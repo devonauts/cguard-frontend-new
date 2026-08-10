@@ -1,3 +1,4 @@
+import { loadXlsx } from '../../../lib/lazyXlsx';
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { clientDisplayName } from '@/lib/clientName';
 import { invalidateEntity } from "@/lib/queryClient";
@@ -69,7 +70,6 @@ import {
   List as ListIcon,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import * as XLSX from 'xlsx';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -1697,6 +1697,7 @@ export default function SecurityGuardsPage() {
                         fr.onerror = () => reject(fr.error);
                         fr.readAsArrayBuffer(importFile);
                       });
+                      const XLSX = await loadXlsx();
                       const wb = XLSX.read(arrBuf, { type: 'array' });
                       const sheetName = wb.SheetNames[0];
                       const sheet = wb.Sheets[sheetName];
@@ -1797,6 +1798,7 @@ export default function SecurityGuardsPage() {
                       const normalized = normalizeCsvContent(text);
                       // parse to objects for preview
                       try {
+                        const XLSX = await loadXlsx();
                         const wbPreview = XLSX.read(normalized, { type: 'string' });
                         const objs = XLSX.utils.sheet_to_json(wbPreview.Sheets[wbPreview.SheetNames[0]], { defval: '' }) as any[];
                         console.debug('Parsed CSV rows (preview):', objs.slice(0, 5));
@@ -1812,6 +1814,7 @@ export default function SecurityGuardsPage() {
                         fr.onerror = () => reject(fr.error);
                         fr.readAsArrayBuffer(importFile);
                       });
+                      const XLSX = await loadXlsx();
                       const wb = XLSX.read(arrBuf, { type: 'array' });
                       const sheetName = wb.SheetNames[0];
                       const sheet = wb.Sheets[sheetName];

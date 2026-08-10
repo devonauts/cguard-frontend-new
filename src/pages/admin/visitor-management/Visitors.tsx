@@ -1,3 +1,4 @@
+import { loadXlsx } from '../../../lib/lazyXlsx';
 import { useMemo, useState, FormEvent, useEffect, useCallback } from "react";
 import { clientDisplayName } from '@/lib/clientName';
 import { useAsyncList } from "@/hooks/useAsyncList";
@@ -164,7 +165,6 @@ type NewVisitor = {
     reason?: string;
 };
 
-import * as XLSX from 'xlsx';
 
 export default function Visitors() {
     const [openFilter, setOpenFilter] = useState(false);
@@ -456,6 +456,7 @@ export default function Visitors() {
 
         try {
             const header = ['Date', 'Last name', 'First name', 'ID', 'Reason of visit', 'Exit Time', 'Number of people', 'Station', 'Client', 'Site'];
+            const XLSX = await loadXlsx();
             const worksheet = XLSX.utils.json_to_sheet(data, { header });
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, 'Bitacoras');

@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import i18n from '@/i18n';
+import { setAppLanguage } from '@/i18n';
 
 type Language = 'es' | 'en' | 'pt';
 
@@ -28,7 +28,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         localStorage.setItem('app_language', lang);
         // also set generic key used by legacy pages (Google Translate page)
         try { localStorage.setItem('language', lang); } catch {}
-        i18n.changeLanguage(lang);
+        void setAppLanguage(lang);
     };
 
     useEffect(() => {
@@ -47,7 +47,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
             }
 
             setLanguageState(chosen);
-            i18n.changeLanguage(chosen);
+            void setAppLanguage(chosen);
         } catch (e) {
             // ignore
         }

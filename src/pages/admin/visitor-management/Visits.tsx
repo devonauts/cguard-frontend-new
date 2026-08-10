@@ -1,3 +1,4 @@
+import { loadXlsx } from '../../../lib/lazyXlsx';
 import { useMemo, useState, useEffect, useCallback, FormEvent } from "react";
 import { useAsyncList } from "@/hooks/useAsyncList";
 import { Search, Filter as FilterIcon, MoreVertical, FileDown, FileSpreadsheet, Printer, ClipboardList } from "lucide-react";
@@ -35,7 +36,6 @@ import { clientService } from "@/lib/api/clientService";
 import { postSiteService } from "@/lib/api/postSiteService";
 import securityGuardService from "@/lib/api/securityGuardService";
 import type { Client, PostSite, SecurityGuard } from "@/types";
-import * as XLSX from "xlsx";
 
 // Loose shape covering the various name fields the client association may carry.
 type ClientLike = {
@@ -332,6 +332,7 @@ export default function Visits() {
         }
         try {
             const data = subjects.map(toExportRow);
+            const XLSX = await loadXlsx();
             const worksheet = XLSX.utils.json_to_sheet(data, { header: exportKeys });
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "Visitas");

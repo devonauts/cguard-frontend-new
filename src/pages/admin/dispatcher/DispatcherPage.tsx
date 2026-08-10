@@ -1,3 +1,4 @@
+import { loadXlsx } from '../../../lib/lazyXlsx';
 import { useMemo, useState, useEffect, useRef, type MouseEvent as ReactMouseEvent } from "react";
 import { clientDisplayName } from '@/lib/clientName';
 import { Link, useNavigate } from "react-router-dom";
@@ -78,7 +79,6 @@ import {
 } from "@/lib/validators/dispatcher-filters";
 import { clientService } from "@/lib/api/clientService";
 import { postSiteService } from "@/lib/api/postSiteService";
-import * as XLSX from 'xlsx';
 import { ApiService } from "@/services/api/apiService";
 import { usePermissions } from '@/hooks/usePermissions';
 import { useTranslation } from 'react-i18next';
@@ -845,6 +845,7 @@ export default function DispatcherPage() {
         }));
 
         // json_to_sheet defaults to starting at A1; avoid passing unsupported 'origin' option
+        const XLSX = await loadXlsx();
         const ws = XLSX.utils.json_to_sheet(rows);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Incidentes');

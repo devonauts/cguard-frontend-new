@@ -1,19 +1,58 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import es from './locales/es.json'
-import en from './locales/en.json'
-import pt from './locales/pt_fixed.json'
 
+/**
+ * Sólo el español entra en el bundle de arranque.
+ *
+ * Antes se importaban los tres idiomas de forma estática: 195 kB de `es`, 180 de
+ * `en` y 23 de `pt`, todos dentro del chunk de entrada. Como `lng` y
+ * `fallbackLng` son ambos `es`, los otros dos sólo hacen falta si el usuario
+ * cambia de idioma — y aun así se los descargaba TODO el mundo, en cada carga.
+ *
+ * `es` se queda estático a propósito: es el idioma por defecto Y el de respaldo,
+ * así que tiene que estar disponible de forma síncrona para el primer pintado.
+ * Sin él, la app arrancaría mostrando las claves de traducción en crudo.
+ */
 i18n.use(initReactI18next).init({
-  resources: {  es: { translation: es },
-    en: { translation: en },
-    pt: { translation: pt },
-  },
-  // Always use Spanish by default across the app
+  resources: { es: { translation: es } },
   lng: 'es',
   fallbackLng: 'es',
   interpolation: { escapeValue: false },
   react: { useSuspense: false },
 })
+
+/** Los idiomas que se descargan cuando se piden. `es` no está: ya viene dentro. */
+const CARGADORES: Record<string, () => Promise<any>> = {
+  en: () => import('./locales/en.json'),
+  pt: () => import('./locales/pt_fixed.json'),
+}
+
+/**
+ * Cambia el idioma, descargando su diccionario si aún no está registrado.
+ *
+ * ÚSALO EN VEZ DE `i18n.changeLanguage` directamente: llamar al de i18next con un
+ * idioma no cargado deja la interfaz en el respaldo (español) sin decir nada, y
+ * el fallo es silencioso y difícil de ver.
+ *
+ * Si la descarga falla —red caída a mitad— se conserva el idioma actual en vez de
+ * dejar la interfaz a medio traducir.
+ */
+export async function setAppLanguage(code: string): Promise<void> {
+  const lang = String(code || 'es').slice(0, 2).toLowerCase()
+
+  if (!i18n.hasResourceBundle(lang, 'translation')) {
+    const cargar = CARGADORES[lang]
+    if (!cargar) return // idioma desconocido: no se toca nada
+    try {
+      const mod = await cargar()
+      i18n.addResourceBundle(lang, 'translation', (mod as any).default ?? mod, true, true)
+    } catch {
+      return
+    }
+  }
+
+  await i18n.changeLanguage(lang)
+}
 
 export default i18n

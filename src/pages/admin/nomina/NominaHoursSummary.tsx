@@ -1,3 +1,4 @@
+import { loadXlsx } from '../../../lib/lazyXlsx';
 import { useEffect, useState, useCallback } from "react";
 import AppLayout from "@/layouts/app-layout";
 import { DataTable, type Column } from "@/components/table/DataTable";
@@ -5,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import { FileDown, Printer, Lock, FileSpreadsheet, CalendarDays, Clock, Timer, UserX } from "lucide-react";
-import * as XLSX from "xlsx";
 import attendanceService from "@/lib/api/attendanceService";
 import { PageContainer, PageHeader, Section, StatCard, Stagger } from "@/components/kit";
 
@@ -79,7 +79,7 @@ export default function NominaHoursSummary() {
     }
   };
 
-  const exportXlsx = () => {
+  const exportXlsx = async () => {
     const data = rows.map((r) => ({
       Vigilante: r.guardName,
       Turnos: r.shifts,
@@ -92,6 +92,7 @@ export default function NominaHoursSummary() {
       Inasistencias: r.noShows,
       Correcciones: r.approvedCorrections,
     }));
+    const XLSX = await loadXlsx();
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Horas");

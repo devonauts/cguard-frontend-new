@@ -10,7 +10,10 @@
  * It joins the same tenant-wide channel (`rc-voice:<tenantId>`) the guards use,
  * so the dispatcher listens to every station/guard on one frequency.
  */
-import { VoiceChannel, type VoiceMember, type VoiceSpeaker, type VoiceState } from "./voiceChannel";
+// SÓLO TIPOS. Se borran al compilar, así que este import no arrastra nada en
+// tiempo de ejecución. La clase se carga bajo demanda en `doConnect` — ver ahí
+// el porqué.
+import type { VoiceChannel, VoiceMember, VoiceSpeaker, VoiceState } from "./voiceChannel";
 import { getAuthToken } from "./api";
 
 const API_URL = (import.meta.env.VITE_API_URL as string | undefined) || "";
@@ -36,6 +39,7 @@ export type RadioVoiceSnapshot = {
 };
 
 let vc: VoiceChannel | null = null;
+let connectPending = false;
 let joinTimer: any = null;
 let selfId: string | undefined;
 let gestureCleanup: (() => void) | null = null;
@@ -102,12 +106,44 @@ export function toggleWidget() {
   set({ open: !snap.open });
 }
 
-function doConnect() {
-  if (vc) return;
-  const tenantId = localStorage.getItem("tenantId") || "";
-  const v = new VoiceChannel();
-  vc = v;
+/**
+ * Carga del SDK de voz BAJO DEMANDA.
+ *
+ * `header.tsx` importa este módulo para pintar el icono de radio, y la cabecera
+ * está en todas las pantallas. Con un `import` estático de `./voiceChannel`, esa
+ * cadena metía `livekit-client` —495 kB sin comprimir, 129 kB gzip— en el chunk
+ * de entrada: TODO el mundo se lo descargaba, incluso quien sólo abre el login y
+ * nunca enciende la radio.
+ *
+ * El `import()` de aquí abajo lo saca del arranque. El coste se paga una sola
+ * vez, cuando el usuario enciende la radio de verdad, y para entonces ya está
+ * autenticado y con la app cargada.
+ *
+ * `connectPending` evita la carrera: encender dos veces seguidas dejaría a dos
+ * llamadas pasando el `if (vc)` antes de que ninguna haya asignado `vc`, y se
+ * abrirían DOS conexiones al SFU.
+ */
+async function doConnect() {
+  if (vc || connectPending) return;
+  connectPending = true;
   set({ state: "connecting", hint: null });
+
+  let VoiceChannelCtor: typeof import("./voiceChannel").VoiceChannel;
+  try {
+    ({ VoiceChannel: VoiceChannelCtor } = await import("./voiceChannel"));
+  } catch {
+    connectPending = false;
+    set({ state: "error", hint: "No se pudo cargar el módulo de voz." });
+    return;
+  }
+  connectPending = false;
+
+  // El usuario pudo apagar la radio mientras se descargaba el módulo.
+  if (!snap.on || vc) return;
+
+  const tenantId = localStorage.getItem("tenantId") || "";
+  const v = new VoiceChannelCtor();
+  vc = v;
   v.connect(
     { url: socketOrigin(), path: "/api/socket.io", token: getAuthToken() || "", tenantId, selfId },
     {
@@ -141,6 +177,9 @@ function doConnect() {
 }
 
 function doDisconnect() {
+  // Si aún se está descargando el SDK, `doConnect` verá `snap.on === false` al
+  // terminar y se retirará solo.
+  connectPending = false;
   if (joinTimer) { clearInterval(joinTimer); joinTimer = null; }
   gestureCleanup?.();
   try { vc?.disconnect(); } catch { /* ignore */ }
