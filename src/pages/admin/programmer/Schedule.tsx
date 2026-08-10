@@ -652,8 +652,38 @@ export default function Schedule() {
     return map;
   }, [stationAlerts]);
 
-  const getOverride = useCallback((guardId: string, dateStr: string): ScheduleOverride | undefined =>
-    overrides.find(o => o.guardId === guardId && String(o.date).slice(0, 10) === dateStr), [overrides]);
+  /**
+   * Índice de novedades por (vigilante, día).
+   *
+   * Esto era un `overrides.find(...)` — un recorrido COMPLETO del array por cada
+   * llamada. Y se llama una vez POR CELDA: la hoja del Mes es el año entero
+   * (365 columnas) por cada puesto, así que con 90 puestos son ~33 000 llamadas
+   * por render. Peor aún, la comparación hacía `String(o.date).slice(0, 10)`
+   * DENTRO del bucle: una cadena nueva por cada elemento recorrido, en cada
+   * celda. Medido en 620 ms por render.
+   *
+   * El mismo patrón correcto está ocho líneas más arriba
+   * (`stationAlertByStationId`): un Map construido una vez por cambio de datos.
+   *
+   * Se conserva la semántica de `find`: si hubiera dos novedades para el mismo
+   * vigilante y día, gana la PRIMERA — por eso el `has` antes del `set` y no un
+   * `set` a secas, que se quedaría con la última.
+   */
+  const overrideByGuardDate = useMemo(() => {
+    const map = new Map<string, ScheduleOverride>();
+    for (const o of overrides || []) {
+      if (!o?.guardId || !o?.date) continue;
+      const key = `${o.guardId}|${String(o.date).slice(0, 10)}`;
+      if (!map.has(key)) map.set(key, o);
+    }
+    return map;
+  }, [overrides]);
+
+  const getOverride = useCallback(
+    (guardId: string, dateStr: string): ScheduleOverride | undefined =>
+      overrideByGuardDate.get(`${guardId}|${dateStr}`),
+    [overrideByGuardDate],
+  );
 
   // ─── Spreadsheet selection model ─────────────────────────────────────────
   // Rows (in visual order) that can hold a selection: every puesto row.
