@@ -30,5 +30,11 @@ dist-ssr
 
 pnpm-lock.yaml
 yarn.lock
-package-lock.json
+# package-lock.json SE VERSIONA. Estaba ignorado, y eso significaba que cada
+# instalación resolvía versiones frescas: el lockfile de esta máquina y el del
+# servidor divergieron en 5 versiones —entre ellas rrweb 2.0.0-alpha.4 frente a
+# 2.1.1, la librería del co-browse— más 155 paquetes presentes en uno y no en el
+# otro. Producción compilaba con un árbol distinto al de desarrollo, y el CI ni
+# siquiera arrancaba: `setup-node` con `cache: npm` y `npm ci` EXIGEN lockfile.
+# El versionado es el del servidor, que es el que produce lo que hoy está vivo.
 bun.lockb
