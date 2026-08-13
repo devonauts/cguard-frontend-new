@@ -10,7 +10,7 @@ import api from '@/lib/api';
 import { stationService } from '@/lib/api/stationService';
 import { toast } from 'sonner';
 import PostSiteMiniInfo from '@/components/post-sites/PostSiteMiniInfo';
-import { Section, EmptyState, StatusBadge, Modal } from '@/components/kit';
+import { Section, EmptyState, StatusBadge, Modal, IconTile, SkeletonBlock } from '@/components/kit';
 import { clientDisplayName } from '@/lib/clientName';
 import { Button } from '@/components/ui/button';
 
@@ -431,13 +431,13 @@ export default function GuardAsignarSitiosPage() {
             action={
               <div className="flex items-center gap-2">
                 <div className="relative hidden sm:block">
-                  <Search size={15} className="absolute left-2.5 top-2.5 text-muted-foreground" />
+                  <Search size={15} className="absolute left-2.5 top-2.5" style={{ color: 'var(--ink-faint)' }} />
                   <input
                     type="text"
                     placeholder={t('guards.assignSites.searchPlaceholder', { defaultValue: 'Buscar puesto o estación' })}
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    className="h-9 w-52 pl-8 pr-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+                    className="cg-input h-9 w-52 pl-8 pr-3 text-sm"
                   />
                 </div>
                 <div className="relative" ref={actionRef}>
@@ -450,28 +450,31 @@ export default function GuardAsignarSitiosPage() {
                       requestDelete(groups.filter((g) => selectedKeys.includes(g.key)));
                     }}
                     disabled={selectedKeys.length === 0}
-                    className="inline-flex items-center gap-1.5 h-9 px-3 rounded-md border text-sm font-medium text-red-600 hover:bg-red-500/10 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="cg-btn-glass cg-focus inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-40"
+                    style={{ color: 'var(--bad-text)' }}
                   >
                     <Trash2 size={15} />
                     {t('guards.assignSites.actions.delete', { defaultValue: 'Quitar' })}
                     {selectedKeys.length > 0 && (
-                      <span className="ml-0.5 px-1.5 py-0.5 rounded-full bg-red-500/15 text-[11px]">{selectedKeys.length}</span>
+                      <span
+                        className="ml-0.5 rounded-full px-1.5 py-0.5 text-[11px] tabular-nums"
+                        style={{ background: 'color-mix(in oklab, var(--bad) 16%, transparent)' }}
+                      >
+                        {selectedKeys.length}
+                      </span>
                     )}
                   </button>
                 </div>
-                <button
-                  onClick={() => setAssignModalOpen(true)}
-                  className="inline-flex items-center justify-center gap-2 text-sm font-medium px-3.5 py-2 rounded-lg bg-primary text-primary-foreground shadow-sm hover:opacity-90 transition"
-                >
+                <Button variant="brand" size="sm" onClick={() => setAssignModalOpen(true)}>
                   <Plus size={16} />
                   {t('guards.assignSites.assignButton', { defaultValue: 'Asignar puesto' })}
-                </button>
+                </Button>
               </div>
             }
           >
             {loading ? (
               <div className="space-y-3">
-                {[0, 1, 2].map((i) => <div key={i} className="h-16 rounded-xl bg-muted/60 animate-pulse" />)}
+                {[0, 1, 2].map((i) => <SkeletonBlock key={i} className="h-16 rounded-xl" />)}
               </div>
             ) : mappings.length === 0 ? (
               <EmptyState
@@ -479,13 +482,10 @@ export default function GuardAsignarSitiosPage() {
                 title={t('guards.assignSites.empty', { defaultValue: 'Sin puestos asignados todavía' })}
                 description={t('guards.assignSites.emptyHint', { defaultValue: 'Asigna un puesto para empezar.' })}
                 action={
-                  <button
-                    onClick={() => setAssignModalOpen(true)}
-                    className="inline-flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg bg-primary text-primary-foreground shadow-sm hover:opacity-90 transition"
-                  >
+                  <Button variant="brand" onClick={() => setAssignModalOpen(true)}>
                     <Plus size={16} />
                     {t('guards.assignSites.assignButton', { defaultValue: 'Asignar puesto' })}
-                  </button>
+                  </Button>
                 }
               />
             ) : filtered.length === 0 ? (
@@ -496,13 +496,13 @@ export default function GuardAsignarSitiosPage() {
               />
             ) : (
               <div className="space-y-2.5">
-                <label className="flex items-center gap-2 px-1 text-[11px] uppercase tracking-wide text-muted-foreground cursor-pointer select-none">
+                <label className="cg-eyebrow flex cursor-pointer select-none items-center gap-2 px-1">
                   <input
                     type="checkbox"
                     aria-label="select all"
                     checked={allSelected}
                     onChange={(e) => toggleSelectAll(e.target.checked)}
-                    className="h-4 w-4 rounded accent-primary"
+                    className="h-4 w-4 rounded" style={{ accentColor: 'var(--brand)' }}
                   />
                   {t('guards.assignSites.selectAll', { defaultValue: 'Seleccionar todo' })}
                 </label>
@@ -516,7 +516,7 @@ export default function GuardAsignarSitiosPage() {
                   return (
                     <div
                       key={g.key}
-                      className={`group flex items-center gap-3 rounded-xl border p-3.5 transition hover:shadow-sm ${checked ? 'border-primary/60 bg-primary/5' : 'hover:bg-muted/30'}`}
+                      className={`glass-flat group flex items-center gap-3 p-3.5 transition ${checked ? 'glass-brand' : 'glass-hover'}`}
                     >
                       <input
                         type="checkbox"
@@ -525,42 +525,42 @@ export default function GuardAsignarSitiosPage() {
                           if (e.target.checked) setSelectedKeys((prev) => [...prev, g.key]);
                           else setSelectedKeys((prev) => prev.filter((x) => x !== g.key));
                         }}
-                        className="h-4 w-4 rounded accent-primary shrink-0"
+                        className="h-4 w-4 shrink-0 rounded" style={{ accentColor: 'var(--brand)' }}
                       />
-                      <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center shrink-0 text-muted-foreground">
-                        <Building2 className="w-4.5 h-4.5" />
-                      </div>
+                      <IconTile tone="brand" size="sm"><Building2 /></IconTile>
                       <div className="flex-1 min-w-0">
                         <div className="font-medium text-sm truncate">{postSiteLabel || stationLabel || '—'}</div>
-                        <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+                        <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs" style={{ color: 'var(--ink-soft)' }}>
                           <span className="inline-flex items-center gap-1 truncate">
                             <Briefcase className="w-3 h-3 shrink-0" />
                             {clientLabel || '—'}
                           </span>
                           {stationLabel && stationLabel !== '-' && (
-                            <StatusBadge tone="slate" dot={false}>
+                            <StatusBadge tone="neutral" dot={false}>
                               <MapPin className="w-3 h-3 shrink-0" />
                               {stationLabel}
                             </StatusBadge>
                           )}
                           {rangeLabel && (
-                            <StatusBadge tone="primary" dot={false}>
+                            <StatusBadge tone="brand" dot={false}>
                               <Clock className="w-3 h-3 shrink-0" />
                               {rangeLabel}
                             </StatusBadge>
                           )}
-                          <StatusBadge tone="slate" dot={false}>
+                          <StatusBadge tone="neutral" dot={false}>
                             {t('guards.assignSites.shiftCount', { defaultValue: '{{count}} turnos', count })}
                           </StatusBadge>
                         </div>
                       </div>
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
                         onClick={() => requestDelete([g])}
                         title={t('guards.assignSites.actions.removeFromPost', { defaultValue: 'Quitar del puesto' })}
-                        className="shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-lg text-muted-foreground hover:text-red-600 hover:bg-red-500/10 transition"
+                        className="shrink-0 hover:[color:var(--bad-text)]"
                       >
                         <Trash2 size={16} />
-                      </button>
+                      </Button>
                     </div>
                   );
                 })}
@@ -571,29 +571,29 @@ export default function GuardAsignarSitiosPage() {
 
         {/* Assign Modal/Drawer */}
         {assignModalOpen && (
-          <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-[1px]" onClick={() => setAssignModalOpen(false)}>
-            <div className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-card shadow-2xl flex flex-col rounded-l-2xl" onClick={(e) => e.stopPropagation()}>
-              <div className="flex items-center justify-between p-5 border-b sticky top-0 bg-card z-10">
+          <div className="glass-scrim fixed inset-0 z-50" onClick={() => setAssignModalOpen(false)}>
+            <div className="glass-raised fixed bottom-0 right-0 top-0 flex w-full max-w-md flex-col rounded-l-3xl rounded-r-none" style={{ position: 'fixed' }} onClick={(e) => e.stopPropagation()}>
+              <div className="sticky top-0 z-10 flex items-center justify-between border-b p-5" style={{ borderColor: 'var(--hairline)', background: 'var(--glass-solid)' }}>
                 <div className="flex items-center gap-2.5">
-                  <span className="w-9 h-9 rounded-xl flex items-center justify-center bg-primary text-primary-foreground shrink-0"><MapPin className="w-4.5 h-4.5" /></span>
+                  <IconTile tone="brand" size="sm"><MapPin /></IconTile>
                   <h3 className="text-base font-semibold tracking-tight">{t('guards.assignSites.modal.title', { defaultValue: 'Asignar puesto' })}</h3>
                 </div>
-                <button onClick={() => setAssignModalOpen(false)} className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition"><X size={18} /></button>
+                <Button variant="ghost" size="icon-sm" onClick={() => setAssignModalOpen(false)} aria-label="Cerrar"><X size={18} /></Button>
               </div>
 
               <div className="p-5 overflow-y-auto flex-1">
                 <div className="space-y-5">
                   <div>
-                    <label className="text-[11px] uppercase tracking-wide text-muted-foreground block mb-1.5">{t('guards.assignSites.form.client', { defaultValue: 'Cliente' })}<span className="text-red-500 ml-0.5">*</span></label>
-                    <select value={selectedClient} onChange={(e) => setSelectedClient(e.target.value)} className="h-9 text-sm flex w-full rounded-md border border-input bg-background px-2">
+                    <label className="cg-eyebrow mb-1.5 block">{t('guards.assignSites.form.client', { defaultValue: 'Cliente' })}<span className="ml-0.5" style={{ color: 'var(--bad-text)' }}>*</span></label>
+                    <select value={selectedClient} onChange={(e) => setSelectedClient(e.target.value)} className="cg-input flex h-9 w-full px-2 text-sm">
                       <option value="">{t('guards.assignSites.form.selectClient', { defaultValue: 'Selecciona cliente' })}</option>
                       {clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
                   </div>
 
                   <div>
-                    <label className="text-[11px] uppercase tracking-wide text-muted-foreground block mb-1.5">{t('guards.assignSites.form.postSite', { defaultValue: 'Puesto' })}<span className="text-red-500 ml-0.5">*</span></label>
-                    <select value={selectedPostSite} onChange={(e) => setSelectedPostSite(e.target.value)} className="h-9 text-sm flex w-full rounded-md border border-input bg-background px-2 mb-2 disabled:opacity-60" disabled={!selectedClient}>
+                    <label className="cg-eyebrow mb-1.5 block">{t('guards.assignSites.form.postSite', { defaultValue: 'Puesto' })}<span className="ml-0.5" style={{ color: 'var(--bad-text)' }}>*</span></label>
+                    <select value={selectedPostSite} onChange={(e) => setSelectedPostSite(e.target.value)} className="cg-input mb-2 flex h-9 w-full px-2 text-sm disabled:opacity-60" disabled={!selectedClient}>
                       <option value="">{t('guards.assignSites.form.selectPostSite', { defaultValue: 'Selecciona puesto' })}</option>
                       {postSites.length === 0 && selectedClient && (
                         <option disabled value="">{t('guards.assignSites.noPostSites', { defaultValue: 'No hay puestos disponibles' })}</option>
@@ -601,8 +601,8 @@ export default function GuardAsignarSitiosPage() {
                       {postSites.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
                     </select>
                     {selectedPostSite && (
-                      <div className="mt-2 rounded-xl border bg-muted/30 p-3">
-                        <React.Suspense fallback={<div className="text-xs text-muted-foreground">{t('guards.assignSites.loadingPostSite', { defaultValue: 'Cargando información del puesto…' })}</div>}>
+                      <div className="glass-sunken mt-2 p-3">
+                        <React.Suspense fallback={<div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{t('guards.assignSites.loadingPostSite', { defaultValue: 'Cargando información del puesto…' })}</div>}>
                           <PostSiteMiniInfo postSiteId={selectedPostSite} />
                         </React.Suspense>
                       </div>
@@ -611,8 +611,8 @@ export default function GuardAsignarSitiosPage() {
 
                   {selectedPostSite && (
                     <div>
-                      <label className="text-[11px] uppercase tracking-wide text-muted-foreground block mb-1.5">{t('guards.assignSites.form.station', { defaultValue: 'Estación' })}</label>
-                      <select value={selectedStationAssign} onChange={(e) => setSelectedStationAssign(e.target.value)} className="h-9 text-sm flex w-full rounded-md border border-input bg-background px-2">
+                      <label className="cg-eyebrow mb-1.5 block">{t('guards.assignSites.form.station', { defaultValue: 'Estación' })}</label>
+                      <select value={selectedStationAssign} onChange={(e) => setSelectedStationAssign(e.target.value)} className="cg-input flex h-9 w-full px-2 text-sm">
                         <option value="">{t('guards.assignSites.form.selectStation', { defaultValue: 'Selecciona estación' })}</option>
                         {stationsForPostSite.length === 0 && selectedPostSite && (
                           <option disabled value="">{t('guards.assignSites.noStations', { defaultValue: 'No hay estaciones disponibles' })}</option>
@@ -624,23 +624,23 @@ export default function GuardAsignarSitiosPage() {
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-[11px] uppercase tracking-wide text-muted-foreground block mb-1.5">{t('guards.assignSites.form.start', { defaultValue: 'Inicio' })}<span className="text-red-500 ml-0.5">*</span></label>
-                      <input type="datetime-local" value={selectedStart} onChange={(e) => setSelectedStart(e.target.value)} className="h-9 text-sm flex w-full rounded-md border border-input bg-background px-2" />
+                      <label className="cg-eyebrow mb-1.5 block">{t('guards.assignSites.form.start', { defaultValue: 'Inicio' })}<span className="ml-0.5" style={{ color: 'var(--bad-text)' }}>*</span></label>
+                      <input type="datetime-local" value={selectedStart} onChange={(e) => setSelectedStart(e.target.value)} className="cg-input flex h-9 w-full px-2 text-sm" />
                     </div>
                     <div>
-                      <label className="text-[11px] uppercase tracking-wide text-muted-foreground block mb-1.5">{t('guards.assignSites.form.end', { defaultValue: 'Fin' })}<span className="text-red-500 ml-0.5">*</span></label>
-                      <input type="datetime-local" value={selectedEnd} onChange={(e) => setSelectedEnd(e.target.value)} className="h-9 text-sm flex w-full rounded-md border border-input bg-background px-2" />
+                      <label className="cg-eyebrow mb-1.5 block">{t('guards.assignSites.form.end', { defaultValue: 'Fin' })}<span className="ml-0.5" style={{ color: 'var(--bad-text)' }}>*</span></label>
+                      <input type="datetime-local" value={selectedEnd} onChange={(e) => setSelectedEnd(e.target.value)} className="cg-input flex h-9 w-full px-2 text-sm" />
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2 p-4 border-t bg-card">
-                <button onClick={() => setAssignModalOpen(false)} className="text-sm px-4 py-2 rounded-lg border hover:bg-muted transition">{t('guards.assignSites.modal.cancel', { defaultValue: 'Cancelar' })}</button>
-                <button onClick={assignSite} disabled={assigning} className="inline-flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg bg-primary text-primary-foreground shadow-sm hover:opacity-90 transition disabled:opacity-60">
+              <div className="flex items-center justify-end gap-2 border-t p-4" style={{ borderColor: 'var(--hairline)', background: 'var(--glass-solid)' }}>
+                <Button variant="outline" onClick={() => setAssignModalOpen(false)}>{t('guards.assignSites.modal.cancel', { defaultValue: 'Cancelar' })}</Button>
+                <Button variant="brand" onClick={assignSite} disabled={assigning}>
                   <Plus size={16} />
                   {t('guards.assignSites.modal.assign', { defaultValue: 'Asignar' })}
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -661,7 +661,7 @@ export default function GuardAsignarSitiosPage() {
               </>
             }
           >
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
               {t('guards.assignSites.actions.confirmDeleteStation', {
                 defaultValue: '¿Quitar a este vigilante de {{station}}? Se eliminarán {{count}} turnos.',
                 station: deleteCtx.label,

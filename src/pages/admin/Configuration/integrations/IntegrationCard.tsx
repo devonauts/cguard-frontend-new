@@ -12,23 +12,47 @@ type Props = {
   href: string;
 };
 
+/**
+ * Tarjeta de una conexión con otro sistema. Va en una rejilla, así que la
+ * superficie es `glass-flat` (sin desenfoque): el desenfoque por tarjeta en un
+ * `map()` es lo que tira el rendimiento del desplazamiento.
+ * Conectada = filo del acento (`glass-brand`).
+ */
 export default function IntegrationCard({ image, title, subtitle, active, href }: Props) {
   return (
-    <div className="cg-card cg-card-hover flex h-full flex-col items-center justify-between gap-3 p-6">
-      <div className="flex min-h-[28px] w-full items-start justify-end">
-        {active && <StatusBadge tone="green">Activo</StatusBadge>}
+    <div
+      className={cn(
+        "glass-flat glass-hover flex h-full flex-col items-center justify-between gap-3 p-5",
+        active && "glass-brand",
+      )}
+    >
+      <div className="flex min-h-[26px] w-full items-start justify-end">
+        {active && <StatusBadge tone="ok">Conectada</StatusBadge>}
       </div>
 
-      <div className="flex flex-1 items-center justify-center py-2">
-        <img src={image} className="h-10 object-contain" alt={title} />
+      <div
+        className="flex h-16 w-full items-center justify-center rounded-2xl border p-3"
+        style={{
+          background: active ? "var(--brand-wash)" : "var(--glass-sunken)",
+          borderColor: active ? "var(--brand-line)" : "var(--hairline)",
+        }}
+      >
+        <img src={image} className="max-h-full max-w-full object-contain" alt={title} />
       </div>
 
-      <div className={cn("w-full border-t pt-3")}>
+      <div className="w-full border-t pt-3" style={{ borderColor: "var(--hairline)" }}>
         <div className="flex items-center justify-between gap-2">
-          <div className="truncate text-xs font-semibold text-primary">{subtitle ?? title}</div>
-          <Button variant="ghost" size="icon" asChild>
+          <div className="min-w-0">
+            <div className="truncate text-sm font-semibold">{title}</div>
+            {subtitle && subtitle !== title && (
+              <div className="truncate text-xs" style={{ color: "var(--ink-soft)" }}>
+                {subtitle}
+              </div>
+            )}
+          </div>
+          <Button variant="ghost" size="icon-sm" asChild>
             <Link to={href} aria-label={`Gestionar ${subtitle ?? title}`}>
-              <Settings className="h-5 w-5" />
+              <Settings className="h-4 w-4" />
             </Link>
           </Button>
         </div>

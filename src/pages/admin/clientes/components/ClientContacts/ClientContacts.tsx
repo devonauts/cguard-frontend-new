@@ -429,7 +429,7 @@ export default function ClientContacts({ client }: { client: Client & { contacts
           <div className="flex-shrink-0">
             <button
               onClick={handleOpenAdd}
-              className={`w-full md:w-auto ${isCompact ? 'px-3 py-1' : 'px-6 py-2'} cg-gradient-brand text-primary-foreground rounded-lg text-sm font-semibold flex items-center justify-center gap-2 shadow-sm hover:shadow-lg hover:brightness-[1.04] transition-all whitespace-nowrap`}
+              className={`cg-btn-brand cg-focus w-full md:w-auto ${isCompact ? 'px-3 py-1' : 'px-6 py-2'} flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-semibold transition-all`}
             >
               <Plus size={isCompact ? 14 : 18} />
               <span>{t('clients.contacts.addcontact') || 'Agregar contacto'}</span>
@@ -440,12 +440,12 @@ export default function ClientContacts({ client }: { client: Client & { contacts
           <table className="w-full">
             <thead>
               <tr className="border-b bg-muted/30">
-                <th className="px-4 py-3 text-left"><input type="checkbox" onChange={(e) => { const checked = e.target.checked; if (checked) setSelectedIds(contacts.map(c => c.id)); else setSelectedIds([]); }} checked={selectedIds.length === contacts.length && contacts.length > 0} /></th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-foreground">{t('clients.contacts.contactName') || 'Name'}</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-foreground">{t('clients.contacts.contactEmail') || 'Email'}</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-foreground">{t('clients.contacts.contactPhone') || 'Mobile Number'}</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-foreground">{t('clients.contacts.contactPostSites') || 'Post Site'}</th>
-                <th className="px-4 py-3 text-left"></th>
+                <th className="cg-eyebrow px-2 py-2"><input type="checkbox" onChange={(e) => { const checked = e.target.checked; if (checked) setSelectedIds(contacts.map(c => c.id)); else setSelectedIds([]); }} checked={selectedIds.length === contacts.length && contacts.length > 0} /></th>
+                <th className="cg-eyebrow px-2 py-2">{t('clients.contacts.contactName') || 'Name'}</th>
+                <th className="cg-eyebrow px-2 py-2">{t('clients.contacts.contactEmail') || 'Email'}</th>
+                <th className="cg-eyebrow px-2 py-2">{t('clients.contacts.contactPhone') || 'Mobile Number'}</th>
+                <th className="cg-eyebrow px-2 py-2">{t('clients.contacts.contactPostSites') || 'Post Site'}</th>
+                <th className="cg-eyebrow px-2 py-2"></th>
               </tr>
             </thead>
             <tbody>
@@ -460,12 +460,12 @@ export default function ClientContacts({ client }: { client: Client & { contacts
                   </td>
                 </tr>
               ) : filtered.map(c => (
-                <tr key={c.id} className="border-b hover:bg-muted/30">
-                  <td className="px-4 py-3 text-sm text-foreground"><input type="checkbox" checked={selectedIds.includes(c.id)} onChange={() => toggleSelect(c.id)} /></td>
-                  <td className="px-4 py-3 text-sm text-foreground">{c.name}</td>
-                  <td className="px-4 py-3 text-sm text-foreground">{c.email || '-'}</td>
-                  <td className="px-4 py-3 text-sm text-foreground">{c.mobile || '-'}</td>
-                  <td className="px-4 py-3 text-sm text-foreground">{resolvePostSiteLabel(c)}</td>
+                <tr key={c.id} className="border-b hover:bg-muted/40">
+                  <td className="px-2 py-2.5 text-sm text-foreground"><input type="checkbox" checked={selectedIds.includes(c.id)} onChange={() => toggleSelect(c.id)} /></td>
+                  <td className="px-2 py-2.5 text-sm text-foreground">{c.name}</td>
+                  <td className="px-2 py-2.5 text-sm text-foreground">{c.email || '-'}</td>
+                  <td className="px-2 py-2.5 text-sm text-foreground">{c.mobile || '-'}</td>
+                  <td className="px-2 py-2.5 text-sm text-foreground">{resolvePostSiteLabel(c)}</td>
                   <td key={`actions-${c.id}`} className="text-right pr-4">
                     <div className="relative inline-block">
                       <button
@@ -491,7 +491,8 @@ export default function ClientContacts({ client }: { client: Client & { contacts
                           </button>
                           <button
                             onClick={() => { setConfirmDeleteIds([c.id]); setOpenMenuId(null); }}
-                            className={`w-full flex items-center justify-start gap-2 px-3 py-2 text-red-600 hover:bg-muted/30 focus:outline-none`}
+                            className="flex w-full items-center justify-start gap-2 px-3 py-2 hover:bg-muted/30 focus:outline-none"
+                            style={{ color: 'var(--bad-text)' }}
                             aria-label={t('actions.delete')}
                             title={t('actions.delete')}
                           >
@@ -549,12 +550,12 @@ export default function ClientContacts({ client }: { client: Client & { contacts
           <div>
             <label className="block text-sm text-foreground/70 mb-1">{t('clients.contacts.form.Name')}</label>
             <input aria-invalid={!!errors.name} className="w-full border rounded-md h-10 px-3" value={form.name || ''} onChange={e => handleChange('name', e.target.value)} />
-            {errors.name && <p className="text-xs text-red-600 mt-1">{errors.name}</p>}
+            {errors.name && <p className="mt-1 text-xs" style={{ color: 'var(--bad-text)' }}>{errors.name}</p>}
           </div>
           <div>
             <label className="block text-sm text-foreground/70 mb-1">{t('clients.contacts.form.Email')}</label>
             <input aria-invalid={!!errors.email} className="w-full border rounded-md h-10 px-3" value={form.email || ''} onChange={e => handleChange('email', e.target.value)} />
-            {errors.email && <p className="text-xs text-red-600 mt-1">{errors.email}</p>}
+            {errors.email && <p className="mt-1 text-xs" style={{ color: 'var(--bad-text)' }}>{errors.email}</p>}
           </div>
           <div>
             <label className="block text-sm text-foreground/70 mb-1">{t('clients.contacts.form.Mobile Number')}</label>
@@ -572,7 +573,7 @@ export default function ClientContacts({ client }: { client: Client & { contacts
                 } as any)}
               />
             </div>
-            {errors.mobile && <p className="text-xs text-red-600 mt-1">{errors.mobile}</p>}
+            {errors.mobile && <p className="mt-1 text-xs" style={{ color: 'var(--bad-text)' }}>{errors.mobile}</p>}
           </div>
           <div>
             <label className="block text-sm text-foreground/70 mb-1">{t('clients.contacts.form.Description')}</label>

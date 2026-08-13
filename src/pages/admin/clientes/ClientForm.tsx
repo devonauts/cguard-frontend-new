@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, useRef } from "react";
+import { FIELD_CLS_LG } from './components/_shared/tab-kit';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { clientSchema, type ClientInput } from "@/lib/validators/client";
@@ -158,7 +159,13 @@ export default function ClientForm({
     // Watch latitude/longitude so we can force remount of the map when they change
     const watchedLat = form.watch('latitude');
     const watchedLng = form.watch('longitude');
-    const addressMapKey = `${watchedLat || ''}_${watchedLng || ''}_${mode}_${id || ''}`;
+    /* La latitud y la longitud SALIERON de esta clave. Estaban aquí porque
+       `AddressAutocomplete` no reaccionaba a los cambios de coordenada, así que
+       se le forzaba a remontar. Ya sí reacciona (mueve la cámara, que es
+       gratis), y remontar costaba una CARGA FACTURABLE de Google Maps por cada
+       arrastre del pin: 3-5 por dirección en vez de 1. Además reseteaba el mapa
+       a media caricia y filtraba memoria. */
+    const addressMapKey = `${mode}_${id || ''}`;
     // Función para cargar Sectores del módulo clientAccount
     const loadCategories = async () => {
         setLoadingCategories(true);
@@ -469,11 +476,11 @@ export default function ClientForm({
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">
-                                                {t('clients.form.clientType', 'Tipo de cliente')} <span className="text-primary">*</span>
+                                                {t('clients.form.clientType', 'Tipo de cliente')} <span className="brand-text">*</span>
                                             </FormLabel>
                                             <FormControl>
                                                 <Select value={String(field.value || 'PN')} onValueChange={(v) => field.onChange(v)}>
-                                                    <SelectTrigger className="h-10 rounded-lg border-slate-200 dark:border-slate-600 focus:border-primary focus:ring-primary/20">
+                                                    <SelectTrigger className="cg-input cg-focus h-10">
                                                         <SelectValue />
                                                     </SelectTrigger>
                                                     <SelectContent>
@@ -492,11 +499,11 @@ export default function ClientForm({
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">
-                                                {personType === 'PJ' ? t('clients.form.ruc', 'RUC de la empresa') : t('clients.form.cedula', 'Cédula')} <span className="text-primary">*</span>
+                                                {personType === 'PJ' ? t('clients.form.ruc', 'RUC de la empresa') : t('clients.form.cedula', 'Cédula')} <span className="brand-text">*</span>
                                             </FormLabel>
                                             <FormControl>
                                                 <input
-                                                    className="flex h-10 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-card px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+                                                    className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm disabled:opacity-50"
                                                     {...field}
                                                     value={typeof field.value === 'string' ? field.value : ''}
                                                     maxLength={personType === 'PJ' ? 13 : 10}
@@ -520,7 +527,7 @@ export default function ClientForm({
                             </div>
 
                             <p className="flex items-center gap-2 pt-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                                <UserRound className="h-3.5 w-3.5 text-primary" /> {t('clients.legalRep.title', 'Datos del representante legal')}
+                                <UserRound className="h-3.5 w-3.5 brand-text" /> {t('clients.legalRep.title', 'Datos del representante legal')}
                             </p>
 
                             {/* Representante legal: nombre + apellido (requeridos) */}
@@ -535,7 +542,7 @@ export default function ClientForm({
                                             </FormLabel>
                                             <FormControl>
                                                 <input
-                                                    className="flex h-10 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-card px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+                                                    className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm disabled:opacity-50"
                                                     {...field}
                                                     value={typeof field.value === "string" ? field.value : ""}
                                                     onChange={(e) => {
@@ -562,7 +569,7 @@ export default function ClientForm({
                                             </FormLabel>
                                             <FormControl>
                                                 <input
-                                                    className="flex h-10 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-card px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+                                                    className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm disabled:opacity-50"
                                                     {...field}
                                                     value={typeof field.value === "string" ? field.value : ""}
                                                     onChange={(e) => {
@@ -585,23 +592,23 @@ export default function ClientForm({
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <FormField<ClientInput> control={form.control} name={"legalRepPhone" as any} render={({ field }) => (
                                   <FormItem>
-                                    <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">{t('clients.legalRep.phone', 'Teléfono personal')} <span className="text-primary">*</span></FormLabel>
-                                    <FormControl><input type="tel" className="flex h-10 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-card px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" {...field} value={typeof field.value === 'string' ? field.value : ''} /></FormControl>
+                                    <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">{t('clients.legalRep.phone', 'Teléfono personal')} <span className="brand-text">*</span></FormLabel>
+                                    <FormControl><input type="tel" className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm" {...field} value={typeof field.value === 'string' ? field.value : ''} /></FormControl>
                                     <FormMessage />
                                   </FormItem>
                                 )} />
                                 <FormField<ClientInput> control={form.control} name={"legalRepEmail" as any} render={({ field }) => (
                                   <FormItem>
-                                    <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">{t('clients.legalRep.email', 'Correo electrónico personal')} <span className="text-primary">*</span></FormLabel>
-                                    <FormControl><input type="email" className="flex h-10 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-card px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" {...field} value={typeof field.value === 'string' ? field.value : ''} /></FormControl>
+                                    <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">{t('clients.legalRep.email', 'Correo electrónico personal')} <span className="brand-text">*</span></FormLabel>
+                                    <FormControl><input type="email" className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm" {...field} value={typeof field.value === 'string' ? field.value : ''} /></FormControl>
                                     <FormMessage />
                                   </FormItem>
                                 )} />
                                 {personType === 'PJ' && (
                                   <FormField<ClientInput> control={form.control} name={"legalRepDocument" as any} render={({ field }) => (
                                     <FormItem>
-                                      <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">{t('clients.legalRep.document', 'Cédula del representante')} <span className="text-primary">*</span></FormLabel>
-                                      <FormControl><input inputMode="numeric" maxLength={10} className="flex h-10 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-card px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" {...field} value={typeof field.value === 'string' ? field.value : ''} onChange={(e) => field.onChange((e.target.value || '').replace(/\D/g, ''))} /></FormControl>
+                                      <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">{t('clients.legalRep.document', 'Cédula del representante')} <span className="brand-text">*</span></FormLabel>
+                                      <FormControl><input inputMode="numeric" maxLength={10} className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm" {...field} value={typeof field.value === 'string' ? field.value : ''} onChange={(e) => field.onChange((e.target.value || '').replace(/\D/g, ''))} /></FormControl>
                                       <FormMessage />
                                     </FormItem>
                                   )} />
@@ -627,7 +634,7 @@ export default function ClientForm({
                                             </FormLabel>
                                             <FormControl>
                                                 <input
-                                                    className="flex h-10 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-card px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+                                                    className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm disabled:opacity-50"
                                                     placeholder={t('clients.form.commercialNamePlaceholder', 'Ej. Empresa Segura S.A.')}
                                                     {...field}
                                                     value={typeof field.value === "string" ? field.value : ""}
@@ -653,7 +660,7 @@ export default function ClientForm({
                                             <FormControl>
                                                 <input
                                                     type="date"
-                                                    className="flex h-10 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-card px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+                                                    className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm disabled:opacity-50"
                                                     {...field}
                                                     value={typeof field.value === "string" ? field.value : ""}
                                                 />
@@ -669,7 +676,7 @@ export default function ClientForm({
                                         <FormItem>
                                             <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">{t('clients.form.contractEndDate', 'Fin de contrato')}<span className="ml-2 text-[10px] font-normal text-muted-foreground normal-case tracking-normal">{t('clients.form.optional', 'Opcional')}</span></FormLabel>
                                             <FormControl>
-                                                <input type="date" className="flex h-10 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-card px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" {...field} value={typeof field.value === "string" ? field.value : ""} />
+                                                <input type="date" className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm" {...field} value={typeof field.value === "string" ? field.value : ""} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -682,7 +689,7 @@ export default function ClientForm({
                                         <FormItem>
                                             <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">{t('clients.form.code', 'Código de cliente')}<span className="ml-2 text-[10px] font-normal text-muted-foreground normal-case tracking-normal">{t('clients.form.optional', 'Opcional')}</span></FormLabel>
                                             <FormControl>
-                                                <input type="text" placeholder="CLI-0001" className="flex h-10 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-card px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" {...field} value={typeof field.value === "string" ? field.value : ""} />
+                                                <input type="text" placeholder="CLI-0001" className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm" {...field} value={typeof field.value === "string" ? field.value : ""} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -695,7 +702,7 @@ export default function ClientForm({
                                         <FormItem>
                                             <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">{t('clients.form.riskLevel', 'Nivel de riesgo')}<span className="ml-2 text-[10px] font-normal text-muted-foreground normal-case tracking-normal">{t('clients.form.optional', 'Opcional')}</span></FormLabel>
                                             <FormControl>
-                                                <select className="flex h-10 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-card px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" {...field} value={typeof field.value === "string" ? field.value : ""}>
+                                                <select className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm" {...field} value={typeof field.value === "string" ? field.value : ""}>
                                                     <option value="">{t('clients.form.selectRisk', 'Sin definir')}</option>
                                                     <option value="Bajo">{t('clients.risk.low', 'Bajo')}</option>
                                                     <option value="Medio">{t('clients.risk.medium', 'Medio')}</option>
@@ -731,7 +738,7 @@ export default function ClientForm({
                                         <span className="ml-2 text-[10px] font-normal text-muted-foreground normal-case tracking-normal">{t('clients.form.optional', 'Opcional')}</span>
                                     </p>
                                     <div
-                                        className="relative flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-200 dark:border-slate-600 bg-card hover:border-primary/40 transition-colors cursor-pointer min-h-[140px] p-4"
+                                        className="glass-sunken relative flex min-h-[140px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-4 transition-colors"
                                         onClick={() => document.getElementById('logo-upload-input')?.click()}
                                     >
                                         <input
@@ -755,7 +762,8 @@ export default function ClientForm({
                                                 <img src={logoPreview} alt="logo" className="max-h-24 max-w-full object-contain rounded" />
                                                 <button
                                                     type="button"
-                                                    className="absolute top-2 right-2 rounded-full bg-card border border-slate-200 dark:border-slate-600 p-0.5 shadow-sm text-muted-foreground hover:text-red-500 hover:border-red-300"
+                                                    className="cg-focus absolute right-2 top-2 rounded-full border p-0.5 shadow-sm transition-opacity hover:opacity-70"
+                                                    style={{ background: 'var(--glass-raised)', borderColor: 'var(--hairline)', color: 'var(--bad-text)' }}
                                                     onClick={(e) => { e.stopPropagation(); setLogoFile(null); setLogoPreview((prev) => { if (prev && prev.startsWith('blob:')) URL.revokeObjectURL(prev); return null; }); setLogoExisting(null); }}
                                                 >
                                                     <X className="h-3.5 w-3.5" />
@@ -779,7 +787,7 @@ export default function ClientForm({
                                         <span className="ml-2 text-[10px] font-normal text-muted-foreground normal-case tracking-normal">{t('clients.form.optional', 'Opcional')}</span>
                                     </p>
                                     <div
-                                        className="relative flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-200 dark:border-slate-600 bg-card hover:border-primary/40 transition-colors cursor-pointer min-h-[140px] p-4"
+                                        className="glass-sunken relative flex min-h-[140px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-4 transition-colors"
                                         onClick={() => document.getElementById('place-upload-input')?.click()}
                                     >
                                         <input
@@ -803,7 +811,8 @@ export default function ClientForm({
                                                 <img src={placePicPreview} alt="place" className="max-h-24 max-w-full object-contain rounded" />
                                                 <button
                                                     type="button"
-                                                    className="absolute top-2 right-2 rounded-full bg-card border border-slate-200 dark:border-slate-600 p-0.5 shadow-sm text-muted-foreground hover:text-red-500 hover:border-red-300"
+                                                    className="cg-focus absolute right-2 top-2 rounded-full border p-0.5 shadow-sm transition-opacity hover:opacity-70"
+                                                    style={{ background: 'var(--glass-raised)', borderColor: 'var(--hairline)', color: 'var(--bad-text)' }}
                                                     onClick={(e) => { e.stopPropagation(); setPlacePicFile(null); setPlacePicPreview((prev) => { if (prev && prev.startsWith('blob:')) URL.revokeObjectURL(prev); return null; }); setPlacePicExisting(null); }}
                                                 >
                                                     <X className="h-3.5 w-3.5" />
@@ -835,12 +844,12 @@ export default function ClientForm({
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">
-                                                {t('clients.form.email', 'Correo electrónico')} <span className="text-primary">*</span>
+                                                {t('clients.form.email', 'Correo electrónico')} <span className="brand-text">*</span>
                                             </FormLabel>
                                             <FormControl>
                                                 <input
                                                     type="email"
-                                                    className="flex h-10 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-card px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+                                                    className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm disabled:opacity-50"
                                                     {...field}
                                                     value={typeof field.value === "string" ? field.value : ""}
                                                     maxLength={50}
@@ -856,7 +865,7 @@ export default function ClientForm({
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">
-                                                {t('clients.form.phone', 'Teléfono')} <span className="text-primary">*</span>
+                                                {t('clients.form.phone', 'Teléfono')} <span className="brand-text">*</span>
                                             </FormLabel>
                                             <FormControl>
                                                 <PhoneInput
@@ -889,7 +898,8 @@ export default function ClientForm({
                         icon={<UserPlus />}
                         title={t('clients.form.extraAccess', 'Personas con acceso adicionales')}
                         action={(
-                          <button type="button" onClick={addAccessPerson} className="inline-flex items-center gap-1.5 rounded-lg border border-input px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/10">
+                          <button type="button" onClick={addAccessPerson} className="cg-focus inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors"
+                            style={{ borderColor: 'var(--brand-line)', color: 'var(--brand-text)', background: 'var(--brand-wash)' }}>
                             <UserPlus size={13} /> {t('clients.form.addPerson', 'Agregar persona')}
                           </button>
                         )}
@@ -904,11 +914,11 @@ export default function ClientForm({
                             <p className="text-xs text-muted-foreground italic">Sin personas adicionales. Solo el contacto principal tendrá acceso.</p>
                           )}
                           {accessPeople.map((p, i) => (
-                            <div key={i} className="grid grid-cols-1 sm:grid-cols-12 gap-2 rounded-lg border border-border/40 bg-background p-3">
-                              <input value={p.name} onChange={(e) => updateAccessPerson(i, { name: e.target.value })} placeholder="Nombre completo *" className="sm:col-span-4 px-3 py-2 border border-border/40 rounded-lg text-sm bg-background outline-none focus:border-primary" />
-                              <input value={p.email} onChange={(e) => updateAccessPerson(i, { email: e.target.value })} type="email" placeholder="Correo *" className="sm:col-span-4 px-3 py-2 border border-border/40 rounded-lg text-sm bg-background outline-none focus:border-primary" />
-                              <input value={p.relationship} onChange={(e) => updateAccessPerson(i, { relationship: e.target.value })} placeholder={personType === 'PJ' ? 'Cargo (ej: Encargado)' : 'Relación (ej: hijo)'} className="sm:col-span-3 px-3 py-2 border border-border/40 rounded-lg text-sm bg-background outline-none focus:border-primary" />
-                              <button type="button" onClick={() => removeAccessPerson(i)} className="sm:col-span-1 grid place-items-center rounded-lg text-muted-foreground hover:text-red-500" aria-label="Quitar"><Trash2 size={15} /></button>
+                            <div key={i} className="glass-sunken grid grid-cols-1 gap-2 p-3 sm:grid-cols-12">
+                              <input value={p.name} onChange={(e) => updateAccessPerson(i, { name: e.target.value })} placeholder="Nombre completo *" className={`${FIELD_CLS_LG} sm:col-span-4`} />
+                              <input value={p.email} onChange={(e) => updateAccessPerson(i, { email: e.target.value })} type="email" placeholder="Correo *" className={`${FIELD_CLS_LG} sm:col-span-4`} />
+                              <input value={p.relationship} onChange={(e) => updateAccessPerson(i, { relationship: e.target.value })} placeholder={personType === 'PJ' ? 'Cargo (ej: Encargado)' : 'Relación (ej: hijo)'} className={`${FIELD_CLS_LG} sm:col-span-3`} />
+                              <button type="button" onClick={() => removeAccessPerson(i)} className="cg-focus grid place-items-center rounded-lg transition-opacity hover:opacity-70 sm:col-span-1" style={{ color: 'var(--bad-text)' }} aria-label="Quitar"><Trash2 size={15} /></button>
                             </div>
                           ))}
                       </Section>
@@ -966,7 +976,7 @@ export default function ClientForm({
                         title={t('clients.form.addressSearch', 'Dirección')}
                         action={(
                             /* Mode toggle pills */
-                            <div className="flex items-center rounded-lg bg-slate-100 dark:bg-[#2a2a2a] p-0.5 gap-0.5">
+                            <div className="glass-sunken flex items-center gap-0.5 p-0.5">
                                 <button
                                     type="button"
                                     onClick={() => setShowAddressAutocomplete(true)}
@@ -1034,11 +1044,11 @@ export default function ClientForm({
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">
-                                                {t('clients.form.address', 'Dirección')} <span className="text-primary">*</span>
+                                                {t('clients.form.address', 'Dirección')} <span className="brand-text">*</span>
                                             </FormLabel>
                                             <FormControl>
                                                 <input
-                                                    className="flex h-10 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-card px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+                                                    className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm disabled:opacity-50"
                                                     {...field}
                                                     value={typeof field.value === "string" ? field.value : ""}
                                                     maxLength={100}
@@ -1061,7 +1071,7 @@ export default function ClientForm({
                                             </FormLabel>
                                             <FormControl>
                                                 <input
-                                                    className="flex h-10 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-card px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                                    className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm"
                                                     placeholder={t('clients.form.addressLine2Placeholder', 'Piso, oficina, departamento…')}
                                                     {...field}
                                                     value={typeof field.value === "string" ? field.value : ""}
@@ -1081,12 +1091,12 @@ export default function ClientForm({
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">
-                                                    {t('clients.form.postalCode', 'Código postal')} <span className="text-primary">*</span>
+                                                    {t('clients.form.postalCode', 'Código postal')} <span className="brand-text">*</span>
                                                 </FormLabel>
                                                 <FormControl>
                                                     <input
                                                         type="text"
-                                                        className="flex h-10 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-card px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+                                                        className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm disabled:opacity-50"
                                                         {...field}
                                                         value={String(field.value || "")}
                                                         maxLength={20}
@@ -1107,7 +1117,7 @@ export default function ClientForm({
                                                 </FormLabel>
                                                 <FormControl>
                                                     <input
-                                                        className="flex h-10 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-card px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+                                                        className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm disabled:opacity-50"
                                                         {...field}
                                                         value={typeof field.value === "string" ? field.value : ""}
                                                         maxLength={100}
@@ -1128,7 +1138,7 @@ export default function ClientForm({
                                                 </FormLabel>
                                                 <FormControl>
                                                     <input
-                                                        className="flex h-10 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-card px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+                                                        className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm disabled:opacity-50"
                                                         {...field}
                                                         value={typeof field.value === "string" ? field.value : ""}
                                                         maxLength={100}
@@ -1160,7 +1170,7 @@ export default function ClientForm({
                                                     <FormControl>
                                                         <input
                                                             type="text"
-                                                            className="flex h-10 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-card px-3 py-2 text-sm font-mono placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+                                                            className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm font-mono disabled:opacity-50"
                                                             placeholder="-90 a 90"
                                                             {...field}
                                                             value={String(field.value ?? "")}
@@ -1182,7 +1192,7 @@ export default function ClientForm({
                                                     <FormControl>
                                                         <input
                                                             type="text"
-                                                            className="flex h-10 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-card px-3 py-2 text-sm font-mono placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+                                                            className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm font-mono disabled:opacity-50"
                                                             placeholder="-180 a 180"
                                                             {...field}
                                                             value={String(field.value ?? "")}
@@ -1202,10 +1212,11 @@ export default function ClientForm({
                     <div className="cg-card cg-card-hover overflow-hidden">
                         <Accordion type="single" collapsible defaultValue="more">
                             <AccordionItem value="more" className="border-0">
-                                <AccordionTrigger className="px-5 py-3.5 bg-card border-b border-slate-200 dark:border-white/10 hover:no-underline hover:bg-slate-50 [&[data-state=open]]:border-b [&[data-state=closed]]:border-b-0 rounded-none">
+                                <AccordionTrigger className="rounded-none border-b px-5 py-3.5 hover:no-underline [&[data-state=closed]]:border-b-0 [&[data-state=open]]:border-b"
+                                    style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}>
                                     <div className="flex items-center gap-2">
-                                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
-                                            <Globe className="h-4 w-4 text-primary" />
+                                        <div className="flex h-7 w-7 items-center justify-center rounded-lg border" style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)' }}>
+                                            <Globe className="h-4 w-4 brand-text" />
                                         </div>
                                         <span className="text-sm font-semibold text-foreground">{t('clients.form.moreInfo', 'Más información')}</span>
                                     </div>
@@ -1252,7 +1263,7 @@ export default function ClientForm({
                                                     </FormLabel>
                                                     <FormControl>
                                                         <input
-                                                            className="flex h-10 w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-card px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+                                                            className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm disabled:opacity-50"
                                                             placeholder="https://"
                                                             {...field}
                                                             value={typeof field.value === "string" ? field.value : ""}
@@ -1274,7 +1285,7 @@ export default function ClientForm({
                             type="button"
                             disabled={form.formState.isSubmitting}
                             onClick={() => onCancel ? onCancel() : navigate('/clients')}
-                            className="min-w-28 bg-card text-foreground border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-[#2a2a2a] hover:text-foreground cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="cg-btn-glass min-w-28 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             {t('profile.cancel', 'Cancelar')}
                         </Button>

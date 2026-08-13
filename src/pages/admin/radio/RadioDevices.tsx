@@ -12,8 +12,11 @@ import {
 } from "lucide-react";
 
 import AppLayout from "@/layouts/app-layout";
-import { Card, CardContent } from "@/components/ui/card";
-import { PageContainer, PageHeader, StatCard, StatusBadge, EmptyState, SkeletonCards, Stagger } from "@/components/kit";
+import {
+  PageContainer, PageHeader, StatCard, StatusBadge, EmptyState, SkeletonCards,
+  Stagger, GlassPanel, IconTile, Section,
+} from "@/components/kit";
+import { DeviceStatusBadge, FaultRail, healthTone, type DeviceHealth } from "../video/deviceStatus";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -81,11 +84,17 @@ const emptyForm: FormState = {
   active: true,
 };
 
-const STATUS_BADGE: Record<string, { label: string; tone: 'green' | 'slate' | 'red' | 'orange' }> = {
-  registered: { label: "Registrado", tone: "green" },
-  offline: { label: "Sin conexión", tone: "slate" },
-  error: { label: "Error", tone: "red" },
-  unknown: { label: "Sin probar", tone: "orange" },
+/**
+ * El estado de un enlace de radio es SEVERIDAD, no marca. La escala es la común
+ * de equipos (`../video/deviceStatus`): «sin conexión» tenía aquí el tono
+ * neutro y en los dispositivos de vídeo el rojo, así que el mismo equipo caído
+ * se leía como trámite o como avería según la pantalla.
+ */
+const STATUS_BADGE: Record<string, { health: DeviceHealth; label: string }> = {
+  registered: { health: "up", label: "Registrado" },
+  offline: { health: "down", label: "Sin conexión" },
+  error: { health: "down", label: "Error" },
+  unknown: { health: "unknown", label: "Sin probar" },
 };
 
 export default function RadioDevices() {
@@ -232,6 +241,18 @@ export default function RadioDevices() {
           icon={<Radio />}
           title="Radios IP"
           subtitle="Conecta una pasarela RoIP / SIP para enlazar los radios físicos con el canal de la app."
+          badges={(
+            counts.registered > 0 ? (
+              /* La misma píldora que el kit ya calcula: la página la pintaba a
+                 mano en la rama «hay enlaces» y con `StatusBadge` en la otra,
+                 así que el mismo indicador tenía dos anatomías. */
+              <StatusBadge tone="ok">
+                {counts.registered === 1 ? 'Un enlace al aire' : `${counts.registered} enlaces al aire`}
+              </StatusBadge>
+            ) : (
+              <StatusBadge tone="neutral">Sin enlaces al aire</StatusBadge>
+            )
+          )}
           actions={(
             <Button variant="brand" onClick={openNew}>
               <Plus className="mr-2 h-4 w-4" /> Agregar radio IP
@@ -242,18 +263,21 @@ export default function RadioDevices() {
         {/* Summary */}
         <Stagger className="grid grid-cols-3 gap-3">
           <StatCard label="Total" value={counts.total} icon={<Radio />} accent="primary" />
-          <StatCard label="Registrados" value={counts.registered} icon={<Wifi />} accent="green" />
-          <StatCard label="Sin conexión" value={counts.offline} icon={<WifiOff />} accent="slate" />
+          <StatCard label="Registrados" value={counts.registered} icon={<Wifi />} accent="ok" />
+          <StatCard label="Sin conexión" value={counts.offline} icon={<WifiOff />} accent="neutral" />
         </Stagger>
 
         {/* List */}
         {loading ? (
           <SkeletonCards count={4} className="lg:grid-cols-2" />
         ) : error ? (
-          <Card><CardContent className="flex flex-col items-center gap-3 py-12 text-center">
-            <p className="text-sm text-muted-foreground">{error}</p>
-            <Button variant="outline" onClick={load}><RefreshCw className="mr-2 h-4 w-4" />Reintentar</Button>
-          </CardContent></Card>
+          <Section>
+            <div className="flex flex-col items-center gap-3 py-8 text-center">
+              <IconTile tone="bad" size="lg"><WifiOff /></IconTile>
+              <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>{error}</p>
+              <Button variant="outline" onClick={load}><RefreshCw className="mr-2 h-4 w-4" />Reintentar</Button>
+            </div>
+          </Section>
         ) : devices.length === 0 ? (
           <EmptyState
             icon={<Radio />}
@@ -266,49 +290,56 @@ export default function RadioDevices() {
             )}
           />
         ) : (
-          <div className="grid gap-3 lg:grid-cols-2">
+          <Stagger className="grid gap-3 lg:grid-cols-2">
             {devices.map((d) => {
               const badge = STATUS_BADGE[d.status || "unknown"] || STATUS_BADGE.unknown;
+              const alAire = d.status === "registered";
+              const falla = d.status === "error";
               return (
-                <Card key={d.id}><CardContent className="flex items-start gap-3 p-4">
-                  <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-amber-500/10">
-                    {d.status === "registered" ? (
-                      <Wifi className="h-5 w-5 text-green-600" />
-                    ) : d.status === "offline" || d.status === "error" ? (
-                      <WifiOff className="h-5 w-5 text-zinc-500" />
-                    ) : (
-                      <Radio className="h-5 w-5 text-primary" />
-                    )}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <p className="truncate font-semibold text-foreground">{d.name}</p>
-                      <StatusBadge tone={badge.tone}>{badge.label}</StatusBadge>
-                      {!d.active && <StatusBadge tone="slate" dot={false}>Inactivo</StatusBadge>}
+                /* `flat` a propósito: dentro de un map(), el desenfoque de `.glass`
+                   obliga a rasterizar el fondo por tarjeta en cada fotograma. */
+                <GlassPanel key={d.id} flat className="relative overflow-hidden p-4">
+                  {/* Canto de severidad — sólo cuando el enlace ha fallado. */}
+                  {falla && <FaultRail />}
+                  <div className="flex items-start gap-3">
+                    {/* El icono y la píldora salen del MISMO estado: un enlace
+                        «sin probar» tenía la píldora en ámbar y el icono en el
+                        acento de marca. */}
+                    <IconTile tone={healthTone(badge.health)}>
+                      {alAire ? <Wifi /> : d.status === "offline" || falla ? <WifiOff /> : <Radio />}
+                    </IconTile>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="truncate font-semibold text-foreground">{d.name}</p>
+                        <DeviceStatusBadge health={badge.health} label={badge.label} />
+                        {!d.active && <StatusBadge tone="neutral" dot={false}>Inactivo</StatusBadge>}
+                      </div>
+                      <p className="mt-0.5 truncate text-xs" style={{ color: 'var(--ink-soft)' }}>
+                        {d.host || "—"}:{d.sipPort ?? 5060} · {String(d.transport || "udp").toUpperCase()}
+                        {d.extension ? ` · ext ${d.extension}` : ""}
+                        {d.sipUsername ? ` · ${d.sipUsername}` : ""}
+                      </p>
+                      {d.lastError && (
+                        <p className="mt-1 truncate text-xs" style={{ color: 'var(--bad-text)' }}>{d.lastError}</p>
+                      )}
+                      <div className="mt-2.5 flex flex-wrap gap-2">
+                        <Button size="sm" variant="outline" disabled={testingId === d.id} onClick={() => test(d)}>
+                          {testingId === d.id ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="mr-1.5 h-3.5 w-3.5" />}
+                          Probar
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => openEdit(d)}>
+                          <Pencil className="mr-1.5 h-3.5 w-3.5" />Editar
+                        </Button>
+                        <Button size="sm" variant="ghost" style={{ color: 'var(--bad-text)' }} onClick={() => setDeleteTarget(d)}>
+                          <Trash2 className="mr-1.5 h-3.5 w-3.5" />Eliminar
+                        </Button>
+                      </div>
                     </div>
-                    <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                      {d.host || "—"}:{d.sipPort ?? 5060} · {String(d.transport || "udp").toUpperCase()}
-                      {d.extension ? ` · ext ${d.extension}` : ""}
-                      {d.sipUsername ? ` · ${d.sipUsername}` : ""}
-                    </p>
-                    {d.lastError && <p className="mt-1 truncate text-xs text-red-500">{d.lastError}</p>}
-                    <div className="mt-2.5 flex flex-wrap gap-2">
-                      <Button size="sm" variant="outline" disabled={testingId === d.id} onClick={() => test(d)}>
-                        {testingId === d.id ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="mr-1.5 h-3.5 w-3.5" />}
-                        Probar
-                      </Button>
-                      <Button size="sm" variant="outline" onClick={() => openEdit(d)}>
-                        <Pencil className="mr-1.5 h-3.5 w-3.5" />Editar
-                      </Button>
-                      <Button size="sm" variant="outline" className="text-red-600" onClick={() => setDeleteTarget(d)}>
-                        <Trash2 className="mr-1.5 h-3.5 w-3.5" />Eliminar
-                      </Button>
-                    </div>
                   </div>
-                </CardContent></Card>
+                </GlassPanel>
               );
             })}
-          </div>
+          </Stagger>
         )}
       </PageContainer>
 
@@ -389,13 +420,25 @@ export default function RadioDevices() {
               <Label>Notas</Label>
               <Textarea value={form.notes} onChange={(e) => set({ notes: e.target.value })} rows={2} />
             </div>
-            <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={form.registerRequired} onChange={(e) => set({ registerRequired: e.target.checked })} />
+            <label className="glass-sunken flex cursor-pointer items-center gap-2.5 p-3 text-sm">
+              <input
+                type="checkbox"
+                className="cg-focus size-4"
+                style={{ accentColor: 'var(--brand)' }}
+                checked={form.registerRequired}
+                onChange={(e) => set({ registerRequired: e.target.checked })}
+              />
               Requiere registro SIP (REGISTER)
             </label>
-            <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={form.active} onChange={(e) => set({ active: e.target.checked })} />
-              Activo (el puente intentará conectarlo)
+            <label className="glass-sunken flex cursor-pointer items-center gap-2.5 p-3 text-sm">
+              <input
+                type="checkbox"
+                className="cg-focus size-4"
+                style={{ accentColor: 'var(--brand)' }}
+                checked={form.active}
+                onChange={(e) => set({ active: e.target.checked })}
+              />
+              Activo (se intentará mantener conectado)
             </label>
           </div>
 
@@ -420,7 +463,7 @@ export default function RadioDevices() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">Eliminar</AlertDialogAction>
+            <AlertDialogAction onClick={confirmDelete} className="cg-btn-bad">Eliminar</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

@@ -13,10 +13,15 @@ import { useEffect, useMemo, useState } from "react";
 import type {
   ControlCenterData, Kpi, MapEntity, MonthPoint, ActivityItem, RevenueSeries,
 } from "./types";
+import { DEFAULT_PREFS } from "./prefs";
 
-const GREEN = "#22c55e";   // covered
-const RED = "#ef4444";     // incident
-const PURPLE = "#a855f7";  // supervisor
+/* La API de marcadores de Google exige un color literal —no resuelve `var(--…)`—,
+   así que estos pines no pueden salir de los tokens. Lo que sí se evita es tener
+   TRES literales más: se leen de los mismos ajustes por defecto que pinta el mapa
+   real, y así la muestra no se separa de lo que el usuario ve en producción. */
+const GREEN = DEFAULT_PREFS.pinColors.guard;      // cubierto
+const RED = DEFAULT_PREFS.pinColors.incident;     // incidente
+const PURPLE = DEFAULT_PREFS.pinColors.supervisor;
 
 const MONTHS = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 const CENTER = { lat: -0.1807, lng: -78.4678 };
@@ -69,8 +74,47 @@ function buildGuards(): MapEntity[] {
     lat: STATION_COORDS[i].lat + 0.0012, lng: STATION_COORDS[i].lng + 0.0012,
     status: i === 2 ? "patrol" : "online",
     label: name, sub: STATION_NAMES[i],
-    meta: { battery: 62 + ((i * 9) % 36), punchInTime: new Date(Date.now() - (i + 1) * 36e5).toISOString() },
+    meta: {
+      entityId: `demo-g-${i}`,
+      battery: 62 + ((i * 9) % 36),
+      punchInTime: new Date(Date.now() - (i + 1) * 36e5).toISOString(),
+      // El mapa sólo late con señal FRESCA. Uno de la muestra lleva rato mudo a
+      // propósito: así se ve la diferencia entre «reportando» y «sin señal».
+      lastSeenAt: new Date(Date.now() - (i === 5 ? 52 * 60e3 : 40e3)).toISOString(),
+      stationName: STATION_NAMES[i],
+      phone: "+593 99 000 00" + (10 + i),
+    },
   }));
+}
+
+const CLIENT_NAMES = [
+  "Grupo Andina", "Corporación Delta", "Banco Pichincha", "Hospital Metropolitano",
+  "Mall El Jardín", "Bodegas Cumbayá",
+];
+
+/** Las sedes de los clientes — el cuarto tipo de entidad del mapa. Se colocan
+ *  cerca de sus puestos, y dos de ellas casi encima para que se vea el racimo. */
+function buildClients(): MapEntity[] {
+  return CLIENT_NAMES.map((name, i) => {
+    const base = STATION_COORDS[i % STATION_COORDS.length];
+    // Las dos últimas comparten manzana: el mapa las agrupa hasta que se acerca.
+    const juntas = i >= CLIENT_NAMES.length - 2;
+    return {
+      id: `demo-cl-${i}`, kind: "client",
+      lat: base.lat + (juntas ? 0.0006 * (i % 2) : 0.004),
+      lng: base.lng + (juntas ? 0.0006 : -0.004),
+      status: "online",
+      label: `Sede ${name}`,
+      sub: name,
+      meta: {
+        entityId: `demo-cl-${i}`, clientId: `demo-cli-${i}`, clientName: name,
+        address: `Av. Demostración ${100 + i * 7}, Quito`,
+        city: "Quito", phone: "+593 2 250 00" + (10 + i),
+        riskLevel: i % 3 === 0 ? "Alto" : "Medio",
+        stationsCount: 1 + (i % 3),
+      },
+    };
+  });
 }
 
 // ── Supervisor patrol routes (looping rings of different radii) ──────────────
@@ -99,7 +143,16 @@ function supervisorsAt(step: number): MapEntity[] {
     const pos = pointOnRoute(route, step * SUP_SPEED + i * 2.3);
     return {
       id: `demo-sup-${i}`, kind: "supervisor", lat: pos.lat, lng: pos.lng, status: "patrol",
-      label: name, sub: "Recorrido de supervisión", meta: { color: PURPLE },
+      label: name, sub: "Recorrido de supervisión",
+      meta: {
+        color: PURPLE, entityId: `demo-sup-${i}`,
+        zone: ["Norte", "Centro", "Valles"][i % 3],
+        vehicle: `Camioneta ${["PDA-120", "PBX-455", "PCT-981"][i % 3]}`,
+        phone: "+593 99 111 11" + (10 + i),
+        onDutySince: new Date(Date.now() - (i + 2) * 36e5).toISOString(),
+        // Se está moviendo AHORA: su marca de tiempo es de este instante.
+        lastSeenAt: new Date().toISOString(),
+      },
     };
   });
 }
@@ -136,6 +189,7 @@ function buildBase(): ControlCenterData {
   };
   const stations = buildStations();
   const guards = buildGuards();
+  const clients = buildClients();
 
   const responseTrend = monthSeries([6.1, 5.8, 5.5, 5.2, 5.0, 4.8, 4.7, 4.5, 4.4, 4.3, 4.3, 4.2]);
   const incidentsTrend = monthSeries([14, 12, 15, 11, 9, 10, 8, 7, 9, 6, 5, 4]);
@@ -152,7 +206,7 @@ function buildBase(): ControlCenterData {
       kpi("response", "Tiempo de respuesta", 4.2, { unit: "min", status: "neutral", trend: -0.12, sub: "promedio mensual", spark: [6.1, 5.4, 5.8, 4.9, 4.6, 4.4, 4.5, 4.2] }),
       kpi("clients", "Clientes", 14, { status: "neutral", trend: 0.16, sub: `${stations.length} puestos` }),
     ],
-    entities: [tenant, ...stations, ...guards],
+    entities: [tenant, ...clients, ...stations, ...guards],
     revenue: buildRevenue(),
     incidentsTrend,
     responseTrend,

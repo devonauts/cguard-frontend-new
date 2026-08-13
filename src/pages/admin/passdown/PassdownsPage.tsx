@@ -13,6 +13,7 @@ import {
   EmptyState,
   Modal,
   Field,
+  Segmented,
 } from "@/components/kit";
 import passdownService, {
   type Passdown,
@@ -26,10 +27,10 @@ function fmtDate(s?: string | null): string {
   return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString("es-EC");
 }
 
-const PRIORITY_META: Record<string, { label: string; tone: "red" | "orange" | "slate" }> = {
-  alta: { label: "Alta", tone: "red" },
-  media: { label: "Media", tone: "orange" },
-  baja: { label: "Baja", tone: "slate" },
+const PRIORITY_META: Record<string, { label: string; tone: "bad" | "warn" | "neutral" }> = {
+  alta: { label: "Alta", tone: "bad" },
+  media: { label: "Media", tone: "warn" },
+  baja: { label: "Baja", tone: "neutral" },
 };
 
 const FILTERS: Array<{ key: PassdownStatus | "all"; label: string }> = [
@@ -40,9 +41,9 @@ const FILTERS: Array<{ key: PassdownStatus | "all"; label: string }> = [
 
 function StatusPill({ status }: { status: PassdownStatus }) {
   return status === "received" ? (
-    <StatusBadge tone="green">Recibido</StatusBadge>
+    <StatusBadge tone="ok">Recibido</StatusBadge>
   ) : (
-    <StatusBadge tone="orange">Pendiente de recibir</StatusBadge>
+    <StatusBadge tone="warn">Pendiente de recibir</StatusBadge>
   );
 }
 
@@ -89,11 +90,9 @@ export default function PassdownsPage() {
       key: "stationName",
       header: "Puesto",
       render: (_v, r) => (
-        <span className="font-medium text-foreground flex items-center gap-1.5">
+        <span className="flex items-center gap-1.5 font-semibold">
           {r.stationName || ((r as any).channel === "supervisor" ? "Supervisión" : "—")}
-          {(r as any).channel === "supervisor" && (
-            <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:bg-amber-500/15 dark:text-amber-400">Supervisor</span>
-          )}
+          {(r as any).channel === "supervisor" && <StatusBadge tone="warn" dot={false}>Supervisor</StatusBadge>}
         </span>
       ),
     },
@@ -101,13 +100,13 @@ export default function PassdownsPage() {
       key: "outgoingGuardName",
       header: "Vigilante saliente",
       render: (_v, r) => (
-        <span className="text-xs text-muted-foreground">{r.outgoingGuardName || "—"}</span>
+        <span className="text-xs" style={{ color: "var(--ink-soft)" }}>{r.outgoingGuardName || "—"}</span>
       ),
     },
     {
       key: "shiftLabel",
       header: "Turno",
-      render: (_v, r) => <span className="text-xs text-muted-foreground">{r.shiftLabel || "—"}</span>,
+      render: (_v, r) => <span className="text-xs" style={{ color: "var(--ink-soft)" }}>{r.shiftLabel || "—"}</span>,
     },
     {
       key: "status",
@@ -118,25 +117,25 @@ export default function PassdownsPage() {
       key: "instructionCount",
       header: "Consignas",
       render: (_v, r) => (
-        <span className="text-xs text-muted-foreground">{r.instructionCount ?? 0}</span>
+        <span className="text-xs tabular-nums" style={{ color: "var(--ink-soft)" }}>{r.instructionCount ?? 0}</span>
       ),
     },
     {
       key: "createdAt",
       header: "Creado",
-      render: (_v, r) => <span className="text-xs text-muted-foreground">{fmtDate(r.createdAt)}</span>,
+      render: (_v, r) => <span className="text-xs tabular-nums" style={{ color: "var(--ink-soft)" }}>{fmtDate(r.createdAt)}</span>,
     },
     {
       key: "receivedByName",
       header: "Recibido por",
       render: (_v, r) =>
         r.status === "received" ? (
-          <span className="text-xs text-muted-foreground">
+          <span className="text-xs" style={{ color: "var(--ink-soft)" }}>
             {r.receivedByName || "—"}
             {r.receivedAt ? ` · ${fmtDate(r.receivedAt)}` : ""}
           </span>
         ) : (
-          <span className="text-xs text-muted-foreground">—</span>
+          <span className="text-xs" style={{ color: "var(--ink-faint)" }}>—</span>
         ),
     },
   ];
@@ -155,18 +154,11 @@ export default function PassdownsPage() {
             title="Pases de turno"
             icon={<Repeat />}
             action={
-              <div className="flex flex-wrap gap-2">
-                {FILTERS.map((f) => (
-                  <Button
-                    key={f.key}
-                    size="sm"
-                    variant={filter === f.key ? "default" : "outline"}
-                    onClick={() => setFilter(f.key)}
-                  >
-                    {f.label}
-                  </Button>
-                ))}
-              </div>
+              <Segmented<PassdownStatus | "all">
+                value={filter}
+                onChange={setFilter}
+                options={FILTERS.map((f) => ({ value: f.key, label: f.label }))}
+              />
             }
           >
             {loading ? (
@@ -219,7 +211,7 @@ export default function PassdownsPage() {
 
             <div>
               <div className="cg-eyebrow mb-1">Novedades</div>
-              <p className="whitespace-pre-wrap text-sm text-foreground/80">
+              <p className="glass-sunken whitespace-pre-wrap p-3 text-sm" style={{ color: "var(--ink)" }}>
                 {detail.notes?.trim() || "Sin novedades registradas."}
               </p>
             </div>
@@ -236,7 +228,7 @@ export default function PassdownsPage() {
                         href={src}
                         target="_blank"
                         rel="noreferrer"
-                        className="block h-24 w-24 overflow-hidden rounded-xl border bg-muted"
+                        className="glass-flat block h-24 w-24 overflow-hidden"
                       >
                         <img
                           src={src}
@@ -248,7 +240,8 @@ export default function PassdownsPage() {
                     ) : (
                       <div
                         key={i}
-                        className="flex h-24 w-24 items-center justify-center rounded-xl border bg-muted text-muted-foreground [&_svg]:size-6"
+                        className="glass-sunken flex h-24 w-24 items-center justify-center [&_svg]:size-6"
+                        style={{ color: "var(--ink-faint)" }}
                       >
                         <ImageOff />
                       </div>
@@ -259,7 +252,7 @@ export default function PassdownsPage() {
             )}
 
             <div>
-              <div className="mb-2 flex items-center gap-2 text-muted-foreground [&_svg]:size-4">
+              <div className="mb-2 flex items-center gap-2 [&_svg]:size-4" style={{ color: "var(--brand-text)" }}>
                 <ListChecks />
                 <span className="cg-eyebrow">Consignas ({detail.instructions?.length ?? 0})</span>
               </div>
@@ -270,14 +263,14 @@ export default function PassdownsPage() {
                     return (
                       <div
                         key={ins.id}
-                        className="flex items-start justify-between gap-3 rounded-xl border p-3"
+                        className="glass-flat flex items-start justify-between gap-3 p-3"
                       >
                         <div className="min-w-0">
-                          <div className="text-sm font-medium text-foreground">{ins.taskToDo}</div>
+                          <div className="text-sm font-medium">{ins.taskToDo}</div>
                           <div className="mt-1 flex flex-wrap items-center gap-2">
                             <StatusBadge tone={pr.tone}>{pr.label}</StatusBadge>
                             {ins.completionNotes && (
-                              <span className="text-xs text-muted-foreground">
+                              <span className="text-xs" style={{ color: "var(--ink-soft)" }}>
                                 {ins.completionNotes}
                               </span>
                             )}
@@ -285,9 +278,9 @@ export default function PassdownsPage() {
                         </div>
                         <div className="shrink-0">
                           {ins.wasItDone ? (
-                            <StatusBadge tone="green">Realizada</StatusBadge>
+                            <StatusBadge tone="ok">Realizada</StatusBadge>
                           ) : (
-                            <StatusBadge tone="slate">Pendiente</StatusBadge>
+                            <StatusBadge tone="neutral">Pendiente</StatusBadge>
                           )}
                         </div>
                       </div>
@@ -295,7 +288,7 @@ export default function PassdownsPage() {
                   })}
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground">Sin consignas registradas.</p>
+                <p className="text-sm" style={{ color: "var(--ink-soft)" }}>Sin consignas registradas.</p>
               )}
             </div>
           </div>

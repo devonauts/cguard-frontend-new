@@ -2,10 +2,13 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Client } from '@/types/client';
 import { useNavigate } from 'react-router-dom';
 import useScrollToTopOnMount from '@/hooks/useScrollToTopOnMount';
+import { MeterBar } from '@/components/charts';
+import type { ChartTone } from '@/lib/chartColors';
 import { clientService } from '@/lib/api/clientService';
 import GoogleMapEmbed from '@/components/GoogleMap/GoogleMapEmbed';
 import ScheduleCard from './ScheduleCard';
-import { Section, EmptyState, StatusBadge } from '@/components/kit';
+import { Section, EmptyState, StatusBadge, IconTile, Segmented } from '@/components/kit';
+import { FIELD_CLS, TabTable, THead, Th, Tr, Pager, TabFooter, TabLoading } from '../_shared/tab-kit';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import {
@@ -20,11 +23,9 @@ import {
   DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 
-const inputCls = 'flex h-9 w-full rounded-lg border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-all placeholder:text-muted-foreground hover:border-ring/40 focus-visible:outline-none focus-visible:border-ring focus-visible:ring-ring/40 focus-visible:ring-[3px]';
-
 // ── Shape of GET /client-account/:id/coverage (clientAccountCoverage.ts) ──
 type CoverageStatus = 'cubierto' | 'parcial' | 'sin_cobertura' | 'asignado_sin_marcar' | 'sin_turno';
-type BadgeTone = 'green' | 'orange' | 'red' | 'slate';
+type BadgeTone = 'ok' | 'warn' | 'bad' | 'neutral';
 interface CoverageSede { id: string; name: string; address: string | null; lat: number | null; lng: number | null; }
 interface CoveragePuesto {
   id: string;
@@ -67,21 +68,21 @@ interface CoverageData {
   updatedAt: string;
 }
 
+/** El punto del pin sale del semántico, nunca de un color escrito a mano. */
 const STATUS_META: Record<string, { label: string; tone: BadgeTone; dot: string; role: string }> = {
-  cubierto:            { label: 'Cubierto',           tone: 'green',  dot: 'bg-emerald-500', role: 'ok' },
-  parcial:             { label: 'Parcial',            tone: 'orange', dot: 'bg-orange-500',  role: 'warn' },
-  asignado_sin_marcar: { label: 'Sin marcar', tone: 'orange', dot: 'bg-orange-500', role: 'warn' },
-  sin_cobertura:       { label: 'Sin cobertura',      tone: 'red',    dot: 'bg-red-500',     role: 'crit' },
-  sin_turno:           { label: 'Sin turno',          tone: 'slate',  dot: 'bg-slate-400',   role: 'muted' },
+  cubierto:            { label: 'Cubierto',      tone: 'ok',      dot: 'var(--ok)',        role: 'ok' },
+  parcial:             { label: 'Parcial',       tone: 'warn',    dot: 'var(--warn)',      role: 'warn' },
+  asignado_sin_marcar: { label: 'Sin marcar',    tone: 'warn',    dot: 'var(--warn)',      role: 'warn' },
+  sin_cobertura:       { label: 'Sin cobertura', tone: 'bad',     dot: 'var(--bad)',       role: 'crit' },
+  sin_turno:           { label: 'Sin turno',     tone: 'neutral', dot: 'var(--ink-faint)', role: 'muted' },
 };
 
 function Bar({ pct, status }: { pct: number; status: string }) {
-  const color = status === 'sin_cobertura' ? 'bg-red-500' : status === 'parcial' || status === 'asignado_sin_marcar' ? 'bg-orange-500' : status === 'sin_turno' ? 'bg-slate-300' : 'bg-emerald-500';
-  return (
-    <div className="h-1.5 w-full min-w-[54px] rounded-full bg-muted">
-      <div className={`h-1.5 rounded-full ${color}`} style={{ width: `${Math.max(2, Math.min(100, pct))}%` }} />
-    </div>
-  );
+  const tone: ChartTone =
+    status === 'sin_cobertura' ? 'bad'
+      : status === 'parcial' || status === 'asignado_sin_marcar' ? 'warn'
+        : status === 'sin_turno' ? 'neutral' : 'ok';
+  return <MeterBar className="min-w-[54px]" height={6} pct={pct} tone={tone} />;
 }
 
 export default function ClientCoverage({ client }: { client: Client }) {
@@ -203,18 +204,18 @@ export default function ClientCoverage({ client }: { client: Client }) {
 
   const fmtUpdated = data?.updatedAt ? new Date(data.updatedAt).toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '';
 
-  if (loading && !data) return <div className="p-8 text-sm text-muted-foreground">Cargando estaciones y cobertura…</div>;
+  if (loading && !data) return <TabLoading />;
 
   return (
     <div ref={containerRef} className="space-y-4">
       {/* Sede selector */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <LayoutGrid className="h-4 w-4" /> Estaciones y cobertura en vivo de la sede seleccionada
+        <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--ink-soft)' }}>
+          <LayoutGrid className="h-4 w-4" /> Puestos y cobertura en vivo de la sede seleccionada
         </div>
         <div className="flex items-center gap-2">
-          <label className="text-xs font-medium text-muted-foreground">Sede / Sitio</label>
-          <select className={`${inputCls} min-w-[220px]`} value={sedeId} onChange={(e) => changeSede(e.target.value)}>
+          <label className="cg-eyebrow">Sede / Sitio</label>
+          <select className={`${FIELD_CLS} min-w-[220px]`} value={sedeId} onChange={(e) => changeSede(e.target.value)}>
             {sedes.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
           </select>
         </div>
@@ -231,13 +232,13 @@ export default function ClientCoverage({ client }: { client: Client }) {
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.15fr_1fr]">
         {/* LEFT — filters + table */}
         <div className="space-y-4">
-          <Section title="Estaciones del sitio" icon={<LayoutGrid className="h-4 w-4" />}>
+          <Section title="Estaciones del sitio" icon={<LayoutGrid />}>
             <div className="mb-3 flex flex-wrap items-center gap-2">
               <div className="relative min-w-[180px] flex-1">
-                <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <input className={`${inputCls} pl-8`} placeholder="Buscar estación por nombre" value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} />
+                <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
+                <input className={`${FIELD_CLS} pl-8`} placeholder="Buscar estación por nombre" value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} />
               </div>
-              <select className={inputCls} value={estado} onChange={(e) => { setEstado(e.target.value); setPage(1); }}>
+              <select className={FIELD_CLS} value={estado} onChange={(e) => { setEstado(e.target.value); setPage(1); }}>
                 <option value="todos">Estado: Todos</option>
                 <option value="cubierto">Cubierto</option>
                 <option value="parcial">Parcial</option>
@@ -245,18 +246,18 @@ export default function ClientCoverage({ client }: { client: Client }) {
                 <option value="sin_cobertura">Sin cobertura</option>
                 <option value="sin_turno">Sin turno</option>
               </select>
-              <select className={inputCls} value={tipo} onChange={(e) => { setTipo(e.target.value); setPage(1); }}>
+              <select className={FIELD_CLS} value={tipo} onChange={(e) => { setTipo(e.target.value); setPage(1); }}>
                 <option value="todos">Tipo: Todos</option>
                 <option value="fijo">Fijo</option>
                 <option value="patrulla">Patrulla</option>
               </select>
-              <select className={inputCls} value={turno} onChange={(e) => { setTurno(e.target.value); setPage(1); }}>
+              <select className={FIELD_CLS} value={turno} onChange={(e) => { setTurno(e.target.value); setPage(1); }}>
                 <option value="todos">Turno: Todos</option>
                 <option value="Diurno">Diurno</option>
                 <option value="Vespertino">Vespertino</option>
                 <option value="Nocturno">Nocturno</option>
               </select>
-              <select className={inputCls} value={orden} onChange={(e) => setOrden(e.target.value)}>
+              <select className={FIELD_CLS} value={orden} onChange={(e) => setOrden(e.target.value)}>
                 <option value="nombre">Nombre A-Z</option>
                 <option value="cobertura_desc">Cobertura ↓</option>
                 <option value="cobertura_asc">Cobertura ↑</option>
@@ -265,54 +266,51 @@ export default function ClientCoverage({ client }: { client: Client }) {
             </div>
 
             {filtered.length === 0 ? (
-              <EmptyState icon={<LayoutGrid className="h-5 w-5" />} title="Sin estaciones" description="Esta sede no tiene estaciones que coincidan con los filtros." />
+              <EmptyState icon={<LayoutGrid />} title="Sin estaciones" description="Esta sede no tiene estaciones que coincidan con los filtros." />
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[860px] text-sm">
-                  <thead>
-                    <tr className="border-b text-left text-xs uppercase tracking-wide text-muted-foreground [&>th]:whitespace-nowrap">
-                      <th className="px-2 py-2 font-medium">Estación</th>
-                      <th className="px-2 py-2 font-medium">Tipo</th>
-                      <th className="px-2 py-2 font-medium">Turno actual</th>
-                      <th className="px-2 py-2 font-medium">Guardias</th>
-                      <th className="px-2 py-2 font-medium">Cobertura</th>
-                      <th className="px-2 py-2 font-medium">Estado</th>
-                      <th className="px-2 py-2 font-medium">Última actividad</th>
-                      <th className="px-2 py-2 font-medium" aria-label="Acciones" />
-                    </tr>
-                  </thead>
+              <TabTable minWidth={860}>
+                  <THead className="[&>th]:whitespace-nowrap">
+                      <Th>Estación</Th>
+                      <Th>Tipo</Th>
+                      <Th>Turno actual</Th>
+                      <Th>Guardias</Th>
+                      <Th>Cobertura</Th>
+                      <Th>Estado</Th>
+                      <Th>Última actividad</Th>
+                      <Th aria-label="Acciones" />
+                  </THead>
                   <tbody>
                     {pageItems.map((p) => {
                       const meta = STATUS_META[p.status] || STATUS_META.sin_turno;
                       const n = idxOf(p.id) + 1;
                       const sel = p.id === selectedId;
                       return (
-                        <tr key={p.id} onClick={() => navigate(`/post-sites/${sedeId}/stations/${p.id}`)}
-                          title="Abrir el detalle de la estación"
-                          className={`cursor-pointer border-b last:border-0 ${sel ? 'bg-primary/5' : 'hover:bg-muted/40'}`}>
+                        <Tr key={p.id} selected={sel} onClick={() => navigate(`/post-sites/${sedeId}/stations/${p.id}`)}
+                          title="Abrir el detalle de la estación">
                           <td className="px-2 py-2.5">
                             <div className="flex items-center gap-2.5">
                               {/* Numbered pin: selects on the map (does NOT navigate) */}
                               <button
                                 onClick={(e) => { e.stopPropagation(); selectPuesto(p); }}
                                 title="Ver en el mapa"
-                                className={`grid h-6 w-6 shrink-0 place-items-center rounded-full text-[11px] font-bold text-white transition-transform hover:scale-110 ${meta.dot}`}>{n}</button>
+                                className="cg-focus grid h-6 w-6 shrink-0 place-items-center rounded-full text-[11px] font-bold transition-transform hover:scale-110"
+                                style={{ background: meta.dot, color: 'oklch(1 0 0)' }}>{n}</button>
                               <div className="min-w-0">
                                 <div className="font-medium truncate">{p.name}</div>
-                                {p.nickname && <div className="text-xs text-muted-foreground truncate">{p.nickname}</div>}
+                                {p.nickname && <div className="truncate text-xs" style={{ color: 'var(--ink-faint)' }}>{p.nickname}</div>}
                               </div>
                             </div>
                           </td>
                           <td className="px-2 py-2.5">
-                            <span className="rounded-md bg-muted px-2 py-0.5 text-xs capitalize">{p.type === 'patrulla' ? 'Patrulla' : 'Fijo'}</span>
+                            <span className="rounded-md border px-2 py-0.5 text-xs capitalize" style={{ background: 'var(--glass-sunken)', borderColor: 'var(--hairline)' }}>{p.type === 'patrulla' ? 'Patrulla' : 'Fijo'}</span>
                           </td>
                           <td className="px-2 py-2.5 whitespace-nowrap">
                             {p.window ? (
                               <div className="leading-tight">
                                 <div className="tabular-nums">{p.window}</div>
-                                {p.turno && <div className="text-xs text-muted-foreground">{p.turno}</div>}
+                                {p.turno && <div className="text-xs" style={{ color: 'var(--ink-faint)' }}>{p.turno}</div>}
                               </div>
-                            ) : <span className="text-muted-foreground">Sin turno</span>}
+                            ) : <span style={{ color: 'var(--ink-faint)' }}>Sin turno</span>}
                           </td>
                           <td className="px-2 py-2.5">
                             <div className="font-medium tabular-nums">{p.onPost} / {p.required || 0}</div>
@@ -321,33 +319,34 @@ export default function ClientCoverage({ client }: { client: Client }) {
                                 says "Sin marcar", so no suffix is needed here. */}
                             <div className="max-w-[180px] truncate text-xs">
                               {p.guards?.length ? (
-                                <span className="text-muted-foreground" title={p.guards.join(', ')}>{p.guards.join(', ')}</span>
+                                <span style={{ color: 'var(--ink-soft)' }} title={p.guards.join(', ')}>{p.guards.join(', ')}</span>
                               ) : p.assigned?.length ? (
-                                <span className="text-orange-600 dark:text-orange-400" title={`Asignados (aún sin marcar entrada): ${p.assigned.join(', ')}`}>
+                                <span style={{ color: 'var(--warn-text)' }} title={`Asignados (aún sin marcar entrada): ${p.assigned.join(', ')}`}>
                                   {p.assigned.join(', ')}
                                 </span>
                               ) : (
-                                <span className="text-muted-foreground">{p.status === 'sin_turno' ? '—' : 'Sin asignar'}</span>
+                                <span style={{ color: 'var(--ink-faint)' }}>{p.status === 'sin_turno' ? '—' : 'Sin asignar'}</span>
                               )}
                             </div>
                           </td>
                           <td className="px-2 py-2.5">
-                            {p.coveragePct == null ? <span className="text-muted-foreground">—</span> : (
+                            {p.coveragePct == null ? <span style={{ color: 'var(--ink-faint)' }}>—</span> : (
                               <div className="flex items-center gap-2"><span className="w-8 text-xs tabular-nums">{p.coveragePct}%</span><Bar pct={p.coveragePct} status={p.status} /></div>
                             )}
                           </td>
                           <td className="px-2 py-2.5"><StatusBadge tone={meta.tone} className="whitespace-nowrap">{meta.label}</StatusBadge></td>
                           <td className="px-2 py-2.5 whitespace-nowrap">
-                            {p.lastActivity?.type === 'ronda' ? <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600"><RouteIcon className="h-3.5 w-3.5" /> Ronda activa</span>
-                              : p.lastActivity?.type === 'checkin' ? <div><div className="tabular-nums">{p.lastActivity.time}</div><div className="text-xs text-muted-foreground">Check-in</div></div>
-                              : <span className="text-xs text-muted-foreground">Sin actividad</span>}
+                            {p.lastActivity?.type === 'ronda' ? <span className="inline-flex items-center gap-1 text-xs font-semibold" style={{ color: 'var(--ok-text)' }}><RouteIcon className="h-3.5 w-3.5" /> Ronda activa</span>
+                              : p.lastActivity?.type === 'checkin' ? <div><div className="tabular-nums">{p.lastActivity.time}</div><div className="text-xs" style={{ color: 'var(--ink-faint)' }}>Entrada marcada</div></div>
+                              : <span className="text-xs" style={{ color: 'var(--ink-faint)' }}>Sin actividad</span>}
                           </td>
                           <td className="px-2 py-2.5 text-right">
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <button
                                   onClick={(e) => e.stopPropagation()}
-                                  className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                                  className="cg-focus rounded-lg p-1.5 hover:opacity-80"
+                                  style={{ color: 'var(--ink-faint)' }}
                                   title="Acciones"
                                 >
                                   <MoreVertical className="h-4 w-4" />
@@ -372,7 +371,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem
-                                  className="text-red-500 focus:text-red-500"
+                                  style={{ color: 'var(--bad-text)' }}
                                   onClick={() => void deleteStation(p)}
                                 >
                                   <Trash2 className="mr-2 h-3.5 w-3.5" /> Eliminar estación
@@ -380,22 +379,14 @@ export default function ClientCoverage({ client }: { client: Client }) {
                               </DropdownMenuContent>
                             </DropdownMenu>
                           </td>
-                        </tr>
+                        </Tr>
                       );
                     })}
                   </tbody>
-                </table>
-              </div>
+              </TabTable>
             )}
 
-            <div className="mt-3 flex items-center justify-between text-sm text-muted-foreground">
-              <span>Mostrando {filtered.length === 0 ? 0 : (page - 1) * PER + 1} a {Math.min(page * PER, filtered.length)} de {filtered.length} estaciones</span>
-              <div className="flex items-center gap-1">
-                <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)} className="rounded-md border px-2 py-1 disabled:opacity-40">‹</button>
-                <span className="grid h-7 min-w-[28px] place-items-center rounded-md bg-primary px-2 text-xs font-semibold text-white">{page}</span>
-                <button disabled={page >= pageCount} onClick={() => setPage((p) => p + 1)} className="rounded-md border px-2 py-1 disabled:opacity-40">›</button>
-              </div>
-            </div>
+            <Pager page={page} pageCount={pageCount} total={filtered.length} perPage={PER} noun="estaciones" onPage={setPage} />
           </Section>
         </div>
 
@@ -403,27 +394,31 @@ export default function ClientCoverage({ client }: { client: Client }) {
         <div className="space-y-4">
           <Section
             title="Mapa del sitio"
-            icon={<MapPin className="h-4 w-4" />}
+            icon={<MapPin />}
             action={
               <div className="flex items-center gap-1">
-                <div className="flex rounded-lg border p-0.5">
-                  <button onClick={() => setMapType('satellite')} className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs ${mapType === 'satellite' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'}`}><Satellite className="h-3.5 w-3.5" /> Satélite</button>
-                  <button onClick={() => setMapType('roadmap')} className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs ${mapType === 'roadmap' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'}`}><MapIcon className="h-3.5 w-3.5" /> Mapa</button>
-                </div>
+                <Segmented
+                  value={mapType}
+                  onChange={setMapType}
+                  options={[
+                    { value: 'satellite', label: <span className="flex items-center gap-1"><Satellite className="h-3.5 w-3.5" /> Satélite</span> },
+                    { value: 'roadmap', label: <span className="flex items-center gap-1"><MapIcon className="h-3.5 w-3.5" /> Mapa</span> },
+                  ]}
+                />
               </div>
             }
           >
             {mapMarkers.length === 0 && !mapCenter ? (
-              <EmptyState icon={<MapPin className="h-5 w-5" />} title="Sin ubicaciones" description="Ninguna estación de esta sede tiene coordenadas. Selecciona una estación y usa “Fijar ubicación exacta”." />
+              <EmptyState icon={<MapPin />} title="Sin ubicaciones" description="Ninguna estación de esta sede tiene coordenadas. Selecciona una estación y usa “Fijar ubicación exacta”." />
             ) : (
               <>
                 {placing && (
-                  <div className="mb-2 flex items-center gap-2 rounded-lg bg-primary/10 px-3 py-2 text-xs text-primary">
+                  <div className="mb-2 flex items-center gap-2 rounded-xl border px-3 py-2 text-xs" style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }}>
                     <Crosshair className="h-4 w-4" /> Toca el mapa para fijar la ubicación exacta de <b>{selected?.name}</b>.
                     <button onClick={() => setPlacing(false)} className="ml-auto font-medium underline">Cancelar</button>
                   </div>
                 )}
-                <div className="overflow-hidden rounded-xl border" style={{ height: 380 }}>
+                <div className="overflow-hidden rounded-xl border" style={{ height: 380, borderColor: 'var(--hairline)' }}>
                   <GoogleMapEmbed
                     lat={mapCenter?.lat}
                     lng={mapCenter?.lng}
@@ -439,9 +434,9 @@ export default function ClientCoverage({ client }: { client: Client }) {
                   />
                 </div>
                 {/* Legend */}
-                <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs" style={{ color: 'var(--ink-soft)' }}>
                   {Object.entries(STATUS_META).map(([k, m]) => (
-                    <span key={k} className="inline-flex items-center gap-1.5"><span className={`h-2.5 w-2.5 rounded-full ${m.dot}`} />{m.label}</span>
+                    <span key={k} className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full" style={{ background: m.dot }} />{m.label}</span>
                   ))}
                 </div>
               </>
@@ -450,15 +445,15 @@ export default function ClientCoverage({ client }: { client: Client }) {
 
           {/* Selected puesto detail + place-location */}
           {selected && (
-            <Section title="Estación seleccionada" icon={<Locate className="h-4 w-4" />}>
+            <Section title="Estación seleccionada" icon={<Locate />}>
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <div className="font-semibold">{selected.name}</div>
-                  <div className="mt-0.5 text-xs text-muted-foreground">{selected.type === 'patrulla' ? 'Patrulla' : 'Fijo'} · {selected.window || 'Sin turno'}</div>
+                  <div className="mt-0.5 text-xs" style={{ color: 'var(--ink-soft)' }}>{selected.type === 'patrulla' ? 'Patrulla' : 'Fijo'} · {selected.window || 'Sin turno'}</div>
                   <div className="mt-1"><StatusBadge tone={(STATUS_META[selected.status] || STATUS_META.sin_turno).tone}>{(STATUS_META[selected.status] || STATUS_META.sin_turno).label}</StatusBadge></div>
                   {Number.isFinite(selected.lat)
-                    ? <div className="mt-2 text-xs text-muted-foreground">📍 {selected.lat!.toFixed(6)}, {selected.lng!.toFixed(6)}</div>
-                    : <div className="mt-2 text-xs text-orange-600">Esta estación aún no tiene ubicación exacta.</div>}
+                    ? <div className="mt-2 text-xs tabular-nums" style={{ color: 'var(--ink-soft)' }}>{selected.lat!.toFixed(6)}, {selected.lng!.toFixed(6)}</div>
+                    : <div className="mt-2 text-xs" style={{ color: 'var(--warn-text)' }}>Este puesto aún no tiene ubicación exacta.</div>}
                 </div>
                 <div className="flex shrink-0 flex-col gap-2">
                   <Button size="sm" variant={placing ? 'brand' : 'outline'} onClick={() => setPlacing((v) => !v)}>
@@ -473,43 +468,46 @@ export default function ClientCoverage({ client }: { client: Client }) {
           )}
 
           {/* Resumen de cobertura por turno */}
-          <Section title="Resumen de cobertura por turno" icon={<Shield className="h-4 w-4" />}>
+          <Section title="Resumen de cobertura por turno" icon={<Shield />}>
             <div className="space-y-3">
               {turnoSummary.map((t) => (
                 <div key={t.key}>
                   <div className="mb-1 flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">{t.label} <span className="text-xs">({t.window})</span></span>
-                    <span className="tabular-nums"><b className={t.pct >= 90 ? 'text-emerald-600' : t.pct >= 60 ? 'text-orange-600' : 'text-red-600'}>{t.pct}%</b> <span className="text-xs text-muted-foreground">{t.covered} / {t.required}</span></span>
+                    <span style={{ color: 'var(--ink-soft)' }}>{t.label} <span className="text-xs">({t.window})</span></span>
+                    <span className="tabular-nums"><b style={{ color: t.pct >= 90 ? 'var(--ok-text)' : t.pct >= 60 ? 'var(--warn-text)' : 'var(--bad-text)' }}>{t.pct}%</b> <span className="text-xs" style={{ color: 'var(--ink-faint)' }}>{t.covered} / {t.required}</span></span>
                   </div>
-                  <div className="h-2 w-full rounded-full bg-muted">
-                    <div className={`h-2 rounded-full ${t.pct >= 90 ? 'bg-emerald-500' : t.pct >= 60 ? 'bg-orange-500' : 'bg-red-500'}`} style={{ width: `${Math.max(2, Math.min(100, t.pct))}%` }} />
-                  </div>
+                  <MeterBar height={8} pct={t.pct} ariaLabel={t.label} tone={t.pct >= 90 ? 'ok' : t.pct >= 60 ? 'warn' : 'bad'} />
                 </div>
               ))}
-              <div className="flex items-center justify-between border-t pt-3">
+              <div className="flex items-center justify-between border-t pt-3" style={{ borderColor: 'var(--hairline)' }}>
                 <span className="font-medium">Cobertura general del sitio</span>
-                <span className={`font-display text-lg font-bold ${(data?.generalPct ?? 0) >= 90 ? 'text-emerald-600' : 'text-orange-600'}`}>{data?.generalPct ?? 0}%</span>
+                <span
+                  className="font-display text-lg font-bold tabular-nums"
+                  style={{ color: (data?.generalPct ?? 0) >= 90 ? 'var(--ok-text)' : 'var(--warn-text)' }}
+                >
+                  {data?.generalPct ?? 0}%
+                </span>
               </div>
-              <p className="text-xs text-muted-foreground">Según asistencia registrada hoy.</p>
+              <p className="text-xs" style={{ color: 'var(--ink-faint)' }}>Según la asistencia registrada hoy.</p>
             </div>
           </Section>
 
           {/* Estaciones sin cobertura */}
-          <Section title={`Estaciones sin cobertura (${sinCobertura.length})`} icon={<ShieldAlert className="h-4 w-4" />}>
+          <Section title={`Estaciones sin cobertura (${sinCobertura.length})`} icon={<ShieldAlert />}>
             {sinCobertura.length === 0 ? (
-              <div className="flex items-center gap-2 py-2 text-sm text-emerald-600"><CheckCircle2 className="h-4 w-4" /> Todas las estaciones con turno están cubiertas.</div>
+              <div className="flex items-center gap-2 py-2 text-sm" style={{ color: 'var(--ok-text)' }}><CheckCircle2 className="h-4 w-4" /> Todos los puestos con turno están cubiertos.</div>
             ) : (
-              <div className="divide-y">
+              <div className="divide-y" style={{ borderColor: 'var(--hairline)' }}>
                 {sinCobertura.map((p) => (
-                  <button key={p.id} onClick={() => selectPuesto(puestos.find((x) => x.id === p.id))} className="flex w-full items-center justify-between gap-3 py-2.5 text-left hover:bg-muted/40">
+                  <button key={p.id} onClick={() => selectPuesto(puestos.find((x) => x.id === p.id))} className="cg-focus flex w-full items-center justify-between gap-3 py-2.5 text-left transition-opacity hover:opacity-80">
                     <div className="flex items-center gap-2.5">
-                      <span className="grid h-8 w-8 place-items-center rounded-lg bg-red-500/12 text-red-600"><Shield className="h-4 w-4" /></span>
+                      <IconTile tone="bad" size="sm"><Shield /></IconTile>
                       <div>
                         <div className="text-sm font-medium">{p.name}</div>
-                        <div className="text-xs text-muted-foreground">{p.window || 'Sin turno'} {p.turno ? `(${p.turno})` : ''} · Requiere {p.requiredGuards} {p.requiredGuards === 1 ? 'guardia' : 'guardias'}</div>
+                        <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{p.window || 'Sin turno'} {p.turno ? `(${p.turno})` : ''} · Requiere {p.requiredGuards} {p.requiredGuards === 1 ? 'vigilante' : 'vigilantes'}</div>
                       </div>
                     </div>
-                    <span className="inline-flex items-center gap-1 text-xs font-medium text-red-600">Sin asignación <ChevronRight className="h-3.5 w-3.5" /></span>
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold" style={{ color: 'var(--bad-text)' }}>Sin asignación <ChevronRight className="h-3.5 w-3.5" /></span>
                   </button>
                 ))}
               </div>
@@ -517,22 +515,22 @@ export default function ClientCoverage({ client }: { client: Client }) {
           </Section>
 
           {/* Próximos a iniciar */}
-          <Section title="Próximos a iniciar" icon={<Clock className="h-4 w-4" />}
-            action={<button onClick={() => navigate('/schedule')} className="text-xs font-medium text-primary hover:underline">Ver calendario</button>}>
+          <Section title="Próximos a iniciar" icon={<Clock />}
+            action={<button onClick={() => navigate('/schedule')} className="cg-focus rounded-md text-xs font-semibold hover:underline" style={{ color: 'var(--brand-text)' }}>Ver calendario</button>}>
             {proximos.length === 0 ? (
-              <div className="py-2 text-sm text-muted-foreground">No hay turnos próximos en las siguientes 2 horas.</div>
+              <div className="py-2 text-sm" style={{ color: 'var(--ink-soft)' }}>No hay turnos próximos en las siguientes 2 horas.</div>
             ) : (
-              <div className="divide-y">
+              <div className="divide-y" style={{ borderColor: 'var(--hairline)' }}>
                 {proximos.slice(0, 6).map((p) => (
-                  <button key={p.id} onClick={() => selectPuesto(puestos.find((x) => x.id === p.id))} className="flex w-full items-center justify-between gap-3 py-2.5 text-left hover:bg-muted/40">
+                  <button key={p.id} onClick={() => selectPuesto(puestos.find((x) => x.id === p.id))} className="cg-focus flex w-full items-center justify-between gap-3 py-2.5 text-left transition-opacity hover:opacity-80">
                     <div className="flex items-center gap-2.5">
-                      <span className="grid h-8 w-8 place-items-center rounded-lg bg-blue-500/12 text-blue-600 text-xs font-bold">{idxOf(p.id) + 1}</span>
+                      <IconTile tone="info" size="sm"><span className="text-xs font-bold">{idxOf(p.id) + 1}</span></IconTile>
                       <div>
                         <div className="text-sm font-medium">{p.name}</div>
-                        <div className="text-xs text-muted-foreground">{p.window} ({p.turno})</div>
+                        <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{p.window} ({p.turno})</div>
                       </div>
                     </div>
-                    <span className="text-xs text-muted-foreground">{p.startsInMin <= 0 ? 'Ahora' : p.startsInMin < 60 ? `En ${p.startsInMin}m` : `En ${Math.floor(p.startsInMin / 60)}h ${p.startsInMin % 60}m`}</span>
+                    <span className="text-xs" style={{ color: 'var(--ink-soft)' }}>{p.startsInMin <= 0 ? 'Ahora' : p.startsInMin < 60 ? `En ${p.startsInMin}m` : `En ${Math.floor(p.startsInMin / 60)}h ${p.startsInMin % 60}m`}</span>
                   </button>
                 ))}
               </div>
@@ -541,14 +539,12 @@ export default function ClientCoverage({ client }: { client: Client }) {
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border bg-muted/30 px-4 py-2.5 text-xs text-muted-foreground">
-        <span className="inline-flex items-center gap-1.5"><RefreshCw className="h-3.5 w-3.5" /> La cobertura se actualiza en tiempo real según el check-in de guardias y asignaciones de turnos.</span>
-        <span className="inline-flex items-center gap-2">
-          {fmtUpdated && <>Última actualización: {fmtUpdated}</>}
-          <button onClick={() => load(sedeId)} className="inline-flex items-center gap-1 font-medium text-primary hover:underline"><RefreshCw className="h-3.5 w-3.5" /> Actualizar</button>
-        </span>
-      </div>
+      <TabFooter
+        icon={<RefreshCw />}
+        note="La cobertura se actualiza en vivo con las entradas de los vigilantes y las asignaciones de turno."
+        updatedAt={fmtUpdated}
+        onRefresh={() => load(sedeId)}
+      />
     </div>
   );
 }

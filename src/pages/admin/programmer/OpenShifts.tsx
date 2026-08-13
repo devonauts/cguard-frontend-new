@@ -26,16 +26,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
-import { Search, Filter, EllipsisVertical, FileText, FileSpreadsheet, Printer, Mail, X, Loader2, UserCheck, CalendarClock, CalendarDays, CalendarRange } from "lucide-react";
+import { Search, Filter, X, Loader2, UserCheck, CalendarClock, CalendarDays, CalendarRange } from "lucide-react";
 import Breadcrumb from "@/components/ui/breadcrumb";
-import { PageContainer, PageHeader, Section, StatCard, Stagger, EmptyState, Modal } from "@/components/kit";
+import { PageContainer, PageHeader, Section, MetricTile, Stagger, EmptyState, Modal, Toolbar } from "@/components/kit";
 import shiftService, { ShiftRecord } from "@/lib/api/shiftService";
 import { securityGuardService } from "@/lib/api/securityGuardService";
 
@@ -216,24 +210,36 @@ export default function OpenShifts() {
       <PageContainer width="wide" className="px-4 lg:px-6">
         <PageHeader
           icon={<CalendarClock />}
-          title="Turnos Abiertos"
+          title="Turnos abiertos"
           subtitle="Turnos sin vigilante asignado · asígnalos al personal disponible."
         />
 
-        {/* Stats */}
-        <Stagger className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <StatCard label="Total Abiertos" value={stats.total} icon={<CalendarClock />} accent="orange" />
-          <StatCard label="Hoy" value={stats.today} icon={<CalendarDays />} accent="blue" />
-          <StatCard label="Esta Semana" value={stats.thisWeek} icon={<CalendarRange />} accent="primary" />
+        {/* KPIs */}
+        <Stagger className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <MetricTile label="Total abiertos" value={stats.total} icon={<CalendarClock />} hint="Turnos sin vigilante" />
+          <MetricTile
+            label="Hoy"
+            value={stats.today}
+            icon={<CalendarDays />}
+            delta={stats.total > 0 ? { value: `${Math.round((stats.today / stats.total) * 100)} %`, direction: stats.today > 0 ? "down" : "flat" } : undefined}
+            hint="Del total abierto"
+          />
+          <MetricTile
+            label="Esta semana"
+            value={stats.thisWeek}
+            icon={<CalendarRange />}
+            delta={stats.total > 0 ? { value: `${Math.round((stats.thisWeek / stats.total) * 100)} %`, direction: stats.thisWeek > 0 ? "down" : "flat" } : undefined}
+            hint="Del total abierto"
+          />
         </Stagger>
 
-        {/* Toolbar */}
-        <div className="flex flex-col md:flex-row justify-end gap-4">
-          <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto items-center">
+        {/* Barra de filtros */}
+        <Toolbar className="justify-end gap-4">
+          <div className="flex w-full flex-col items-center gap-4 md:w-auto md:flex-row">
             <div className="relative w-full md:w-80">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: "var(--ink-faint)" }} />
               <Input
-                placeholder="Buscar estación o fecha"
+                placeholder="Buscar puesto o fecha"
                 className="pl-9"
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
@@ -243,8 +249,8 @@ export default function OpenShifts() {
             <div className="flex items-center gap-2">
               <Sheet open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="outline" className="text-primary border-primary/30 hover:bg-primary/10 hover:text-primary">
-                    <Filter className="h-4 w-4 mr-2" /> Filtros
+                  <Button variant="outline">
+                    <Filter className="mr-2 h-4 w-4" /> Filtros
                   </Button>
                 </SheetTrigger>
                 <SheetContent className="w-[400px] sm:w-[540px]">
@@ -312,7 +318,7 @@ export default function OpenShifts() {
                       </Button>
                       <Button
                         variant="outline"
-                        className="w-full text-primary border-primary/30 hover:bg-primary/10"
+                        className="w-full"
                         onClick={() => {
                           const empty = { startDate: "", startTime: "", endDate: "", endTime: "" };
                           setFilters(empty);
@@ -328,27 +334,27 @@ export default function OpenShifts() {
               </Sheet>
             </div>
           </div>
-        </div>
+        </Toolbar>
 
-        {/* Table */}
+        {/* Tabla */}
         <Section title="Turnos abiertos" icon={<CalendarClock />} contentClassName="overflow-x-auto -mx-1">
           <Table>
-            <TableHeader className="bg-muted/40">
+            <TableHeader style={{ background: "var(--glass-sunken)" }}>
               <TableRow>
                 <TableHead className="w-[50px]"><Checkbox /></TableHead>
-                <TableHead className="font-bold text-foreground">Fecha</TableHead>
-                <TableHead className="font-bold text-foreground">Estación</TableHead>
-                <TableHead className="font-bold text-foreground">Hora de Inicio</TableHead>
-                <TableHead className="font-bold text-foreground">Hora de Fin</TableHead>
-                <TableHead className="font-bold text-foreground">Duración</TableHead>
-                <TableHead className="font-bold text-foreground">Acción</TableHead>
+                <TableHead className="cg-eyebrow">Fecha</TableHead>
+                <TableHead className="cg-eyebrow">Puesto</TableHead>
+                <TableHead className="cg-eyebrow">Hora de inicio</TableHead>
+                <TableHead className="cg-eyebrow">Hora de fin</TableHead>
+                <TableHead className="cg-eyebrow">Duración</TableHead>
+                <TableHead className="cg-eyebrow">Acción</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
                   <TableCell colSpan={7} className="h-[200px] text-center">
-                    <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground" />
+                    <Loader2 className="mx-auto h-6 w-6 animate-spin" style={{ color: "var(--ink-faint)" }} />
                   </TableCell>
                 </TableRow>
               ) : paginated.length === 0 ? (
@@ -366,16 +372,15 @@ export default function OpenShifts() {
                 paginated.map((shift) => (
                   <TableRow key={shift.id}>
                     <TableCell><Checkbox /></TableCell>
-                    <TableCell>{formatDate(shift.startTime)}</TableCell>
-                    <TableCell>{shift.station?.stationName ?? "—"}</TableCell>
-                    <TableCell>{formatTime(shift.startTime)}</TableCell>
-                    <TableCell>{formatTime(shift.endTime)}</TableCell>
-                    <TableCell>{durationHours(shift.startTime, shift.endTime)}</TableCell>
+                    <TableCell className="tabular-nums">{formatDate(shift.startTime)}</TableCell>
+                    <TableCell className="font-medium">{shift.station?.stationName ?? "—"}</TableCell>
+                    <TableCell className="tabular-nums">{formatTime(shift.startTime)}</TableCell>
+                    <TableCell className="tabular-nums">{formatTime(shift.endTime)}</TableCell>
+                    <TableCell className="tabular-nums">{durationHours(shift.startTime, shift.endTime)}</TableCell>
                     <TableCell>
                       <Button
                         size="sm"
                         variant="outline"
-                        className="text-primary border-primary/30 hover:bg-primary/10 hover:text-primary"
                         onClick={() => {
                           setAssignTarget(shift);
                           setSelectedGuard(null);
@@ -394,7 +399,7 @@ export default function OpenShifts() {
 
         {/* Pagination */}
         <div className="flex items-center justify-end space-x-2 py-4">
-          <div className="text-sm text-muted-foreground">Elementos por página</div>
+          <div className="text-sm" style={{ color: "var(--ink-soft)" }}>Elementos por página</div>
           <Select value={String(pageSize)} onValueChange={(v) => { setPageSize(Number(v)); setPage(1); }}>
             <SelectTrigger className="w-[70px]"><SelectValue /></SelectTrigger>
             <SelectContent>
@@ -403,10 +408,10 @@ export default function OpenShifts() {
               <SelectItem value="100">100</SelectItem>
             </SelectContent>
           </Select>
-          <div className="text-sm text-muted-foreground mx-4">
+          <div className="mx-4 text-sm tabular-nums" style={{ color: "var(--ink-soft)" }}>
             {filtered.length === 0
-              ? "0 of 0"
-              : `${(page - 1) * pageSize + 1}–${Math.min(page * pageSize, filtered.length)} of ${filtered.length}`}
+              ? "0 de 0"
+              : `${(page - 1) * pageSize + 1}–${Math.min(page * pageSize, filtered.length)} de ${filtered.length}`}
           </div>
           <div className="flex items-center space-x-2">
             <Button variant="outline" size="icon" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
@@ -431,7 +436,7 @@ export default function OpenShifts() {
         onOpenChange={(open) => {
           if (!open) { setAssignTarget(null); setSelectedGuard(null); setGuardSearch(""); }
         }}
-        title="Asignar Vigilante"
+        title="Asignar vigilante"
         icon={<UserCheck />}
         footer={(
           <>
@@ -444,47 +449,58 @@ export default function OpenShifts() {
               onClick={handleAssign}
             >
               {assigning ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-              Confirmar Asignación
+              Confirmar asignación
             </Button>
           </>
         )}
       >
           {assignTarget && (
             <div className="space-y-4">
-              <div className="bg-muted/40 rounded-xl p-3 text-sm">
-                <div className="font-medium">{assignTarget.station?.stationName ?? "Sin estación"}</div>
-                <div className="text-muted-foreground">
+              <div className="glass-sunken p-3 text-sm">
+                <div className="font-semibold">{assignTarget.station?.stationName ?? "Sin puesto"}</div>
+                <div className="tabular-nums" style={{ color: "var(--ink-soft)" }}>
                   {formatDate(assignTarget.startTime)} · {formatTime(assignTarget.startTime)} – {formatTime(assignTarget.endTime)}
                   {" "}({durationHours(assignTarget.startTime, assignTarget.endTime)})
                 </div>
               </div>
 
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: "var(--ink-faint)" }} />
                 <Input
-                  placeholder="Buscar vigilante..."
+                  placeholder="Buscar vigilante…"
                   className="pl-9"
                   value={guardSearch}
                   onChange={(e) => setGuardSearch(e.target.value)}
                 />
               </div>
 
-              <div className="border rounded-md max-h-56 overflow-y-auto">
+              <div className="glass-sunken max-h-56 overflow-y-auto p-1">
                 {filteredGuards.length === 0 ? (
-                  <div className="p-4 text-center text-sm text-muted-foreground">
-                    {allGuards.length === 0 ? "Cargando vigilantes..." : "No se encontraron vigilantes"}
+                  <div className="p-4 text-center text-sm" style={{ color: "var(--ink-soft)" }}>
+                    {allGuards.length === 0 ? "Cargando vigilantes…" : "No se encontraron vigilantes"}
                   </div>
                 ) : (
-                  filteredGuards.map((g) => (
-                    <div
-                      key={g.userId}
-                      className={`flex items-center gap-3 p-3 cursor-pointer hover:bg-muted/50 border-b last:border-b-0 ${selectedGuard?.userId === g.userId ? "bg-primary/10" : ""}`}
-                      onClick={() => setSelectedGuard(g)}
-                    >
-                      <div className={`w-4 h-4 rounded-full border-2 flex-shrink-0 ${selectedGuard?.userId === g.userId ? "border-primary bg-primary" : "border-muted-foreground/30"}`} />
-                      <span className="text-sm">{g.fullName}</span>
-                    </div>
-                  ))
+                  filteredGuards.map((g) => {
+                    const elegido = selectedGuard?.userId === g.userId;
+                    return (
+                      <button
+                        key={g.userId}
+                        type="button"
+                        aria-pressed={elegido}
+                        className="cg-focus flex w-full cursor-pointer items-center gap-3 rounded-xl p-3 text-left transition-colors hover:bg-[var(--glass-raised)]"
+                        style={elegido ? { background: "var(--brand-wash)", boxShadow: "inset 0 0 0 1px var(--brand-line)" } : undefined}
+                        onClick={() => setSelectedGuard(g)}
+                      >
+                        <span
+                          className="h-4 w-4 flex-shrink-0 rounded-full border-2"
+                          style={elegido
+                            ? { borderColor: "var(--brand)", background: "var(--brand)" }
+                            : { borderColor: "var(--hairline)" }}
+                        />
+                        <span className="text-sm">{g.fullName}</span>
+                      </button>
+                    );
+                  })
                 )}
               </div>
             </div>

@@ -1,17 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Separator } from "@/components/ui/separator";
-import { Sparkles, CreditCard, Check, Loader2 } from "lucide-react";
+import { Sparkles, CreditCard, Check } from "lucide-react";
 import {
   PageContainer,
   PageHeader,
   Section,
   Field,
   StatusBadge,
+  GlassPanel,
+  IconTile,
+  Segmented,
+  SkeletonBlock,
 } from "@/components/kit";
 import {
   subscriptionBillingService,
@@ -39,13 +41,20 @@ const ANNUAL_PRICE: Record<PlanKey, number> = {
   professional: 8.5,
 };
 
-type BadgeTone = "blue" | "green" | "red" | "orange" | "slate";
+/**
+ * Tonos SEMÁNTICOS, no nombres de color. `StatusBadge` todavía acepta
+ * «blue»/«green»/«red» por compatibilidad y los remapea, pero escribirlos aquí
+ * hace creer que el estado de una suscripción elige un color cuando lo que
+ * elige es un SIGNIFICADO: «pago vencido» es malo, y tiene que seguir siendo
+ * rojo aunque la empresa ponga el acento en rojo.
+ */
+type BadgeTone = "info" | "ok" | "bad" | "warn" | "neutral";
 const STATUS_META: Record<string, { label: string; tone: BadgeTone }> = {
-  trialing: { label: "Prueba gratuita", tone: "blue" },
-  active: { label: "Activo", tone: "green" },
-  past_due: { label: "Pago vencido", tone: "red" },
-  trial_expired: { label: "Prueba expirada", tone: "orange" },
-  canceled: { label: "Cancelado", tone: "slate" },
+  trialing: { label: "Prueba gratuita", tone: "info" },
+  active: { label: "Activo", tone: "ok" },
+  past_due: { label: "Pago vencido", tone: "bad" },
+  trial_expired: { label: "Prueba expirada", tone: "warn" },
+  canceled: { label: "Cancelado", tone: "neutral" },
 };
 
 function fmtDate(iso: string | null | undefined): string {
@@ -111,24 +120,23 @@ export default function SubscriptionDetailsModule() {
       />
 
       {/* Banner */}
-      <Card className="p-4 rounded-2xl bg-primary/10 border-primary/30">
+      <GlassPanel brand className="p-4">
         <div className="flex items-start gap-3">
-          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary [&_svg]:size-5">
-            <Sparkles />
-          </span>
-          <p className="text-sm">
-            <span className="font-semibold">Special Offer!!</span> Update Now and
-            Get 15% Off For Next 3 Months!! Your account will be immediately
-            charged based on number of active users in the system.{" "}
+          <IconTile size="sm"><Sparkles /></IconTile>
+          <p className="text-sm leading-relaxed">
+            <span className="font-semibold">Oferta especial.</span> Mejora tu plan
+            ahora y obtén un 15 % de descuento durante los próximos 3 meses. El
+            cobro se calcula sobre el número de usuarios activos.{" "}
             <button
-              className="text-primary underline-offset-2 hover:underline"
+              className="font-medium underline-offset-2 hover:underline"
+              style={{ color: 'var(--brand-text)' }}
               onClick={goToBilling}
             >
-              (Click Here)
+              Ver detalles
             </button>
           </p>
         </div>
-      </Card>
+      </GlassPanel>
 
       {/* Información de suscripción */}
       <Section
@@ -141,8 +149,15 @@ export default function SubscriptionDetailsModule() {
         }
       >
         {loading ? (
-          <div className="flex min-h-[8rem] items-center justify-center">
-            <Loader2 className="animate-spin text-primary" size={24} />
+          // Barras fantasma con la forma de los cuatro campos, no una ruleta:
+          // el bloque no salta de altura cuando llegan los datos.
+          <div className="grid grid-cols-2 gap-6">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="space-y-1.5">
+                <SkeletonBlock className="h-2.5 w-20" />
+                <SkeletonBlock className="h-4 w-32" />
+              </div>
+            ))}
           </div>
         ) : (
         <div className="grid grid-cols-2 gap-6">
@@ -173,29 +188,28 @@ export default function SubscriptionDetailsModule() {
 
         {/* Selector Mensual / Anual */}
         <div className="flex justify-center">
-          <ToggleGroup
-            type="single"
+          <Segmented<BillingPeriod>
             value={period}
-            onValueChange={(v) => v && setPeriod(v as BillingPeriod)}
-            className="rounded-xl border p-1 bg-muted/50"
-          >
-            <ToggleGroupItem value="monthly" className="px-6 rounded-lg">
-              Mensual
-            </ToggleGroupItem>
-            <ToggleGroupItem value="annual" className="px-6 rounded-lg">
-              Anual
-            </ToggleGroupItem>
-          </ToggleGroup>
+            onChange={setPeriod}
+            options={[
+              { value: "monthly", label: "Mensual" },
+              { value: "annual", label: "Anual" },
+            ]}
+          />
         </div>
 
         {/* Nota: la contratación real de la suscripción se gestiona en la
             página de Suscripción (facturación por usuario con Stripe). Los
             planes por niveles de abajo son referenciales y no se pueden
             comprar desde aquí. */}
-        <p className="mt-4 rounded-lg border border-dashed bg-muted/40 px-3 py-2 text-center text-xs text-muted-foreground">
+        <p
+          className="mt-4 rounded-lg border border-dashed px-3 py-2 text-center text-xs"
+          style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)', color: 'var(--ink-soft)' }}
+        >
           Los cambios de plan y pagos se gestionan en{" "}
           <button
-            className="font-medium text-primary underline-offset-2 hover:underline"
+            className="font-medium underline-offset-2 hover:underline"
+            style={{ color: 'var(--brand-text)' }}
             onClick={goToBilling}
           >
             Suscripción / Facturación
@@ -211,15 +225,22 @@ export default function SubscriptionDetailsModule() {
               const isCurrent = plan === currentPlan;
               const isPopular = plan === "professional";
               return (
-                <Card
+                // `GlassPanel flat` y no `Card`. `Card` trae `.glass` cosido
+                // dentro, y `.glass` lleva `backdrop-filter`: dentro de este
+                // `map()` eso son tres superficies desenfocadas —una por plan—
+                // y el desenfoque no se veía en el JSX, que es justo lo que lo
+                // hacía fácil de pasar por alto. `flat` deja el mismo aspecto
+                // sin rasterizar el fondo en cada fotograma.
+                <GlassPanel
                   key={plan}
-                  className={`p-6 flex flex-col gap-4 rounded-2xl transition-shadow hover:shadow-md ${
-                    isPopular ? "border-primary/40 ring-1 ring-primary/20" : ""
-                  }`}
+                  flat
+                  hover
+                  brand={isPopular}
+                  className="flex flex-col gap-4 p-6"
                 >
                   <div className="flex items-center justify-between">
                     <h3 className="font-semibold">{PLAN_LABEL[plan]}</h3>
-                    {isPopular && <StatusBadge tone="primary" dot={false}>POPULAR</StatusBadge>}
+                    {isPopular && <StatusBadge tone="brand" dot={false}>POPULAR</StatusBadge>}
                   </div>
 
                   <div className="space-y-1">
@@ -253,7 +274,7 @@ export default function SubscriptionDetailsModule() {
                       </Button>
                     )}
                   </div>
-                </Card>
+                </GlassPanel>
               );
             }
           )}

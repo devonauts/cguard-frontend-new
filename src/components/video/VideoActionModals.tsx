@@ -20,8 +20,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { videoService, type Camera } from "@/lib/api/videoService";
 
-const GOLD = "#C8860A";
-
 /* ------------------------------------------------------------------ */
 /* Shared shell                                                        */
 /* ------------------------------------------------------------------ */
@@ -59,25 +57,30 @@ function ModalShell({ open, onClose, title, icon, children, footer }: ModalShell
       aria-modal="true"
       aria-label={title}
     >
+      {/* Velo del diálogo: negro en los dos temas a propósito. Un token
+          acromático se invertiría y en claro dejaría el modal sobre un gris
+          pálido, sin separación del fondo. */}
       <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        className="absolute inset-0 backdrop-blur-sm"
+        style={{ background: "oklch(0 0 0 / 0.55)" }}
         onClick={onClose}
       />
-      <div className="relative z-10 w-full max-w-lg rounded-xl border bg-card text-card-foreground shadow-2xl">
-        <div className="flex items-center justify-between gap-3 border-b px-5 py-4">
+      <div className="glass-raised relative z-10 w-full max-w-lg">
+        <div className="flex items-center justify-between gap-3 border-b px-5 py-4" style={{ borderColor: "var(--hairline)" }}>
           <div className="flex items-center gap-2.5">
             <span
-              className="flex size-8 items-center justify-center rounded-lg"
-              style={{ backgroundColor: `${GOLD}1A`, color: GOLD }}
+              className="flex size-8 items-center justify-center rounded-lg border"
+              style={{ background: "var(--brand-wash)", borderColor: "var(--brand-line)", color: "var(--brand-text)" }}
             >
               {icon}
             </span>
-            <h2 className="text-base font-semibold">{title}</h2>
+            <h2 className="font-display text-base font-semibold">{title}</h2>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            className="cg-focus rounded-full p-1 transition-colors hover:bg-[var(--glass-sunken)]"
+            style={{ color: "var(--ink-faint)" }}
             aria-label="Cerrar"
           >
             <X className="size-5" />
@@ -87,7 +90,7 @@ function ModalShell({ open, onClose, title, icon, children, footer }: ModalShell
         <div className="px-5 py-4">{children}</div>
 
         {footer ? (
-          <div className="flex items-center justify-end gap-2 border-t px-5 py-4">
+          <div className="flex items-center justify-end gap-2 border-t px-5 py-4" style={{ borderColor: "var(--hairline)", background: "var(--glass-sunken)" }}>
             {footer}
           </div>
         ) : null}
@@ -97,18 +100,23 @@ function ModalShell({ open, onClose, title, icon, children, footer }: ModalShell
   );
 }
 
-const goldStyle: React.CSSProperties = { backgroundColor: GOLD, color: "#fff" };
-
+/**
+ * Botón principal de estos modales. Antes se pintaba a mano con `#C8860A` y
+ * tinta BLANCA encima: 2,25:1, ilegible (ver la medición en tokens.css). Ahora
+ * es la variante `brand` del botón del sistema, que ya lleva `--brand` de
+ * relleno y `--brand-ink` de tinta y sigue al acento configurado. Se conserva el
+ * nombre porque lo usan una docena de sitios de este archivo.
+ */
 function GoldButton(
   props: React.ComponentProps<typeof Button> & { busy?: boolean }
 ) {
-  const { busy, children, style, disabled, ...rest } = props;
+  const { busy, children, disabled, ...rest } = props;
   return (
     <Button
       {...rest}
+      variant="brand"
       disabled={disabled || busy}
-      style={{ ...goldStyle, ...style }}
-      className={cn("hover:opacity-90", props.className)}
+      className={cn(props.className)}
     >
       {busy ? <Loader2 className="size-4 animate-spin" /> : null}
       {children}
@@ -116,9 +124,9 @@ function GoldButton(
   );
 }
 
-/* Native select styled like shadcn Input (kept native for portal safety) */
+/* Native select styled like the system field (kept native for portal safety) */
 const selectClass =
-  "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50";
+  "cg-input cg-focus flex h-9 w-full px-3 py-1 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50";
 
 /* default datetime-local value = local now (truncated to minutes) */
 function localNow(offsetMinutes = 0): string {
@@ -286,9 +294,9 @@ export function TrimShareModal({
         <div className="space-y-3">
           <div
             className="flex items-start gap-2 rounded-lg border p-3"
-            style={{ borderColor: `${GOLD}55`, backgroundColor: `${GOLD}0D` }}
+            style={{ borderColor: "var(--brand-line)", background: "var(--brand-wash)" }}
           >
-            <LinkIcon className="mt-0.5 size-4 shrink-0" style={{ color: GOLD }} />
+            <LinkIcon className="mt-0.5 size-4 shrink-0" style={{ color: "var(--brand-text)" }} />
             <div className="min-w-0 flex-1">
               <p className="text-xs font-medium text-muted-foreground">
                 Enlace para el cliente
@@ -302,7 +310,7 @@ export function TrimShareModal({
             onClick={handleCopy}
           >
             {copied ? (
-              <Check className="size-4" style={{ color: GOLD }} />
+              <Check className="size-4" style={{ color: "var(--ok-text)" }} />
             ) : (
               <Copy className="size-4" />
             )}

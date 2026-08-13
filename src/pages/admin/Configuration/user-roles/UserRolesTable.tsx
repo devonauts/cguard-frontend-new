@@ -1,8 +1,7 @@
 import React from "react";
-import { MoreVertical, Plus, Search, ChevronDown } from "lucide-react";
+import { MoreVertical, Search, ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePermissions } from '@/hooks/usePermissions';
-import { PermissionedButton } from '@/components/permissions/Permissioned';
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -26,7 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { StatusBadge, EmptyState } from "@/components/kit";
+import { StatusBadge, EmptyState, Toolbar, GlassPanel } from "@/components/kit";
 
 export type UserRoleRow = {
   id: string;
@@ -48,7 +47,6 @@ type Props = {
   onCheckRow: (id: string, v: boolean) => void;
   query: string;
   onQueryChange: (v: string) => void;
-  onNew: () => void;
   onToggleExpand?: (r: UserRoleRow) => void;
   onEdit: (r: UserRoleRow) => void;
   onDelete: (r: UserRoleRow) => void;
@@ -68,7 +66,6 @@ export default function UserRolesTable({
   onCheckRow,
   query,
   onQueryChange,
-  onNew,
   onToggleExpand,
   onEdit,
   onDelete,
@@ -87,10 +84,10 @@ export default function UserRolesTable({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
+      <Toolbar>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="min-w-[140px] justify-between">
+            <Button variant="outline" size="sm" className="min-w-[130px] justify-between">
               Acción <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -101,22 +98,18 @@ export default function UserRolesTable({
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <div className="relative flex-1 max-w-xl">
-          <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <div className="relative min-w-[200px] flex-1">
+          <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: 'var(--ink-faint)' }} />
           <Input
             className="pl-9"
-            placeholder="Buscar Rol de Usuario"
+            placeholder="Buscar rol de usuario"
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}
           />
         </div>
+      </Toolbar>
 
-        <PermissionedButton permission="settingsEdit" variant="brand" onClick={onNew}>
-          <Plus className="mr-2 h-4 w-4" />Nuevo Rol
-        </PermissionedButton>
-      </div>
-
-      <div className="rounded-2xl border overflow-hidden">
+      <GlassPanel className="overflow-hidden p-0">
         <Table>
           <TableHeader>
             <TableRow>
@@ -152,18 +145,26 @@ export default function UserRolesTable({
                       />
                     </TableCell>
                     <TableCell
-                      className="font-medium cursor-pointer"
+                      className="cg-focus cursor-pointer font-medium"
                       role="button"
                       tabIndex={0}
+                      aria-expanded={expandedRoleId === r.id}
                       onClick={() => onToggleExpand && onToggleExpand(r)}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === " ") onToggleExpand && onToggleExpand(r);
                       }}
                     >
-                      <span className="mr-2">{r.name}</span>
-                      {r.isDefault && <StatusBadge tone="primary">Predeterminado</StatusBadge>}
+                      <span className="inline-flex items-center gap-2">
+                        {expandedRoleId === r.id ? (
+                          <ChevronDown className="h-4 w-4" style={{ color: 'var(--brand-text)' }} />
+                        ) : (
+                          <ChevronRight className="h-4 w-4" style={{ color: 'var(--ink-faint)' }} />
+                        )}
+                        <span>{r.name}</span>
+                        {r.isDefault && <StatusBadge tone="brand">Predeterminado</StatusBadge>}
+                      </span>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">{r.description}</TableCell>
+                    <TableCell style={{ color: 'var(--ink-soft)' }}>{r.description}</TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -186,8 +187,8 @@ export default function UserRolesTable({
                   </TableRow>
                   {expandedRoleId === r.id && (
                     <TableRow key={`${r.id}-expanded`}>
-                      <TableCell colSpan={4}>
-                        <div className="p-4 border rounded">{expandedContent}</div>
+                      <TableCell colSpan={4} className="p-3">
+                        <div className="glass-sunken p-4">{expandedContent}</div>
                       </TableCell>
                     </TableRow>
                   )}
@@ -196,10 +197,10 @@ export default function UserRolesTable({
             )}
           </TableBody>
         </Table>
-      </div>
+      </GlassPanel>
 
-      <div className="flex items-center justify-end gap-4">
-        <div className="text-sm text-muted-foreground">Elementos por página</div>
+      <div className="flex items-center justify-end gap-4 text-sm" style={{ color: 'var(--ink-soft)' }}>
+        <div>Elementos por página</div>
         <Select value={pageSize} onValueChange={onPageSize}>
           <SelectTrigger className="w-[90px]">
             <SelectValue />
@@ -211,7 +212,7 @@ export default function UserRolesTable({
             <SelectItem value="100">100</SelectItem>
           </SelectContent>
         </Select>
-        <div className="text-sm text-muted-foreground">{pageLabel}</div>
+        <div className="tabular-nums">{pageLabel}</div>
       </div>
     </div>
   );

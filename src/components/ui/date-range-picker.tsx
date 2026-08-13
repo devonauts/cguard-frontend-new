@@ -126,24 +126,24 @@ export function DateRangePicker({
             variant="outline"
             size="sm"
             className={cn(
-              "justify-start text-left font-normal text-xs h-8",
-              !dateRange && "text-muted-foreground"
+              "h-8 justify-start text-left text-xs font-medium",
+              !dateRange && "text-[color:var(--ink-faint)]"
             )}
           >
             <CalendarIcon className="mr-1.5 h-3.5 w-3.5" />
             {formatDateRange()}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="end">
+        <PopoverContent className="w-auto overflow-hidden p-0" align="end">
           <div className="flex">
-            {/* Sidebar with presets */}
-            <div className="border-r bg-primary text-white p-1.5 w-40">
+            {/* Atajos — pozo hundido a la izquierda del calendario. */}
+            <div className="w-40 border-r border-[color:var(--hairline)] bg-[var(--glass-sunken)] p-1.5">
               <div className="space-y-0.5">
                 {presets.map((preset) => (
                   <button
                     key={preset.label}
                     onClick={() => handlePresetClick(preset)}
-                    className="w-full text-left px-2.5 py-1.5 text-xs rounded hover:bg-blue-700 transition-colors"
+                    className="cg-focus w-full rounded-[var(--r-sm)] px-2.5 py-1.5 text-left text-xs font-medium text-[color:var(--ink-soft)] transition-colors duration-200 hover:bg-[var(--brand-wash)] hover:text-[color:var(--brand-text)] motion-reduce:transition-none"
                   >
                     {preset.label}
                   </button>

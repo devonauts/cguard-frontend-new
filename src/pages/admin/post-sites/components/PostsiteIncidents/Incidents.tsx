@@ -48,6 +48,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import useScrollToTopOnMount from '@/hooks/useScrollToTopOnMount';
 import { EmptyState, StatusBadge, SkeletonCards } from '@/components/kit';
+import { FIELD_CLS_LG } from '@/pages/admin/clientes/components/_shared/tab-kit';
 import type { PostSite } from '@/types';
 
 interface SiteProp extends PostSite {
@@ -604,7 +605,7 @@ export default function Incidents({ site }: { site?: SiteProp }) {
 
   return (
     <div ref={containerRef} className="space-y-4">
-      <div className="bg-card border rounded-lg p-4">
+      <div className="glass p-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Select value={actionSelectValue} onValueChange={(v) => {
@@ -639,7 +640,7 @@ export default function Incidents({ site }: { site?: SiteProp }) {
 
             <Sheet open={openFilter} onOpenChange={setOpenFilter}>
               <SheetTrigger asChild>
-                <Button variant="outline" className="border-primary/30 text-primary">
+                <Button variant="outline" className="border-primary/30 brand-text">
                   <Filter className="mr-2 h-4 w-4" />
                   {t('incidents.filters') || 'Filters'}
                 </Button>
@@ -795,9 +796,9 @@ export default function Incidents({ site }: { site?: SiteProp }) {
           <>
           <div className="mt-4 overflow-hidden rounded-lg border">
               <table className="min-w-full border-collapse text-left text-sm">
-              <thead className="bg-muted/30">
+              <thead>
                 <tr className="border-b">
-                    <th className="px-4 py-3">
+                    <th className="cg-eyebrow px-2 py-2">
                       <Checkbox
                         checked={visibleRows.length > 0 && visibleRows.every((r) => selectedIds.includes(r.id))}
                         onCheckedChange={(v) => {
@@ -814,12 +815,12 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                         }}
                       />
                     </th>
-                    <th className="px-4 py-3 font-semibold">{t('incidents.columns.ticket') || 'Ticket'}</th>
-                    <th className="px-4 py-3 font-semibold">{t('incidents.columns.date') || 'Date'}</th>
-                    <th className="px-4 py-3 font-semibold">{t('incidents.columns.caller') || 'Caller'}</th>
-                    <th className="px-4 py-3 font-semibold">{t('incidents.columns.incidentType') || 'Incident type'}</th>
-                    <th className="px-4 py-3 font-semibold">{t('incidents.columns.status') || 'Status'}</th>
-                    <th className="px-4 py-3" />
+                    <th className="cg-eyebrow px-2 py-2">{t('incidents.columns.ticket') || 'Ticket'}</th>
+                    <th className="cg-eyebrow px-2 py-2">{t('incidents.columns.date') || 'Date'}</th>
+                    <th className="cg-eyebrow px-2 py-2">{t('incidents.columns.caller') || 'Caller'}</th>
+                    <th className="cg-eyebrow px-2 py-2">{t('incidents.columns.incidentType') || 'Incident type'}</th>
+                    <th className="cg-eyebrow px-2 py-2">{t('incidents.columns.status') || 'Status'}</th>
+                    <th className="cg-eyebrow px-2 py-2" />
                 </tr>
               </thead>
               <tbody>
@@ -849,7 +850,7 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                     })
                     .map((it) => (
                       <tr key={it.id} className="border-b">
-                        <td className="px-4 py-3">
+                        <td className="px-2 py-2.5">
                           <Checkbox
                             checked={selectedIds.includes(it.id)}
                             onCheckedChange={(v) => {
@@ -864,12 +865,12 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                             }}
                           />
                         </td>
-                        <td className="px-4 py-3" title={it.id}>{it.id ? String(it.id).substring(0, 8) : '-'}</td>
-                        <td className="px-4 py-3 text-sm text-foreground">{it.incidentAt || it.date || it.createdAt || it.created_at ? new Date(it.incidentAt || it.date || it.createdAt || it.created_at).toLocaleString() : '-'}</td>
+                        <td className="px-2 py-2.5" title={it.id}>{it.id ? String(it.id).substring(0, 8) : '-'}</td>
+                        <td className="px-2 py-2.5 text-sm text-foreground">{it.incidentAt || it.date || it.createdAt || it.created_at ? new Date(it.incidentAt || it.date || it.createdAt || it.created_at).toLocaleString() : '-'}</td>
                         
-                        <td className="px-4 py-3 text-sm text-foreground">{it.callerName || it.callerType || it.guardName?.fullName || it.guardName?.name || '-'}</td>
-                        <td className="px-4 py-3 text-sm text-foreground">{(it.incidentType && (it.incidentType.name || it.incidentType.id)) ? (it.incidentType.name || it.incidentType.id) : (it.incidentTypeId || '-')}</td>
-                        <td className="px-4 py-3">
+                        <td className="px-2 py-2.5 text-sm text-foreground">{it.callerName || it.callerType || it.guardName?.fullName || it.guardName?.name || '-'}</td>
+                        <td className="px-2 py-2.5 text-sm text-foreground">{(it.incidentType && (it.incidentType.name || it.incidentType.id)) ? (it.incidentType.name || it.incidentType.id) : (it.incidentTypeId || '-')}</td>
+                        <td className="px-2 py-2.5">
                           {
                             (() => {
                               // Prefer the granular workStatus (a supervisor may
@@ -894,7 +895,7 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                             })()
                           }
                         </td>
-                        <td className="px-4 py-3 text-right">
+                        <td className="px-2 py-2.5 text-right">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button variant="ghost" size="icon" aria-label="Más acciones">
@@ -965,7 +966,7 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                               )}
 
                               <DropdownMenuItem onClick={() => handleDeleteIncident(it)}>
-                                <div className="flex items-center text-red-600">
+                                <div className="flex items-center" style={{ color: 'var(--bad-text)' }}>
                                   <Trash2 className="mr-2 h-4 w-4 inline-block" />
                                   {t('dispatcher.action_delete_label')}
                                 </div>
@@ -1058,7 +1059,7 @@ export default function Incidents({ site }: { site?: SiteProp }) {
             <select
               value={selSup}
               onChange={(e) => setSelSup(e.target.value)}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className={FIELD_CLS_LG}
             >
               <option value="">{t('incidents.selectSupervisor', { defaultValue: '— Selecciona un supervisor —' })}</option>
               {sups.map((s) => (

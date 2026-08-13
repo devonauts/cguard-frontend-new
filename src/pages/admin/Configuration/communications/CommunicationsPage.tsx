@@ -11,6 +11,8 @@ import {
   Save,
   ListFilter,
   Plus,
+  Mail,
+  BellRing,
 } from "lucide-react";
 
 import AppLayout from "@/layouts/app-layout";
@@ -19,7 +21,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -28,7 +29,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { PageContainer, PageHeader, Section, StatCard, Stagger, StatusBadge } from "@/components/kit";
+import {
+  PageContainer, PageHeader, Section, MetricTile, StatusBadge, Segmented,
+  SkeletonCards, EmptyState, IconTile,
+} from "@/components/kit";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   communicationService,
@@ -77,21 +81,45 @@ function fmtDate(value?: string | null) {
   });
 }
 
-const STATUS_STYLES: Record<string, string> = {
-  delivered: "bg-green-500/15 text-green-700 border-green-200",
-  read: "bg-green-500/15 text-green-700 border-green-200",
-  sent: "bg-blue-500/15 text-blue-700 border-blue-200",
-  queued: "bg-slate-500/15 text-slate-600 border-slate-200",
-  failed: "bg-red-500/15 text-red-700 border-red-200",
-  skipped: "bg-amber-500/15 text-amber-700 border-amber-200",
+/** Estado de un envío → tono del sistema. La severidad nunca es el acento. */
+const STATUS_TONE: Record<string, string> = {
+  delivered: "ok",
+  read: "ok",
+  sent: "info",
+  queued: "neutral",
+  failed: "bad",
+  skipped: "warn",
+};
+
+const STATUS_LABELS: Record<string, string> = {
+  delivered: "Entregado",
+  read: "Leído",
+  sent: "Enviado",
+  queued: "En cola",
+  failed: "Fallido",
+  skipped: "Omitido",
 };
 
 const CHANNEL_LABELS: Record<string, string> = {
-  push: "Push",
+  push: "Aviso al móvil",
   whatsapp: "WhatsApp",
   sms: "SMS",
-  email: "Email",
+  email: "Correo",
   wallet: "Recarga",
+};
+
+const TYPE_LABELS: Record<string, string> = {
+  otp: "Código de acceso",
+  shift_reminder: "Recordatorio de turno",
+  incident_alert: "Incidente",
+  visitor_alert: "Visita",
+  ronda_alert: "Ronda",
+  task_alert: "Tarea",
+  no_show: "Ausencia",
+  panic: "Pánico",
+  new_assignment: "Nueva asignación",
+  escalation: "Escalamiento",
+  generic: "General",
 };
 
 interface ToggleRowProps {
@@ -102,14 +130,44 @@ interface ToggleRowProps {
   disabled?: boolean;
 }
 
+/** Fila de conmutador. Plana: se repite dentro de un `map()`/lista. */
 function ToggleRow({ title, desc, checked, onChange, disabled }: ToggleRowProps) {
   return (
-    <div className="flex items-start justify-between gap-4 py-3">
+    <div className="glass-flat flex items-start justify-between gap-4 px-4 py-3">
       <div className="min-w-0">
-        <p className="text-sm font-medium text-foreground">{title}</p>
-        {desc && <p className="mt-0.5 text-xs text-muted-foreground">{desc}</p>}
+        <p className="text-sm font-medium">{title}</p>
+        {desc && <p className="mt-0.5 text-xs" style={{ color: "var(--ink-soft)" }}>{desc}</p>}
       </div>
       <Switch checked={checked} onCheckedChange={onChange} disabled={disabled} />
+    </div>
+  );
+}
+
+/** Aviso en línea con tono semántico. */
+function Aviso({ tone, icon, children }: {
+  tone: "warn" | "info" | "bad" | "ok"; icon: React.ReactNode; children: React.ReactNode;
+}) {
+  return (
+    <div
+      className="flex items-start gap-2 rounded-xl border p-3 text-xs"
+      style={{
+        background: `color-mix(in oklab, var(--${tone}) 10%, transparent)`,
+        borderColor: `color-mix(in oklab, var(--${tone}) 28%, transparent)`,
+        color: `var(--${tone}-text)`,
+      }}
+    >
+      <span className="mt-0.5 shrink-0 [&_svg]:size-3.5">{icon}</span>
+      <span className="min-w-0">{children}</span>
+    </div>
+  );
+}
+
+/** Cifra compacta del resumen de uso. Plana: van cuatro en rejilla. */
+function ResumenTile({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <div className="glass-flat p-3">
+      <p className="cg-eyebrow">{label}</p>
+      <p className="font-display mt-1 text-lg font-bold tabular-nums">{value}</p>
     </div>
   );
 }
@@ -298,9 +356,9 @@ export default function CommunicationsPage() {
   const saveBar = settings ? (
     <div className="flex items-center justify-end gap-3">
       {dirty && (
-        <span className="text-xs text-amber-700">
+        <StatusBadge tone="warn">
           {t("comms.unsaved", { defaultValue: "Cambios sin guardar" })}
-        </span>
+        </StatusBadge>
       )}
       <Button variant="brand" onClick={onSave} disabled={saving || !dirty}>
         {saving ? (
@@ -324,6 +382,13 @@ export default function CommunicationsPage() {
             icon={<MessageCircle />}
             title={t("settings.configuracion.comunicaciones", { defaultValue: "Comunicaciones" })}
             subtitle={t("comms.walletHint", { defaultValue: "Saldo prepago para SMS. WhatsApp se factura directo a tu cuenta de Meta al conectarla." })}
+            badges={
+              !loading && wallet ? (
+                <StatusBadge tone={wallet.balanceCents <= 0 ? "bad" : wallet.belowThreshold ? "warn" : "ok"}>
+                  {t("comms.walletBadge", { defaultValue: "Saldo" })} {money(wallet.balanceCents || 0, currency)}
+                </StatusBadge>
+              ) : undefined
+            }
             actions={
               !loading ? (
                 <Button variant="outline" size="sm" onClick={loadConfig}>
@@ -334,9 +399,7 @@ export default function CommunicationsPage() {
             }
           />
           {loading ? (
-            <div className="flex min-h-[30vh] items-center justify-center">
-              <Loader2 className="animate-spin text-primary" size={28} />
-            </div>
+            <SkeletonCards count={4} />
           ) : (
             <Tabs defaultValue="whatsapp" className="space-y-6">
               <TabsList className="w-full justify-start">
@@ -353,48 +416,36 @@ export default function CommunicationsPage() {
               {/* ── SMS: saldo prepago Twilio + recarga + alertas ─────────── */}
               <TabsContent value="sms" className="space-y-6">
               {/* Wallet */}
-              <Stagger className="grid grid-cols-1 gap-4">
-                <StatCard
-                  label={t("comms.walletTitle", { defaultValue: "Saldo de comunicaciones" })}
-                  value={money(wallet?.balanceCents || 0, currency)}
-                  icon={<Wallet />}
-                  accent={wallet?.belowThreshold ? "orange" : "primary"}
-                  hint={t("comms.walletHint", {
-                    defaultValue: "Saldo prepago para SMS. WhatsApp se factura directo a tu cuenta de Meta al conectarla.",
-                  })}
-                />
-              </Stagger>
+              <MetricTile
+                label={t("comms.walletTitle", { defaultValue: "Saldo de comunicaciones" })}
+                value={money(wallet?.balanceCents || 0, currency)}
+                icon={<Wallet />}
+                hint={t("comms.walletHint", {
+                  defaultValue: "Saldo prepago para SMS. WhatsApp se factura directo a tu cuenta de Meta al conectarla.",
+                })}
+              />
               {wallet?.belowThreshold && (
-                <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-500/10 p-3 text-xs text-amber-700">
-                  <AlertTriangle size={14} className="mt-0.5 shrink-0" />
-                  <span>
-                    {t("comms.lowBalance", {
-                      defaultValue:
-                        "Saldo bajo: por debajo del umbral configurado. Los canales con costo podrían bloquearse.",
-                    })}{" "}
-                    ({money(wallet.lowBalanceThresholdCents, currency)})
-                  </span>
-                </div>
+                <Aviso tone={wallet.balanceCents <= 0 ? "bad" : "warn"} icon={<AlertTriangle />}>
+                  {wallet.balanceCents <= 0
+                    ? t("comms.noBalance", {
+                        defaultValue: "Te has quedado sin saldo. Los mensajes con costo no saldrán hasta que recargues.",
+                      })
+                    : t("comms.lowBalance", {
+                        defaultValue:
+                          "Saldo bajo: por debajo del umbral configurado. Los canales con costo podrían bloquearse.",
+                      })}{" "}
+                  ({money(wallet.lowBalanceThresholdCents, currency)})
+                </Aviso>
               )}
 
               {/* Recharge */}
               <Section title={t("comms.rechargeTitle", { defaultValue: "Recargar saldo" })} icon={<Wallet />}>
                 <div className="space-y-4">
-                  <div className="flex flex-wrap gap-2">
-                    {RECHARGE_PRESETS.map((p) => (
-                      <button
-                        key={p}
-                        onClick={() => setRechargeAmount(p)}
-                        className={`rounded-lg border px-4 py-2 text-sm font-semibold transition-colors ${
-                          rechargeAmount === p
-                            ? "border-primary bg-primary/10 text-primary"
-                            : "border-border text-foreground hover:bg-muted/30"
-                        }`}
-                      >
-                        ${p}
-                      </button>
-                    ))}
-                  </div>
+                  <Segmented
+                    value={RECHARGE_PRESETS.includes(rechargeAmount) ? String(rechargeAmount) : ""}
+                    onChange={(v) => setRechargeAmount(Number(v))}
+                    options={RECHARGE_PRESETS.map((p) => ({ value: String(p), label: `$${p}` }))}
+                  />
                   <div className="flex items-end gap-3">
                     <div className="w-40">
                       <Label className="text-xs">{t("comms.customAmount", { defaultValue: "Monto (USD)" })}</Label>
@@ -411,7 +462,7 @@ export default function CommunicationsPage() {
                       {t("comms.recharge", { defaultValue: "Recargar" })}
                     </Button>
                   </div>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
                     {t("comms.rechargeHint", {
                       defaultValue:
                         "Pago seguro con tarjeta vía Stripe. El saldo se acredita automáticamente al confirmarse el pago y cubre los SMS enviados por la plataforma.",
@@ -423,7 +474,7 @@ export default function CommunicationsPage() {
               {/* SMS toggles */}
               {settings && (
                 <Section title={t("comms.smsTitle", { defaultValue: "SMS (Twilio)" })} icon={<Smartphone />}>
-                  <div className="divide-y">
+                  <div className="space-y-2">
                     <ToggleRow
                       title={t("comms.smsFallback", { defaultValue: "SMS como respaldo" })}
                       desc={t("comms.smsFallbackDesc", {
@@ -500,7 +551,7 @@ export default function CommunicationsPage() {
 
               {settings && (
                 <Section title={t("comms.waTogglesTitle", { defaultValue: "Alertas por WhatsApp" })} icon={<MessageCircle />}>
-                  <div className="divide-y">
+                  <div className="space-y-2">
                     <ToggleRow
                       title={t("comms.whatsappEnabled", { defaultValue: "Habilitar WhatsApp" })}
                       desc={t("comms.whatsappEnabledDesc", {
@@ -539,6 +590,31 @@ export default function CommunicationsPage() {
 
               {/* ── Preferencias de enrutamiento ─────────────────────────── */}
               <TabsContent value="preferencias" className="space-y-6">
+              {/* Orden en que se intenta cada canal */}
+              <Section title={t("comms.orderTitle", { defaultValue: "Orden de aviso" })} icon={<MessageCircle />}>
+                <p className="mb-3 text-sm" style={{ color: "var(--ink-soft)" }}>
+                  {t("comms.orderHint", {
+                    defaultValue: "Cada aviso intenta el canal más barato primero y sólo baja al siguiente si no llega.",
+                  })}
+                </p>
+                <div className="grid gap-2 sm:grid-cols-4">
+                  {[
+                    { icon: <BellRing />, label: CHANNEL_LABELS.push, hint: t("comms.orderPush", { defaultValue: "Sin costo" }) },
+                    { icon: <MessageCircle />, label: CHANNEL_LABELS.whatsapp, hint: t("comms.orderWa", { defaultValue: "Lo factura Meta" }) },
+                    { icon: <Smartphone />, label: CHANNEL_LABELS.sms, hint: t("comms.orderSms", { defaultValue: "Consume saldo" }) },
+                    { icon: <Mail />, label: CHANNEL_LABELS.email, hint: t("comms.orderMail", { defaultValue: "Sin costo" }) },
+                  ].map((c, i) => (
+                    <div key={c.label} className="glass-flat flex items-center gap-3 p-3">
+                      <IconTile tone={i === 0 ? "brand" : "neutral"} size="sm">{c.icon}</IconTile>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium">{c.label}</p>
+                        <p className="truncate text-xs" style={{ color: "var(--ink-faint)" }}>{c.hint}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Section>
+
               {/* OTP / routing preferences */}
               {settings && (
                 <Section title={t("comms.routingTitle", { defaultValue: "Preferencias de enrutamiento" })} icon={<Smartphone />}>
@@ -546,12 +622,12 @@ export default function CommunicationsPage() {
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                       <div>
                         <Label className="text-xs">
-                          {t("comms.otpChannel", { defaultValue: "Canal preferido para OTP" })}
+                          {t("comms.otpChannel", { defaultValue: "Canal preferido para el código de acceso" })}
                         </Label>
                         <select
                           value={settings.otp_preferred_channel}
                           onChange={(e) => patch("otp_preferred_channel", e.target.value)}
-                          className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                          className="cg-input cg-focus mt-1 h-9 w-full px-3 text-sm"
                         >
                           <option value="whatsapp">WhatsApp</option>
                           <option value="sms">SMS</option>
@@ -581,32 +657,26 @@ export default function CommunicationsPage() {
                 <div className="space-y-4">
                   {/* Cost summary */}
                   <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                    <div className="rounded-lg border border-border p-3">
-                      <p className="text-xs text-muted-foreground">
-                        {t("comms.sumMessages", { defaultValue: "Mensajes (página)" })}
-                      </p>
-                      <p className="text-lg font-semibold text-foreground">{costSummary.count}</p>
-                    </div>
-                    <div className="rounded-lg border border-border p-3">
-                      <p className="text-xs text-muted-foreground">
-                        {t("comms.sumPaid", { defaultValue: "Con costo" })}
-                      </p>
-                      <p className="text-lg font-semibold text-foreground">{costSummary.paid}</p>
-                    </div>
-                    <div className="rounded-lg border border-border p-3">
-                      <p className="text-xs text-muted-foreground">
-                        {t("comms.sumBilled", { defaultValue: "Facturado" })}
-                      </p>
-                      <p className="text-lg font-semibold text-foreground">
-                        {money(costSummary.billed || costSummary.estimate, costSummary.currency)}
-                      </p>
-                    </div>
-                    <div className="rounded-lg border border-border p-3">
-                      <p className="text-xs text-muted-foreground">
-                        {t("comms.sumFailed", { defaultValue: "Fallidos" })}
-                      </p>
-                      <p className="text-lg font-semibold text-foreground">{costSummary.failed}</p>
-                    </div>
+                    <ResumenTile
+                      label={t("comms.sumMessages", { defaultValue: "Mensajes (página)" })}
+                      value={costSummary.count}
+                    />
+                    <ResumenTile
+                      label={t("comms.sumPaid", { defaultValue: "Con costo" })}
+                      value={costSummary.paid}
+                    />
+                    <ResumenTile
+                      label={t("comms.sumBilled", { defaultValue: "Facturado" })}
+                      value={money(costSummary.billed || costSummary.estimate, costSummary.currency)}
+                    />
+                    <ResumenTile
+                      label={t("comms.sumFailed", { defaultValue: "Fallidos" })}
+                      value={
+                        <span style={costSummary.failed ? { color: "var(--bad-text)" } : undefined}>
+                          {costSummary.failed}
+                        </span>
+                      }
+                    />
                   </div>
 
                   {/* Filters */}
@@ -616,7 +686,7 @@ export default function CommunicationsPage() {
                       <select
                         value={filters.channel || ""}
                         onChange={(e) => setFilter("channel", e.target.value)}
-                        className="mt-1 w-full rounded-md border border-border bg-background px-2 py-2 text-sm"
+                        className="cg-input cg-focus mt-1 h-9 w-full px-2 text-sm"
                       >
                         <option value="">{t("comms.all", { defaultValue: "Todos" })}</option>
                         {CHANNEL_OPTIONS.map((c) => (
@@ -631,7 +701,7 @@ export default function CommunicationsPage() {
                       <select
                         value={filters.provider || ""}
                         onChange={(e) => setFilter("provider", e.target.value)}
-                        className="mt-1 w-full rounded-md border border-border bg-background px-2 py-2 text-sm"
+                        className="cg-input cg-focus mt-1 h-9 w-full px-2 text-sm"
                       >
                         <option value="">{t("comms.all", { defaultValue: "Todos" })}</option>
                         {PROVIDER_OPTIONS.map((p) => (
@@ -646,12 +716,12 @@ export default function CommunicationsPage() {
                       <select
                         value={filters.status || ""}
                         onChange={(e) => setFilter("status", e.target.value)}
-                        className="mt-1 w-full rounded-md border border-border bg-background px-2 py-2 text-sm"
+                        className="cg-input cg-focus mt-1 h-9 w-full px-2 text-sm"
                       >
                         <option value="">{t("comms.all", { defaultValue: "Todos" })}</option>
                         {STATUS_OPTIONS.map((s) => (
                           <option key={s} value={s}>
-                            {s}
+                            {STATUS_LABELS[s] || s}
                           </option>
                         ))}
                       </select>
@@ -661,12 +731,12 @@ export default function CommunicationsPage() {
                       <select
                         value={filters.type || ""}
                         onChange={(e) => setFilter("type", e.target.value)}
-                        className="mt-1 w-full rounded-md border border-border bg-background px-2 py-2 text-sm"
+                        className="cg-input cg-focus mt-1 h-9 w-full px-2 text-sm"
                       >
                         <option value="">{t("comms.all", { defaultValue: "Todos" })}</option>
                         {TYPE_OPTIONS.map((ty) => (
                           <option key={ty} value={ty}>
-                            {ty}
+                            {TYPE_LABELS[ty] || ty}
                           </option>
                         ))}
                       </select>
@@ -704,15 +774,19 @@ export default function CommunicationsPage() {
                   </div>
 
                   {/* Table */}
-                  <div className="overflow-x-auto rounded-lg border">
+                  <div className="overflow-x-auto">
                     {logsLoading ? (
-                      <div className="flex min-h-[140px] items-center justify-center">
-                        <Loader2 className="animate-spin text-primary" size={22} />
+                      <div className="space-y-2">
+                        {Array.from({ length: 4 }).map((_, i) => (
+                          <div key={i} className="cg-skeleton h-12 w-full" />
+                        ))}
                       </div>
                     ) : !logsResult || logsResult.rows.length === 0 ? (
-                      <p className="py-10 text-center text-sm text-muted-foreground">
-                        {t("comms.noLogs", { defaultValue: "Sin registros para los filtros aplicados." })}
-                      </p>
+                      <EmptyState
+                        icon={<ListFilter />}
+                        title={t("comms.noLogs", { defaultValue: "Sin registros para los filtros aplicados." })}
+                        description={t("comms.noLogsDesc", { defaultValue: "Cambia o limpia los filtros para ver más envíos." })}
+                      />
                     ) : (
                       <Table>
                         <TableHeader>
@@ -730,27 +804,27 @@ export default function CommunicationsPage() {
                         <TableBody>
                           {logsResult.rows.map((row: CommunicationLog) => (
                             <TableRow key={row.id}>
-                              <TableCell className="whitespace-nowrap text-xs text-muted-foreground">
+                              <TableCell className="whitespace-nowrap text-xs" style={{ color: "var(--ink-soft)" }}>
                                 {fmtDate(row.createdAt)}
                               </TableCell>
                               <TableCell className="text-sm">
                                 {CHANNEL_LABELS[row.channel] || row.channel}
-                                <span className="ml-1 text-xs text-muted-foreground">{row.provider}</span>
+                                <span className="ml-1 text-xs" style={{ color: "var(--ink-faint)" }}>{row.provider}</span>
                               </TableCell>
-                              <TableCell className="text-xs">{row.messageType}</TableCell>
+                              <TableCell className="text-xs">
+                                {TYPE_LABELS[row.messageType] || row.messageType}
+                              </TableCell>
                               <TableCell className="max-w-[160px] truncate text-xs" title={row.recipient}>
                                 {row.recipient}
                               </TableCell>
                               <TableCell>
-                                <Badge
-                                  variant="outline"
-                                  className={STATUS_STYLES[row.status] || ""}
-                                  title={row.errorMessage || undefined}
-                                >
-                                  {row.status}
-                                </Badge>
+                                <span title={row.errorMessage || undefined}>
+                                  <StatusBadge tone={STATUS_TONE[row.status] || "neutral"}>
+                                    {STATUS_LABELS[row.status] || row.status}
+                                  </StatusBadge>
+                                </span>
                               </TableCell>
-                              <TableCell className="text-right text-xs">
+                              <TableCell className="text-right text-xs tabular-nums">
                                 {row.billedAmountCents != null
                                   ? money(row.billedAmountCents, row.currency || currency)
                                   : row.costEstimateCents != null
@@ -767,7 +841,7 @@ export default function CommunicationsPage() {
                   {/* Pagination */}
                   {logsResult && logsResult.totalPages > 1 && (
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-xs tabular-nums" style={{ color: "var(--ink-soft)" }}>
                         {t("comms.pageOf", {
                           defaultValue: "Página {{page}} de {{total}} · {{count}} registros",
                           page: logsResult.page,

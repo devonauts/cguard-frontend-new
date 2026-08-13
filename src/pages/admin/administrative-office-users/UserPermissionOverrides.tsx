@@ -1,6 +1,7 @@
 import React from "react";
 import { PERMISSIONS, groupPermissions, ADMIN_FLOOR_PERMISSIONS } from "@/config/permissions";
 import { formatPermissionLabel, getResourceLabel } from "@/config/permissionLabels";
+import { GlassPanel, EmptyState } from "@/components/kit";
 
 export type Overrides = { grant: string[]; deny: string[] };
 
@@ -65,29 +66,35 @@ export default function UserPermissionOverrides({
     onChange({ grant: Array.from(nextGrant), deny: Array.from(nextDeny) });
   };
 
-  const stateOf = (p: string): { label: string; cls: string } => {
-    if (denySet.has(p)) return { label: "Denegado", cls: "bg-red-100 text-red-700 border-red-300" };
-    if (grantSet.has(p)) return { label: "Concedido", cls: "bg-green-100 text-green-700 border-green-300" };
-    if (isFloor(p)) return { label: "Obligatorio", cls: "bg-amber-100 text-amber-700 border-amber-300" };
+  /** El tono sale de los semánticos del sistema: nunca de un color escrito a mano. */
+  const stateOf = (p: string): { label: string; style: React.CSSProperties } => {
+    const tint = (token: string) => ({
+      background: `color-mix(in oklab, var(--${token}) 14%, transparent)`,
+      borderColor: `color-mix(in oklab, var(--${token}) 32%, transparent)`,
+      color: `var(--${token}-text)`,
+    });
+    if (denySet.has(p)) return { label: "Denegado", style: tint("bad") };
+    if (grantSet.has(p)) return { label: "Concedido", style: tint("ok") };
+    if (isFloor(p)) return { label: "Obligatorio", style: tint("warn") };
     return inherited.has(p)
-      ? { label: "Heredado ✓", cls: "bg-slate-100 text-slate-600 border-slate-300" }
-      : { label: "Heredado ✗", cls: "bg-slate-50 text-slate-400 border-slate-200" };
+      ? { label: "Heredado ✓", style: { background: "var(--glass-sunken)", borderColor: "var(--hairline)", color: "var(--ink-soft)" } }
+      : { label: "Heredado ✗", style: { background: "transparent", borderColor: "var(--hairline)", color: "var(--ink-faint)" } };
   };
 
   return (
     <div className="space-y-4">
-      <p className="text-xs text-muted-foreground">
+      <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
         Haz clic en un permiso para alternar entre heredado del rol, concedido (+) y denegado (−).
         Lo denegado tiene prioridad sobre el rol.
       </p>
       {Object.keys(filtered).length === 0 ? (
-        <div className="text-sm text-muted-foreground">No se encontraron permisos</div>
+        <EmptyState title="No se encontraron permisos" description="Prueba con otro texto de búsqueda." />
       ) : (
         Object.keys(filtered)
           .filter((g) => !HIDDEN_GROUPS.has(g))
           .map((group) => (
-            <div key={group} className="rounded-2xl border bg-card dark:bg-[#202020] p-4 shadow-sm">
-              <div className="text-sm font-semibold mb-3 tracking-tight">{getResourceLabel(group)}</div>
+            <GlassPanel key={group} flat className="p-4">
+              <div className="mb-3 text-sm font-semibold tracking-tight">{getResourceLabel(group)}</div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                 {filtered[group].map((p) => {
                   const st = stateOf(p);
@@ -98,15 +105,25 @@ export default function UserPermissionOverrides({
                       disabled={disabled}
                       onClick={() => cycle(p)}
                       title={isFloor(p) ? "Requerido para el acceso de administrador (no se puede denegar)" : p}
-                      className={"flex items-center justify-between gap-2 rounded-xl border px-2.5 py-2 text-left transition " + (disabled ? "opacity-60 cursor-not-allowed " : "hover:bg-primary/5 hover:border-primary/30 dark:hover:bg-[#2a2a2a] ")}
+                      className={"cg-focus flex items-center justify-between gap-2 rounded-xl border px-2.5 py-2 text-left transition-colors " + (disabled ? "cursor-not-allowed opacity-60" : "")}
+                      style={{ borderColor: "var(--hairline)", background: "transparent" }}
+                      onMouseEnter={(e) => {
+                        if (disabled) return;
+                        e.currentTarget.style.background = "var(--brand-wash)";
+                        e.currentTarget.style.borderColor = "var(--brand-line)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = "transparent";
+                        e.currentTarget.style.borderColor = "var(--hairline)";
+                      }}
                     >
                       <span className="min-w-0 truncate text-sm">{formatPermissionLabel(p)}</span>
-                      <span className={"shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold " + st.cls}>{st.label}</span>
+                      <span className="shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold" style={st.style}>{st.label}</span>
                     </button>
                   );
                 })}
               </div>
-            </div>
+            </GlassPanel>
           ))
       )}
     </div>

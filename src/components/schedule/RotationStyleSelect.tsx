@@ -148,7 +148,9 @@ export default function RotationStyleSelect({
             <label className="block text-[10px] font-medium text-muted-foreground mb-1 uppercase">Descansa</label>
             <input type="number" min={1} max={30} value={cRest} onChange={(e) => setCRest(e.target.value)} className="w-20 rounded-lg border border-border/40 bg-background px-2 py-1.5 text-sm font-mono outline-none focus:border-primary" />
           </div>
-          <button type="button" onClick={createCustom} disabled={creating} className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-white hover:bg-primary/90 disabled:opacity-50">
+          {/* La tinta sobre el relleno de marca es `--brand-ink`, no blanco:
+              `.cg-btn-brand` ya trae las dos y sigue al acento configurado. */}
+          <button type="button" onClick={createCustom} disabled={creating} className="cg-btn-brand cg-focus inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-semibold transition-[filter] hover:brightness-105 disabled:opacity-50">
             {creating ? <Loader2 size={13} className="animate-spin" /> : <Plus size={13} />} Crear y usar
           </button>
         </div>

@@ -14,8 +14,9 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { DataTable, type Column } from "@/components/table/DataTable";
 import { RowActionsMenu, type RowAction } from "@/components/table/RowActionsMenu";
 import { BulkActionsSelect, type BulkAction } from "@/components/table/BulkActionsSelect";
-import { Plus, Search, Eye, Trash, Filter, EllipsisVertical, FileDown, FileSpreadsheet, Megaphone, FileText } from "lucide-react";
-import { PageContainer, PageHeader, Section } from "@/components/kit";
+import { TableToolbar, TableSearch } from "@/components/table/TableToolbar";
+import { Plus, Eye, Trash, Filter, EllipsisVertical, FileDown, FileSpreadsheet, Megaphone, FileText, CheckCheck, Clock } from "lucide-react";
+import { PageContainer, PageHeader, Section, EmptyState, Segmented, StatCard, StatusBadge, Field } from "@/components/kit";
 import { userService } from "@/lib/api/userService";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -370,9 +371,17 @@ export default function MemosPage() {
       key: 'wasAccepted',
       header: 'Estado',
       sortable: true,
-      render: (value) => value ? 'Aceptado' : 'Pendiente',
+      // El acuse de lectura es un semántico, nunca el acento: aceptado = ok,
+      // pendiente de acuse = warn.
+      render: (value) =>
+        value
+          ? <StatusBadge tone="ok">Aceptado</StatusBadge>
+          : <StatusBadge tone="warn">Pendiente</StatusBadge>,
     },
   ];
+
+  const aceptados = useMemo(() => memos.filter((memo) => memo.wasAccepted).length, [memos]);
+  const pendientes = memos.length - aceptados;
 
   const rowActions = (memo: MemoItem): RowAction[] => [
     {
@@ -396,6 +405,11 @@ export default function MemosPage() {
           icon={<Megaphone />}
           title="Memos"
           subtitle="Lista de memos del equipo de seguridad."
+          badges={
+            selectedIds.length > 0 ? (
+              <StatusBadge tone="brand">{selectedIds.length} seleccionados</StatusBadge>
+            ) : undefined
+          }
           actions={
             <Button variant="brand" onClick={() => setCreateOpen(true)}>
               <Plus className="mr-2 h-4 w-4" /> Nuevo Memo
@@ -403,28 +417,41 @@ export default function MemosPage() {
           }
         />
 
-        <Section className="!p-4">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
-            <div className="flex items-center gap-2">
-              <BulkActionsSelect key={bulkKey} actions={bulkActions} onChange={handleBulkAction} />
-            </div>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <StatCard label="Memos" value={memos.length} icon={<Megaphone />} accent="brand" />
+          <StatCard
+            label="Con acuse de lectura"
+            value={aceptados}
+            icon={<CheckCheck />}
+            accent="ok"
+            hint="El vigilante confirmó haberlo leído"
+          />
+          <StatCard
+            label="Pendientes de acuse"
+            value={pendientes}
+            icon={<Clock />}
+            accent="warn"
+            hint="Todavía sin confirmar"
+          />
+        </div>
 
-            <div className="flex-1 flex justify-center">
-              <div className="relative w-full max-w-md">
-                <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Buscar memo..."
-                  className="pl-10 w-full"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                />
-              </div>
-            </div>
+        <TableToolbar
+          leading={<BulkActionsSelect key={bulkKey} actions={bulkActions} onChange={handleBulkAction} />}
+          search={<TableSearch value={query} onChange={setQuery} placeholder="Buscar memo…" />}
+        >
+              <Segmented
+                value={filters.status || 'all'}
+                onChange={(value) => setFilters({ ...filters, status: value })}
+                options={[
+                  { value: 'all', label: 'Todos' },
+                  { value: 'accepted', label: 'Aceptados' },
+                  { value: 'pending', label: 'Pendientes' },
+                ]}
+              />
 
-            <div className="ml-auto flex flex-wrap items-center gap-2">
               <Sheet open={openFilter} onOpenChange={setOpenFilter}>
                 <SheetTrigger asChild>
-                  <Button variant="outline" className="text-primary border-primary/30">
+                  <Button variant="outline" size="sm" className="h-9">
                     <Filter className="mr-2 h-4 w-4" /> Filtros
                   </Button>
                 </SheetTrigger>
@@ -472,22 +499,6 @@ export default function MemosPage() {
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="space-y-2">
-                      <Label>Estado</Label>
-                      <Select
-                        value={filters.status || 'all'}
-                        onValueChange={(value) => setFilters({ ...filters, status: value as 'all' | 'accepted' | 'pending' })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Todos" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">Todos</SelectItem>
-                          <SelectItem value="accepted">Aceptados</SelectItem>
-                          <SelectItem value="pending">Pendientes</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
                     <Button
                       variant="brand"
                       className="w-full"
@@ -524,11 +535,9 @@ export default function MemosPage() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            </div>
-          </div>
-        </Section>
+        </TableToolbar>
 
-        <Section title="Memos" icon={<FileText />} contentClassName="-mx-5 -mb-5">
+        <Section title="Memos" icon={<FileText />}>
           <DataTable<MemoItem>
             columns={columns}
             data={sortedMemos}
@@ -544,10 +553,11 @@ export default function MemosPage() {
               setSortDir(dir);
             }}
             emptyState={
-              <div className="flex flex-col items-center justify-center text-center py-16">
-                <p className="text-base font-medium">No se encontraron memos</p>
-                <p className="mt-1 text-sm text-muted-foreground">Ajusta la búsqueda o crea un nuevo memo.</p>
-              </div>
+              <EmptyState
+                icon={<FileText />}
+                title="No se encontraron memos"
+                description="Ajusta la búsqueda o crea un nuevo memo."
+              />
             }
           />
         </Section>
@@ -563,7 +573,7 @@ export default function MemosPage() {
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div>
-                <label className="mb-2 block text-sm font-medium text-foreground">Vigilante</label>
+                <Label className="mb-2 block">Vigilante</Label>
                 <Select value={guardId} onValueChange={(value) => setGuardId(value)}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Selecciona una vigilante" />
@@ -578,7 +588,7 @@ export default function MemosPage() {
                 </Select>
               </div>
               <div>
-                <label className="mb-2 block text-sm font-medium text-foreground">Estado</label>
+                <Label className="mb-2 block">Estado</Label>
                 <Select value={wasAccepted ? 'accepted' : 'pending'} onValueChange={(value) => setWasAccepted(value === 'accepted')}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Selecciona el estado" />
@@ -590,11 +600,11 @@ export default function MemosPage() {
                 </Select>
               </div>
               <div>
-                <label className="mb-2 block text-sm font-medium text-foreground">Asunto</label>
+                <Label className="mb-2 block">Asunto</Label>
                 <Input value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Descripción corta del memo" />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-medium text-foreground">Contenido</label>
+                <Label className="mb-2 block">Contenido</Label>
                 <Textarea value={content} onChange={(e) => setContent(e.target.value)} rows={6} placeholder="Detalles del memo" />
               </div>
             </div>
@@ -623,7 +633,7 @@ export default function MemosPage() {
                   Cancelar
                 </Button>
               </DialogClose>
-              <Button className="bg-red-600 hover:bg-red-700 text-white" onClick={confirmDelete}>
+              <Button variant="destructive" onClick={confirmDelete}>
                 Eliminar memo
               </Button>
             </DialogFooter>
@@ -637,25 +647,33 @@ export default function MemosPage() {
               <DialogDescription>Revisa la información del memo seleccionado.</DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
-              <div>
-                <h3 className="text-sm font-medium text-foreground">Asunto</h3>
-                <p className="mt-1 text-sm text-foreground">{viewMemo?.subject || '-'}</p>
+              <div className="flex flex-wrap items-center gap-2">
+                <StatusBadge tone={viewMemo?.wasAccepted ? 'ok' : 'warn'}>
+                  {viewMemo?.wasAccepted ? 'Acuse de lectura recibido' : 'Pendiente de acuse'}
+                </StatusBadge>
+              </div>
+              <div className="glass-sunken grid grid-cols-2 gap-4 p-4">
+                <Field
+                  label="Vigilante"
+                  value={typeof viewMemo?.guardName === 'string' ? viewMemo?.guardName : viewMemo?.guardName?.name || '-'}
+                />
+                <Field
+                  label="Creado por"
+                  value={typeof viewMemo?.createdBy === 'string' ? viewMemo?.createdBy : viewMemo?.createdBy?.name || '-'}
+                />
+                <Field
+                  label="Fecha"
+                  value={viewMemo?.dateTime ? new Date(viewMemo.dateTime).toLocaleString() : '-'}
+                  className="col-span-2"
+                />
               </div>
               <div>
-                <h3 className="text-sm font-medium text-foreground">Vigilante</h3>
-                <p className="mt-1 text-sm text-foreground">{typeof viewMemo?.guardName === 'string' ? viewMemo?.guardName : viewMemo?.guardName?.name || '-'}</p>
+                <div className="cg-eyebrow mb-1">Asunto</div>
+                <p className="text-sm font-semibold">{viewMemo?.subject || '-'}</p>
               </div>
               <div>
-                <h3 className="text-sm font-medium text-foreground">Creado por</h3>
-                <p className="mt-1 text-sm text-foreground">{typeof viewMemo?.createdBy === 'string' ? viewMemo?.createdBy : viewMemo?.createdBy?.name || '-'}</p>
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-foreground">Fecha</h3>
-                <p className="mt-1 text-sm text-foreground">{viewMemo?.dateTime ? new Date(viewMemo.dateTime).toLocaleString() : '-'}</p>
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-foreground">Contenido</h3>
-                <p className="mt-1 whitespace-pre-line text-sm text-foreground">{viewMemo?.content || '-'}</p>
+                <div className="cg-eyebrow mb-1">Contenido</div>
+                <p className="whitespace-pre-line text-sm" style={{ color: 'var(--ink-soft)' }}>{viewMemo?.content || '-'}</p>
               </div>
             </div>
             <DialogFooter>

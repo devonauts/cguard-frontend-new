@@ -471,7 +471,7 @@ export default function NewSecurityGuardPage() {
                     );
                   })}
 
-                  <SubmitBar primaryLabel={t('guards.new.form.send')} loading={inviteState.isSubmitting} onPrimary={submitInvite(onSubmitInvite)} primaryClassName="bg-primary text-primary-foreground px-6 py-3 rounded-full shadow-lg hover:bg-primary/90 transition-colors font-medium disabled:opacity-50" />
+                  <SubmitBar primaryLabel={t('guards.new.form.send')} loading={inviteState.isSubmitting} onPrimary={submitInvite(onSubmitInvite)} primaryClassName="cg-btn-brand rounded-full px-6 py-3 font-medium transition-colors disabled:opacity-50" />
                 </form>
               </Form>
             </>
@@ -516,7 +516,7 @@ export default function NewSecurityGuardPage() {
                     </FormBlock>
                   ))}
 
-                  <SubmitBar primaryLabel={t('guards.new.form.send')} loading={joinState.isSubmitting} onPrimary={submitJoin(onSubmitJoin)} primaryClassName="bg-primary text-primary-foreground px-6 py-3 rounded-full shadow-lg hover:bg-primary/90 transition-colors font-medium disabled:opacity-50" />
+                  <SubmitBar primaryLabel={t('guards.new.form.send')} loading={joinState.isSubmitting} onPrimary={submitJoin(onSubmitJoin)} primaryClassName="cg-btn-brand rounded-full px-6 py-3 font-medium transition-colors disabled:opacity-50" />
                 </form>
               </Form>
             </>
@@ -550,7 +550,7 @@ export default function NewSecurityGuardPage() {
                     </FormBlock>
                   ))}
 
-                  <SubmitBar primaryLabel={t('guards.new.form.send')} loading={linkState.isSubmitting} onPrimary={submitLink(onSubmitLink)} primaryClassName="bg-primary text-primary-foreground px-6 py-3 rounded-full shadow-lg hover:bg-primary/90 transition-colors font-medium disabled:opacity-50" />
+                  <SubmitBar primaryLabel={t('guards.new.form.send')} loading={linkState.isSubmitting} onPrimary={submitLink(onSubmitLink)} primaryClassName="cg-btn-brand rounded-full px-6 py-3 font-medium transition-colors disabled:opacity-50" />
                 </form>
               </Form>
             </>
@@ -834,9 +834,9 @@ export default function NewSecurityGuardPage() {
                   </Section>
 
                   {/* ── Submit Bar ───────────────────────────────────────────── */}
-                  <div className="cg-card flex items-center justify-end gap-3 px-6 py-4">
+                  <div className="glass flex items-center justify-end gap-3 px-6 py-4">
                     {uploading && (
-                      <span className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <span className="flex items-center gap-2 text-sm" style={{ color: 'var(--ink-soft)' }}>
                         <Loader2 className="h-4 w-4 animate-spin" />
                         Subiendo documentos…
                       </span>
@@ -845,7 +845,7 @@ export default function NewSecurityGuardPage() {
                       primaryLabel={t('guards.new.form.create_and_send')}
                       loading={createState.isSubmitting || uploading}
                       onPrimary={() => { createIntentRef.current = "create_send"; submitCreate(onSubmitCreate)(); }}
-                      primaryClassName="bg-primary text-primary-foreground px-6 py-3 rounded-full shadow-lg hover:bg-primary/90 transition-colors font-medium disabled:opacity-50"
+                      primaryClassName="cg-btn-brand rounded-full px-6 py-3 font-medium transition-colors disabled:opacity-50"
                     />
                   </div>
 

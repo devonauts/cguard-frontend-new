@@ -74,6 +74,12 @@ export interface DirectoryOption {
   companyName?: string;
   address?: string;
   // Optional geo fields probed by the detail / printable views.
+  //
+  // `latitud`/`longitud` (en español) NO son un capricho: son los nombres que
+  // devuelve de verdad `postSiteService.list`, y faltaban aquí. Sin declararlos,
+  // toda sonda escrita contra este tipo miraba campos que nunca vienen.
+  latitud?: string | number | null;
+  longitud?: string | number | null;
   latitude?: string | number | null;
   longitude?: string | number | null;
   lat?: string | number | null;

@@ -74,26 +74,31 @@ export default function AlarmActionPlan({ caseId }: { caseId: string }) {
         </div>
         <span className="text-xs font-semibold text-muted-foreground">{doneCount}/{steps.length}</span>
       </div>
-      <div className="mb-3 h-1.5 w-full overflow-hidden rounded-full bg-muted">
-        <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
+      <div className="mb-3 h-1.5 w-full overflow-hidden rounded-full" style={{ background: "var(--glass-sunken)" }}>
+        <div className="h-full rounded-full transition-[width] duration-500" style={{ width: `${pct}%`, background: "var(--brand)", boxShadow: "0 0 12px 0 var(--brand-glow)" }} />
       </div>
       <ol className="space-y-1.5">
         {steps.map((s, i) => {
           const meta = STEP_META[s.type] || { label: s.type, icon: <Check className="size-3.5" /> };
           const done = !!progress[String(i)]?.done;
           return (
-            <li key={i} className="flex items-start gap-2 rounded-lg border border-border/50 bg-background px-3 py-2">
+            <li key={i} className="glass-flat flex items-start gap-2 px-3 py-2">
               <button
                 onClick={() => toggle(i, !done)}
                 disabled={savingIdx === i}
-                className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded border ${done ? "border-primary bg-primary text-white" : "border-border text-transparent hover:border-primary"}`}
+                className="cg-focus mt-0.5 flex size-5 shrink-0 items-center justify-center rounded border transition-colors"
+                // Marcado: relleno de marca con tinta `--brand-ink`. Blanco sobre
+                // `--brand` (L 0.72/0.78) daría ~2,2:1 — ver tokens.css.
+                style={done
+                  ? { borderColor: "var(--brand)", background: "var(--brand)", color: "var(--brand-ink)" }
+                  : { borderColor: "var(--hairline)", color: "transparent" }}
                 title={done ? "Desmarcar" : "Marcar como completado"}
               >
-                {savingIdx === i ? <Loader2 className="size-3 animate-spin text-muted-foreground" /> : <Check className="size-3.5" />}
+                {savingIdx === i ? <Loader2 className="size-3 animate-spin" style={{ color: "var(--ink-faint)" }} /> : <Check className="size-3.5" />}
               </button>
               <div className="min-w-0 flex-1">
-                <div className={`flex items-center gap-1.5 text-sm ${done ? "text-muted-foreground line-through" : "text-foreground"}`}>
-                  <span className="text-primary">{meta.icon}</span>
+                <div className={`flex items-center gap-1.5 text-sm ${done ? "line-through" : ""}`} style={{ color: done ? "var(--ink-faint)" : "var(--ink)" }}>
+                  <span style={{ color: "var(--brand-text)" }}>{meta.icon}</span>
                   <span className="font-medium">{meta.label}</span>
                 </div>
                 {s.detail && <p className="text-xs text-muted-foreground">{s.detail}</p>}

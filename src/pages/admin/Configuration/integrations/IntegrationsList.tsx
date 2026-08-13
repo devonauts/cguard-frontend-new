@@ -1,7 +1,7 @@
-import { Puzzle } from "lucide-react";
+import { Puzzle, Info } from "lucide-react";
 import AppLayout from "@/layouts/app-layout";
 import SettingsLayout from "@/layouts/SettingsLayout";
-import { PageContainer, PageHeader, Section, Stagger } from "@/components/kit";
+import { PageContainer, PageHeader, Section, Stagger, StatusBadge } from "@/components/kit";
 import IntegrationCard from "./IntegrationCard";
 
 const INTEGRATIONS = [
@@ -16,6 +16,8 @@ const INTEGRATIONS = [
 ];
 
 export default function IntegrationsList() {
+    const conectadas = INTEGRATIONS.filter((it) => it.active).length;
+
     return (
         <AppLayout>
             <SettingsLayout navKey="configuracion" title="Integraciones">
@@ -24,18 +26,27 @@ export default function IntegrationsList() {
                         icon={<Puzzle />}
                         title="Integraciones"
                         subtitle="Conecta C-Guard Pro con tus herramientas de nómina y contabilidad."
+                        badges={
+                            <>
+                                <StatusBadge tone={conectadas ? "ok" : "neutral"}>
+                                    {conectadas} conectada{conectadas === 1 ? "" : "s"}
+                                </StatusBadge>
+                                <StatusBadge tone="neutral" dot={false}>
+                                    {INTEGRATIONS.length} disponibles
+                                </StatusBadge>
+                            </>
+                        }
                     />
 
-                    <Section>
-                        <p className="text-sm text-muted-foreground">
-                            Configure integraciones para ahorrar tiempo en la gestión de usuarios y exportación de
-                            nómina. Explore nuestras integraciones para ver lo que está disponible o gestione sus
-                            integraciones existentes a continuación. Siempre estamos trabajando en agregar nuevas
-                            integraciones, así que vuelva de vez en cuando.
+                    <Section title="Cómo funcionan" icon={<Info />}>
+                        <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+                            Al conectar una herramienta de nómina o contabilidad, las horas trabajadas y los datos del
+                            personal viajan solos y dejas de exportarlos a mano. Elige la que usa tu empresa para ver
+                            sus requisitos y activarla.
                         </p>
                     </Section>
 
-                    <Stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    <Stagger className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                         {INTEGRATIONS.map((it) => (
                             <IntegrationCard
                                 key={`${it.title}-${it.subtitle}`}

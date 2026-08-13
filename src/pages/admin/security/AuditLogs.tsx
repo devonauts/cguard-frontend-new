@@ -1,24 +1,21 @@
 import { useEffect, useState } from "react";
-import { ShieldCheck, LogIn, LogOut, Smartphone, AlertTriangle, RefreshCw, Search } from "lucide-react";
+import { ShieldCheck, AlertTriangle, RefreshCw, Inbox } from "lucide-react";
 import AppLayout from "@/layouts/app-layout";
-import { PageContainer, PageHeader, Section } from "@/components/kit";
+import { Button } from "@/components/ui/button";
+import {
+  PageContainer, PageHeader, Section, Toolbar, StatusBadge, EmptyState,
+} from "@/components/kit";
 import { ApiService } from "@/services/api/apiService";
+import {
+  AuditRow as AuditTr, AuditSearch, AuditSkeleton, AuditTable, SeverityRail,
+  fmtStamp, metaFor,
+} from "./shared";
 
 type AuditRow = {
   id: string; event: string; outcome?: string | null; email?: string | null;
   ip?: string | null; userAgent?: string | null; deviceId?: string | null;
   platform?: string | null; detail?: string | null; at: string; userId?: string | null;
 };
-
-const EVENT_META: Record<string, { label: string; icon: JSX.Element; color: string }> = {
-  login: { label: "Inicio de sesión", icon: <LogIn className="size-3.5" />, color: "#22c55e" },
-  login_failed: { label: "Inicio fallido", icon: <AlertTriangle className="size-3.5" />, color: "#ef4444" },
-  logout: { label: "Cierre de sesión", icon: <LogOut className="size-3.5" />, color: "#64748b" },
-  device_registered: { label: "Dispositivo registrado", icon: <Smartphone className="size-3.5" />, color: "#0ea5e9" },
-  device_evicted: { label: "Dispositivo retirado", icon: <Smartphone className="size-3.5" />, color: "#f59e0b" },
-};
-
-const fmt = (d?: string) => { try { return new Date(d as string).toLocaleString(undefined, { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit", second: "2-digit" }); } catch { return ""; } };
 
 export default function AuditLogs() {
   const [rows, setRows] = useState<AuditRow[]>([]);
@@ -43,6 +40,9 @@ export default function AuditLogs() {
     return blob.includes(q.toLowerCase());
   });
 
+  // Un fallo de acceso es lo que se busca aquí: se cuenta aparte.
+  const fallidos = filtered.filter((r) => r.event === "login_failed").length;
+
   return (
     <AppLayout>
       <PageContainer width="wide">
@@ -50,68 +50,88 @@ export default function AuditLogs() {
           icon={<ShieldCheck />}
           title="Registro de seguridad"
           subtitle="Inicios y cierres de sesión, intentos fallidos y eventos de dispositivos."
-          actions={
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar…"
-                  className="h-9 rounded-lg border border-input bg-background pl-8 pr-3 text-sm focus:border-primary focus:outline-none" />
-              </div>
-              <button onClick={load} className="grid h-9 w-9 place-items-center rounded-lg border border-input text-muted-foreground hover:text-foreground">
-                <RefreshCw className={`size-4 ${loading ? "animate-spin" : ""}`} />
-              </button>
-            </div>
+          badges={
+            !loading && !error ? (
+              <>
+                <StatusBadge tone="neutral" dot={false}>
+                  {filtered.length === 1 ? "1 evento" : `${filtered.length} eventos`}
+                </StatusBadge>
+                {fallidos > 0 && (
+                  <StatusBadge tone="bad">
+                    {fallidos === 1 ? "1 intento fallido" : `${fallidos} intentos fallidos`}
+                  </StatusBadge>
+                )}
+              </>
+            ) : undefined
           }
         />
 
+        <Toolbar>
+          <AuditSearch value={q} onChange={setQ} placeholder="Buscar por usuario, dirección o dispositivo…" />
+          <Button variant="outline" size="icon" className="ml-auto" onClick={load} title="Recargar" aria-label="Recargar">
+
+            <RefreshCw className={`size-4 ${loading ? "animate-spin" : ""}`} />
+          </Button>
+        </Toolbar>
+
         <Section contentClassName="-mx-5 -mb-5">
-          <div className="overflow-x-auto rounded-b-2xl">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-left text-xs text-muted-foreground">
-                  <th className="px-4 py-2">Evento</th>
-                  <th className="px-3 py-2">Usuario</th>
-                  <th className="px-3 py-2">IP</th>
-                  <th className="px-3 py-2">Plataforma</th>
-                  <th className="px-3 py-2">Detalle</th>
-                  <th className="px-3 py-2 text-right">Fecha</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading ? (
-                  <tr><td colSpan={6} className="px-4 py-10 text-center text-muted-foreground">Cargando…</td></tr>
-                ) : error ? (
-                  <tr>
-                    <td colSpan={6} className="px-4 py-10 text-center">
-                      <div className="flex flex-col items-center gap-3 text-muted-foreground">
-                        <AlertTriangle className="size-6 text-destructive" />
-                        <span>No se pudo cargar el registro de seguridad.</span>
-                        <button onClick={load} className="inline-flex items-center gap-1.5 rounded-lg border border-input px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted">
-                          <RefreshCw className="size-4" /> Reintentar
-                        </button>
-                      </div>
+          {loading ? (
+            <AuditSkeleton />
+          ) : error ? (
+            <div className="p-6">
+              <EmptyState
+                className="border-0"
+                icon={<AlertTriangle />}
+                title="No se pudo cargar el registro de seguridad"
+                description="Vuelve a intentarlo en unos segundos."
+                action={
+                  <Button variant="outline" className="gap-2" onClick={load}>
+                    <RefreshCw className="size-4" /> Reintentar
+                  </Button>
+                }
+              />
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="p-6">
+              <EmptyState
+                className="border-0"
+                icon={<Inbox />}
+                title="Sin registros"
+                description={q.trim() ? `Ningún evento coincide con “${q}”.` : "Todavía no hay eventos de seguridad."}
+              />
+            </div>
+          ) : (
+            <AuditTable
+              flush
+              head={
+                <>
+                  <th className="px-4 py-3">Evento</th>
+                  <th className="px-3 py-3">Usuario</th>
+                  <th className="px-3 py-3">Dirección</th>
+                  <th className="px-3 py-3">Plataforma</th>
+                  <th className="px-3 py-3">Detalle</th>
+                  <th className="px-3 py-3 text-right">Fecha</th>
+                </>
+              }
+            >
+              {filtered.map((r) => {
+                const m = metaFor(r.event);
+                return (
+                  <AuditTr key={r.id} tone={m.tone}>
+                    <td className="relative px-4 py-2.5">
+                      <SeverityRail tone={m.tone} />
+                      <StatusBadge tone={m.tone} dot={false}>{m.icon}{m.label}</StatusBadge>
                     </td>
-                  </tr>
-                ) : filtered.length === 0 ? (
-                  <tr><td colSpan={6} className="px-4 py-10 text-center text-muted-foreground">Sin registros.</td></tr>
-                ) : filtered.map((r) => {
-                  const m = EVENT_META[r.event] || { label: r.event, icon: <ShieldCheck className="size-3.5" />, color: "#64748b" };
-                  return (
-                    <tr key={r.id} className="border-b border-border/50">
-                      <td className="px-4 py-2">
-                        <span className="inline-flex items-center gap-1.5 font-medium" style={{ color: m.color }}>{m.icon}{m.label}</span>
-                      </td>
-                      <td className="px-3 py-2 text-muted-foreground">{r.email || "—"}</td>
-                      <td className="px-3 py-2 font-mono text-xs text-muted-foreground">{r.ip || "—"}</td>
-                      <td className="px-3 py-2 text-muted-foreground">{r.platform || "—"}</td>
-                      <td className="px-3 py-2 text-xs text-muted-foreground" title={r.detail || ""}>{(r.detail || "").slice(0, 60)}</td>
-                      <td className="px-3 py-2 text-right text-xs text-muted-foreground">{fmt(r.at)}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                    <td className="px-3 py-2.5" style={{ color: "var(--ink-soft)" }}>{r.email || "—"}</td>
+                    <td className="px-3 py-2.5 font-mono text-xs" style={{ color: "var(--ink-soft)" }}>{r.ip || "—"}</td>
+                    <td className="px-3 py-2.5" style={{ color: "var(--ink-soft)" }}>{r.platform || "—"}</td>
+                    <td className="px-3 py-2.5 text-xs" style={{ color: "var(--ink-faint)" }} title={r.detail || ""}>{(r.detail || "").slice(0, 60)}</td>
+                    <td className="px-3 py-2.5 text-right text-xs tabular-nums" style={{ color: "var(--ink-faint)" }}>{fmtStamp(r.at)}</td>
+                  </AuditTr>
+                );
+              })}
+            </AuditTable>
+          )}
         </Section>
       </PageContainer>
     </AppLayout>

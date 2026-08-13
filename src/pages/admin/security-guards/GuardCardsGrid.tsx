@@ -1,9 +1,12 @@
 /**
- * Vista de tarjetas de vigilantes (toggle Cards ⇄ Lista en SecurityGuardsPage),
- * al mismo estilo que las tarjetas de clientes. Cada tarjeta: avatar (inicial con
- * color estable), nombre → detalle, estado, correo/teléfono y su asignación
- * (estación). El menú de acciones se inyecta desde la página (mismos handlers que
- * la tabla) para no duplicar la lógica.
+ * Vista de tarjetas de vigilantes (conmutador Tarjetas ⇄ Lista en
+ * SecurityGuardsPage), al mismo estilo que las tarjetas de clientes. Cada
+ * tarjeta: avatar de cristal, nombre → detalle, estado, correo/teléfono y su
+ * asignación (estación). El menú de acciones se inyecta desde la página (mismos
+ * handlers que la tabla) para no duplicar la lógica.
+ *
+ * Las tarjetas se repiten: llevan `glass-flat` (mismo aspecto, sin desenfoque),
+ * nunca `glass` — una rejilla con desenfoque por tarjeta tumba el desplazamiento.
  */
 import { EllipsisVertical, Mail, Phone, MapPin, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -49,17 +52,10 @@ export interface GuardRow {
     raw?: GuardCardRaw;
 }
 
-const HUES = [28, 205, 150, 265, 340, 95, 180, 12];
-function hueFor(name: string): number {
-    let h = 0;
-    for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
-    return HUES[h % HUES.length];
-}
-
-const STATUS_TONE: Record<string, "green" | "orange" | "red" | "slate"> = {
-    Activo: "green",
-    Pendiente: "orange",
-    Archivado: "slate",
+const STATUS_TONE: Record<string, "ok" | "warn" | "bad" | "neutral"> = {
+    Activo: "ok",
+    Pendiente: "warn",
+    Archivado: "neutral",
 };
 
 export default function GuardCardsGrid({
@@ -92,7 +88,6 @@ export default function GuardCardsGrid({
         <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {guards.map((g, i) => {
                 const name = g.name || "—";
-                const hue = hueFor(name);
                 const userId = g.raw?.guard?.id || g.raw?.guardId || g.raw?.userId || "";
                 const station = stationByUserId[userId] || null;
                 const pi = g.raw?.profileImage;
@@ -103,7 +98,7 @@ export default function GuardCardsGrid({
                         : (pi?.downloadUrl || pi?.publicUrl || null);
                 const photo = photoFromPi || g.raw?.photoUrl || null;
                 const acts = actions(g);
-                const tone = STATUS_TONE[g.status ?? ""] || "slate";
+                const tone = STATUS_TONE[g.status ?? ""] || "neutral";
                 const realId = g.raw?.id || g.id;
                 const rating = ratings?.[realId];
                 return (
@@ -113,7 +108,7 @@ export default function GuardCardsGrid({
                         tabIndex={0}
                         onClick={() => onOpen(g)}
                         onKeyDown={(e) => { if (e.key === "Enter") onOpen(g); }}
-                        className="group relative flex cursor-pointer flex-col rounded-2xl border bg-card p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md animate-in fade-in slide-in-from-bottom-2"
+                        className="glass-flat glass-hover cg-focus group relative flex cursor-pointer flex-col p-4 animate-in fade-in slide-in-from-bottom-2"
                         style={{ animationDelay: `${Math.min(i, 12) * 30}ms`, animationFillMode: "backwards" }}
                     >
                         <div className="flex items-start gap-3">
@@ -121,17 +116,23 @@ export default function GuardCardsGrid({
                                 <Checkbox checked={selectedIds.includes(g.id)} onCheckedChange={(v) => onSelect(g.id, Boolean(v))} aria-label={`Seleccionar ${name}`} />
                             </div>
                             {photo ? (
-                                <img src={photo} alt={name} loading="lazy" className="h-12 w-12 shrink-0 rounded-full border object-cover bg-muted" />
+                                <img
+                                    src={photo}
+                                    alt={name}
+                                    loading="lazy"
+                                    className="h-12 w-12 shrink-0 rounded-full border object-cover"
+                                    style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}
+                                />
                             ) : (
                                 <div
-                                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-lg font-bold"
-                                    style={{ backgroundColor: `hsl(${hue} 70% 92%)`, color: `hsl(${hue} 60% 32%)` }}
+                                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border text-lg font-bold"
+                                    style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }}
                                 >
                                     {name.charAt(0).toUpperCase()}
                                 </div>
                             )}
                             <div className="min-w-0 flex-1">
-                                <p className="truncate font-semibold leading-tight group-hover:text-primary">{name}</p>
+                                <p className="truncate font-semibold leading-tight transition-colors group-hover:[color:var(--brand-text)]">{name}</p>
                                 <div className="mt-1 flex flex-wrap items-center gap-1.5">
                                     <StatusBadge tone={tone}>{g.status}</StatusBadge>
                                     {rating && (
@@ -161,14 +162,17 @@ export default function GuardCardsGrid({
                             )}
                         </div>
 
-                        <div className="mt-3 space-y-1 text-sm text-muted-foreground">
+                        <div className="mt-3 space-y-1 text-sm" style={{ color: 'var(--ink-soft)' }}>
                             {g.email && <p className="flex items-center gap-1.5 truncate"><Mail className="h-3.5 w-3.5 shrink-0" /><span className="truncate">{g.email}</span></p>}
                             {g.phone && <p className="flex items-center gap-1.5 truncate"><Phone className="h-3.5 w-3.5 shrink-0" /><span className="truncate">{g.phone}</span></p>}
                         </div>
 
-                        <div className="mt-3 flex items-center gap-1.5 border-t pt-3 text-sm text-muted-foreground">
-                            <MapPin className="h-4 w-4 shrink-0 text-primary" />
-                            {station ? <span className="truncate text-foreground">{station}</span> : <span>Sin asignación</span>}
+                        <div
+                            className="mt-3 flex items-center gap-1.5 border-t pt-3 text-sm"
+                            style={{ borderColor: 'var(--hairline)', color: 'var(--ink-soft)' }}
+                        >
+                            <MapPin className="brand-text h-4 w-4 shrink-0" />
+                            {station ? <span className="truncate" style={{ color: 'var(--ink)' }}>{station}</span> : <span>Sin asignación</span>}
                         </div>
                     </div>
                 );

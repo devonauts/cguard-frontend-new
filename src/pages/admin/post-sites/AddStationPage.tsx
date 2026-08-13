@@ -7,11 +7,11 @@ import { ChevronLeft, Loader2, Sun, Moon, Clock, SlidersHorizontal, ShieldPlus }
 import PostSiteLayout from '@/layouts/PostSiteLayout';
 import { postSiteService, setTenantId as setGlobalTenantId } from '@/lib/api/postSiteService';
 import { ApiService } from '@/services/api/apiService';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import StationGeofencePolygon, { type PolyPoint } from '@/components/GoogleMap/StationGeofencePolygon';
 import RotationStyleSelect from '@/components/schedule/RotationStyleSelect';
 import { PageContainer, PageHeader } from '@/components/kit';
+import { FIELD_CLS_LG } from '@/pages/admin/clientes/components/_shared/tab-kit';
 
 // Mirrors the staffing model used in the Stations tab: one jornada = 1 fijo.
 function jornadaType(start?: string, end?: string): 'diurno' | 'nocturno' | null {
@@ -55,7 +55,8 @@ const ALL_DAYS = ['lun', 'mar', 'mie', 'jue', 'vie', 'sab', 'dom'];
 interface Jornada { tipo: string; startTime: string; endTime: string; guardsCount: string; days: string[] }
 
 const TURNO_OPTIONS: {
-  key: TurnoType; label: string; sub: string; start: string; end: string; guards: number; Icon: React.ComponentType<{ className?: string }>;
+  key: TurnoType; label: string; sub: string; start: string; end: string; guards: number;
+  Icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
 }[] = [
   { key: 'diurno',   label: '12h Diurno',     sub: '07:00 – 19:00',     start: '07:00', end: '19:00', guards: 1, Icon: Sun },
   { key: 'nocturno', label: '12h Nocturno',   sub: '19:00 – 07:00',     start: '19:00', end: '07:00', guards: 1, Icon: Moon },
@@ -282,8 +283,6 @@ export default function AddStationPage() {
     }
   };
 
-  const inputCls =
-    'w-full px-3 py-2 border border-input rounded-md text-sm text-foreground bg-background focus:outline-none focus:ring-2 focus:ring-primary';
 
   return (
     <PostSiteLayout
@@ -292,7 +291,7 @@ export default function AddStationPage() {
     >
       <div className="p-4">
         <PageContainer width="narrow">
-        <Link to={stationsUrl} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+        <Link to={stationsUrl} className="cg-focus inline-flex items-center gap-1 rounded text-sm" style={{ color: 'var(--ink-soft)' }}>
           <ChevronLeft className="h-4 w-4" />
           {t('postSites.stations.backToStations', 'Estaciones')}
         </Link>
@@ -304,14 +303,14 @@ export default function AddStationPage() {
 
         {loadingSite && !site ? (
           <div className="flex items-center justify-center py-16">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            <Loader2 className="h-6 w-6 animate-spin" style={{ color: 'var(--brand-text)' }} />
           </div>
         ) : (
-          <Card>
-            <CardContent className="space-y-6 p-6">
+          <div className="glass">
+            <div className="space-y-6 p-6">
               {/* Name */}
               <div>
-                <label className="mb-2 block text-sm font-medium text-foreground">
+                <label className="mb-2 block text-sm font-medium">
                   {t('postSites.stations.form.name', 'Nombre *')}
                 </label>
                 <input
@@ -319,16 +318,16 @@ export default function AddStationPage() {
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                   placeholder={t('postSites.stations.placeholderName', 'Nombre de la estación')}
-                  className={inputCls}
+                  className={FIELD_CLS_LG}
                   autoFocus
                 />
               </div>
 
               {/* Nickname / nominativo — private to operations */}
               <div>
-                <label className="mb-2 flex items-center gap-2 text-sm font-medium text-foreground">
+                <label className="mb-2 flex items-center gap-2 text-sm font-medium">
                   {t('postSites.stations.form.nickname', 'Nominativo')}
-                  <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-normal uppercase tracking-wide text-muted-foreground">
+                  <span className="rounded px-1.5 py-0.5 text-[10px] font-normal uppercase tracking-wide" style={{ background: 'var(--glass-sunken)', color: 'var(--ink-soft)' }}>
                     {t('common.private', 'Privado')}
                   </span>
                 </label>
@@ -337,16 +336,16 @@ export default function AddStationPage() {
                   value={nickname}
                   onChange={(e) => setNickname(e.target.value)}
                   placeholder={t('postSites.stations.placeholderNickname', 'Apodo / nominativo interno')}
-                  className={inputCls}
+                  className={FIELD_CLS_LG}
                 />
-                <p className="mt-1 text-xs text-muted-foreground">
+                <p className="mt-1 text-xs" style={{ color: 'var(--ink-soft)' }}>
                   {t('postSites.stations.form.nicknameHint', 'Solo visible para operaciones del tenant. El cliente no lo ve.')}
                 </p>
               </div>
 
               {/* Turno (horario) — same setup as the station's horario */}
               <div>
-                <label className="mb-2 block text-sm font-medium text-foreground">
+                <label className="mb-2 block text-sm font-medium">
                   {t('postSites.stations.form.schedule', 'Turno (horario) *')}
                 </label>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -356,17 +355,19 @@ export default function AddStationPage() {
                       <button
                         key={key}
                         type="button"
+                        aria-pressed={selected}
                         onClick={() => selectTurno(key)}
-                        className={`flex flex-col items-start gap-2 rounded-xl border p-3 text-left transition-all ${
+                        className="cg-focus flex flex-col items-start gap-2 rounded-xl border p-3 text-left transition-all"
+                        style={
                           selected
-                            ? 'border-primary bg-primary/10 ring-1 ring-primary/30'
-                            : 'border-input bg-card hover:border-primary/40'
-                        }`}
+                            ? { background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', boxShadow: '0 0 22px -10px var(--brand-glow)' }
+                            : { background: 'var(--glass-sunken)', borderColor: 'var(--hairline)' }
+                        }
                       >
-                        <Icon className={`h-5 w-5 ${selected ? 'text-primary' : 'text-muted-foreground'}`} />
+                        <Icon className="h-5 w-5" style={{ color: selected ? 'var(--brand-text)' : 'var(--ink-faint)' }} />
                         <div>
-                          <p className={`text-sm font-semibold ${selected ? 'text-primary' : 'text-foreground'}`}>{label}</p>
-                          <p className="text-[11px] text-muted-foreground">{sub}</p>
+                          <p className="text-sm font-semibold" style={selected ? { color: 'var(--brand-text)' } : undefined}>{label}</p>
+                          <p className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>{sub}</p>
                         </div>
                       </button>
                     );
@@ -376,7 +377,7 @@ export default function AddStationPage() {
 
               {/* Patrón de rotación — chosen here at the station; assigned guards inherit it. */}
               {turnoType && (
-                <div className="rounded-xl border border-input bg-card p-3">
+                <div className="glass-sunken p-3">
                   <RotationStyleSelect scheduleType={turnoToScheduleType(turnoType)} value={rotationStyleId} onChange={setRotationStyleId} onStyleChange={setRotStyle} />
                 </div>
               )}
@@ -385,17 +386,17 @@ export default function AddStationPage() {
               {turnoType && turnoType !== '24h' && (
                 <div className={`grid grid-cols-1 gap-4 ${turnoType === 'custom' ? 'sm:grid-cols-2 lg:grid-cols-4' : 'sm:grid-cols-3'}`}>
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-foreground">{t('postSites.stations.form.startTime', 'Inicio')}</label>
-                    <input type="time" value={startingTimeInDay} onChange={(e) => setStartingTimeInDay(e.target.value)} className={inputCls} />
+                    <label className="mb-2 block text-sm font-medium">{t('postSites.stations.form.startTime', 'Inicio')}</label>
+                    <input type="time" value={startingTimeInDay} onChange={(e) => setStartingTimeInDay(e.target.value)} className={FIELD_CLS_LG} />
                   </div>
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-foreground">{t('postSites.stations.form.endTime', 'Fin')}</label>
-                    <input type="time" value={finishTimeInDay} onChange={(e) => setFinishTimeInDay(e.target.value)} className={inputCls} />
+                    <label className="mb-2 block text-sm font-medium">{t('postSites.stations.form.endTime', 'Fin')}</label>
+                    <input type="time" value={finishTimeInDay} onChange={(e) => setFinishTimeInDay(e.target.value)} className={FIELD_CLS_LG} />
                   </div>
                   {turnoType === 'custom' && (
                     <div>
-                      <label className="mb-2 block text-sm font-medium text-foreground">{t('postSites.stations.form.blockHours', 'Turno por vigilante')}</label>
-                      <select value={blockHours} onChange={(e) => setBlockHours(e.target.value)} className={inputCls}>
+                      <label className="mb-2 block text-sm font-medium">{t('postSites.stations.form.blockHours', 'Turno por vigilante')}</label>
+                      <select value={blockHours} onChange={(e) => setBlockHours(e.target.value)} className={FIELD_CLS_LG}>
                         <option value="">{t('postSites.stations.form.wholeWindow', 'Toda la jornada')}</option>
                         {[4, 6, 8, 12, 24].map((h) => {
                           const fits = customWindowMin > 0 && customWindowMin % (h * 60) === 0;
@@ -411,21 +412,21 @@ export default function AddStationPage() {
                   )}
                   {turnoType === 'custom' && (
                     <div>
-                      <label className="mb-2 block text-sm font-medium text-foreground">{t('postSites.stations.form.restCoverage', 'Cobertura de descansos')}</label>
-                      <select value={restCoverage} onChange={(e) => setRestCoverage(e.target.value as any)} className={inputCls}>
+                      <label className="mb-2 block text-sm font-medium">{t('postSites.stations.form.restCoverage', 'Cobertura de descansos')}</label>
+                      <select value={restCoverage} onChange={(e) => setRestCoverage(e.target.value as any)} className={FIELD_CLS_LG}>
                         <option value="sacafranco">{t('postSites.stations.form.withSf', 'Sacafranco cubre los descansos')}</option>
                         <option value="alternate">{t('postSites.stations.form.alternate', 'Alternancia entre fijos (sin sacafranco)')}</option>
                       </select>
                     </div>
                   )}
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-foreground">{t('postSites.stations.form.guards', 'Vigilantes')}</label>
-                    <div className="flex h-[42px] items-center rounded-md border border-input bg-muted/40 px-3 text-sm">
-                      <span className="font-semibold text-foreground">{requiredGuards} fijo{requiredGuards > 1 ? 's' : ''}</span>
+                    <label className="mb-2 block text-sm font-medium">{t('postSites.stations.form.guards', 'Vigilantes')}</label>
+                    <div className="glass-sunken flex h-[42px] items-center px-3 text-sm">
+                      <span className="font-semibold">{requiredGuards} fijo{requiredGuards > 1 ? 's' : ''}</span>
                       {turnoType === 'custom' && customWindowMin > 0 ? (
-                        <span className="ml-auto text-[11px] text-muted-foreground">{customWindowMin / 60}h de cobertura</span>
+                        <span className="ml-auto text-[11px]" style={{ color: 'var(--ink-soft)' }}>{customWindowMin / 60}h de cobertura</span>
                       ) : jornadaType(startingTimeInDay, finishTimeInDay) ? (
-                        <span className="ml-auto text-[11px] capitalize text-muted-foreground">{jornadaType(startingTimeInDay, finishTimeInDay)}</span>
+                        <span className="ml-auto text-[11px] capitalize" style={{ color: 'var(--ink-soft)' }}>{jornadaType(startingTimeInDay, finishTimeInDay)}</span>
                       ) : null}
                     </div>
                   </div>
@@ -434,21 +435,26 @@ export default function AddStationPage() {
 
               {/* Custom breakdown: blocks × alternation */}
               {turnoType === 'custom' && restCoverage === 'alternate' && rotStyle && (
-                <p className={`rounded-md p-3 text-xs ${alternateOk ? 'bg-muted/30 text-muted-foreground' : 'bg-destructive/10 text-destructive'}`}>
+                <p
+                  className="rounded-md p-3 text-xs"
+                  style={alternateOk
+                    ? { background: 'var(--glass-sunken)', color: 'var(--ink-soft)' }
+                    : { background: 'color-mix(in oklab, var(--bad) 12%, transparent)', color: 'var(--bad-text)' }}
+                >
                   {alternateOk
                     ? <>Patrón <strong>{rotWork}-{rotCycle - rotWork}</strong>: cada bloque lo comparten <strong>{guardsPerBlock} fijos alternando</strong> (uno trabaja mientras el otro descansa) — <strong>sin sacafranco</strong>. Total: {requiredGuards} fijo{requiredGuards > 1 ? 's' : ''}.</>
                     : <>El patrón {rotWork}-{rotCycle - rotWork} no permite alternancia exacta: el ciclo ({rotCycle}) debe ser múltiplo de los días de trabajo ({rotWork}). Usa 1-1, 2-2, 3-3…</>}
                 </p>
               )}
               {turnoType === 'custom' && customBlocksOk && customBlockCount > 1 && (
-                <div className="rounded-xl border border-input bg-muted/30 p-4 text-sm">
-                  <p className="mb-2 font-medium text-foreground">
+                <div className="glass-sunken p-4 text-sm">
+                  <p className="mb-2 font-medium">
                     Cobertura {customWindowMin / 60}h — {customBlockCount} bloques de {Number(blockHours)}h{guardsPerBlock > 1 ? ` × ${guardsPerBlock} fijos alternando` : ''}
                   </p>
-                  <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
+                  <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs" style={{ color: 'var(--ink-soft)' }}>
                     {Array.from({ length: customBlockCount }, (_, i) => (
                       <span key={i} className="inline-flex items-center gap-1.5">
-                        <Clock className="h-3.5 w-3.5 text-primary" />
+                        <Clock className="h-3.5 w-3.5" style={{ color: 'var(--brand-text)' }} />
                         Fijo {i + 1} · {toHHMM(toMin(startingTimeInDay) + i * customBlockMin)} – {toHHMM(toMin(startingTimeInDay) + (i + 1) * customBlockMin)}
                       </span>
                     ))}
@@ -458,27 +464,27 @@ export default function AddStationPage() {
 
               {/* 24h is a fixed split into two jornadas */}
               {turnoType === '24h' && (
-                <div className="rounded-xl border border-input bg-muted/30 p-4 text-sm">
-                  <p className="mb-2 font-medium text-foreground">Cobertura 24 horas — dos jornadas</p>
-                  <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
-                    <span className="inline-flex items-center gap-1.5"><Sun className="h-3.5 w-3.5 text-primary" /> Diurno · 07:00 – 19:00</span>
-                    <span className="inline-flex items-center gap-1.5"><Moon className="h-3.5 w-3.5 text-primary" /> Nocturno · 19:00 – 07:00</span>
-                    <span className="ml-auto font-semibold text-foreground">2 fijos</span>
+                <div className="glass-sunken p-4 text-sm">
+                  <p className="mb-2 font-medium">Cobertura 24 horas — dos jornadas</p>
+                  <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs" style={{ color: 'var(--ink-soft)' }}>
+                    <span className="inline-flex items-center gap-1.5"><Sun className="h-3.5 w-3.5" style={{ color: 'var(--warn-text)' }} /> Diurno · 07:00 – 19:00</span>
+                    <span className="inline-flex items-center gap-1.5"><Moon className="h-3.5 w-3.5" style={{ color: 'var(--info-text)' }} /> Nocturno · 19:00 – 07:00</span>
+                    <span className="ml-auto font-semibold">2 fijos</span>
                   </div>
                 </div>
               )}
 
               {turnoType && (turnoType !== 'custom' || restCoverage !== 'alternate') && (
-                <p className="rounded-md bg-muted/30 p-3 text-xs text-muted-foreground">
-                  <strong className="text-foreground/80">{requiredGuards} vigilante{requiredGuards > 1 ? 's' : ''} fijo{requiredGuards > 1 ? 's' : ''}</strong> en el puesto +{' '}
-                  <strong className="text-foreground/80">1 sacafranco</strong> que cubre los días de descanso. El sacafranco salta entre
+                <p className="rounded-md p-3 text-xs" style={{ background: 'var(--glass-sunken)', color: 'var(--ink-soft)' }}>
+                  <strong style={{ color: 'var(--ink)' }}>{requiredGuards} vigilante{requiredGuards > 1 ? 's' : ''} fijo{requiredGuards > 1 ? 's' : ''}</strong> en el puesto +{' '}
+                  <strong style={{ color: 'var(--ink)' }}>1 sacafranco</strong> que cubre los días de descanso. El sacafranco salta entre
                   puestos — no pertenece a un solo puesto, por eso no se cuenta en las vigilantes requeridas.
                 </p>
               )}
 
               {/* Geofence radius */}
               <div>
-                <label className="mb-2 block text-sm font-medium text-foreground">
+                <label className="mb-2 block text-sm font-medium">
                   {t('postSites.stations.form.geofenceRadius', 'Radio geovalla (metros)')}
                 </label>
                 <input
@@ -488,9 +494,9 @@ export default function AddStationPage() {
                   value={geofenceRadius}
                   onChange={(e) => setGeofenceRadius(e.target.value)}
                   placeholder="100"
-                  className={inputCls}
+                  className={FIELD_CLS_LG}
                 />
-                <p className="mt-1 text-xs text-muted-foreground">
+                <p className="mt-1 text-xs" style={{ color: 'var(--ink-soft)' }}>
                   {t('postSites.stations.form.geofenceHint', 'Distancia máxima para marcar entrada')}
                 </p>
               </div>
@@ -498,7 +504,7 @@ export default function AddStationPage() {
               {/* Clock-in tolerance windows */}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-foreground">
+                  <label className="mb-2 block text-sm font-medium">
                     {t('postSites.stations.form.clockInEarlyBuffer', 'Tolerancia de entrada anticipada (min)')}
                   </label>
                   <input
@@ -508,11 +514,11 @@ export default function AddStationPage() {
                     value={clockInEarlyBufferMin}
                     onChange={(e) => setClockInEarlyBufferMin(e.target.value)}
                     placeholder={t('common.default', 'Por defecto')}
-                    className={inputCls}
+                    className={FIELD_CLS_LG}
                   />
                 </div>
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-foreground">
+                  <label className="mb-2 block text-sm font-medium">
                     {t('postSites.stations.form.clockInLateGrace', 'Tolerancia de entrada tardía (min)')}
                   </label>
                   <input
@@ -522,18 +528,18 @@ export default function AddStationPage() {
                     value={clockInLateGraceMin}
                     onChange={(e) => setClockInLateGraceMin(e.target.value)}
                     placeholder={t('common.default', 'Por defecto')}
-                    className={inputCls}
+                    className={FIELD_CLS_LG}
                   />
                 </div>
-                <p className="text-xs text-muted-foreground sm:col-span-2">
+                <p className="text-xs sm:col-span-2" style={{ color: 'var(--ink-soft)' }}>
                   {t('postSites.stations.form.clockInBufferHint', 'Minutos antes/después de la hora de inicio en que el vigilante puede marcar entrada. Vacío = usar el valor por defecto de la empresa.')}
                 </p>
               </div>
 
               {/* Geofence polygon — now has full page width + height to work with */}
               <div>
-                <label className="mb-2 block text-sm font-medium text-foreground">Geocerca poligonal (opcional)</label>
-                <p className="mb-2 text-xs text-muted-foreground">
+                <label className="mb-2 block text-sm font-medium">Geocerca poligonal (opcional)</label>
+                <p className="mb-2 text-xs" style={{ color: 'var(--ink-soft)' }}>
                   Si defines un polígono (3+ puntos), se usa en lugar del radio para validar la marcación.
                 </p>
                 <StationGeofencePolygon
@@ -546,23 +552,23 @@ export default function AddStationPage() {
 
               {/* Description */}
               <div>
-                <label className="mb-2 block text-sm font-medium text-foreground">
+                <label className="mb-2 block text-sm font-medium">
                   {t('postSites.stations.form.description', 'Descripción')}
                 </label>
                 <textarea
                   value={newDescription}
                   onChange={(e) => setNewDescription(e.target.value)}
                   placeholder={t('postSites.stations.form.descriptionPlaceholder', 'Descripción opcional')}
-                  className={`${inputCls} resize-none`}
+                  className={`${FIELD_CLS_LG} resize-none`}
                   rows={4}
                 />
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         )}
 
         {/* Sticky action bar */}
-        <div className="sticky bottom-0 mt-4 flex items-center justify-end gap-3 rounded-md border border-border bg-card/95 p-3 backdrop-blur">
+        <div className="glass sticky bottom-0 mt-4 flex items-center justify-end gap-3 p-3">
           <Button variant="outline" onClick={() => navigate(stationsUrl)} disabled={saving}>
             {t('actions.cancel', 'Cancelar')}
           </Button>

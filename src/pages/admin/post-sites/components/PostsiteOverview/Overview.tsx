@@ -1,7 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { clientDisplayName } from '@/lib/clientName';
 import { useTranslation } from "react-i18next";
-import { Link } from 'react-router-dom';
 import IncidentMap from "@/components/IncidentMap/IncidentMap";
 import { useState } from 'react';
 import { ApiService } from '@/services/api/apiService';
@@ -12,11 +11,7 @@ import { Button } from "@/components/ui/button";
 import { ServiceTypeBadge } from "@/components/post-sites/ServiceTypeBadge";
 import { StatCard, EmptyState, Stagger, Section } from '@/components/kit';
 import useScrollToTopOnMount from '@/hooks/useScrollToTopOnMount';
-import {
-  Users, ShieldCheck, Route, ClipboardCheck, AlertTriangle, Clock,
-  Building2, MapPin, Phone, Mail, Briefcase, Pencil, MapIcon,
-  ExternalLink, Activity, SlidersHorizontal,
-} from 'lucide-react';
+import { Users, ShieldCheck, Route, ClipboardCheck, AlertTriangle, Clock, MapPin, MapIcon, ExternalLink, Activity, SlidersHorizontal } from 'lucide-react';
 import type { PostSite } from '@/types';
 
 interface SiteProp extends PostSite {
@@ -68,12 +63,12 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
   // Each stat: icon + a soft accent colour. Values stay in `foreground` for
   // readability; only the icon chip carries colour.
   const stats = [
-    { id: 'assigned',  label: t('postSites.overview.Stats.guardsAssigned'),    value: assignedCount,  icon: Users,          accent: 'blue' as const },
-    { id: 'onsite',    label: t('postSites.overview.Stats.guardOnSite'),       value: onsiteCount,    icon: ShieldCheck,    accent: 'primary' as const },
-    { id: 'tours',     label: t('postSites.overview.Stats.toursCompleted'),    value: toursCount,     icon: Route,          accent: 'green' as const },
-    { id: 'tasks',     label: t('postSites.overview.Stats.tasksCompleted'),    value: tasksCount,     icon: ClipboardCheck, accent: 'blue' as const },
-    { id: 'incidents', label: t('postSites.overview.Stats.incidentsReported'), value: incidentsCount, icon: AlertTriangle,  accent: 'red' as const },
-    { id: 'hrs',       label: t('postSites.overview.Stats.hoursLogged'),       value: hoursLogged,    icon: Clock,          accent: 'slate' as const },
+    { id: 'assigned',  label: t('postSites.overview.Stats.guardsAssigned'),    value: assignedCount,  icon: Users,          accent: 'info' as const },
+    { id: 'onsite',    label: t('postSites.overview.Stats.guardOnSite'),       value: onsiteCount,    icon: ShieldCheck,    accent: 'brand' as const },
+    { id: 'tours',     label: t('postSites.overview.Stats.toursCompleted'),    value: toursCount,     icon: Route,          accent: 'ok' as const },
+    { id: 'tasks',     label: t('postSites.overview.Stats.tasksCompleted'),    value: tasksCount,     icon: ClipboardCheck, accent: 'info' as const },
+    { id: 'incidents', label: t('postSites.overview.Stats.incidentsReported'), value: incidentsCount, icon: AlertTriangle,  accent: 'bad' as const },
+    { id: 'hrs',       label: t('postSites.overview.Stats.hoursLogged'),       value: hoursLogged,    icon: Clock,          accent: 'neutral' as const },
   ];
 
   useEffect(() => {
@@ -222,10 +217,10 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
       {/* ── Stats ────────────────────────────────────────────────────────── */}
       <div>
         <div className="mb-3 flex items-center gap-2 px-1">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          <h3 className="cg-eyebrow">
             {t('postSites.overview.Stats.title')}
           </h3>
-          <span className="text-xs text-muted-foreground/70">· {t('postSites.overview.last7days', 'últimos 7 días')}</span>
+          <span className="text-xs" style={{ color: 'var(--ink-faint)' }}>· {t('postSites.overview.last7days', 'últimos 7 días')}</span>
         </div>
         <Stagger className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
           {stats.map((s) => {
@@ -243,26 +238,26 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
         icon={<MapIcon />}
         action={address ? (
           <a href={mapsUrl} target="_blank" rel="noreferrer"
-             className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline">
+             className="cg-btn-link cg-focus inline-flex items-center gap-1.5 rounded text-sm hover:underline">
             {t('postSites.overview.Map.openInMaps', 'Abrir en Google Maps')}
             <ExternalLink className="h-3.5 w-3.5" />
           </a>
         ) : undefined}
       >
           {hasCoords ? (
-            <div className="h-80 overflow-hidden rounded-xl border border-border">
+            <div className="h-80 overflow-hidden rounded-xl border" style={{ borderColor: 'var(--hairline)' }}>
               <IncidentMap lat={latNum} lng={lngNum} label={siteName} />
             </div>
           ) : (
-            <div className="flex h-56 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-muted/30 text-center text-muted-foreground">
-              <MapPin className="h-7 w-7 opacity-50" />
-              <p className="text-sm">{t('postSites.overview.Map.noCoords', 'Este sitio no tiene coordenadas configuradas.')}</p>
-              {address ? (
-                <a href={mapsUrl} target="_blank" rel="noreferrer" className="text-sm text-primary hover:underline">
+            <EmptyState
+              icon={<MapPin />}
+              title={t('postSites.overview.Map.noCoords', 'Este sitio no tiene coordenadas configuradas.')}
+              action={address ? (
+                <a href={mapsUrl} target="_blank" rel="noreferrer" className="cg-btn-link cg-focus rounded text-sm hover:underline">
                   {t('postSites.overview.Map.openInMaps', 'Abrir en Google Maps')}
                 </a>
-              ) : null}
-            </div>
+              ) : undefined}
+            />
           )}
       </Section>
 
@@ -288,25 +283,25 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
                 </SheetHeader>
 
                 <div className="mt-4 space-y-4">
-                  <div className="text-sm text-muted-foreground">{t('postSites.overview.FilterHelp', 'Selecciona filtros para la vista.')}</div>
+                  <div className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t('postSites.overview.FilterHelp', 'Selecciona filtros para la vista.')}</div>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
-                      <label className="text-xs text-muted-foreground">{t('postSites.overview.Filter.fromDate', 'From Date')}</label>
-                      <input type="date" className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+                      <label className="cg-eyebrow">{t('postSites.overview.Filter.fromDate', 'Desde')}</label>
+                      <input type="date" className="cg-input cg-focus w-full px-3 py-2 text-sm" />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-xs text-muted-foreground">{t('postSites.overview.Filter.toDate', 'To Date')}</label>
-                      <input type="date" className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+                      <label className="cg-eyebrow">{t('postSites.overview.Filter.toDate', 'Hasta')}</label>
+                      <input type="date" className="cg-input cg-focus w-full px-3 py-2 text-sm" />
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium">{t('postSites.overview.Filter.type', 'Type')}</label>
-                    <div className="mt-2 max-h-60 overflow-auto rounded-md border border-border bg-card p-2">
+                    <label className="text-sm font-medium">{t('postSites.overview.Filter.type', 'Tipo')}</label>
+                    <div className="glass-sunken mt-2 max-h-60 overflow-auto p-2">
                       {typeKeys.map((key) => (
-                        <label key={key} className="flex cursor-pointer items-center gap-3 rounded px-2 py-2 hover:bg-muted/40">
+                        <label key={key} className="flex cursor-pointer items-center gap-3 rounded px-2 py-2">
                           <Checkbox checked={selectedTypes.includes(key)} onCheckedChange={() => toggleType(key)} />
-                          <span className="text-sm text-foreground">{t(`postSites.overview.types.${key}`)}</span>
+                          <span className="text-sm">{t(`postSites.overview.types.${key}`)}</span>
                         </label>
                       ))}
                     </div>

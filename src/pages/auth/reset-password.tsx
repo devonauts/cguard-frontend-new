@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, NavLink, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, CheckCircle2, Smartphone } from "lucide-react";
-import AuthLayout from "@/layouts/auth-layout";
-import { FadeIn } from "@/components/kit";
+import { Eye, EyeOff, CheckCircle2, Smartphone, Lock, ShieldCheck } from "lucide-react";
+import AuthShell, { CAMPO_ICONO, BOTON_PRINCIPAL, Etiqueta } from "./AuthShell";
+import { FadeIn, IconTile } from "@/components/kit";
 import { toast } from "sonner";
 import { AuthService } from "@/services/auth/authService";
 import { useTranslation } from "react-i18next";
@@ -66,78 +66,73 @@ export default function ResetPassword() {
 
   if (doneField) {
     return (
-      <AuthLayout
+      <AuthShell
         variant="field"
+        splash={false}
+        showFeatures={false}
         title={t('auth.reset_done_title', { defaultValue: '¡Contraseña actualizada!' })}
         subtitle={t('auth.reset_done_field_subtitle', { defaultValue: 'Vuelve a la app C-Guard Pro e inicia sesión con tu nueva contraseña.' })}
       >
-        <FadeIn className="flex flex-col items-center text-center gap-5 py-2">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full" style={{ background: "rgba(34,197,94,0.12)" }}>
-            <CheckCircle2 className="h-9 w-9" style={{ color: "#16a34a" }} />
-          </div>
-          <p className="text-sm text-muted-foreground dark:text-muted-foreground max-w-xs">
+        <FadeIn className="flex flex-col items-center gap-5 py-2 text-center">
+          <IconTile tone="ok" size="lg"><CheckCircle2 /></IconTile>
+          <p className="max-w-xs text-sm leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
             {t('auth.reset_done_field_body', { defaultValue: 'Tu contraseña fue restablecida. Abre la app C-Guard Pro en tu teléfono e inicia sesión con tu correo y tu nueva contraseña.' })}
           </p>
-          <a
-            href="cguardpro://login"
-            className="inline-flex w-full items-center justify-center gap-2 rounded-lg py-3 font-semibold text-white"
-            style={{ background: "linear-gradient(135deg, #0C2459 0%, #1a3a7d 100%)" }}
-          >
-            <Smartphone className="h-5 w-5" />
+          <a href="cguardpro://login" className={BOTON_PRINCIPAL}>
+            <Smartphone className="h-4.5 w-4.5" />
             {t('auth.reset_open_app', { defaultValue: 'Abrir la app C-Guard Pro' })}
           </a>
         </FadeIn>
-      </AuthLayout>
+      </AuthShell>
     );
   }
 
   return (
-    <AuthLayout variant={isField ? 'field' : 'admin'} title={t('auth.reset_title_short', { defaultValue: 'Reset password' })}>
-      <FadeIn>
+    <AuthShell
+      variant={isField ? 'field' : 'admin'}
+      showFeatures={false}
+      title={t('auth.reset_title_short', { defaultValue: 'Restablecer contraseña' })}
+      subtitle={isField ? undefined : t('auth.reset_subtitle', { defaultValue: 'Elige una contraseña nueva para entrar de nuevo a tu cuenta.' })}
+    >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="new-password" className="mb-2 block text-sm font-medium text-foreground">
-            {t('auth.new_password_label', { defaultValue: 'New password' })}<span className="text-primary">*</span>
-          </label>
+          <Etiqueta htmlFor="new-password">{t('auth.new_password_label', { defaultValue: 'Nueva contraseña' })}</Etiqueta>
           <div className="relative">
+            <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-4.5 w-4.5 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
             <input
               id="new-password"
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder={t('auth.new_password_placeholder', { defaultValue: 'New password' })}
-              className="w-full h-12 rounded-xl border border-slate-200 bg-card px-4 pr-10 text-foreground transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-white/5 dark:text-white"
+              placeholder={t('auth.new_password_placeholder', { defaultValue: 'Nueva contraseña' })}
+              className={`${CAMPO_ICONO} pr-12`}
               autoComplete="new-password"
               disabled={loading}
             />
             <button
               type="button"
-              aria-label={showPassword ? t('auth.hide_password', { defaultValue: 'Hide password' }) : t('auth.show_password', { defaultValue: 'Show password' })}
+              aria-label={showPassword ? t('auth.hide_password', { defaultValue: 'Ocultar contraseña' }) : t('auth.show_password', { defaultValue: 'Mostrar contraseña' })}
               onClick={() => setShowPassword((s) => !s)}
-              className="absolute right-3 inset-y-0 flex items-center justify-center px-2 text-muted-foreground hover:text-foreground"
+              className="cg-focus absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 transition-colors"
+              style={{ color: 'var(--ink-faint)' }}
               disabled={loading}
             >
-              {showPassword ? (
-                <EyeOff className="h-6 w-6" />
-              ) : (
-                <Eye className="h-6 w-6" />
-              )}
+              {showPassword ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
             </button>
           </div>
         </div>
 
         <div>
-          <label htmlFor="confirm-password" className="mb-2 block text-sm font-medium text-foreground">
-            {t('auth.confirm_password_label', { defaultValue: 'Confirm password' })}<span className="text-primary">*</span>
-          </label>
+          <Etiqueta htmlFor="confirm-password">{t('auth.confirm_password_label', { defaultValue: 'Confirmar contraseña' })}</Etiqueta>
           <div className="relative">
+            <ShieldCheck className="pointer-events-none absolute left-3.5 top-1/2 h-4.5 w-4.5 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
             <input
               id="confirm-password"
               type={showConfirm ? "text" : "password"}
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
-              placeholder={t('auth.confirm_password_placeholder', { defaultValue: 'Confirm password' })}
-              className="w-full h-12 rounded-xl border border-slate-200 bg-card px-4 pr-10 text-foreground transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-white/5 dark:text-white"
+              placeholder={t('auth.confirm_password_placeholder', { defaultValue: 'Confirmar contraseña' })}
+              className={`${CAMPO_ICONO} pr-12`}
               autoComplete="new-password"
               disabled={loading}
             />
@@ -145,35 +140,27 @@ export default function ResetPassword() {
               type="button"
               aria-label={showConfirm ? t('auth.hide_password', { defaultValue: 'Ocultar contraseña' }) : t('auth.show_password', { defaultValue: 'Mostrar contraseña' })}
               onClick={() => setShowConfirm((s) => !s)}
-              className="absolute right-3 inset-y-0 flex items-center justify-center px-2 text-muted-foreground hover:text-foreground"
+              className="cg-focus absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 transition-colors"
+              style={{ color: 'var(--ink-faint)' }}
               disabled={loading}
             >
-              {showConfirm ? (
-                <EyeOff className="h-6 w-6" />
-              ) : (
-                <Eye className="h-6 w-6" />
-              )}
+              {showConfirm ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
             </button>
           </div>
         </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="cg-gradient-brand w-full rounded-lg py-3 font-semibold text-primary-foreground transition-all hover:shadow-lg hover:brightness-[1.04] disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {loading ? t('auth.resetting', { defaultValue: 'Resetting...' }) : t('auth.reset_password', { defaultValue: 'Reset password' })}
+        <button type="submit" disabled={loading} className={BOTON_PRINCIPAL}>
+          {loading ? t('auth.resetting', { defaultValue: 'Restableciendo…' }) : t('auth.reset_password', { defaultValue: 'Restablecer contraseña' })}
         </button>
 
         {!isField && (
-          <div className="flex items-center justify-between text-sm">
-            <NavLink to="/login" className="font-medium text-primary hover:underline">
-              {t('auth.back_to_login', { defaultValue: 'Back to login' })}
+          <div className="pt-1 text-center text-sm">
+            <NavLink to="/login" className="font-semibold hover:underline" style={{ color: 'var(--brand-text)' }}>
+              {t('auth.back_to_login', { defaultValue: 'Volver a iniciar sesión' })}
             </NavLink>
           </div>
         )}
       </form>
-      </FadeIn>
-    </AuthLayout>
+    </AuthShell>
   );
 }

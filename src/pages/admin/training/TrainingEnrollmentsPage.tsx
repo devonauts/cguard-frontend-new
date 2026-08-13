@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import AppLayout from '@/layouts/app-layout';
 import Breadcrumb from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { MeterBar } from '@/components/charts';
 import {
   Sheet,
   SheetContent,
@@ -26,8 +26,9 @@ import {
   type EnrollmentRow,
   type EnrollmentDetail,
 } from '@/lib/api/trainingEnrollmentService';
-import { ENROLLMENT_STATUS_LABELS, ENROLLMENT_STATUS_VARIANT } from './trainingConstants';
-import { PageContainer, PageHeader, Section, StatCard, Stagger } from '@/components/kit';
+import { ENROLLMENT_STATUS_LABELS, ENROLLMENT_STATUS_TONE } from './trainingConstants';
+import { PageContainer, PageHeader, Section, StatCard, Stagger, StatusBadge, EmptyState, SkeletonCards } from '@/components/kit';
+import { DataTable, type Column } from '@/components/table/DataTable';
 
 export default function TrainingEnrollmentsPage() {
   const { courseId } = useParams<{ courseId: string }>();
@@ -88,13 +89,79 @@ export default function TrainingEnrollmentsPage() {
     return (
       <AppLayout>
         <Breadcrumb items={[{ label: 'Panel de control', path: '/dashboard' }, { label: 'Entrenamiento' }]} />
-        <div className="p-8 text-center text-muted-foreground">No tienes permiso para ver el progreso.</div>
+        <PageContainer width="wide" className="p-4 sm:p-6"><EmptyState icon={<Users />} title="Sin acceso" description="No tienes permiso para ver el progreso." /></PageContainer>
       </AppLayout>
     );
   }
 
   const completedCount = rows.filter((r) => r.status === 'completed').length;
   const realEnrollments = rows.filter((r) => r.guardId || r.assignmentType === 'individual');
+
+  /* Las columnas van a `DataTable` en vez de a un `<table>` a mano: es lo que
+     da las cabeceras `cg-eyebrow`, los filos de pelo, el esqueleto de carga y
+     el estado vacío que el resto de tablas del CRM ya tienen. */
+  const enrollmentColumns: Column<EnrollmentRow>[] = [
+    {
+      key: 'guardName',
+      header: 'Vigilante',
+      render: (_v, r) =>
+        r.assignmentType === 'all_guards' && !r.guardId
+          ? <StatusBadge tone="neutral" dot={false}>Todos los vigilantes (plantilla)</StatusBadge>
+          : (r.guardName || '—'),
+    },
+    {
+      key: 'status',
+      header: 'Estado',
+      render: (_v, r) => (
+        <StatusBadge tone={ENROLLMENT_STATUS_TONE[r.status]} dot={false}>
+          {ENROLLMENT_STATUS_LABELS[r.status]}
+        </StatusBadge>
+      ),
+    },
+    {
+      key: 'progressPercentage',
+      header: 'Progreso',
+      render: (_v, r) => (
+        <div className="flex items-center gap-2">
+          <MeterBar className="w-24" height={6} pct={r.progressPercentage ?? 0} ariaLabel="Progreso" />
+          <span className="text-xs tabular-nums" style={{ color: 'var(--ink-soft)' }}>{r.progressPercentage ?? 0}%</span>
+        </div>
+      ),
+    },
+    {
+      key: 'quizPassed',
+      header: 'Cuestionario',
+      render: (_v, r) => (r.quizPassed
+        ? <StatusBadge tone="ok" dot={false}><span className="tabular-nums">Aprobado{r.quizScore != null ? ` (${r.quizScore}%)` : ''}</span></StatusBadge>
+        : <span style={{ color: 'var(--ink-soft)' }}>—</span>),
+    },
+    {
+      key: 'dueDate',
+      header: 'Fecha límite',
+      render: (_v, r) => (
+        <span className="tabular-nums" style={{ color: 'var(--ink-soft)' }}>
+          {r.dueDate ? new Date(r.dueDate).toLocaleDateString('es-EC') : '—'}
+        </span>
+      ),
+    },
+    {
+      key: 'completedAt',
+      header: 'Completado',
+      render: (_v, r) => (
+        <span className="tabular-nums" style={{ color: 'var(--ink-soft)' }}>
+          {r.completedAt ? new Date(r.completedAt).toLocaleDateString('es-EC') : '—'}
+        </span>
+      ),
+    },
+    {
+      key: 'detalle',
+      header: 'Detalle',
+      align: 'right',
+      render: (_v, r) => (r.assignmentType === 'all_guards' && !r.guardId ? null : (
+        <Button size="sm" variant="ghost" onClick={() => openDetail(r.id)}>Ver</Button>
+      )),
+    },
+  ];
 
   return (
     <AppLayout>
@@ -108,7 +175,7 @@ export default function TrainingEnrollmentsPage() {
         ]}
       />
 
-      <PageContainer width="wide" className="p-4">
+      <PageContainer width="wide" className="p-4 sm:p-6">
         <PageHeader
           icon={<GraduationCap />}
           title={course?.title ?? 'Progreso del curso'}
@@ -129,106 +196,66 @@ export default function TrainingEnrollmentsPage() {
           }
         />
 
-        <Stagger className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <StatCard label="Inscripciones" value={realEnrollments.length} icon={<Users />} accent="blue" />
-          <StatCard label="Completaron" value={completedCount} icon={<BadgeCheck />} accent="green" />
-          <StatCard label="Pendientes" value={Math.max(realEnrollments.length - completedCount, 0)} icon={<Clock />} accent="orange" />
+        <Stagger className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <StatCard label="Inscripciones" value={realEnrollments.length} icon={<Users />} accent="info" />
+          <StatCard label="Completaron" value={completedCount} icon={<BadgeCheck />} accent="ok" />
+          <StatCard label="Pendientes" value={Math.max(realEnrollments.length - completedCount, 0)} icon={<Clock />} accent="warn" />
         </Stagger>
 
         <Section title="Progreso de vigilantes" icon={<Users />} contentClassName="-mx-5 -mb-5">
-          <div className="overflow-hidden rounded-b-2xl">
-          <table className="min-w-full text-sm text-left">
-            <thead className="bg-muted/30">
-              <tr className="border-b">
-                <th className="px-4 py-3 font-semibold">Vigilante</th>
-                <th className="px-4 py-3 font-semibold">Estado</th>
-                <th className="px-4 py-3 font-semibold">Progreso</th>
-                <th className="px-4 py-3 font-semibold">Cuestionario</th>
-                <th className="px-4 py-3 font-semibold">Fecha límite</th>
-                <th className="px-4 py-3 font-semibold">Completado</th>
-                <th className="px-4 py-3 font-semibold text-right">Detalle</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading && <tr><td colSpan={7} className="py-16 text-center text-muted-foreground">Cargando...</td></tr>}
-              {!loading && rows.length === 0 && (
-                <tr><td colSpan={7} className="py-16 text-center text-muted-foreground">No hay inscripciones</td></tr>
-              )}
-              {!loading && rows.map((r) => {
-                const isTemplate = r.assignmentType === 'all_guards' && !r.guardId;
-                return (
-                  <tr key={r.id} className="border-b hover:bg-muted/30">
-                    <td className="px-4 py-3">
-                      {isTemplate ? <Badge variant="outline">Todos los vigilantes (plantilla)</Badge> : (r.guardName || '-')}
-                    </td>
-                    <td className="px-4 py-3"><Badge variant={ENROLLMENT_STATUS_VARIANT[r.status]}>{ENROLLMENT_STATUS_LABELS[r.status]}</Badge></td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <div className="h-1.5 w-24 rounded-full bg-muted overflow-hidden">
-                          <div className="h-full rounded-full bg-primary" style={{ width: `${r.progressPercentage ?? 0}%` }} />
-                        </div>
-                        <span className="text-xs text-muted-foreground">{r.progressPercentage ?? 0}%</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      {r.quizPassed
-                        ? <Badge variant="default">Aprobado{r.quizScore != null ? ` (${r.quizScore}%)` : ''}</Badge>
-                        : <span className="text-muted-foreground">—</span>}
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground">{r.dueDate ? new Date(r.dueDate).toLocaleDateString() : '—'}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{r.completedAt ? new Date(r.completedAt).toLocaleDateString() : '—'}</td>
-                    <td className="px-4 py-3 text-right">
-                      {!isTemplate && (
-                        <Button size="sm" variant="ghost" onClick={() => openDetail(r.id)}>Ver</Button>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-          </div>
+          <DataTable
+            surface="none"
+            loading={loading}
+            data={rows}
+            columns={enrollmentColumns}
+            emptyState={
+              <EmptyState
+                icon={<Users />}
+                title="No hay inscripciones"
+                description="Cuando asignes este curso a un vigilante, su progreso aparecerá aquí."
+                className="border-0"
+              />
+            }
+          />
         </Section>
       </PageContainer>
 
       <Sheet open={!!detail || detailLoading} onOpenChange={(o) => { if (!o) { setDetail(null); } }}>
-        <SheetContent side="right" className="w-[420px] overflow-y-auto">
+        <SheetContent side="right" className="w-full overflow-y-auto sm:max-w-md">
           <SheetHeader>
             <SheetTitle>Detalle de progreso</SheetTitle>
           </SheetHeader>
-          {detailLoading && <div className="mt-6 text-muted-foreground">Cargando...</div>}
+          {detailLoading && <div className="mt-6"><SkeletonCards count={2} className="sm:grid-cols-1" /></div>}
           {detail && (
             <div className="mt-6 space-y-4">
               <div>
-                <div className="text-lg font-semibold">{detail.guardName}</div>
-                <Badge variant={ENROLLMENT_STATUS_VARIANT[detail.status]} className="mt-1">{ENROLLMENT_STATUS_LABELS[detail.status]}</Badge>
+                <div className="text-sm font-semibold tracking-tight">{detail.guardName}</div>
+                <StatusBadge tone={ENROLLMENT_STATUS_TONE[detail.status]} dot={false} className="mt-1.5">{ENROLLMENT_STATUS_LABELS[detail.status]}</StatusBadge>
               </div>
               <div className="flex items-center gap-2">
-                <div className="h-2 flex-1 rounded-full bg-muted overflow-hidden">
-                  <div className="h-full rounded-full bg-primary" style={{ width: `${detail.progressPercentage ?? 0}%` }} />
-                </div>
-                <span className="text-sm">{detail.progressPercentage ?? 0}%</span>
+                <MeterBar className="flex-1" height={8} pct={detail.progressPercentage ?? 0} ariaLabel="Progreso" />
+                <span className="text-sm tabular-nums">{detail.progressPercentage ?? 0}%</span>
               </div>
               <div className="text-sm">
                 Cuestionario:{' '}
                 {detail.quizPassed
-                  ? <span className="text-green-600 font-medium">Aprobado{detail.quizScore != null ? ` (${detail.quizScore}%)` : ''}</span>
-                  : <span className="text-muted-foreground">No aprobado</span>}
+                  ? <span className="font-medium tabular-nums" style={{ color: 'var(--ok-text)' }}>Aprobado{detail.quizScore != null ? ` (${detail.quizScore}%)` : ''}</span>
+                  : <span style={{ color: 'var(--ink-soft)' }}>No aprobado</span>}
               </div>
               <div>
-                <h4 className="text-sm font-semibold mb-2">Lecciones</h4>
+                <h4 className="mb-2 text-sm font-semibold tracking-tight">Lecciones</h4>
                 <div className="space-y-2">
                   {detail.lessonCompletions.length === 0 && (
-                    <p className="text-sm text-muted-foreground">Aún no ha completado lecciones.</p>
+                    <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>Aún no ha completado lecciones.</p>
                   )}
                   {detail.lessonCompletions.map((lc) => (
                     <div key={lc.lessonId} className="flex items-center gap-2 text-sm">
                       {lc.completedAt
-                        ? <CheckCircle2 className="h-4 w-4 text-green-600" />
-                        : <Clock className="h-4 w-4 text-muted-foreground" />}
+                        ? <CheckCircle2 className="h-4 w-4" style={{ color: 'var(--ok-text)' }} />
+                        : <Clock className="h-4 w-4" style={{ color: 'var(--ink-faint)' }} />}
                       <span className="flex-1">{lc.title}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {lc.completedAt ? new Date(lc.completedAt).toLocaleDateString() : 'Pendiente'}
+                      <span className="text-xs tabular-nums" style={{ color: 'var(--ink-soft)' }}>
+                        {lc.completedAt ? new Date(lc.completedAt).toLocaleDateString('es-EC') : 'Pendiente'}
                       </span>
                     </div>
                   ))}

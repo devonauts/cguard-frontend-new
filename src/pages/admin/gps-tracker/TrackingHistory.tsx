@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import AppLayout from "@/layouts/app-layout";
 import { toast } from "sonner";
 import {
@@ -10,6 +11,7 @@ import Breadcrumb from "@/components/ui/breadcrumb";
 import { PageContainer, PageHeader, Section, EmptyState } from "@/components/kit";
 import { securityGuardService } from "@/lib/api/securityGuardService";
 import TrailMap, { type TrailPoint } from "./TrailMap";
+import { hora, kmh } from "./trackGeometry";
 
 type MapType = "roadmap" | "satellite" | "hybrid" | "terrain";
 
@@ -19,15 +21,29 @@ function ymd(d: Date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
+/* ── Lista de puntos ───────────────────────────────────────────────────────
+   Un turno son miles de pings. Pintar una fila por ping son miles de nodos en
+   el árbol y el panel se arrastra al desplazarlo, así que se dibuja SÓLO la
+   ventana visible: dos separadores con la altura del resto sostienen la barra
+   de desplazamiento. Fila de alto fijo — es lo que permite saber qué toca sin
+   medir nada. */
+const ALTO_FILA = 34;
+const MARGEN_FILAS = 8;
+
 export default function TrackingHistoryPage() {
+  const [params] = useSearchParams();
+
   const [guards, setGuards] = useState<GuardOpt[]>([]);
-  const [guardId, setGuardId] = useState<string>("");
-  const [from, setFrom] = useState<string>(() => ymd(new Date()));
-  const [to, setTo] = useState<string>(() => ymd(new Date()));
+  // El enlace profundo (`?guard=…&from=…&to=…`) es lo que hace que «Ver
+  // recorrido» desde el mapa en vivo caiga en el recorrido ya cargado.
+  const [guardId, setGuardId] = useState<string>(() => params.get("guard") || "");
+  const [from, setFrom] = useState<string>(() => params.get("from") || ymd(new Date()));
+  const [to, setTo] = useState<string>(() => params.get("to") || ymd(new Date()));
   const [mapType, setMapType] = useState<MapType>("roadmap");
   const [points, setPoints] = useState<TrailPoint[]>([]);
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [focus, setFocus] = useState<number | null>(null);
 
   // Load the vigilantes list once for the selector.
   useEffect(() => {
@@ -48,9 +64,9 @@ export default function TrackingHistoryPage() {
 
   // Clear the drawn trail when the selection changes so the map + CSV never show
   // a previous guard's route under a new guard's name (the fetch is manual).
-  useEffect(() => { setPoints([]); setLoaded(false); }, [guardId, from, to]);
+  useEffect(() => { setPoints([]); setLoaded(false); setFocus(null); }, [guardId, from, to]);
 
-  const loadTrail = async () => {
+  const loadTrail = useCallback(async () => {
     if (!guardId) { toast.error("Selecciona un vigilante"); return; }
     setLoading(true);
     try {
@@ -67,7 +83,16 @@ export default function TrackingHistoryPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [from, guardId, to]);
+
+  // Llegar por enlace con vigilante ya elegido carga el recorrido sin pedir un
+  // clic más. Una sola vez: después manda el botón.
+  const autoRef = useRef(!!params.get("guard"));
+  useEffect(() => {
+    if (!autoRef.current || !guardId) return;
+    autoRef.current = false;
+    loadTrail();
+  }, [guardId, loadTrail]);
 
   const exportCsv = () => {
     if (!points.length) return;
@@ -92,6 +117,37 @@ export default function TrackingHistoryPage() {
 
   const guardName = useMemo(() => guards.find((g) => g.id === guardId)?.name || "", [guards, guardId]);
 
+  /* ── Ventana visible de la lista ─────────────────────────────────────── */
+  const listaRef = useRef<HTMLDivElement>(null);
+  const [desplazamiento, setDesplazamiento] = useState(0);
+  const [altoVista, setAltoVista] = useState(320);
+
+  useEffect(() => {
+    const el = listaRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => setAltoVista(el.clientHeight || 320));
+    ro.observe(el);
+    setAltoVista(el.clientHeight || 320);
+    return () => ro.disconnect();
+  }, [loaded]);
+
+  const primera = Math.max(0, Math.floor(desplazamiento / ALTO_FILA) - MARGEN_FILAS);
+  const ultima = Math.min(points.length, Math.ceil((desplazamiento + altoVista) / ALTO_FILA) + MARGEN_FILAS);
+  const visibles = points.slice(primera, ultima);
+
+  // Cuando el foco llega DESDE el mapa (pulsando el trazo o una parada), la fila
+  // correspondiente tiene que aparecer sola: si no, el resaltado queda fuera de
+  // pantalla y parece que no pasó nada.
+  useEffect(() => {
+    const el = listaRef.current;
+    if (focus == null || !el) return;
+    const arriba = focus * ALTO_FILA;
+    const abajo = arriba + ALTO_FILA;
+    if (arriba < el.scrollTop || abajo > el.scrollTop + el.clientHeight) {
+      el.scrollTo({ top: Math.max(0, arriba - el.clientHeight / 2), behavior: "smooth" });
+    }
+  }, [focus]);
+
   return (
     <AppLayout>
       <PageContainer width="wide" className="p-4 sm:p-6">
@@ -107,17 +163,18 @@ export default function TrackingHistoryPage() {
           title="Historial de seguimiento"
           subtitle="Reproduce el recorrido GPS real de tus vigilantes por rango de fechas."
           actions={
-            <Button variant="ghost" size="icon" onClick={exportCsv} disabled={!points.length} aria-label="Exportar">
-              <FileSpreadsheet className="h-5 w-5 text-foreground" />
+            <Button variant="outline" onClick={exportCsv} disabled={!points.length}>
+              <FileSpreadsheet className="size-4" />
+              Exportar
             </Button>
           }
         />
 
         {/* Filters */}
-        <Section title="Filtros" icon={<MapPin size={16} />}>
+        <Section title="Filtros" icon={<MapPin />}>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
             <div className="lg:col-span-2">
-              <label className="mb-1.5 block text-xs font-semibold text-muted-foreground">Vigilante</label>
+              <label className="cg-eyebrow mb-2 block">Vigilante</label>
               <Select value={guardId} onValueChange={setGuardId}>
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccionar vigilante" />
@@ -130,14 +187,14 @@ export default function TrackingHistoryPage() {
               </Select>
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-semibold text-muted-foreground">Desde</label>
+              <label className="cg-eyebrow mb-2 block">Desde</label>
               <input type="date" value={from} max={to} onChange={(e) => setFrom(e.target.value)}
-                className="w-full rounded-xl border border-border/50 bg-background px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
+                className="cg-input w-full px-3 py-2 text-sm" />
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-semibold text-muted-foreground">Hasta</label>
+              <label className="cg-eyebrow mb-2 block">Hasta</label>
               <input type="date" value={to} min={from} onChange={(e) => setTo(e.target.value)}
-                className="w-full rounded-xl border border-border/50 bg-background px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
+                className="cg-input w-full px-3 py-2 text-sm" />
             </div>
             <div className="flex items-end">
               <Button variant="brand" className="w-full gap-2" onClick={loadTrail} disabled={loading || !guardId}>
@@ -151,7 +208,7 @@ export default function TrackingHistoryPage() {
         {/* Map + points */}
         <Section
           title={guardName ? `Recorrido · ${guardName}` : "Vista del mapa"}
-          icon={<MapIcon size={16} />}
+          icon={<MapIcon />}
           action={
             <Select value={mapType} onValueChange={(v) => setMapType(v as MapType)}>
               <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
@@ -164,10 +221,15 @@ export default function TrackingHistoryPage() {
             </Select>
           }
         >
-          <div className="mt-1 flex h-[440px] overflow-hidden rounded-2xl border">
+          <div className="mt-1 flex h-[520px] overflow-hidden rounded-2xl border">
             <div className="flex-[2] bg-muted">
               {loaded ? (
-                <TrailMap points={points} mapType={mapType} />
+                <TrailMap
+                  points={points}
+                  mapType={mapType}
+                  focusIndex={focus}
+                  onFocusIndex={setFocus}
+                />
               ) : (
                 <div className="flex h-full items-center justify-center">
                   <EmptyState
@@ -179,27 +241,66 @@ export default function TrackingHistoryPage() {
                 </div>
               )}
             </div>
-            <div className="flex flex-[1] flex-col border-l bg-card">
-              <div className="flex border-b bg-muted/30 px-4 py-3 text-sm font-semibold text-foreground">
-                <span className="flex-1">Punto</span>
-                <span className="flex-1">Fecha/Hora</span>
+
+            <div className="hidden flex-[1] flex-col border-l bg-card sm:flex">
+              <div className="flex border-b bg-muted/30 px-3 py-2.5 text-xs font-semibold text-foreground">
+                <span className="w-10">#</span>
+                <span className="flex-1">Hora</span>
+                <span className="w-20 text-right">Velocidad</span>
+                <span className="w-10 text-right">Bat.</span>
               </div>
-              <div className="flex-1 overflow-y-auto">
+
+              <div
+                ref={listaRef}
+                className="flex-1 overflow-y-auto"
+                onScroll={(e) => setDesplazamiento((e.target as HTMLDivElement).scrollTop)}
+              >
                 {points.length === 0 ? (
                   <div className="flex h-full items-center justify-center px-4 py-6 text-center text-sm text-muted-foreground">
                     {loaded ? "Sin puntos en este rango" : "—"}
                   </div>
                 ) : (
-                  points.map((p, i) => (
-                    <div key={i} className="flex items-center border-b border-border/30 px-4 py-2 text-xs">
-                      <span className="flex-1 tabular-nums text-muted-foreground">#{i + 1}</span>
-                      <span className="flex-1 tabular-nums text-foreground">{new Date(p.at).toLocaleString("es-EC", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</span>
-                    </div>
-                  ))
+                  <>
+                    <div style={{ height: primera * ALTO_FILA }} aria-hidden />
+                    {visibles.map((p, j) => {
+                      const i = primera + j;
+                      const activo = focus === i;
+                      const bat = typeof p.battery === "number" ? Math.round(p.battery) : null;
+                      return (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => setFocus(i)}
+                          aria-current={activo || undefined}
+                          className="flex w-full items-center border-b border-border/30 px-3 text-left text-xs transition-colors hover:bg-muted/40"
+                          style={{
+                            height: ALTO_FILA,
+                            background: activo ? "var(--brand-wash)" : undefined,
+                          }}
+                        >
+                          <span className="w-10 tabular-nums text-muted-foreground">#{i + 1}</span>
+                          <span className="flex-1 tabular-nums text-foreground">{hora(p.at)}</span>
+                          <span className="w-20 text-right tabular-nums text-muted-foreground">
+                            {kmh(p.speed)}
+                          </span>
+                          <span
+                            className="w-10 text-right tabular-nums"
+                            style={{ color: bat != null && bat <= 20 ? "var(--bad-text)" : "var(--ink-faint)" }}
+                          >
+                            {bat != null ? `${bat}%` : "—"}
+                          </span>
+                        </button>
+                      );
+                    })}
+                    <div style={{ height: Math.max(0, (points.length - ultima) * ALTO_FILA) }} aria-hidden />
+                  </>
                 )}
               </div>
+
               {points.length > 0 && (
-                <div className="border-t px-4 py-2 text-xs text-muted-foreground">{points.length} punto(s)</div>
+                <div className="border-t px-3 py-2 text-xs text-muted-foreground">
+                  {points.length.toLocaleString("es-EC")} punto(s) · pulsa uno para verlo en el mapa
+                </div>
               )}
             </div>
           </div>

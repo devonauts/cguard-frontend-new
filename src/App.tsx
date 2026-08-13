@@ -7,10 +7,12 @@ import Login from "./pages/auth/login";
 import ForgotPassword from "./pages/auth/forgot-password";
 import ResetPassword from "./pages/auth/reset-password";
 const DashboardPage = lazy(() => import("./pages/admin/dashboard/control-center/ControlCenter"));
+const AppearancePage = lazy(() => import("./pages/admin/Configuration/appearance/AppearancePage"));
 const OperationsMapFull = lazy(() => import("./pages/admin/dashboard/control-center/OperationsMapFull"));
 const LanguagePage = lazy(() => import("./pages/idioma/configuracion"));
 import { AuthProvider, useAuth } from "./contexts/AuthContext"
 import { ThemeProvider } from "./contexts/ThemeContext"
+import { AccentProvider } from "./contexts/AccentContext"
 import { LanguageProvider } from "./contexts/LanguageContext"
 import { QueryClientProvider } from "@tanstack/react-query"
 import { queryClient } from "./lib/queryClient"
@@ -26,11 +28,11 @@ const Notification = lazy(() => import("./pages/admin/Configuration/Notification
 const MobilPage = lazy(() => import("./pages/admin/Configuration/mobil/MobilPage"));
 const MobileHubPage = lazy(() => import("./pages/admin/Configuration/mobile-hub/MobileHubPage"));
 import { ArrowLeftCircle } from "lucide-react"
+import { ProgresoDeRuta } from "@/components/kit/movimiento"
 const CompanyPoliciesPage = lazy(() => import("./pages/admin/Configuration/company-policies/CompanyPoliciesPage"));
 const IncidentTypesPage = lazy(() => import("./pages/admin/Configuration/types-incidents/IncidentTypePage"));
 const LicenseTypePage = lazy(() => import("./pages/admin/Configuration/types-licenses/LicensesTypePage"));
 const DepartmentPage = lazy(() => import("./pages/admin/Configuration/department/DepartmentPage"));
-const SkillSetsPage = lazy(() => import("./pages/admin/Configuration/skill-sets/SkillSetsPage"));
 const UserRolesPage = lazy(() => import("./pages/admin/Configuration/user-roles/UserRolesPage"));
 const SettingsHome = lazy(() => import("./pages/admin/Configuration/SettingsHome"));
 const IntegrationsList = lazy(() => import("./pages/admin/Configuration/integrations/IntegrationsList"));
@@ -172,7 +174,6 @@ const GuardDocumentosPage = lazy(() => import("./pages/admin/security-guards/com
 const GuardRemindersPage = lazy(() => import("./pages/admin/security-guards/components/GuardReminders/GuardRemindersPage"));
 const GuardFilesPage = lazy(() => import("./pages/admin/security-guards/components/GuardFiles/GuardFilesPage"));
 const GuardAsignarSitiosPage = lazy(() => import("./pages/admin/security-guards/components/GuardAssign-Sites/GuardAsignarSitiosPage"));
-const GuardSkillsPage = lazy(() => import("./pages/admin/security-guards/components/GuardSkills/GuardSkillsPage"));
 const GuardDepartamentoPage = lazy(() => import("./pages/admin/security-guards/components/GuardDepartment/GuardDepartamentoPage"));
 const GuardConfiguracionPage = lazy(() => import("./pages/admin/security-guards/components/GuardConfiguration/GuardConfiguracionPage"));
 import GuardAppLayout from "./layouts/GuardAppLayout";
@@ -270,13 +271,14 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
     <ThemeProvider>
+      <AccentProvider>
     <LanguageProvider>
       <AuthProvider>
         <ClientSelectionProvider>
           <CoBrowseAgent />
           <BrowserRouter>
             <PersistentChrome>
-            <Suspense fallback={<div style={{minHeight:"60vh",display:"flex",alignItems:"center",justifyContent:"center"}}><div className="animate-spin" aria-label="Cargando" style={{width:28,height:28,border:"3px solid var(--border,#e5e7eb)",borderTopColor:"var(--primary,#C8860A)",borderRadius:"50%"}}/></div>}>
+            <Suspense fallback={<><ProgresoDeRuta /><div style={{minHeight:"60vh",display:"flex",alignItems:"center",justifyContent:"center"}}><div className="animate-spin" aria-label="Cargando" style={{width:28,height:28,border:"3px solid var(--border,#e5e7eb)",borderTopColor:"var(--primary,#C8860A)",borderRadius:"50%"}}/></div></>}>
             <AppErrorBoundary scope="routes">
             <Routes>
               {/* Enlace público de video compartido (cliente, sin login) */}
@@ -844,14 +846,6 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <GuardAsignarSitiosPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/guards/:id/habilidades"
-                element={
-                  <ProtectedRoute>
-                    <GuardSkillsPage />
                   </ProtectedRoute>
                 }
               />
@@ -1520,14 +1514,6 @@ export default function App() {
                 }
               />
               <Route
-                path="/setting/conjunto-habilidades"
-                element={
-                  <ProtectedRoute>
-                    <SkillSetsPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
                 path="/setting/Departamentos"
                 element={
                   <ProtectedRoute>
@@ -1548,6 +1534,14 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <SettingsHome />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/setting/apariencia"
+                element={
+                  <ProtectedRoute>
+                    <AppearancePage />
                   </ProtectedRoute>
                 }
               />
@@ -1710,6 +1704,7 @@ export default function App() {
         </ClientSelectionProvider>
       </AuthProvider>
     </LanguageProvider>
+      </AccentProvider>
     </ThemeProvider>
     </QueryClientProvider>
   )

@@ -25,8 +25,13 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className }) => {
     }));
 
   return (
-    <nav className={`bg-background border-b border-border px-6 py-6 ${className || ""}`}>
-      <ol className="flex items-center text-sm">
+    /* Fondo transparente: la miga va SOBRE el lienzo de la app y deja ver los
+       halos del acento. Con `bg-background` se recortaba una banda opaca en
+       medio del cristal. */
+    <nav
+      className={`border-b border-[color:var(--hairline)] bg-transparent px-6 py-6 ${className || ""}`}
+    >
+      <ol className="flex flex-wrap items-center text-sm">
         {generatedItems.map((item, index) => {
           const isLast = index === generatedItems.length - 1;
           return (
@@ -34,18 +39,18 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className }) => {
               {!isLast ? (
                 <Link
                   to={item.path || "#"}
-                  className="text-primary font-medium hover:underline"
+                  className="cg-focus rounded-full px-1 font-medium text-[color:var(--ink-soft)] transition-colors duration-200 hover:text-[color:var(--brand-text)] motion-reduce:transition-none"
                 >
                   {item.label}
                 </Link>
               ) : (
-                <span className="font-semibold text-foreground">
+                <span className="px-1 font-semibold text-[color:var(--ink)]">
                   {item.label}
                 </span>
               )}
 
               {!isLast && (
-                <ChevronRight className="w-4 h-4 mx-1 text-muted-foreground" />
+                <ChevronRight className="mx-0.5 h-3.5 w-3.5 shrink-0 text-[color:var(--ink-faint)]" />
               )}
             </li>
           );

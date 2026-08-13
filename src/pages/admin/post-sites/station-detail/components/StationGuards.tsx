@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { confirmDialog } from '@/components/ui/confirmDialog';
 import { ApiService } from '@/services/api/apiService';
 import { Section, EmptyState, SkeletonCards, StatusBadge, Modal } from '@/components/kit';
+import { FIELD_CLS_LG, LabeledField } from '@/pages/admin/clientes/components/_shared/tab-kit';
 import { Button } from '@/components/ui/button';
 import ShiftAssignModal from './ShiftAssignModal';
 import { localToday } from '@/lib/utils';
@@ -55,7 +56,9 @@ const NEXT_DAYS: Date[] = Array.from({ length: 28 }, (_, i) => {
  *  small gap separates each week. */
 function CoverageStrip({ work, type }: { work: Set<string>; type: PosType }) {
   if (!work || work.size === 0) return null;
-  const onCls = type === 'sacafranco' ? 'bg-indigo-500 text-white' : 'bg-primary text-primary-foreground';
+  // El sacafranco (relevo) se lee siempre en el semántico «info»; el fijo, en el
+  // acento de la marca. Ninguno es un color escrito a mano.
+  const onFill = type === 'sacafranco' ? 'var(--info)' : 'var(--brand)';
   return (
     <div className="mt-1.5 flex gap-px overflow-x-auto pb-1">
       {NEXT_DAYS.map((d, i) => {
@@ -66,7 +69,12 @@ function CoverageStrip({ work, type }: { work: Set<string>; type: PosType }) {
           <div
             key={i}
             title={`${dk(d)} — ${on ? (type === 'sacafranco' ? 'cubre' : 'trabaja') : 'descansa'}`}
-            className={`flex h-6 w-[18px] shrink-0 flex-col items-center justify-center rounded-sm text-[8px] font-semibold leading-none ${weekGap} ${on ? onCls : 'bg-muted/40 text-muted-foreground'} ${isToday ? 'ring-1 ring-foreground/50' : ''}`}
+            className={`flex h-6 w-[18px] shrink-0 flex-col items-center justify-center rounded-sm text-[8px] font-semibold leading-none ${weekGap}`}
+            style={{
+              background: on ? onFill : 'var(--glass-sunken)',
+              color: on ? 'var(--brand-ink)' : 'var(--ink-faint)',
+              boxShadow: isToday ? 'inset 0 0 0 1px var(--ink-soft)' : undefined,
+            }}
           >
             <span className="opacity-60">{WEEKDAY[d.getDay()]}</span>
             <span>{d.getDate()}</span>
@@ -307,7 +315,6 @@ export default function StationGuards({ station, stationId, postSiteId }: Props)
 
   const modalOpen = !!assignType || !!changeTarget;
   const modalIsSaca = assignType === 'sacafranco' || changeTarget?.type === 'sacafranco';
-  const selectCls = 'w-full rounded-xl border border-border/40 bg-background px-3 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20';
 
   return (
     <>
@@ -339,7 +346,7 @@ export default function StationGuards({ station, stationId, postSiteId }: Props)
             <div className="mt-1.5 flex flex-wrap items-center gap-3 text-[11px] text-muted-foreground">
               <span className="font-medium">Próximas 4 semanas:</span>
               <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded bg-primary" /> Fijo trabaja</span>
-              <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded bg-indigo-500" /> Sacafranco cubre</span>
+              <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded" style={{ background: 'var(--info)' }} /> Sacafranco cubre</span>
               <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded bg-muted/40" /> Descanso</span>
             </div>
           )}
@@ -348,7 +355,7 @@ export default function StationGuards({ station, stationId, postSiteId }: Props)
         {loading ? (
           <div className="px-5 pb-5 pt-4"><SkeletonCards count={3} /></div>
         ) : error ? (
-          <div className="p-6 text-sm text-red-600">{error}</div>
+          <div className="p-6 text-sm" style={{ color: 'var(--bad-text)' }}>{error}</div>
         ) : rows.length === 0 ? (
           <div className="px-5 pb-5 pt-4">
             <EmptyState
@@ -364,8 +371,13 @@ export default function StationGuards({ station, stationId, postSiteId }: Props)
         ) : (
           <ul className="mt-4 divide-y border-t">
             {rows.map((a) => (
-              <li key={a.id} className="flex items-center gap-3 px-6 py-3 hover:bg-muted/20">
-                <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${a.type === 'sacafranco' ? 'bg-indigo-500/12 text-indigo-600' : 'bg-primary/12 text-primary'}`}>
+              <li key={a.id} className="flex items-center gap-3 px-6 py-3 hover:bg-muted/40">
+                <div
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
+                  style={a.type === 'sacafranco'
+                    ? { background: 'color-mix(in oklab, var(--info) 14%, transparent)', color: 'var(--info-text)' }
+                    : { background: 'var(--brand-wash)', color: 'var(--brand-text)' }}
+                >
                   {a.type === 'sacafranco' ? <Repeat size={16} /> : <Shield size={16} />}
                 </div>
                 <div className="min-w-0 flex-1">
@@ -382,7 +394,7 @@ export default function StationGuards({ station, stationId, postSiteId }: Props)
                 <button onClick={() => openChange(a)} className="inline-flex items-center gap-1 rounded-md border border-border px-2.5 py-1.5 text-xs font-medium hover:bg-muted/40" title={t('station.guards.change', 'Cambiar')}>
                   <RefreshCw size={13} /> {t('station.guards.change', 'Cambiar')}
                 </button>
-                <button onClick={() => removeGuard(a)} className="rounded-md p-1.5 text-muted-foreground hover:bg-rose-500/10 hover:text-rose-600" title={t('station.guards.remove', 'Quitar')}>
+                <button onClick={() => removeGuard(a)} className="cg-focus rounded-md p-1.5" style={{ color: 'var(--bad-text)' }} title={t('station.guards.remove', 'Quitar')}>
                   <Trash2 size={15} />
                 </button>
               </li>
@@ -413,36 +425,34 @@ export default function StationGuards({ station, stationId, postSiteId }: Props)
       >
         <div className="space-y-4">
               {changeTarget && (
-                <div className="rounded-xl bg-muted/20 px-3 py-2.5 text-sm">
+                <div className="glass-sunken px-3 py-2.5 text-sm">
                   {t('station.guards.replacing', 'Reemplazando a')} <span className="font-medium text-foreground">{changeTarget.guardName}</span>
                 </div>
               )}
-              <div>
-                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{t('station.guards.guard', 'Vigilante')}</label>
-                <select value={pickGuard} onChange={(e) => setPickGuard(e.target.value)} className={selectCls} autoFocus>
+              <LabeledField label={t('station.guards.guard', 'Vigilante')}>
+                <select value={pickGuard} onChange={(e) => setPickGuard(e.target.value)} className={FIELD_CLS_LG} autoFocus>
                   <option value="">{t('station.guards.selectGuard', 'Seleccionar vigilante…')}</option>
                   {guards.filter((g) => !occupiedGuardIds.has(g.id)).map((g) => <option key={g.id} value={g.id}>{g.label}</option>)}
                 </select>
                 {guards.filter((g) => !occupiedGuardIds.has(g.id)).length === 0 && (
-                  <p className="mt-1.5 text-[11px] text-amber-600">{t('station.guards.allBusy', 'Todos los vigilantes ya tienen una asignación activa.')}</p>
+                  <p className="mt-1.5 text-[11px]" style={{ color: 'var(--warn-text)' }}>{t('station.guards.allBusy', 'Todos los vigilantes ya tienen una asignación activa.')}</p>
                 )}
-              </div>
+              </LabeledField>
 
               {/* Alternation (24x24 etc.): the operator picks the day this guard
                   starts working. The backend phases the rotation to it, so
                   "empieza hoy" = trabaja hoy. Assign the partner starting the
                   next day and they alternate automatically. */}
               {!modalIsSaca && isAlternation && (
-                <div>
-                  <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{t('station.guards.startDay', 'Primer día de turno')}</label>
+                <LabeledField label={t('station.guards.startDay', 'Primer día de turno')}>
                   <input
                     type="date"
                     value={assignStart}
                     onChange={(e) => setAssignStart(e.target.value)}
-                    className={selectCls}
+                    className={FIELD_CLS_LG}
                   />
                   <p className="mt-1.5 text-[11px] text-muted-foreground">{t('station.guards.startDayHint', 'Este vigilante trabaja ese día y luego día por medio. Asigna a su relevo empezando al día siguiente.')}</p>
-                </div>
+                </LabeledField>
               )}
         </div>
       </Modal>

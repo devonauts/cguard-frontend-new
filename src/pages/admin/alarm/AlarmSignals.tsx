@@ -24,24 +24,34 @@ import {
   PageHeader,
   Section,
   EmptyState,
+  StatusBadge,
+  Segmented,
+  Toolbar,
+  SkeletonCards,
 } from "@/components/kit";
+import { Chip, formatWhenFull as formatWhen } from "./shared";
 
 /* ------------------------------------------------------------------ */
 /* Metadata (Spanish labels)                                           */
 /* ------------------------------------------------------------------ */
 
-const FORMAT_META: Record<string, { label: string; className: string }> = {
-  sia: { label: "SIA DC-09", className: "bg-indigo-500/15 text-indigo-600 border-indigo-500/30" },
-  contactid: { label: "Contact ID", className: "bg-sky-500/15 text-sky-600 border-sky-500/30" },
-  surgard: { label: "Sur-Gard", className: "bg-violet-500/15 text-violet-600 border-violet-500/30" },
-  webhook: { label: "Webhook", className: "bg-emerald-500/15 text-emerald-600 border-emerald-500/30" },
-  manual: { label: "Manual", className: "bg-amber-500/15 text-amber-600 border-amber-500/30" },
+/* El FORMATO de la señal es una clasificación técnica, no una severidad: iba en
+   cinco colores distintos que no significaban nada. Ahora es una píldora neutra
+   y el color queda libre para lo que sí lo necesita — el calificador. */
+const FORMAT_META: Record<string, { label: string }> = {
+  sia: { label: "SIA DC-09" },
+  contactid: { label: "Contact ID" },
+  surgard: { label: "Sur-Gard" },
+  webhook: { label: "Aviso web" },
+  manual: { label: "Manual" },
 };
 
-const QUALIFIER_META: Record<string, { label: string; className: string }> = {
-  event: { label: "Evento", className: "bg-red-500/15 text-red-600 border-red-500/30" },
-  restore: { label: "Restauración", className: "bg-emerald-500/15 text-emerald-600 border-emerald-500/30" },
-  status: { label: "Estado", className: "bg-slate-500/15 text-slate-600 border-slate-500/30" },
+/** Aquí sí hay severidad: un evento es una alarma que entra; una restauración es
+ *  que algo volvió a la normalidad. Semánticos fijos. */
+const QUALIFIER_META: Record<string, { label: string; tone: string }> = {
+  event: { label: "Evento", tone: "bad" },
+  restore: { label: "Restauración", tone: "ok" },
+  status: { label: "Estado", tone: "neutral" },
 };
 
 const CHANNEL_META: Record<string, { label: string; icon: React.ReactNode }> = {
@@ -49,32 +59,6 @@ const CHANNEL_META: Record<string, { label: string; icon: React.ReactNode }> = {
   cellular: { label: "Celular", icon: <Signal className="size-3.5" /> },
   receiver: { label: "Receptor", icon: <Server className="size-3.5" /> },
 };
-
-function Badge({ className, children }: { className?: string; children: React.ReactNode }) {
-  return (
-    <span
-      className={[
-        "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium",
-        className || "",
-      ].join(" ")}
-    >
-      {children}
-    </span>
-  );
-}
-
-function formatWhen(iso?: string | null): string {
-  if (!iso) return "—";
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "—";
-  return d.toLocaleString("es", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
-}
 
 /* ------------------------------------------------------------------ */
 /* Page                                                                */
@@ -142,7 +126,7 @@ export default function AlarmSignals() {
         <PageHeader
           icon={<Radio />}
           title="Registro de señales"
-          subtitle="Tráfico crudo recibido de los paneles (inmutable)"
+          subtitle="Todo lo que han enviado los paneles, tal cual llegó. No se puede modificar."
           actions={
             <Button
               variant="outline"
@@ -159,10 +143,10 @@ export default function AlarmSignals() {
           }
         />
 
-        {/* Controls */}
-        <div className="flex flex-wrap items-center gap-3">
+        {/* Controles */}
+        <Toolbar>
           <div className="relative min-w-[240px] flex-1">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -170,33 +154,20 @@ export default function AlarmSignals() {
               className="pl-9"
             />
           </div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <ArrowDownUp className="size-4" />
-            <span>Mostrar:</span>
-            {[100, 250, 500].map((n) => (
-              <button
-                key={n}
-                type="button"
-                onClick={() => setLimit(n)}
-                className={
-                  "inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium transition-colors " +
-                  (limit === n
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "hover:bg-muted")
-                }
-              >
-                {n}
-              </button>
-            ))}
-          </div>
-        </div>
+          <span className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: 'var(--ink-soft)' }}>
+            <ArrowDownUp className="size-3.5" />
+            Mostrar
+          </span>
+          <Segmented
+            value={String(limit)}
+            onChange={(v) => setLimit(Number(v))}
+            options={[100, 250, 500].map((n) => ({ value: String(n), label: n }))}
+          />
+        </Toolbar>
 
         {/* Table */}
         {loading ? (
-          <div className="flex items-center justify-center py-20 text-muted-foreground">
-            <Loader2 className="mr-2 size-5 animate-spin" />
-            Cargando señales…
-          </div>
+          <SkeletonCards count={4} className="sm:grid-cols-1" />
         ) : filtered.length === 0 ? (
           <EmptyState
             icon={<Radio />}
@@ -212,7 +183,10 @@ export default function AlarmSignals() {
             <div className="overflow-x-auto">
               <table className="w-full min-w-[760px] text-sm">
                 <thead>
-                  <tr className="border-b bg-muted/40 text-left text-xs uppercase tracking-wide text-muted-foreground">
+                  <tr
+                    className="border-b text-left text-xs uppercase tracking-wide"
+                    style={{ background: 'var(--glass-sunken)', borderColor: 'var(--hairline)', color: 'var(--ink-faint)' }}
+                  >
                     <th className="px-4 py-3 font-medium">Recibida</th>
                     <th className="px-4 py-3 font-medium">Cuenta</th>
                     <th className="px-4 py-3 font-medium">Formato</th>
@@ -220,7 +194,7 @@ export default function AlarmSignals() {
                     <th className="px-4 py-3 font-medium">Calificador</th>
                     <th className="px-4 py-3 font-medium">Zona</th>
                     <th className="px-4 py-3 font-medium">Canal</th>
-                    <th className="px-4 py-3 font-medium">Crudo</th>
+                    <th className="px-4 py-3 font-medium">Mensaje original</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -231,7 +205,8 @@ export default function AlarmSignals() {
                     return (
                       <tr
                         key={s.id}
-                        className="border-b last:border-0 align-top transition-colors hover:bg-muted/30"
+                        className="border-b align-top transition-colors last:border-0"
+                        style={{ borderColor: 'var(--hairline)' }}
                       >
                         <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
                           {formatWhen(s.receivedAt)}
@@ -241,19 +216,19 @@ export default function AlarmSignals() {
                         </td>
                         <td className="px-4 py-3">
                           {fmt ? (
-                            <Badge className={fmt.className}>{fmt.label}</Badge>
+                            <Chip>{fmt.label}</Chip>
                           ) : (
                             <span className="text-muted-foreground">{s.format || "—"}</span>
                           )}
                         </td>
                         <td className="whitespace-nowrap px-4 py-3">
-                          <code className="rounded bg-muted px-1.5 py-0.5 text-xs">
+                          <code className="rounded px-1.5 py-0.5 text-xs" style={{ background: 'var(--glass-sunken)' }}>
                             {s.eventCode || "—"}
                           </code>
                         </td>
                         <td className="px-4 py-3">
                           {qual ? (
-                            <Badge className={qual.className}>{qual.label}</Badge>
+                            <StatusBadge tone={qual.tone}>{qual.label}</StatusBadge>
                           ) : (
                             <span className="text-muted-foreground">{s.qualifier || "—"}</span>
                           )}
@@ -296,7 +271,7 @@ export default function AlarmSignals() {
         )}
 
         {!loading && filtered.length > 0 ? (
-          <p className="text-right text-xs text-muted-foreground">
+          <p className="text-right text-xs" style={{ color: 'var(--ink-faint)' }}>
             {filtered.length} señal{filtered.length === 1 ? "" : "es"}
             {query ? ` (de ${signals.length})` : ""}
           </p>

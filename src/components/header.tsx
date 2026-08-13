@@ -1,4 +1,19 @@
-import { useEffect, useRef, useState, useMemo } from "react";
+/**
+ * ════════════════════════════════════════════════════════════════════════════
+ * C-GUARD PRO — CABECERA
+ * Barra superior de cristal. El contenedor de app-layout ya lleva `.app-header`
+ * (fondo translúcido + desenfoque + filo inferior), así que AQUÍ DENTRO NO SE
+ * PINTA NINGÚN FONDO: hacerlo taparía el cristal y dejaría una barra opaca.
+ * Lo único que cambia al desplazar es la densidad — el cristal se cierra un
+ * punto y aparece la sombra, que es lo que separa la barra del contenido que
+ * pasa por debajo.
+ *
+ * Nada de colores escritos a mano: relleno, tinta y filos salen de las
+ * variables, así que la barra se ve correcta en claro, en oscuro y con
+ * cualquier acento que elija el usuario en Configuración › Apariencia.
+ * ════════════════════════════════════════════════════════════════════════════
+ */
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   Menu,
@@ -11,16 +26,17 @@ import {
   Clock,
   History,
   LogOut,
-  Sun,
-  Moon,
   Star,
-  ArrowRight,
   Radio,
+  Palette,
+  CornerDownLeft,
+  LayoutGrid,
+  Settings2,
+  X,
 } from "lucide-react";
 import { useSyncExternalStore } from "react";
 import { subscribeRadio, getRadioSnapshot, toggleWidget, radioResume } from "@/lib/radioVoiceManager";
 import { useAuth } from "@/contexts/AuthContext";
-import { useThemeContext } from "@/contexts/ThemeContext";
 import { useTranslation } from 'react-i18next';
 import { toast } from "sonner";
 import { alarmService } from "@/lib/api/alarmService";
@@ -33,9 +49,14 @@ import { NotificationsPanel } from "@/components/notifications/NotificationsPane
 import { showNotificationToast } from "@/components/notifications/notificationToast";
 import { PanicAlertOverlay } from "@/components/notifications/PanicAlertOverlay";
 import TrialDaysBadge from "@/components/TrialDaysBadge";
+import { ThemeSwitch } from "@/components/theme-switch";
+import { IconTile } from "@/components/kit";
+import MENU from "@/data/sidebar-menu.json";
+import NAVS from "@/data/settings-nav.json";
 
 type HeaderProps = {
   toggleSidebar: () => void;
+  sidebarOpen?: boolean;
   notificationsCount?: number;
 };
 
@@ -53,12 +74,81 @@ function getInitials(text: string) {
   return (parts[0][0] + parts[1][0]).toUpperCase();
 }
 
+/** Botón circular de cristal. El aro y la tinta salen de las variables, así que
+ *  el mismo botón vale en claro y en oscuro. */
+function GlassButton({
+  onClick, label, children, dot,
+}: {
+  onClick?: () => void;
+  label: string;
+  children: React.ReactNode;
+  /** Punto de estado con latido — `.cc-dot` de la capa de cristal. */
+  dot?: { color: string; pulse?: boolean } | null;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      title={label}
+      className="cg-focus cg-btn-glass relative grid h-9 w-9 shrink-0 place-items-center rounded-full transition-all duration-200 active:scale-95 [&_svg]:size-[18px]"
+      style={{ color: 'var(--ink-soft)' }}
+    >
+      {children}
+      {dot && (
+        // El punto va DENTRO de un envoltorio posicionado: `.cc-dot` fija
+        // `position: relative` desde una hoja sin capa, y eso gana a la utilidad
+        // `absolute` de Tailwind — colocarlo directamente lo dejaría descolgado.
+        <span className="pointer-events-none absolute right-1.5 top-1.5 h-2 w-2">
+          <span
+            className={dot.pulse ? "cc-dot" : "block h-2 w-2 rounded-full"}
+            style={{ background: dot.color }}
+          />
+        </span>
+      )}
+    </button>
+  );
+}
+
+// ── Buscador global ─────────────────────────────────────────────────────────
+type Destino = { id: string; label: string; path: string; grupo: 'menu' | 'config'; contexto?: string };
+
+/** Sin tildes y en minúsculas: «vigilancia» encuentra «Vigilância» y «RONDAS». */
+const plano = (s: string) => (s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+/**
+ * El conmutador del panel lateral.
+ *
+ * Sustituye a la hamburguesa, que era el icono más genérico posible y —lo que
+ * importa— NO DECÍA NADA: tres rayas no informan de qué va a pasar al pulsarlas.
+ * Este glifo dibuja el panel y el sentido del movimiento, así que se entiende
+ * antes de pulsarlo: el riel se estrecha cuando el panel se va a plegar, y la
+ * punta señala hacia dónde. Al conmutar, las dos cosas se animan.
+ */
+function IconoPanel({ abierto }: { abierto: boolean }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden focusable="false">
+      {/* el marco: la pantalla */}
+      <rect x="1.25" y="2.75" width="15.5" height="12.5" rx="3.25"
+            stroke="currentColor" strokeWidth="1.4" opacity=".55" />
+      {/* el riel: el propio panel lateral, ancho cuando está desplegado */}
+      <rect x="2.9" y="4.4" width={abierto ? 4.2 : 2} height="9.2" rx="1"
+            fill="currentColor"
+            style={{ transition: 'width .22s cubic-bezier(.22,1,.36,1), opacity .22s' }}
+            opacity={abierto ? '.95' : '.5'} />
+      {/* la punta: hacia dónde irá */}
+      <path d={abierto ? 'M12.9 6.9 10.6 9l2.3 2.1' : 'M10.6 6.9 12.9 9l-2.3 2.1'}
+            stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 export default function Header({
   toggleSidebar,
+  sidebarOpen = true,
   notificationsCount = 1,
 }: HeaderProps) {
   const { user, signOut } = useAuth();
-  const { theme, setTheme } = useThemeContext();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const radio = useSyncExternalStore(subscribeRadio, getRadioSnapshot);
@@ -168,6 +258,133 @@ export default function Header({
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  // ── Densidad al desplazar ────────────────────────────────────────────────
+  // El contenido se desplaza dentro de <main>, no de la ventana: el evento no
+  // burbujea, así que se escucha en fase de CAPTURA. Sin esto la cabecera nunca
+  // se enteraría de que hay contenido pasando por debajo.
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = (e: Event) => {
+      const el = e.target as HTMLElement | null;
+      const top = el && 'scrollTop' in el ? el.scrollTop : window.scrollY;
+      setScrolled((prev) => (prev === top > 6 ? prev : top > 6));
+    };
+    window.addEventListener("scroll", onScroll, true);
+    return () => window.removeEventListener("scroll", onScroll, true);
+  }, []);
+
+  // ── Buscador global ──────────────────────────────────────────────────────
+  const [consulta, setConsulta] = useState("");
+  const [buscando, setBuscando] = useState(false);   // panel de resultados abierto
+  const [movil, setMovil] = useState(false);         // el campo ocupa toda la barra
+  const [cursor, setCursor] = useState(0);
+  const campoRef = useRef<HTMLInputElement>(null);
+  const buscadorRef = useRef<HTMLDivElement>(null);
+
+  /** El menú lateral y el índice de Configuración SON el mapa del producto: el
+   *  buscador los reutiliza en vez de mantener una segunda lista que se queda
+   *  desfasada en cuanto alguien añade una página. */
+  const destinos = useMemo<Destino[]>(() => {
+    const etiqueta = (...claves: string[]) => {
+      for (const k of claves) {
+        const v = t(k, { defaultValue: "" }) as string;
+        if (v && typeof v === "string") return v;
+      }
+      return "";
+    };
+    const out: Destino[] = [];
+    for (const item of MENU as any[]) {
+      const nombre = etiqueta(`sidebar.${item.id}.label`, `sidebar.${item.id}`) || item.name;
+      if (item.path) out.push({ id: item.id, label: nombre, path: item.path, grupo: 'menu' });
+      for (const sub of (item.subItems ?? []) as any[]) {
+        const subNombre = etiqueta(`sidebar.${item.id}.${sub.id}`, `sidebar.${sub.id}`) || sub.name;
+        out.push({ id: `${item.id}.${sub.id}`, label: subNombre, path: sub.path, grupo: 'menu', contexto: nombre });
+      }
+    }
+    const config = (NAVS as any)?.configuracion;
+    for (const sec of (config?.sections ?? []) as any[]) {
+      for (const it of (sec.items ?? []) as any[]) {
+        out.push({
+          id: `cfg.${it.id}`,
+          label: etiqueta(`settings.configuracion.${it.id}`) || it.label,
+          path: it.path,
+          grupo: 'config',
+          contexto: sec.label ? String(sec.label).toLowerCase() : undefined,
+        });
+      }
+    }
+    out.push({ id: 'cfg.apariencia', label: 'Apariencia', path: '/setting/apariencia', grupo: 'config', contexto: 'mi cuenta' });
+    return out;
+  }, [t]);
+
+  const resultados = useMemo(() => {
+    const q = plano(consulta.trim());
+    if (!q) return [];
+    const marca = (d: Destino) => {
+      const l = plano(d.label);
+      if (l.startsWith(q)) return 0;
+      if (l.includes(q)) return 1;
+      if (plano(d.contexto ?? "").includes(q)) return 2;
+      return 99;
+    };
+    return destinos
+      .map((d) => ({ d, r: marca(d) }))
+      .filter((x) => x.r < 99)
+      .sort((a, b) => a.r - b.r)
+      .slice(0, 8)
+      .map((x) => x.d);
+  }, [consulta, destinos]);
+
+  useEffect(() => { setCursor(0); }, [consulta]);
+
+  const cerrarBusqueda = useCallback(() => {
+    setBuscando(false);
+    setMovil(false);
+    setConsulta("");
+  }, []);
+
+  const irA = useCallback((d: Destino) => {
+    cerrarBusqueda();
+    campoRef.current?.blur();
+    navigate(d.path);
+  }, [cerrarBusqueda, navigate]);
+
+  // ⌘K / Ctrl+K desde cualquier punto del CRM. Esc cierra.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setMovil(true);
+        setBuscando(true);
+        requestAnimationFrame(() => { campoRef.current?.focus(); campoRef.current?.select(); });
+      } else if (e.key === "Escape") {
+        cerrarBusqueda();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [cerrarBusqueda]);
+
+  // Clic fuera → se cierra el panel de resultados.
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (buscadorRef.current && !buscadorRef.current.contains(e.target as Node)) {
+        setBuscando(false);
+        setMovil(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const teclasBusqueda = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "ArrowDown") { e.preventDefault(); setCursor((c) => Math.min(c + 1, Math.max(resultados.length - 1, 0))); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); setCursor((c) => Math.max(c - 1, 0)); }
+    else if (e.key === "Enter") { const d = resultados[cursor]; if (d) { e.preventDefault(); irA(d); } }
+  };
+
+  const esMac = typeof navigator !== "undefined" && /mac|iphone|ipad/i.test(navigator.platform || navigator.userAgent);
+
   const handleLogout = async () => {
     try {
       await signOut();
@@ -204,147 +421,259 @@ export default function Header({
     setFeedbackText("");
   };
 
+  const enlaceMenu = "flex items-center gap-3 px-4 py-2.5 text-sm transition-colors hover:bg-[var(--glass-sunken)]";
+
   return (
     <>
     <PanicAlertOverlay alerts={panicAlerts} onAcknowledge={handleAcknowledgePanic} />
-    <header className="sticky top-0 z-50 bg-background border-b border-border shadow-sm h-14" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
-      <div className="h-14 px-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={toggleSidebar}
-            className="p-2 rounded-lg hover:bg-accent transition-colors"
-            aria-label={t('header.openMenu')}
-            title={t('header.openMenu')}
-          >
-            <Menu className="w-4.5 h-4.5 text-muted-foreground" />
-          </button>
+    {/* Sin fondo propio: el cristal lo pone `.app-header` del contenedor. */}
+    <header
+      className="relative flex h-14 items-center gap-2 px-3 transition-shadow duration-300 sm:px-4"
+      style={{ boxShadow: scrolled ? 'var(--lift-2)' : 'none' }}
+    >
+      <button
+        onClick={toggleSidebar}
+        className="cg-focus cg-btn-glass grid h-9 w-9 shrink-0 place-items-center rounded-xl"
+        aria-label={sidebarOpen ? 'Plegar el menú' : 'Desplegar el menú'}
+        aria-expanded={sidebarOpen}
+        title={sidebarOpen ? 'Plegar el menú' : 'Desplegar el menú'}
+      >
+        {/* En MÓVIL sí toca hamburguesa: ahí el menú es un cajón que se superpone,
+            no un panel que se pliega, y las tres rayas son la convención que todo
+            el mundo reconoce sin pensar. En escritorio el glifo dice hacia dónde
+            va el panel, que es información que en móvil no aplica. */}
+        <span className="md:hidden"><Menu className="h-[19px] w-[19px]" /></span>
+        <span className="hidden md:block"><IconoPanel abierto={sidebarOpen} /></span>
+      </button>
+
+      {/* ── Buscador global ─────────────────────────────────────────────── */}
+      <div
+        ref={buscadorRef}
+        className={movil ? "absolute inset-x-3 z-30" : "hidden min-w-0 flex-1 md:block md:max-w-md"}
+      >
+        <div className="relative">
+          <Search
+            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
+            style={{ color: 'var(--ink-faint)' }}
+          />
+          <input
+            ref={campoRef}
+            value={consulta}
+            onChange={(e) => { setConsulta(e.target.value); setBuscando(true); }}
+            onFocus={() => setBuscando(true)}
+            onKeyDown={teclasBusqueda}
+            placeholder={t('header.searchPlaceholder', { defaultValue: 'Buscar en C-Guard Pro…' }) as string}
+            aria-label={t('header.search')}
+            className="cg-input h-9 w-full pl-9 pr-20 text-sm outline-none"
+          />
+          {/* El atajo, a la vista: un buscador con atajo invisible no lo usa nadie. */}
+          {consulta ? (
+            <button
+              type="button"
+              onClick={cerrarBusqueda}
+              aria-label={t('common.clear', { defaultValue: 'Limpiar' }) as string}
+              className="cg-focus absolute right-2 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-full transition-colors hover:bg-[var(--glass-sunken)]"
+              style={{ color: 'var(--ink-faint)' }}
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          ) : (
+            <kbd
+              className="pointer-events-none absolute right-2 top-1/2 hidden -translate-y-1/2 items-center gap-0.5 rounded-md border px-1.5 py-0.5 text-[10px] font-semibold sm:inline-flex"
+              style={{ borderColor: 'var(--hairline)', background: 'var(--glass-raised)', color: 'var(--ink-faint)' }}
+            >
+              {esMac ? '⌘' : 'Ctrl'} K
+            </kbd>
+          )}
+
+          {buscando && consulta.trim().length > 0 && (
+            <div className="absolute left-0 right-0 top-full z-50 mt-2">
+            <div className="glass-raised cg-flotante cc-rise max-h-[62vh] overflow-y-auto p-1.5">
+              {resultados.length === 0 ? (
+                <div className="px-3 py-6 text-center text-xs" style={{ color: 'var(--ink-faint)' }}>
+                  No hay nada con «{consulta.trim()}»
+                </div>
+              ) : (
+                resultados.map((d, i) => {
+                  const activo = i === cursor;
+                  return (
+                    <button
+                      key={d.id}
+                      type="button"
+                      onMouseEnter={() => setCursor(i)}
+                      onClick={() => irA(d)}
+                      className="flex w-full items-center gap-3 rounded-xl px-2.5 py-2 text-left transition-colors"
+                      style={activo
+                        ? { background: 'var(--brand-wash)', boxShadow: 'inset 0 0 0 1px var(--brand-line)' }
+                        : undefined}
+                    >
+                      <IconTile tone={activo ? 'brand' : 'neutral'} size="sm">
+                        {d.grupo === 'config' ? <Settings2 /> : <LayoutGrid />}
+                      </IconTile>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-semibold" style={{ color: 'var(--ink)' }}>{d.label}</span>
+                        <span className="block truncate text-[11px]" style={{ color: 'var(--ink-faint)' }}>
+                          {d.grupo === 'config' ? 'Configuración' : 'Menú principal'}
+                          {d.contexto ? ` · ${d.contexto}` : ''}
+                        </span>
+                      </span>
+                      {activo && <CornerDownLeft className="h-3.5 w-3.5 shrink-0" style={{ color: 'var(--brand-text)' }} />}
+                    </button>
+                  );
+                })
+              )}
+            </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* `md:ml-auto` empuja el grupo al extremo derecho. Sin él, `md:flex-none`
+          lo dejaba pegado al buscador con media barra vacía a la derecha, y el
+          perfil parecía estar en el medio. */}
+      <div className="flex flex-1 items-center justify-end gap-1.5 md:ml-auto md:flex-none">
+        <div className="mr-1 hidden sm:block">
+          <TrialDaysBadge />
         </div>
 
-        <div className="flex items-center gap-1">
-          <div className="mr-1 hidden xs:block sm:block">
-            <TrialDaysBadge />
-          </div>
-          <button
-            onClick={() => setFeedbackOpen(true)}
-            className="p-2 rounded-lg hover:bg-accent transition-colors"
-            aria-label={t('header.feedback')}
-            title={t('header.feedback')}
+        {/* En pantallas estrechas el campo no cabe: el botón lo despliega sobre
+            la barra entera. */}
+        <span className="md:hidden">
+          <GlassButton
+            label={t('header.search')}
+            onClick={() => {
+              setMovil(true);
+              setBuscando(true);
+              requestAnimationFrame(() => campoRef.current?.focus());
+            }}
           >
-            <MessageSquare className="w-4.5 h-4.5 text-muted-foreground" />
-          </button>
-          <button className="p-2 rounded-lg hover:bg-accent transition-colors" aria-label={t('header.search')} title={t('header.search')}>
-            <Search className="w-4.5 h-4.5 text-muted-foreground" />
-          </button>
-          <button
-            onClick={() => setHelpOpen(true)}
-            className="p-2 rounded-lg hover:bg-accent transition-colors"
-            aria-label={t('header.help')}
-            title={t('header.help')}
-          >
-            <HelpCircle className="w-4.5 h-4.5 text-muted-foreground" />
-          </button>
+            <Search />
+          </GlassButton>
+        </span>
 
-          {/* Radio: opens the persistent general-channel widget. */}
+        <span className="hidden sm:inline-flex">
+          <GlassButton label={t('header.feedback')} onClick={() => setFeedbackOpen(true)}>
+            <MessageSquare />
+          </GlassButton>
+        </span>
+
+        <span className="hidden sm:inline-flex">
+          <GlassButton label={t('header.help')} onClick={() => setHelpOpen(true)}>
+            <HelpCircle />
+          </GlassButton>
+        </span>
+
+        {/* Radio: abre el widget persistente del canal general. */}
+        <GlassButton
+          label="Radio · Canal general"
+          onClick={() => { radioResume(); toggleWidget(); }}
+          dot={radio.on ? { color: radio.speaker ? 'var(--brand)' : 'var(--ok)', pulse: Boolean(radio.speaker) } : null}
+        >
+          <Radio style={radio.on ? { color: 'var(--brand-text)' } : undefined} />
+        </GlassButton>
+
+        {/* Campana en vivo (SSE) */}
+        <NotificationsPanel
+          notifications={notifications}
+          unreadCount={unreadCount}
+          connected={connected}
+          onMarkRead={markRead}
+          onMarkAllRead={markAllRead}
+        />
+
+        <span className="hidden sm:inline-flex"><ThemeSwitch /></span>
+        <span className="sm:hidden"><ThemeSwitch compact /></span>
+
+        <span className="mx-0.5 hidden h-6 w-px sm:block" style={{ background: 'var(--hairline)' }} />
+
+        <div ref={userRef} className="relative">
           <button
-            onClick={() => { radioResume(); toggleWidget(); }}
-            className="relative p-2 rounded-lg hover:bg-accent transition-colors"
-            aria-label="Radio"
-            title="Radio · Canal general"
+            onClick={() => setOpenUser((v) => !v)}
+            className="cg-focus cg-btn-glass flex items-center gap-2.5 rounded-full py-1 pl-1 pr-2.5 transition-all duration-200 active:scale-[0.98]"
+            title={userName || t('header.account')}
+            aria-label={t('header.account')}
+            aria-expanded={openUser}
           >
-            <Radio className={`w-4.5 h-4.5 ${radio.on ? "text-amber-500" : "text-muted-foreground"}`} />
-            {radio.on && (
-              <span className={`absolute right-1 top-1 h-2 w-2 rounded-full ring-2 ring-card ${radio.speaker ? "bg-amber-500 animate-pulse" : "bg-emerald-500"}`} />
+            {avatar ? (
+              <img
+                src={avatar}
+                alt={userName}
+                className="h-7 w-7 rounded-full object-cover"
+                style={{ boxShadow: '0 0 0 2px var(--brand-line)' }}
+              />
+            ) : (
+              <span
+                className="grid h-7 w-7 place-items-center rounded-full text-[11px] font-bold"
+                style={{ background: 'var(--brand)', color: 'var(--brand-ink)' }}
+              >
+                {getInitials(userName)}
+              </span>
             )}
-          </button>
-
-          {/* Real-time notification bell */}
-          <NotificationsPanel
-            notifications={notifications}
-            unreadCount={unreadCount}
-            connected={connected}
-            onMarkRead={markRead}
-            onMarkAllRead={markAllRead}
-          />
-
-          <div className="w-px h-6 bg-border mx-1" />
-
-          <div ref={userRef} className="relative">
-            <button
-              onClick={() => {
-                setOpenUser((v) => !v);
-              }}
-              className="flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 hover:bg-accent transition-colors"
-              title={userName || t('header.account')}
-              aria-label={t('header.account')}
-            >
-              {avatar ? (
-                <img src={avatar} alt={userName} className="w-7 h-7 rounded-full object-cover ring-2 ring-primary/30" />
-              ) : (
-                <div
-                  className="w-7 h-7 rounded-full text-white text-xs font-semibold grid place-items-center"
-                  style={{ background: "linear-gradient(135deg, #C8860A, #F5C300)" }}
-                >
-                  {getInitials(userName)}
-                </div>
+            <span className="hidden leading-tight sm:block">
+              {showTenant && tenantName && (
+                <span className="block max-w-[140px] truncate text-[10px] font-medium" style={{ color: 'var(--ink-faint)' }}>
+                  {tenantName}
+                </span>
               )}
-              <div className="leading-tight hidden sm:block">
-                {showTenant && <div className="text-[10px] text-muted-foreground font-medium">{tenantName}</div>}
-                <div className="text-[12px] font-medium text-foreground">{userName}</div>
+              <span className="block max-w-[140px] truncate text-[12px] font-semibold" style={{ color: 'var(--ink)' }}>
+                {userName}
+              </span>
+            </span>
+            <ChevronDown
+              className="h-3.5 w-3.5 shrink-0 transition-transform duration-200"
+              style={{ color: 'var(--ink-faint)', transform: openUser ? 'rotate(180deg)' : undefined }}
+            />
+          </button>
+
+          {openUser && (
+            <div className="absolute right-0 z-50 mt-2 w-[290px]">
+            <div className="glass-raised cg-flotante cc-rise overflow-hidden">
+              <div className="px-4 py-3.5" style={{ borderBottom: '1px solid var(--hairline)', background: 'var(--brand-wash)' }}>
+                <div className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>{t('header.connected_as', { defaultValue: 'Conectado como' })}</div>
+                <div className="truncate text-[13px] font-semibold" style={{ color: 'var(--ink)' }}>{userEmail}</div>
+                {showTenant && tenantName && (
+                  <div className="mt-1 truncate text-[11px] font-medium" style={{ color: 'var(--brand-text)' }}>{tenantName}</div>
+                )}
               </div>
-              <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
-            </button>
 
-            {openUser && (
-              <div className="absolute right-0 mt-2 w-[300px] rounded-xl border border-border bg-card shadow-xl overflow-hidden">
-                <div className="px-4 py-3.5 bg-gradient-to-r from-muted to-amber-50/40 dark:to-amber-950/20 border-b border-border">
-                  <div className="text-[11px] text-muted-foreground mb-0.5">Conectado como</div>
-                  <div className="text-[13px] font-semibold text-foreground truncate">{userEmail}</div>
-                </div>
-
-                <div className="py-1.5">
-                  <NavLink to="/setting" className="flex items-center gap-3 px-4 py-2 hover:bg-accent text-sm text-foreground transition-colors">
-                    <Settings className="w-4 h-4 text-muted-foreground" />
-                    {t('header.settings')}
-                  </NavLink>
-                  <NavLink to="/setting/billing" className="flex items-center gap-3 px-4 py-2 hover:bg-accent text-sm text-foreground transition-colors">
-                    <CreditCard className="w-4 h-4 text-muted-foreground" />
-                    {t('header.subscription')}
-                  </NavLink>
-                  <NavLink to="/registros-sistema" className="flex items-center gap-3 px-4 py-2 hover:bg-accent text-sm text-foreground transition-colors">
-                    <Clock className="w-4 h-4 text-muted-foreground" />
-                    {t('header.system_logs')}
-                  </NavLink>
-                  <NavLink to="/historial-inicio-sesion" className="flex items-center gap-3 px-4 py-2 hover:bg-accent text-sm text-foreground transition-colors">
-                    <History className="w-4 h-4 text-muted-foreground" />
-                    {t('header.login_history')}
-                  </NavLink>
-
-                  <button
-                    onClick={() => { const next = theme === 'dark' ? 'light' : 'dark'; setTheme(next); setOpenUser(false); }}
-                    className="w-full flex items-center justify-between px-4 py-2 hover:bg-accent text-sm text-foreground transition-colors"
-                  >
-                    <span className="inline-flex items-center gap-3">
-                      {theme === 'dark'
-                        ? <Moon className="w-4 h-4 text-muted-foreground" />
-                        : <Sun className="w-4 h-4 text-muted-foreground" />
-                      }
-                      {theme === 'dark' ? 'Modo oscuro' : 'Modo claro'}
-                    </span>
-                    <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      <ArrowRight className="h-3 w-3" />{theme === 'dark' ? 'claro' : 'oscuro'}
-                    </span>
-                  </button>
-                </div>
-
-                <div className="border-t border-border p-1.5">
-                  <button onClick={handleLogout} className="flex w-full items-center gap-3 px-4 py-2 text-sm text-red-500 hover:bg-red-500/10 rounded-lg transition-colors">
-                    <LogOut className="w-4 h-4" />
-                    {t('header.logout')}
-                  </button>
-                </div>
+              <div className="py-1.5" onClick={() => setOpenUser(false)}>
+                <NavLink to="/setting" className={enlaceMenu} style={{ color: 'var(--ink)' }}>
+                  <Settings className="h-4 w-4" style={{ color: 'var(--ink-faint)' }} />
+                  {t('header.settings')}
+                </NavLink>
+                <NavLink to="/setting/apariencia" className={enlaceMenu} style={{ color: 'var(--ink)' }}>
+                  <Palette className="h-4 w-4" style={{ color: 'var(--ink-faint)' }} />
+                  Apariencia
+                </NavLink>
+                <NavLink to="/setting/billing" className={enlaceMenu} style={{ color: 'var(--ink)' }}>
+                  <CreditCard className="h-4 w-4" style={{ color: 'var(--ink-faint)' }} />
+                  {t('header.subscription')}
+                </NavLink>
+                <NavLink to="/registros-sistema" className={enlaceMenu} style={{ color: 'var(--ink)' }}>
+                  <Clock className="h-4 w-4" style={{ color: 'var(--ink-faint)' }} />
+                  {t('header.system_logs')}
+                </NavLink>
+                <NavLink to="/historial-inicio-sesion" className={enlaceMenu} style={{ color: 'var(--ink)' }}>
+                  <History className="h-4 w-4" style={{ color: 'var(--ink-faint)' }} />
+                  {t('header.login_history')}
+                </NavLink>
               </div>
-            )}
-          </div>
+
+              <div className="p-1.5" style={{ borderTop: '1px solid var(--hairline)' }}>
+                <button
+                  onClick={handleLogout}
+                  className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors"
+                  style={{ color: 'var(--bad-text)' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'color-mix(in oklab, var(--bad) 12%, transparent)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                >
+                  <LogOut className="h-4 w-4" />
+                  {t('header.logout')}
+                </button>
+              </div>
+            </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -352,31 +681,36 @@ export default function Header({
       <Dialog open={feedbackOpen} onOpenChange={handleFeedbackClose}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle className="text-center text-lg font-normal">GuardsPro</DialogTitle>
-            <DialogDescription>{t('header.feedback_modal_desc')}</DialogDescription>
+            <DialogTitle className="text-center text-lg font-semibold">C-Guard Pro</DialogTitle>
+            <DialogDescription className="text-center">{t('header.feedback_modal_desc')}</DialogDescription>
           </DialogHeader>
 
           <div className="py-6">
-            <h3 className="text-center text-base text-foreground mb-8">{t('header.feedback_modal_title')}</h3>
+            <h3 className="mb-8 text-center text-base" style={{ color: 'var(--ink)' }}>{t('header.feedback_modal_title')}</h3>
 
-            <div className="flex justify-center gap-2 mb-6">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                  key={star}
-                  type="button"
-                  onClick={() => setRating(star)}
-                  onMouseEnter={() => setHoverRating(star)}
-                  onMouseLeave={() => setHoverRating(0)}
-                  className="transition-transform hover:scale-110"
-                >
-                  <Star
-                    className={`w-10 h-10 ${star <= (hoverRating || rating)
-                      ? "fill-gray-800 text-foreground"
-                      : "fill-none text-muted-foreground"
-                      }`}
-                  />
-                </button>
-              ))}
+            <div className="mb-6 flex justify-center gap-2">
+              {[1, 2, 3, 4, 5].map((star) => {
+                const activo = star <= (hoverRating || rating);
+                return (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setRating(star)}
+                    onMouseEnter={() => setHoverRating(star)}
+                    onMouseLeave={() => setHoverRating(0)}
+                    className="cg-focus rounded-full transition-transform hover:scale-110"
+                    aria-label={`${star}`}
+                  >
+                    <Star
+                      className="h-10 w-10"
+                      style={{
+                        fill: activo ? 'var(--brand)' : 'none',
+                        color: activo ? 'var(--brand)' : 'var(--ink-faint)',
+                      }}
+                    />
+                  </button>
+                );
+              })}
             </div>
 
             <Textarea
@@ -388,10 +722,7 @@ export default function Header({
           </div>
 
           <div className="flex justify-end">
-            <Button
-              onClick={handleFeedbackSubmit}
-              className="bg-primary hover:bg-primary/90 text-white px-8"
-            >
+            <Button onClick={handleFeedbackSubmit} className="px-8">
               {t('header.send')}
             </Button>
           </div>
@@ -402,54 +733,29 @@ export default function Header({
       <Dialog open={helpOpen} onOpenChange={setHelpOpen}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
-            <DialogTitle className="text-center text-lg font-normal">¿Cómo podemos ayudar?</DialogTitle>
-            <DialogDescription>Encuentra artículos, videos y soporte para resolver tus dudas.</DialogDescription>
+            <DialogTitle className="text-center text-lg font-semibold">¿Cómo podemos ayudar?</DialogTitle>
+            <DialogDescription className="text-center">Encuentra artículos, videos y soporte para resolver tus dudas.</DialogDescription>
           </DialogHeader>
 
           <div className="grid grid-cols-2 gap-4 py-6">
-            <button className="flex flex-col items-center gap-3 p-6 rounded-lg border border-border hover:border-primary/30 hover:bg-primary/10 transition-colors">
-              <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
-                <HelpCircle className="w-6 h-6 text-foreground/70" />
-              </div>
-              <div className="text-center">
-                <div className="font-medium text-primary mb-1">Centro de Soporte</div>
-                <div className="text-sm text-muted-foreground">Lista de artículos</div>
-              </div>
-            </button>
-
-            <button className="flex flex-col items-center gap-3 p-6 rounded-lg border border-border hover:border-primary/30 hover:bg-primary/10 transition-colors">
-              <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
-                <svg className="w-6 h-6 text-foreground/70" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
-                </svg>
-              </div>
-              <div className="text-center">
-                <div className="font-medium text-primary mb-1">Video de Youtube</div>
-                <div className="text-sm text-muted-foreground">Videos instructivos</div>
-              </div>
-            </button>
-
-            <button className="flex flex-col items-center gap-3 p-6 rounded-lg border border-border hover:border-primary/30 hover:bg-primary/10 transition-colors">
-              <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
-                <MessageSquare className="w-6 h-6 text-foreground/70" />
-              </div>
-              <div className="text-center">
-                <div className="font-medium text-primary mb-1">Soporte por Chat</div>
-                <div className="text-sm text-muted-foreground">Soporte por Chat en Vivo</div>
-              </div>
-            </button>
-
-            <button className="flex flex-col items-center gap-3 p-6 rounded-lg border border-border hover:border-primary/30 hover:bg-primary/10 transition-colors">
-              <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
-                <svg className="w-6 h-6 text-foreground/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
-                </svg>
-              </div>
-              <div className="text-center">
-                <div className="font-medium text-primary mb-1">Enviar Ticket</div>
-                <div className="text-sm text-muted-foreground">Tickets de Soporte</div>
-              </div>
-            </button>
+            {[
+              { icono: <HelpCircle />, titulo: 'Centro de Soporte', pie: 'Lista de artículos' },
+              { icono: <MessageSquare />, titulo: 'Soporte por Chat', pie: 'Chat en vivo con soporte' },
+              { icono: <Clock />, titulo: 'Videos instructivos', pie: 'Aprende paso a paso' },
+              { icono: <Settings />, titulo: 'Enviar Ticket', pie: 'Tickets de soporte' },
+            ].map((c) => (
+              <button
+                key={c.titulo}
+                className="glass glass-hover flex flex-col items-center gap-3 p-6 text-center"
+                type="button"
+              >
+                <IconTile size="lg">{c.icono}</IconTile>
+                <span>
+                  <span className="mb-1 block text-sm font-semibold" style={{ color: 'var(--ink)' }}>{c.titulo}</span>
+                  <span className="block text-xs" style={{ color: 'var(--ink-soft)' }}>{c.pie}</span>
+                </span>
+              </button>
+            ))}
           </div>
         </DialogContent>
       </Dialog>

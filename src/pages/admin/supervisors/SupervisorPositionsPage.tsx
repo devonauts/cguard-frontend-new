@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { MapPin, Plus, Radar, Clock, Users, X, Trash2, Building2, Check } from "lucide-react";
-import { PageContainer, PageHeader, Section, SkeletonCards, StatCard, Modal, StatusBadge } from "@/components/kit";
+import { PageContainer, PageHeader, Section, SkeletonCards, StatCard, Modal, StatusBadge, EmptyState } from "@/components/kit";
+import { ListSection } from "./ListSection";
 import RotationStyleSelect from "@/components/schedule/RotationStyleSelect";
 import { supervisorPositionService, type SupervisorPosition } from "@/lib/api/supervisorPositionService";
 import { supervisorService, type Supervisor } from "@/lib/api/supervisorService";
@@ -118,76 +119,122 @@ export default function SupervisorPositionsPage() {
 
           <div className="mb-4 grid grid-cols-2 gap-3 sm:max-w-md">
             <StatCard label="Puestos" value={rows.length} icon={<MapPin />} />
-            <StatCard label="Supervisores asignados" value={totalAssigned} icon={<Users />} accent="success" />
+            <StatCard label="Supervisores asignados" value={totalAssigned} icon={<Users />} accent="ok" />
           </div>
 
           {loading ? (
             <SkeletonCards count={3} />
           ) : rows.length === 0 ? (
-            <Section title="Puestos"><div className="py-10 text-center text-sm text-muted-foreground">Aún no hay puestos. Crea el primero (p. ej. “Aguila2”).</div></Section>
+            <Section title="Puestos" icon={<MapPin />}>
+              <EmptyState
+                icon={<MapPin />}
+                title="Aún no hay puestos de supervisor"
+                description="Crea el primero (p. ej. «Aguila2»): defines su turno y su rotación, y los supervisores asignados la siguen."
+                action={<Button variant="brand" size="sm" onClick={() => setOpen(true)}><Plus className="mr-2 h-4 w-4" /> Nuevo puesto</Button>}
+              />
+            </Section>
           ) : (
             <div className="space-y-4">
               {rows.map((p) => (
-                <Section key={p.id} title={p.name} icon={<MapPin />}
-                  action={<button onClick={() => removePos(p.id)} className="text-muted-foreground hover:text-red-600" title="Eliminar"><Trash2 className="h-4 w-4" /></button>}>
+                <ListSection key={p.id} title={p.name} icon={<MapPin />}
+                  action={(
+                    <button
+                      onClick={() => removePos(p.id)}
+                      className="cg-focus rounded-lg p-1.5 transition-colors"
+                      style={{ color: "var(--ink-faint)" }}
+                      onMouseEnter={(e) => { e.currentTarget.style.color = "var(--bad-text)"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.color = "var(--ink-faint)"; }}
+                      title="Eliminar"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  )}>
                   <div className="mb-3 flex flex-wrap items-center gap-2 text-xs">
-                    {p.zone && <StatusBadge tone="slate" dot={false}>{p.zone}</StatusBadge>}
-                    <StatusBadge tone="amber" dot={false}><Clock className="mr-1 inline h-3 w-3" />{p.startTime || "—"}–{p.endTime || "—"}</StatusBadge>
-                    <StatusBadge tone="green" dot={false}><Radar className="mr-1 inline h-3 w-3" />{rotationSummary(p)}</StatusBadge>
-                    <span className="text-muted-foreground">{p.scheduleType}</span>
+                    {p.zone && <StatusBadge tone="neutral" dot={false}>{p.zone}</StatusBadge>}
+                    <StatusBadge tone="warn" dot={false}><Clock className="mr-1 inline h-3 w-3" />{p.startTime || "—"}–{p.endTime || "—"}</StatusBadge>
+                    <StatusBadge tone="ok" dot={false}><Radar className="mr-1 inline h-3 w-3" />{rotationSummary(p)}</StatusBadge>
+                    <span style={{ color: "var(--ink-soft)" }}>{p.scheduleType}</span>
                   </div>
 
-                  <div className="mb-2 text-[11px] uppercase tracking-wide text-muted-foreground">Supervisores asignados</div>
+                  <div className="cg-eyebrow mb-2">Supervisores asignados</div>
                   <div className="mb-3 flex flex-wrap gap-1.5">
-                    {p.assignments.length === 0 && <span className="text-sm text-muted-foreground">Ninguno</span>}
+                    {p.assignments.length === 0 && <span className="text-sm" style={{ color: "var(--ink-soft)" }}>Ninguno</span>}
                     {p.assignments.map((a) => (
-                      <span key={a.id} className="inline-flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-xs font-medium">
+                      <StatusBadge key={a.id} tone="neutral" dot={false}>
                         <Users className="h-3 w-3" />{a.supervisorName || a.supervisorUserId}
-                        {a.platoonOffset ? <span className="rounded bg-primary/15 px-1 text-[10px] text-primary">desfase {a.platoonOffset}</span> : null}
-                        <button onClick={() => unassign(p.id, a.id)} className="text-muted-foreground hover:text-red-600"><X className="h-3 w-3" /></button>
-                      </span>
+                        {a.platoonOffset ? (
+                          <span
+                            className="rounded-full px-1.5 text-[10px] font-semibold tabular-nums"
+                            style={{ background: "var(--brand-wash)", color: "var(--brand-text)" }}
+                          >
+                            desfase {a.platoonOffset}
+                          </span>
+                        ) : null}
+                        <button
+                          onClick={() => unassign(p.id, a.id)}
+                          className="cg-focus rounded-full transition-colors hover:[color:var(--bad-text)]"
+                          style={{ color: "var(--ink-soft)" }}
+                          aria-label="Quitar supervisor"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </StatusBadge>
                     ))}
                   </div>
 
                   <div className="flex flex-wrap items-center gap-2">
                     <select value={assignSel[p.id] || ""} onChange={(e) => setAssignSel((s) => ({ ...s, [p.id]: e.target.value }))}
-                      className="h-9 flex-1 rounded-md border border-input bg-background px-2 text-sm sm:max-w-xs">
+                      className="cg-input cg-focus h-9 flex-1 px-2 text-sm sm:max-w-xs">
                       <option value="">Asignar supervisor…</option>
                       {sups.filter((s) => !p.assignments.some((a) => a.supervisorUserId === s.id)).map((s) => (
                         <option key={s.id} value={s.id}>{s.fullName}</option>
                       ))}
                     </select>
                     <div className="flex items-center gap-1">
-                      <label className="text-xs text-muted-foreground">Desfase</label>
+                      <label className="cg-eyebrow">Desfase</label>
                       <input type="number" min={0} value={offsetSel[p.id] ?? ""} placeholder="0"
                         onChange={(e) => setOffsetSel((s) => ({ ...s, [p.id]: e.target.value }))}
-                        className="h-9 w-16 rounded-md border border-input bg-background px-2 text-sm" />
+                        className="cg-input cg-focus h-9 w-16 px-2 text-sm" />
                     </div>
                     <Button variant="outline" size="sm" disabled={!assignSel[p.id]} onClick={() => assign(p.id)}>Asignar</Button>
                   </div>
                   {p.rotationStyle && (
-                    <p className="mt-1.5 text-[11px] text-muted-foreground">
-                      El desfase escalona la rotación. Para el turno opuesto (noche mientras otro está en día), usa <span className="font-medium text-foreground">{p.rotationStyle.dayShifts}</span>.
+                    <p className="mt-1.5 text-[11px]" style={{ color: "var(--ink-faint)" }}>
+                      El desfase escalona la rotación. Para el turno opuesto (noche mientras otro está en día), usa <span className="font-semibold text-foreground">{p.rotationStyle.dayShifts}</span>.
                     </p>
                   )}
 
-                  <div className="mt-4 border-t border-border/60 pt-3">
+                  <div className="mt-4 border-t pt-3" style={{ borderColor: "var(--hairline)" }}>
                     <div className="mb-2 flex items-center justify-between">
-                      <span className="text-[11px] uppercase tracking-wide text-muted-foreground">Estaciones bajo protección ({p.stationIds.length})</span>
-                      <button onClick={() => setStationEdit(stationEdit === p.id ? null : p.id)} className="text-xs font-medium text-primary hover:underline">
+                      <span className="cg-eyebrow tabular-nums">Puestos bajo protección ({p.stationIds.length})</span>
+                      <button
+                        onClick={() => setStationEdit(stationEdit === p.id ? null : p.id)}
+                        className="cg-focus rounded-md text-xs font-semibold hover:underline"
+                        style={{ color: "var(--brand-text)" }}
+                      >
                         {stationEdit === p.id ? "Listo" : "Editar"}
                       </button>
                     </div>
                     {stationEdit === p.id ? (
                       <div className="max-h-56 space-y-1 overflow-y-auto pr-1">
-                        {stations.length === 0 && <p className="text-xs text-muted-foreground">Cargando estaciones…</p>}
+                        {stations.length === 0 && <p className="text-xs" style={{ color: "var(--ink-soft)" }}>Cargando puestos…</p>}
                         {stations.map((s) => {
                           const on = p.stationIds.includes(s.id);
                           return (
                             <button key={s.id} type="button" onClick={() => toggleStationOnPuesto(p, s.id)}
-                              className={`flex w-full items-center gap-2 rounded-md border px-3 py-2 text-left text-sm transition ${on ? "border-primary bg-primary/10" : "border-border hover:bg-muted"}`}>
-                              <span className={`grid h-4 w-4 place-items-center rounded ${on ? "bg-primary text-primary-foreground" : "border border-border"}`}>{on && <Check className="h-3 w-3" />}</span>
-                              <Building2 className="h-3.5 w-3.5 text-muted-foreground" /><span className="truncate">{s.name}</span>
+                              className="cg-focus flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-all"
+                              style={on
+                                ? { borderColor: "var(--brand-line)", background: "var(--brand-wash)" }
+                                : { borderColor: "var(--hairline)", background: "transparent" }}>
+                              <span
+                                className="grid h-4 w-4 place-items-center rounded border"
+                                style={on
+                                  ? { background: "var(--brand)", color: "var(--brand-ink)", borderColor: "transparent" }
+                                  : { borderColor: "var(--hairline)" }}
+                              >
+                                {on && <Check className="h-3 w-3" />}
+                              </span>
+                              <Building2 className="h-3.5 w-3.5" style={{ color: "var(--ink-faint)" }} /><span className="truncate">{s.name}</span>
                             </button>
                           );
                         })}
@@ -195,14 +242,16 @@ export default function SupervisorPositionsPage() {
                     ) : p.stationIds.length ? (
                       <div className="flex flex-wrap gap-1.5">
                         {p.stationIds.map((sid) => (
-                          <span key={sid} className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-xs font-medium"><Building2 className="h-3 w-3" />{stationName(sid)}</span>
+                          <StatusBadge key={sid} tone="neutral" dot={false}>
+                            <Building2 className="h-3 w-3" />{stationName(sid)}
+                          </StatusBadge>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-sm text-muted-foreground">Ninguna. Usa “Editar” para asignar estaciones.</p>
+                      <p className="text-sm" style={{ color: "var(--ink-soft)" }}>Ninguno. Usa «Editar» para asignar puestos.</p>
                     )}
                   </div>
-                </Section>
+                </ListSection>
               ))}
             </div>
           )}
@@ -218,35 +267,43 @@ export default function SupervisorPositionsPage() {
             <Input placeholder="Zona / sector" value={form.zone} onChange={(e) => setForm((f) => ({ ...f, zone: e.target.value }))} />
           </div>
           <div>
-            <label className="mb-1 block text-[11px] uppercase tracking-wide text-muted-foreground">Tipo de turno</label>
+            <label className="cg-eyebrow mb-1 block">Tipo de turno</label>
             <select value={form.scheduleType} onChange={(e) => setForm((f) => ({ ...f, scheduleType: e.target.value }))}
-              className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm">
+              className="cg-input cg-focus h-9 w-full px-2 text-sm">
               {SCHEDULE_TYPES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-[11px] uppercase tracking-wide text-muted-foreground">Rotación</label>
+            <label className="cg-eyebrow mb-1 block">Rotación</label>
             <RotationStyleSelect scheduleType={form.scheduleType} value={form.rotationStyleId} onChange={(id) => setForm((f) => ({ ...f, rotationStyleId: id }))} />
           </div>
           <div className="grid grid-cols-3 gap-3">
-            <label className="text-[11px] uppercase tracking-wide text-muted-foreground">Entrada (día)
+            <label className="cg-eyebrow">Entrada (día)
               <Input type="time" value={form.startTime} onChange={(e) => setForm((f) => ({ ...f, startTime: e.target.value }))} className="mt-1" /></label>
-            <label className="text-[11px] uppercase tracking-wide text-muted-foreground">Salida (día)
+            <label className="cg-eyebrow">Salida (día)
               <Input type="time" value={form.endTime} onChange={(e) => setForm((f) => ({ ...f, endTime: e.target.value }))} className="mt-1" /></label>
-            <label className="text-[11px] uppercase tracking-wide text-muted-foreground">Supervisores/slot
+            <label className="cg-eyebrow">Supervisores por turno
               <Input type="number" min={1} value={form.guardsNeeded} onChange={(e) => setForm((f) => ({ ...f, guardsNeeded: Number(e.target.value) }))} className="mt-1" /></label>
           </div>
           <div>
-            <label className="mb-1 block text-[11px] uppercase tracking-wide text-muted-foreground">Estaciones bajo protección ({form.stationIds.length})</label>
-            <div className="max-h-48 space-y-1 overflow-y-auto rounded-md border border-input p-1">
-              {stations.length === 0 && <p className="p-2 text-xs text-muted-foreground">Cargando estaciones…</p>}
+            <label className="cg-eyebrow mb-1 block">Puestos bajo protección ({form.stationIds.length})</label>
+            <div className="glass-sunken max-h-48 space-y-1 overflow-y-auto p-1">
+              {stations.length === 0 && <p className="p-2 text-xs" style={{ color: "var(--ink-faint)" }}>Cargando puestos…</p>}
               {stations.map((s) => {
                 const on = form.stationIds.includes(s.id);
                 return (
                   <button key={s.id} type="button"
                     onClick={() => setForm((f) => ({ ...f, stationIds: on ? f.stationIds.filter((x) => x !== s.id) : [...f.stationIds, s.id] }))}
-                    className={`flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm transition ${on ? "bg-primary/10 text-primary" : "hover:bg-muted"}`}>
-                    <span className={`grid h-4 w-4 place-items-center rounded ${on ? "bg-primary text-primary-foreground" : "border border-border"}`}>{on && <Check className="h-3 w-3" />}</span>
+                    className="cg-focus flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-sm transition-all"
+                    style={on ? { background: "var(--brand-wash)", color: "var(--brand-text)" } : undefined}>
+                    <span
+                      className="grid h-4 w-4 place-items-center rounded border"
+                      style={on
+                        ? { background: "var(--brand)", color: "var(--brand-ink)", borderColor: "transparent" }
+                        : { borderColor: "var(--hairline)" }}
+                    >
+                      {on && <Check className="h-3 w-3" />}
+                    </span>
                     <Building2 className="h-3.5 w-3.5" /><span className="truncate">{s.name}</span>
                   </button>
                 );

@@ -2,8 +2,12 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { Client } from '@/types/client';
 import useScrollToTopOnMount from '@/hooks/useScrollToTopOnMount';
+import { MeterBar } from '@/components/charts';
 import { clientService } from '@/lib/api/clientService';
-import { Section, EmptyState, StatCard, StatusBadge, Modal, Field } from '@/components/kit';
+import { Section, EmptyState, StatCard, StatusBadge, Modal, Field, GlassPanel, IconTile } from '@/components/kit';
+import {
+  FIELD_CLS, LabeledField, TabTable, THead, Th, Tr, RowAction, RowActions, TabLoading,
+} from '../_shared/tab-kit';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import {
@@ -79,15 +83,9 @@ const fmtDate = (d: string | number | Date | null | undefined) => {
 };
 const orDash = (v: unknown) => (v === null || v === undefined || v === '' ? '—' : (v as ReactNode));
 
-const inputCls = 'flex h-9 w-full rounded-lg border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-all placeholder:text-muted-foreground hover:border-ring/40 focus-visible:outline-none focus-visible:border-ring focus-visible:ring-ring/40 focus-visible:ring-[3px]';
-
 function Bar({ pct, tone = 'ok' }: { pct: number; tone?: 'ok' | 'warn' | 'crit' }) {
-  const color = tone === 'crit' ? 'bg-red-500' : tone === 'warn' ? 'bg-orange-500' : 'bg-emerald-500';
-  return (
-    <div className="h-1.5 w-full min-w-[60px] rounded-full bg-muted">
-      <div className={`h-1.5 rounded-full ${color}`} style={{ width: `${Math.max(3, Math.min(100, pct))}%` }} />
-    </div>
-  );
+  return <MeterBar className="min-w-[60px]" height={6} minVisiblePct={3} pct={pct}
+    tone={tone === 'crit' ? 'bad' : tone === 'warn' ? 'warn' : 'ok'} />;
 }
 
 export default function ClientContract({ client }: { client: Client }) {
@@ -210,36 +208,39 @@ export default function ClientContract({ client }: { client: Client }) {
     catch { toast.error('No se pudo eliminar'); }
   };
 
-  if (loading) {
-    return <div className="p-8 text-sm text-muted-foreground">Cargando contrato…</div>;
-  }
+  if (loading) return <TabLoading />;
 
   const renewalDate = c.contractEndDate;
 
   return (
     <div ref={containerRef} className="space-y-4">
       {/* Estado del contrato strip */}
-      <div className="rounded-2xl border bg-card p-4 sm:p-5 shadow-sm">
+      <GlassPanel className="p-4 sm:p-5">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
             <div>
-              <div className="text-xs uppercase tracking-wide text-muted-foreground">Estado del contrato</div>
-              <div className="mt-1"><StatusBadge tone={c.active ? 'green' : 'slate'}>{c.active ? 'Activo' : 'Inactivo'}</StatusBadge></div>
+              <div className="cg-eyebrow">Estado del contrato</div>
+              <div className="mt-1"><StatusBadge tone={c.active ? 'ok' : 'neutral'}>{c.active ? 'Activo' : 'Inactivo'}</StatusBadge></div>
             </div>
             <div>
-              <div className="text-xs uppercase tracking-wide text-muted-foreground">Días restantes</div>
-              <div className={`mt-1 text-2xl font-semibold ${derived.daysRemaining != null && derived.daysRemaining < 30 ? 'text-orange-500' : 'text-emerald-600'}`}>
+              <div className="cg-eyebrow">Días restantes</div>
+              <div
+                className="mt-1 font-display text-2xl font-bold tabular-nums"
+                style={{ color: derived.daysRemaining != null && derived.daysRemaining < 30 ? 'var(--warn-text)' : 'var(--ok-text)' }}
+              >
                 {derived.daysRemaining != null ? `${derived.daysRemaining} días` : '—'}
               </div>
             </div>
             <div>
-              <div className="text-xs uppercase tracking-wide text-muted-foreground">Próxima renovación</div>
-              <div className="mt-1 text-2xl font-semibold">{fmtDate(renewalDate)}</div>
+              <div className="cg-eyebrow">Próxima renovación</div>
+              {/* Misma tipografía que «Días restantes»: son dos métricas de la
+                  misma tira y con pesos distintos una parecía más importante. */}
+              <div className="mt-1 font-display text-2xl font-bold tabular-nums">{fmtDate(renewalDate)}</div>
             </div>
           </div>
           <Button onClick={openEdit}><Pencil className="mr-2 h-4 w-4" /> Editar contrato</Button>
         </div>
-      </div>
+      </GlassPanel>
 
       {/* Row 1 — four info cards */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
@@ -285,7 +286,7 @@ export default function ClientContract({ client }: { client: Client }) {
                   href={d.downloadUrl || d.url || '#'}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center justify-between gap-2 py-2.5 hover:bg-muted/30 rounded-md px-1"
+                  className="flex items-center justify-between gap-2 rounded-md px-1 py-2.5"
                 >
                   <span className="flex min-w-0 items-center gap-2 text-sm text-foreground">
                     <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
@@ -315,20 +316,17 @@ export default function ClientContract({ client }: { client: Client }) {
             action={<Button size="sm" onClick={() => openSvc()}><Plus className="mr-1.5 h-4 w-4" /> Agregar servicio</Button>}
           />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[720px] text-sm">
-              <thead>
-                <tr className="border-b text-left text-xs uppercase tracking-wide text-muted-foreground">
-                  <th className="px-2 py-2 font-medium">Servicio</th>
-                  <th className="px-2 py-2 font-medium">Descripción</th>
-                  <th className="px-2 py-2 font-medium">Unidad</th>
-                  <th className="px-2 py-2 font-medium text-right">Contratado</th>
-                  <th className="px-2 py-2 font-medium text-right">Utilizado (mes)</th>
-                  <th className="px-2 py-2 font-medium">Cumplimiento</th>
-                  <th className="px-2 py-2 font-medium">Estado</th>
-                  <th className="px-2 py-2" />
-                </tr>
-              </thead>
+          <TabTable>
+              <THead>
+                <Th>Servicio</Th>
+                <Th>Descripción</Th>
+                <Th>Unidad</Th>
+                <Th align="right">Contratado</Th>
+                <Th align="right">Utilizado (mes)</Th>
+                <Th>Cumplimiento</Th>
+                <Th>Estado</Th>
+                <Th aria-label="Acciones" />
+              </THead>
               <tbody>
                 {services.map((s) => {
                   const Icon = SERVICE_PRESETS[s.serviceKey]?.icon || ClipboardList;
@@ -339,10 +337,10 @@ export default function ClientContract({ client }: { client: Client }) {
                   const estado = comp == null ? 'Activo' : comp >= target ? 'Cumple' : 'Atención';
                   const tone = comp == null ? 'ok' : comp >= target ? 'ok' : comp >= target * 0.75 ? 'warn' : 'crit';
                   return (
-                    <tr key={s.id} className="border-b last:border-0 hover:bg-muted/40">
+                    <Tr key={s.id}>
                       <td className="px-2 py-2.5">
                         <div className="flex items-center gap-2 font-medium">
-                          <span className="grid h-7 w-7 place-items-center rounded-lg bg-primary/10 text-primary"><Icon className="h-4 w-4" /></span>
+                          <IconTile size="sm"><Icon /></IconTile>
                           {s.name}
                         </div>
                       </td>
@@ -362,17 +360,16 @@ export default function ClientContract({ client }: { client: Client }) {
                         <StatusBadge tone={estado === 'Cumple' ? 'green' : estado === 'Atención' ? 'orange' : 'slate'}>{estado}</StatusBadge>
                       </td>
                       <td className="px-2 py-2.5">
-                        <div className="flex justify-end gap-1">
-                          <button onClick={() => openSvc(s)} className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"><Pencil className="h-3.5 w-3.5" /></button>
-                          <button onClick={() => delSvc(s)} className="rounded-md p-1.5 text-muted-foreground hover:bg-red-500/10 hover:text-red-600"><Trash2 className="h-3.5 w-3.5" /></button>
-                        </div>
+                        <RowActions>
+                          <RowAction title="Editar servicio" onClick={() => openSvc(s)}><Pencil className="h-3.5 w-3.5" /></RowAction>
+                          <RowAction title="Eliminar servicio" tone="bad" onClick={() => delSvc(s)}><Trash2 className="h-3.5 w-3.5" /></RowAction>
+                        </RowActions>
                       </td>
-                    </tr>
+                    </Tr>
                   );
                 })}
               </tbody>
-            </table>
-          </div>
+          </TabTable>
         )}
       </Section>
 
@@ -416,37 +413,33 @@ export default function ClientContract({ client }: { client: Client }) {
           {renewals.length === 0 ? (
             <EmptyState icon={<History className="h-5 w-5" />} title="Sin historial" description="Registra los periodos del contrato." />
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[720px] text-sm">
-                <thead>
-                  <tr className="border-b text-left text-xs uppercase tracking-wide text-muted-foreground">
-                    <th className="px-2 py-2 font-medium">Periodo</th>
-                    <th className="px-2 py-2 font-medium">Desde</th>
-                    <th className="px-2 py-2 font-medium">Hasta</th>
-                    <th className="px-2 py-2 font-medium">Duración</th>
-                    <th className="px-2 py-2 font-medium">Estado</th>
-                    <th className="px-2 py-2" />
-                  </tr>
-                </thead>
+            <TabTable minWidth={560}>
+                <THead>
+                  <Th>Periodo</Th>
+                  <Th>Desde</Th>
+                  <Th>Hasta</Th>
+                  <Th>Duración</Th>
+                  <Th>Estado</Th>
+                  <Th aria-label="Acciones" />
+                </THead>
                 <tbody>
                   {renewals.map((r) => (
-                    <tr key={r.id} className="border-b last:border-0 hover:bg-muted/40">
+                    <Tr key={r.id}>
                       <td className="px-2 py-2.5 font-medium">{r.periodLabel || '—'}</td>
-                      <td className="px-2 py-2.5">{fmtDate(r.fromDate)}</td>
-                      <td className="px-2 py-2.5">{fmtDate(r.toDate)}</td>
+                      <td className="px-2 py-2.5 tabular-nums">{fmtDate(r.fromDate)}</td>
+                      <td className="px-2 py-2.5 tabular-nums">{fmtDate(r.toDate)}</td>
                       <td className="px-2 py-2.5">{r.durationMonths ? `${r.durationMonths} meses` : '—'}</td>
                       <td className="px-2 py-2.5"><StatusBadge tone={r.status === 'active' ? 'green' : 'slate'}>{r.status === 'active' ? 'Activo' : 'Finalizado'}</StatusBadge></td>
                       <td className="px-2 py-2.5">
-                        <div className="flex justify-end gap-1">
-                          <button onClick={() => openRen(r)} className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"><Pencil className="h-3.5 w-3.5" /></button>
-                          <button onClick={() => delRen(r)} className="rounded-md p-1.5 text-muted-foreground hover:bg-red-500/10 hover:text-red-600"><Trash2 className="h-3.5 w-3.5" /></button>
-                        </div>
+                        <RowActions>
+                          <RowAction title="Editar periodo" onClick={() => openRen(r)}><Pencil className="h-3.5 w-3.5" /></RowAction>
+                          <RowAction title="Eliminar periodo" tone="bad" onClick={() => delRen(r)}><Trash2 className="h-3.5 w-3.5" /></RowAction>
+                        </RowActions>
                       </td>
-                    </tr>
+                    </Tr>
                   ))}
                 </tbody>
-              </table>
-            </div>
+            </TabTable>
           )}
         </Section>
       </div>
@@ -455,30 +448,30 @@ export default function ClientContract({ client }: { client: Client }) {
       <Modal open={editOpen} onOpenChange={setEditOpen} title="Editar contrato" icon={<FileText className="h-5 w-5" />} size="lg"
         footer={<><Button variant="outline" onClick={() => setEditOpen(false)}>Cancelar</Button><Button onClick={saveContract} disabled={saving}>{saving ? 'Guardando…' : 'Guardar'}</Button></>}>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <Lbl label="Número de contrato"><input className={inputCls} value={form.contractNumber} onChange={(e) => setForm({ ...form, contractNumber: e.target.value })} /></Lbl>
-          <Lbl label="Tipo de contrato"><input className={inputCls} placeholder="Servicio integral" value={form.contractType} onChange={(e) => setForm({ ...form, contractType: e.target.value })} /></Lbl>
-          <Lbl label="Moneda"><input className={inputCls} placeholder="USD" value={form.currency} onChange={(e) => setForm({ ...form, currency: e.target.value })} /></Lbl>
-          <Lbl label="Forma de pago"><input className={inputCls} placeholder="Mensual" value={form.paymentTerms} onChange={(e) => setForm({ ...form, paymentTerms: e.target.value })} /></Lbl>
-          <Lbl label="Fecha de inicio"><input type="date" className={inputCls} value={form.contractDate || ''} onChange={(e) => setForm({ ...form, contractDate: e.target.value })} /></Lbl>
-          <Lbl label="Fecha de vencimiento"><input type="date" className={inputCls} value={form.contractEndDate || ''} onChange={(e) => setForm({ ...form, contractEndDate: e.target.value })} /></Lbl>
-          <Lbl label="Renovación automática">
+          <LabeledField label="Número de contrato"><input className={FIELD_CLS} value={form.contractNumber} onChange={(e) => setForm({ ...form, contractNumber: e.target.value })} /></LabeledField>
+          <LabeledField label="Tipo de contrato"><input className={FIELD_CLS} placeholder="Servicio integral" value={form.contractType} onChange={(e) => setForm({ ...form, contractType: e.target.value })} /></LabeledField>
+          <LabeledField label="Moneda"><input className={FIELD_CLS} placeholder="USD" value={form.currency} onChange={(e) => setForm({ ...form, currency: e.target.value })} /></LabeledField>
+          <LabeledField label="Forma de pago"><input className={FIELD_CLS} placeholder="Mensual" value={form.paymentTerms} onChange={(e) => setForm({ ...form, paymentTerms: e.target.value })} /></LabeledField>
+          <LabeledField label="Fecha de inicio"><input type="date" className={FIELD_CLS} value={form.contractDate || ''} onChange={(e) => setForm({ ...form, contractDate: e.target.value })} /></LabeledField>
+          <LabeledField label="Fecha de vencimiento"><input type="date" className={FIELD_CLS} value={form.contractEndDate || ''} onChange={(e) => setForm({ ...form, contractEndDate: e.target.value })} /></LabeledField>
+          <LabeledField label="Renovación automática">
             <div className="flex items-center gap-2 h-9">
               <input id="autoRenew" type="checkbox" className="h-4 w-4" checked={!!form.autoRenew} onChange={(e) => setForm({ ...form, autoRenew: e.target.checked })} />
               <label htmlFor="autoRenew" className="text-sm text-muted-foreground">Renovar automáticamente</label>
             </div>
-          </Lbl>
-          <Lbl label="Aviso de renovación (días antes)"><input type="number" className={inputCls} value={form.autoRenewDaysBefore} onChange={(e) => setForm({ ...form, autoRenewDaysBefore: e.target.value })} /></Lbl>
-          <Lbl label="Horas contratadas / mes"><input type="number" className={inputCls} value={form.contractedHoursPerMonth} onChange={(e) => setForm({ ...form, contractedHoursPerMonth: e.target.value })} /></Lbl>
-          <Lbl label="Jurisdicción"><input className={inputCls} placeholder="Ecuador" value={form.jurisdiction} onChange={(e) => setForm({ ...form, jurisdiction: e.target.value })} /></Lbl>
-          <Lbl label="Penalización por incumplimiento" full><input className={inputCls} placeholder="Crédito del 5% mensual" value={form.penaltyClause} onChange={(e) => setForm({ ...form, penaltyClause: e.target.value })} /></Lbl>
-          <Lbl label="Cancelación anticipada" full><input className={inputCls} placeholder="60 días de notificación" value={form.earlyCancellationNotice} onChange={(e) => setForm({ ...form, earlyCancellationNotice: e.target.value })} /></Lbl>
+          </LabeledField>
+          <LabeledField label="Aviso de renovación (días antes)"><input type="number" className={FIELD_CLS} value={form.autoRenewDaysBefore} onChange={(e) => setForm({ ...form, autoRenewDaysBefore: e.target.value })} /></LabeledField>
+          <LabeledField label="Horas contratadas / mes"><input type="number" className={FIELD_CLS} value={form.contractedHoursPerMonth} onChange={(e) => setForm({ ...form, contractedHoursPerMonth: e.target.value })} /></LabeledField>
+          <LabeledField label="Jurisdicción"><input className={FIELD_CLS} placeholder="Ecuador" value={form.jurisdiction} onChange={(e) => setForm({ ...form, jurisdiction: e.target.value })} /></LabeledField>
+          <LabeledField label="Penalización por incumplimiento" full><input className={FIELD_CLS} placeholder="Crédito del 5% mensual" value={form.penaltyClause} onChange={(e) => setForm({ ...form, penaltyClause: e.target.value })} /></LabeledField>
+          <LabeledField label="Cancelación anticipada" full><input className={FIELD_CLS} placeholder="60 días de notificación" value={form.earlyCancellationNotice} onChange={(e) => setForm({ ...form, earlyCancellationNotice: e.target.value })} /></LabeledField>
           <div className="sm:col-span-2 mt-1 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <Lbl label="SLA uptime (%)"><input type="number" className={inputCls} value={form.slaUptimeTarget} onChange={(e) => setForm({ ...form, slaUptimeTarget: e.target.value })} /></Lbl>
-            <Lbl label="Respuesta (min)"><input type="number" className={inputCls} value={form.slaResponseMinutes} onChange={(e) => setForm({ ...form, slaResponseMinutes: e.target.value })} /></Lbl>
-            <Lbl label="Rondas (%)"><input type="number" className={inputCls} value={form.slaRoundsTarget} onChange={(e) => setForm({ ...form, slaRoundsTarget: e.target.value })} /></Lbl>
-            <Lbl label="Reportes (%)"><input type="number" className={inputCls} value={form.slaReportsTarget} onChange={(e) => setForm({ ...form, slaReportsTarget: e.target.value })} /></Lbl>
+            <LabeledField label="SLA uptime (%)"><input type="number" className={FIELD_CLS} value={form.slaUptimeTarget} onChange={(e) => setForm({ ...form, slaUptimeTarget: e.target.value })} /></LabeledField>
+            <LabeledField label="Respuesta (min)"><input type="number" className={FIELD_CLS} value={form.slaResponseMinutes} onChange={(e) => setForm({ ...form, slaResponseMinutes: e.target.value })} /></LabeledField>
+            <LabeledField label="Rondas (%)"><input type="number" className={FIELD_CLS} value={form.slaRoundsTarget} onChange={(e) => setForm({ ...form, slaRoundsTarget: e.target.value })} /></LabeledField>
+            <LabeledField label="Reportes (%)"><input type="number" className={FIELD_CLS} value={form.slaReportsTarget} onChange={(e) => setForm({ ...form, slaReportsTarget: e.target.value })} /></LabeledField>
           </div>
-          <Lbl label="Notas del contrato" full><textarea rows={3} className={`${inputCls} h-auto py-2`} value={form.contractNotes} onChange={(e) => setForm({ ...form, contractNotes: e.target.value })} /></Lbl>
+          <LabeledField label="Notas del contrato" full><textarea rows={3} className={`${FIELD_CLS} h-auto py-2`} value={form.contractNotes} onChange={(e) => setForm({ ...form, contractNotes: e.target.value })} /></LabeledField>
         </div>
       </Modal>
 
@@ -487,20 +480,20 @@ export default function ClientContract({ client }: { client: Client }) {
         footer={<><Button variant="outline" onClick={() => setSvcOpen(false)}>Cancelar</Button><Button onClick={saveSvc} disabled={saving}>{saving ? 'Guardando…' : 'Guardar'}</Button></>}>
         {svcForm && (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Lbl label="Tipo de servicio" full>
-              <select className={inputCls} value={svcForm.serviceKey}
+            <LabeledField label="Tipo de servicio" full>
+              <select className={FIELD_CLS} value={svcForm.serviceKey}
                 onChange={(e) => {
                   const k = e.target.value; const p = SERVICE_PRESETS[k];
                   setSvcForm({ ...svcForm, serviceKey: k, name: (svcForm.id ? svcForm.name : p.name) || svcForm.name, unit: (svcForm.id ? svcForm.unit : p.unit) || svcForm.unit });
                 }}>
                 {SERVICE_KEYS.map((k) => <option key={k} value={k}>{k === 'custom' ? 'Personalizado' : SERVICE_PRESETS[k].name}</option>)}
               </select>
-            </Lbl>
-            <Lbl label="Nombre" full><input className={inputCls} value={svcForm.name} onChange={(e) => setSvcForm({ ...svcForm, name: e.target.value })} /></Lbl>
-            <Lbl label="Descripción" full><input className={inputCls} value={svcForm.description || ''} onChange={(e) => setSvcForm({ ...svcForm, description: e.target.value })} /></Lbl>
-            <Lbl label="Unidad"><input className={inputCls} placeholder="Estación, Rondas…" value={svcForm.unit || ''} onChange={(e) => setSvcForm({ ...svcForm, unit: e.target.value })} /></Lbl>
-            <Lbl label="Cantidad contratada"><input type="number" className={inputCls} placeholder="Vacío = ilimitado" value={svcForm.contractedQty ?? ''} onChange={(e) => setSvcForm({ ...svcForm, contractedQty: e.target.value })} /></Lbl>
-            <Lbl label="Objetivo SLA (%)"><input type="number" className={inputCls} value={svcForm.slaTarget ?? ''} onChange={(e) => setSvcForm({ ...svcForm, slaTarget: e.target.value })} /></Lbl>
+            </LabeledField>
+            <LabeledField label="Nombre" full><input className={FIELD_CLS} value={svcForm.name} onChange={(e) => setSvcForm({ ...svcForm, name: e.target.value })} /></LabeledField>
+            <LabeledField label="Descripción" full><input className={FIELD_CLS} value={svcForm.description || ''} onChange={(e) => setSvcForm({ ...svcForm, description: e.target.value })} /></LabeledField>
+            <LabeledField label="Unidad"><input className={FIELD_CLS} placeholder="Estación, Rondas…" value={svcForm.unit || ''} onChange={(e) => setSvcForm({ ...svcForm, unit: e.target.value })} /></LabeledField>
+            <LabeledField label="Cantidad contratada"><input type="number" className={FIELD_CLS} placeholder="Vacío = ilimitado" value={svcForm.contractedQty ?? ''} onChange={(e) => setSvcForm({ ...svcForm, contractedQty: e.target.value })} /></LabeledField>
+            <LabeledField label="Objetivo SLA (%)"><input type="number" className={FIELD_CLS} value={svcForm.slaTarget ?? ''} onChange={(e) => setSvcForm({ ...svcForm, slaTarget: e.target.value })} /></LabeledField>
           </div>
         )}
       </Modal>
@@ -510,16 +503,16 @@ export default function ClientContract({ client }: { client: Client }) {
         footer={<><Button variant="outline" onClick={() => setRenOpen(false)}>Cancelar</Button><Button onClick={saveRen} disabled={saving}>{saving ? 'Guardando…' : 'Guardar'}</Button></>}>
         {renForm && (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Lbl label="Periodo" full><input className={inputCls} placeholder="Actual / Anterior" value={renForm.periodLabel} onChange={(e) => setRenForm({ ...renForm, periodLabel: e.target.value })} /></Lbl>
-            <Lbl label="Desde"><input type="date" className={inputCls} value={renForm.fromDate || ''} onChange={(e) => setRenForm({ ...renForm, fromDate: e.target.value })} /></Lbl>
-            <Lbl label="Hasta"><input type="date" className={inputCls} value={renForm.toDate || ''} onChange={(e) => setRenForm({ ...renForm, toDate: e.target.value })} /></Lbl>
-            <Lbl label="Duración (meses)"><input type="number" className={inputCls} value={renForm.durationMonths ?? ''} onChange={(e) => setRenForm({ ...renForm, durationMonths: e.target.value })} /></Lbl>
-            <Lbl label="Estado">
-              <select className={inputCls} value={renForm.status} onChange={(e) => setRenForm({ ...renForm, status: e.target.value })}>
+            <LabeledField label="Periodo" full><input className={FIELD_CLS} placeholder="Actual / Anterior" value={renForm.periodLabel} onChange={(e) => setRenForm({ ...renForm, periodLabel: e.target.value })} /></LabeledField>
+            <LabeledField label="Desde"><input type="date" className={FIELD_CLS} value={renForm.fromDate || ''} onChange={(e) => setRenForm({ ...renForm, fromDate: e.target.value })} /></LabeledField>
+            <LabeledField label="Hasta"><input type="date" className={FIELD_CLS} value={renForm.toDate || ''} onChange={(e) => setRenForm({ ...renForm, toDate: e.target.value })} /></LabeledField>
+            <LabeledField label="Duración (meses)"><input type="number" className={FIELD_CLS} value={renForm.durationMonths ?? ''} onChange={(e) => setRenForm({ ...renForm, durationMonths: e.target.value })} /></LabeledField>
+            <LabeledField label="Estado">
+              <select className={FIELD_CLS} value={renForm.status} onChange={(e) => setRenForm({ ...renForm, status: e.target.value })}>
                 <option value="active">Activo</option>
                 <option value="finished">Finalizado</option>
               </select>
-            </Lbl>
+            </LabeledField>
           </div>
         )}
       </Modal>
@@ -527,21 +520,12 @@ export default function ClientContract({ client }: { client: Client }) {
   );
 }
 
-function Lbl({ label, children, full }: { label: string; children: React.ReactNode; full?: boolean }) {
-  return (
-    <div className={full ? 'sm:col-span-2' : ''}>
-      <label className="mb-1 block text-xs font-medium text-muted-foreground">{label}</label>
-      {children}
-    </div>
-  );
-}
-
 function SlaCell({ icon, label, value, suffix, actual }: { icon: ReactNode; label: string; value: ReactNode; suffix?: string; actual?: number | null }) {
   return (
     <div>
-      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">{icon}{label}</div>
-      <div className="mt-1 text-xl font-semibold">{value != null && value !== '' ? `${value}${suffix || ''}` : '—'}</div>
-      {actual != null && <div className="text-xs text-muted-foreground">Real: {actual}%</div>}
+      <div className="cg-eyebrow flex items-center gap-1.5 [&_svg]:size-3.5">{icon}{label}</div>
+      <div className="mt-1 font-display text-xl font-bold tabular-nums">{value != null && value !== '' ? `${value}${suffix || ''}` : '—'}</div>
+      {actual != null && <div className="text-xs" style={{ color: 'var(--ink-faint)' }}>Real: {actual}%</div>}
     </div>
   );
 }

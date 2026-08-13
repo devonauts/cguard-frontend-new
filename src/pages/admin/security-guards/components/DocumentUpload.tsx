@@ -23,9 +23,9 @@ const DEFAULT_ACCEPT = "application/pdf,image/png,image/jpeg,image/webp";
 const MAX_MB = 15;
 
 function fileIcon(file: File) {
-  if (file.type === "application/pdf") return <FileText className="w-5 h-5 text-red-500" />;
-  if (file.type.startsWith("image/")) return <ImageIcon className="w-5 h-5 text-blue-500" />;
-  return <File className="w-5 h-5 text-muted-foreground" />;
+  if (file.type === "application/pdf") return <FileText className="h-5 w-5" style={{ color: 'var(--bad-text)' }} />;
+  if (file.type.startsWith("image/")) return <ImageIcon className="h-5 w-5" style={{ color: 'var(--info-text)' }} />;
+  return <File className="h-5 w-5" style={{ color: 'var(--ink-faint)' }} />;
 }
 
 function formatSize(bytes: number) {
@@ -78,48 +78,52 @@ export default function DocumentUpload({
 
   return (
     <div className="group">
-      {/* Label row */}
-      <div className="flex items-baseline gap-1 mb-1.5">
+      {/* Etiqueta */}
+      <div className="mb-1.5 flex items-baseline gap-1">
         <span className="text-sm font-medium leading-none">
           {label}
-          {required && <span className="text-red-500 ml-0.5">*</span>}
+          {required && <span className="ml-0.5" style={{ color: 'var(--bad-text)' }}>*</span>}
         </span>
         {description && (
-          <span className="text-xs text-muted-foreground">— {description}</span>
+          <span className="text-xs" style={{ color: 'var(--ink-faint)' }}>— {description}</span>
         )}
       </div>
 
       {value ? (
-        /* File selected state */
-        <div className="flex items-center gap-3 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#171717] px-3 py-2.5">
-          {/* Preview thumbnail or icon */}
+        /* Archivo seleccionado */
+        <div className="glass-sunken flex items-center gap-3 px-3 py-2.5">
+          {/* Miniatura o icono */}
           <div className="flex-shrink-0">
             {value.previewUrl ? (
               <img
                 src={value.previewUrl}
                 alt={value.file.name}
-                className="w-10 h-10 rounded object-cover border border-slate-200"
+                className="h-10 w-10 rounded-lg border object-cover"
+                style={{ borderColor: 'var(--hairline)' }}
               />
             ) : (
-              <div className="w-10 h-10 rounded bg-slate-100 dark:bg-[#202020] flex items-center justify-center border border-slate-200 dark:border-white/10">
+              <div
+                className="flex h-10 w-10 items-center justify-center rounded-lg border"
+                style={{ background: 'var(--glass-raised)', borderColor: 'var(--hairline)' }}
+              >
                 {fileIcon(value.file)}
               </div>
             )}
           </div>
-          {/* File meta */}
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate" title={value.file.name}>
+          {/* Datos del archivo */}
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-medium" title={value.file.name}>
               {value.file.name}
             </p>
-            <p className="text-xs text-muted-foreground">{formatSize(value.file.size)}</p>
+            <p className="text-xs" style={{ color: 'var(--ink-faint)' }}>{formatSize(value.file.size)}</p>
           </div>
-          {/* Actions */}
-          <div className="flex items-center gap-1.5 flex-shrink-0">
+          {/* Acciones */}
+          <div className="flex flex-shrink-0 items-center gap-1.5">
             <Button
               type="button"
               variant="ghost"
               size="sm"
-              className="text-xs h-7 px-2"
+              className="h-7 px-2 text-xs"
               onClick={() => inputRef.current?.click()}
             >
               Cambiar
@@ -127,15 +131,16 @@ export default function DocumentUpload({
             <button
               type="button"
               onClick={handleRemove}
-              className="text-muted-foreground hover:text-red-500 transition-colors p-1 rounded"
+              className="cg-focus rounded-full p-1 transition-colors hover:[color:var(--bad-text)]"
+              style={{ color: 'var(--ink-faint)' }}
               title="Eliminar archivo"
             >
-              <X className="w-4 h-4" />
+              <X className="h-4 w-4" />
             </button>
           </div>
         </div>
       ) : (
-        /* Empty drop zone */
+        /* Zona de arrastre vacía */
         <div
           role="button"
           tabIndex={0}
@@ -143,14 +148,15 @@ export default function DocumentUpload({
           onKeyDown={(e) => e.key === "Enter" && inputRef.current?.click()}
           onDrop={handleDrop}
           onDragOver={(e) => e.preventDefault()}
-          className="flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#171717] hover:border-blue-400 hover:bg-blue-500/10 dark:hover:bg-blue-950/30 transition-colors cursor-pointer py-4 px-3 text-center select-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="cg-focus flex cursor-pointer select-none flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed px-3 py-4 text-center transition-colors hover:[border-color:var(--brand-line)] hover:[background:var(--brand-wash)]"
+          style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}
         >
-          <Upload className="w-5 h-5 text-muted-foreground" />
+          <Upload className="h-5 w-5" style={{ color: 'var(--brand-text)' }} />
           <div>
-            <p className="text-sm font-medium text-foreground/70 dark:text-muted-foreground">
+            <p className="text-sm font-medium">
               Arrastra o haz clic para adjuntar
             </p>
-            <p className="text-xs text-muted-foreground mt-0.5">
+            <p className="mt-0.5 text-xs" style={{ color: 'var(--ink-faint)' }}>
               PDF, PNG, JPG, WebP — máx. {MAX_MB} MB
             </p>
           </div>

@@ -7,7 +7,8 @@ import guardRatingService, { GuardRatingRecord } from '@/lib/api/guardRatingServ
 import api from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Modal, Section, StatCard, EmptyState } from '@/components/kit';
+import { Modal, Section, StatCard, EmptyState, PageContainer, SkeletonCards } from '@/components/kit';
+import { MeterBar } from '@/components/charts';
 import { toast } from 'sonner';
 import {
   Star, MessageSquareWarning, FileText, Loader2, Building2, MapPin, Calendar,
@@ -18,7 +19,15 @@ function Stars({ value, size = 'h-4 w-4' }: { value: number; size?: string }) {
   return (
     <span className="inline-flex items-center gap-0.5" aria-label={`${value} de 5`}>
       {[1, 2, 3, 4, 5].map((i) => (
-        <Star key={i} className={`${size} ${i <= Math.round(value) ? 'fill-yellow-400 text-yellow-400' : 'text-slate-300'}`} />
+        <Star
+          key={i}
+          className={size}
+          style={
+            i <= Math.round(value)
+              ? { fill: 'var(--warn)', color: 'var(--warn)' }
+              : { color: 'var(--ink-faint)' }
+          }
+        />
       ))}
     </span>
   );
@@ -105,47 +114,44 @@ export default function GuardReviewsPage() {
   return (
     <AppLayout>
       <GuardsLayout navKey="keep-safe" title="guards.nav.reviews">
-        <div className="mx-auto max-w-5xl space-y-4">
+        <PageContainer>
           {/* Summary */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <StatCard
               icon={<Star />}
-              accent="orange"
+              accent="warn"
               label="Promedio del vigilante"
               value={average != null ? average.toFixed(2) : '—'}
               hint={average != null ? <Stars value={average} /> : undefined}
             />
-            <StatCard icon={<MessageSquareWarning />} accent="primary" label="Reseñas recibidas" value={total} />
-            <div className="rounded-2xl border bg-card p-4">
-              <div className="mb-2 text-xs font-medium text-muted-foreground">Distribución</div>
-              <div className="space-y-1">
-                {dist.map((c, i) => {
-                  const starVal = 5 - i;
-                  const pct = total ? Math.round((c / total) * 100) : 0;
-                  return (
-                    <div key={starVal} className="flex items-center gap-2 text-xs">
-                      <span className="w-3 tabular-nums text-muted-foreground">{starVal}</span>
-                      <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                      <div className="h-1.5 flex-1 rounded-full bg-muted">
-                        <div className="h-1.5 rounded-full bg-yellow-400" style={{ width: `${pct}%` }} />
-                      </div>
-                      <span className="w-6 tabular-nums text-right text-muted-foreground">{c}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+            <StatCard icon={<MessageSquareWarning />} accent="brand" label="Reseñas recibidas" value={total} />
+            {/* Tercera ficha de la MISMA fila: mismas medidas y misma etiqueta
+                que las otras dos, o se lee como un hueco. */}
+            <Section title="Distribución" className="p-4" contentClassName="space-y-1">
+              {dist.map((c, i) => {
+                const starVal = 5 - i;
+                const pct = total ? Math.round((c / total) * 100) : 0;
+                return (
+                  <div key={starVal} className="flex items-center gap-2 text-xs">
+                    <span className="w-3 tabular-nums" style={{ color: 'var(--ink-soft)' }}>{starVal}</span>
+                    <Star className="h-3 w-3" style={{ fill: 'var(--warn)', color: 'var(--warn)' }} />
+                    <MeterBar className="flex-1" pct={pct} height={6} tone="warn" ariaLabel={`${starVal} estrellas`} />
+                    <span className="w-6 text-right tabular-nums" style={{ color: 'var(--ink-soft)' }}>{c}</span>
+                  </div>
+                );
+              })}
+            </Section>
           </div>
 
           {/* Reviews list */}
           <Section title="Reseñas de clientes" icon={<Star className="h-4 w-4" />}>
             {guardName && (
-              <p className="mb-3 text-xs text-muted-foreground">
+              <p className="mb-3 text-xs" style={{ color: 'var(--ink-soft)' }}>
                 Calificaciones enviadas por los clientes sobre {guardName}.
               </p>
             )}
             {loading ? (
-              <div className="py-10 text-center"><Loader2 className="mx-auto h-6 w-6 animate-spin text-muted-foreground" /></div>
+              <SkeletonCards count={2} className="sm:grid-cols-1" />
             ) : rows.length === 0 ? (
               <EmptyState
                 icon={<Star className="h-5 w-5" />}
@@ -155,14 +161,14 @@ export default function GuardReviewsPage() {
             ) : (
               <div className="space-y-3">
                 {rows.map((r) => (
-                  <div key={r.id} className="rounded-xl border p-4 transition hover:bg-muted/30">
+                  <div key={r.id} className="glass-flat glass-hover p-4">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
                           <Stars value={r.rating} />
                           <span className="text-sm font-semibold tabular-nums">{r.rating}.0</span>
                         </div>
-                        {r.comment && <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-foreground/80">{r.comment}</p>}
+                        {r.comment && <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed" style={{ color: 'var(--ink-soft)' }}>{r.comment}</p>}
                         <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] uppercase tracking-wide text-muted-foreground">
                           {r.clientName && <span className="inline-flex items-center gap-1"><Building2 className="h-3 w-3" /> {r.clientName}</span>}
                           {r.stationName && <span className="inline-flex items-center gap-1"><MapPin className="h-3 w-3" /> {r.stationName}</span>}
@@ -183,7 +189,7 @@ export default function GuardReviewsPage() {
               </div>
             )}
           </Section>
-        </div>
+        </PageContainer>
 
         {/* Generate memo/observación modal */}
         <Modal
@@ -218,7 +224,7 @@ export default function GuardReviewsPage() {
                 value={form.content}
                 onChange={(e) => setForm({ ...form, content: e.target.value })}
                 rows={6}
-                className="w-full resize-none rounded-md border border-input bg-background px-3 py-2 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-primary"
+                className="cg-input w-full resize-none px-3 py-2 text-sm leading-relaxed"
                 placeholder="Detalle para conversar con el vigilante…"
               />
             </div>

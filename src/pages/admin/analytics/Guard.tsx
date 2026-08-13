@@ -1,16 +1,23 @@
 import { Fragment, useEffect, useState } from "react";
-import { Shield, Clock, Award, Timer, ChevronDown, ChevronRight, Loader2 } from "lucide-react";
+import { Shield, Clock, Award, Timer, ChevronDown, ChevronRight } from "lucide-react";
 import {
-  useOpsAnalytics, AnalyticsShell, MetricCard, Section, GOLD, pctClass, RangeFooter, GuardLink,
+  useOpsAnalytics, AnalyticsShell, MetricCard, Section, GOLD, TONES, toneInk, pctColor,
+  RangeFooter, GuardLink, AttendanceTiles,
 } from "./_shared";
 import { analyticsService, PerfLeaderboard, GuardPerformance } from "@/lib/api/analyticsService";
-import { Stagger, StatCard, EmptyState } from "@/components/kit";
+import { Stagger, EmptyState, StatusBadge, SkeletonBlock } from "@/components/kit";
+import { MeterBar } from "@/components/charts";
+import { CHART_VARS, alphaVar } from "@/lib/chartColors";
 
-const TIER: Record<string, { label: string; color: string; bg: string }> = {
-  excellent: { label: "Excelente", color: "#059669", bg: "rgba(5,150,105,0.12)" },
-  good: { label: "Bueno", color: "#0284c7", bg: "rgba(2,132,199,0.12)" },
-  fair: { label: "Regular", color: "#d97706", bg: "rgba(217,119,6,0.12)" },
-  poor: { label: "Bajo", color: "#e11d48", bg: "rgba(225,29,72,0.12)" },
+/** Tramos de desempeño. Son ESTADOS (bien/regular/mal), así que van con los
+ *  colores semánticos, que el sistema deja fijos aunque cambie el acento.
+ *  `color` rellena (barras, puntos) y `ink` escribe: el mismo tono a la
+ *  luminosidad que cada trabajo necesita. */
+const TIER: Record<string, { label: string; tone: "ok" | "info" | "warn" | "bad"; color: string; ink: string; bg: string }> = {
+  excellent: { label: "Excelente", tone: "ok", color: CHART_VARS.ok, ink: toneInk(CHART_VARS.ok), bg: alphaVar(CHART_VARS.ok, 12) },
+  good: { label: "Bueno", tone: "info", color: CHART_VARS.info, ink: toneInk(CHART_VARS.info), bg: alphaVar(CHART_VARS.info, 12) },
+  fair: { label: "Regular", tone: "warn", color: CHART_VARS.warn, ink: toneInk(CHART_VARS.warn), bg: alphaVar(CHART_VARS.warn, 12) },
+  poor: { label: "Bajo", tone: "bad", color: CHART_VARS.bad, ink: toneInk(CHART_VARS.bad), bg: alphaVar(CHART_VARS.bad, 12) },
 };
 const tierOf = (t: string) => TIER[t] || TIER.poor;
 
@@ -21,11 +28,11 @@ const FACTOR_ES: Record<string, string> = {
 
 function ScoreBadge({ score, tier }: { score: number | null; tier: string }) {
   const t = tierOf(tier);
-  if (score == null) return <span className="rounded-md bg-muted px-2 py-1 text-xs text-muted-foreground">Sin datos</span>;
+  if (score == null) return <StatusBadge tone="neutral" dot={false}>Sin datos</StatusBadge>;
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-sm font-bold" style={{ background: t.bg, color: t.color }}>
+    <StatusBadge tone={t.tone} dot={false} className="text-sm font-bold">
       {score}<span className="text-[10px] font-medium opacity-80">/100</span>
-    </span>
+    </StatusBadge>
   );
 }
 
@@ -36,9 +43,8 @@ function FactorBars({ g }: { g: GuardPerformance }) {
       {g.components.map((c) => (
         <div key={c.key} className="flex items-center gap-2">
           <span className="w-24 shrink-0 text-xs text-foreground/80">{FACTOR_ES[c.key] || c.key}</span>
-          <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
-            <div className="h-full rounded-full" style={{ width: `${c.score}%`, background: c.score >= 75 ? "#22c55e" : c.score >= 50 ? "#f59e0b" : "#ef4444" }} />
-          </div>
+          <MeterBar className="flex-1" height={8} pct={c.score} ariaLabel={FACTOR_ES[c.key] || c.key}
+            tone={c.score >= 75 ? "ok" : c.score >= 50 ? "warn" : "bad"} />
           <span className="w-8 shrink-0 text-right text-xs font-semibold text-foreground">{c.score}</span>
           <span className="w-10 shrink-0 text-right text-[10px] text-muted-foreground">×{Math.round(c.weight * 100)}%</span>
         </div>
@@ -75,14 +81,14 @@ export default function Guard() {
           {/* KPIs */}
           <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <MetricCard icon={<Award size={16} />} accent={GOLD} value={lb?.averageScore ?? "—"} label="Puntuación promedio" sub={`${counts?.scored ?? 0} vigilantes evaluados`} pct={lb?.averageScore ?? undefined} />
-            <MetricCard icon={<Shield size={16} />} accent="#059669" value={counts?.excellent ?? 0} label="Excelentes" sub={`${counts?.good ?? 0} buenos · ${counts?.poor ?? 0} bajos`} />
-            <MetricCard icon={<Shield size={16} />} accent="#0ea5e9" value={k.guardsOnDuty} label="En servicio" sub="ahora mismo" />
-            <MetricCard icon={<Clock size={16} />} accent="#f59e0b" value={`${k.punctualityPct}%`} label="Puntualidad" sub={`${k.clockinsOnTime}/${k.clockinsTotal} a tiempo`} pct={k.punctualityPct} />
+            <MetricCard icon={<Shield size={16} />} accent={TONES.ok} value={counts?.excellent ?? 0} label="Excelentes" sub={`${counts?.good ?? 0} buenos · ${counts?.poor ?? 0} bajos`} />
+            <MetricCard icon={<Shield size={16} />} accent={TONES.info} value={k.guardsOnDuty} label="En servicio" sub="ahora mismo" />
+            <MetricCard icon={<Clock size={16} />} accent={TONES.warn} value={`${k.punctualityPct}%`} label="Puntualidad" sub={`${k.clockinsOnTime}/${k.clockinsTotal} a tiempo`} pct={k.punctualityPct} />
           </Stagger>
 
           {/* Tier distribution */}
           {!!tierTotal && (
-            <Section title="Distribución de desempeño" icon={<Award size={16} className="text-primary" />}>
+            <Section title="Distribución de desempeño" icon={<Award size={16} />}>
               <div className="flex h-3 w-full overflow-hidden rounded-full">
                 {(["excellent", "good", "fair", "poor"] as const).map((t) => {
                   const v = counts![t]; if (!v) return null;
@@ -98,9 +104,18 @@ export default function Guard() {
           )}
 
           {/* Leaderboard */}
-          <Section title="Ranking de desempeño" icon={<Award size={16} className="text-primary" />}>
+          <Section title="Ranking de desempeño" icon={<Award size={16} />}>
             {lbLoading ? (
-              <div className="flex items-center justify-center py-8"><Loader2 className="animate-spin text-primary" size={18} /></div>
+              <div className="space-y-3 py-2">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="flex items-center gap-4">
+                    <SkeletonBlock className="h-3 w-2/5" />
+                    <SkeletonBlock className="h-3 w-1/5" />
+                    <SkeletonBlock className="h-3 w-1/5" />
+                    <SkeletonBlock className="h-3 w-1/5" />
+                  </div>
+                ))}
+              </div>
             ) : !lb || lb.guards.length === 0 ? (
               <EmptyState icon={<Award />} title="Sin evaluaciones" description="No hay vigilantes para evaluar." />
             ) : (
@@ -123,18 +138,18 @@ export default function Guard() {
                       const open = expanded === g.id;
                       return (
                         <Fragment key={g.id}>
-                          <tr className="cursor-pointer hover:bg-muted/20" onClick={() => setExpanded(open ? null : g.id)}>
+                          <tr className="cursor-pointer transition-colors hover:bg-[var(--glass-sunken)]" onClick={() => setExpanded(open ? null : g.id)}>
                             <td className="px-3 py-2 text-muted-foreground">{g.hasData ? i + 1 : "—"}</td>
                             <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}><GuardLink id={g.id} name={g.name} /></td>
                             <td className="px-3 py-2"><ScoreBadge score={g.score} tier={g.tier} /></td>
-                            <td className="px-3 py-2"><span style={{ color: tierOf(g.tier).color }} className="text-xs font-semibold">{g.hasData ? tierOf(g.tier).label : "—"}</span></td>
-                            <td className="px-3 py-2 text-right">{g.attendanceRate != null ? <span className={pctClass(g.attendanceRate)}>{g.attendanceRate}%</span> : <span className="text-muted-foreground">—</span>}</td>
+                            <td className="px-3 py-2"><span style={{ color: tierOf(g.tier).ink }} className="text-xs font-semibold">{g.hasData ? tierOf(g.tier).label : "—"}</span></td>
+                            <td className="px-3 py-2 text-right">{g.attendanceRate != null ? <span style={{ color: pctColor(g.attendanceRate) }}>{g.attendanceRate}%</span> : <span className="text-muted-foreground">—</span>}</td>
                             <td className="px-3 py-2 text-right text-muted-foreground">{g.absences}</td>
                             <td className="px-3 py-2 text-right text-muted-foreground">{g.tardies}</td>
                             <td className="px-3 py-2 text-right text-muted-foreground">{open ? <ChevronDown size={15} /> : <ChevronRight size={15} />}</td>
                           </tr>
                           {open && (
-                            <tr className="bg-muted/10">
+                            <tr style={{ background: "var(--glass-sunken)" }}>
                               <td colSpan={8} className="px-6 py-3">
                                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Desglose de factores (puntaje × peso)</p>
                                 <FactorBars g={g} />
@@ -151,17 +166,8 @@ export default function Guard() {
           </Section>
 
           {/* Attendance summary (raw) */}
-          <Section title="Asistencia (registros de la app)" icon={<Timer size={16} className="text-sky-500" />}>
-            <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {[
-                { label: "Horas trabajadas", value: ops.data.attendance.hoursWorked, accent: "blue" as const },
-                { label: "Tardanzas", value: ops.data.attendance.late, accent: "orange" as const },
-                { label: "Salidas tempranas", value: ops.data.attendance.earlyDeparture, accent: "primary" as const },
-                { label: "Fuera de geocerca", value: ops.data.attendance.geofenceViolations, accent: "red" as const },
-              ].map((c) => (
-                <StatCard key={c.label} accent={c.accent} label={c.label} value={c.value} />
-              ))}
-            </Stagger>
+          <Section title="Asistencia (registros de la app)" icon={<Timer size={16} />}>
+            <AttendanceTiles attendance={ops.data.attendance} className="grid grid-cols-2 gap-3 sm:grid-cols-4" />
           </Section>
 
           <RangeFooter data={ops.data} />

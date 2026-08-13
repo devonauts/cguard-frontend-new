@@ -128,7 +128,7 @@ export default function StationIncidents({ stationId, postSiteId }: Props) {
       {loading ? (
         <div className="px-5 pb-5"><SkeletonCards count={3} /></div>
       ) : error ? (
-        <div className="px-5 pb-5 text-sm text-red-600">{error}</div>
+        <div className="px-5 pb-5 text-sm" style={{ color: 'var(--bad-text)' }}>{error}</div>
       ) : rows.length === 0 ? (
         <div className="px-5 pb-5">
           <EmptyState
@@ -139,18 +139,18 @@ export default function StationIncidents({ stationId, postSiteId }: Props) {
       ) : (
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
-            <thead className="bg-muted/30 border-y">
+            <thead className="border-y" style={{ borderColor: 'var(--hairline)' }}>
               <tr>
-                <th className="px-6 py-3 text-left font-semibold text-foreground/70">
+                <th className="cg-eyebrow px-2 py-2">
                   {t('station.incidents.col.description', 'Descripción')}
                 </th>
-                <th className="px-6 py-3 text-left font-semibold text-foreground/70">
+                <th className="cg-eyebrow px-2 py-2">
                   {t('station.incidents.col.status', 'Estado')}
                 </th>
-                <th className="px-6 py-3 text-left font-semibold text-foreground/70">
+                <th className="cg-eyebrow px-2 py-2">
                   {t('station.incidents.col.date', 'Fecha')}
                 </th>
-                <th className="px-6 py-3 text-left font-semibold text-foreground/70">
+                <th className="cg-eyebrow px-2 py-2">
                   {t('station.incidents.col.guard', 'Vigilante')}
                 </th>
               </tr>
@@ -166,15 +166,15 @@ export default function StationIncidents({ stationId, postSiteId }: Props) {
                 // El vigilante viaja bajo `guardName`, que es un OBJETO.
                 const guardName = guardLabel(r.guardName);
                 return (
-                  <tr key={r.id || i} className="hover:bg-muted/30">
-                    <td className="px-6 py-3 text-foreground max-w-xs">
+                  <tr key={r.id || i} className="hover:bg-muted/40">
+                    <td className="px-2 py-2.5 text-foreground max-w-xs">
                       <div className="truncate">{description}</div>
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="px-2 py-2.5">
                       <StatusBadge tone={statusTone(status)} className="capitalize">{status}</StatusBadge>
                     </td>
-                    <td className="px-6 py-3 text-muted-foreground font-mono text-xs">{fmt(date)}</td>
-                    <td className="px-6 py-3 text-foreground">{guardName}</td>
+                    <td className="px-2 py-2.5 text-muted-foreground font-mono text-xs">{fmt(date)}</td>
+                    <td className="px-2 py-2.5 text-foreground">{guardName}</td>
                   </tr>
                 );
               })}

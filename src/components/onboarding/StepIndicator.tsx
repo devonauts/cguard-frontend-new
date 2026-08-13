@@ -14,11 +14,14 @@ interface StepIndicatorProps {
   className?: string;
 }
 
-const GOLD = "#C8860A";
-
 /**
- * Numbered horizontal stepper with gold active/completed states, connectors,
- * responsive labels and accessible markup (aria-current on the active step).
+ * Numbered horizontal stepper with connectors, responsive labels and accessible
+ * markup (aria-current on the active step).
+ *
+ * El estado activo/completado es el ACENTO, no un oro fijo: el número activo va
+ * sobre `--brand` con tinta `--brand-ink` (blanco encima daría ~2,2:1 — ver la
+ * medición en tokens.css), el completado en el lavado del acento, y el conector
+ * lleno se pinta con `--brand`, que se recalcula solo al cambiar el tono.
  */
 export default function StepIndicator({
   steps,
@@ -47,27 +50,25 @@ export default function StepIndicator({
                 aria-current={isActive ? "step" : undefined}
                 aria-label={`Paso ${i + 1}: ${step.label}`}
                 className={cn(
-                  "group flex items-center gap-2.5 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
+                  "cg-focus group flex items-center gap-2.5 rounded-full",
                   clickable ? "cursor-pointer" : "cursor-default",
                 )}
               >
                 <span
-                  className={cn(
-                    "flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 text-sm font-semibold transition-all duration-300",
-                    isActive && "border-primary bg-primary text-white shadow-[0_0_0_4px_rgba(200,134,10,0.18)]",
-                    isCompleted && "border-primary bg-primary/15 text-primary",
-                    !isActive && !isCompleted && "border-border bg-muted text-muted-foreground",
-                  )}
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 text-sm font-semibold tabular-nums transition-all duration-300"
+                  style={
+                    isActive
+                      ? { borderColor: "var(--brand)", background: "var(--brand)", color: "var(--brand-ink)", boxShadow: "0 0 0 4px var(--brand-glow)" }
+                      : isCompleted
+                        ? { borderColor: "var(--brand-line)", background: "var(--brand-wash)", color: "var(--brand-text)" }
+                        : { borderColor: "var(--hairline)", background: "var(--glass-sunken)", color: "var(--ink-faint)" }
+                  }
                 >
                   {isCompleted ? <Check className="h-4 w-4" strokeWidth={3} /> : i + 1}
                 </span>
                 <span
-                  className={cn(
-                    "hidden text-sm font-medium transition-colors sm:inline-block",
-                    isActive && "text-foreground",
-                    isCompleted && "text-foreground/80",
-                    !isActive && !isCompleted && "text-muted-foreground",
-                  )}
+                  className="hidden text-sm font-medium transition-colors sm:inline-block"
+                  style={{ color: isActive ? "var(--ink)" : isCompleted ? "var(--ink-soft)" : "var(--ink-faint)" }}
                 >
                   {step.label}
                 </span>
@@ -76,13 +77,14 @@ export default function StepIndicator({
               {!isLast && (
                 <span
                   aria-hidden
-                  className="mx-2 h-0.5 flex-1 rounded-full bg-border overflow-hidden sm:mx-3"
+                  className="mx-2 h-0.5 flex-1 overflow-hidden rounded-full sm:mx-3"
+                  style={{ background: "var(--hairline)" }}
                 >
                   <span
                     className="block h-full rounded-full transition-all duration-500"
                     style={{
                       width: isCompleted ? "100%" : "0%",
-                      backgroundColor: GOLD,
+                      background: "var(--brand)",
                     }}
                   />
                 </span>

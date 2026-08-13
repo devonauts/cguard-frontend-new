@@ -1,183 +1,792 @@
-/* ───────────────────────────────────────────────────────────────────────────
-   GLOBAL futuristic glass design layer (theme-aware: light + dark).
-   Loaded app-wide via main.tsx after globals.css. All values derive from the
-   app's oklch design tokens (--card, --primary, --border, --sidebar …) so the
-   same classes look correct in BOTH light and dark mode automatically.
-   ─────────────────────────────────────────────────────────────────────────── */
+/* ════════════════════════════════════════════════════════════════════════════
+   C-GUARD PRO — CAPA DE CRISTAL
+   Se carga después de tokens.css. Todo deriva de las variables de allí, así que
+   una sola clase se ve correcta en claro Y en oscuro, y con cualquier acento.
 
-:root {
-  --cc-accent: var(--primary);
-  --cc-accent-soft: color-mix(in oklab, var(--cc-accent) 16%, transparent);
-  --cc-glass-bg: color-mix(in oklab, var(--card) 72%, transparent);
-  --cc-glass-brd: color-mix(in oklab, var(--cc-accent) 22%, var(--border));
-}
+   ── QUÉ HACE QUE ALGO PAREZCA VIDRIO ───────────────────────────────────────
+   No es la transparencia: es el BORDE. Un rectángulo translúcido con un borde
+   plano parece un rectángulo gris. Se lee como cristal cuando tiene
+   (1) fondo translúcido con desenfoque por detrás,
+   (2) filo de 1 px MÁS CLARO ARRIBA que abajo — la luz cayendo sobre el canto,
+   (3) un realce interior en la primera línea de píxeles,
+   (4) sombra amplia y suave que lo despega del lienzo.
+   Quitar el punto 2 es lo que hace que la mayoría de intentos de glassmorphism
+   parezcan tarjetas normales con opacidad.
 
-/* ── glass surfaces ──────────────────────────────────────────────────────── */
-.cc-glass, .glass {
-  /* Light mode: clean solid card with a neutral border + soft shadow. */
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 1rem;
-  box-shadow: 0 1px 2px -1px color-mix(in oklab, #000 12%, transparent),
-              0 4px 16px -8px color-mix(in oklab, #000 10%, transparent);
+   ── EL DESENFOQUE CUESTA ───────────────────────────────────────────────────
+   `backdrop-filter` obliga al navegador a rasterizar lo que hay detrás en cada
+   fotograma. En una tabla de 500 filas con cristal por fila, el desplazamiento
+   se cae. Por eso `.glass` es para SUPERFICIES (tarjetas, paneles, barras) y
+   `.glass-flat` — mismo aspecto, sin desenfoque — para elementos que se repiten
+   muchas veces o que se desplazan.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* ── ESTE ARCHIVO GANA A LAS UTILIDADES DE TAILWIND ────────────────────────
+   glass.css NO lleva `@layer` y se carga después de globals.css. En CSS lo no
+   encapado gana a lo encapado, así que estas clases ganan a `rounded-lg`,
+   `bg-*`, `border-*`, `shadow-*` y `fixed` de Tailwind.
+
+   Fue deliberado —es lo que hizo que Poppins ganara al preflight— pero tiene
+   una consecuencia que hay que conocer: sobre un elemento con `.glass*` o
+   `.cg-input` NO se pueden pisar con utilidades `position`, `border-radius`,
+   `background`, `border` ni `box-shadow`. Se pisan con `style={{…}}` en línea,
+   que gana a todo.
+
+   Comprobado: `<div class="glass-raised fixed rounded-md bg-red-500">` computa
+   `position: relative`, radio 24px y el fondo de cristal. Un diálogo con
+   `.glass-raised fixed` se quedaba en `relative` y caía en el flujo del
+   documento en vez de centrarse.
+
+   Encapar las superficies en `@layer components` devolvería la prioridad a las
+   utilidades y sería lo correcto a largo plazo. Está pendiente de hacerse con
+   QA visual delante, no a ciegas.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* ── LA SUPERFICIE ─────────────────────────────────────────────────────────── */
+.glass {
   position: relative;
-  overflow: hidden;
-}
-.cc-glass::after, .glass::after { content: none; }
-.dark .cc-glass, .dark .glass {
-  background: var(--cc-glass-bg);
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
-  border: 1px solid var(--cc-glass-brd);
-  box-shadow:
-    0 1px 0 0 color-mix(in oklab, #fff 7%, transparent) inset,
-    0 18px 40px -24px color-mix(in oklab, #000 60%, transparent);
-}
-.dark .cc-glass::after, .dark .glass::after {
-  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--cc-accent) 55%, transparent), transparent);
-  opacity: .55;
-}
-.cc-glass-hover { transition: transform .22s cubic-bezier(.2,.8,.2,1), border-color .22s ease, box-shadow .22s ease; }
-.cc-glass-hover:hover {
-  transform: translateY(-3px);
-  border-color: color-mix(in oklab, var(--cc-accent) 50%, var(--border));
-  box-shadow:
-    0 1px 0 0 color-mix(in oklab, #fff 10%, transparent) inset,
-    0 26px 60px -28px color-mix(in oklab, var(--cc-accent) 40%, #000);
+  background: var(--glass);
+  backdrop-filter: blur(var(--blur)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(180%);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-xl);
+  box-shadow: var(--lift-3), inset 0 1px 0 0 var(--hairline-lit);
 }
 
-/* ── animated status dots ────────────────────────────────────────────────── */
-.cc-dot { position: relative; display: inline-block; width: 9px; height: 9px; border-radius: 9999px; }
-.cc-dot::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: inherit; animation: cc-ping 1.8s cubic-bezier(0,0,.2,1) infinite; }
-@keyframes cc-ping { 75%, 100% { transform: scale(2.4); opacity: 0; } }
-
-/* ── entrance + scan + rise ──────────────────────────────────────────────── */
-@keyframes cc-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-.cc-rise { animation: cc-rise .5s both; }
-@keyframes cc-scan { 0% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
-.cc-scan::before {
-  content: ""; position: absolute; top: 0; bottom: 0; width: 40%; pointer-events: none;
-  background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--cc-accent) 9%, transparent), transparent);
-  animation: cc-scan 3.2s ease-in-out infinite;
-}
-.cc-accent-text { color: var(--cc-accent); }
-
-/* ── map popup (Google overlay) ──────────────────────────────────────────── */
-.cc-pop {
-  background: color-mix(in oklab, var(--card) 88%, transparent);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--cc-glass-brd);
-  border-radius: .75rem; padding: .6rem .75rem; min-width: 180px;
-  color: var(--card-foreground); box-shadow: 0 18px 40px -20px #000; font-size: 12px;
+/* El filo iluminado de arriba. Pseudo-elemento y no `border-top` porque tiene
+   que DESVANECERSE hacia los lados: un filo de brillo uniforme parece un
+   subrayado, no luz. */
+.glass::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  border-radius: inherit;
+  background: linear-gradient(90deg, transparent, var(--hairline-lit) 22%, var(--hairline-lit) 78%, transparent);
+  opacity: 0.9;
+  pointer-events: none;
 }
 
-/* ─────────────────────────────────────────────────────────────────────────
-   GLOBAL APP SHELL — premium ambient backdrop behind every page.
-   Subtle in light mode, richer in dark mode. Pure decoration, no interaction.
+/* Mismo aspecto, SIN desenfoque. Para filas de tabla, listas largas y cualquier
+   cosa que se repita — ver la nota de coste arriba. */
+.glass-flat {
+  position: relative;
+  background: var(--glass-raised);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  box-shadow: var(--lift-2), inset 0 1px 0 0 var(--hairline-lit);
+}
+
+/* Panel elevado — diálogos, menús, lo que flota por encima de todo. */
+.glass-raised {
+  position: relative;
+  background: var(--float);
+  backdrop-filter: blur(calc(var(--blur) * 1.4)) saturate(200%);
+  -webkit-backdrop-filter: blur(calc(var(--blur) * 1.4)) saturate(200%);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-xl);
+  box-shadow: var(--lift-4), inset 0 1px 0 0 var(--hairline-lit);
+}
+
+/* Hueco — campos, pozos, zonas de entrada. Invierte la luz: el filo claro pasa
+   ABAJO, que es lo que lee como hundido en vez de levantado. */
+.glass-sunken {
+  background: var(--glass-sunken);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  box-shadow: inset 0 1px 2px oklch(0 0 0 / 0.10), inset 0 -1px 0 0 var(--hairline-lit);
+}
+
+/* ── REACCIÓN AL PUNTERO ───────────────────────────────────────────────────── */
+.glass-hover {
+  transition: transform 0.28s var(--ease), border-color 0.28s var(--ease),
+              box-shadow 0.28s var(--ease), background-color 0.28s var(--ease);
+}
+.glass-hover:hover {
+  transform: translateY(-2px);
+  border-color: var(--brand-line);
+  box-shadow: var(--lift-4), inset 0 1px 0 0 var(--hairline-lit), 0 0 32px -8px var(--brand-glow);
+}
+.glass-hover:active { transform: translateY(0); transition-duration: 0.08s; }
+
+/* Realce con el acento — la tarjeta seleccionada, la fila activa. */
+.glass-brand {
+  border-color: var(--brand-line);
+  background: var(--brand-wash);
+  box-shadow: var(--lift-2), inset 0 1px 0 0 var(--hairline-lit), 0 0 28px -10px var(--brand-glow);
+}
+
+/* ── BRILLO ────────────────────────────────────────────────────────────────── */
+.brand-glow    { box-shadow: 0 0 32px -6px var(--brand-glow); }
+.brand-glow-sm { box-shadow: 0 0 18px -6px var(--brand-glow); }
+.brand-text    { color: var(--brand-text); }
+.brand-fill    { background: var(--brand); color: var(--brand-ink); }
+
+/* Regla del acento en un canto — el marcador de «activo» del sistema. */
+.brand-rail { position: relative; }
+.brand-rail::after {
+  content: "";
+  position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 60%; border-radius: 9999px;
+  background: var(--brand);
+  box-shadow: 0 0 12px 0 var(--brand-glow);
+}
+
+/* ── EL LIENZO ─────────────────────────────────────────────────────────────
+   Un degradado en CAPAS, no un color plano ni dos manchas sueltas.
+
+   POR QUÉ ASÍ Y NO CON `filter: blur()`. La versión anterior eran dos círculos
+   con desenfoque, y desenfocar obliga al navegador a rasterizar esa capa. Un
+   `radial-gradient` YA es suave por definición: mismo resultado, sin coste de
+   composición, y se puede apilar varios en una sola propiedad.
+
+   Cuatro capas, de arriba abajo:
+     1. halo del ACENTO arriba a la derecha — el foco cálido, sigue al acento
+     2. contrahalo frío abajo a la izquierda — da profundidad y evita que el
+        lienzo se lea como una sola mancha de color
+     3. vela central muy tenue — levanta el centro para que las tarjetas de
+        cristal tengan algo detrás que refractar
+     4. base plana — el color del lienzo
+
+   Va en `position: fixed` para que NO se desplace con la página: un fondo que
+   se mueve con el scroll delata que es una imagen; uno quieto se lee como la
+   luz de la sala.
    ───────────────────────────────────────────────────────────────────────── */
-.app-shell { position: relative; isolation: isolate; }
-/* Ambient grid + amber glow are DARK-MODE ONLY. In light mode they read as
-   gamer/techy decoration, so the light canvas stays clean and enterprise. */
-.app-shell::before { content: none; }
-.app-shell::after { content: none; }
-.dark .app-shell::before {
-  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
-  background-image:
-    linear-gradient(color-mix(in oklab, var(--cc-accent) 5%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in oklab, var(--cc-accent) 5%, transparent) 1px, transparent 1px);
-  background-size: 48px 48px;
-  -webkit-mask-image: radial-gradient(ellipse 90% 55% at 70% -10%, #000 20%, transparent 70%);
-  mask-image: radial-gradient(ellipse 90% 55% at 70% -10%, #000 20%, transparent 70%);
-  opacity: .5;
-}
-.dark .app-shell::after {
-  content: ""; position: fixed; top: -160px; right: -120px; width: 520px; height: 520px;
-  z-index: -1; pointer-events: none; border-radius: 9999px; filter: blur(90px); opacity: .12;
-  background: radial-gradient(circle, var(--cc-accent), transparent 65%);
+.app-shell { position: relative; isolation: isolate; background: var(--canvas); }
+
+.app-shell::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60vw 55vh at 82% -8%,
+      color-mix(in oklab, var(--brand) 26%, transparent) 0%, transparent 62%),
+    radial-gradient(52vw 48vh at 12% 108%,
+      color-mix(in oklab, var(--ink) 18%, transparent) 0%, transparent 58%),
+    radial-gradient(90vw 70vh at 50% 45%,
+      color-mix(in oklab, var(--ink) 5%, transparent) 0%, transparent 70%);
+  opacity: 0.5;
 }
 
-/* ─────────────────────────────────────────────────────────────────────────
-   SIDEBAR — glass, theme-aware. Replaces the old hardcoded dark gradient.
-   ───────────────────────────────────────────────────────────────────────── */
+/* En oscuro el halo tiene que empujar más: sobre un lienzo a L 0.09 un degradado
+   suave se lo traga el negro y no se ve nada. */
+.dark .app-shell::before { opacity: 0.85; }
+
+/* Deriva lentísima — 40 s por ciclo, unos pocos píxeles. No se «ve» moverse;
+   lo que hace es que la pantalla no se sienta congelada cuando uno lleva horas
+   delante. Es el detalle que separa un fondo de una foto de fondo. */
+@keyframes cg-canvas-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50%      { transform: translate3d(-1.5%, 1.2%, 0) scale(1.04); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .app-shell::before { animation: cg-canvas-drift 40s ease-in-out infinite; }
+}
+
+/* Grano finísimo por encima del degradado. Es lo que impide el BANDING: un
+   degradado amplio sobre casi-negro se escalona en franjas visibles en
+   pantallas de 8 bits, y un poco de ruido lo rompe. SVG en línea, sin pedir
+   ningún archivo. */
+.app-shell::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.dark .app-shell::after { opacity: 0.05; }
+
+/* ── BARRA LATERAL ─────────────────────────────────────────────────────────── */
 .app-sidebar {
   position: relative;
-  /* Light mode: clean solid surface with a hairline divider from the canvas. */
-  background: var(--sidebar);
-  border-right: 1px solid var(--sidebar-border);
+  background: var(--glass);
+  backdrop-filter: blur(calc(var(--blur) * 1.2)) saturate(180%);
+  -webkit-backdrop-filter: blur(calc(var(--blur) * 1.2)) saturate(180%);
+  border-right: 1px solid var(--hairline);
 }
-.app-sidebar::before { content: none; }
+/* Filo iluminado vertical, en el canto derecho. */
+.app-sidebar::after {
+  content: "";
+  position: absolute; top: 0; bottom: 0; right: 0; width: 1px;
+  background: linear-gradient(180deg, transparent, var(--hairline-lit) 12%, var(--hairline-lit) 60%, transparent);
+  opacity: 0.7; pointer-events: none;
+}
 .app-sidebar-head {
-  background: var(--sidebar);
-  border-bottom: 1px solid var(--sidebar-border);
+  background: transparent;
+  border-bottom: 1px solid var(--hairline);
 }
-/* Dark mode: clean near-black sidebar, neutral grey divider (no amber wash). */
-.dark .app-sidebar {
-  background: var(--sidebar);
-  border-right: 1px solid var(--sidebar-border);
-  backdrop-filter: blur(18px) saturate(140%);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
-}
-.dark .app-sidebar::before { content: none; }
-.dark .app-sidebar-head {
-  background: color-mix(in oklab, var(--sidebar) 70%, transparent);
-  border-bottom: 1px solid color-mix(in oklab, var(--cc-accent) 16%, var(--border));
-  backdrop-filter: blur(12px);
-}
-/* nav item — modern rounded pill with a soft accent bar on active */
+
 .app-nav-item {
   position: relative;
   display: flex; width: 100%; align-items: center; justify-content: space-between;
-  gap: .75rem; padding: .58rem .7rem; border-radius: .7rem;
-  font-size: 13px; font-weight: 500; color: var(--sidebar-foreground);
-  opacity: .72; transition: all .2s cubic-bezier(0.22, 1, 0.36, 1);
+  gap: 0.75rem; padding: 0.6rem 0.75rem; border-radius: var(--r-md);
+  font-size: 13px; font-weight: 500; color: var(--ink-soft);
+  transition: color 0.2s var(--ease), background-color 0.2s var(--ease), transform 0.2s var(--ease);
 }
-.app-nav-item:hover {
-  opacity: 1; background: color-mix(in oklab, var(--cc-accent) 8%, transparent);
-  transform: translateX(2px);
-}
+.app-nav-item:hover { color: var(--ink); background: var(--glass-sunken); transform: translateX(2px); }
 .app-nav-item.is-active {
-  opacity: 1; color: var(--cc-accent); font-weight: 600;
-  background: linear-gradient(90deg, color-mix(in oklab, var(--cc-accent) 17%, transparent), color-mix(in oklab, var(--cc-accent) 6%, transparent));
-  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--cc-accent) 16%, transparent);
+  color: var(--brand-text); font-weight: 600;
+  background: var(--brand-wash);
+  box-shadow: inset 0 0 0 1px var(--brand-line);
 }
 .app-nav-item.is-active::before {
-  content: ""; position: absolute; left: -.45rem; top: 50%; transform: translateY(-50%);
-  height: 55%; width: 3px; border-radius: 9999px; background: var(--cc-accent);
+  content: "";
+  position: absolute; left: -0.5rem; top: 50%; transform: translateY(-50%);
+  height: 55%; width: 3px; border-radius: 9999px;
+  background: var(--brand);
+  box-shadow: 0 0 12px 0 var(--brand-glow);
 }
-.app-subnav-item {
-  display: block; padding: .42rem .6rem; margin-bottom: 2px; border-radius: .55rem;
-  font-size: 12px; font-weight: 500; color: var(--sidebar-foreground); opacity: .62; transition: all .18s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.app-subnav-item:hover { opacity: 1; background: color-mix(in oklab, var(--cc-accent) 7%, transparent); transform: translateX(2px); }
-.app-subnav-item.is-active { opacity: 1; color: var(--cc-accent); font-weight: 600; background: color-mix(in oklab, var(--cc-accent) 13%, transparent); }
 
-/* ── glassy header ───────────────────────────────────────────────────────── */
-.app-header {
-  background: color-mix(in oklab, var(--card) 85%, transparent);
-  backdrop-filter: blur(14px) saturate(120%);
-  -webkit-backdrop-filter: blur(14px) saturate(120%);
-  border-bottom: 1px solid var(--border) !important;
+.app-subnav-item {
+  display: block; padding: 0.44rem 0.65rem; margin-bottom: 2px; border-radius: var(--r-sm);
+  font-size: 12px; font-weight: 500; color: var(--ink-faint);
+  transition: color 0.18s var(--ease), background-color 0.18s var(--ease), transform 0.18s var(--ease);
 }
-.dark .app-header {
-  background: color-mix(in oklab, var(--background) 65%, transparent);
-  border-bottom: 1px solid color-mix(in oklab, var(--cc-accent) 12%, var(--border)) !important;
+.app-subnav-item:hover { color: var(--ink); background: var(--glass-sunken); transform: translateX(2px); }
+.app-subnav-item.is-active { color: var(--brand-text); font-weight: 600; background: var(--brand-wash); }
+
+/* ── CABECERA ──────────────────────────────────────────────────────────────── */
+/* ── BARRA SUPERIOR ────────────────────────────────────────────────────────
+   Era una fila de iconos sueltos. Lo que la convierte en un panel de mando son
+   tres capas que no se ven por separado pero se notan juntas:
+     1. el cristal, con más saturación que el resto para que destaque como capa
+     2. un HILO DE ACENTO en el canto inferior, que decae hacia la derecha —
+        marca el borde y da dirección de lectura
+     3. una veta de luz muy tenue en el canto superior
+   ───────────────────────────────────────────────────────────────────────── */
+.app-header {
+  position: relative;
+  background: var(--glass);
+  backdrop-filter: blur(calc(var(--blur) * 1.15)) saturate(200%);
+  -webkit-backdrop-filter: blur(calc(var(--blur) * 1.15)) saturate(200%);
+  border-bottom: 1px solid var(--hairline) !important;
+}
+/* Veta superior: el canto de la lámina de vidrio. */
+.app-header::before {
+  content: ""; position: absolute; inset: 0 0 auto 0; height: 1px; pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--hairline-lit) 18%, var(--hairline-lit) 74%, transparent);
+  opacity: .8;
+}
+/* Hilo de acento inferior. Decae hacia la derecha en vez de ser uniforme: un
+   filo de brillo constante parece un subrayado, no luz. */
+.app-header::after {
+  content: ""; position: absolute; inset: auto 0 -1px 0; height: 1px; pointer-events: none;
+  background: linear-gradient(90deg,
+    color-mix(in oklab, var(--brand) 55%, transparent) 0%,
+    color-mix(in oklab, var(--brand) 22%, transparent) 26%,
+    transparent 62%);
+  box-shadow: 0 0 12px -2px var(--brand-glow);
+}
+
+/* Los botones circulares de la barra: placa hundida que se ELEVA e ilumina al
+   pasar el puntero. Antes eran iconos planos sobre nada. */
+.app-header .cg-btn-glass {
+  background: var(--glass-sunken);
+  border-color: var(--hairline);
+  box-shadow: inset 0 1px 0 0 var(--hairline-lit);
+  transition: transform .18s var(--ease), border-color .18s var(--ease),
+              box-shadow .18s var(--ease), background-color .18s var(--ease), color .18s var(--ease);
+}
+.app-header .cg-btn-glass:hover {
+  transform: translateY(-1.5px);
+  color: var(--brand-text);
+  border-color: var(--brand-line);
+  box-shadow: inset 0 1px 0 0 var(--hairline-lit), 0 6px 18px -8px var(--brand-glow);
+}
+.app-header .cg-btn-glass:active { transform: translateY(0); transition-duration: .07s; }
+
+/* El buscador de la barra, con anillo de acento y algo de brillo al enfocar. */
+.app-header input:focus-visible,
+.app-header .cg-input:focus-within {
+  box-shadow: 0 0 0 3px var(--brand-glow), 0 0 22px -10px var(--brand-glow);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cc-dot::after, .cc-scan::before, .cc-rise { animation: none; }
+  .app-header .cg-btn-glass { transition: none; }
+  .app-header .cg-btn-glass:hover { transform: none; }
 }
 
-/* ════════════════════════════════════════════════════════════════════════════
-   POPPINS — BULLETPROOF GLOBAL FONT
-   Non-layered (glass.css carries no @layer), loaded after globals.css → wins the
-   cascade over @layer base + Tailwind preflight. Targets the app shell, sidebar,
-   header and ALL their descendants + form controls, so nothing escapes Poppins.
-   ════════════════════════════════════════════════════════════════════════════ */
+/* ── PUNTO DE ESTADO ───────────────────────────────────────────────────────── */
+.cc-dot { position: relative; display: inline-block; width: 8px; height: 8px; border-radius: 9999px; }
+.cc-dot::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; background: inherit;
+  animation: cc-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+@keyframes cc-ping { 70%, 100% { transform: scale(2.6); opacity: 0; } }
+
+/* ── COMPATIBILIDAD ────────────────────────────────────────────────────────── */
+/* `.cc-glass`, `.cg-card` y `.cg-glass` están repartidas por el CRM de la etapa
+   anterior. Se reapuntan al cristal nuevo en vez de buscarlas y sustituirlas en
+   200 archivos: heredan el aspecto nuevo sin tocar una línea de TSX. */
+.cc-glass, .cg-glass {
+  position: relative;
+  background: var(--glass);
+  backdrop-filter: blur(var(--blur)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(180%);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-xl);
+  box-shadow: var(--lift-3), inset 0 1px 0 0 var(--hairline-lit);
+}
+.cg-card {
+  position: relative;
+  background: var(--glass-raised);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-xl);
+  box-shadow: var(--lift-2), inset 0 1px 0 0 var(--hairline-lit);
+}
+.cc-glass-hover, .cg-card-hover, .hover-lift {
+  transition: transform 0.28s var(--ease), border-color 0.28s var(--ease), box-shadow 0.28s var(--ease);
+}
+.cc-glass-hover:hover, .cg-card-hover:hover, .hover-lift:hover {
+  transform: translateY(-2px);
+  border-color: var(--brand-line);
+  box-shadow: var(--lift-4), inset 0 1px 0 0 var(--hairline-lit), 0 0 32px -8px var(--brand-glow);
+}
+.cc-accent-text { color: var(--brand-text); }
+.cc-pop {
+  background: var(--glass-raised);
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md); padding: 0.6rem 0.75rem; min-width: 180px;
+  color: var(--ink); box-shadow: var(--lift-4); font-size: 12px;
+}
+@keyframes cc-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.cc-rise { animation: cc-rise 0.5s var(--ease) both; }
+@keyframes cc-scan { 0% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
+.cc-scan::before {
+  content: ""; position: absolute; top: 0; bottom: 0; width: 40%; pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--brand-glow), transparent);
+  animation: cc-scan 3.2s ease-in-out infinite;
+}
+
+/* ── MOVIMIENTO REDUCIDO ───────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .cc-dot::after, .cc-scan::before, .cc-rise { animation: none; }
+  .glass-hover, .cc-glass-hover, .cg-card-hover, .hover-lift { transition: none; }
+  .glass-hover:hover, .cc-glass-hover:hover, .cg-card-hover:hover, .hover-lift:hover { transform: none; }
+}
+
+/* ── TIPOGRAFÍA BLINDADA (Inter) ───────────────────────────────────────────────────── */
+/* Sin capa (glass.css no lleva @layer) y cargado después de globals.css, así que
+   gana el cascade sobre @layer base y el preflight de Tailwind. Es lo que
+   arregló que los controles de formulario salieran en la fuente del sistema. */
 html, body, button, input, select, textarea, optgroup,
 .app-shell, .app-shell *,
 .app-sidebar, .app-sidebar *,
 .app-header, .app-header *,
 .app-nav-item, .app-subnav-item {
-  font-family: "Poppins", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: "Inter Variable", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ── Y LOS TITULARES RECUPERAN LA SUYA ──────────────────────────────────────
+   La regla de arriba usa `.app-shell *`, que alcanza a TODOS los descendientes
+   —titulares incluidos— y al ir sin capa le gana a la regla de `h1..h5` de
+   globals.css. Consecuencia: durante toda la migración los titulares se
+   dibujaron con la fuente de CUERPO, que es exactamente por qué «cambiar la
+   tipografía» no se notaba: lo más visible de la pantalla nunca la cambió.
+
+   Va DESPUÉS y con la misma especificidad para deshacerlo. Se mide, no se
+   supone: un `<h1>` dentro del shell tiene que computar Saira, no Inter. */
+.app-shell h1, .app-shell h2, .app-shell h3, .app-shell h4, .app-shell h5,
+.app-shell .font-display,
+.app-sidebar .font-display, .app-header .font-display,
+h1, h2, h3, h4, h5, .font-display,
+/* Los botones y la navegación también: la regla de arriba nombra `button`
+   explícitamente, así que sin esto se quedaban con la fuente de cuerpo. */
+.app-shell .cg-btn-brand, .app-shell .cg-btn-glass, .app-shell .cg-btn-ghost,
+.app-shell .cg-btn-bad, .app-shell .cg-btn-link,
+.cg-btn-brand, .cg-btn-glass, .cg-btn-ghost, .cg-btn-bad, .cg-btn-link,
+.app-shell .cg-eyebrow, .cg-eyebrow,
+.app-sidebar .app-nav-item, .app-sidebar .app-subnav-item,
+.app-nav-item, .app-subnav-item {
+  font-family: "Saira Variable", "Saira", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ── CORRECCIÓN CENTRAL DE `text-primary` ──────────────────────────────────
+   `--primary` apunta a `--brand`, que es el color de RELLENO: intenso, pensado
+   para llevar tinta casi negra encima. Usado como color de TEXTO sobre el
+   lienzo claro da 2,25:1 — ilegible (ver la medición en tokens.css).
+
+   Hay ~200 usos de `text-primary` repartidos por el CRM y de la etapa anterior.
+   Reapuntar la clase aquí los arregla todos de golpe; ir archivo por archivo
+   dejaría fuera los que se escriban mañana. Funciona porque glass.css va sin
+   capa y gana a las utilidades de Tailwind — ver la nota del principio.
+
+   `bg-primary` NO se toca: como relleno, `--brand` es exactamente lo correcto.
+   ───────────────────────────────────────────────────────────────────────── */
+.text-primary { color: var(--brand-text); }
+
+/* Y las VARIANTES, que la regla de arriba no alcanza. Tailwind genera
+   `hover:text-primary` como `.hover\:text-primary:hover`, un selector distinto:
+   quedaban 14 sitios donde el nombre de un puesto o de un vigilante caía a
+   2,25:1 EXACTAMENTE al pasar el puntero — el peor momento posible, porque es
+   cuando lo estás leyendo. Se enumeran los estados en vez de intentar un
+   comodín: son pocos y así se ve cuáles están cubiertos. */
+.hover\:text-primary:hover,
+.focus\:text-primary:focus,
+.focus-visible\:text-primary:focus-visible,
+.group:hover .group-hover\:text-primary,
+[data-state="active"].data-\[state\=active\]\:text-primary { color: var(--brand-text); }
+
+/* ── BOTONES ───────────────────────────────────────────────────────────────── */
+/* En CSS y no en clases de Tailwind porque el relleno y la tinta salen de
+   `--brand`/`--brand-ink`, que se recalculan solos al cambiar el acento. Con
+   clases utilitarias habría que enumerar un color por tono posible. */
+.cg-btn-brand {
+  background: var(--brand);
+  color: var(--brand-ink);
+  border: 1px solid transparent;
+  box-shadow: 0 1px 0 0 oklch(1 0 0 / 0.25) inset, 0 6px 20px -8px var(--brand-glow);
+}
+.cg-btn-brand:hover { filter: brightness(1.06); box-shadow: 0 1px 0 0 oklch(1 0 0 / 0.3) inset, 0 10px 28px -8px var(--brand-glow); }
+
+.cg-btn-glass {
+  background: var(--glass);
+  backdrop-filter: blur(12px) saturate(160%);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  color: var(--ink);
+  border: 1px solid var(--hairline);
+  box-shadow: inset 0 1px 0 0 var(--hairline-lit), var(--lift-1);
+}
+.cg-btn-glass:hover { border-color: var(--brand-line); background: var(--glass-raised); }
+
+.cg-btn-ghost { background: transparent; color: var(--ink-soft); border: 1px solid transparent; }
+.cg-btn-ghost:hover { background: var(--glass-sunken); color: var(--ink); }
+
+.cg-btn-bad {
+  background: var(--bad); color: oklch(1 0 0); border: 1px solid transparent;
+  box-shadow: 0 1px 0 0 oklch(1 0 0 / 0.2) inset, 0 6px 20px -8px color-mix(in oklab, var(--bad) 40%, transparent);
+}
+.cg-btn-bad:hover { filter: brightness(1.06); }
+
+.cg-btn-link { color: var(--brand-text); background: transparent; }
+
+/* ── CAMPOS ────────────────────────────────────────────────────────────────── */
+.cg-input {
+  background: var(--glass-sunken);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  color: var(--ink);
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease), background-color 0.2s var(--ease);
+}
+.cg-input::placeholder { color: var(--ink-faint); }
+.cg-input:focus-visible {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-glow);
+  background: var(--glass-raised);
+}
+
+/* ── VELOS ─────────────────────────────────────────────────────────────────
+   Cuando algo flota por encima (modal, hoja, desplegable), lo de detrás se
+   desenfoca. Es lo que separa una capa que flota SOBRE el cristal de una que
+   está pegada a la página.
+
+   DOS VARIANTES, y la diferencia no es estética:
+
+   `.glass-scrim` — para modales y hojas. Va sobre el `Overlay` de Radix, que
+   YA gestiona el puntero: captura el clic fuera para cerrar y atrapa el foco.
+   Aquí sólo se le pone el aspecto.
+
+   `.cg-scrim-menu` — para desplegables, menús y selectores, más abajo. Radix NO
+   crea velo para esos y no se puede inyectar uno en su portal (ver la nota de
+   allí, que costó una página caída). Va DENTRO de `.app-shell`, no en el body,
+   porque el armazón aísla su contexto de apilamiento (ver la nota de la regla). Va con `pointer-events: none` a propósito:
+   un desplegable abierto no debe bloquear la página. Hoy pulsar otro botón con
+   el menú abierto lo cierra Y activa ese botón; un velo que capturase el clic se
+   comería esa segunda parte y haría falta pulsar dos veces.
+
+   COSTE: es UN elemento a pantalla completa, no uno por fila — bounded y
+   compositado por GPU. No confundir con la regla de no meter `backdrop-filter`
+   dentro de un `map()`, que es la que tumba el desplazamiento de una tabla.
+   ───────────────────────────────────────────────────────────────────────── */
+.glass-scrim {
+  background: oklch(0 0 0 / 0.28);
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+}
+.dark .glass-scrim { background: oklch(0 0 0 / 0.55); }
+
+/* El velo de los DESPLEGABLES va en CSS, no en React, y esa decisión costó una
+   página caída. Lo intenté primero inyectando un elemento en el portal de Radix:
+   (1) el portal de `Select` clona a su hijo con semántica de `Slot`, que exige
+       HIJO ÚNICO — colgarle un hermano reventaba Clientes entera con «SlotClone»;
+   (2) al separarlo en dos portales dejó de reventar pero el velo pasó a pintarse
+       SIEMPRE: el portal monta a sus hijos con el componente, y quien decide
+       abierto/cerrado es el contenido, no el portal. Resultado: toda la
+       aplicación desenfocada de forma permanente.
+
+   `:has()` se cierra solo por construcción. Radix envuelve todo contenido
+   flotante en `[data-radix-popper-content-wrapper]`, que existe en el DOM
+   ÚNICAMENTE mientras está abierto: no hay estado que sincronizar ni portal que
+   se escape. Se excluye el tooltip —que también usa popper— porque desenfocar la
+   pantalla entera por un rótulo de ayuda sería absurdo.
+   ───────────────────────────────────────────────────────────────────────── */
+.cg-scrim-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0;
+  background: oklch(0 0 0 / 0.14);
+  backdrop-filter: blur(7px) saturate(115%);
+  -webkit-backdrop-filter: blur(7px) saturate(115%);
+  transition: opacity 0.16s var(--ease);
+}
+.dark .cg-scrim-menu { background: oklch(0 0 0 / 0.34); }
+
+/* Y ahora, QUIÉN lo enciende. Va después de la base para que se lea en orden:
+   apagado por defecto, encendido mientras haya algo flotando abierto. */
+/* Los tres primeros cubren lo que porta Radix. El cuarto, los menús escritos A
+   MANO: el del usuario en la cabecera es un `div` posicionado y ningún selector
+   de Radix lo alcanzaba; basta con que lleven la marca `.cg-flotante`.
+
+   OJO — el comentario va AQUÍ, no entre las comas. Un comentario dentro de una
+   lista de selectores hace que el parser descarte la regla ENTERA en silencio:
+   el velo se quedaba apagado y no había forma de verlo desde el CSSOM porque la
+   regla sencillamente no existía. */
+body:has([data-radix-popper-content-wrapper] [role="menu"]) .cg-scrim-menu,
+body:has([data-radix-popper-content-wrapper] [role="listbox"]) .cg-scrim-menu,
+body:has([data-radix-popper-content-wrapper] [data-radix-popover-content]) .cg-scrim-menu,
+body:has(.cg-flotante) .cg-scrim-menu { opacity: 1; }
+
+/* Sin desenfoque cuando el sistema lo pide: `backdrop-filter` es justo lo que
+   marea a quien activa esa preferencia. Se conserva el oscurecido, que sigue
+   diciendo «hay algo por encima». */
+@media (prefers-reduced-motion: reduce) {
+  .glass-scrim, .cg-scrim-menu {
+    backdrop-filter: none; -webkit-backdrop-filter: none; transition: none;
+  }
+}
+
+/* ── DÓNDE MANDA SAIRA ──────────────────────────────────────────────────────
+   La familia de titulares no se queda en los `<h1>`. Se extiende a lo que se
+   LEE DE UN VISTAZO —botones, navegación, etiquetas en mayúsculas, píldoras de
+   estado— porque son textos cortos y prominentes, y ahí sus formas cuadradas son
+   justo lo que da el carácter técnico que se busca.
+
+   Y NO se extiende a tablas, campos ni párrafos. Saira es condensada y de apertura
+   cerrada: a 12 px en una tabla de 500 filas cansa y ocupa más columna. Ese
+   trabajo es de Inter, que está dibujada para eso. Una sola familia haciendo
+   las dos cosas siempre falla en una de las dos.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Las mayúsculas diminutas piden más aire entre letras en una condensada:
+   con el espaciado de Inter se apelmazan. */
+.cg-eyebrow { letter-spacing: 0.1em; }
+
+/* ── ACORDEÓN ──────────────────────────────────────────────────────────────
+   `accordion.tsx` usa `animate-accordion-up/down` desde siempre, pero el
+   `theme.extend` de tailwind.config.js está VACÍO: esas animaciones nunca
+   existieron, así que el acordeón saltaba en seco. Se definen aquí y no en la
+   config porque el proyecto ya es Tailwind v4 con el CSS por delante, y porque
+   la altura la publica Radix en una variable propia que sólo el CSS puede leer.
+   ───────────────────────────────────────────────────────────────────────── */
+@keyframes cg-accordion-down {
+  from { height: 0; opacity: 0; }
+  to   { height: var(--radix-accordion-content-height); opacity: 1; }
+}
+@keyframes cg-accordion-up {
+  from { height: var(--radix-accordion-content-height); opacity: 1; }
+  to   { height: 0; opacity: 0; }
+}
+.animate-accordion-down { animation: cg-accordion-down 0.24s var(--ease); }
+.animate-accordion-up   { animation: cg-accordion-up   0.20s var(--ease); }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-accordion-down, .animate-accordion-up { animation: none; }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   MOVIMIENTO — CONTENIDO, QUE INFORME
+   Este es un producto que se mira ocho horas seguidas. La diferencia entre una
+   interfaz que se siente viva y una que cansa no es la cantidad de movimiento,
+   es si ese movimiento DICE algo:
+
+     · las cosas LLEGAN en vez de aparecer  → sabes que son nuevas
+     · lo que cambia se SEÑALA un instante  → no hay que estar mirando
+     · sólo late lo que de verdad está vivo → el latido significa algo
+
+   Tres reglas duras:
+     1. Nada en bucle salvo estado en vivo. Una tarjeta que flota es ruido.
+     2. Estado 120-220 ms, entradas 320-420 ms. Más lento estorba al que sabe
+        dónde va a pulsar.
+     3. El escalonado se ACOTA. Veinte filas a 60 ms cada una son 1,2 s de
+        espera mirando cómo se dibuja una tabla.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* ── ENTRADAS ─────────────────────────────────────────────────────────────── */
+@keyframes cg-in-up   { from { opacity: 0; transform: translateY(8px); }  to { opacity: 1; transform: none; } }
+@keyframes cg-in-fade { from { opacity: 0; }                              to { opacity: 1; } }
+
+.cg-in       { animation: cg-in-up 0.34s var(--ease) both; }
+.cg-in-soft  { animation: cg-in-fade 0.26s var(--ease) both; }
+
+/* Escalonado ACOTADO: a partir del octavo, todos entran a la vez. Sin el tope,
+   una lista larga se dibuja delante de ti como una máquina de escribir. */
+.cg-cascade > *  { animation: cg-in-up 0.34s var(--ease) both; }
+.cg-cascade > *:nth-child(1) { animation-delay: 0ms; }
+.cg-cascade > *:nth-child(2) { animation-delay: 34ms; }
+.cg-cascade > *:nth-child(3) { animation-delay: 68ms; }
+.cg-cascade > *:nth-child(4) { animation-delay: 102ms; }
+.cg-cascade > *:nth-child(5) { animation-delay: 136ms; }
+.cg-cascade > *:nth-child(6) { animation-delay: 170ms; }
+.cg-cascade > *:nth-child(7) { animation-delay: 204ms; }
+.cg-cascade > *:nth-child(n+8) { animation-delay: 230ms; }
+
+/* ── LO QUE CAMBIA SE SEÑALA ──────────────────────────────────────────────── */
+/* Un dato que se actualiza solo (un contador en vivo, una fila que llega) se
+   tiñe del acento medio segundo y se apaga. Es la diferencia entre enterarte y
+   tener que estar mirando la cifra. */
+@keyframes cg-blink-brand {
+  0%   { background-color: color-mix(in oklab, var(--brand) 24%, transparent); }
+  100% { background-color: transparent; }
+}
+.cg-changed { animation: cg-blink-brand 0.9s var(--ease) both; border-radius: var(--r-sm); }
+
+/* Una fila nueva entra empujando desde el borde por el que llegó. */
+@keyframes cg-row-in { from { opacity: 0; transform: translateX(-6px); } to { opacity: 1; transform: none; } }
+.cg-row-in { animation: cg-row-in 0.28s var(--ease) both; }
+
+/* ── CARGA ────────────────────────────────────────────────────────────────── */
+/* El esqueleto se funde con el contenido en vez de sustituirlo de golpe: el
+   salto seco es lo que hace que una página parezca parpadear al cargar. */
+.cg-swap { animation: cg-in-fade 0.22s var(--ease) both; }
+
+/* Línea de progreso del cambio de página, pegada bajo la barra superior. No
+   dice cuánto falta —nadie lo sabe— pero sí que algo está pasando. */
+@keyframes cg-route-run {
+  0%   { transform: translateX(-100%) scaleX(.35); }
+  55%  { transform: translateX(-10%)  scaleX(.75); }
+  100% { transform: translateX(100%)  scaleX(.35); }
+}
+.cg-route-progress {
+  position: fixed; top: 56px; left: 0; right: 0; height: 2px; z-index: 55;
+  pointer-events: none; overflow: hidden;
+}
+.cg-route-progress::before {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, var(--brand), transparent);
+  box-shadow: 0 0 12px 0 var(--brand-glow);
+  animation: cg-route-run 1.1s var(--ease) infinite;
+}
+
+/* ── LO QUE ESTÁ VIVO ─────────────────────────────────────────────────────── */
+/* Respiración lentísima para lo que se refresca solo. 3 s por ciclo y un 8 % de
+   recorrido: no se ve latir, se nota que está encendido. */
+@keyframes cg-breathe { 0%, 100% { opacity: 1; } 50% { opacity: .82; } }
+.cg-live { animation: cg-breathe 3s ease-in-out infinite; }
+
+/* ── RESPUESTA AL PUNTERO ─────────────────────────────────────────────────── */
+/* Lo pulsable cede al pulsarse. Es el detalle que más «responde» aporta por
+   línea de CSS, y no distrae porque sólo ocurre cuando ya estás actuando. */
+button:not(:disabled):active,
+[role="button"]:not([aria-disabled="true"]):active { transform: scale(0.985); }
+button, [role="button"] { transition: transform 0.09s var(--ease); }
+
+/* ── NADA DE ESTO SI EL SISTEMA PIDE CALMA ────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .cg-in, .cg-in-soft, .cg-cascade > *, .cg-changed, .cg-row-in, .cg-swap, .cg-live { animation: none; }
+  .cg-route-progress::before { animation: none; opacity: .6; }
+  button, [role="button"] { transition: none; }
+  button:not(:disabled):active, [role="button"]:active { transform: none; }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   MÓVIL — EL MAPA ES EL CONTENIDO
+   En un móvil, la pregunta de un jefe de operaciones es «dónde está mi gente
+   AHORA». Eso es el mapa. Las cifras son una capa que se desliza por encima, no
+   una lista que empuja el mapa fuera de la pantalla.
+
+   Es el patrón de Uber, y funciona por una razón concreta: el pulgar llega a la
+   parte baja de la pantalla, así que lo interactivo vive abajo y lo contextual
+   ocupa el resto.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* ── CARRUSEL DE CIFRAS ───────────────────────────────────────────────────── */
+/* Desplazamiento horizontal con ANCLAJE: cada tarjeta se queda centrada al
+   soltar. Sin anclaje el carrusel queda a medias entre dos tarjetas, que es lo
+   que hace que un carrusel se sienta barato. */
+.cg-carrusel {
+  display: flex; gap: 10px;
+  overflow-x: auto; overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  /* El primer y último elemento se centran igual que los del medio. */
+  padding: 2px 14px 12px;
+  scroll-padding-inline: 14px;
+}
+.cg-carrusel::-webkit-scrollbar { display: none; }
+.cg-carrusel > * {
+  scroll-snap-align: start;
+  flex: 0 0 auto;
+  min-width: 148px;
+}
+
+/* ── CAPA SOBRE EL MAPA ───────────────────────────────────────────────────── */
+/* El mapa ocupa la pantalla; esto flota encima. `pointer-events: none` en el
+   contenedor y `auto` en los hijos: así se puede arrastrar el mapa por los
+   huecos entre tarjetas en vez de que la capa se coma todo el gesto. */
+.cg-sobre-mapa {
+  position: absolute; left: 0; right: 0; z-index: 10;
+  pointer-events: none;
+}
+.cg-sobre-mapa > * { pointer-events: auto; }
+
+/* Las tarjetas que flotan sobre el mapa necesitan MÁS opacidad que el cristal
+   normal: sobre teselas con detalle, una superficie al 5 % no se lee. */
+.cg-tarjeta-mapa {
+  background: color-mix(in oklab, var(--glass-solid) 82%, transparent);
+  backdrop-filter: blur(calc(var(--blur) * 1.2)) saturate(180%);
+  -webkit-backdrop-filter: blur(calc(var(--blur) * 1.2)) saturate(180%);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  box-shadow: var(--lift-3), inset 0 1px 0 0 var(--hairline-lit);
+}
+
+/* ── HOJA INFERIOR ARRASTRABLE ────────────────────────────────────────────── */
+/* El resto del panel vive aquí: se sube con el pulgar cuando hace falta y no
+   estorba cuando no. */
+.cg-hoja {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 20;
+  border-radius: var(--r-2xl) var(--r-2xl) 0 0;
+  background: color-mix(in oklab, var(--glass-solid) 94%, transparent);
+  backdrop-filter: blur(calc(var(--blur) * 1.4)) saturate(190%);
+  -webkit-backdrop-filter: blur(calc(var(--blur) * 1.4)) saturate(190%);
+  border-top: 1px solid var(--hairline);
+  box-shadow: 0 -18px 48px -22px oklch(0 0 0 / .55), inset 0 1px 0 0 var(--hairline-lit);
+  transition: transform .28s var(--ease);
+  /* Que no quede debajo de la barra de gestos del teléfono. */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+/* El tirador. Cuatro píxeles que dicen «esto se arrastra» sin una sola palabra. */
+.cg-hoja-tirador {
+  display: grid; place-items: center; padding: 9px 0 6px; cursor: grab;
+  touch-action: none;
+}
+.cg-hoja-tirador::before {
+  content: ""; width: 38px; height: 4px; border-radius: 9999px;
+  background: var(--ink-faint); opacity: .5;
+}
+.cg-hoja-tirador:active { cursor: grabbing; }
+
+/* ── OBJETIVOS TÁCTILES ───────────────────────────────────────────────────── */
+/* 44 px es el mínimo con el que un pulgar acierta. Debajo de eso se falla, y en
+   una app de seguridad fallar un botón puede ser fallar un pánico. */
+@media (pointer: coarse) {
+  button, [role="button"], a.cg-focus, .app-nav-item, .cgsb-item, .cgsb-sub {
+    min-height: 44px;
+  }
+  .cg-carrusel > * { min-width: 160px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cg-hoja { transition: none; }
+  .cg-carrusel { scroll-behavior: auto; }
 }

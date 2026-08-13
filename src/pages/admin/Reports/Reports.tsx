@@ -3,13 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { Settings, ArrowRight, Search, BarChart3, X, SearchX } from "lucide-react";
 import AppLayout from "@/layouts/app-layout";
 import { REPORT_SECTIONS } from "@/config/reports-config";
-import { SECTION_THEME, iconForReport } from "./reportIcons";
+import { SECTION_THEME, iconForReport, toneForReport } from "./reportIcons";
 import { Button } from "@/components/ui/button";
 import {
   PageContainer,
   PageHeader,
   EmptyState,
   StatusBadge,
+  IconTile,
   FadeIn,
   Stagger,
 } from "@/components/kit";
@@ -64,17 +65,22 @@ const Reports: React.FC<ReportsProps> = ({ onNavigate }) => {
   // Search field reused inside the page hero.
   const searchField = (
     <div className="relative w-full sm:w-80">
-      <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+      <Search
+        className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2"
+        style={{ color: "var(--ink-faint)" }}
+      />
       <input
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Buscar un informe…"
-        className="w-full rounded-xl border border-border/50 bg-background/70 py-2.5 pl-10 pr-9 text-sm text-foreground outline-none backdrop-blur transition-all placeholder:text-muted-foreground/60 focus:border-primary focus:ring-2 focus:ring-primary/20"
+        className="cg-input w-full py-2.5 pl-10 pr-9 text-sm"
       />
       {query && (
         <button
           onClick={() => setQuery("")}
-          className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground hover:bg-muted/40"
+          aria-label="Limpiar búsqueda"
+          className="cg-focus absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md p-1 transition-colors"
+          style={{ color: "var(--ink-faint)" }}
         >
           <X size={14} />
         </button>
@@ -114,31 +120,30 @@ const Reports: React.FC<ReportsProps> = ({ onNavigate }) => {
                 {/* Section header */}
                 <div className="flex items-center justify-between gap-4 px-1">
                   <div className="flex items-center gap-2.5">
-                    <div className={`grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br ${theme.from} ${theme.to} ${theme.text}`}>
-                      <SectionIcon size={18} />
-                    </div>
+                    <IconTile tone={theme.tone} size="sm">
+                      <SectionIcon />
+                    </IconTile>
                     <div>
-                      <h2 className="text-sm font-bold text-foreground">{section.title}</h2>
-                      <p className="text-[11px] text-muted-foreground">{section.reports.length} informe{section.reports.length !== 1 ? "s" : ""}</p>
+                      <h2 className="text-sm font-bold">{section.title}</h2>
+                      <p className="text-[11px]" style={{ color: "var(--ink-faint)" }}>
+                        {section.reports.length} informe{section.reports.length !== 1 ? "s" : ""}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     {section.settingsHref && (
-                      <button
+                      <Button
+                        variant="outline"
+                        size="icon"
                         title="Configuración"
+                        aria-label="Configuración de la sección"
                         onClick={() => go(section.settingsHref)}
-                        className="grid h-9 w-9 place-items-center rounded-xl border border-border/40 text-muted-foreground transition-colors hover:bg-muted/30 hover:text-foreground"
                       >
                         <Settings size={15} />
-                      </button>
+                      </Button>
                     )}
                     {section.viewAllHref && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => go(section.viewAllHref)}
-                        className="gap-1 text-primary hover:bg-primary/10 hover:text-primary"
-                      >
+                      <Button variant="link" size="sm" onClick={() => go(section.viewAllHref)} className="gap-1">
                         Ver todo <ArrowRight size={14} />
                       </Button>
                     )}
@@ -159,30 +164,42 @@ const Reports: React.FC<ReportsProps> = ({ onNavigate }) => {
                         onClick={ready ? () => go(report.href) : undefined}
                         disabled={!ready}
                         aria-disabled={!ready}
-                        className={`group relative flex h-full w-full items-start gap-3.5 overflow-hidden rounded-2xl border border-border/40 bg-card p-4 text-left shadow-sm ring-1 ring-transparent transition-all duration-200 ${ready ? `hover:-translate-y-0.5 hover:shadow-lg ${theme.ring}` : "cursor-not-allowed opacity-55"}`}
+                        // `glass-flat` y no `glass`: son fichas que se repiten en
+                        // una rejilla y el desenfoque por ficha hunde el scroll.
+                        className={`cg-focus group glass-flat relative flex h-full w-full items-start gap-3.5 overflow-hidden p-4 text-left ${
+                          ready ? "glass-hover" : "cursor-not-allowed opacity-55"
+                        }`}
                       >
-                        <div className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br ${theme.from} ${theme.to} ${theme.text} transition-transform duration-200 ${ready ? "group-hover:scale-105" : ""}`}>
-                          <Icon size={20} />
-                        </div>
+                        <IconTile tone={toneForReport(report.id, section.id)}>
+                          <Icon />
+                        </IconTile>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-start justify-between gap-2">
-                            <h3 className="text-sm font-semibold leading-snug text-foreground">{report.title}</h3>
+                            <h3 className="text-sm font-semibold leading-snug">{report.title}</h3>
                             {!ready ? (
-                              <StatusBadge tone="slate" dot={false} className="shrink-0 px-1.5 py-0.5 text-[10px]">Próximamente</StatusBadge>
+                              <StatusBadge tone="neutral" dot={false} className="shrink-0 px-1.5 py-0.5 text-[10px]">Próximamente</StatusBadge>
                             ) : (report.openCount !== undefined || report.closedCount !== undefined) && (
                               <div className="flex shrink-0 gap-1">
                                 {report.openCount !== undefined && (
-                                  <StatusBadge tone="green" dot={false} className="px-1.5 py-0.5 text-[10px]">{report.openCount}</StatusBadge>
+                                  <StatusBadge tone="ok" dot={false} className="px-1.5 py-0.5 text-[10px]">{report.openCount}</StatusBadge>
                                 )}
                                 {report.closedCount !== undefined && (
-                                  <StatusBadge tone="slate" dot={false} className="px-1.5 py-0.5 text-[10px]">{report.closedCount}</StatusBadge>
+                                  <StatusBadge tone="neutral" dot={false} className="px-1.5 py-0.5 text-[10px]">{report.closedCount}</StatusBadge>
                                 )}
                               </div>
                             )}
                           </div>
-                          <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-muted-foreground">{report.description}</p>
+                          <p className="mt-1 line-clamp-2 text-xs leading-relaxed" style={{ color: "var(--ink-soft)" }}>
+                            {report.description}
+                          </p>
                         </div>
-                        {ready && <ArrowRight size={16} className="absolute bottom-3 right-3 text-muted-foreground/0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-muted-foreground/60" />}
+                        {ready && (
+                          <ArrowRight
+                            size={16}
+                            className="absolute bottom-3 right-3 opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:opacity-100"
+                            style={{ color: "var(--brand-text)" }}
+                          />
+                        )}
                       </button>
                     );
                   })}

@@ -13,7 +13,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { invalidateEntity } from "@/lib/queryClient";
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
 import {
   CheckCircle2,
   ChevronRight,
@@ -56,6 +55,7 @@ import AddressAutocomplete, { AddressComponents } from '@/components/maps/Addres
 import { useClientSelection } from '@/contexts/ClientSelectionContext';
 import { getServiceType } from '@/lib/serviceTypes';
 import { ImagePlus, Upload } from 'lucide-react';
+import { Section, EmptyState, IconTile } from '@/components/kit';
 
 // ─── types ────────────────────────────────────────────────────────────────────
 
@@ -131,12 +131,36 @@ const JORNADA_PRESETS: { tipo: JornadaDraft['tipo']; label: string; startTime: s
   { tipo: 'personalizada',label: 'Personalizada',startTime: '',      endTime: ''      },
 ];
 
-const JORNADA_STYLE: Record<JornadaDraft['tipo'], { badge: string; ring: string }> = {
-  matutina:     { badge: 'bg-amber-500/15 text-amber-700 border-amber-300',   ring: 'ring-amber-200' },
-  nocturna:     { badge: 'bg-indigo-500/15 text-indigo-700 border-indigo-300', ring: 'ring-indigo-200' },
-  sacafranco:   { badge: 'bg-emerald-500/15 text-emerald-600 border-emerald-300', ring: 'ring-emerald-200' },
-  personalizada:{ badge: 'bg-muted text-foreground border-border',      ring: 'ring-gray-200' },
+// El tinte de cada jornada sale de los semánticos del sistema: matutina = día
+// (warn), nocturna = noche (info), sacafranco = relevo (ok). Nada escrito a mano
+// para que el acento del usuario no choque con la píldora.
+const JORNADA_TONE: Record<JornadaDraft['tipo'], 'warn' | 'info' | 'ok' | 'neutral'> = {
+  matutina: 'warn',
+  nocturna: 'info',
+  sacafranco: 'ok',
+  personalizada: 'neutral',
 };
+
+function jornadaFill(tipo: JornadaDraft['tipo']) {
+  const t = JORNADA_TONE[tipo] ?? 'neutral';
+  return t === 'neutral' ? 'var(--ink-faint)' : `var(--${t})`;
+}
+
+/** Píldora de la jornada — fondo, borde y tinta del mismo semántico. */
+function jornadaChip(tipo: JornadaDraft['tipo']): React.CSSProperties {
+  const t = JORNADA_TONE[tipo] ?? 'neutral';
+  const fill = jornadaFill(tipo);
+  return {
+    background: `color-mix(in oklab, ${fill} 14%, transparent)`,
+    borderColor: `color-mix(in oklab, ${fill} 32%, transparent)`,
+    color: t === 'neutral' ? 'var(--ink-soft)' : `var(--${t}-text)`,
+  };
+}
+
+/** Canto teñido de la fila de jornada. */
+function jornadaEdge(tipo: JornadaDraft['tipo']): React.CSSProperties {
+  return { borderColor: `color-mix(in oklab, ${jornadaFill(tipo)} 30%, transparent)` };
+}
 
 const DEPLOY_CHECKS: { key: string; label: string; defaultOn?: boolean }[] = [
   { key: 'armedService',    label: 'Vigilante armado' },
@@ -198,12 +222,12 @@ function ChipGroup({ options, value, customItems, onChange, placeholder = 'Agreg
               key={opt.value}
               type="button"
               onClick={() => toggleKnown(opt.value)}
-              className={cn(
-                'inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-all',
+              className="cg-focus inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-all"
+              style={
                 checked
-                  ? 'border-amber-400 bg-amber-500/15 text-amber-700 shadow-sm'
-                  : 'border-border bg-card text-foreground/70 hover:border-amber-300 hover:bg-amber-500/10',
-              )}
+                  ? { background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }
+                  : { background: 'var(--glass-sunken)', borderColor: 'var(--hairline)', color: 'var(--ink-soft)' }
+              }
             >
               {checked && <Check className="h-3 w-3 shrink-0" />}
               {opt.label}
@@ -213,11 +237,18 @@ function ChipGroup({ options, value, customItems, onChange, placeholder = 'Agreg
         {customItems.map((item) => (
           <span
             key={item}
-            className="inline-flex items-center gap-1.5 rounded-full border border-amber-400 bg-amber-500/15 text-amber-700 px-3 py-1 text-xs font-medium"
+            className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium"
+            style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }}
           >
             <Tag className="h-3 w-3 shrink-0" />
             {item}
-            <button type="button" onClick={() => removeCustom(item)} className="ml-0.5 hover:text-red-600 transition-colors">
+            <button
+              type="button"
+              onClick={() => removeCustom(item)}
+              aria-label={`Quitar ${item}`}
+              className="cg-focus ml-0.5 rounded-full transition-colors"
+              style={{ color: 'var(--bad-text)' }}
+            >
               <X className="h-3 w-3" />
             </button>
           </span>
@@ -237,7 +268,7 @@ function ChipGroup({ options, value, customItems, onChange, placeholder = 'Agreg
           type="button"
           onClick={addCustom}
           disabled={!input.trim()}
-          className="flex items-center gap-1 rounded-md bg-amber-500/15 border border-amber-300 px-3 py-1 text-xs font-medium text-amber-700 hover:bg-amber-200 disabled:opacity-40 transition-colors"
+          className="cg-btn-brand cg-focus flex items-center gap-1 rounded-md px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-40"
         >
           <Plus className="h-3 w-3" />
           Agregar
@@ -259,26 +290,30 @@ function StepBar({ current, total }: { current: number; total: number }) {
         return (
           <React.Fragment key={idx}>
             <div className="flex flex-col items-center gap-1">
-              <div className={cn(
-                'flex h-7 w-7 items-center justify-center rounded-full border-2 text-xs font-bold transition-all duration-300',
-                done  ? 'border-green-500 bg-green-500 text-white'
-                      : active ? 'border-amber-500 bg-amber-500 text-white shadow-md shadow-amber-200'
-                      : 'border-border bg-card text-muted-foreground',
-              )}>
+              <div
+                className="flex h-7 w-7 items-center justify-center rounded-full border-2 text-xs font-bold transition-all duration-300"
+                style={
+                  done
+                    ? { background: 'var(--ok)', borderColor: 'var(--ok)', color: 'var(--brand-ink)' }
+                    : active
+                    ? { background: 'var(--brand)', borderColor: 'var(--brand)', color: 'var(--brand-ink)', boxShadow: '0 0 18px -6px var(--brand-glow)' }
+                    : { background: 'var(--glass-sunken)', borderColor: 'var(--hairline)', color: 'var(--ink-faint)' }
+                }
+              >
                 {done ? <Check className="h-3.5 w-3.5" /> : idx}
               </div>
-              <span className={cn(
-                'hidden sm:block text-[10px] font-medium leading-none',
-                active ? 'text-amber-700' : done ? 'text-green-600' : 'text-muted-foreground',
-              )}>
+              <span
+                className="hidden sm:block text-[10px] font-medium leading-none"
+                style={{ color: active ? 'var(--brand-text)' : done ? 'var(--ok-text)' : 'var(--ink-faint)' }}
+              >
                 {label}
               </span>
             </div>
             {i < total - 1 && (
-              <div className={cn(
-                'h-0.5 flex-1 rounded transition-all duration-500',
-                idx < current ? 'bg-green-400' : 'bg-muted',
-              )} />
+              <div
+                className="h-0.5 flex-1 rounded transition-all duration-500"
+                style={{ background: idx < current ? 'var(--ok)' : 'var(--glass-sunken)' }}
+              />
             )}
           </React.Fragment>
         );
@@ -298,11 +333,13 @@ function JornadaRow({
   onChange: (d: Partial<JornadaDraft>) => void;
   onRemove: () => void;
 }) {
-  const style = JORNADA_STYLE[jornada.tipo] ?? JORNADA_STYLE.personalizada;
   return (
-    <div className={cn('flex items-center gap-2 rounded-lg border bg-card px-3 py-2 ring-1', style.ring)}>
+    <div className="glass-flat flex items-center gap-2 px-3 py-2" style={jornadaEdge(jornada.tipo)}>
       {/* Type badge */}
-      <span className={cn('shrink-0 rounded-full border px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide', style.badge)}>
+      <span
+        className="shrink-0 rounded-full border px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide"
+        style={jornadaChip(jornada.tipo)}
+      >
         {jornada.tipo === 'sacafranco' ? 'SF' : jornada.tipo.slice(0, 3).toUpperCase()}
       </span>
       {/* Editable name */}
@@ -338,7 +375,13 @@ function JornadaRow({
           className="h-7 w-10 text-[11px] text-center px-1"
         />
       </div>
-      <button type="button" onClick={onRemove} className="shrink-0 text-muted-foreground/60 hover:text-red-500 transition-colors">
+      <button
+        type="button"
+        onClick={onRemove}
+        aria-label="Quitar jornada"
+        className="cg-focus shrink-0 rounded-md transition-colors"
+        style={{ color: 'var(--bad-text)' }}
+      >
         <X className="h-3.5 w-3.5" />
       </button>
     </div>
@@ -377,7 +420,7 @@ function StationRow({
   };
 
   return (
-    <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+    <div className="glass-flat overflow-hidden">
       {/* Station name + delete */}
       <div className="flex items-center gap-2 px-4 pt-4 pb-3">
         <Input
@@ -386,7 +429,13 @@ function StationRow({
           placeholder="Nombre del puesto *"
           className="font-semibold flex-1"
         />
-        <button type="button" onClick={onRemove} className="shrink-0 text-muted-foreground hover:text-red-500 transition-colors">
+        <button
+          type="button"
+          onClick={onRemove}
+          aria-label="Quitar puesto"
+          className="cg-focus shrink-0 rounded-md transition-colors"
+          style={{ color: 'var(--bad-text)' }}
+        >
           <Trash2 className="h-4 w-4" />
         </button>
       </div>
@@ -401,9 +450,9 @@ function StationRow({
       </div>
 
       {/* Jornadas section */}
-      <div className="border-t border-border bg-muted/30 px-4 py-3 space-y-2">
+      <div className="border-t px-4 py-3 space-y-2" style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}>
         <div className="flex items-center justify-between gap-2 flex-wrap">
-          <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground flex items-center gap-1">
+          <span className="cg-eyebrow flex items-center gap-1">
             <Clock className="h-3 w-3" /> Jornadas / Turnos
           </span>
           <div className="flex gap-1.5 flex-wrap">
@@ -412,10 +461,8 @@ function StationRow({
                 key={p.tipo}
                 type="button"
                 onClick={() => addJornada(p)}
-                className={cn(
-                  'flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-medium transition-opacity hover:opacity-70',
-                  JORNADA_STYLE[p.tipo].badge,
-                )}
+                className="cg-focus flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-medium transition-opacity hover:opacity-70"
+                style={jornadaChip(p.tipo)}
               >
                 <Plus className="h-2.5 w-2.5" />
                 {p.label}
@@ -425,7 +472,7 @@ function StationRow({
         </div>
 
         {draft.jornadas.length === 0 ? (
-          <p className="text-xs text-muted-foreground py-3 text-center italic">
+          <p className="py-3 text-center text-xs italic" style={{ color: 'var(--ink-faint)' }}>
             Sin turnos — añade Matutina, Nocturna o Sacafranco con los botones de arriba.
           </p>
         ) : (
@@ -442,7 +489,7 @@ function StationRow({
         )}
 
         {draft.jornadas.length > 0 && (
-          <p className="text-[10px] text-muted-foreground pt-1">
+          <p className="pt-1 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
             Cada jornada se guarda como un registro independiente en el puesto.
           </p>
         )}
@@ -815,12 +862,19 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
       const targetId = isEdit ? id! : (createdId ?? '');
       return (
         <div className="flex flex-col items-center gap-6 py-8 text-center">
-          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-green-100 ring-8 ring-green-50">
-            <CheckCircle2 className="h-10 w-10 text-green-600" />
+          <div
+            className="flex h-20 w-20 items-center justify-center rounded-full"
+            style={{
+              background: 'color-mix(in oklab, var(--ok) 16%, transparent)',
+              boxShadow: '0 0 0 8px color-mix(in oklab, var(--ok) 8%, transparent)',
+              color: 'var(--ok-text)',
+            }}
+          >
+            <CheckCircle2 className="h-10 w-10" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-foreground">{isEdit ? '¡Cambios guardados!' : '¡Puesto creado!'}</h2>
-            <p className="text-sm text-muted-foreground mt-2 max-w-sm mx-auto">
+            <h2 className="font-display text-2xl font-bold">{isEdit ? '¡Cambios guardados!' : '¡Puesto creado!'}</h2>
+            <p className="mx-auto mt-2 max-w-sm text-sm" style={{ color: 'var(--ink-soft)' }}>
               {isEdit
                 ? 'El sitio fue actualizado correctamente.'
                 : stationCount > 0
@@ -851,8 +905,8 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
       return (
         <div className="space-y-6">
           <div className="text-center space-y-1">
-            <h2 className="text-xl font-bold text-foreground">¿Qué tipo de servicio es este sitio?</h2>
-            <p className="text-sm text-muted-foreground">
+            <h2 className="font-display text-xl font-bold">¿Qué tipo de servicio es este sitio?</h2>
+            <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
               Esto nos permite preparar los campos de configuración adecuados. Puede cambiar después.
             </p>
           </div>
@@ -864,7 +918,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
             <button
               type="button"
               onClick={() => { setServiceType(undefined); setStep(2); }}
-              className="text-sm text-muted-foreground hover:text-foreground/70 underline underline-offset-4 transition-colors"
+              className="cg-btn-link cg-focus rounded-md text-sm underline underline-offset-4 transition-colors"
             >
               Continuar sin seleccionar tipo
             </button>
@@ -883,31 +937,33 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
       return (
         <div className="space-y-5">
           <div>
-            <h2 className="text-xl font-bold text-foreground mb-0.5">Ubicación del sitio</h2>
-            <p className="text-sm text-muted-foreground">Busca la dirección en el mapa y asigna el sitio a un cliente.</p>
+            <h2 className="font-display mb-0.5 text-xl font-bold">Ubicación del sitio</h2>
+            <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>Busca la dirección en el mapa y asigna el sitio a un cliente.</p>
           </div>
 
           {/* ── Client selector — card style ─────────────────────────── */}
-          <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
-            <div className="flex items-center gap-3 px-4 py-2.5 bg-muted/30 border-b border-border">
-              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-amber-500/15">
-                <Building2 className="h-4 w-4 text-amber-700" />
-              </div>
-              <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Cliente</span>
+          <div className="glass overflow-hidden">
+            <div className="flex items-center gap-3 border-b px-4 py-2.5" style={{ borderColor: 'var(--hairline)' }}>
+              <IconTile size="sm"><Building2 /></IconTile>
+              <span className="cg-eyebrow">Cliente</span>
             </div>
             <div className="px-4 py-3">
               {selectedClientObj ? (
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2.5">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-500/15 text-amber-700 text-xs font-bold">
+                    <div
+                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-xs font-bold"
+                      style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }}
+                    >
                       {selectedClientObj.name.charAt(0).toUpperCase()}
                     </div>
-                    <span className="text-sm font-semibold text-foreground">{selectedClientObj.name}</span>
+                    <span className="text-sm font-semibold">{selectedClientObj.name}</span>
                   </div>
                   <button
                     type="button"
                     onClick={() => setClientId('')}
-                    className="text-xs text-muted-foreground hover:text-foreground/70 flex items-center gap-1 transition-colors"
+                    className="cg-focus flex items-center gap-1 rounded-md text-xs transition-colors"
+                    style={{ color: 'var(--ink-soft)' }}
                   >
                     <Edit3 className="h-3 w-3" /> Cambiar
                   </button>
@@ -916,7 +972,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
                 <select
                   value={clientId}
                   onChange={(e) => setClientId(e.target.value)}
-                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  className="cg-input cg-focus flex h-9 w-full px-3 py-1 text-sm"
                 >
                   <option value="">— Seleccionar cliente —</option>
                   {clients.map((c) => (
@@ -927,7 +983,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
             </div>
             {/* ── Same address as client toggle ── */}
             {clientId && clientData?.address && (
-              <div className="border-t border-border px-4 py-2.5">
+              <div className="border-t px-4 py-2.5" style={{ borderColor: 'var(--hairline)' }}>
                 <label className="flex items-center gap-2.5 cursor-pointer select-none">
                   <input
                     type="checkbox"
@@ -946,11 +1002,12 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
                         setAddressConfirmed(true);
                       }
                     }}
-                    className="h-4 w-4 rounded border-border text-amber-600 focus:ring-amber-500"
+                    className="cg-focus h-4 w-4 rounded"
+                    style={{ accentColor: 'var(--brand)' }}
                   />
                   <div className="flex-1 min-w-0">
-                    <span className="text-xs font-medium text-foreground">Misma dirección del cliente</span>
-                    <p className="text-[11px] text-muted-foreground truncate">{clientData.address}</p>
+                    <span className="text-xs font-medium">Misma dirección del cliente</span>
+                    <p className="truncate text-[11px]" style={{ color: 'var(--ink-soft)' }}>{clientData.address}</p>
                   </div>
                 </label>
               </div>
@@ -958,7 +1015,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
           </div>
 
           {/* ── Map hero block ──────────────────────────────────────── */}
-          <div className="rounded-xl border border-border shadow-sm bg-card">
+          <div className="glass">
             <div className="px-4 pt-4 pb-0">
               <AddressAutocomplete
                 onAddressSelect={handleAddressSelect}
@@ -975,30 +1032,39 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
 
           {/* ── Address confirmation card — appears after selection ─── */}
           {addressConfirmed && (address || city) && (
-            <div className="rounded-xl border border-green-200 bg-gradient-to-br from-green-50 to-emerald-50 shadow-sm overflow-hidden">
+            <div
+              className="glass overflow-hidden"
+              style={{
+                borderColor: 'color-mix(in oklab, var(--ok) 32%, transparent)',
+                background: 'color-mix(in oklab, var(--ok) 10%, transparent)',
+              }}
+            >
               <div className="flex items-start gap-3 px-4 py-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-green-500 shadow-sm">
-                  <Check className="h-5 w-5 text-white" />
+                <div
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
+                  style={{ background: 'var(--ok)', color: 'var(--brand-ink)' }}
+                >
+                  <Check className="h-5 w-5" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-green-900 leading-snug">
+                  <p className="text-sm font-semibold leading-snug">
                     {address || city}
                   </p>
                   <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
                     {city && (
-                      <span className="inline-flex items-center gap-1 text-xs text-green-700">
+                      <span className="inline-flex items-center gap-1 text-xs" style={{ color: 'var(--ok-text)' }}>
                         <Globe className="h-3 w-3" />
                         {[city, country].filter(Boolean).join(', ')}
                       </span>
                     )}
                     {postalCode && (
-                      <span className="inline-flex items-center gap-1 text-xs text-green-700">
+                      <span className="inline-flex items-center gap-1 text-xs" style={{ color: 'var(--ok-text)' }}>
                         <Hash className="h-3 w-3" />
                         CP {postalCode}
                       </span>
                     )}
                     {coordsLabel && (
-                      <span className="inline-flex items-center gap-1 text-xs text-green-600 font-mono">
+                      <span className="inline-flex items-center gap-1 font-mono text-xs" style={{ color: 'var(--ok-text)' }}>
                         <Navigation2 className="h-3 w-3" />
                         {coordsLabel}
                       </span>
@@ -1008,7 +1074,8 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
                 <button
                   type="button"
                   onClick={() => setShowAddressFields((v) => !v)}
-                  className="flex items-center gap-1 text-xs text-green-700 hover:text-green-900 transition-colors shrink-0"
+                  className="cg-focus flex shrink-0 items-center gap-1 rounded-md text-xs transition-colors"
+                  style={{ color: 'var(--ok-text)' }}
                 >
                   <Edit3 className="h-3 w-3" />
                   Editar
@@ -1018,7 +1085,10 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
 
               {/* Collapsible manual fields */}
               {showAddressFields && (
-                <div className="border-t border-green-200 bg-white/70 px-4 py-4 space-y-3">
+                <div
+                  className="space-y-3 border-t px-4 py-4"
+                  style={{ borderColor: 'color-mix(in oklab, var(--ok) 28%, transparent)', background: 'var(--glass-sunken)' }}
+                >
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="sm:col-span-2">
                       <label className="block text-xs font-medium text-foreground/70 mb-1">Dirección</label>
@@ -1058,7 +1128,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
 
           {/* Fallback: show bare fields if no address confirmed yet */}
           {!addressConfirmed && address && (
-            <div className="rounded-xl border border-border bg-muted/30 px-4 py-3 space-y-3">
+            <div className="glass-sunken space-y-3 px-4 py-3">
               <div className="sm:col-span-2">
                 <label className="block text-xs font-medium text-foreground/70 mb-1">Dirección</label>
                 <Input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Calle y número" />
@@ -1068,7 +1138,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
 
           {/* ── Description ─────────────────────────────────────────── */}
           <div>
-            <label className="block text-sm font-semibold text-foreground mb-1.5">Descripción del sitio</label>
+            <label className="mb-1.5 block text-sm font-semibold">Descripción del sitio</label>
             <Textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -1078,12 +1148,10 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
           </div>
 
           {/* ── Site Photo ────────────────────────────────────────── */}
-          <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
-            <div className="flex items-center gap-3 px-4 py-2.5 bg-muted/30 border-b border-border">
-              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-purple-500/15">
-                <ImagePlus className="h-4 w-4 text-purple-700" />
-              </div>
-              <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Foto del sitio</span>
+          <div className="glass overflow-hidden">
+            <div className="flex items-center gap-3 border-b px-4 py-2.5" style={{ borderColor: 'var(--hairline)' }}>
+              <IconTile size="sm"><ImagePlus /></IconTile>
+              <span className="cg-eyebrow">Foto del sitio</span>
             </div>
             <div className="px-4 py-4">
               <label className="cursor-pointer block">
@@ -1093,11 +1161,14 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
                   setPlaceFile(f);
                   setPlacePrev(URL.createObjectURL(f));
                 }} />
-                <div className="relative w-full aspect-video max-w-[280px] rounded-lg border-2 border-dashed border-border hover:border-purple-400 overflow-hidden flex items-center justify-center bg-muted/30 transition-colors">
+                <div
+                  className="relative flex aspect-video w-full max-w-[280px] items-center justify-center overflow-hidden rounded-lg border-2 border-dashed transition-colors"
+                  style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}
+                >
                   {placePreview ? (
-                    <img src={placePreview} className="w-full h-full object-cover" alt="site" />
+                    <img src={placePreview} className="h-full w-full object-cover" alt="Foto del sitio" />
                   ) : (
-                    <div className="flex flex-col items-center gap-1 text-muted-foreground">
+                    <div className="flex flex-col items-center gap-1" style={{ color: 'var(--ink-faint)' }}>
                       <Upload size={20} />
                       <span className="text-[11px]">Subir foto del sitio</span>
                     </div>
@@ -1105,7 +1176,14 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
                 </div>
               </label>
               {placePreview && (
-                <button onClick={() => { setPlaceFile(null); setPlacePrev(null); setPlaceExisting(null); }} className="mt-1 text-[11px] text-red-500 hover:underline">Quitar</button>
+                <button
+                  type="button"
+                  onClick={() => { setPlaceFile(null); setPlacePrev(null); setPlaceExisting(null); }}
+                  className="cg-focus mt-1 rounded-md text-[11px] hover:underline"
+                  style={{ color: 'var(--bad-text)' }}
+                >
+                  Quitar
+                </button>
               )}
             </div>
           </div>
@@ -1120,23 +1198,17 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
       return (
         <div className="space-y-6">
           <div>
-            <h2 className="text-xl font-bold text-foreground mb-1">
+            <h2 className="font-display mb-1 text-xl font-bold">
               Configuración operativa
               {typeDef && (
-                <span className="ml-2 text-base font-normal text-amber-700">— {typeDef.label}</span>
+                <span className="ml-2 text-base font-normal" style={{ color: 'var(--brand-text)' }}>— {typeDef.label}</span>
               )}
             </h2>
-            <p className="text-sm text-muted-foreground">Equipamiento, capacitación y parámetros del servicio.</p>
+            <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>Equipamiento, capacitación y parámetros del servicio.</p>
           </div>
 
           {/* Equipment */}
-          <div className="rounded-xl border border-amber-100 bg-amber-500/10 p-4 space-y-3">
-            <div className="flex items-center gap-2">
-              <span className="flex h-7 w-7 items-center justify-center rounded-md bg-amber-500/15 text-amber-700">
-                <Zap className="h-4 w-4" />
-              </span>
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-amber-700">Equipamiento</h3>
-            </div>
+          <Section title="Equipamiento" icon={<Zap />} contentClassName="space-y-3">
             <ChipGroup
               options={equipmentOptions}
               value={equipment}
@@ -1144,16 +1216,10 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
               onChange={(sel, cust) => { setEquipment(sel); setCustomEquipment(cust); }}
               placeholder="Agregar otro equipo…"
             />
-          </div>
+          </Section>
 
           {/* Training */}
-          <div className="rounded-xl border border-amber-100 bg-amber-500/10 p-4 space-y-3">
-            <div className="flex items-center gap-2">
-              <span className="flex h-7 w-7 items-center justify-center rounded-md bg-amber-500/15 text-amber-700">
-                <Star className="h-4 w-4" />
-              </span>
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-amber-700">Capacitación requerida</h3>
-            </div>
+          <Section title="Capacitación requerida" icon={<Star />} contentClassName="space-y-3">
             <ChipGroup
               options={trainingOptions}
               value={training}
@@ -1161,24 +1227,17 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
               onChange={(sel, cust) => { setTraining(sel); setCustomTraining(cust); }}
               placeholder="Agregar otra capacitación…"
             />
-          </div>
+          </Section>
 
           {/* Deployment checks */}
-          <div className="rounded-xl border border-amber-100 bg-amber-500/10 p-4 space-y-4">
-            <div className="flex items-center gap-2">
-              <span className="flex h-7 w-7 items-center justify-center rounded-md bg-amber-500/15 text-amber-700">
-                <Shield className="h-4 w-4" />
-              </span>
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-amber-700">Despliegue operativo</h3>
-            </div>
-
+          <Section title="Despliegue operativo" icon={<Shield />} contentClassName="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs text-muted-foreground mb-1">Nivel de riesgo</label>
+                <label className="cg-eyebrow mb-1 block">Nivel de riesgo</label>
                 <select
                   value={cfgGet('riskLevel')}
                   onChange={(e) => cfgSet('riskLevel', e.target.value)}
-                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  className="cg-input cg-focus flex h-9 w-full px-3 py-1 text-sm"
                 >
                   <option value="">Seleccionar…</option>
                   {[['low','Bajo'],['medium','Medio'],['high','Alto'],['critical','Crítico']].map(([v,l]) => (
@@ -1187,7 +1246,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
                 </select>
               </div>
               <div>
-                <label className="block text-xs text-muted-foreground mb-1">Mínimo de estaciones</label>
+                <label className="cg-eyebrow mb-1 block">Mínimo de estaciones</label>
                 <Input
                   type="number" min={1}
                   placeholder="Ej. 2"
@@ -1198,34 +1257,40 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
             </div>
 
             <div className="grid grid-cols-2 gap-2">
-              {DEPLOY_CHECKS.map(({ key, label, defaultOn = false }) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => cfgSet(key, !cfgGet(key, defaultOn))}
-                  className={cn(
-                    'flex items-center gap-2 rounded-lg border px-3 py-2.5 text-left transition-colors',
-                    cfgGet(key, defaultOn)
-                      ? 'border-amber-400 bg-amber-500/10 text-amber-700'
-                      : 'border-border bg-card text-muted-foreground hover:border-border',
-                  )}
-                >
-                  <span className={cn(
-                    'h-4 w-4 rounded border-2 flex items-center justify-center shrink-0',
-                    cfgGet(key, defaultOn) ? 'border-amber-500 bg-amber-500' : 'border-border',
-                  )}>
-                    {cfgGet(key, defaultOn) && <Check className="h-2.5 w-2.5 text-white" />}
-                  </span>
-                  <span className="text-xs font-medium leading-tight">{label}</span>
-                </button>
-              ))}
+              {DEPLOY_CHECKS.map(({ key, label, defaultOn = false }) => {
+                const on = !!cfgGet(key, defaultOn);
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    aria-pressed={on}
+                    onClick={() => cfgSet(key, !on)}
+                    className="cg-focus flex items-center gap-2 rounded-lg border px-3 py-2.5 text-left transition-colors"
+                    style={
+                      on
+                        ? { background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }
+                        : { background: 'var(--glass-sunken)', borderColor: 'var(--hairline)', color: 'var(--ink-soft)' }
+                    }
+                  >
+                    <span
+                      className="flex h-4 w-4 shrink-0 items-center justify-center rounded border-2"
+                      style={on
+                        ? { background: 'var(--brand)', borderColor: 'var(--brand)', color: 'var(--brand-ink)' }
+                        : { borderColor: 'var(--hairline)' }}
+                    >
+                      {on && <Check className="h-2.5 w-2.5" />}
+                    </span>
+                    <span className="text-xs font-medium leading-tight">{label}</span>
+                  </button>
+                );
+              })}
             </div>
-          </div>
+          </Section>
 
           {/* SOP field */}
           <div>
-            <label className="block text-sm font-semibold text-foreground mb-1.5 flex items-center gap-1.5">
-              <AlertTriangle className="h-4 w-4 text-amber-600" />
+            <label className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold">
+              <AlertTriangle className="h-4 w-4" style={{ color: 'var(--warn-text)' }} />
               Instrucciones del puesto (SOP)
             </label>
             <Textarea
@@ -1244,8 +1309,8 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
       return (
         <div className="space-y-6">
           <div>
-            <h2 className="text-xl font-bold text-foreground mb-1">Estaciones de vigilancia</h2>
-            <p className="text-sm text-muted-foreground">
+            <h2 className="font-display mb-1 text-xl font-bold">Estaciones de vigilancia</h2>
+            <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
               Define los puestos de vigilante. Cada estación tiene su propio horario y número de vigilantes.
             </p>
           </div>
@@ -1253,11 +1318,11 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
           {/* Station builder */}
           <div className="space-y-3">
             {stations.length === 0 ? (
-              <div className="rounded-xl border-2 border-dashed border-border py-10 text-center">
-                <Shield className="mx-auto h-9 w-9 text-muted-foreground/60 mb-2" />
-                <p className="text-sm font-medium text-muted-foreground">Sin estaciones definidas</p>
-                <p className="text-xs text-muted-foreground mt-1">Puedes añadirlas ahora o desde el perfil del sitio.</p>
-              </div>
+              <EmptyState
+                icon={<Shield />}
+                title="Sin estaciones definidas"
+                description="Puedes añadirlas ahora o desde el perfil del sitio."
+              />
             ) : (
               stations.map((s, i) => (
                 <StationRow
@@ -1271,7 +1336,8 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
             <button
               type="button"
               onClick={addStationDraft}
-              className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border py-3 text-sm font-medium text-muted-foreground hover:border-amber-300 hover:text-amber-700 transition-colors"
+              className="cg-focus flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed py-3 text-sm font-medium transition-colors"
+              style={{ borderColor: 'var(--hairline)', color: 'var(--ink-soft)' }}
             >
               <Plus className="h-4 w-4" />
               Añadir estación
@@ -1279,26 +1345,34 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
           </div>
 
           {/* Status */}
-          <div className="rounded-xl border border-border bg-muted/30/50 p-4">
-            <label className="block text-xs text-muted-foreground mb-2">Estado del sitio</label>
-            <div className="flex gap-2 max-w-xs">
-              {(['active', 'inactive'] as const).map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => setStatus(s)}
-                  className={cn(
-                    'flex-1 h-9 rounded-md border text-sm font-medium transition-colors',
-                    status === s
-                      ? s === 'active' ? 'border-green-400 bg-green-500/10 text-green-700' : 'border-gray-400 bg-muted text-foreground/70'
-                      : 'border-border bg-card text-muted-foreground hover:border-border',
-                  )}
-                >
-                  {s === 'active' ? 'Activo' : 'Inactivo'}
-                </button>
-              ))}
+          <Section title="Estado del sitio">
+            <div className="flex max-w-xs gap-2">
+              {(['active', 'inactive'] as const).map((s) => {
+                const sel = status === s;
+                const fill = s === 'active' ? 'var(--ok)' : 'var(--ink-faint)';
+                return (
+                  <button
+                    key={s}
+                    type="button"
+                    aria-pressed={sel}
+                    onClick={() => setStatus(s)}
+                    className="cg-focus h-9 flex-1 rounded-md border text-sm font-medium transition-colors"
+                    style={
+                      sel
+                        ? {
+                            background: `color-mix(in oklab, ${fill} 14%, transparent)`,
+                            borderColor: `color-mix(in oklab, ${fill} 34%, transparent)`,
+                            color: s === 'active' ? 'var(--ok-text)' : 'var(--ink-soft)',
+                          }
+                        : { background: 'var(--glass-sunken)', borderColor: 'var(--hairline)', color: 'var(--ink-faint)' }
+                    }
+                  >
+                    {s === 'active' ? 'Activo' : 'Inactivo'}
+                  </button>
+                );
+              })}
             </div>
-          </div>
+          </Section>
         </div>
       );
     }
@@ -1311,28 +1385,34 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
 
       const SummaryRow = ({ icon, label, value }: { icon: React.ReactNode; label: string; value?: string }) =>
         value ? (
-          <div className="flex items-start gap-3 py-2 border-b border-border last:border-0">
-            <span className="mt-0.5 text-amber-600 shrink-0">{icon}</span>
-            <span className="text-xs text-muted-foreground w-28 shrink-0">{label}</span>
-            <span className="text-sm text-foreground font-medium">{value}</span>
+          <div className="flex items-start gap-3 border-b py-2 last:border-0" style={{ borderColor: 'var(--hairline)' }}>
+            <span className="mt-0.5 shrink-0" style={{ color: 'var(--brand-text)' }}>{icon}</span>
+            <span className="w-28 shrink-0 text-xs" style={{ color: 'var(--ink-soft)' }}>{label}</span>
+            <span className="text-sm font-medium">{value}</span>
           </div>
         ) : null;
 
       return (
         <div className="space-y-5">
           <div>
-            <h2 className="text-xl font-bold text-foreground mb-1">Revisar y crear</h2>
-            <p className="text-sm text-muted-foreground">Comprueba la información antes de crear el puesto de vigilancia.</p>
+            <h2 className="font-display mb-1 text-xl font-bold">Revisar y crear</h2>
+            <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>Comprueba la información antes de crear el puesto de vigilancia.</p>
           </div>
 
           {/* Summary card */}
-          <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+          <div className="glass overflow-hidden">
             {typeDef && (
-              <div className={cn('flex items-center gap-3 px-5 py-3', typeDef.color)}>
-                <span className={cn('flex h-8 w-8 items-center justify-center rounded-full', typeDef.color, typeDef.textColor)}>
+              <div
+                className="flex items-center gap-3 border-b px-5 py-3"
+                style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)' }}
+              >
+                <span
+                  className="flex h-8 w-8 items-center justify-center rounded-full border"
+                  style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }}
+                >
                   {React.createElement(SERVICE_ICONS[typeDef.icon] ?? Shield, { className: 'h-4 w-4' })}
                 </span>
-                <span className={cn('text-sm font-semibold', typeDef.textColor)}>{typeDef.label}</span>
+                <span className="text-sm font-semibold" style={{ color: 'var(--brand-text)' }}>{typeDef.label}</span>
               </div>
             )}
             <div className="px-5 py-4 space-y-0">
@@ -1344,70 +1424,77 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
           </div>
 
           {/* Equipment & training chips */}
-          {(allEquip.length > 0 || allTraining.length > 0) && (            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {(allEquip.length > 0 || allTraining.length > 0) && (
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {allEquip.length > 0 && (
-                <div className="rounded-xl border border-amber-100 bg-amber-500/10 p-3">
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-amber-700 mb-2 flex items-center gap-1">
-                    <Zap className="h-3 w-3" /> Equipamiento
-                  </p>
+                <Section title="Equipamiento" icon={<Zap />}>
                   <div className="flex flex-wrap gap-1.5">
                     {allEquip.map((e) => {
                       const opt = equipmentOptions.find((o) => o.value === e);
                       return (
-                        <span key={e} className="text-[11px] bg-card border border-amber-200 text-amber-700 rounded-full px-2 py-0.5">
+                        <span
+                          key={e}
+                          className="rounded-full border px-2 py-0.5 text-[11px]"
+                          style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }}
+                        >
                           {opt?.label ?? e}
                         </span>
                       );
                     })}
                   </div>
-                </div>
+                </Section>
               )}
               {allTraining.length > 0 && (
-                <div className="rounded-xl border border-amber-100 bg-amber-500/10 p-3">
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-amber-700 mb-2 flex items-center gap-1">
-                    <Star className="h-3 w-3" /> Capacitación
-                  </p>
+                <Section title="Capacitación" icon={<Star />}>
                   <div className="flex flex-wrap gap-1.5">
                     {allTraining.map((t) => {
                       const opt = trainingOptions.find((o) => o.value === t);
                       return (
-                        <span key={t} className="text-[11px] bg-card border border-amber-200 text-amber-700 rounded-full px-2 py-0.5">
+                        <span
+                          key={t}
+                          className="rounded-full border px-2 py-0.5 text-[11px]"
+                          style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }}
+                        >
                           {opt?.label ?? t}
                         </span>
                       );
                     })}
                   </div>
-                </div>
+                </Section>
               )}
             </div>
           )}
 
           {/* Stations summary */}
           {stations.filter((s) => s.name.trim()).length > 0 && (
-            <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
-              <div className="flex items-center gap-3 px-5 py-3 bg-muted/30 border-b border-border">
-                <Shield className="h-4 w-4 text-amber-700" />
-                <span className="text-sm font-semibold text-foreground">
+            <div className="glass overflow-hidden">
+              <div className="flex items-center gap-3 border-b px-5 py-3" style={{ borderColor: 'var(--hairline)' }}>
+                <Shield className="h-4 w-4" style={{ color: 'var(--brand-text)' }} />
+                <span className="text-sm font-semibold">
                   Estaciones ({stations.filter((s) => s.name.trim()).length})
                 </span>
               </div>
-              <div className="divide-y divide-border">
+              <div>
                 {stations.filter((s) => s.name.trim()).map((s, i) => (
-                  <div key={i} className="px-5 py-3">
-                    <p className="text-sm font-medium text-foreground">{s.name}</p>
-                    {s.description && <p className="text-xs text-muted-foreground mb-1">{s.description}</p>}
+                  <div key={i} className="border-b px-5 py-3 last:border-0" style={{ borderColor: 'var(--hairline)' }}>
+                    <p className="text-sm font-medium">{s.name}</p>
+                    {s.description && <p className="mb-1 text-xs" style={{ color: 'var(--ink-soft)' }}>{s.description}</p>}
                     {s.jornadas.length > 0 ? (
-                      <div className="flex flex-wrap gap-1.5 mt-1">
+                      <div className="mt-1 flex flex-wrap gap-1.5">
                         {s.jornadas.map((j) => (
-                          <span key={j.id} className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium ${JORNADA_STYLE[j.tipo].badge}`}>
+                          <span
+                            key={j.id}
+                            className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium"
+                            style={jornadaChip(j.tipo)}
+                          >
                             {j.nombre}
-                            {j.startTime && j.endTime && <span className="font-mono opacity-70 ml-1">{j.startTime}–{j.endTime}</span>}
-                            <span className="flex items-center gap-0.5 opacity-70 ml-1"><Users className="h-2.5 w-2.5" />{j.guardsCount||'1'}</span>
+                            {j.startTime && j.endTime && <span className="ml-1 font-mono opacity-70">{j.startTime}–{j.endTime}</span>}
+                            <span className="ml-1 flex items-center gap-0.5 opacity-70"><Users className="h-2.5 w-2.5" />{j.guardsCount||'1'}</span>
                           </span>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-xs text-muted-foreground mt-1">Sin jornadas definidas</p>
+                      <p className="mt-1 text-xs" style={{ color: 'var(--ink-faint)' }}>Sin jornadas definidas</p>
                     )}
                   </div>
                 ))}
@@ -1430,7 +1517,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
     <div className="max-w-2xl mx-auto">
       {loadingEdit ? (
         <div className="flex items-center justify-center py-24">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <Loader2 className="h-8 w-8 animate-spin" style={{ color: 'var(--brand-text)' }} />
         </div>
       ) : (
         <>
@@ -1448,7 +1535,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
 
       {/* Navigation footer (not shown on station step — has own buttons) */}
       {!isStationStep && (
-        <div className="mt-8 flex items-center justify-between border-t border-border pt-5">
+        <div className="mt-8 flex items-center justify-between border-t pt-5" style={{ borderColor: 'var(--hairline)' }}>
           <Button
             type="button"
             variant="ghost"

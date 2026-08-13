@@ -31,7 +31,7 @@ export function BulkActionsSelect({ actions, onChange }: BulkActionsSelectProps)
 
     return (
         <Select value={value} onValueChange={handleChange}>
-            <SelectTrigger className="w-full md:w-44">
+            <SelectTrigger className="cg-input h-9 w-full md:w-44">
                 <SelectValue placeholder={t('actions.action') || t('postSites.action') || 'Action'} />
             </SelectTrigger>
             <SelectContent>

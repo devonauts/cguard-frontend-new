@@ -16,12 +16,10 @@ import {
 } from "lucide-react";
 
 import AppLayout from "@/layouts/app-layout";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import {
   PageContainer,
   PageHeader,
@@ -29,6 +27,12 @@ import {
   Stagger,
   EmptyState,
   Modal,
+  GlassPanel,
+  IconTile,
+  Segmented,
+  SkeletonBlock,
+  SkeletonCards,
+  StatusBadge as KitStatusBadge,
 } from "@/components/kit";
 
 import {
@@ -133,40 +137,45 @@ const AUTHORITY_LABELS: Record<AlarmContactAuthority, string> = {
 // Status badge
 // ============================================================
 
-function StatusBadge({ status }: { status?: AlarmPanelStatus }) {
+/**
+ * Estado del panel. Tonos SEMÁNTICOS fijos: «sin conexión» es rojo pase lo que
+ * pase con el color de marca — un panel caído es un panel caído. «En línea»
+ * además LATE, porque es el único estado que significa «ahora mismo».
+ */
+function PanelStatusBadge({ status }: { status?: AlarmPanelStatus }) {
   const s = status ?? "unknown";
   if (s === "online") {
     return (
-      <Badge className="gap-1 border-transparent bg-emerald-100 text-emerald-700 hover:bg-emerald-100">
-        <Wifi className="h-3 w-3" /> {STATUS_LABELS.online}
-      </Badge>
+      <KitStatusBadge tone="ok" dot={false}>
+        <span className="cc-dot" style={{ background: 'var(--ok)' }} /> {STATUS_LABELS.online}
+      </KitStatusBadge>
     );
   }
   if (s === "armed") {
     return (
-      <Badge className="gap-1 border-transparent bg-amber-100 text-amber-800 hover:bg-amber-100">
+      <KitStatusBadge tone="warn" dot={false}>
         <ShieldAlert className="h-3 w-3" /> {STATUS_LABELS.armed}
-      </Badge>
+      </KitStatusBadge>
     );
   }
   if (s === "disarmed") {
     return (
-      <Badge className="gap-1 border-transparent bg-sky-100 text-sky-700 hover:bg-sky-100">
+      <KitStatusBadge tone="info" dot={false}>
         <Wifi className="h-3 w-3" /> {STATUS_LABELS.disarmed}
-      </Badge>
+      </KitStatusBadge>
     );
   }
   if (s === "offline") {
     return (
-      <Badge className="gap-1 border-transparent bg-red-100 text-red-700 hover:bg-red-100">
+      <KitStatusBadge tone="bad" dot={false}>
         <WifiOff className="h-3 w-3" /> {STATUS_LABELS.offline}
-      </Badge>
+      </KitStatusBadge>
     );
   }
   return (
-    <Badge variant="secondary" className="gap-1">
+    <KitStatusBadge tone="neutral" dot={false}>
       <WifiOff className="h-3 w-3" /> {STATUS_LABELS.unknown}
-    </Badge>
+    </KitStatusBadge>
   );
 }
 
@@ -746,17 +755,24 @@ function ZonesManager({ panelId }: { panelId: string }) {
   return (
     <div>
       {loading ? (
-        <div className="flex items-center gap-2 py-4 text-sm text-muted-foreground">
-          <Loader2 className="h-4 w-4 animate-spin" /> Cargando zonas...
+        <div className="space-y-2 py-2">
+          <SkeletonBlock className="h-9" />
+          <SkeletonBlock className="h-9" />
+          <SkeletonBlock className="h-9" />
         </div>
       ) : zones.length === 0 ? (
-        <div className="py-2 text-sm text-muted-foreground">
-          No hay zonas configuradas.
-        </div>
+        <EmptyState
+          icon={<RadioTower />}
+          title="Sin zonas configuradas"
+          description="Añade las zonas del panel para saber de dónde viene cada señal."
+        />
       ) : (
-        <div className="overflow-x-auto rounded-md border">
+        <div className="glass-flat overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-muted/50 text-left text-xs uppercase text-muted-foreground">
+            <thead
+              className="text-left text-xs uppercase tracking-wide"
+              style={{ background: 'var(--glass-sunken)', color: 'var(--ink-faint)' }}
+            >
               <tr>
                 <th className="px-3 py-2">Zona</th>
                 <th className="px-3 py-2">Nombre</th>
@@ -769,7 +785,7 @@ function ZonesManager({ panelId }: { panelId: string }) {
             </thead>
             <tbody>
               {zones.map((z) => (
-                <tr key={z.id} className="border-t">
+                <tr key={z.id} className="border-t" style={{ borderColor: 'var(--hairline)' }}>
                   <td className="px-3 py-2 font-mono">{z.zoneNumber || "—"}</td>
                   <td className="px-3 py-2">{z.name || "—"}</td>
                   <td className="px-3 py-2">
@@ -781,11 +797,9 @@ function ZonesManager({ panelId }: { panelId: string }) {
                   </td>
                   <td className="px-3 py-2">
                     {z.bypassed ? (
-                      <Badge className="border-transparent bg-amber-100 text-amber-800 hover:bg-amber-100">
-                        Anulada
-                      </Badge>
+                      <KitStatusBadge tone="warn">Anulada</KitStatusBadge>
                     ) : (
-                      <Badge variant="secondary">Activa</Badge>
+                      <KitStatusBadge tone="ok" dot={false}>Activa</KitStatusBadge>
                     )}
                   </td>
                   <td className="px-3 py-2">
@@ -802,7 +816,7 @@ function ZonesManager({ panelId }: { panelId: string }) {
                         size="icon"
                         variant="ghost"
                         title="Eliminar"
-                        className="text-red-600 hover:text-red-700"
+                        style={{ color: 'var(--bad-text)' }}
                         onClick={() => setDeleteTarget(z)}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -1046,17 +1060,24 @@ function ContactsManager({ panelId }: { panelId: string }) {
   return (
     <div>
       {loading ? (
-        <div className="flex items-center gap-2 py-4 text-sm text-muted-foreground">
-          <Loader2 className="h-4 w-4 animate-spin" /> Cargando contactos...
+        <div className="space-y-2 py-2">
+          <SkeletonBlock className="h-9" />
+          <SkeletonBlock className="h-9" />
+          <SkeletonBlock className="h-9" />
         </div>
       ) : contacts.length === 0 ? (
-        <div className="py-2 text-sm text-muted-foreground">
-          No hay contactos de aviso configurados.
-        </div>
+        <EmptyState
+          icon={<Users />}
+          title="Sin contactos de aviso"
+          description="Añade a quién hay que llamar, y en qué orden, cuando entre una alarma."
+        />
       ) : (
-        <div className="overflow-x-auto rounded-md border">
+        <div className="glass-flat overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-muted/50 text-left text-xs uppercase text-muted-foreground">
+            <thead
+              className="text-left text-xs uppercase tracking-wide"
+              style={{ background: 'var(--glass-sunken)', color: 'var(--ink-faint)' }}
+            >
               <tr>
                 <th className="px-3 py-2">Orden</th>
                 <th className="px-3 py-2">Nombre</th>
@@ -1068,7 +1089,7 @@ function ContactsManager({ panelId }: { panelId: string }) {
             </thead>
             <tbody>
               {contacts.map((c) => (
-                <tr key={c.id} className="border-t">
+                <tr key={c.id} className="border-t" style={{ borderColor: 'var(--hairline)' }}>
                   <td className="px-3 py-2 font-mono">{c.callOrder ?? "—"}</td>
                   <td className="px-3 py-2">{c.name || "—"}</td>
                   <td className="px-3 py-2 font-mono text-xs">{c.phone || "—"}</td>
@@ -1092,7 +1113,7 @@ function ContactsManager({ panelId }: { panelId: string }) {
                         size="icon"
                         variant="ghost"
                         title="Eliminar"
-                        className="text-red-600 hover:text-red-700"
+                        style={{ color: 'var(--bad-text)' }}
                         onClick={() => setDeleteTarget(c)}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -1220,32 +1241,16 @@ function ContactsManager({ panelId }: { panelId: string }) {
 function PanelDetail({ panelId }: { panelId: string }) {
   const [tab, setTab] = useState<"zones" | "contacts">("zones");
   return (
-    <div className="border-t bg-muted/10 px-4 py-4">
-      <div className="mb-3 inline-flex rounded-md border bg-background p-0.5">
-        <button
-          type="button"
-          onClick={() => setTab("zones")}
-          className={
-            "inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-sm font-medium " +
-            (tab === "zones"
-              ? "bg-amber-50 text-amber-900"
-              : "text-muted-foreground hover:text-foreground")
-          }
-        >
-          <RadioTower className="h-4 w-4" /> Zonas
-        </button>
-        <button
-          type="button"
-          onClick={() => setTab("contacts")}
-          className={
-            "inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-sm font-medium " +
-            (tab === "contacts"
-              ? "bg-amber-50 text-amber-900"
-              : "text-muted-foreground hover:text-foreground")
-          }
-        >
-          <Users className="h-4 w-4" /> Contactos
-        </button>
+    <div className="border-t px-4 py-4" style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}>
+      <div className="mb-3">
+        <Segmented
+          value={tab}
+          onChange={(v) => setTab(v)}
+          options={[
+            { value: "zones", label: <span className="inline-flex items-center gap-1.5"><RadioTower className="h-3.5 w-3.5" /> Zonas</span> },
+            { value: "contacts", label: <span className="inline-flex items-center gap-1.5"><Users className="h-3.5 w-3.5" /> Contactos</span> },
+          ]}
+        />
       </div>
 
       {tab === "zones" ? (
@@ -1353,17 +1358,15 @@ export default function AlarmPanels() {
 
         {/* Summary */}
         <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <StatCard label="Total" value={counts.total} icon={<ShieldAlert />} accent="slate" />
-          <StatCard label="En línea" value={counts.online} icon={<Wifi />} accent="green" />
-          <StatCard label="Armados" value={counts.armed} icon={<ShieldAlert />} accent="orange" />
-          <StatCard label="Sin conexión" value={counts.offline} icon={<WifiOff />} accent="red" />
+          <StatCard label="Total" value={counts.total} icon={<ShieldAlert />} accent="neutral" />
+          <StatCard label="En línea" value={counts.online} icon={<Wifi />} accent="ok" />
+          <StatCard label="Armados" value={counts.armed} icon={<ShieldAlert />} accent="warn" />
+          <StatCard label="Sin conexión" value={counts.offline} icon={<WifiOff />} accent="bad" />
         </Stagger>
 
         {/* List */}
         {loading ? (
-          <div className="flex items-center justify-center py-24 text-muted-foreground">
-            <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Cargando paneles...
-          </div>
+          <SkeletonCards count={4} className="sm:grid-cols-1" />
         ) : panels.length === 0 ? (
           <EmptyState
             icon={<ShieldAlert />}
@@ -1381,41 +1384,39 @@ export default function AlarmPanels() {
             {panels.map((p) => {
               const isOpen = !!expanded[p.id];
               return (
-                <Card key={p.id} className="overflow-hidden">
+                /* `flat`: la lista de paneles puede ser larga y cada ficha
+                   despliega tablas dentro; el desenfoque por ficha no se paga. */
+                <GlassPanel key={p.id} flat className="overflow-hidden">
                   <div className="flex items-start justify-between gap-3 p-4">
                     <button
                       type="button"
                       onClick={() => toggleExpand(p.id)}
-                      className="flex min-w-0 flex-1 items-start gap-3 text-left"
+                      className="cg-focus flex min-w-0 flex-1 items-start gap-3 rounded-xl text-left"
+                      aria-expanded={isOpen}
                     >
-                      <div className="mt-0.5 rounded-md bg-amber-500/10 p-2">
-                        {isOpen ? (
-                          <ChevronDown className="h-5 w-5 text-primary" />
-                        ) : (
-                          <ChevronRight
-                            className="h-5 w-5 text-primary"
-                          />
-                        )}
-                      </div>
+                      {/* Un panel sin reportar no es «lo destacado de la
+                          pantalla»: iba en el acento de marca mientras la
+                          tarjeta «Armados» de arriba lo contaba en ámbar. */}
+                      <IconTile tone={p.status === "offline" ? "bad" : p.status === "online" ? "ok" : "warn"} size="sm">
+                        {isOpen ? <ChevronDown /> : <ChevronRight />}
+                      </IconTile>
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="truncate font-semibold">{p.name}</span>
-                          <Badge variant="outline" className="text-[10px] uppercase">
+                          <KitStatusBadge tone="neutral" dot={false} className="uppercase">
                             {PANEL_TYPE_LABELS[
                               (p.panelType as AlarmPanelType) ?? "intrusion"
                             ]}
-                          </Badge>
+                          </KitStatusBadge>
                           {p.active === false && (
-                            <Badge variant="secondary" className="text-[10px]">
-                              Inactivo
-                            </Badge>
+                            <KitStatusBadge tone="neutral" dot={false}>Inactivo</KitStatusBadge>
                           )}
                         </div>
-                        <div className="mt-0.5 truncate text-sm text-muted-foreground">
+                        <div className="mt-0.5 truncate text-sm" style={{ color: 'var(--ink-soft)' }}>
                           {[p.make, p.model].filter(Boolean).join(" · ") ||
-                            "Sin marca/modelo"}
+                            "Sin marca ni modelo"}
                         </div>
-                        <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 font-mono text-xs text-muted-foreground">
+                        <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 font-mono text-xs" style={{ color: 'var(--ink-faint)' }}>
                           <span>
                             Cuenta: {p.accountNumber || "—"}
                           </span>
@@ -1433,7 +1434,7 @@ export default function AlarmPanels() {
                     </button>
 
                     <div className="flex shrink-0 items-center gap-2">
-                      <StatusBadge status={p.status as AlarmPanelStatus} />
+                      <PanelStatusBadge status={p.status as AlarmPanelStatus} />
                       <Button
                         size="icon"
                         variant="ghost"
@@ -1446,7 +1447,7 @@ export default function AlarmPanels() {
                         size="icon"
                         variant="ghost"
                         title="Eliminar"
-                        className="text-red-600 hover:text-red-700"
+                        style={{ color: 'var(--bad-text)' }}
                         onClick={() => setDeleteTarget(p)}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -1455,7 +1456,7 @@ export default function AlarmPanels() {
                   </div>
 
                   {isOpen && <PanelDetail panelId={p.id} />}
-                </Card>
+                </GlassPanel>
               );
             })}
           </div>

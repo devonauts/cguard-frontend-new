@@ -1,30 +1,10 @@
 import { useState, useEffect } from 'react';
 import type { Client } from '@/types/client';
-import { useNavigate } from 'react-router-dom';
 import { Plus, Pencil, Trash2, CheckCircle2, EllipsisVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
 import { projectService, type ClientProject } from '@/lib/api/projectService';
 import { ProjectTypeBadge, ProjectStatusBadge } from '@/components/projects/ProjectBadge';
@@ -118,34 +98,34 @@ export default function ClientProjects({ client }: Props) {
         ) : (
           <div className="border rounded-xl overflow-x-auto">
             <table className="min-w-[640px] w-full text-sm text-left">
-              <thead className="bg-muted/30">
+              <thead>
                 <tr className="border-b">
-                  <th className="px-4 py-3 font-semibold">Proyecto</th>
-                  <th className="px-4 py-3 font-semibold">Tipo</th>
-                  <th className="px-4 py-3 font-semibold">Inicio</th>
-                  <th className="px-4 py-3 font-semibold">Fin</th>
-                  <th className="px-4 py-3 font-semibold">Estado</th>
-                  <th className="px-4 py-3 font-semibold text-right">Acciones</th>
+                  <th className="cg-eyebrow px-2 py-2">Proyecto</th>
+                  <th className="cg-eyebrow px-2 py-2">Tipo</th>
+                  <th className="cg-eyebrow px-2 py-2">Inicio</th>
+                  <th className="cg-eyebrow px-2 py-2">Fin</th>
+                  <th className="cg-eyebrow px-2 py-2">Estado</th>
+                  <th className="cg-eyebrow px-2 py-2 text-right">Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {projects.map((p) => (
-                  <tr key={p.id} className="border-b hover:bg-muted/30 transition-colors">
-                    <td className="px-4 py-3 font-medium">
+                  <tr key={p.id} className="border-b hover:bg-muted/40 transition-colors">
+                    <td className="px-2 py-2.5 font-medium">
                       <div>{p.name}</div>
                       {p.location && (
                         <div className="text-xs text-muted-foreground mt-0.5">{p.location}</div>
                       )}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-2 py-2.5">
                       <ProjectTypeBadge value={p.type} />
                     </td>
-                    <td className="px-4 py-3 text-foreground/70">{p.startDate ?? '-'}</td>
-                    <td className="px-4 py-3 text-foreground/70">{p.endDate ?? '-'}</td>
-                    <td className="px-4 py-3">
+                    <td className="px-2 py-2.5 text-foreground/70">{p.startDate ?? '-'}</td>
+                    <td className="px-2 py-2.5 text-foreground/70">{p.endDate ?? '-'}</td>
+                    <td className="px-2 py-2.5">
                       <ProjectStatusBadge value={p.status} />
                     </td>
-                    <td className="px-4 py-3 text-right">
+                    <td className="px-2 py-2.5 text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <button className="p-1.5 rounded-lg hover:bg-muted transition-colors">
@@ -158,11 +138,11 @@ export default function ClientProjects({ client }: Props) {
                           </DropdownMenuItem>
                           {p.status !== 'completed' && (
                             <DropdownMenuItem onClick={() => handleMarkComplete(p.id)}>
-                              <CheckCircle2 className="mr-2 h-4 w-4 text-green-600" /> Marcar completado
+                              <CheckCircle2 className="mr-2 h-4 w-4" style={{ color: 'var(--ok-text)' }} /> Marcar completado
                             </DropdownMenuItem>
                           )}
                           <DropdownMenuItem
-                            className="text-red-600"
+                            style={{ color: 'var(--bad-text)' }}
                             onClick={() => setDeleteTargetId(p.id)}
                           >
                             <Trash2 className="mr-2 h-4 w-4" /> Eliminar
@@ -206,7 +186,7 @@ export default function ClientProjects({ client }: Props) {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction className="bg-red-600 hover:bg-red-700" onClick={handleDelete}>
+            <AlertDialogAction className="cg-btn-bad" onClick={handleDelete}>
               Eliminar
             </AlertDialogAction>
           </AlertDialogFooter>

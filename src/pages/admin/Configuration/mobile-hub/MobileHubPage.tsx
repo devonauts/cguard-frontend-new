@@ -18,15 +18,20 @@ import { toast } from 'sonner';
 import api from '@/lib/api';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/SettingsLayout';
-import { PageContainer, PageHeader, Section, SkeletonBlock } from '@/components/kit';
+import { PageContainer, PageHeader, Section, SkeletonCards, Segmented, StatusBadge, IconTile } from '@/components/kit';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { usePermissions } from '@/hooks/usePermissions';
 
-const DEFAULT_ACCENT = '#d4a017'; // the apps' factory gold
+/* ────────────────────────────────────────────────────────────────────────────
+   Los colores de abajo NO son estilos del CRM: son DATOS de la empresa. Es el
+   acento con el que se pintan SUS apps de móvil, se guarda en su cuenta y lo
+   aplica una app nativa que no comparte los tokens del panel. Por eso van
+   escritos y no salen de `--brand`.
+   ──────────────────────────────────────────────────────────────────────────── */
+const DEFAULT_ACCENT = '#d4a017'; // el dorado de fábrica de las apps
 
 const PRESET_ACCENTS = [
   DEFAULT_ACCENT, '#2563eb', '#16a34a', '#dc2626',
@@ -130,6 +135,11 @@ export default function MobileHubPage() {
     }
   };
 
+  const modulosActivos = useMemo(
+    () => MODULE_META.filter((m) => cfg.modules[m.key]).length,
+    [cfg.modules],
+  );
+
   const preview = useMemo(() => (
     <PhonePreview
       accent={accent}
@@ -148,6 +158,13 @@ export default function MobileHubPage() {
             icon={<TabletSmartphone />}
             title="Hub móvil del equipo"
             subtitle="Personaliza las apps del vigilante y del supervisor con la identidad de tu empresa."
+            badges={
+              !loading ? (
+                <StatusBadge tone={modulosActivos === MODULE_META.length ? 'ok' : 'neutral'}>
+                  {modulosActivos} de {MODULE_META.length} módulos visibles
+                </StatusBadge>
+              ) : undefined
+            }
             actions={
               <Button variant="brand" onClick={save} disabled={!canEdit || saving || loading}>
                 <Save size={16} className="mr-2" />
@@ -157,7 +174,7 @@ export default function MobileHubPage() {
           />
 
           {loading ? (
-            <SkeletonBlock className="h-96" />
+            <SkeletonCards count={4} />
           ) : (
             <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
               <div className="space-y-6">
@@ -173,11 +190,15 @@ export default function MobileHubPage() {
                             type="button"
                             onClick={() => set('accentColor', c === DEFAULT_ACCENT ? '' : c)}
                             aria-label={`Color ${c}`}
-                            className={`h-9 w-9 rounded-full border-2 transition-transform hover:scale-110 ${accent === c ? 'border-foreground scale-110' : 'border-transparent'}`}
-                            style={{ background: c }}
+                            aria-pressed={accent === c}
+                            className={`cg-focus h-9 w-9 rounded-full border-2 transition-transform hover:scale-110 ${accent === c ? 'scale-110' : ''}`}
+                            style={{ background: c, borderColor: accent === c ? 'var(--ink)' : 'transparent' }}
                           />
                         ))}
-                        <label className="ml-1 flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted">
+                        <label
+                          className="glass-flat ml-1 flex cursor-pointer items-center gap-2 px-3 py-1.5 text-sm"
+                          style={{ color: 'var(--ink-soft)' }}
+                        >
                           <input
                             type="color"
                             value={accent}
@@ -192,8 +213,8 @@ export default function MobileHubPage() {
                           </Button>
                         )}
                       </div>
-                      <p className="mt-2 text-xs text-muted-foreground">
-                        Recolorea botones, el PTT de la radio, pestañas y acentos en ambas apps.
+                      <p className="mt-2 text-xs" style={{ color: 'var(--ink-soft)' }}>
+                        Recolorea botones, el botón de hablar de la radio, pestañas y acentos en ambas apps.
                       </p>
                     </div>
 
@@ -209,7 +230,7 @@ export default function MobileHubPage() {
                         />
                       </div>
                       <div>
-                        <Label htmlFor="mh-tagline" className="mb-2 block">Lema (tagline)</Label>
+                        <Label htmlFor="mh-tagline" className="mb-2 block">Lema</Label>
                         <Input
                           id="mh-tagline"
                           value={cfg.tagline}
@@ -220,16 +241,21 @@ export default function MobileHubPage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between rounded-lg border p-4">
-                      <div className="flex items-center gap-3">
+                    <div className="glass-flat flex items-center justify-between gap-4 p-4">
+                      <div className="flex min-w-0 items-center gap-3">
                         {logoUrl ? (
-                          <img src={logoUrl} alt="Logo de la empresa" className="h-10 w-10 rounded-lg object-contain bg-muted p-1" />
+                          <img
+                            src={logoUrl}
+                            alt="Logo de la empresa"
+                            className="h-11 w-11 rounded-xl border object-contain p-1"
+                            style={{ background: 'var(--glass-sunken)', borderColor: 'var(--hairline)' }}
+                          />
                         ) : (
-                          <div className="grid h-10 w-10 place-items-center rounded-lg bg-muted text-xs text-muted-foreground">—</div>
+                          <IconTile tone="neutral"><Palette /></IconTile>
                         )}
-                        <div>
+                        <div className="min-w-0">
                           <p className="text-sm font-medium">Usar el logo de la empresa</p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>
                             {logoUrl
                               ? 'Se muestra en el inicio de sesión y la pantalla de arranque.'
                               : 'Sube tu logo en Configuración › Perfil de la empresa para activarlo.'}
@@ -245,17 +271,16 @@ export default function MobileHubPage() {
 
                     <div>
                       <Label className="mb-2 block">Tema por defecto</Label>
-                      <ToggleGroup
-                        type="single"
+                      <Segmented
                         value={cfg.defaultTheme}
-                        onValueChange={(v) => v && set('defaultTheme', v as MobileAppSettings['defaultTheme'])}
-                        className="justify-start"
-                      >
-                        <ToggleGroupItem value="dark">Oscuro</ToggleGroupItem>
-                        <ToggleGroupItem value="light">Claro</ToggleGroupItem>
-                        <ToggleGroupItem value="user">Según el dispositivo</ToggleGroupItem>
-                      </ToggleGroup>
-                      <p className="mt-2 text-xs text-muted-foreground">
+                        onChange={(v) => set('defaultTheme', v)}
+                        options={[
+                          { value: 'dark', label: 'Oscuro' },
+                          { value: 'light', label: 'Claro' },
+                          { value: 'user', label: 'Según el dispositivo' },
+                        ]}
+                      />
+                      <p className="mt-2 text-xs" style={{ color: 'var(--ink-soft)' }}>
                         El vigilante siempre puede cambiarlo desde su perfil; esto define el arranque.
                       </p>
                     </div>
@@ -266,12 +291,12 @@ export default function MobileHubPage() {
                 <Section title="Módulos de la app del vigilante" icon={<LayoutGrid size={18} />}>
                   <div className="grid gap-3 sm:grid-cols-2">
                     {MODULE_META.map((m) => (
-                      <div key={m.key} className="flex items-center justify-between rounded-lg border p-3.5">
-                        <div className="flex items-start gap-3">
-                          <span className="mt-0.5 text-muted-foreground">{m.icon}</span>
-                          <div>
+                      <div key={m.key} className="glass-flat flex items-center justify-between gap-3 p-3.5">
+                        <div className="flex min-w-0 items-start gap-3">
+                          <IconTile tone={cfg.modules[m.key] ? 'brand' : 'neutral'} size="sm">{m.icon}</IconTile>
+                          <div className="min-w-0">
                             <p className="text-sm font-medium">{m.label}</p>
-                            <p className="text-xs text-muted-foreground">{m.desc}</p>
+                            <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>{m.desc}</p>
                           </div>
                         </div>
                         <Switch
@@ -282,7 +307,7 @@ export default function MobileHubPage() {
                       </div>
                     ))}
                   </div>
-                  <p className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
+                  <p className="mt-4 flex items-center gap-2 text-xs" style={{ color: 'var(--ink-faint)' }}>
                     <Mic size={13} />
                     Los módulos operativos — radio, botón de pánico, rondas, incidentes, horario, mensajes y perfil — no se pueden ocultar.
                   </p>
@@ -291,10 +316,10 @@ export default function MobileHubPage() {
 
               {/* ── Vista previa ─────────────────────────────────────────── */}
               <div className="lg:sticky lg:top-24 lg:self-start">
-                <Section title="Vista previa" contentClassName="flex justify-center">
+                <Section title="Vista previa" icon={<TabletSmartphone size={18} />} contentClassName="flex justify-center">
                   {preview}
                 </Section>
-                <p className="mt-3 text-center text-xs text-muted-foreground">
+                <p className="mt-3 text-center text-xs" style={{ color: 'var(--ink-faint)' }}>
                   Los cambios se aplican en las apps al iniciar sesión.
                 </p>
               </div>
@@ -306,7 +331,14 @@ export default function MobileHubPage() {
   );
 }
 
-/** Miniature live preview of the worker app with the chosen branding. */
+/**
+ * Maqueta a escala de la app del vigilante.
+ *
+ * OJO: los colores de DENTRO de la pantalla son los de la APP NATIVA, no los del
+ * CRM. La app se pinta sola con su propio tema (oscuro/claro) y con el acento que
+ * la empresa elige arriba; si aquí usáramos los tokens del panel, la vista previa
+ * mentiría. El chasis del teléfono sí es acromático como el resto del sistema.
+ */
 function PhonePreview({ accent, name, tagline, logoUrl, light }: {
   accent: string; name: string; tagline: string; logoUrl: string | null; light: boolean;
 }) {
@@ -315,12 +347,16 @@ function PhonePreview({ accent, name, tagline, logoUrl, light }: {
   const text = light ? '#111827' : '#f3f4f6';
   const muted = light ? '#6b7280' : '#9ca3af';
   const border = light ? '#e5e7eb' : '#232a36';
+  const inkOnAccent = 'oklch(0.15 0 0)';
 
   return (
-    <div className="w-60 select-none rounded-[2.2rem] p-[7px]" style={{ background: 'linear-gradient(160deg,#3a3a3e,#141416 60%,#2c2c30)' }}>
+    <div
+      className="w-60 select-none rounded-[2.2rem] p-[7px]"
+      style={{ background: 'linear-gradient(160deg, oklch(0.32 0 0), oklch(0.14 0 0) 60%, oklch(0.26 0 0))', boxShadow: 'var(--lift-4)' }}
+    >
       <div className="overflow-hidden rounded-[1.85rem]" style={{ background: bg }}>
         <div className="grid h-6 place-items-center" style={{ background: light ? '#e7e5e4' : '#10151d' }}>
-          <span className="h-3.5 w-16 rounded-full bg-black" />
+          <span className="h-3.5 w-16 rounded-full" style={{ background: 'oklch(0 0 0)' }} />
         </div>
         <div className="space-y-3 p-4" style={{ color: text }}>
           <div className="flex items-center gap-2.5">
@@ -348,12 +384,12 @@ function PhonePreview({ accent, name, tagline, logoUrl, light }: {
 
           <div className="flex items-center justify-between rounded-xl border p-2.5" style={{ borderColor: border, background: card }}>
             <span className="text-[10px] font-semibold">Tareas del turno</span>
-            <span className="grid h-4 w-4 place-items-center rounded-full text-[8px] font-bold text-black" style={{ background: accent }}>3</span>
+            <span className="grid h-4 w-4 place-items-center rounded-full text-[8px] font-bold" style={{ background: accent, color: inkOnAccent }}>3</span>
           </div>
 
           <div className="flex justify-end pr-1">
-            <span className="grid h-11 w-11 place-items-center rounded-full shadow-lg" style={{ background: accent }}>
-              <Mic size={18} className="text-black" />
+            <span className="grid h-11 w-11 place-items-center rounded-full" style={{ background: accent, boxShadow: 'var(--lift-3)' }}>
+              <Mic size={18} style={{ color: inkOnAccent }} />
             </span>
           </div>
 

@@ -6,6 +6,9 @@ import { ApiService } from '@/services/api/apiService';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Section, Field, StatusBadge } from '@/components/kit';
+import { Pencil, Mail, Loader2 } from 'lucide-react';
 import GuardsLayout from '@/layouts/GuardsLayout';
 import AppLayout from '@/layouts/app-layout';
 import type { GuardDetail } from '../../guardDetailTypes';
@@ -95,41 +98,26 @@ function toDateInput(v: string | number | Date | null | undefined): string {
   return d.toISOString().slice(0, 10);
 }
 
-// ── Small presentational helpers ────────────────────────────────────────────
-const Section = ({ title, icon, action, children }: { title: string; icon?: React.ReactNode; action?: React.ReactNode; children: React.ReactNode }) => (
-  <div className="bg-card border rounded-2xl p-5 shadow-sm">
-    <div className="flex items-center justify-between mb-4">
-      <div className="flex items-center gap-2">
-        {icon && <span className="text-muted-foreground">{icon}</span>}
-        <h4 className="font-semibold text-sm tracking-tight">{title}</h4>
-      </div>
-      {action}
-    </div>
-    {children}
-  </div>
-);
-
+// ── Piezas de presentación ──────────────────────────────────────────────────
+/** Dato de solo lectura — misma rejilla que el resto de fichas del vigilante. */
 const ReadField = ({ label, value }: { label: string; value: React.ReactNode }) => (
-  <div className="min-w-0">
-    <div className="text-[11px] uppercase tracking-wide text-muted-foreground mb-0.5">{label}</div>
-    <div className="font-medium text-sm text-foreground truncate">{value || '—'}</div>
-  </div>
+  <Field label={label} value={value} />
 );
 
 const EditText = ({ label, value, onChange, type = 'text' }: { label: string; value: string; onChange: (v: string) => void; type?: string }) => (
   <div>
-    <div className="text-[11px] uppercase tracking-wide text-muted-foreground mb-1">{label}</div>
+    <div className="cg-eyebrow mb-1">{label}</div>
     <Input type={type} value={value || ''} onChange={(e) => onChange(e.target.value)} className="h-9 text-sm" />
   </div>
 );
 
 const EditSelect = ({ label, value, field, onChange }: { label: string; value: string; field: string; onChange: (v: string) => void }) => (
   <div>
-    <div className="text-[11px] uppercase tracking-wide text-muted-foreground mb-1">{label}</div>
+    <div className="cg-eyebrow mb-1">{label}</div>
     <select
       value={value || ''}
       onChange={(e) => onChange(e.target.value)}
-      className="h-9 text-sm flex w-full rounded-md border border-input bg-background px-2"
+      className="cg-input flex h-9 w-full px-2 text-sm"
     >
       <option value="">Seleccionar…</option>
       {(FIELD_OPTIONS[field] || []).map((o) => <option key={o} value={o}>{o}</option>)}
@@ -264,11 +252,12 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
   const tokenExpires = data?.guard?.invitationTokenExpiresAt;
   const tokenExpired = tokenExpires && new Date(tokenExpires) < new Date();
 
+  // Tono del acceso: verde si ya entró, rojo si la invitación caducó, ámbar si sigue pendiente.
   const accessBadge = isActivated
-    ? { txt: t('guards.profile.access.statusActive') || 'App activa', cls: 'bg-green-500/15 text-green-700', dot: 'bg-green-500' }
+    ? { txt: t('guards.profile.access.statusActive') || 'App activa', tone: 'ok' }
     : tokenExpired
-      ? { txt: t('guards.profile.access.statusExpired') || 'Invitación expirada', cls: 'bg-red-500/15 text-red-700', dot: 'bg-red-500' }
-      : { txt: t('guards.profile.access.statusPending') || 'Acceso pendiente', cls: 'bg-orange-500/15 text-orange-700', dot: 'bg-orange-500' };
+      ? { txt: t('guards.profile.access.statusExpired') || 'Invitación expirada', tone: 'bad' }
+      : { txt: t('guards.profile.access.statusPending') || 'Acceso pendiente', tone: 'warn' };
 
   return (
     <AppLayout>
@@ -278,27 +267,32 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
           {/* Edit toolbar — the guard's identity (avatar/name/status) lives in
               the shared GuardsLayout header card above. */}
           <div className="flex items-center justify-between gap-2">
-            <h2 className="text-sm font-semibold text-foreground">{t('guards.nav.perfil', 'Perfil')}</h2>
+            <h2 className="text-sm font-semibold">{t('guards.nav.perfil', 'Perfil')}</h2>
             <div className="flex items-center gap-2">
               {!editing ? (
-                <button onClick={beginEdit} className="inline-flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg bg-primary text-primary-foreground shadow-sm hover:opacity-90 transition">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13l6.536-6.536a2 2 0 012.828 2.828L11.828 15.828a2 2 0 01-1.414.586H9v-2a2 2 0 01.586-1.414z" /></svg>
+                <Button variant="brand" size="sm" onClick={beginEdit}>
+                  <Pencil className="h-4 w-4" />
                   {t('guards.profile.actions.edit') || 'Editar'}
-                </button>
+                </Button>
               ) : (
                 <>
-                  <button onClick={cancelEdit} disabled={saving} className="text-sm px-3 py-2 rounded-lg border hover:bg-muted transition disabled:opacity-50">{t('guards.profile.actions.cancel') || 'Cancelar'}</button>
-                  <button onClick={save} disabled={saving} className="inline-flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg bg-primary text-primary-foreground shadow-sm disabled:opacity-50">
-                    {saving && <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />}
+                  <Button variant="outline" size="sm" onClick={cancelEdit} disabled={saving}>
+                    {t('guards.profile.actions.cancel') || 'Cancelar'}
+                  </Button>
+                  <Button variant="brand" size="sm" onClick={save} disabled={saving}>
+                    {saving && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                     {saving ? (t('guards.profile.actions.saving') || 'Guardando…') : (t('guards.profile.actions.save') || 'Guardar')}
-                  </button>
+                  </Button>
                 </>
               )}
             </div>
           </div>
 
           {editing && (
-            <div className="text-xs text-muted-foreground bg-amber-500/10 border border-amber-500/20 rounded-lg px-3 py-2">
+            <div
+              className="rounded-xl border px-3 py-2 text-xs"
+              style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', color: 'var(--ink-soft)' }}
+            >
               {t('guards.profile.editHint') || 'El nombre, correo y teléfono son la identidad del vigilante y se gestionan desde la invitación de acceso.'}
             </div>
           )}
@@ -363,37 +357,37 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
                   ) : (
                     <>
                       <div>
-                        <div className="text-[11px] uppercase tracking-wide text-muted-foreground mb-1.5">{t('guards.profile.fields.languages') || 'Idiomas'}</div>
+                        <div className="cg-eyebrow mb-1.5">{t('guards.profile.fields.languages') || 'Idiomas'}</div>
                         <div className="flex flex-wrap gap-1.5">
                           {(Array.isArray(data?.languages) ? data.languages : []).filter(Boolean).map((l: string) => (
-                            <span key={l} className="px-2 py-0.5 rounded-full bg-muted text-xs font-medium">{l}</span>
+                            <span key={l} className="rounded-full border px-2 py-0.5 text-xs font-medium" style={{ background: 'var(--glass-sunken)', borderColor: 'var(--hairline)' }}>{l}</span>
                           ))}
-                          {(!data?.languages || !data.languages.length) && <span className="text-sm text-muted-foreground">—</span>}
+                          {(!data?.languages || !data.languages.length) && <span className="text-sm" style={{ color: 'var(--ink-faint)' }}>—</span>}
                         </div>
                       </div>
                       <div>
-                        <div className="text-[11px] uppercase tracking-wide text-muted-foreground mb-1.5">{t('guards.profile.fields.skills') || 'Habilidades'}</div>
+                        <div className="cg-eyebrow mb-1.5">{t('guards.profile.fields.skills') || 'Habilidades'}</div>
                         <div className="flex flex-wrap gap-1.5">
                           {(Array.isArray(data?.skills) ? data.skills : []).filter(Boolean).map((s: string) => (
-                            <span key={s} className="px-2 py-0.5 rounded-full bg-muted text-xs font-medium">{s}</span>
+                            <span key={s} className="rounded-full border px-2 py-0.5 text-xs font-medium" style={{ background: 'var(--glass-sunken)', borderColor: 'var(--hairline)' }}>{s}</span>
                           ))}
-                          {(!data?.skills || !data.skills.length) && <span className="text-sm text-muted-foreground">—</span>}
+                          {(!data?.skills || !data.skills.length) && <span className="text-sm" style={{ color: 'var(--ink-faint)' }}>—</span>}
                         </div>
                       </div>
                     </>
                   )}
                 </div>
-                {editing && <p className="mt-2 text-[11px] text-muted-foreground">{t('guards.profile.placeholders.csvHint') || 'Separa con comas.'}</p>}
+                {editing && <p className="mt-2 text-[11px]" style={{ color: 'var(--ink-faint)' }}>{t('guards.profile.placeholders.csvHint') || 'Separa con comas.'}</p>}
               </Section>
 
               {/* Attendance */}
               <Section title={t('guards.profile.cards.attendance') || 'Asistencia reciente'}>
                 {loadingShifts ? (
-                  <div className="text-sm text-muted-foreground">{t('common.loading') || 'Cargando…'}</div>
+                  <div className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t('common.loading') || 'Cargando…'}</div>
                 ) : guardShifts.length === 0 ? (
-                  <div className="text-sm text-muted-foreground">{t('guards.profile.noAttendance') || 'Sin registros de asistencia.'}</div>
+                  <div className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t('guards.profile.noAttendance') || 'Sin registros de asistencia.'}</div>
                 ) : (
-                  <ul className="divide-y">
+                  <ul className="divide-y" style={{ borderColor: 'var(--hairline)' }}>
                     {guardShifts.slice(0, 8).map((s) => {
                       // The guard-shift rows expose `stationName`/`guardName` as
                       // nested OBJECTS ({ stationName }, { fullName }) — rendering
@@ -411,16 +405,18 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
                       const punchIn = lastSession?.in || s.punchInTime || null;
                       const punchOut = lastSession?.out || s.punchOutTime || null;
                       return (
-                        <li key={s.id} className="py-2.5 flex items-center justify-between gap-3">
+                        <li key={s.id} className="flex items-center justify-between gap-3 py-2.5">
                           <div className="min-w-0">
-                            <div className="text-sm font-medium truncate">{stationLabel}</div>
-                            <div className="text-xs text-muted-foreground">
+                            <div className="truncate text-sm font-medium">{stationLabel}</div>
+                            <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>
                               {punchIn ? new Date(punchIn).toLocaleString('es', { timeZone: getTenantTimezone() }) : '—'}
                               {' → '}
-                              {punchOut ? new Date(punchOut).toLocaleString('es', { timeZone: getTenantTimezone() }) : <span className="text-green-600 font-medium">En curso</span>}
+                              {punchOut ? new Date(punchOut).toLocaleString('es', { timeZone: getTenantTimezone() }) : <span className="font-medium" style={{ color: 'var(--ok-text)' }}>En curso</span>}
                             </div>
                           </div>
-                          <span className={`shrink-0 px-2 py-0.5 rounded-full text-[11px] font-medium ${punchOut ? 'bg-muted text-foreground/60' : 'bg-green-500/15 text-green-700'}`}>{s.shiftSchedule || 'Turno'}</span>
+                          <StatusBadge tone={punchOut ? 'neutral' : 'ok'} dot={!punchOut} className="shrink-0">
+                            {s.shiftSchedule || 'Turno'}
+                          </StatusBadge>
                         </li>
                       );
                     })}
@@ -434,22 +430,18 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
               {/* App access */}
               <Section title={t('guards.profile.cards.appAccess') || 'Acceso a la app'}>
                 <div className="space-y-3">
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${accessBadge.cls}`}>
-                    <span className={`w-1.5 h-1.5 rounded-full ${accessBadge.dot}`} />{accessBadge.txt}
-                  </span>
+                  <StatusBadge tone={accessBadge.tone}>{accessBadge.txt}</StatusBadge>
                   {data?.guard?.lastLoginAt && (
-                    <div className="text-xs text-muted-foreground">{t('guards.profile.access.lastLogin') || 'Último ingreso'}: <span className="font-medium text-foreground">{new Date(data.guard.lastLoginAt).toLocaleString('es')}</span></div>
+                    <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{t('guards.profile.access.lastLogin') || 'Último ingreso'}: <span className="font-medium" style={{ color: 'var(--ink)' }}>{new Date(data.guard.lastLoginAt).toLocaleString('es')}</span></div>
                   )}
                   {data?.guard?.email && (
-                    <div className="text-xs text-muted-foreground">{t('guards.profile.access.sendTo') || 'Enviar a'}: <span className="font-medium text-foreground">{data.guard.email}</span></div>
+                    <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{t('guards.profile.access.sendTo') || 'Enviar a'}: <span className="font-medium" style={{ color: 'var(--ink)' }}>{data.guard.email}</span></div>
                   )}
                   {data?.guard?.email && (
-                    <button onClick={handleSendAppAccess} disabled={sendingInvite} className="mt-1 w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground text-sm font-medium py-2 px-4 rounded-lg disabled:opacity-60 transition">
-                      {sendingInvite ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : (
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                      )}
+                    <Button variant="brand" className="mt-1 w-full" onClick={handleSendAppAccess} disabled={sendingInvite}>
+                      {sendingInvite ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />}
                       {isActivated ? (t('guards.profile.access.resendInvite') || 'Reenviar invitación') : (t('guards.profile.access.sendInvite') || 'Enviar acceso')}
-                    </button>
+                    </Button>
                   )}
                 </div>
               </Section>
@@ -469,7 +461,8 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
                 {data?.licenses && data.licenses.length > 0 ? (
                   <div className="space-y-3">
                     {data.licenses.map((lic: ProfileLicense, idx: number) => (
-                      <div key={idx} className="rounded-lg border p-3">
+                      /* Se repite → cristal plano. */
+                      <div key={idx} className="glass-flat p-3">
                         <div className="grid grid-cols-2 gap-2">
                           <ReadField label={t('guards.profile.fields.licenseType') || 'Tipo'} value={lic.type} />
                           <ReadField label={t('guards.profile.fields.licenseNumber') || 'Número'} value={lic.number} />
@@ -479,7 +472,7 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-muted-foreground">{t('guards.profile.noLicense') || 'Sin licencias registradas.'}</p>
+                  <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t('guards.profile.noLicense') || 'Sin licencias registradas.'}</p>
                 )}
               </Section>
             </div>

@@ -1,14 +1,13 @@
 import { useState } from "react";
-import AppLayout from "@/layouts/app-layout";
-import SettingsLayout from "@/layouts/SettingsLayout";
 import IncidentTypesTable, { IncidentTypeRow } from "./IncidentTypesTable";
 import IncidentTypeDialog, { IncidentTypeDialogValues } from "./IncidentTypeDialog";
 import IncidentTypesService from "@/services/incident-types.service";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Modal } from "@/components/kit";
-import { AlertTriangle } from "lucide-react";
+import { Modal, StatusBadge } from "@/components/kit";
+import SettingsPageShell from "../components/SettingsPageShell";
+import { AlertTriangle, Plus, Siren } from "lucide-react";
 
 export default function IncidentTypePage() {
   const [open, setOpen] = useState(false);
@@ -40,8 +39,23 @@ export default function IncidentTypePage() {
   useEffect(() => { fetchData(); }, [query, page, pageSize]);
 
   return (
-    <AppLayout>
-      <SettingsLayout navKey="configuracion" title="Tipos de Incidentes">
+    <SettingsPageShell
+      kind="table"
+      icon={<Siren />}
+      title="Tipos de Incidentes"
+      subtitle="El catálogo con el que tu equipo clasifica lo que ocurre en cada puesto."
+      badges={
+        !loading && total > 0 ? (
+          <StatusBadge tone="neutral">{total} {total === 1 ? "tipo" : "tipos"}</StatusBadge>
+        ) : undefined
+      }
+      actions={
+        <Button variant="brand" onClick={() => { setEdit(null); setOpen(true); }}>
+          <Plus className="mr-2 h-4 w-4" />
+          Nuevo tipo
+        </Button>
+      }
+    >
         <IncidentTypesTable
           rows={rows}
           total={total}
@@ -52,7 +66,6 @@ export default function IncidentTypePage() {
           onQueryChange={setQuery}
           onPageChange={setPage}
           onPageSizeChange={setPageSize}
-          onCreate={() => { setEdit(null); setOpen(true); }}
           onEdit={(r) => { setEdit(r); setOpen(true); }}
           onToggleStatus={async (id: string) => {
             try {
@@ -101,7 +114,7 @@ export default function IncidentTypePage() {
           footer={
             <>
               <Button variant="outline" onClick={() => setConfirmOpen(false)}>Cancelar</Button>
-              <Button className="bg-red-600 text-white hover:bg-red-600/90" onClick={async () => {
+              <Button variant="destructive" onClick={async () => {
                 try {
                   await IncidentTypesService.destroyAll(deleteIds);
                   toast.success('Tipos de incidente eliminados');
@@ -116,9 +129,10 @@ export default function IncidentTypePage() {
             </>
           }
         >
-          <p className="text-sm text-muted-foreground">¿Estás seguro que deseas eliminar {deleteIds.length} tipo(s) de incidente? Esta acción no se puede deshacer.</p>
+          <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
+            ¿Estás seguro que deseas eliminar {deleteIds.length} tipo(s) de incidente? Esta acción no se puede deshacer.
+          </p>
         </Modal>
-      </SettingsLayout>
-    </AppLayout>
+    </SettingsPageShell>
   );
 }

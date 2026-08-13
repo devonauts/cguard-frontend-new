@@ -17,13 +17,6 @@ import {
   StickyNote,
   Clock,
   ShieldAlert,
-  Flame,
-  Hand,
-  Bell,
-  HeartPulse,
-  Wrench,
-  DoorOpen,
-  Activity,
   MapPin,
   Cpu,
   FileText,
@@ -31,16 +24,20 @@ import {
 } from "lucide-react";
 
 import AppLayout from "@/layouts/app-layout";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
   PageContainer,
+  PageHeader,
   Section,
   EmptyState,
-  Modal as KitModal,
+  Modal,
+  GlassPanel,
+  IconTile,
+  StatusBadge,
+  SkeletonCards,
 } from "@/components/kit";
 import {
   alarmService,
@@ -51,51 +48,14 @@ import {
   type AlarmDispatchType,
   type AlarmCaseDisposition,
 } from "@/lib/api/alarmService";
-
-const GOLD = "#C8860A";
+import {
+  Chip, CriticalRail, PriorityPill, STATUS_META, OPEN_STATUSES,
+  categoryMeta, categoryTone, criticalBorder, formatWhenFull as formatWhen, sourceTone,
+} from "./shared";
 
 /* ------------------------------------------------------------------ */
 /* Metadata                                                            */
 /* ------------------------------------------------------------------ */
-
-const STATUS_META: Record<string, { label: string; className: string }> = {
-  queued: { label: "En cola", className: "bg-red-500/15 text-red-600 border-red-500/30" },
-  acknowledged: { label: "Reconocida", className: "bg-amber-500/15 text-amber-600 border-amber-500/30" },
-  verifying: { label: "Verificando", className: "bg-sky-500/15 text-sky-600 border-sky-500/30" },
-  dispatched: { label: "Despachada", className: "bg-purple-500/15 text-purple-600 border-purple-500/30" },
-  resolved: { label: "Resuelta", className: "bg-emerald-500/15 text-emerald-600 border-emerald-500/30" },
-  closed: { label: "Cerrada", className: "bg-slate-500/15 text-slate-600 border-slate-500/30" },
-};
-
-const CATEGORY_META: Record<string, { label: string; icon: React.ReactNode }> = {
-  burglary: { label: "Intrusión", icon: <ShieldAlert className="size-4" /> },
-  fire: { label: "Incendio", icon: <Flame className="size-4" /> },
-  holdup: { label: "Atraco", icon: <Hand className="size-4" /> },
-  panic: { label: "Pánico", icon: <Bell className="size-4" /> },
-  medical: { label: "Médica", icon: <HeartPulse className="size-4" /> },
-  tamper: { label: "Sabotaje", icon: <Wrench className="size-4" /> },
-  trouble: { label: "Avería", icon: <AlertTriangle className="size-4" /> },
-  openclose: { label: "Apertura/Cierre", icon: <DoorOpen className="size-4" /> },
-  test: { label: "Prueba", icon: <Activity className="size-4" /> },
-  supervisory: { label: "Supervisión", icon: <Activity className="size-4" /> },
-  restore: { label: "Restauración", icon: <Activity className="size-4" /> },
-};
-
-function categoryMeta(cat?: string | null) {
-  return (cat && CATEGORY_META[cat]) || { label: cat || "Alarma", icon: <Siren className="size-4" /> };
-}
-
-const PRIORITY_META: Record<number, { label: string; className: string }> = {
-  1: { label: "P1 · Crítica", className: "bg-red-600 text-white border-red-600" },
-  2: { label: "P2 · Alta", className: "bg-orange-500 text-white border-orange-500" },
-  3: { label: "P3 · Media", className: "bg-amber-500 text-white border-amber-500" },
-  4: { label: "P4 · Baja", className: "bg-sky-500 text-white border-sky-500" },
-  5: { label: "P5 · Info", className: "bg-slate-500 text-white border-slate-500" },
-};
-
-function priorityMeta(p?: number) {
-  return PRIORITY_META[p || 3] || PRIORITY_META[3];
-}
 
 const DISPATCH_TYPES: { value: AlarmDispatchType; label: string }[] = [
   { value: "guard", label: "Vigilante" },
@@ -115,69 +75,10 @@ const DISPOSITIONS: { value: AlarmCaseDisposition; label: string }[] = [
   { value: "cancelled", label: "Cancelada" },
 ];
 
-function Badge({ className, children }: { className?: string; children: React.ReactNode }) {
-  return (
-    <span
-      className={[
-        "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium",
-        className || "",
-      ].join(" ")}
-    >
-      {children}
-    </span>
-  );
-}
+const selectClass = "cg-input cg-focus h-9 w-full px-3 text-sm disabled:cursor-not-allowed disabled:opacity-50";
 
-function formatWhen(iso?: string | null): string {
-  if (!iso) return "—";
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "—";
-  return d.toLocaleString("es", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
-}
-
-const selectClass =
-  "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50";
-
-const OPEN_STATUSES = new Set<string>(["queued", "acknowledged", "verifying", "dispatched"]);
 
 /* ------------------------------------------------------------------ */
-/* Modal shell (portal)                                                */
-/* ------------------------------------------------------------------ */
-
-function Modal({
-  open,
-  title,
-  icon,
-  onClose,
-  children,
-  footer,
-}: {
-  open: boolean;
-  title: string;
-  icon: React.ReactNode;
-  onClose: () => void;
-  children: React.ReactNode;
-  footer?: React.ReactNode;
-}) {
-  return (
-    <KitModal
-      open={open}
-      onOpenChange={(o) => { if (!o) onClose(); }}
-      title={title}
-      icon={icon}
-      footer={footer}
-    >
-      {children}
-    </KitModal>
-  );
-}
 
 /* ------------------------------------------------------------------ */
 /* Page                                                                */
@@ -314,10 +215,9 @@ export default function AlarmCaseDetail() {
   if (loading) {
     return (
       <AppLayout>
-        <div className="flex items-center justify-center py-24 text-muted-foreground">
-          <Loader2 className="mr-2 size-5 animate-spin" />
-          Cargando caso…
-        </div>
+        <PageContainer width="wide">
+          <SkeletonCards count={4} />
+        </PageContainer>
       </AppLayout>
     );
   }
@@ -343,12 +243,13 @@ export default function AlarmCaseDetail() {
   }
 
   const cat = categoryMeta(data.category);
-  const prio = priorityMeta(data.priority);
   const st = STATUS_META[data.status || "queued"] || STATUS_META.queued;
   const panel = data.panel || null;
   const isOpen = OPEN_STATUSES.has(data.status || "queued");
   const isClosed = data.status === "closed";
   const acked = Boolean(data.ackAt) || !["queued"].includes(data.status || "queued");
+  /* Crítico = P1 todavía abierta. Es lo único que se lleva el canto rojo. */
+  const critico = isOpen && (data.priority ?? 3) === 1;
 
   const events: AlarmEvent[] = Array.isArray(data.events) ? data.events : [];
   const audit: AlarmAuditLog[] = Array.isArray(data.auditLogs) ? data.auditLogs : [];
@@ -367,65 +268,66 @@ export default function AlarmCaseDetail() {
   return (
     <AppLayout>
       <PageContainer width="wide">
-        {/* Back + refresh */}
-        <div className="mb-4 flex items-center justify-between">
-          <Button variant="ghost" size="sm" onClick={() => navigate("/alarm/queue")}>
-            <ArrowLeft className="size-4" />
-            Cola de alarmas
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => load()} disabled={busy}>
-            {busy ? <Loader2 className="size-4 animate-spin" /> : <RefreshCw className="size-4" />}
-            Actualizar
-          </Button>
+        {/* La cabecera del sistema, igual que en las cinco pantallas hermanas.
+            Antes era un `<h1 text-xl>` propio dentro de una tarjeta a mano: un
+            escalón más pequeño que cualquier otra página y sin el halo del
+            acento. El canto rojo de un caso crítico se conserva encima. */}
+        <div className="relative">
+          {critico && <CriticalRail />}
+          <PageHeader
+            className={critico ? 'overflow-hidden' : undefined}
+            icon={<Siren />}
+            title={data.title || cat.label}
+            subtitle={`Caso #${String(data.id).slice(0, 8)} · creado ${formatWhen(data.createdAt)}`}
+            badges={(
+              <>
+                <PriorityPill p={data.priority} />
+                <StatusBadge tone={categoryTone(data.category)} dot={false}>
+                  <span className="[&_svg]:size-3.5">{cat.icon}</span>
+                  {cat.label}
+                </StatusBadge>
+                <StatusBadge tone={st.tone} dot={isOpen}>{st.label}</StatusBadge>
+                {(() => {
+                  const sm = alarmSourceMeta(data.source);
+                  return <StatusBadge tone={sourceTone(data.source)} dot={false}>{sm.label}</StatusBadge>;
+                })()}
+                {data.disposition ? (
+                  <Chip>
+                    {DISPOSITIONS.find((d) => d.value === data.disposition)?.label ||
+                      data.disposition}
+                  </Chip>
+                ) : null}
+                {data.incidentId ? (
+                  /* Escalado a incidente: agravación del caso, no realce de
+                     marca. Iba en el acento configurable. */
+                  <StatusBadge tone="bad" dot={false}>
+                    <AlertTriangle className="size-3.5" />
+                    Incidente
+                  </StatusBadge>
+                ) : null}
+              </>
+            )}
+            actions={(
+              <>
+                <Button variant="ghost" onClick={() => navigate("/alarm/queue")}>
+                  <ArrowLeft className="size-4" />
+                  Cola de alarmas
+                </Button>
+                <Button variant="outline" onClick={() => load()} disabled={busy}>
+                  {busy ? <Loader2 className="size-4 animate-spin" /> : <RefreshCw className="size-4" />}
+                  Actualizar
+                </Button>
+              </>
+            )}
+          />
         </div>
 
-        {/* Header card */}
-        <Card className="mb-5 p-5">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div className="flex items-start gap-3">
-              <span
-                className="flex size-11 items-center justify-center rounded-xl"
-                style={{ backgroundColor: `${GOLD}1A`, color: GOLD }}
-              >
-                <Siren className="size-6" />
-              </span>
-              <div>
-                <div className="mb-1.5 flex flex-wrap items-center gap-2">
-                  <Badge className={prio.className}>{prio.label}</Badge>
-                  <Badge className="border-transparent bg-muted text-foreground">
-                    {cat.icon}
-                    {cat.label}
-                  </Badge>
-                  <Badge className={st.className}>{st.label}</Badge>
-                  {(() => {
-                    const sm = alarmSourceMeta(data.source);
-                    return <Badge className={sm.className}>{sm.label}</Badge>;
-                  })()}
-                  {data.disposition ? (
-                    <Badge className="border-transparent bg-slate-500/15 text-slate-600">
-                      {DISPOSITIONS.find((d) => d.value === data.disposition)?.label ||
-                        data.disposition}
-                    </Badge>
-                  ) : null}
-                  {data.incidentId ? (
-                    <Badge className="border-transparent bg-purple-500/15 text-purple-600">
-                      <AlertTriangle className="size-3.5" />
-                      Incidente
-                    </Badge>
-                  ) : null}
-                </div>
-                <h1 className="text-xl font-semibold tracking-tight">
-                  {data.title || cat.label}
-                </h1>
-                <p className="mt-0.5 text-sm text-muted-foreground">
-                  Caso #{String(data.id).slice(0, 8)} · creado {formatWhen(data.createdAt)}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Action buttons */}
-          <div className="mt-4 flex flex-wrap gap-2 border-t pt-4">
+        {/* Acciones del caso */}
+        <GlassPanel
+          className="relative overflow-hidden p-5"
+          style={criticalBorder(critico)}
+        >
+          <div className="flex flex-wrap gap-2">
             <Button
               variant="outline"
               size="sm"
@@ -481,7 +383,7 @@ export default function AlarmCaseDetail() {
               Nota
             </Button>
           </div>
-        </Card>
+        </GlassPanel>
 
         {/* Action plan — guided operator response */}
         <div className="mb-5">
@@ -511,9 +413,9 @@ export default function AlarmCaseDetail() {
           <Section title="Panel y sitio" icon={<Cpu />} className="lg:col-span-1">
             {panel ? (
               <dl className="space-y-2.5 text-sm">
-                <Field label="Panel" value={panel.name} />
-                <Field label="Cuenta" value={panel.accountNumber} mono />
-                <Field
+                <PanelField label="Panel" value={panel.name} />
+                <PanelField label="Cuenta" value={panel.accountNumber} mono />
+                <PanelField
                   label="Tipo"
                   value={
                     panel.panelType
@@ -521,12 +423,12 @@ export default function AlarmCaseDetail() {
                       : null
                   }
                 />
-                <Field label="Protocolo" value={panel.protocol} />
-                <Field
+                <PanelField label="Protocolo" value={panel.protocol} />
+                <PanelField
                   label="Equipo"
                   value={[panel.make, panel.model].filter(Boolean).join(" ") || null}
                 />
-                <Field
+                <PanelField
                   label="Comunicación"
                   value={
                     panel.comms
@@ -534,8 +436,8 @@ export default function AlarmCaseDetail() {
                       : null
                   }
                 />
-                <Field label="Estado del panel" value={panel.status} />
-                <Field label="Última señal" value={formatWhen(panel.lastSignalAt)} />
+                <PanelField label="Estado del panel" value={panel.status} />
+                <PanelField label="Última señal" value={formatWhen(panel.lastSignalAt)} />
                 {panel.notes ? (
                   <div className="flex items-start gap-1.5 pt-1 text-muted-foreground">
                     <MapPin className="mt-0.5 size-3.5 shrink-0" />
@@ -544,7 +446,7 @@ export default function AlarmCaseDetail() {
                 ) : null}
               </dl>
             ) : (
-              <p className="text-sm text-muted-foreground">Sin información de panel.</p>
+              <EmptyState className="border-0 py-6" icon={<Cpu />} title="Sin información de panel" />
             )}
           </Section>
 
@@ -555,42 +457,55 @@ export default function AlarmCaseDetail() {
             title={
               <span className="flex items-center gap-2">
                 Cronología de eventos
-                <span className="rounded-full bg-muted px-1.5 text-xs font-normal text-muted-foreground">
+                <span
+                  className="rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums"
+                  style={{ background: 'var(--glass-sunken)', color: 'var(--ink-soft)' }}
+                >
                   {sortedEvents.length}
                 </span>
               </span>
             }
           >
             {sortedEvents.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Sin eventos registrados.</p>
+              <EmptyState className="border-0 py-6" icon={<FileText />} title="Sin eventos registrados" />
             ) : (
-              <ol className="relative space-y-4 border-l pl-5">
+              <ol className="relative space-y-4 border-l pl-5" style={{ borderColor: 'var(--hairline)' }}>
                 {sortedEvents.map((ev) => {
                   const ec = categoryMeta(ev.category);
+                  // Grave por categoría o por prioridad: cualquiera de las dos
+                  // basta para que el nudo se lea como emergencia.
+                  const nodo = ec.grave || ev.priority === 1
+                    ? 'bad'
+                    : ev.priority === 2 ? 'warn' : 'info';
                   return (
                     <li key={ev.id} className="relative">
+                      {/* El nudo de la línea de tiempo, con el halo del lienzo
+                          alrededor para que la línea parezca pasar por detrás. */}
+                      {/* El nudo lleva la GRAVEDAD del evento, no el acento.
+                          Iba en `var(--brand)`: un evento de pánico o incendio
+                          se pintaba del color de marca mientras la píldora de
+                          prioridad justo al lado decía «P1 · Crítica» en rojo. */}
                       <span
-                        className="absolute -left-[27px] top-1 flex size-4 items-center justify-center rounded-full ring-4 ring-background"
-                        style={{ backgroundColor: GOLD }}
+                        className="absolute -left-[27px] top-1 flex size-4 items-center justify-center rounded-full"
+                        style={{
+                          background: `var(--${nodo})`,
+                          boxShadow: `0 0 0 4px var(--canvas), 0 0 12px 0 color-mix(in oklab, var(--${nodo}) 45%, transparent)`,
+                        }}
                       />
                       <div className="flex flex-wrap items-center gap-2">
-                        <Badge className="border-transparent bg-muted text-foreground">
-                          {ec.icon}
+                        <StatusBadge tone={categoryTone(ev.category)} dot={false}>
+                          <span className="[&_svg]:size-3.5">{ec.icon}</span>
                           {ec.label}
-                        </Badge>
-                        {ev.priority ? (
-                          <Badge className={priorityMeta(ev.priority).className}>
-                            {priorityMeta(ev.priority).label}
-                          </Badge>
-                        ) : null}
+                        </StatusBadge>
+                        {ev.priority ? <PriorityPill p={ev.priority} /> : null}
                         {ev.zoneNumber ? (
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-xs" style={{ color: 'var(--ink-faint)' }}>
                             Zona {ev.zoneNumber}
                           </span>
                         ) : null}
                       </div>
                       <p className="mt-1 text-sm">{ev.description || ec.label}</p>
-                      <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
+                      <p className="mt-0.5 flex items-center gap-1 text-xs" style={{ color: 'var(--ink-faint)' }}>
                         <Clock className="size-3" />
                         {formatWhen(ev.at || ev.createdAt)}
                       </p>
@@ -608,16 +523,19 @@ export default function AlarmCaseDetail() {
             title={
               <span className="flex items-center gap-2">
                 Registro de auditoría
-                <span className="rounded-full bg-muted px-1.5 text-xs font-normal text-muted-foreground">
+                <span
+                  className="rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums"
+                  style={{ background: 'var(--glass-sunken)', color: 'var(--ink-soft)' }}
+                >
                   {sortedAudit.length}
                 </span>
               </span>
             }
           >
             {sortedAudit.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Sin entradas de auditoría.</p>
+              <EmptyState className="border-0 py-6" icon={<History />} title="Sin entradas de auditoría" />
             ) : (
-              <ul className="divide-y">
+              <ul className="divide-y" style={{ borderColor: 'var(--hairline)' }}>
                 {sortedAudit.map((a) => (
                   <li key={a.id} className="flex flex-col gap-1 py-2.5 sm:flex-row sm:items-start sm:justify-between">
                     <div className="min-w-0">
@@ -644,7 +562,7 @@ export default function AlarmCaseDetail() {
         open={dispatchOpen}
         title="Despachar"
         icon={<Radio className="size-4" />}
-        onClose={() => setDispatchOpen(false)}
+        onOpenChange={(o) => { if (!o) setDispatchOpen(false); }}
         footer={
           <>
             <Button variant="outline" onClick={() => setDispatchOpen(false)} disabled={busy}>
@@ -700,7 +618,7 @@ export default function AlarmCaseDetail() {
         open={closeOpen}
         title="Cerrar caso"
         icon={<Lock className="size-4" />}
-        onClose={() => setCloseOpen(false)}
+        onOpenChange={(o) => { if (!o) setCloseOpen(false); }}
         footer={
           <>
             <Button variant="outline" onClick={() => setCloseOpen(false)} disabled={busy}>
@@ -738,7 +656,7 @@ export default function AlarmCaseDetail() {
         open={incidentOpen}
         title="Crear incidente"
         icon={<AlertTriangle className="size-4" />}
-        onClose={() => setIncidentOpen(false)}
+        onOpenChange={(o) => { if (!o) setIncidentOpen(false); }}
         footer={
           <>
             <Button variant="outline" onClick={() => setIncidentOpen(false)} disabled={busy}>
@@ -779,7 +697,7 @@ export default function AlarmCaseDetail() {
         open={noteOpen}
         title="Agregar nota"
         icon={<StickyNote className="size-4" />}
-        onClose={() => setNoteOpen(false)}
+        onOpenChange={(o) => { if (!o) setNoteOpen(false); }}
         footer={
           <>
             <Button variant="outline" onClick={() => setNoteOpen(false)} disabled={busy}>
@@ -811,7 +729,14 @@ export default function AlarmCaseDetail() {
 /* Small field row                                                     */
 /* ------------------------------------------------------------------ */
 
-function Field({
+/**
+ * Renglón de la ficha del panel. NO es el `Field` del kit —se llamaba igual y lo
+ * tapaba al importarlo—: aquí el par va en `dt`/`dd` dentro de un `<dl>`, que es
+ * lo que corresponde a una ficha técnica, y la etiqueta y el valor comparten
+ * línea en vez de apilarse. El estilo de la etiqueta sí es el del sistema
+ * (`cg-eyebrow`), que antes se reimplementaba a mano.
+ */
+function PanelField({
   label,
   value,
   mono,
@@ -822,9 +747,9 @@ function Field({
 }) {
   return (
     <div className="flex items-baseline justify-between gap-3">
-      <dt className="shrink-0 text-xs uppercase tracking-wide text-muted-foreground">{label}</dt>
+      <dt className="cg-eyebrow shrink-0">{label}</dt>
       <dd className={["text-right", mono ? "font-mono text-xs" : ""].join(" ")}>
-        {value || <span className="text-muted-foreground">—</span>}
+        {value || <span style={{ color: 'var(--ink-faint)' }}>—</span>}
       </dd>
     </div>
   );

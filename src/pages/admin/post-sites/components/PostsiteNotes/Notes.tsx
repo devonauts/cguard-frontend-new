@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Search, ChevronDown, Plus, X, EllipsisVertical, Eye, Pencil, Trash, StickyNote } from 'lucide-react';
 import MobileCardList from '@/components/responsive/MobileCardList';
 import { EmptyState, Modal } from '@/components/kit';
+import { FIELD_CLS, FIELD_CLS_LG } from '@/pages/admin/clientes/components/_shared/tab-kit';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { postSiteService } from '@/lib/api/postSiteService';
@@ -193,15 +194,15 @@ export default function PostSiteNotes({ site }: Props) {
 
   return (
     <div ref={containerRef} className="min-h-screen flex flex-col animate-fade-up">
-      <div className="cg-card p-6 flex-1 flex flex-col min-h-0">
+      <div className="glass flex min-h-0 flex-1 flex-col p-6">
         <div className="flex items-center justify-between gap-4 mb-6">
           <div className="relative" ref={actionRef}>
-            <button onClick={() => setActionOpen(v => !v)} className="px-3 py-2 border rounded-md bg-card text-foreground text-sm font-medium flex items-center gap-2 hover:bg-muted/30 min-w-[100px]">
+            <button onClick={() => setActionOpen(v => !v)} className="cg-btn-glass cg-focus flex min-w-[100px] items-center gap-2 rounded-md px-3 py-2 text-sm font-medium">
               {t('actions.action', 'Action')}
               <ChevronDown size={16} />
             </button>
             {actionOpen && (
-              <div className="absolute left-0 mt-1 bg-card border rounded-md shadow-lg z-10 w-full">
+              <div className="glass-raised absolute left-0 z-10 mt-1 w-full">
                 <button onClick={() => { setActionOpen(false); setConfirmDeleteIds(selectedIds); }} className="block w-full text-left px-4 py-2 text-sm hover:bg-muted">{t('clients.notes.delete', 'Delete')}</button>
               </div>
             )}
@@ -210,11 +211,11 @@ export default function PostSiteNotes({ site }: Props) {
           <div className="flex-1 max-w-xs">
             <div className="relative">
               <Search size={16} className="absolute left-3 top-3 text-muted-foreground" />
-              <input type="text" placeholder={t('clients.notes.notesearchPlaceholder', 'Search note')} value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full pl-9 pr-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+              <input type="text" placeholder={t('clients.notes.notesearchPlaceholder', 'Search note')} value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className={`${FIELD_CLS} pl-9`} />
             </div>
           </div>
 
-          <button onClick={handleAddNote} className="px-6 py-2 bg-primary text-primary-foreground rounded-md text-sm font-semibold flex items-center gap-2 hover:bg-primary/90 transition-colors">
+          <button onClick={handleAddNote} className="cg-btn-brand cg-focus flex items-center gap-2 rounded-md px-6 py-2 text-sm font-semibold transition-colors">
             <Plus size={18} />
            {(t('clients.notes.addNote', 'Add Note'))}
           </button>
@@ -225,7 +226,7 @@ export default function PostSiteNotes({ site }: Props) {
             <table className="w-full">
             <thead>
               <tr className="border-b bg-muted/30">
-                <th className="px-4 py-3 text-left">
+                <th className="cg-eyebrow px-2 py-2">
                   <input
                     type="checkbox"
                     className="rounded"
@@ -238,10 +239,10 @@ export default function PostSiteNotes({ site }: Props) {
                     aria-label="Select all notes"
                   />
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-foreground">{t('clients.notes.Title')}</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-foreground">{t('clients.notes.Date')}</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-foreground">{t('clients.notes.Added By')}</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-foreground"></th>
+                <th className="cg-eyebrow px-2 py-2">{t('clients.notes.Title')}</th>
+                <th className="cg-eyebrow px-2 py-2">{t('clients.notes.Date')}</th>
+                <th className="cg-eyebrow px-2 py-2">{t('clients.notes.Added By')}</th>
+                <th className="cg-eyebrow px-2 py-2"></th>
               </tr>
             </thead>
             <tbody>
@@ -257,12 +258,12 @@ export default function PostSiteNotes({ site }: Props) {
                 </tr>
               ) : (
                 notesData.map((note, idx) => (
-                  <tr key={note.id || idx} className="border-b hover:bg-muted/30">
-                    <td className="px-4 py-3 text-sm text-foreground"><input type="checkbox" checked={selectedIds.includes(String(note.id))} onChange={() => toggleSelect(String(note.id))} /></td>
-                    <td className="px-4 py-3 text-sm text-foreground">{note.title}</td>
-                    <td className="px-4 py-3 text-sm text-foreground">{note.date}</td>
-                    <td className="px-4 py-3 text-sm text-foreground">{note.addedBy || '-'}</td>
-                    <td className="px-4 py-3 text-right">
+                  <tr key={note.id || idx} className="border-b hover:bg-muted/40">
+                    <td className="px-2 py-2.5 text-sm text-foreground"><input type="checkbox" checked={selectedIds.includes(String(note.id))} onChange={() => toggleSelect(String(note.id))} /></td>
+                    <td className="px-2 py-2.5 text-sm text-foreground">{note.title}</td>
+                    <td className="px-2 py-2.5 text-sm text-foreground">{note.date}</td>
+                    <td className="px-2 py-2.5 text-sm text-foreground">{note.addedBy || '-'}</td>
+                    <td className="px-2 py-2.5 text-right">
                       <div className="relative inline-block">
                         <button
                           onClick={() => setOpenMenuId(prev => (prev === note.id ? null : String(note.id)))}
@@ -273,7 +274,7 @@ export default function PostSiteNotes({ site }: Props) {
                         </button>
 
                         {openMenuId === String(note.id) && (
-                          <div className="absolute right-0 mt-2 w-44 bg-card border rounded-md shadow-lg z-50">
+                          <div className="glass-raised absolute right-0 z-50 mt-2 w-44">
                             <button
                               onClick={() => { setDetailsNote(note.raw || note); setOpenMenuId(null); }}
                               className="w-full flex items-center gap-2 px-3 py-2 hover:bg-muted/30 focus:outline-none"
@@ -290,7 +291,7 @@ export default function PostSiteNotes({ site }: Props) {
                             </button>
                             <button
                               onClick={() => { setOpenMenuId(null); setConfirmDeleteIds([String(note.id)]); }}
-                              className="w-full flex items-center gap-2 px-3 py-2 text-red-600 hover:bg-muted/30 focus:outline-none"
+                              className="cg-btn-ghost cg-focus flex w-full items-center gap-2 px-3 py-2" style={{ color: 'var(--bad-text)' }}
                             >
                               <Trash size={16} />
                               <span className="text-sm">{t('actions.delete') || 'Delete'}</span>
@@ -320,33 +321,33 @@ export default function PostSiteNotes({ site }: Props) {
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center" onClick={handleCloseModal}>
-          <div className="absolute inset-0 bg-black/40" onClick={handleCloseModal} />
+          <div className="absolute inset-0" style={{ background: 'oklch(0 0 0 / 0.45)' }} onClick={handleCloseModal} />
 
-          <div className="w-full sm:ml-auto sm:w-96 bg-card shadow-2xl overflow-y-auto rounded-t-lg sm:rounded-md" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between p-6 border-b sticky top-0 bg-card">
+          <div className="glass-raised w-full overflow-y-auto sm:ml-auto sm:w-96" onClick={(e) => e.stopPropagation()}>
+            <div className="sticky top-0 flex items-center justify-between border-b p-6">
               <h2 className="text-lg font-semibold text-foreground">{t('clients.notes.form.Title', 'Add New Note')}</h2>
             </div>
 
             <div className="p-6 space-y-6">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">{t('clients.notes.form.Titlenote', 'Title *')} </label>
-                <input type="text" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} placeholder={t('clients.notes.form.Titlenote', 'Title *')} className="w-full px-3 py-2 border rounded-md text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
+                <input type="text" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} placeholder={t('clients.notes.form.Titlenote', 'Title *')} className={FIELD_CLS_LG} />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">{t('clients.notes.form.Description', 'Description *')} </label>
-                <textarea value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} placeholder={t('clients.notes.form.Descriptioninput', 'Description *')} className="w-full px-3 py-2 border rounded-md text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none" rows={6} />
+                <textarea value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} placeholder={t('clients.notes.form.Descriptioninput', 'Description *')} className={`${FIELD_CLS_LG} resize-none`} rows={6} />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">{t('clients.notes.form.Date', 'Date *')} </label>
-                <input type="date" value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer" />
+                <input type="date" value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} className={`${FIELD_CLS_LG} cursor-pointer`} />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">{t('clients.notes.form.AttachFile', 'Attachments')}</label>
 
-                <label className="w-full border border-border rounded-md p-3 flex items-center justify-between gap-3 cursor-pointer hover:border-gray-400">
+                <label className="glass-sunken flex w-full cursor-pointer items-center justify-between gap-3 p-3">
                   <div className="flex-1">
                     <div className="text-sm text-foreground/70">
                       {formData.attachments && formData.attachments.length > 0 ? (
@@ -356,7 +357,7 @@ export default function PostSiteNotes({ site }: Props) {
                               <div className="flex items-center gap-3 truncate">
                                 <span className="text-sm text-foreground font-medium truncate" style={{ maxWidth: 200 }} title={f.name}>{shortName(f.name, 28)}</span>
                               </div>
-                              <button onClick={(e) => { e.stopPropagation(); removeAttachment(i); }} className="text-muted-foreground hover:text-red-500 p-1 rounded" aria-label={`Remove ${f.name}`}>
+                              <button onClick={(e) => { e.stopPropagation(); removeAttachment(i); }} className="cg-focus rounded p-1" style={{ color: 'var(--bad-text)' }} aria-label={`Remove ${f.name}`}>
                                 <X size={14} />
                               </button>
                             </div>
@@ -373,11 +374,11 @@ export default function PostSiteNotes({ site }: Props) {
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3 p-6 border-t sticky bottom-0 bg-card">
+            <div className="sticky bottom-0 flex items-center justify-end gap-3 border-t p-6">
               <button
                 onClick={handleSubmitNote}
                 disabled={!isFormValid}
-                className={`px-6 py-2 bg-primary text-primary-foreground rounded-md font-semibold hover:bg-primary/90 ${!isFormValid ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`cg-btn-brand cg-focus rounded-md px-6 py-2 font-semibold ${!isFormValid ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 {t('actions.save', 'Save')}
               </button>

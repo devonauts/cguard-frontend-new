@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { ApiService } from '@/services/api/apiService';
 import { useTranslation } from 'react-i18next';
 import { Section, EmptyState } from '@/components/kit';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import type { PostSite } from '@/types';
 
@@ -152,7 +151,7 @@ export default function AssignGuards({ site }: { site?: SiteProp }) {
         <button
           onClick={load}
           disabled={loading}
-          className="inline-flex items-center gap-1.5 rounded-md border border-input px-2.5 py-1.5 text-xs text-muted-foreground hover:bg-accent"
+          className="cg-btn-glass cg-focus inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs"
         >
           {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
           {t('app.refresh', 'Actualizar')}
@@ -189,19 +188,19 @@ export default function AssignGuards({ site }: { site?: SiteProp }) {
       ) : (
         <div className="space-y-5">
           {groups.map((grp) => (
-            <div key={grp.stationId} className="rounded-xl border border-border/50 bg-card">
+            <div key={grp.stationId} className="glass-flat">
               <button
                 onClick={() => goToStation(grp.stationId)}
-                className="flex w-full items-center justify-between gap-3 rounded-t-xl border-b border-border/50 bg-muted/30 px-4 py-3 text-left transition-colors hover:bg-muted/50"
+                className="glass-sunken flex w-full items-center justify-between gap-3 rounded-b-none px-4 py-3 text-left transition-colors"
               >
                 <div className="flex items-center gap-2 min-w-0">
-                  <MapPin className="h-4 w-4 shrink-0 text-primary" />
+                  <MapPin className="h-4 w-4 shrink-0 brand-text" />
                   <span className="truncate font-semibold text-foreground">{grp.stationName}</span>
                   <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
                     {grp.guards.length} {grp.guards.length === 1 ? t('clients.assignGuards.guardOne', 'vigilante') : t('clients.assignGuards.guardMany', 'vigilantes')}
                   </span>
                 </div>
-                <span className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-primary">
+                <span className="inline-flex shrink-0 items-center gap-1 text-xs font-medium brand-text">
                   {t('clients.assignGuards.manageInStation', 'Gestionar en la estación')} <ArrowRight className="h-3.5 w-3.5" />
                 </span>
               </button>

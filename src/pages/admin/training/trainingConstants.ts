@@ -21,11 +21,20 @@ export const ENROLLMENT_STATUS_LABELS: Record<EnrollmentStatus, string> = {
   expired: 'Vencido',
 };
 
-export const ENROLLMENT_STATUS_VARIANT: Record<EnrollmentStatus, 'default' | 'secondary' | 'outline' | 'destructive'> = {
-  assigned: 'secondary',
-  in_progress: 'outline',
-  completed: 'default',
-  expired: 'destructive',
+/**
+ * Estado de la inscripción → PAPEL del sistema.
+ *
+ * Antes esto devolvía variantes de shadcn (`default`/`secondary`/`outline`/
+ * `destructive`), que son formas de botón, no estados: «completado» y
+ * «asignado» salían del mismo gris y sólo se distinguían por el borde. Todos
+ * los demás mapas de estado del CRM (nómina, tareas, pase de novedades) ya
+ * hablan en tonos; éste era el único que no.
+ */
+export const ENROLLMENT_STATUS_TONE: Record<EnrollmentStatus, 'neutral' | 'info' | 'ok' | 'bad'> = {
+  assigned: 'neutral',
+  in_progress: 'info',
+  completed: 'ok',
+  expired: 'bad',
 };
 
 export function categoryLabel(value?: string): string {

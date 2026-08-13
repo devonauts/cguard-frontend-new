@@ -61,6 +61,44 @@ const routeService = {
     return resp;
   },
 
+  /**
+   * Reordena las paradas para recortar kilómetros y minutos.
+   *
+   * GRATIS: el servidor calcula el orden con las coordenadas que ya tiene, sin
+   * preguntarle a nadie. Devuelve `{ optimized, optimizedAt, changed, meta,
+   * points }`; `meta.savings` es la cifra que justifica el botón y `changed`
+   * distingue «ha mejorado» de «ya estaba en el mejor orden».
+   *
+   * Los 400 traen `message` YA TRADUCIDO (`runInProgress`, `notEnoughStops`,
+   * `noCoordinates`) y el interceptor de `api` los enseña tal cual: quien llama
+   * NO debe reescribirlos.
+   */
+  async optimize(id: string, speedKmh?: number) {
+    const tenantId = getTenantId();
+    const payload = speedKmh != null ? { speedKmh } : {};
+    const { data: resp } = await api.post<any>(`/tenant/${tenantId}/route/${id}/optimize`, { data: payload });
+    return resp;
+  },
+
+  /**
+   * Trazado REAL por calles de la ruta.
+   *
+   * ESTO SE PAGA. Devuelve `{ polyline, source: 'cache'|'google'|'none', reason }`
+   * y NUNCA falla: sin clave o con demasiadas paradas devuelve `polyline: null`
+   * y quien llama sigue pintando la línea recta.
+   *
+   * `source: 'cache'` es una respuesta GRATIS —ya había trazado guardado—; sólo
+   * `force` vuelve a consultar el servicio de mapas, y por eso `force` no se
+   * manda nunca solo: va detrás de un aviso explícito.
+   */
+  async roadShape(id: string, force = false) {
+    const tenantId = getTenantId();
+    const { data: resp } = await api.post<any>(`/tenant/${tenantId}/route/${id}/road-shape`, {
+      data: force ? { force: true } : {},
+    });
+    return resp;
+  },
+
   async destroy(ids: string[] | string) {
     const tenantId = getTenantId();
     const payload = Array.isArray(ids) ? ids : [ids];

@@ -14,6 +14,7 @@ const TAB_ICONS: Record<string, any> = {
   BarChart3, File, DollarSign, Building2, Briefcase, IdCard, StickyNote, Folder, KeyRound, Mail,
 };
 import { Button } from '@/components/ui/button';
+import { StatusBadge } from '@/components/kit';
 import { clientService } from '@/lib/api/clientService';
 
 type Props = { navKey: string; title?: string; children: ReactNode; client?: any };
@@ -25,22 +26,41 @@ type Ov = {
   accountExecutiveName?: string | null; tenantTimezone?: string | null;
 };
 
-const ACCENT: Record<string, string> = {
-  primary: 'bg-primary/12 text-primary', blue: 'bg-blue-500/12 text-blue-600',
-  green: 'bg-emerald-500/12 text-emerald-600', orange: 'bg-orange-500/12 text-orange-600',
-  red: 'bg-red-500/12 text-red-600', slate: 'bg-muted text-muted-foreground', violet: 'bg-violet-500/12 text-violet-600',
+/**
+ * Los acentos heredados (`blue`/`green`/`orange`/`red`/`violet`) eran siete
+ * colores de Tailwind fijos: siete colores que no se enteran de que el acento lo
+ * elige el usuario. Se remapean a los tonos del sistema —los mismos alias que ya
+ * usa `StatCard` del kit— para que el conjunto siga siendo coherente con
+ * cualquier tono. No se cambia la firma: las llamadas de abajo siguen pasando
+ * `accent: 'blue'`. `violet` no tiene equivalente semántico y cae en el acento.
+ */
+type KpiTone = 'brand' | 'neutral' | 'ok' | 'warn' | 'bad' | 'info';
+const ACCENT_TONE: Record<string, KpiTone> = {
+  primary: 'brand', brand: 'brand', violet: 'brand',
+  blue: 'info', green: 'ok', orange: 'warn', red: 'bad', slate: 'neutral',
 };
 
+function toneStyle(tone: KpiTone) {
+  if (tone === 'brand') return { background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', color: 'var(--brand-text)' };
+  if (tone === 'neutral') return { background: 'var(--glass-sunken)', borderColor: 'var(--hairline)', color: 'var(--ink-soft)' };
+  return {
+    background: `color-mix(in oklab, var(--${tone}) 14%, transparent)`,
+    borderColor: `color-mix(in oklab, var(--${tone}) 30%, transparent)`,
+    color: `var(--${tone}-text)`,
+  };
+}
+
 function KpiCard({ icon, value, label, accent = 'primary', to, sub, navigate }: any) {
+  const tone = ACCENT_TONE[accent] || 'brand';
   return (
     <button
       onClick={() => to && navigate(to)}
-      className={`flex flex-col rounded-2xl border border-border bg-card p-4 text-left transition-shadow ${to ? 'cursor-pointer hover:shadow-md' : 'cursor-default'}`}
+      className={`glass-flat flex flex-col p-4 text-left ${to ? 'glass-hover cursor-pointer' : 'cursor-default'}`}
     >
-      <span className={`mb-2 flex h-9 w-9 items-center justify-center rounded-lg ${ACCENT[accent] || ACCENT.primary} [&_svg]:size-[18px]`}>{icon}</span>
-      <span className="text-2xl font-bold leading-none tracking-tight text-foreground tabular-nums">{value}</span>
-      <span className="mt-1 text-xs text-muted-foreground">{label}</span>
-      {sub && <span className="mt-1.5 text-[11px] font-medium text-primary">{sub}</span>}
+      <span className="mb-2 flex h-9 w-9 items-center justify-center rounded-lg border [&_svg]:size-[18px]" style={toneStyle(tone)}>{icon}</span>
+      <span className="font-display text-2xl font-bold leading-none tracking-tight tabular-nums" style={{ color: 'var(--ink)' }}>{value}</span>
+      <span className="mt-1 text-xs" style={{ color: 'var(--ink-soft)' }}>{label}</span>
+      {sub && <span className="mt-1.5 text-[11px] font-medium" style={{ color: 'var(--brand-text)' }}>{sub}</span>}
     </button>
   );
 }
@@ -80,12 +100,12 @@ export default function ClientsLayout({ navKey, title, children, client }: Props
       ? `${client?.name || client?.firstName}${(client?.lastName || client?.surname) ? ' ' + (client?.lastName || client?.surname) : ''}`
       : t(cfg?.title ?? title ?? 'clients.nav.title');
   const logo = Array.isArray(client?.logoUrl) ? client.logoUrl[0]?.downloadUrl : null;
-  let h = 0; const nm = String(displayName || '?');
-  for (let i = 0; i < nm.length; i++) h = (h * 31 + nm.charCodeAt(i)) >>> 0;
-  const hue = [28, 205, 150, 265, 340, 95, 180, 12][h % 8];
+  const nm = String(displayName || '?');
 
   const risk = String(client?.riskLevel || '').toLowerCase();
-  const riskTone = risk.includes('alt') ? 'bg-red-500/12 text-red-600' : risk.includes('med') ? 'bg-orange-500/12 text-orange-600' : risk ? 'bg-emerald-500/12 text-emerald-600' : '';
+  // Riesgo alto/medio/bajo → bad/warn/ok. Los semánticos son FIJOS en tokens.css:
+  // un riesgo alto sigue siendo rojo aunque el acento de la empresa sea rojo.
+  const riskTone = risk.includes('alt') ? 'bad' : risk.includes('med') ? 'warn' : 'ok';
   const hoursWorked = (() => {
     const s = Number(ov?.hoursLoggedSeconds || 0);
     return `${String(Math.floor(s / 3600)).padStart(2, '0')}:${String(Math.floor((s % 3600) / 60)).padStart(2, '0')}`;
@@ -107,57 +127,62 @@ export default function ClientsLayout({ navKey, title, children, client }: Props
   return (
     <div className="mx-auto w-full max-w-[1440px] space-y-4 px-4 py-4">
       {/* Breadcrumb: Clientes › {Cliente} › {Pestaña activa} */}
-      <div className="flex min-w-0 items-center gap-1.5 text-sm text-muted-foreground">
+      <div className="flex min-w-0 items-center gap-1.5 text-sm" style={{ color: 'var(--ink-soft)' }}>
         <Link to="/clients" className="shrink-0 hover:text-primary">{t('clients.nav.title', 'Clientes')}</Link>
         <ChevronRight className="h-3.5 w-3.5 shrink-0" />
         {showTabCrumb ? (
           <>
             <Link to={`${base}/overview`} className="max-w-[180px] truncate hover:text-primary sm:max-w-[240px]" title={displayName}>{displayName}</Link>
             <ChevronRight className="h-3.5 w-3.5 shrink-0" />
-            <span className="shrink-0 font-medium text-foreground">{activeTabLabel}</span>
+            <span className="shrink-0 font-medium" style={{ color: 'var(--ink)' }}>{activeTabLabel}</span>
           </>
         ) : (
-          <span className="max-w-[220px] truncate font-medium text-foreground sm:max-w-[320px]" title={displayName}>{displayName}</span>
+          <span className="max-w-[220px] truncate font-medium sm:max-w-[320px]" style={{ color: 'var(--ink)' }} title={displayName}>{displayName}</span>
         )}
       </div>
 
       {/* Header card */}
-      <div className="rounded-2xl border border-border bg-card p-5">
+      <div className="glass p-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex min-w-0 items-start gap-4">
             {logo ? (
-              <img src={logo} alt="" className="h-16 w-16 shrink-0 rounded-2xl border bg-white object-cover" />
+              // Fondo claro FIJO bajo el logo: es una imagen ajena (muchos logos
+              // son PNG con transparencia pensados para papel blanco) y se vería
+              // recortada sobre el cristal oscuro. No es color de la interfaz.
+              <img src={logo} alt="" className="h-16 w-16 shrink-0 rounded-2xl border object-cover" style={{ background: 'oklch(1 0 0)', borderColor: 'var(--hairline)' }} />
             ) : (
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl text-2xl font-bold" style={{ backgroundColor: `hsl(${hue} 70% 92%)`, color: `hsl(${hue} 60% 32%)` }}>
+              <div
+                className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border text-2xl font-bold"
+                style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }}
+              >
                 {nm.charAt(0).toUpperCase()}
               </div>
             )}
             <div className="min-w-0">
-              <h1 className="truncate text-2xl font-bold tracking-tight text-foreground">{displayName}</h1>
+              <h1 className="font-display truncate text-2xl font-bold tracking-tight" style={{ color: 'var(--ink)' }}>{displayName}</h1>
               <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
                 {client?.active !== undefined && (
-                  <span className={`inline-flex items-center gap-1 font-medium ${client.active ? 'text-emerald-600' : 'text-red-500'}`}>
-                    <span className={`h-1.5 w-1.5 rounded-full ${client.active ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                  <StatusBadge tone={client.active ? 'ok' : 'bad'}>
                     {client.active ? t('common.active', 'Activo') : t('common.archived', 'Archivado')}
-                  </span>
+                  </StatusBadge>
                 )}
                 {client?.personType && (
-                  <span className="rounded-full bg-muted px-2.5 py-0.5 font-medium text-muted-foreground">
+                  <StatusBadge tone="neutral" dot={false}>
                     {client.personType === 'PJ' ? t('clients.corporate', 'Cliente corporativo') : t('clients.individual', 'Cliente particular')}
-                  </span>
+                  </StatusBadge>
                 )}
                 {client?.code && (
-                  <span className="text-muted-foreground">{t('clients.code', 'Código')}: <span className="font-medium text-foreground">{client.code}</span></span>
+                  <span style={{ color: 'var(--ink-soft)' }}>{t('clients.code', 'Código')}: <span className="font-medium" style={{ color: 'var(--ink)' }}>{client.code}</span></span>
                 )}
                 {risk && (
-                  <span className={`rounded-full px-2.5 py-0.5 font-semibold capitalize ${riskTone}`}>
+                  <StatusBadge tone={riskTone} className="capitalize">
                     {t('clients.risk', 'Riesgo')}: {client.riskLevel}
-                  </span>
+                  </StatusBadge>
                 )}
               </div>
-              <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs text-muted-foreground">
+              <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs" style={{ color: 'var(--ink-soft)' }}>
                 {client?.contractDate && (
-                  <span className="inline-flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {t('clients.contractStart', 'Inicio de contrato')}: <span className="text-foreground">{fmtD(client.contractDate)}</span></span>
+                  <span className="inline-flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {t('clients.contractStart', 'Inicio de contrato')}: <span style={{ color: 'var(--ink)' }}>{fmtD(client.contractDate)}</span></span>
                 )}
                 {(() => {
                   // Only meaningful for a persona jurídica (the company title ≠ the
@@ -165,11 +190,11 @@ export default function ClientsLayout({ navKey, title, children, client }: Props
                   if (client?.personType !== 'PJ') return null;
                   const rep = `${client?.legalRepFirstName || client?.name || ''} ${client?.legalRepLastName || client?.lastName || ''}`.trim();
                   return rep ? (
-                    <span className="inline-flex items-center gap-1.5"><UserCog className="h-3.5 w-3.5" /> {t('clients.accountExec', 'Representante legal')}: <span className="text-foreground">{rep}</span></span>
+                    <span className="inline-flex items-center gap-1.5"><UserCog className="h-3.5 w-3.5" /> {t('clients.accountExec', 'Representante legal')}: <span style={{ color: 'var(--ink)' }}>{rep}</span></span>
                   ) : null;
                 })()}
                 {ov?.tenantTimezone && (
-                  <span className="inline-flex items-center gap-1.5"><ClockIcon className="h-3.5 w-3.5" /> {t('clients.timezone', 'Zona horaria')}: <span className="text-foreground">{ov.tenantTimezone}</span></span>
+                  <span className="inline-flex items-center gap-1.5"><ClockIcon className="h-3.5 w-3.5" /> {t('clients.timezone', 'Zona horaria')}: <span style={{ color: 'var(--ink)' }}>{ov.tenantTimezone}</span></span>
                 )}
               </div>
             </div>
@@ -193,20 +218,38 @@ export default function ClientsLayout({ navKey, title, children, client }: Props
 
       {/* Tabs */}
       <div className="overflow-x-auto">
-        <nav className="flex min-w-max items-center gap-1 border-b border-border">
+        <nav className="flex min-w-max items-center gap-1 border-b" style={{ borderColor: 'var(--hairline)' }}>
           {items.map((it) => {
             const path = resolvePathWithId(it.path);
             const active = location.pathname === path;
             const badge = it.id === 'postSites' ? ov?.postSitesCount : undefined;
             const Icon = it.icon ? TAB_ICONS[it.icon] : null;
             return (
-              <Link key={it.id} to={path} className={`relative flex items-center gap-1.5 whitespace-nowrap px-3.5 py-2.5 text-sm font-medium transition-colors ${active ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
+              <Link
+                key={it.id}
+                to={path}
+                className="cg-focus relative flex items-center gap-1.5 whitespace-nowrap px-3.5 py-2.5 text-sm font-medium transition-colors"
+                style={{ color: active ? 'var(--brand-text)' : 'var(--ink-soft)' }}
+              >
                 {Icon && <Icon className="h-4 w-4" />}
                 {t(it.label)}
                 {typeof badge === 'number' && badge > 0 && (
-                  <span className={`inline-flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-[11px] font-semibold ${active ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'}`}>{badge}</span>
+                  // Sobre el relleno de marca la tinta es `--brand-ink`, NO blanco:
+                  // `--brand` es un color claro (L 0.72/0.78) y el blanco encima da
+                  // ~2,2:1. Ver la medición de contraste en tokens.css.
+                  <span
+                    className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-[11px] font-semibold"
+                    style={active
+                      ? { background: 'var(--brand)', color: 'var(--brand-ink)' }
+                      : { background: 'var(--glass-sunken)', color: 'var(--ink-soft)' }}
+                  >{badge}</span>
                 )}
-                {active && <span className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-primary" />}
+                {active && (
+                  <span
+                    className="absolute inset-x-2 -bottom-px h-0.5 rounded-full"
+                    style={{ background: 'var(--brand)', boxShadow: '0 0 12px 0 var(--brand-glow)' }}
+                  />
+                )}
               </Link>
             );
           })}

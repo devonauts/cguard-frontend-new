@@ -6,7 +6,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { toast } from "sonner";
 import attendanceService from "@/lib/api/attendanceService";
 import { EXCEPTION_LABEL, SEVERITY_META, EXC_STATUS_META, fmtDateTime } from "./shared";
-import { PageContainer, PageHeader, Section, EmptyState, SkeletonCards } from "@/components/kit";
+import { PageContainer, PageHeader, Section, EmptyState, SkeletonCards, StatusBadge, Toolbar } from "@/components/kit";
 import { AlertTriangle, Filter, ListChecks, PartyPopper, CheckCircle2, Eye } from "lucide-react";
 
 interface ExceptionRow {
@@ -32,31 +32,46 @@ const STATUS_OPTIONS: { value: string; label: string }[] = [
   { value: "resolved", label: "Resueltas" },
   { value: "all", label: "Todas (historial)" },
 ];
-const SEVERITY_LABEL: Record<string, string> = { low: "Baja", medium: "Media", high: "Alta", critical: "Crítica" };
-
 function fullName(u?: { firstName?: string; lastName?: string } | null): string {
   if (!u) return "";
   return `${u.firstName || ""} ${u.lastName || ""}`.trim();
 }
 
 function SeverityPill({ severity }: { severity: string }) {
-  return (
-    <span className={`inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold ${SEVERITY_META[severity] || "bg-slate-400/15 text-slate-500"}`}>
-      {SEVERITY_LABEL[severity] || severity}
-    </span>
-  );
+  const m = SEVERITY_META[severity] || { label: severity, tone: "neutral" as const };
+  return <StatusBadge tone={m.tone}>{m.label}</StatusBadge>;
 }
 function StatusPill({ status }: { status: string }) {
-  const m = EXC_STATUS_META[status] || { label: status, cls: "bg-slate-400/15 text-slate-500" };
-  return <span className={`inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold ${m.cls}`}>{m.label}</span>;
+  const m = EXC_STATUS_META[status] || { label: status, tone: "neutral" as const };
+  return <StatusBadge tone={m.tone}>{m.label}</StatusBadge>;
 }
 
 function Field({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div>
-      <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</p>
-      <p className="mt-0.5 text-sm text-foreground">{value ?? "—"}</p>
+      <p className="cg-eyebrow">{label}</p>
+      <p className="mt-0.5 text-sm" style={{ color: "var(--ink)" }}>{value ?? "—"}</p>
     </div>
+  );
+}
+
+/** Desplegable de filtro sobre el pozo de cristal — sin borde propio ni fondo
+ *  opaco, para que se lea como parte de la barra y no como un control suelto. */
+function FilterSelect({ icon, value, onChange, children }: {
+  icon: React.ReactNode; value: string; onChange: (v: string) => void; children: React.ReactNode;
+}) {
+  return (
+    <label className="glass-sunken flex items-center gap-2 px-3 py-1.5">
+      <span className="[&_svg]:size-4" style={{ color: "var(--ink-faint)" }}>{icon}</span>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="cg-focus bg-transparent text-sm outline-none"
+        style={{ color: "var(--ink)" }}
+      >
+        {children}
+      </select>
+    </label>
   );
 }
 
@@ -104,19 +119,19 @@ export default function NominaExceptions() {
     { key: "type", header: "Tipo", render: (_v, r) => EXCEPTION_LABEL[r.type] || r.type },
     { key: "guard", header: "Vigilante", render: (_v, r) => r.guard?.fullName || "—" },
     { key: "station", header: "Puesto", render: (_v, r) => r.station?.stationName || "—" },
-    { key: "detectedAt", header: "Detectado", render: (_v, r) => <span className="text-xs text-muted-foreground">{fmtDateTime(r.detectedAt)}</span> },
+    { key: "detectedAt", header: "Detectado", render: (_v, r) => <span className="text-xs tabular-nums" style={{ color: "var(--ink-soft)" }}>{fmtDateTime(r.detectedAt)}</span> },
     { key: "status", header: "Estado", render: (_v, r) => <StatusPill status={r.status} /> },
     {
       key: "resolvedAt",
       header: "Resuelto",
       render: (_v, r) =>
         r.resolvedAt ? (
-          <span className="text-xs text-muted-foreground">
+          <span className="text-xs tabular-nums" style={{ color: "var(--ink-soft)" }}>
             {fmtDateTime(r.resolvedAt)}
             {fullName(r.resolvedBy) ? <span className="block opacity-70">por {fullName(r.resolvedBy)}</span> : null}
           </span>
         ) : (
-          <span className="text-xs text-muted-foreground">—</span>
+          <span className="text-xs" style={{ color: "var(--ink-faint)" }}>—</span>
         ),
     },
     {
@@ -139,27 +154,23 @@ export default function NominaExceptions() {
           icon={<AlertTriangle />}
           title="Excepciones"
           subtitle="Desviaciones de asistencia — registro e historial de operación"
-          actions={
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-1.5">
-                <ListChecks className="size-4 text-muted-foreground" />
-                <select value={status} onChange={(e) => setStatus(e.target.value)} className="bg-transparent text-sm outline-none">
-                  {STATUS_OPTIONS.map((s) => (
-                    <option key={s.value} value={s.value}>{s.label}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-1.5">
-                <Filter className="size-4 text-muted-foreground" />
-                <select value={type} onChange={(e) => setType(e.target.value)} className="bg-transparent text-sm outline-none">
-                  {TYPE_OPTIONS.map((t) => (
-                    <option key={t} value={t}>{t === "" ? "Todos los tipos" : EXCEPTION_LABEL[t] || t}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          }
         />
+
+        <Toolbar>
+          <FilterSelect icon={<ListChecks />} value={status} onChange={setStatus}>
+            {STATUS_OPTIONS.map((s) => (
+              <option key={s.value} value={s.value}>{s.label}</option>
+            ))}
+          </FilterSelect>
+          <FilterSelect icon={<Filter />} value={type} onChange={setType}>
+            {TYPE_OPTIONS.map((t) => (
+              <option key={t} value={t}>{t === "" ? "Todos los tipos" : EXCEPTION_LABEL[t] || t}</option>
+            ))}
+          </FilterSelect>
+          <span className="ml-auto pr-1 text-xs tabular-nums" style={{ color: "var(--ink-soft)" }}>
+            {loading ? "Cargando…" : `${rows.length} excepción(es)`}
+          </span>
+        </Toolbar>
 
         <Section title={STATUS_OPTIONS.find((s) => s.value === status)?.label || "Excepciones"} icon={<ListChecks />}>
           {loading ? (
@@ -206,23 +217,23 @@ export default function NominaExceptions() {
 
                 {selected.reason && (
                   <div>
-                    <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Motivo</p>
-                    <p className="mt-0.5 whitespace-pre-wrap rounded-lg bg-muted/50 p-3 text-foreground">{selected.reason}</p>
+                    <p className="cg-eyebrow">Motivo</p>
+                    <p className="glass-sunken mt-1 whitespace-pre-wrap p-3" style={{ color: "var(--ink)" }}>{selected.reason}</p>
                   </div>
                 )}
 
                 {/* Resolution history (read-only trail) */}
                 {(selected.status === "resolved" || selected.status === "acknowledged" || selected.status === "approved" || selected.status === "rejected") && (
-                  <div className="rounded-lg border border-border p-3">
-                    <p className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
-                      <CheckCircle2 className="size-3.5 text-emerald-600" /> Resolución
+                  <div className="glass-flat p-3">
+                    <p className="flex items-center gap-1.5 text-xs font-semibold">
+                      <CheckCircle2 className="size-3.5" style={{ color: "var(--ok-text)" }} /> Resolución
                     </p>
                     <div className="mt-2 grid grid-cols-2 gap-3">
                       <Field label="Fecha" value={selected.resolvedAt ? fmtDateTime(selected.resolvedAt) : "—"} />
                       <Field label="Por" value={fullName(selected.resolvedBy) || "—"} />
                     </div>
                     {selected.resolutionNotes && (
-                      <p className="mt-2 whitespace-pre-wrap rounded-lg bg-muted/50 p-3 text-foreground">{selected.resolutionNotes}</p>
+                      <p className="glass-sunken mt-2 whitespace-pre-wrap p-3" style={{ color: "var(--ink)" }}>{selected.resolutionNotes}</p>
                     )}
                   </div>
                 )}
@@ -230,20 +241,16 @@ export default function NominaExceptions() {
                 {/* Resolve / acknowledge (only while actionable) */}
                 {isOpenState && (
                   <div className="space-y-2 pt-1">
-                    <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Nota de resolución (queda en el historial)</p>
+                    <p className="cg-eyebrow">Nota de resolución (queda en el historial)</p>
                     <textarea
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
                       rows={3}
                       placeholder="Describe qué se hizo o por qué se cierra esta excepción…"
-                      className="w-full rounded-lg border border-border bg-background p-2 text-sm outline-none focus:ring-1 focus:ring-ring"
+                      className="cg-input cg-focus w-full p-2 text-sm"
                     />
                     <div className="flex flex-wrap gap-2 pt-1">
-                      <Button
-                        disabled={busy}
-                        onClick={() => act(selected.id, "resolved")}
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white"
-                      >
+                      <Button disabled={busy} onClick={() => act(selected.id, "resolved")}>
                         Resolver
                       </Button>
                       {selected.status === "open" && (

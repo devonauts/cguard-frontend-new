@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import { FileDown, Printer, Lock, FileSpreadsheet, CalendarDays, Clock, Timer, UserX } from "lucide-react";
 import attendanceService from "@/lib/api/attendanceService";
-import { PageContainer, PageHeader, Section, StatCard, Stagger } from "@/components/kit";
+import { PageContainer, PageHeader, Section, MetricTile, Stagger, Toolbar, StatusBadge, EmptyState } from "@/components/kit";
 
 interface SummaryRow {
   id: string;
@@ -43,6 +43,19 @@ interface HoursTotals {
 interface HoursSummaryResponse {
   rows?: SummaryRow[];
   totals?: HoursTotals;
+}
+
+/** Cifra de nómina: alineada a la derecha y en cifras de ancho fijo, para que
+ *  las columnas se puedan comparar de un vistazo. */
+function Num({ v, strong, tone }: { v: React.ReactNode; strong?: boolean; tone?: "warn" | "bad" }) {
+  return (
+    <span
+      className={`block text-right tabular-nums ${strong ? "font-semibold" : ""}`}
+      style={tone ? { color: `var(--${tone}-text)`, fontWeight: 600 } : undefined}
+    >
+      {v}
+    </span>
+  );
 }
 
 export default function NominaHoursSummary() {
@@ -100,6 +113,14 @@ export default function NominaHoursSummary() {
   };
 
   const exportPdf = () => {
+    // El encabezado de la tabla impresa toma el acento vivo del CRM: si el
+    // usuario cambió el color, el PDF cambia con él. Si el navegador no puede
+    // resolverlo, la celda sale sin relleno en vez de con un dorado fijo.
+    const css = getComputedStyle(document.documentElement);
+    const brand = css.getPropertyValue("--brand").trim();
+    const brandInk = css.getPropertyValue("--brand-ink").trim();
+    // El filo de la tabla impresa también sale del token, no de un gris fijo.
+    const line = css.getPropertyValue("--hairline").trim();
     const esc = (s: unknown) =>
       String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string));
     const head = ["Vigilante", "Días trab.", "Turnos", "H. reg.", "H. extra", "H. tot.", "Tardanzas", "Inasist.", "Correc."];
@@ -112,9 +133,11 @@ export default function NominaHoursSummary() {
     const w = window.open("", "_blank");
     if (!w) return;
     w.document.write(`<html><head><title>Horas trabajadas ${esc(from)} a ${esc(to)}</title>
-      <style>body{font-family:Arial,sans-serif;padding:24px;color:#111}h1{font-size:18px}
+      <style>body{font-family:Arial,sans-serif;padding:24px}h1{font-size:18px}
       table{width:100%;border-collapse:collapse;font-size:12px;margin-top:12px}
-      th,td{border:1px solid #ddd;padding:6px;text-align:left}th{background:#C8860A;color:#fff}</style></head>
+      th,td{border:1px solid ${line || "currentColor"};padding:6px;text-align:left}
+      th{background:${brand || "transparent"};color:${brandInk || "inherit"}}
+      td:not(:first-child){text-align:right;font-variant-numeric:tabular-nums}</style></head>
       <body><h1>Resumen de horas · ${esc(from)} a ${esc(to)}</h1>
       <table><thead><tr>${head.map((h) => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${body}</tbody></table>
       </body></html>`);
@@ -148,27 +171,19 @@ export default function NominaHoursSummary() {
       render: (_v, r) => (
         <span className="inline-flex items-center gap-1.5">
           {r.guardName}
-          {r.role === "supervisor" && (
-            <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-700">
-              Supervisor
-            </span>
-          )}
-          {r.role === "administrative" && (
-            <span className="rounded-full bg-sky-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-sky-700">
-              Administrativo
-            </span>
-          )}
+          {r.role === "supervisor" && <StatusBadge tone="warn" dot={false}>Supervisor</StatusBadge>}
+          {r.role === "administrative" && <StatusBadge tone="info" dot={false}>Administrativo</StatusBadge>}
         </span>
       ),
     },
-    { key: "daysWorked", header: "Días trabajados", render: (_v, r) => <span className="font-semibold">{r.daysWorked ?? 0}</span> },
-    { key: "shifts", header: "Turnos" },
-    { key: "regularHours", header: "H. regulares", render: (_v, r) => r.regularHours.toFixed(2) },
-    { key: "overtimeHours", header: "H. extra", render: (_v, r) => r.overtimeHours.toFixed(2) },
-    { key: "totalHours", header: "H. totales", render: (_v, r) => r.totalHours.toFixed(2) },
-    { key: "lateCount", header: "Tardanzas" },
-    { key: "noShows", header: "Inasistencias" },
-    { key: "approvedCorrections", header: "Correcciones" },
+    { key: "daysWorked", header: "Días trabajados", render: (_v, r) => <Num v={r.daysWorked ?? 0} strong /> },
+    { key: "shifts", header: "Turnos", render: (_v, r) => <Num v={r.shifts} /> },
+    { key: "regularHours", header: "H. regulares", render: (_v, r) => <Num v={r.regularHours.toFixed(2)} /> },
+    { key: "overtimeHours", header: "H. extra", render: (_v, r) => <Num v={r.overtimeHours.toFixed(2)} tone={r.overtimeHours > 0 ? "warn" : undefined} /> },
+    { key: "totalHours", header: "H. totales", render: (_v, r) => <Num v={r.totalHours.toFixed(2)} strong /> },
+    { key: "lateCount", header: "Tardanzas", render: (_v, r) => <Num v={r.lateCount} tone={r.lateCount > 0 ? "warn" : undefined} /> },
+    { key: "noShows", header: "Inasistencias", render: (_v, r) => <Num v={r.noShows} tone={r.noShows > 0 ? "bad" : undefined} /> },
+    { key: "approvedCorrections", header: "Correcciones", render: (_v, r) => <Num v={r.approvedCorrections} /> },
   ];
 
   return (
@@ -180,16 +195,16 @@ export default function NominaHoursSummary() {
           subtitle="Días trabajados y horas por persona en el periodo"
         />
 
-        {/* Toolbar: rango de fechas (izquierda) · exportar y acciones (derecha) */}
-        <div className="mt-5 flex flex-col gap-3 rounded-2xl border border-border bg-card p-3 lg:flex-row lg:flex-wrap lg:items-end lg:justify-between">
+        {/* Barra: rango de fechas (izquierda) · exportar y acciones (derecha) */}
+        <Toolbar className="justify-between gap-3 p-3">
           <div className="flex flex-wrap items-end gap-2">
             <label className="cg-eyebrow">
               Desde
-              <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="mt-1 block rounded-lg border border-border bg-background px-3 py-1.5 text-sm" />
+              <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="cg-input cg-focus mt-1 block px-3 py-1.5 text-sm tabular-nums" />
             </label>
             <label className="cg-eyebrow">
               Hasta
-              <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="mt-1 block rounded-lg border border-border bg-background px-3 py-1.5 text-sm" />
+              <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="cg-input cg-focus mt-1 block px-3 py-1.5 text-sm tabular-nums" />
             </label>
             <Button variant="brand" onClick={load} disabled={loading}>
               {loading ? "Generando…" : "Generar"}
@@ -205,32 +220,49 @@ export default function NominaHoursSummary() {
             <Button variant="outline" size="sm" onClick={exportPdf} disabled={!rows.length}>
               <Printer className="mr-1.5 h-4 w-4" /> PDF
             </Button>
-            <Button variant="outline" size="sm" onClick={closePeriod} disabled={closing} className="text-red-600">
+            <Button variant="destructive" size="sm" onClick={closePeriod} disabled={closing}>
               <Lock className="mr-1.5 h-4 w-4" /> {closing ? "Cerrando…" : "Cerrar periodo"}
             </Button>
           </div>
-        </div>
+        </Toolbar>
 
         {totals && (
-          <Stagger className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-4">
-            <StatCard icon={<CalendarDays />} accent="primary" label="Turnos" value={totals.shifts} />
-            <StatCard icon={<Clock />} accent="blue" label="Horas totales" value={Number(totals.totalHours).toFixed(2)} />
-            <StatCard icon={<Timer />} accent="orange" label="Horas extra" value={Number(totals.overtimeHours).toFixed(2)} />
-            <StatCard icon={<UserX />} accent="red" label="Tardanzas / Inasist." value={`${totals.lateCount} / ${totals.noShows}`} />
+          <Stagger className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <MetricTile icon={<CalendarDays />} label="Turnos" value={totals.shifts} hint="Turnos con marcación en el periodo" />
+            <MetricTile icon={<Clock />} label="Horas totales" value={Number(totals.totalHours).toFixed(2)} hint="Suma de horas trabajadas" />
+            <MetricTile
+              icon={<Timer />}
+              label="Horas extra"
+              value={Number(totals.overtimeHours).toFixed(2)}
+              delta={totals.totalHours > 0
+                ? { value: `${((totals.overtimeHours / totals.totalHours) * 100).toFixed(1)} %`, direction: totals.overtimeHours > 0 ? "up" : "flat" }
+                : undefined}
+              hint="Sobre el total de horas"
+            />
+            <MetricTile
+              icon={<UserX />}
+              label="Tardanzas / Inasist."
+              value={`${totals.lateCount} / ${totals.noShows}`}
+              hint="Incidencias de puntualidad"
+            />
           </Stagger>
         )}
 
-        <div className="mt-5">
-          <Section title="Detalle por persona" icon={<Clock />}>
-            <div className="overflow-x-auto">
-              <DataTable
-                columns={columns}
-                data={rows}
-                emptyState={<div className="py-12 text-center text-sm text-muted-foreground">Sin datos en el rango</div>}
-              />
-            </div>
-          </Section>
-        </div>
+        <Section title="Detalle por persona" icon={<Clock />}>
+          <div className="overflow-x-auto">
+            <DataTable
+              columns={columns}
+              data={rows}
+              emptyState={
+                <EmptyState
+                  icon={<Clock />}
+                  title="Sin datos en el rango"
+                  description="Elige otro rango de fechas y vuelve a generar el resumen."
+                />
+              }
+            />
+          </div>
+        </Section>
       </PageContainer>
     </AppLayout>
   );

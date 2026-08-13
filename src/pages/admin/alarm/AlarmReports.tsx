@@ -12,6 +12,7 @@ import {
   Stagger,
   SkeletonCards,
   EmptyState,
+  Segmented,
 } from "@/components/kit";
 
 const PERIODS = [7, 30, 90, 365];
@@ -48,20 +49,14 @@ export default function AlarmReports() {
         <PageHeader
           icon={<BarChart3 />}
           title="Reportes de falsas alarmas"
-          subtitle="Disposiciones y tasa de falsas alarmas por panel."
+          subtitle="Cómo se cerró cada caso y qué proporción resultó ser falsa, panel por panel."
           actions={
             <>
-              <div className="flex rounded-lg border border-border p-0.5">
-                {PERIODS.map((dd) => (
-                  <button
-                    key={dd}
-                    onClick={() => setDays(dd)}
-                    className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${days === dd ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-                  >
-                    {dd}d
-                  </button>
-                ))}
-              </div>
+              <Segmented
+                value={String(days)}
+                onChange={(v) => setDays(Number(v))}
+                options={PERIODS.map((dd) => ({ value: String(dd), label: dd === 365 ? "1 año" : `${dd} días` }))}
+              />
               <Button asChild variant="outline" size="sm">
                 <Link to="/alarm/queue">Cola</Link>
               </Button>
@@ -74,12 +69,20 @@ export default function AlarmReports() {
         ) : (
           <>
             <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-              <StatCard label="Total" value={o.total} icon={<BarChart3 />} accent="slate" />
-              <StatCard label="Reales" value={o.real} icon={<ShieldCheck />} accent="green" />
-              <StatCard label="Falsas" value={o.false} icon={<ShieldAlert />} accent="orange" />
-              <StatCard label="Runaway" value={o.runaway} icon={<Siren />} accent="red" />
-              <StatCard label="Pruebas" value={o.test} icon={<FlaskConical />} accent="slate" />
-              <StatCard label="Tasa falsas" value={`${o.falseRate}%`} icon={<ShieldAlert />} accent="primary" />
+              <StatCard label="Total" value={o.total} icon={<BarChart3 />} accent="neutral" />
+              <StatCard label="Reales" value={o.real} icon={<ShieldCheck />} accent="ok" />
+              <StatCard label="Falsas" value={o.false} icon={<ShieldAlert />} accent="warn" />
+              <StatCard label="Reincidentes" value={o.runaway} icon={<Siren />} accent="bad" />
+              <StatCard label="Pruebas" value={o.test} icon={<FlaskConical />} accent="neutral" />
+              {/* La cifra que resume la salud de la cuenta lleva la MISMA escala que
+                  las celdas de la tabla de abajo (50 % / 25 %). Iba en el acento
+                  de marca, contradiciendo su propia tabla en la misma página. */}
+              <StatCard
+                label="Tasa falsas"
+                value={`${o.falseRate}%`}
+                icon={<ShieldAlert />}
+                accent={o.falseRate >= 50 ? "bad" : o.falseRate >= 25 ? "warn" : "ok"}
+              />
             </Stagger>
 
             <Section title="Por panel" icon={<BarChart3 />}>
@@ -93,26 +96,29 @@ export default function AlarmReports() {
                 <div className="overflow-x-auto -mx-1">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
+                      <tr
+                        className="border-b text-left text-xs uppercase tracking-wide"
+                        style={{ borderColor: 'var(--hairline)', color: 'var(--ink-faint)' }}
+                      >
                         <th className="px-4 py-2 font-medium">Panel</th>
                         <th className="px-3 py-2 font-medium">Cuenta</th>
                         <th className="px-3 py-2 text-right font-medium">Total</th>
                         <th className="px-3 py-2 text-right font-medium">Reales</th>
                         <th className="px-3 py-2 text-right font-medium">Falsas</th>
-                        <th className="px-3 py-2 text-right font-medium">Runaway</th>
+                        <th className="px-3 py-2 text-right font-medium">Reincidentes</th>
                         <th className="px-3 py-2 text-right font-medium">Tasa falsas</th>
                       </tr>
                     </thead>
                     <tbody>
                       {data.panels.map((p) => (
-                        <tr key={p.panelId} className="border-b border-border/50 transition-colors hover:bg-muted/30">
+                        <tr key={p.panelId} className="border-b transition-colors" style={{ borderColor: 'var(--hairline)' }}>
                           <td className="px-4 py-2 font-medium text-foreground">{p.panelName}</td>
-                          <td className="px-3 py-2 text-muted-foreground">{p.accountNumber || "—"}</td>
-                          <td className="px-3 py-2 text-right">{p.total}</td>
-                          <td className="px-3 py-2 text-right text-green-600">{p.real}</td>
-                          <td className="px-3 py-2 text-right text-amber-600">{p.false}</td>
-                          <td className="px-3 py-2 text-right text-red-600">{p.runaway}</td>
-                          <td className="px-3 py-2 text-right font-semibold" style={{ color: p.falseRate >= 50 ? "#dc2626" : p.falseRate >= 25 ? "var(--primary)" : undefined }}>
+                          <td className="px-3 py-2" style={{ color: 'var(--ink-soft)' }}>{p.accountNumber || "—"}</td>
+                          <td className="px-3 py-2 text-right tabular-nums">{p.total}</td>
+                          <td className="px-3 py-2 text-right tabular-nums" style={{ color: 'var(--ok-text)' }}>{p.real}</td>
+                          <td className="px-3 py-2 text-right tabular-nums" style={{ color: 'var(--warn-text)' }}>{p.false}</td>
+                          <td className="px-3 py-2 text-right tabular-nums" style={{ color: 'var(--bad-text)' }}>{p.runaway}</td>
+                          <td className="px-3 py-2 text-right font-semibold tabular-nums" style={{ color: p.falseRate >= 50 ? "var(--bad-text)" : p.falseRate >= 25 ? "var(--warn-text)" : "var(--ink-soft)" }}>
                             {p.falseRate}%
                           </td>
                         </tr>

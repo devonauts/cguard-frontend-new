@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
-import AppLayout from "@/layouts/app-layout";
-import SettingsLayout from "@/layouts/SettingsLayout";
 import { useTranslation } from 'react-i18next';
 import { toast } from "sonner";
 import LicenseTypesTable, { LicenseTypeRow } from "./LicensesTypeTable";
 import LicenseTypeDialog, { LicenseTypeDialogValues } from "./LicensesTypeDialog";
 import licenseTypeService from "@/lib/api/licenseTypeService";
+import { Button } from "@/components/ui/button";
+import { StatusBadge } from "@/components/kit";
+import SettingsPageShell from "../components/SettingsPageShell";
+import { IdCard, Plus } from "lucide-react";
 
 export default function LicenseTypePage() {
   const { t } = useTranslation();
@@ -46,8 +48,23 @@ export default function LicenseTypePage() {
   useEffect(() => { fetchData(); /* eslint-disable-next-line */ }, [query, page, pageSize]);
 
   return (
-    <AppLayout>
-      <SettingsLayout navKey="configuracion" title={t('licenseTypes.page.title', { defaultValue: 'Tipos de Licencia' })}>
+    <SettingsPageShell
+      kind="table"
+      icon={<IdCard />}
+      title={t('licenseTypes.page.title', { defaultValue: 'Tipos de Licencia' })}
+      subtitle="Los permisos y licencias que tu personal puede solicitar o acreditar."
+      badges={
+        !loading && total > 0 ? (
+          <StatusBadge tone="neutral">{total} {total === 1 ? 'tipo' : 'tipos'}</StatusBadge>
+        ) : undefined
+      }
+      actions={
+        <Button variant="brand" onClick={() => { setEdit(null); setOpen(true); }}>
+          <Plus className="mr-2 h-4 w-4" />
+          {t('licenseTypes.table.create', { defaultValue: 'Nuevo Tipo de Licencia' })}
+        </Button>
+      }
+    >
         <LicenseTypesTable
           rows={rows}
           total={total}
@@ -58,7 +75,6 @@ export default function LicenseTypePage() {
           onQueryChange={setQuery}
           onPageChange={setPage}
           onPageSizeChange={setPageSize}
-          onCreate={() => { setEdit(null); setOpen(true); }}
           onEdit={(r: LicenseTypeRow) => { setEdit(r); setOpen(true); }}
           onToggleStatus={async (row: LicenseTypeRow) => {
             try {
@@ -102,7 +118,6 @@ export default function LicenseTypePage() {
             }
           }}
         />
-      </SettingsLayout>
-    </AppLayout>
+    </SettingsPageShell>
   );
 }

@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
   DialogContent,
@@ -14,12 +13,6 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,9 +30,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { GraduationCap, Plus, Search, EllipsisVertical, Pencil, Trash2, Users, Award, Lock, BookOpen, CheckCircle2 } from 'lucide-react';
+import { GraduationCap, Plus, Pencil, Trash2, Users, Award, Lock, BookOpen, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { PageContainer, PageHeader, Section, EmptyState, SkeletonCards, Stagger, StatCard, StatusBadge } from '@/components/kit';
+import { PageContainer, PageHeader, Section, EmptyState, Stagger, StatCard, StatusBadge } from '@/components/kit';
+import { DataTable, type Column } from '@/components/table/DataTable';
+import { TableToolbar, TableSearch } from '@/components/table/TableToolbar';
 import { usePermissions } from '@/hooks/usePermissions';
 import {
   trainingCourseService,
@@ -140,12 +135,56 @@ export default function TrainingCoursesPage() {
     return (
       <AppLayout>
         <Breadcrumb items={[{ label: 'Panel de control', path: '/dashboard' }, { label: 'Entrenamiento' }]} />
-        <div className="p-8 text-center text-muted-foreground">
-          No tienes permiso para ver los cursos de entrenamiento.
-        </div>
+        <PageContainer width="wide" className="p-4 sm:p-6">
+          <EmptyState
+            icon={<BookOpen />}
+            title="Sin acceso a los cursos"
+            description="No tienes permiso para ver los cursos de entrenamiento."
+          />
+        </PageContainer>
       </AppLayout>
     );
   }
+
+  const courseColumns: Column<TrainingCourse>[] = [
+    {
+      key: 'title',
+      header: 'Curso',
+      className: 'max-w-[260px]',
+      render: (_v, c) => (
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="truncate font-medium">{c.title}</span>
+            {c.isAddon && (
+              <StatusBadge tone="neutral" dot={false} className="shrink-0"><Lock className="h-3 w-3" /> Addon</StatusBadge>
+            )}
+          </div>
+          {c.description && (
+            <div className="mt-0.5 truncate text-xs" style={{ color: 'var(--ink-soft)' }}>{c.description}</div>
+          )}
+        </div>
+      ),
+    },
+    { key: 'category', header: 'Categoría', render: (_v, c) => categoryLabel(c.category) },
+    { key: 'level', header: 'Nivel', render: (_v, c) => levelLabel(c.level) },
+    {
+      key: 'pointsValue',
+      header: 'Puntos',
+      numeric: true,
+      render: (_v, c) => (
+        <span className="inline-flex items-center gap-1 tabular-nums">
+          <Award className="h-3.5 w-3.5" style={{ color: 'var(--brand-text)' }} /> {c.pointsValue ?? 0}
+        </span>
+      ),
+    },
+    {
+      key: 'published',
+      header: 'Estado',
+      render: (_v, c) => (c.published
+        ? <StatusBadge tone="ok">Publicado</StatusBadge>
+        : <StatusBadge tone="neutral">Borrador</StatusBadge>),
+    },
+  ];
 
   return (
     <AppLayout>
@@ -157,7 +196,7 @@ export default function TrainingCoursesPage() {
         ]}
       />
 
-      <PageContainer width="wide" className="px-4">
+      <PageContainer width="wide" className="p-4 sm:p-6">
         <PageHeader
           icon={<GraduationCap />}
           title="Cursos de Entrenamiento"
@@ -174,124 +213,56 @@ export default function TrainingCoursesPage() {
         />
 
         <Stagger className="grid gap-4 sm:grid-cols-3">
-          <StatCard label="Cursos" value={courses.length} icon={<BookOpen />} accent="primary" />
-          <StatCard label="Publicados" value={publishedCount} icon={<CheckCircle2 />} accent="green" />
-          <StatCard label="Borradores" value={draftCount} icon={<Pencil />} accent="orange" />
+          <StatCard label="Cursos" value={courses.length} icon={<BookOpen />} accent="brand" />
+          <StatCard label="Publicados" value={publishedCount} icon={<CheckCircle2 />} accent="ok" />
+          <StatCard label="Borradores" value={draftCount} icon={<Pencil />} accent="warn" />
         </Stagger>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full">
-            <div className="relative w-full sm:w-64">
-              <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Buscar cursos"
-                className="pl-9"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </div>
-
-            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="w-full sm:w-48">
-                <SelectValue placeholder="Categoría" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas las categorías</SelectItem>
-                {TRAINING_CATEGORIES.map((c) => (
-                  <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <Section icon={<BookOpen />} title="Catálogo de cursos" contentClassName="overflow-hidden rounded-xl border">
-          <table className="min-w-full text-sm text-left">
-            <thead className="bg-muted/30">
-              <tr className="border-b">
-                <th className="px-4 py-3 font-semibold">Curso</th>
-                <th className="px-4 py-3 font-semibold">Categoría</th>
-                <th className="px-4 py-3 font-semibold">Nivel</th>
-                <th className="px-4 py-3 font-semibold">Puntos</th>
-                <th className="px-4 py-3 font-semibold">Estado</th>
-                <th className="px-4 py-3 font-semibold text-right">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading && (
-                <tr><td colSpan={6} className="p-4"><SkeletonCards count={4} /></td></tr>
-              )}
-              {!loading && filtered.length === 0 && (
-                <tr><td colSpan={6} className="py-10">
-                  <EmptyState
-                    icon={<GraduationCap />}
-                    title="No se encontraron cursos"
-                    description="Crea tu primer curso de entrenamiento para tus vigilantes."
-                    action={canCreate ? (
-                      <Button variant="brand" onClick={() => { setForm(emptyForm); setOpenForm(true); }}>
-                        <Plus className="h-4 w-4 mr-1" /> Nuevo curso
-                      </Button>
-                    ) : undefined}
-                  />
-                </td></tr>
-              )}
-              {!loading && filtered.map((c) => (
-                <tr
-                  key={c.id}
-                  className="border-b hover:bg-muted/30 cursor-pointer"
-                  onClick={() => navigate(`/training/courses/${c.id}`)}
-                >
-                  <td className="px-4 py-3 font-medium max-w-[260px]">
-                    <div className="flex items-center gap-2">
-                      <span className="truncate">{c.title}</span>
-                      {c.isAddon && (
-                        <Badge variant="outline" className="shrink-0 gap-1">
-                          <Lock className="h-3 w-3" /> Addon
-                        </Badge>
-                      )}
-                    </div>
-                    {c.description && (
-                      <div className="text-xs text-muted-foreground truncate mt-0.5">{c.description}</div>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">{categoryLabel(c.category)}</td>
-                  <td className="px-4 py-3">{levelLabel(c.level)}</td>
-                  <td className="px-4 py-3">
-                    <span className="inline-flex items-center gap-1">
-                      <Award className="h-3.5 w-3.5 text-primary" /> {c.pointsValue ?? 0}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    {c.published
-                      ? <StatusBadge tone="green">Publicado</StatusBadge>
-                      : <StatusBadge tone="slate">Borrador</StatusBadge>}
-                  </td>
-                  <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <button className="p-1.5 rounded hover:bg-muted">
-                          <EllipsisVertical className="h-4 w-4 text-muted-foreground" />
-                        </button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-48">
-                        <DropdownMenuItem onClick={() => navigate(`/training/courses/${c.id}`)}>
-                          <Pencil className="mr-2 h-4 w-4" /> Abrir / Editar
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => navigate(`/training/courses/${c.id}/enrollments`)}>
-                          <Users className="mr-2 h-4 w-4" /> Progreso de vigilantes
-                        </DropdownMenuItem>
-                        {canDestroy && !c.isAddon && (
-                          <DropdownMenuItem className="text-red-600" onClick={() => setDeleteId(c.id)}>
-                            <Trash2 className="mr-2 h-4 w-4" /> Eliminar
-                          </DropdownMenuItem>
-                        )}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </td>
-                </tr>
+        {/* La barra de filtros del sistema: una sola superficie de cristal, con
+            el buscador y los filtros dentro. Antes era una fila de divs suelta
+            con su propio gris y su propia altura. */}
+        <TableToolbar search={<TableSearch value={search} onChange={setSearch} placeholder="Buscar cursos" />}>
+          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+            <SelectTrigger className="w-full sm:w-48">
+              <SelectValue placeholder="Categoría" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas las categorías</SelectItem>
+              {TRAINING_CATEGORIES.map((c) => (
+                <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
               ))}
-            </tbody>
-          </table>
+            </SelectContent>
+          </Select>
+        </TableToolbar>
+
+        <Section icon={<BookOpen />} title="Catálogo de cursos" contentClassName="-mx-5 -mb-5">
+          <DataTable
+            surface="none"
+            loading={loading}
+            data={filtered}
+            columns={courseColumns}
+            onRowClick={(c) => navigate(`/training/courses/${c.id}`)}
+            rowActions={(c) => [
+              { label: 'Abrir / Editar', icon: <Pencil className="h-4 w-4" />, onClick: () => navigate(`/training/courses/${c.id}`) },
+              { label: 'Progreso de vigilantes', icon: <Users className="h-4 w-4" />, onClick: () => navigate(`/training/courses/${c.id}/enrollments`) },
+              ...(canDestroy && !c.isAddon
+                ? [{ label: 'Eliminar', icon: <Trash2 className="h-4 w-4" />, destructive: true, onClick: () => setDeleteId(c.id) }]
+                : []),
+            ]}
+            emptyState={
+              <EmptyState
+                icon={<GraduationCap />}
+                title="No se encontraron cursos"
+                description="Crea tu primer curso de entrenamiento para tus vigilantes."
+                className="border-0"
+                action={canCreate ? (
+                  <Button variant="brand" onClick={() => { setForm(emptyForm); setOpenForm(true); }}>
+                    <Plus /> Nuevo curso
+                  </Button>
+                ) : undefined}
+              />
+            }
+          />
         </Section>
       </PageContainer>
 
@@ -361,7 +332,7 @@ export default function TrainingCoursesPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction className="bg-red-600 hover:bg-red-700" onClick={handleDelete}>Eliminar</AlertDialogAction>
+            <AlertDialogAction className="cg-btn-bad" onClick={handleDelete}>Eliminar</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

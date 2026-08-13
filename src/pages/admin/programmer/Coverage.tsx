@@ -2,13 +2,13 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import AppLayout from "@/layouts/app-layout";
 import Breadcrumb from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Select, SelectTrigger, SelectContent, SelectItem, SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  PageContainer, PageHeader, Section, StatCard, EmptyState, SkeletonCards, Modal, Stagger,
+  PageContainer, PageHeader, Section, MetricTile, EmptyState, SkeletonCards, Modal, Stagger,
+  StatusBadge, Segmented, GlassPanel, IconTile,
 } from "@/components/kit";
 import {
   ShieldAlert, ShieldCheck, Clock, UserPlus, ArrowRightLeft, RefreshCw, Undo2,
@@ -29,11 +29,13 @@ import coverageService, {
  * carries the action that closes it.
  */
 
-const STATUS_STYLE: Record<string, string> = {
-  uncovered: "bg-destructive/12 text-destructive border-destructive/30",
-  at_risk: "bg-amber-500/12 text-amber-600 border-amber-500/30",
-  covered: "bg-emerald-500/12 text-emerald-600 border-emerald-500/30",
-  idle: "bg-muted text-muted-foreground border-border",
+/** Estado del puesto → papel de color del sistema. Un puesto sin cubrir es
+ *  `bad` siempre, elija el usuario el acento que elija. */
+const STATUS_TONE: Record<string, "bad" | "warn" | "ok" | "neutral"> = {
+  uncovered: "bad",
+  at_risk: "warn",
+  covered: "ok",
+  idle: "neutral",
 };
 
 /** Overrides the operator can confirm when the service refuses. */
@@ -203,27 +205,38 @@ export default function Coverage() {
 
   const openEvents = useMemo(() => events.filter((e) => e.status === "open"), [events]);
 
+  // Reparto de los puestos entre cubiertos / en riesgo / sin cubrir, para que
+  // cada KPI diga qué porción del total representa.
+  const totalPuestos =
+    (summary.uncovered || 0) + (summary.at_risk || 0) + (summary.covered || 0);
+  const pct = (n: number) => (totalPuestos > 0 ? Math.round((n / totalPuestos) * 100) : 0);
+
   const StationRow = ({ st }: { st: StationCoverage }) => (
-    <div className="rounded-xl border bg-card p-4">
+    /* `glass-flat` y no `glass`: esta tarjeta se repite por cada puesto y un
+       desenfoque por tarjeta obliga a rasterizar el fondo en cada fotograma. */
+    <GlassPanel flat className="p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="flex items-center gap-2 font-semibold">
             {st.nickname && (
-              <span className="shrink-0 rounded-md bg-muted px-1.5 py-0.5 font-mono text-xs font-bold text-muted-foreground">
+              <span
+                className="glass-sunken shrink-0 px-1.5 py-0.5 font-mono text-xs font-bold"
+                style={{ color: "var(--ink-soft)" }}
+              >
                 {st.nickname}
               </span>
             )}
             <span className="truncate">{st.stationName || "—"}</span>
           </p>
           {st.minutesSinceStart != null && st.status !== "covered" && (
-            <p className="mt-0.5 text-xs text-muted-foreground">
+            <p className="mt-0.5 text-xs tabular-nums" style={{ color: "var(--ink-soft)" }}>
               {st.minutesSinceStart} min desde el inicio del turno
             </p>
           )}
         </div>
-        <Badge variant="outline" className={STATUS_STYLE[st.status]}>
+        <StatusBadge tone={STATUS_TONE[st.status] ?? "neutral"}>
           {STATUS_LABEL[st.status]}
-        </Badge>
+        </StatusBadge>
       </div>
 
       {st.expected.length > 0 && (
@@ -231,12 +244,12 @@ export default function Coverage() {
           {st.expected.map((e) => {
             const here = st.present.some((p) => p.guardId === e.guardId);
             return (
-              <div key={e.shiftId} className="flex items-center gap-2 rounded-lg bg-muted/40 px-3 py-2">
+              <div key={e.shiftId} className="glass-sunken flex items-center gap-2 px-3 py-2">
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">{e.fullName || "Vigilante"}</p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs tabular-nums" style={{ color: "var(--ink-soft)" }}>
                     {fmtTime(e.startTime)}–{fmtTime(e.endTime)} ·{" "}
-                    <span className={here ? "text-emerald-600" : "text-destructive"}>
+                    <span className="font-semibold" style={{ color: here ? "var(--ok-text)" : "var(--bad-text)" }}>
                       {here ? "En el puesto" : "Sin marcar entrada"}
                     </span>
                   </p>
@@ -268,26 +281,35 @@ export default function Coverage() {
       )}
 
       {st.openEvents.map((ev) => (
-        <div key={ev.id} className="mt-2 flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/8 px-3 py-2">
-          <ShieldAlert className="size-4 shrink-0 text-destructive" />
+        <div
+          key={ev.id}
+          className="mt-2 flex items-center gap-2 rounded-xl border px-3 py-2"
+          style={{
+            borderColor: "color-mix(in oklab, var(--bad) 30%, transparent)",
+            background: "color-mix(in oklab, var(--bad) 10%, transparent)",
+          }}
+        >
+          <ShieldAlert className="size-4 shrink-0" style={{ color: "var(--bad-text)" }} />
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold text-destructive">
+            <p className="truncate text-sm font-semibold" style={{ color: "var(--bad-text)" }}>
               {REASON_LABEL[ev.reason] || ev.reason}
             </p>
-            <p className="text-xs text-muted-foreground">Puesto vacío hace {ev.minutesOpen} min</p>
+            <p className="text-xs tabular-nums" style={{ color: "var(--ink-soft)" }}>Puesto vacío hace {ev.minutesOpen} min</p>
           </div>
           <Button size="sm" onClick={() => openCover(ev)}>
             <UserPlus className="mr-1 size-3.5" /> Cubrir
           </Button>
         </div>
       ))}
-    </div>
+    </GlassPanel>
   );
 
   return (
     <AppLayout>
-      <PageContainer>
-        <Breadcrumb items={[{ label: "Programador", path: "/admin/programmer/schedule" }, { label: "Cobertura" }]} />
+      {/* Mismo ancho y mismos márgenes que sus cinco páginas hermanas: sin
+          esto, pasar de Cobertura a Turnos abiertos daba un salto de anchura. */}
+      <Breadcrumb items={[{ label: "Programador", path: "/admin/programmer/schedule" }, { label: "Cobertura" }]} />
+      <PageContainer width="wide" className="px-4 lg:px-6">
         <PageHeader
           title="Cobertura en vivo"
           subtitle={
@@ -303,28 +325,51 @@ export default function Coverage() {
           }
         />
 
-        <div className="grid gap-3 sm:grid-cols-4">
-          <StatCard label="Sin cubrir" value={summary.uncovered || 0} icon={<ShieldAlert />} />
-          <StatCard label="En riesgo" value={summary.at_risk || 0} icon={<Clock />} />
-          <StatCard label="Cubiertos" value={summary.covered || 0} icon={<ShieldCheck />} />
-          <StatCard label="Novedades abiertas" value={openEvents.length} icon={<ArrowRightLeft />} />
-        </div>
+        <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <MetricTile
+            label="Sin cubrir"
+            value={summary.uncovered || 0}
+            icon={<ShieldAlert />}
+            delta={totalPuestos > 0 ? { value: `${pct(summary.uncovered || 0)} %`, direction: (summary.uncovered || 0) > 0 ? "down" : "flat" } : undefined}
+            hint="Puestos sin nadie presente"
+          />
+          <MetricTile
+            label="En riesgo"
+            value={summary.at_risk || 0}
+            icon={<Clock />}
+            delta={totalPuestos > 0 ? { value: `${pct(summary.at_risk || 0)} %`, direction: (summary.at_risk || 0) > 0 ? "down" : "flat" } : undefined}
+            hint="El turno empezó y no hay marcación"
+          />
+          <MetricTile
+            label="Cubiertos"
+            value={summary.covered || 0}
+            icon={<ShieldCheck />}
+            delta={totalPuestos > 0 ? { value: `${pct(summary.covered || 0)} %`, direction: "up" } : undefined}
+            hint="Vigilante presente en el puesto"
+          />
+          <MetricTile
+            label="Novedades abiertas"
+            value={openEvents.length}
+            icon={<ArrowRightLeft />}
+            hint="Ausencias aún sin reemplazo"
+          />
+        </Stagger>
 
-        <div className="flex gap-2">
-          <Button variant={tab === "board" ? "default" : "outline"} size="sm" onClick={() => setTab("board")}>
-            Puestos
-          </Button>
-          <Button variant={tab === "events" ? "default" : "outline"} size="sm" onClick={() => setTab("events")}>
-            Novedades ({events.length})
-          </Button>
-        </div>
+        <Segmented<"board" | "events">
+          value={tab}
+          onChange={setTab}
+          options={[
+            { value: "board", label: "Puestos" },
+            { value: "events", label: `Novedades (${events.length})` },
+          ]}
+        />
 
         {loading ? (
           <SkeletonCards />
         ) : tab === "board" ? (
           <Section title="Estado de los puestos">
             {!live?.stations.length ? (
-              <EmptyState title="Sin estaciones" description="No hay estaciones configuradas." />
+              <EmptyState icon={<ShieldCheck />} title="Sin puestos" description="Todavía no hay puestos configurados." />
             ) : (
               <Stagger className="grid gap-3 lg:grid-cols-2">
                 {live.stations.map((st) => <StationRow key={st.stationId} st={st} />)}
@@ -334,20 +379,20 @@ export default function Coverage() {
         ) : (
           <Section title="Novedades registradas">
             {!events.length ? (
-              <EmptyState title="Sin novedades" description="No se han registrado novedades en el período." />
+              <EmptyState icon={<ShieldCheck />} title="Sin novedades" description="No se han registrado novedades en el período." />
             ) : (
               <div className="space-y-2">
                 {events.map((ev) => (
-                  <div key={ev.id} className="flex items-center gap-3 rounded-xl border bg-card p-3">
+                  <div key={ev.id} className="glass-flat flex flex-wrap items-center gap-3 p-3">
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold">
                         {[ev.absentGuard?.firstName, ev.absentGuard?.lastName].filter(Boolean).join(" ") || "Vigilante"}
                         {" · "}
-                        <span className="font-normal text-muted-foreground">
+                        <span className="font-normal" style={{ color: "var(--ink-soft)" }}>
                           {REASON_LABEL[ev.reason] || ev.reason}
                         </span>
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
                         {stationLabel(ev.originStation)}
                         {ev.targetStation ? ` → ${stationLabel(ev.targetStation)}` : ""}
                         {" · "}
@@ -362,18 +407,18 @@ export default function Coverage() {
                       {/* A traslado expires on its own — say where they go back
                           to, so nobody goes looking for a button to undo it. */}
                       {ev.kind === "transfer" && ev.status !== "cancelled" && ev.originStation && (
-                        <p className="mt-0.5 text-[11px] text-primary">
+                        <p className="mt-0.5 text-[11px] font-medium" style={{ color: "var(--brand-text)" }}>
                           Vuelve a {stationLabel(ev.originStation)} después del{" "}
                           {new Date(ev.windowEnd).toLocaleDateString("es-EC")}
                         </p>
                       )}
                     </div>
                     {/* Payroll/discipline consequences, visible where they are decided. */}
-                    {ev.countsAgainstGuard && <Badge variant="destructive">Falta grave</Badge>}
-                    <Badge variant="outline">{ev.paid ? "Con sueldo" : "Sin sueldo"}</Badge>
-                    <Badge variant={ev.status === "open" ? "destructive" : "outline"}>
+                    {ev.countsAgainstGuard && <StatusBadge tone="bad">Falta grave</StatusBadge>}
+                    <StatusBadge tone="neutral" dot={false}>{ev.paid ? "Con sueldo" : "Sin sueldo"}</StatusBadge>
+                    <StatusBadge tone={ev.status === "open" ? "bad" : "ok"}>
                       {ev.status === "open" ? "Sin cubrir" : ev.status === "covered" ? "Cubierto" : ev.status}
-                    </Badge>
+                    </StatusBadge>
                     {ev.status === "open" && (
                       <Button size="sm" onClick={() => openCover(ev)}>
                         <UserPlus className="mr-1 size-3.5" /> Cubrir
@@ -409,9 +454,9 @@ export default function Coverage() {
             </>
           }
         >
-          <div className="space-y-3 p-5">
+          <div className="space-y-4">
             <div>
-              <label className="mb-1 block text-xs font-medium text-muted-foreground">Motivo</label>
+              <label className="cg-eyebrow mb-1.5 block">Motivo</label>
               <Select value={reason} onValueChange={(v) => setReason(v as CoverageReason)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -421,12 +466,12 @@ export default function Coverage() {
                 </SelectContent>
               </Select>
               {/* The reason is not a label: it decides pay and discipline. */}
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="mt-1.5 text-xs" style={{ color: "var(--ink-soft)" }}>
                 El motivo define si la ausencia es remunerada y si afecta el récord del vigilante.
               </p>
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-muted-foreground">Detalle (opcional)</label>
+              <label className="cg-eyebrow mb-1.5 block">Detalle (opcional)</label>
               <Textarea value={note} onChange={(e) => setNote(e.target.value)} rows={3}
                 placeholder="Ej.: llamó, se le dañó la moto en la vía" />
             </div>
@@ -440,18 +485,18 @@ export default function Coverage() {
           title="¿Quién cubre el puesto?"
           icon={<UserPlus />}
         >
-          <div className="space-y-2 p-5">
+          <div className="space-y-2">
             {candidates == null ? (
               <SkeletonCards />
             ) : !candidates.length ? (
-              <EmptyState title="Sin vigilantes disponibles" description="Nadie está libre en ese horario." />
+              <EmptyState icon={<UserPlus />} title="Sin vigilantes disponibles" description="Nadie está libre en ese horario." />
             ) : (
               candidates.map((c) => (
                 <button
                   key={c.guardId}
                   type="button"
                   disabled={busy}
-                  className="flex w-full items-center gap-3 rounded-lg border p-3 text-left hover:bg-muted/50"
+                  className="glass-flat glass-hover cg-focus flex w-full items-center gap-3 p-3 text-left"
                   onClick={async () => {
                     const ok = await runWithConfirm(
                       (flags) => coverageService.cover(coverFor.id, c.guardId, flags),
@@ -463,9 +508,9 @@ export default function Coverage() {
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium">{c.fullName || "Vigilante"}</p>
                     {/* Why the system suggests them — the operator can overrule it. */}
-                    <p className="text-xs text-muted-foreground">{c.reason}</p>
+                    <p className="text-xs" style={{ color: "var(--ink-soft)" }}>{c.reason}</p>
                   </div>
-                  <UserPlus className="size-4 text-primary" />
+                  <IconTile size="sm"><UserPlus /></IconTile>
                 </button>
               ))
             )}
@@ -486,11 +531,11 @@ export default function Coverage() {
             </>
           }
         >
-          <div className="space-y-3 p-5">
+          <div className="space-y-4">
             <div>
-              <label className="mb-1 block text-xs font-medium text-muted-foreground">Estación destino</label>
+              <label className="cg-eyebrow mb-1.5 block">Puesto destino</label>
               <Select value={toStationId} onValueChange={setToStationId}>
-                <SelectTrigger><SelectValue placeholder="Seleccione una estación" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder="Elige un puesto" /></SelectTrigger>
                 <SelectContent>
                   {/* The live payload already carries every station the caller
                       may see, correctly tenant-scoped — no second fetch needed. */}
@@ -505,54 +550,49 @@ export default function Coverage() {
               </Select>
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-muted-foreground">Duración</label>
-              <div className="flex gap-2">
-                <Button
-                  type="button" size="sm"
-                  variant={transferMode === "shift" ? "default" : "outline"}
-                  onClick={() => setTransferMode("shift")}
-                >
-                  Solo este turno
-                </Button>
-                <Button
-                  type="button" size="sm"
-                  variant={transferMode === "range" ? "default" : "outline"}
-                  onClick={() => { setTransferMode("range"); if (!transferUntil) setTransferUntil(tenantToday()); }}
-                >
-                  Hasta una fecha
-                </Button>
-              </div>
+              <label className="cg-eyebrow mb-1.5 block">Duración</label>
+              <Segmented<"shift" | "range">
+                value={transferMode}
+                onChange={(v) => {
+                  setTransferMode(v);
+                  if (v === "range" && !transferUntil) setTransferUntil(tenantToday());
+                }}
+                options={[
+                  { value: "shift", label: "Solo este turno" },
+                  { value: "range", label: "Hasta una fecha" },
+                ]}
+              />
               {transferMode === "range" && (
                 <input
                   type="date"
                   value={transferUntil}
                   min={tenantToday()}
                   onChange={(e) => setTransferUntil(e.target.value)}
-                  className="mt-2 w-full rounded-md border bg-background px-3 py-2 text-sm"
+                  className="cg-input cg-focus mt-2 w-full px-3 py-2 text-sm tabular-nums"
                 />
               )}
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-muted-foreground">Motivo (opcional)</label>
+              <label className="cg-eyebrow mb-1.5 block">Motivo (opcional)</label>
               <Textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2}
                 placeholder="Ej.: refuerzo por evento en el cliente" />
             </div>
             {/* The single most important thing to state plainly: the traslado
                 ENDS BY ITSELF. It moves only the turnos in the range, so the
                 next one is back at their own post — nothing to remember. */}
-            <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 text-xs">
-              <p className="font-semibold text-foreground">
+            <div className="glass-brand rounded-xl p-3 text-xs">
+              <p className="font-semibold">
                 {transferMode === "range" && transferUntil
                   ? `Cubre ${transferFor?.stationName ? "otro puesto" : "el destino"} hasta el ${transferUntil}.`
                   : "Cubre el destino solo en este turno."}
               </p>
-              <p className="mt-1 text-muted-foreground">
+              <p className="mt-1" style={{ color: "var(--ink-soft)" }}>
                 Después vuelve automáticamente a <strong>{transferFor?.stationName || "su puesto"}</strong>.
                 No hace falta revertirlo: solo se trasladan los turnos del rango.
               </p>
             </div>
-            <p className="text-xs text-muted-foreground">
-              El vigilante podrá marcar entrada en la estación destino y recibirá sus
+            <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
+              El vigilante podrá marcar entrada en el puesto destino y recibirá sus
               recordatorios de turno allí, como cualquier turno normal. El puesto que deja
               queda visible como <strong>sin cubrir</strong> hasta que se asigne un reemplazo.
             </p>

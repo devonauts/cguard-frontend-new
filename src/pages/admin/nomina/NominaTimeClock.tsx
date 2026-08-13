@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Clock, MapPin, LogIn, LogOut, Loader2, UserX } from "lucide-react";
 import attendanceService from "@/lib/api/attendanceService";
-import { PageContainer, FadeIn, StatusBadge, EmptyState } from "@/components/kit";
+import { PageContainer, FadeIn, StatusBadge, EmptyState, IconTile } from "@/components/kit";
 
 interface Station { id: string; stationName?: string; name?: string }
 
@@ -113,11 +113,11 @@ export default function NominaTimeClock() {
   return (
     <AppLayout>
       <PageContainer width="narrow" className="max-w-md p-4 sm:p-6">
-        <FadeIn className="cg-card cg-card-hover overflow-hidden p-8 text-center">
-          <span className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl cg-gradient-brand text-primary-foreground shadow-md [&_svg]:size-7">
-            <Clock />
-          </span>
-          <h1 className="font-display text-xl font-bold tracking-tight text-foreground">Reloj de Asistencia</h1>
+        <FadeIn className="glass glass-hover overflow-hidden p-8 text-center">
+          <div className="mb-4 flex justify-center">
+            <IconTile size="lg" className="brand-glow-sm"><Clock /></IconTile>
+          </div>
+          <h1 className="font-display text-xl font-bold tracking-tight">Reloj de Asistencia</h1>
 
           {loading ? (
             <div className="space-y-3 py-10">
@@ -137,7 +137,7 @@ export default function NominaTimeClock() {
           ) : (
             <>
               <div className="mt-2 flex justify-center">
-                <StatusBadge tone={isClockedIn ? "green" : "slate"}>
+                <StatusBadge tone={isClockedIn ? "ok" : "neutral"}>
                   {isClockedIn ? "En servicio" : "Fuera de servicio"}
                 </StatusBadge>
               </div>
@@ -150,7 +150,7 @@ export default function NominaTimeClock() {
                   <select
                     value={stationId}
                     onChange={(e) => setStationId(e.target.value)}
-                    className="mt-1.5 w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm"
+                    className="cg-input cg-focus mt-1.5 w-full px-3 py-2.5 text-sm"
                   >
                     {stations.length === 0 && <option value="">Sin puestos asignados</option>}
                     {stations.map((s) => (
@@ -161,7 +161,7 @@ export default function NominaTimeClock() {
               )}
 
               {mode === "staff" && (
-                <p className="mt-4 text-xs text-muted-foreground">
+                <p className="mt-4 text-xs" style={{ color: "var(--ink-soft)" }}>
                   Registro de asistencia administrativa.
                   {office
                     ? ` Se valida tu ubicación contra tu oficina${office.address ? ` (${office.address})` : ""} (máx. ${office.radiusM} m).`
@@ -171,7 +171,7 @@ export default function NominaTimeClock() {
 
               <div className="mt-6">
                 {isClockedIn ? (
-                  <Button onClick={doClockOut} disabled={busy} className="w-full bg-red-600 hover:bg-red-700 text-white py-6 text-base">
+                  <Button variant="destructive" onClick={doClockOut} disabled={busy} className="w-full py-6 text-base">
                     {busy ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <LogOut className="mr-2 h-5 w-5" />}
                     Marcar salida
                   </Button>
@@ -183,7 +183,7 @@ export default function NominaTimeClock() {
                 )}
               </div>
               {mode === "guard" && (
-                <p className="mt-3 text-[11px] text-muted-foreground">
+                <p className="mt-3 text-[11px]" style={{ color: "var(--ink-faint)" }}>
                   Se solicitará tu ubicación para confirmar que estás dentro del área del puesto.
                 </p>
               )}

@@ -1,12 +1,9 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Loader2, Save, Clock, ShieldCheck, Bell } from "lucide-react";
+import { Clock, ShieldCheck, Bell, Info } from "lucide-react";
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/ui/button";
 import { Section, Stagger, SkeletonCards } from "@/components/kit";
+import { ToggleRow, NumberRow, SaveBar } from "../components/SettingsForm";
 import { rondaSettingsService, RondaSettings } from "@/lib/api/rondaSettingsService";
 
 const DEFAULTS: RondaSettings = {
@@ -25,39 +22,6 @@ const DEFAULTS: RondaSettings = {
   emailOnComplete: false,
   active: true,
 };
-
-function NumberRow({ label, hint, value, onChange, min = 0, suffix }: {
-  label: string; hint?: string; value: number | null;
-  onChange: (n: number | null) => void; min?: number; suffix?: string;
-}) {
-  return (
-    <div className="flex items-center justify-between gap-4 py-2">
-      <div>
-        <Label className="text-sm">{label}</Label>
-        {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
-      </div>
-      <div className="flex items-center gap-2">
-        <Input type="number" min={min} value={value ?? ""} className="w-24 text-right"
-          onChange={(e) => onChange(e.target.value === "" ? null : Number(e.target.value))} />
-        {suffix && <span className="w-10 text-xs text-muted-foreground">{suffix}</span>}
-      </div>
-    </div>
-  );
-}
-
-function ToggleRow({ label, hint, checked, onCheckedChange }: {
-  label: string; hint?: string; checked: boolean; onCheckedChange: (b: boolean) => void;
-}) {
-  return (
-    <div className="flex items-center justify-between gap-4 py-2.5">
-      <div>
-        <Label className="text-sm">{label}</Label>
-        {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
-      </div>
-      <Switch checked={checked} onCheckedChange={onCheckedChange} />
-    </div>
-  );
-}
 
 /**
  * Reusable patrol-settings form. With no `postSiteId` it edits the tenant default;
@@ -112,47 +76,49 @@ export default function RondaSettingsForm({
   return (
     <div className="space-y-6">
       {postSiteId && inherited && (
-        <p className="rounded-lg border border-primary/30 bg-primary/10 px-3 py-2 text-xs text-primary">
-          Este sitio usa la configuración predeterminada del inquilino. Al guardar, creará una configuración específica para este sitio.
-        </p>
+        <div
+          className="glass-flat flex items-start gap-3 p-4"
+          style={{ borderColor: 'var(--brand-line)', background: 'var(--brand-wash)' }}
+        >
+          <Info className="mt-0.5 h-4 w-4 shrink-0" style={{ color: 'var(--brand-text)' }} />
+          <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
+            Este puesto usa las reglas generales de la empresa. Al guardar, se creará una
+            configuración propia sólo para este puesto.
+          </p>
+        </div>
       )}
 
       <Stagger className="grid gap-6">
         <Section title="Cadencia de la ronda" icon={<Clock />}>
           <div className="divide-y">
-            <NumberRow label="Frecuencia" hint="Cada cuánto debe realizarse una ronda" value={s.frequencyMinutes} onChange={(v) => set("frequencyMinutes", (v ?? 0) as number)} min={1} suffix="min" />
-            <NumberRow label="Rondas por turno" hint="Número esperado de rondas por turno (opcional)" value={s.roundsPerShift} onChange={(v) => set("roundsPerShift", v)} min={1} suffix="rondas" />
-            <NumberRow label="Tolerancia (gracia)" hint="Minutos de tolerancia antes de marcar una ronda como tarde" value={s.graceMinutes} onChange={(v) => set("graceMinutes", (v ?? 0) as number)} suffix="min" />
-            <NumberRow label="Duración máxima" hint="Tiempo máximo para completar una ronda" value={s.maxDurationMinutes} onChange={(v) => set("maxDurationMinutes", (v ?? 0) as number)} min={1} suffix="min" />
+            <NumberRow label="Frecuencia" hint="Cada cuánto debe realizarse una ronda." value={s.frequencyMinutes} onChange={(v) => set("frequencyMinutes", (v ?? 0) as number)} min={1} suffix="minutos" />
+            <NumberRow label="Rondas por turno" hint="Número esperado de rondas en cada turno. Puedes dejarlo vacío." value={s.roundsPerShift} onChange={(v) => set("roundsPerShift", v)} min={1} suffix="rondas" />
+            <NumberRow label="Tolerancia" hint="Margen antes de marcar una ronda como tarde." value={s.graceMinutes} onChange={(v) => set("graceMinutes", (v ?? 0) as number)} suffix="minutos" />
+            <NumberRow label="Duración máxima" hint="Tiempo máximo para completar una ronda entera." value={s.maxDurationMinutes} onChange={(v) => set("maxDurationMinutes", (v ?? 0) as number)} min={1} suffix="minutos" />
           </div>
         </Section>
 
-        <Section title="Validación de puntos" icon={<ShieldCheck />}>
+        <Section title="Validación de los puntos" icon={<ShieldCheck />}>
           <div className="divide-y">
-            <ToggleRow label="Requerir foto" hint="El vigilante debe tomar una foto con marca de tiempo en cada punto" checked={s.requirePhoto} onCheckedChange={(b) => set("requirePhoto", b)} />
-            <ToggleRow label="Requerir geolocalización" hint="Validar la ubicación del vigilante en cada punto" checked={s.requireGeofence} onCheckedChange={(b) => set("requireGeofence", b)} />
-            <NumberRow label="Radio de geocerca" hint="Distancia permitida desde el punto" value={s.geofenceRadius} onChange={(v) => set("geofenceRadius", (v ?? 0) as number)} suffix="m" />
-            <ToggleRow label="Requerir nota" hint="El vigilante debe dejar una observación en cada punto" checked={s.requireNote} onCheckedChange={(b) => set("requireNote", b)} />
+            <ToggleRow label="Exigir foto" hint="El vigilante debe tomar una foto con fecha y hora en cada punto." checked={s.requirePhoto} onCheckedChange={(b) => set("requirePhoto", b)} />
+            <ToggleRow label="Exigir ubicación" hint="Se comprueba dónde está el vigilante al marcar cada punto." checked={s.requireGeofence} onCheckedChange={(b) => set("requireGeofence", b)} />
+            <NumberRow label="Radio permitido" hint="Distancia máxima desde el punto para que el escaneo cuente." value={s.geofenceRadius} onChange={(v) => set("geofenceRadius", (v ?? 0) as number)} suffix="metros" />
+            <ToggleRow label="Exigir observación" hint="El vigilante debe dejar una nota escrita en cada punto." checked={s.requireNote} onCheckedChange={(b) => set("requireNote", b)} />
           </div>
         </Section>
 
-        <Section title="Notificaciones" icon={<Bell />}>
+        <Section title="Avisos" icon={<Bell />}>
           <div className="divide-y">
-            <ToggleRow label="Notificar al iniciar" hint="Avisar cuando un vigilante inicia una ronda" checked={s.notifyTenantOnStart} onCheckedChange={(b) => set("notifyTenantOnStart", b)} />
-            <ToggleRow label="Notificar al completar" hint="Avisar cuando una ronda se completa" checked={s.notifyTenantOnComplete} onCheckedChange={(b) => set("notifyTenantOnComplete", b)} />
-            <ToggleRow label="Enviar correo al completar" hint="Enviar un correo a los administradores/supervisores cuando una ronda se completa (requiere correo configurado)" checked={s.emailOnComplete} onCheckedChange={(b) => set("emailOnComplete", b)} />
-            <ToggleRow label="Notificar rondas perdidas/tarde" checked={s.notifyTenantOnMissed} onCheckedChange={(b) => set("notifyTenantOnMissed", b)} />
-            <ToggleRow label="Notificar al cliente" hint="Enviar notificaciones de ronda también al cliente del sitio" checked={s.notifyClient} onCheckedChange={(b) => set("notifyClient", b)} />
+            <ToggleRow label="Avisar al iniciar" hint="Cuando un vigilante empieza una ronda." checked={s.notifyTenantOnStart} onCheckedChange={(b) => set("notifyTenantOnStart", b)} />
+            <ToggleRow label="Avisar al completar" hint="Cuando una ronda termina correctamente." checked={s.notifyTenantOnComplete} onCheckedChange={(b) => set("notifyTenantOnComplete", b)} />
+            <ToggleRow label="Enviar correo al completar" hint="Además del aviso, envía un correo a administradores y supervisores (requiere el correo configurado)." checked={s.emailOnComplete} onCheckedChange={(b) => set("emailOnComplete", b)} />
+            <ToggleRow label="Avisar rondas perdidas o tarde" hint="Cuando una ronda no se hace o se hace fuera de tiempo." checked={s.notifyTenantOnMissed} onCheckedChange={(b) => set("notifyTenantOnMissed", b)} />
+            <ToggleRow label="Avisar también al cliente" hint="El cliente del puesto recibe los mismos avisos de ronda." checked={s.notifyClient} onCheckedChange={(b) => set("notifyClient", b)} />
           </div>
         </Section>
       </Stagger>
 
-      <div className="flex justify-end">
-        <Button variant="brand" onClick={save} disabled={saving}>
-          {saving ? <Loader2 className="mr-2 animate-spin" size={16} /> : <Save className="mr-2" size={16} />}
-          Guardar configuración
-        </Button>
-      </div>
+      <SaveBar onSave={save} saving={saving} />
     </div>
   );
 }

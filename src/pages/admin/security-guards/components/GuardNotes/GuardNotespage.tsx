@@ -6,7 +6,8 @@ import AppLayout from '@/layouts/app-layout';
 import { useParams } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Modal } from '@/components/kit';
+import { Modal, Section, EmptyState, StatusBadge, PageContainer } from '@/components/kit';
+import { MeterBar } from '@/components/charts';
 import securityGuardService from '@/lib/api/securityGuardService';
 import { toast } from 'sonner';
 import api from '@/lib/api';
@@ -40,20 +41,6 @@ const guardNotesApi: NotesApi = {
     remove: (id, noteId) => securityGuardService.destroySecurityGuardNote(id, noteId),
     update: (id, noteId, payload) => securityGuardService.updateSecurityGuardNote(id, noteId, payload),
 };
-
-// ── Small presentational helper ─────────────────────────────────────────────
-const Section = ({ title, icon, action, children }: { title: string; icon?: React.ReactNode; action?: React.ReactNode; children: React.ReactNode }) => (
-    <div className="bg-card border rounded-2xl p-5 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-                {icon && <span className="text-muted-foreground">{icon}</span>}
-                <h4 className="font-semibold text-sm tracking-tight">{title}</h4>
-            </div>
-            {action}
-        </div>
-        {children}
-    </div>
-);
 
 // Render a translation string that may contain <br /> markers as real JSX line
 // breaks, instead of feeding it through dangerouslySetInnerHTML (no HTML sink).
@@ -267,27 +254,21 @@ export default function GuardNotes({ guard, entityId, navKey = 'keep-safe', titl
     return (
         <AppLayout>
             <GuardsLayout navKey={navKey} title={title}>
-                <div className="mx-auto max-w-5xl space-y-6">
+                <PageContainer>
 
                     <Section
                         title={t('guards.notes.sectionTitle', { defaultValue: 'Notas' })}
                         icon={<StickyNote size={16} />}
                         action={
-                            <div className="flex items-center gap-2">
-                                {/* Add note */}
-                                <button
-                                    onClick={handleAddNote}
-                                    className="inline-flex h-9 items-center gap-2 rounded-lg px-4 text-sm font-medium bg-primary text-primary-foreground shadow-sm transition hover:opacity-90"
-                                >
-                                    <Plus size={16} />
-                                    {t('guards.notes.addButton', { defaultValue: 'Agregar nota' })}
-                                </button>
-                            </div>
+                            <Button onClick={handleAddNote}>
+                                <Plus />
+                                {t('guards.notes.addButton', { defaultValue: 'Agregar nota' })}
+                            </Button>
                         }
                     >
                         {/* Search */}
                         <div className="relative mb-5 max-w-sm">
-                            <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                            <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
                             <Input
                                 type="text"
                                 placeholder={t('guards.notes.searchPlaceholder', { defaultValue: 'Buscar nota' }) as string}
@@ -299,32 +280,21 @@ export default function GuardNotes({ guard, entityId, navKey = 'keep-safe', titl
 
                         {/* Notes feed */}
                         {filteredNotes.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed py-14 text-center">
-                                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted">
-                                    <StickyNote size={26} className="text-muted-foreground" />
-                                </div>
-                                <div>
-                                    <h3 className="text-sm font-semibold text-foreground">
-                                        {q
-                                            ? t('guards.notes.empty.title', { defaultValue: 'Sin resultados' })
-                                            : t('guards.notes.empty.none', { defaultValue: 'Sin notas todavía' })}
-                                    </h3>
-                                    <p className="mt-1 text-xs text-muted-foreground">
-                                        {q
-                                            ? renderWithLineBreaks(t('guards.notes.empty.message', { defaultValue: 'No encontramos<br />notas que coincidan<br />con tu búsqueda' }))
-                                            : t('guards.notes.empty.hint', { defaultValue: 'Crea la primera nota para este vigilante.' })}
-                                    </p>
-                                </div>
-                                {!q && (
-                                    <button
-                                        onClick={handleAddNote}
-                                        className="mt-1 inline-flex h-9 items-center gap-2 rounded-lg px-4 text-sm font-medium bg-primary text-primary-foreground shadow-sm transition hover:opacity-90"
-                                    >
-                                        <Plus size={16} />
+                            <EmptyState
+                                icon={<StickyNote />}
+                                title={q
+                                    ? t('guards.notes.empty.title', { defaultValue: 'Sin resultados' })
+                                    : t('guards.notes.empty.none', { defaultValue: 'Sin notas todavía' })}
+                                description={q
+                                    ? renderWithLineBreaks(t('guards.notes.empty.message', { defaultValue: 'No encontramos<br />notas que coincidan<br />con tu búsqueda' }))
+                                    : t('guards.notes.empty.hint', { defaultValue: 'Crea la primera nota para este vigilante.' })}
+                                action={!q ? (
+                                    <Button size="sm" onClick={handleAddNote}>
+                                        <Plus />
                                         {t('guards.notes.addButton', { defaultValue: 'Agregar nota' })}
-                                    </button>
-                                )}
-                            </div>
+                                    </Button>
+                                ) : undefined}
+                            />
                         ) : (
                             <ul className="space-y-3">
                                 {filteredNotes.map((note: GuardNote, idx: number) => {
@@ -334,11 +304,11 @@ export default function GuardNotes({ guard, entityId, navKey = 'keep-safe', titl
                                     return (
                                         <li
                                             key={note?.id ?? idx}
-                                            className="group rounded-xl border bg-card p-4 shadow-sm transition hover:border-foreground/20 hover:shadow"
+                                            className="group glass-flat p-4 transition hover:border-foreground/20 hover:shadow"
                                         >
                                             <div className="flex items-start gap-3">
                                                 <div
-                                                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold bg-primary text-primary-foreground"
+                                                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold brand-fill"
                                                 >
                                                     {initials(author)}
                                                 </div>
@@ -349,7 +319,7 @@ export default function GuardNotes({ guard, entityId, navKey = 'keep-safe', titl
                                                         </h5>
                                                         <div className="flex shrink-0 items-center gap-1.5">
                                                             {when && (
-                                                                <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                                                                <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium [background:var(--glass-sunken)] [color:var(--ink-soft)]">
                                                                     <Calendar size={11} />
                                                                     {when}
                                                                 </span>
@@ -358,7 +328,8 @@ export default function GuardNotes({ guard, entityId, navKey = 'keep-safe', titl
                                                                 <button
                                                                     onClick={() => setDeleteTarget(note)}
                                                                     title={t('guards.notes.actions.delete', { defaultValue: 'Eliminar' }) as string}
-                                                                    className="rounded-lg p-1.5 text-muted-foreground opacity-0 transition hover:bg-red-500/10 hover:text-red-600 group-hover:opacity-100"
+                                                                    className="cg-focus rounded-lg p-1.5 opacity-0 transition hover:[color:var(--bad-text)] group-hover:opacity-100"
+                                                                    style={{ color: 'var(--ink-faint)' }}
                                                                 >
                                                                     <Trash2 size={14} />
                                                                 </button>
@@ -366,7 +337,7 @@ export default function GuardNotes({ guard, entityId, navKey = 'keep-safe', titl
                                                         </div>
                                                     </div>
                                                     {note?.description && (
-                                                        <p className="mt-1.5 whitespace-pre-wrap break-words text-sm text-muted-foreground">
+                                                        <p className="mt-1.5 whitespace-pre-wrap break-words text-sm [color:var(--ink-soft)]">
                                                             {note.description}
                                                         </p>
                                                     )}
@@ -386,7 +357,7 @@ export default function GuardNotes({ guard, entityId, navKey = 'keep-safe', titl
                                                                             target="_blank"
                                                                             rel="noreferrer"
                                                                             title={att?.name || ''}
-                                                                            className="block h-16 w-16 overflow-hidden rounded-lg border bg-muted"
+                                                                            className="block h-16 w-16 overflow-hidden rounded-lg border [background:var(--glass-sunken)]"
                                                                         >
                                                                             <img src={href} alt={att?.name || ''} className="h-full w-full object-cover" loading="lazy" />
                                                                         </a>
@@ -399,7 +370,7 @@ export default function GuardNotes({ guard, entityId, navKey = 'keep-safe', titl
                                                                         target="_blank"
                                                                         rel="noreferrer"
                                                                         title={att?.name || ''}
-                                                                        className="inline-flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-foreground transition hover:bg-muted/70"
+                                                                        className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition [background:var(--glass-sunken)] hover:[border-color:var(--brand-line)]"
                                                                     >
                                                                         <Paperclip size={12} />
                                                                         <span className="max-w-[160px] truncate">{att?.name || t('guards.notes.attachment', { defaultValue: 'Adjunto' })}</span>
@@ -411,7 +382,7 @@ export default function GuardNotes({ guard, entityId, navKey = 'keep-safe', titl
                                                     )}
 
                                                     {author && (
-                                                        <div className="mt-2 inline-flex items-center gap-1 text-[11px] uppercase tracking-wide text-muted-foreground">
+                                                        <div className="mt-2 inline-flex items-center gap-1 text-[11px] uppercase tracking-wide [color:var(--ink-soft)]">
                                                             <User size={11} />
                                                             {author}
                                                         </div>
@@ -428,11 +399,11 @@ export default function GuardNotes({ guard, entityId, navKey = 'keep-safe', titl
                     {/* Modal */}
                     {showModal && (
                         <div
-                            className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
+                            className="glass-scrim fixed inset-0 z-50"
                             onClick={handleCloseModal}
                         >
                             <div
-                                className="fixed right-0 top-0 bottom-0 flex w-full max-w-md flex-col bg-card shadow-2xl"
+                                className="glass-raised fixed bottom-0 right-0 top-0 flex w-full max-w-md flex-col rounded-l-3xl rounded-r-none" style={{ position: "fixed" }}
                                 onClick={(e) => e.stopPropagation()}
                             >
                                 {/* Header */}
@@ -454,8 +425,8 @@ export default function GuardNotes({ guard, entityId, navKey = 'keep-safe', titl
                                 <div className="flex-1 space-y-5 overflow-y-auto px-6 py-6">
                                     {/* Título */}
                                     <div>
-                                        <label className="mb-1 block text-[11px] uppercase tracking-wide text-muted-foreground">
-                                            {t('guards.notes.form.title.label', { defaultValue: 'Título' })} <span className="text-red-500">*</span>
+                                        <label className="cg-eyebrow mb-1 block">
+                                            {t('guards.notes.form.title.label', { defaultValue: 'Título' })} <span style={{ color: 'var(--bad-text)' }}>*</span>
                                         </label>
                                         <Input
                                             type="text"
@@ -468,22 +439,22 @@ export default function GuardNotes({ guard, entityId, navKey = 'keep-safe', titl
 
                                     {/* Descripción */}
                                     <div>
-                                        <label className="mb-1 block text-[11px] uppercase tracking-wide text-muted-foreground">
-                                            {t('guards.notes.form.description.label', { defaultValue: 'Descripción' })} <span className="text-red-500">*</span>
+                                        <label className="cg-eyebrow mb-1 block">
+                                            {t('guards.notes.form.description.label', { defaultValue: 'Descripción' })} <span style={{ color: 'var(--bad-text)' }}>*</span>
                                         </label>
                                         <textarea
                                             value={formData.description}
                                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                             placeholder={t('guards.notes.form.description.placeholder', { defaultValue: 'Ingresa la descripción de la nota' }) as string}
-                                            className="w-full resize-none rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                            className="cg-input w-full resize-none px-3 py-2 text-sm"
                                             rows={6}
                                         />
                                     </div>
 
                                     {/* Fecha */}
                                     <div>
-                                        <label className="mb-1 block text-[11px] uppercase tracking-wide text-muted-foreground">
-                                            {t('guards.notes.form.date.label', { defaultValue: 'Fecha' })} <span className="text-red-500">*</span>
+                                        <label className="cg-eyebrow mb-1 block">
+                                            {t('guards.notes.form.date.label', { defaultValue: 'Fecha' })} <span style={{ color: 'var(--bad-text)' }}>*</span>
                                         </label>
                                         <Input
                                             type="date"
@@ -495,7 +466,7 @@ export default function GuardNotes({ guard, entityId, navKey = 'keep-safe', titl
 
                                     {/* Attachments */}
                                     <div>
-                                        <label className="mb-1 block text-[11px] uppercase tracking-wide text-muted-foreground">{t('guards.notes.form.attachments.label', { defaultValue: 'Adjuntos' })}</label>
+                                        <label className="cg-eyebrow mb-1 block">{t('guards.notes.form.attachments.label', { defaultValue: 'Adjuntos' })}</label>
 
                                         <label className="flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl border border-dashed p-3 transition-colors hover:border-foreground/30">
                                             <div className="flex-1">
@@ -508,15 +479,13 @@ export default function GuardNotes({ guard, entityId, navKey = 'keep-safe', titl
                                                                         <div className="flex items-center gap-3 truncate">
                                                                             <span className="truncate text-sm font-medium text-foreground" style={{maxWidth: 200}} title={f.name}>{shortName(f.name, 28)}</span>
                                                                         </div>
-                                                                        <button onClick={(e) => { e.stopPropagation(); removeAttachment(i); }} className="rounded p-1 text-muted-foreground transition-colors hover:text-red-500" aria-label={`Quitar ${f.name}`}>
+                                                                        <button onClick={(e) => { e.stopPropagation(); removeAttachment(i); }} className="cg-focus rounded p-1 transition-colors hover:[color:var(--bad-text)]" style={{ color: 'var(--ink-faint)' }} aria-label={`Quitar ${f.name}`}>
                                                                             <X size={14} />
                                                                         </button>
                                                                     </div>
                                                                     {/* Progress Bar */}
                                                                     {typeof uploadProgress[i] !== 'undefined' && (
-                                                                        <div className="h-2 w-full overflow-hidden rounded bg-muted">
-                                                                            <div className="h-2" style={{ width: `${uploadProgress[i]}%`, background: 'var(--primary)' }} />
-                                                                        </div>
+                                                                        <MeterBar pct={uploadProgress[i]} height={8} ariaLabel="Progreso de subida" />
                                                                     )}
                                                                 </div>
                                                             ))}
@@ -547,13 +516,13 @@ export default function GuardNotes({ guard, entityId, navKey = 'keep-safe', titl
                                 <div className="flex items-center justify-end gap-3 border-t px-6 py-5">
                                     <button
                                         onClick={handleCloseModal}
-                                        className="h-9 rounded-lg border px-4 text-sm font-medium text-foreground transition hover:bg-muted"
+                                        className="cg-btn-glass cg-focus h-9 rounded-full px-4 text-sm font-semibold transition"
                                     >
                                         {t('guards.notes.modal.cancel', { defaultValue: 'Cancelar' })}
                                     </button>
                                     <button
                                         onClick={handleSubmitNote}
-                                        className="h-9 rounded-lg px-5 text-sm font-medium bg-primary text-primary-foreground shadow-sm transition hover:opacity-90"
+                                        className="cg-btn-brand cg-focus h-9 rounded-full px-5 text-sm font-semibold transition"
                                     >
                                         {t('guards.notes.modal.save', { defaultValue: 'Guardar' })}
                                     </button>
@@ -599,7 +568,7 @@ export default function GuardNotes({ guard, entityId, navKey = 'keep-safe', titl
                             </p>
                         </Modal>
                     )}
-                </div>
+                </PageContainer>
             </GuardsLayout>
         </AppLayout>
     );

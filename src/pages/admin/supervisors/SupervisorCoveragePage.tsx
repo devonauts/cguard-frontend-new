@@ -4,7 +4,9 @@ import { toast } from 'sonner';
 import { MapPin, Navigation, Clock, RotateCw, Car, Settings2, Building2 } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import GuardsLayout from '@/layouts/GuardsLayout';
-import { Section, EmptyState, StatusBadge, Field, SkeletonCards } from '@/components/kit';
+import { Button } from '@/components/ui/button';
+import { PageContainer, EmptyState, StatusBadge, Field, SkeletonCards } from '@/components/kit';
+import { ListSection } from './ListSection';
 import { supervisorService } from '@/lib/api/supervisorService';
 
 interface CoveragePosition {
@@ -34,18 +36,15 @@ export default function SupervisorCoveragePage() {
   useEffect(load, [load]);
 
   const manageBtn = (
-    <button
-      onClick={() => navigate('/supervisor-positions')}
-      className="inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium hover:bg-muted transition"
-    >
-      <Settings2 className="h-4 w-4" /> Gestionar puestos
-    </button>
+    <Button variant="outline" size="sm" onClick={() => navigate('/supervisor-positions')}>
+      <Settings2 className="mr-2 h-4 w-4" /> Gestionar puestos
+    </Button>
   );
 
   return (
     <AppLayout>
       <GuardsLayout navKey="supervisors" title="Cobertura">
-        <div className="mx-auto max-w-5xl space-y-6 pb-24">
+        <PageContainer>
           {loading ? (
             <SkeletonCards count={2} />
           ) : !positions || positions.length === 0 ? (
@@ -58,18 +57,19 @@ export default function SupervisorCoveragePage() {
           ) : (
             <>
               <div className="flex items-center justify-between gap-2">
-                <p className="text-sm text-muted-foreground">
-                  Zonas y estaciones que este supervisor cubre según sus puestos asignados.
+                <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
+                  Zonas y puestos que este supervisor cubre según sus asignaciones.
                 </p>
                 {manageBtn}
               </div>
 
+              {/* Una sección POR PUESTO → cristal plano, sin desenfoque. */}
               {positions.map((p) => (
-                <Section
+                <ListSection
                   key={p.id}
                   title={p.name}
-                  icon={<MapPin className="h-4 w-4" />}
-                  action={p.zone ? <StatusBadge tone="primary" dot={false}>{p.zone}</StatusBadge> : undefined}
+                  icon={<MapPin />}
+                  action={p.zone ? <StatusBadge tone="brand" dot={false}>{p.zone}</StatusBadge> : undefined}
                 >
                   <div className="space-y-5">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -89,40 +89,37 @@ export default function SupervisorCoveragePage() {
 
                     <div>
                       <div className="cg-eyebrow mb-2 flex items-center gap-1.5">
-                        <Building2 className="h-3.5 w-3.5" /> Estaciones cubiertas
+                        <Building2 className="h-3.5 w-3.5" /> Puestos cubiertos
                       </div>
                       {p.stations?.length ? (
                         <div className="flex flex-wrap gap-2">
                           {(p.stations || []).map((s) => (
-                            <span
-                              key={s.id}
-                              className="inline-flex items-center gap-1.5 rounded-full border bg-muted/40 px-3 py-1 text-xs font-medium text-foreground"
-                            >
-                              <MapPin className="h-3 w-3 text-muted-foreground" /> {s.name}
-                            </span>
+                            <StatusBadge key={s.id} tone="neutral" dot={false}>
+                              <MapPin className="h-3 w-3" /> {s.name}
+                            </StatusBadge>
                           ))}
                         </div>
                       ) : (
-                        <p className="text-sm text-muted-foreground">Ninguna estación asignada a este puesto.</p>
+                        <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>Ningún puesto asignado.</p>
                       )}
                     </div>
 
                     {p.mobileStation && (
                       <div>
                         <div className="cg-eyebrow mb-2 flex items-center gap-1.5">
-                          <Car className="h-3.5 w-3.5" /> Estación móvil
+                          <Car className="h-3.5 w-3.5" /> Puesto móvil
                         </div>
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/12 px-3 py-1 text-xs font-semibold text-primary">
+                        <StatusBadge tone="brand" dot={false}>
                           <Car className="h-3 w-3" /> {p.mobileStation.name}
-                        </span>
+                        </StatusBadge>
                       </div>
                     )}
                   </div>
-                </Section>
+                </ListSection>
               ))}
             </>
           )}
-        </div>
+        </PageContainer>
       </GuardsLayout>
     </AppLayout>
   );

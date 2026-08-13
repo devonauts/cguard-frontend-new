@@ -22,11 +22,9 @@ function tzFromText(...vals: (string | undefined)[]): string | null {
   return null;
 }
 
-import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import CompanyPhoneField from "./profile/CompanyPhoneField";
@@ -35,14 +33,16 @@ import { toast } from "sonner";
 import { useTranslation } from 'react-i18next';
 import {
   Camera,
-  Edit,
+  Pencil,
   Search,
   Building2,
   MapPin,
   Clock,
-  FileText,
+  Phone,
+  Lock,
+  Wand2,
 } from "lucide-react";
-import { Section } from "@/components/kit";
+import { Section, Stagger, IconTile, EmptyState } from "@/components/kit";
 import { useAuth } from "@/contexts/AuthContext";
 import tenantService from '@/services/tenant.service';
 import { invalidateTenantBranding } from '@/lib/tenantBranding';
@@ -52,6 +52,7 @@ import CompanyDocumentsSection, { CompanyDocument } from "./profile/documents/Co
 import TenantJoinModal from "@/components/TenantJoinModal";
 import { validateCedulaOrRuc } from '@/lib/validators/id';
 import { cacheTenantLocation } from '@/utils/tenantLocation';
+import { geocodeRaw, parseGeocodeResult } from '@/utils/geocodeAddress';
 
 // useEffect imported above
 
@@ -193,7 +194,6 @@ export default function ProfileCompanyForm() {
   });
 
   const [phoneE164, setPhoneE164] = useState("");
-  const navigate = useNavigate();
   const [createCompanyOpen, setCreateCompanyOpen] = useState(false);
 
   // resolved tenantId used across render and effect
@@ -360,51 +360,59 @@ export default function ProfileCompanyForm() {
     return () => { mounted = false; };
   }, [user]);
 
-  // Geocode form.address to lat/lng when address changes and coordinates are missing
+  // ── Dirección → coordenadas ────────────────────────────────────────────────
+  //
+  // DOS ARREGLOS DE COSTE EN EL MISMO EFECTO.
+  //
+  // 1. Ya no se construye `new google.maps.Geocoder()`. Ese camino iba directo a
+  //    la Geocoding API de Google (~5 USD/1.000) sin caché de ninguna clase: la
+  //    dirección de la empresa se pagaba entera cada vez que alguien entraba en
+  //    Configuración. Ahora se pide por `geocodeAddress`, que resuelve por la
+  //    caché compartida del servidor y sólo llega a Google si el proveedor
+  //    gratuito no supo responder — una vez, para todas las empresas y para
+  //    siempre.
+  //
+  // 2. El retardo era de 700 ms, que NO agrupa una dirección: agrupa hasta la
+  //    siguiente pausa al teclear. Escribir "Av. Amazonas N24-03 y Colón, Quito"
+  //    a mano eran fácilmente 4-6 consultas para una sola dirección. Ahora son
+  //    1.500 ms y, sobre todo, hay un guardia de repetición: la misma cadena no
+  //    se consulta dos veces aunque el efecto se vuelva a disparar.
+  const ultimaConsultaRef = useRef<string>('');
+
   useEffect(() => {
     let cancelled = false;
-    let timer: ReturnType<typeof setTimeout>;
-    const shouldGeocode = form.address && (!form.latitude || !form.longitude || form.latitude === '' || form.longitude === '');
-    if (!shouldGeocode) return;
+    const direccion = String(form.address || '').trim();
+    const faltanCoords = !form.latitude || !form.longitude || form.latitude === '' || form.longitude === '';
+    // Menos de 8 caracteres no es una dirección, es alguien empezando a escribir.
+    if (!direccion || direccion.length < 8 || !faltanCoords) return;
+    if (ultimaConsultaRef.current === direccion) return;
 
-    // debounce to avoid many requests while typing
-    timer = setTimeout(async () => {
+    const timer = setTimeout(async () => {
       try {
-        const q = form.address + ' Ecuador';
-        const google = (window as any).google;
-        if (!google?.maps) return;
-        const geocoder = new google.maps.Geocoder();
-        const results: GeocodeResult[] = await new Promise((resolve) => {
-          geocoder.geocode({ address: q, region: 'ec' }, (res: GeocodeResult[] | null, status: string) => {
-            resolve(status === 'OK' ? (res || []) : []);
-          });
-        });
-        if (cancelled) return;
-        if (Array.isArray(results) && results.length > 0) {
-          const best = results[0];
-          const loc = best.geometry?.location;
-          const comps: Record<string, string> = {};
-          (best.address_components || []).forEach((c) =>
-            c.types.forEach((tp) => { comps[tp] = c.long_name; })
-          );
-          setForm((s) => ({
-            ...s,
-            latitude: String(loc!.lat()),
-            longitude: String(loc!.lng()),
-            address: best.formatted_address || s.address,
-            city: comps.locality || comps.administrative_area_level_2 || comps.sublocality_level_1 || s.city,
-            postalCode: comps.postal_code || s.postalCode,
-            country: comps.country || s.country,
-          }));
-          toast?.success?.('Coordenadas encontradas para la dirección');
-        }
+        ultimaConsultaRef.current = direccion;
+        const best = (await geocodeRaw(`${direccion} Ecuador`, { region: 'ec' }))[0] as GeocodeResult | undefined;
+        if (cancelled || !best) return;
+
+        const datos = parseGeocodeResult(best);
+        if (!datos) return;
+
+        setForm((s) => ({
+          ...s,
+          latitude: String(datos.latitude),
+          longitude: String(datos.longitude),
+          address: datos.formattedAddress || s.address,
+          city: datos.city || s.city,
+          postalCode: datos.postalCode || s.postalCode,
+          country: datos.country || s.country,
+        }));
+        toast?.success?.('Coordenadas encontradas para la dirección');
       } catch (err) {
         // ignore
       }
-    }, 700);
+    }, 1500);
 
     return () => { cancelled = true; clearTimeout(timer); };
-  }, [form.address]);
+  }, [form.address, form.latitude, form.longitude]);
   // Handler to upload a new legal document
   const handleUploadDocument = useCallback(async (file: File) => {
     if (!resolvedTenantId) return;
@@ -441,245 +449,256 @@ export default function ProfileCompanyForm() {
   if (!resolvedTenantId) {
     if (isAdmin) {
       return (
-        <div className="p-6">
-          <div className="max-w-2xl mx-auto cg-card p-6 text-center">
-            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/12 text-primary [&_svg]:size-6">
-              <Building2 />
-            </div>
-            <h3 className="text-lg font-medium mb-2">Debe crear una Empresa</h3>
-            <p className="text-sm text-foreground/70 mb-4">Aún no tiene una empresa asignada. Cree una para continuar configurando la información.</p>
-            <div className="flex justify-center">
-              {/* Opens the real join/create flow — the old navigate('/tenant/create')
-                  pointed at a route that doesn't exist (dead-end 404). */}
+        <>
+          <EmptyState
+            icon={<Building2 />}
+            title="Todavía no hay una empresa"
+            description="Aún no tienes una empresa asignada. Crea una para continuar configurando su información."
+            action={
+              /* Opens the real join/create flow — the old navigate('/tenant/create')
+                 pointed at a route that doesn't exist (dead-end 404). */
               <Button variant="brand" onClick={() => setCreateCompanyOpen(true)}>
-                Crear Empresa
+                Crear empresa
               </Button>
-            </div>
-          </div>
+            }
+          />
           <TenantJoinModal open={createCompanyOpen} onOpenChange={setCreateCompanyOpen} />
-        </div>
+        </>
       );
     }
   }
 
   return (
-    <>
-      <form onSubmit={onSubmit}>
-        <div className="w-full flex flex-col items-center gap-3 mb-8">
-          <div className="relative">
-            <div className="w-28 h-28 rounded-full border bg-muted overflow-hidden grid place-items-center">
-              {logo ? (
-                <img src={logo} alt="logo" className="w-full h-full object-cover" />
-              ) : (
-                <Building2 className="h-10 w-10 text-muted-foreground" />
-              )}
-            </div>
-            <label
-              htmlFor="logo"
-              className={`absolute -right-2 -bottom-2 h-8 w-8 rounded-full bg-muted grid place-items-center border ${!canEdit ? 'cursor-not-allowed opacity-60 pointer-events-none' : 'cursor-pointer'}`}
-            >
-              <Camera className="h-4 w-4 text-muted-foreground" />
-            </label>
-            <input id="logo" type="file" accept="image/*" className="hidden" onChange={onPickLogo} disabled={!canEdit} />
+    <form onSubmit={onSubmit}>
+      <Stagger className="space-y-6">
+        {!canEdit && (
+          <div
+            className="glass-flat flex items-start gap-3 p-4"
+            style={{ borderColor: 'color-mix(in oklab, var(--warn) 32%, transparent)' }}
+          >
+            <IconTile tone="warn" size="sm"><Lock /></IconTile>
+            <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
+              Estás viendo la información en modo lectura. Sólo los administradores pueden
+              modificar los datos de la empresa.
+            </p>
           </div>
-        </div>
+        )}
 
-        <div className="grid grid-cols-1 gap-6">
-          {!canEdit && (
-            <div className="p-3 rounded-xl bg-yellow-500/10 border border-yellow-500/20 text-sm text-yellow-700 dark:text-yellow-400">
-              Sólo los usuarios con el rol <strong>admin</strong> pueden editar la información de la empresa.
-            </div>
-          )}
-
-          <Section title="Datos de la empresa" icon={<Building2 />} contentClassName="grid grid-cols-1 gap-6">
-          <div className="space-y-2">
-            <Label>Nombre de la Empresa*</Label>
-            <Input
-              value={form.name}
-              onChange={(e) => setForm((s) => ({ ...s, name: e.target.value }))}
-              disabled={!canEdit}
-              placeholder="Nombre"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label>Número de Teléfono de la Empresa*</Label>
-            <div>
-              <CompanyPhoneField value={phoneE164} onChange={setPhoneE164} disabled={!canEdit} />
-              {phoneE164 && !isPhoneValid && (
-                <p className="text-xs text-red-500">Número inválido. Usa el formato internacional, por ejemplo +12015550123.</p>
-              )}
-            </div>
-            <p className="text-xs text-muted-foreground">e.g. {country.dialCode}2015550123</p>
-          </div>
-
-
-          <div className="space-y-2">
-            <Label>Sitio Web de la Empresa</Label>
-            <Input
-              type="url"
-              value={form.website}
-              onChange={(e) => setForm((s) => ({ ...s, website: e.target.value }))}
-              placeholder="https://tu-dominio.com"
-              disabled={!canEdit}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label>RUC (Registro Único de Contribuyentes)</Label>
-            <Input
-              value={form.ruc}
-              onChange={(e) => setForm((s) => ({ ...s, ruc: e.target.value }))}
-              onBlur={(e) => {
-                const v = (e.target as HTMLInputElement).value || '';
-                const digits = v.replace(/\D/g, '');
-                if (digits && digits.length > 0) {
-                  if (digits.length !== 13 || !validateCedulaOrRuc(digits)) {
-                    toast.error(t('clients.validation.ruc_invalid'));
-                  }
-                }
-              }}
-              placeholder="RUC de la empresa"
-              maxLength={13}
-              disabled={!canEdit}
-            />
-          </div>
-          </Section>
-
-          <Section title="Ubicación" icon={<MapPin />} contentClassName="grid grid-cols-1 gap-6">
-          <div className="space-y-2">
-            <div className="flex items-center justify-between mb-2">
-              <Label>Dirección de la Empresa*</Label>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setShowAddressAutocomplete(!showAddressAutocomplete)}
-                disabled={!canEdit}
-                className={`flex items-center gap-2 ${!canEdit ? 'opacity-50 pointer-events-none' : ''}`}
+        {/* ── Identidad ───────────────────────────────────────────────── */}
+        <Section title="Identidad" icon={<Building2 />} contentClassName="space-y-5">
+          <div className="flex flex-col items-center gap-2 sm:flex-row sm:items-center sm:gap-5">
+            <div className="relative shrink-0">
+              <div
+                className="glass-sunken grid h-24 w-24 place-items-center overflow-hidden"
+                style={{ borderStyle: 'dashed', borderColor: 'var(--hairline)', borderRadius: 'var(--r-lg)' }}
               >
-                <Edit className="h-4 w-4" />
-                <span>{showAddressAutocomplete ? 'Ingresar dirección manualmente' : 'Volver a búsqueda automática'}</span>
-              </Button>
-            </div>
-
-
-            {showAddressAutocomplete && canEdit ? (
-              <>
-                <div style={{ position: 'relative', zIndex: 0 }}>
-                  <AddressAutocomplete
-                    onAddressSelect={(addressData: AddressComponents) => {
-                      setForm((s) => ({
-                        ...s,
-                        address: addressData.address,
-                        city: addressData.city,
-                        postalCode: addressData.postalCode,
-                        country: addressData.country,
-                        latitude: String(addressData.latitude),
-                        longitude: String(addressData.longitude),
-                      }));
-                      // deduplicated toast
-                      import.meta.env && null; // placeholder to keep linters happy
-                      // eslint-disable-next-line @typescript-eslint/no-var-requires
-                      //const { toastOnce } = require('@/lib/toastOnce');
-                      toast.success('Dirección completada automáticamente');
-                    }}
-                    defaultValue={form.address || ''}
-                    initialLat={form.latitude && !isNaN(Number(form.latitude)) ? Number(form.latitude) : undefined}
-                    initialLng={form.longitude && !isNaN(Number(form.longitude)) ? Number(form.longitude) : undefined}
-                    openWithQuery={autocompleteOpenQuery}
-                    placeholder="Buscar dirección..."
-                    // Mostrar mapa integrado como fuente única de ubicación
-                    showMap={true}
-                    mapHeight="320px"
-                  />
-                </div>
-              </>
-            ) : null}
-
-            {/* Mostrar el mapa solo si el usuario puede editar. Si no hay lat/lng usar coordenadas por defecto de Ecuador */}
-            {canEdit && !showAddressAutocomplete && (
-              <div style={{ marginTop: 16, position: 'relative', zIndex: 0 }}>
-                {(() => {
-                  const defaultLat = -1.831239; // centro aproximado de Ecuador
-                  const defaultLng = -78.183406;
-                  const latVal = form.latitude && !isNaN(Number(form.latitude)) ? Number(form.latitude) : defaultLat;
-                  const lngVal = form.longitude && !isNaN(Number(form.longitude)) ? Number(form.longitude) : defaultLng;
-                    return (
-                      <GoogleMapEmbed
-                        lat={latVal}
-                        lng={lngVal}
-                        zoom={form.latitude && form.longitude ? 17 : 6}
-                        height="320px"
-                        draggable={true}
-                        onMarkerMove={(lat, lng, address, addressDetails) => {
-                          setForm((s) => ({
-                            ...s,
-                            latitude: String(lat),
-                            longitude: String(lng),
-                            address: address || s.address,
-                            city: (addressDetails && (addressDetails.locality || addressDetails.administrative_area_level_2 || addressDetails.administrative_area_level_1)) || s.city,
-                            postalCode: (addressDetails && addressDetails.postal_code) || s.postalCode,
-                            country: (addressDetails && addressDetails.country) || s.country,
-                          }));
-                        }}
-                      />
-                    );
-                })()}
+                {logo ? (
+                  <img src={logo} alt="Logo de la empresa" className="h-full w-full object-cover" />
+                ) : (
+                  <Building2 className="h-9 w-9" style={{ color: 'var(--ink-faint)' }} />
+                )}
               </div>
-            )}
-
-            {/* Manual Address Fields */}
-            <div style={{ position: 'relative', zIndex: 2000 }}>
-              {showAddressAutocomplete && canEdit && (
-                <p className="text-xs text-muted-foreground mb-2">Los campos manuales están bloqueados. Haz clic en "Ingresar dirección manualmente" para modificarlos.</p>
-              )}
-            
-            <div className={showAddressAutocomplete && canEdit ? 'opacity-60 pointer-events-none' : ''}>
-              <div className="space-y-4">
-                <div>
-                  <Label>Dirección Principal</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      value={form.address}
-                      onChange={(e) => setForm((s) => ({ ...s, address: e.target.value }))}
-                      placeholder="Dirección"
-                      disabled={!canEdit || showAddressAutocomplete}
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      title="Buscar con autocompletado"
-                      onClick={() => {
-                        setAutocompleteOpenQuery(form.address || '');
-                        setShowAddressAutocomplete(true);
-                      }}
-                      disabled={!canEdit}
-                      className="flex items-center gap-2"
-                    >
-                      <Search className="h-4 w-4" />
-                      <span>Buscar</span>
-                    </Button>
-                  </div>
-                </div>
-
-                </div>
-              </div>
+              <label
+                htmlFor="logo"
+                className={`absolute -bottom-1 -right-1 grid h-8 w-8 place-items-center rounded-full border [&_svg]:size-4 ${!canEdit ? 'pointer-events-none cursor-not-allowed opacity-60' : 'cursor-pointer'}`}
+                style={{
+                  background: 'var(--brand)',
+                  borderColor: 'var(--brand-line)',
+                  color: 'var(--brand-ink)',
+                  boxShadow: 'var(--lift-2)',
+                }}
+                aria-label="Cambiar el logo de la empresa"
+              >
+                <Camera />
+              </label>
+              <input id="logo" type="file" accept="image/*" className="hidden" onChange={onPickLogo} disabled={!canEdit} />
             </div>
+            <div className="text-center sm:text-left">
+              <div className="text-sm font-semibold">Logo de la empresa</div>
+              <p className="mt-0.5 text-xs" style={{ color: 'var(--ink-faint)' }}>
+                {uploadingLogo
+                  ? 'Subiendo el logo…'
+                  : 'Aparece en la barra lateral, en los informes y en los correos que envías. Se guarda al elegirlo.'}
+              </p>
+            </div>
+          </div>
 
-            <div className="mt-4">
-              <Label>Dirección Complementaria</Label>
+          <div className="grid gap-5 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label>Nombre de la empresa*</Label>
               <Input
-                value={form.addressLine2}
-                onChange={(e) => setForm((s) => ({ ...s, addressLine2: e.target.value }))}
-                placeholder="Opcional"
+                value={form.name}
+                onChange={(e) => setForm((s) => ({ ...s, name: e.target.value }))}
+                disabled={!canEdit}
+                placeholder="Nombre"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>RUC (Registro Único de Contribuyentes)</Label>
+              <Input
+                value={form.ruc}
+                onChange={(e) => setForm((s) => ({ ...s, ruc: e.target.value }))}
+                onBlur={(e) => {
+                  const v = (e.target as HTMLInputElement).value || '';
+                  const digits = v.replace(/\D/g, '');
+                  if (digits && digits.length > 0) {
+                    if (digits.length !== 13 || !validateCedulaOrRuc(digits)) {
+                      toast.error(t('clients.validation.ruc_invalid'));
+                    }
+                  }
+                }}
+                placeholder="RUC de la empresa"
+                maxLength={13}
+                disabled={!canEdit}
+              />
+              <p className="text-xs" style={{ color: 'var(--ink-faint)' }}>13 dígitos.</p>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Sitio web</Label>
+              <Input
+                type="url"
+                value={form.website}
+                onChange={(e) => setForm((s) => ({ ...s, website: e.target.value }))}
+                placeholder="https://tu-dominio.com"
                 disabled={!canEdit}
               />
             </div>
 
-            <div className={showAddressAutocomplete && canEdit ? 'opacity-60 pointer-events-none' : ''}>
-              <div className="space-y-4">
-                <div>
-                  <Label>Dirección Principal</Label>
+            <div className="space-y-2">
+              <Label>Número de licencia de la empresa</Label>
+              <Input
+                value={form.license}
+                onChange={(e) => setForm((s) => ({ ...s, license: e.target.value }))}
+                placeholder="Licencia"
+                disabled={!canEdit}
+              />
+            </div>
+          </div>
+        </Section>
+
+        {/* ── Contacto ────────────────────────────────────────────────── */}
+        <Section title="Contacto" icon={<Phone />} contentClassName="grid gap-5 md:grid-cols-2">
+          <div className="space-y-2">
+            <Label>Teléfono de la empresa*</Label>
+            <CompanyPhoneField value={phoneE164} onChange={setPhoneE164} disabled={!canEdit} />
+            {phoneE164 && !isPhoneValid ? (
+              <p className="text-xs" style={{ color: 'var(--bad-text)' }}>
+                Número inválido. Usa el formato internacional, por ejemplo +12015550123.
+              </p>
+            ) : (
+              <p className="text-xs" style={{ color: 'var(--ink-faint)' }}>
+                Ejemplo: {country.dialCode}2015550123
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label>Correo electrónico de la empresa</Label>
+            <Input
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm((s) => ({ ...s, email: e.target.value }))}
+              placeholder="correo@empresa.com"
+              disabled={!canEdit}
+            />
+            <p className="text-xs" style={{ color: 'var(--ink-faint)' }}>
+              Es el remitente y el contacto que ven tus clientes.
+            </p>
+          </div>
+        </Section>
+
+        {/* ── Dirección ───────────────────────────────────────────────── */}
+        <Section
+          title="Dirección"
+          icon={<MapPin />}
+          contentClassName="space-y-5"
+          action={
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setShowAddressAutocomplete(!showAddressAutocomplete)}
+              disabled={!canEdit}
+              className={!canEdit ? 'pointer-events-none opacity-50' : undefined}
+            >
+              <Pencil className="mr-2 h-4 w-4" />
+              {showAddressAutocomplete ? 'Escribir a mano' : 'Volver a la búsqueda'}
+            </Button>
+          }
+        >
+          {showAddressAutocomplete && canEdit ? (
+            <div style={{ position: 'relative', zIndex: 0 }}>
+              <AddressAutocomplete
+                onAddressSelect={(addressData: AddressComponents) => {
+                  setForm((s) => ({
+                    ...s,
+                    address: addressData.address,
+                    city: addressData.city,
+                    postalCode: addressData.postalCode,
+                    country: addressData.country,
+                    latitude: String(addressData.latitude),
+                    longitude: String(addressData.longitude),
+                  }));
+                  toast.success('Dirección completada automáticamente');
+                }}
+                defaultValue={form.address || ''}
+                initialLat={form.latitude && !isNaN(Number(form.latitude)) ? Number(form.latitude) : undefined}
+                initialLng={form.longitude && !isNaN(Number(form.longitude)) ? Number(form.longitude) : undefined}
+                openWithQuery={autocompleteOpenQuery}
+                placeholder="Buscar dirección..."
+                // Mostrar mapa integrado como fuente única de ubicación
+                showMap={true}
+                mapHeight="320px"
+              />
+            </div>
+          ) : null}
+
+          {/* Mostrar el mapa solo si el usuario puede editar. Si no hay lat/lng usar coordenadas por defecto de Ecuador */}
+          {canEdit && !showAddressAutocomplete && (
+            <div style={{ position: 'relative', zIndex: 0 }}>
+              {(() => {
+                const defaultLat = -1.831239; // centro aproximado de Ecuador
+                const defaultLng = -78.183406;
+                const latVal = form.latitude && !isNaN(Number(form.latitude)) ? Number(form.latitude) : defaultLat;
+                const lngVal = form.longitude && !isNaN(Number(form.longitude)) ? Number(form.longitude) : defaultLng;
+                return (
+                  <GoogleMapEmbed
+                    lat={latVal}
+                    lng={lngVal}
+                    zoom={form.latitude && form.longitude ? 17 : 6}
+                    height="320px"
+                    draggable={true}
+                    onMarkerMove={(lat, lng, address, addressDetails) => {
+                      setForm((s) => ({
+                        ...s,
+                        latitude: String(lat),
+                        longitude: String(lng),
+                        address: address || s.address,
+                        city: (addressDetails && (addressDetails.locality || addressDetails.administrative_area_level_2 || addressDetails.administrative_area_level_1)) || s.city,
+                        postalCode: (addressDetails && addressDetails.postal_code) || s.postalCode,
+                        country: (addressDetails && addressDetails.country) || s.country,
+                      }));
+                    }}
+                  />
+                );
+              })()}
+            </div>
+          )}
+
+          <div style={{ position: 'relative', zIndex: 2000 }}>
+            {showAddressAutocomplete && canEdit && (
+              <p className="mb-3 flex items-center gap-2 text-xs" style={{ color: 'var(--ink-faint)' }}>
+                <Lock className="h-3.5 w-3.5" />
+                Los campos de abajo se completan solos con la búsqueda. Pulsa «Escribir a mano» para editarlos.
+              </p>
+            )}
+
+            <div className={showAddressAutocomplete && canEdit ? 'pointer-events-none opacity-60' : ''}>
+              <div className="space-y-5">
+                <div className="space-y-2">
+                  <Label>Dirección principal</Label>
                   <div className="flex gap-2">
                     <Input
                       value={form.address}
@@ -696,17 +715,17 @@ export default function ProfileCompanyForm() {
                         setShowAddressAutocomplete(true);
                       }}
                       disabled={!canEdit}
-                      className="flex items-center gap-2"
+                      className="shrink-0"
                     >
-                      <Search className="h-4 w-4" />
-                      <span>Buscar</span>
+                      <Search className="mr-2 h-4 w-4" />
+                      Buscar
                     </Button>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <Label>Código Postal</Label>
+                <div className="grid gap-5 md:grid-cols-3">
+                  <div className="space-y-2">
+                    <Label>Código postal</Label>
                     <Input
                       value={form.postalCode}
                       onChange={(e) => setForm((s) => ({ ...s, postalCode: e.target.value }))}
@@ -715,7 +734,7 @@ export default function ProfileCompanyForm() {
                     />
                   </div>
 
-                  <div>
+                  <div className="space-y-2">
                     <Label>Ciudad</Label>
                     <Input
                       value={form.city}
@@ -725,7 +744,7 @@ export default function ProfileCompanyForm() {
                     />
                   </div>
 
-                  <div>
+                  <div className="space-y-2">
                     <Label>País</Label>
                     <Input
                       value={form.country}
@@ -736,8 +755,8 @@ export default function ProfileCompanyForm() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
+                <div className="grid gap-5 md:grid-cols-2">
+                  <div className="space-y-2">
                     <Label>Latitud</Label>
                     <Input
                       value={form.latitude}
@@ -747,7 +766,7 @@ export default function ProfileCompanyForm() {
                     />
                   </div>
 
-                  <div>
+                  <div className="space-y-2">
                     <Label>Longitud</Label>
                     <Input
                       value={form.longitude}
@@ -760,97 +779,93 @@ export default function ProfileCompanyForm() {
               </div>
             </div>
           </div>
-          </Section>
 
-          <Section title="Contacto y registro" icon={<FileText />} contentClassName="grid grid-cols-1 gap-6">
           <div className="space-y-2">
-            <Label>Correo Electrónico de la Empresa</Label>
+            <Label>Dirección complementaria</Label>
             <Input
-              type="email"
-              value={form.email}
-              onChange={(e) => setForm((s) => ({ ...s, email: e.target.value }))}
-              placeholder="correo@empresa.com"
+              value={form.addressLine2}
+              onChange={(e) => setForm((s) => ({ ...s, addressLine2: e.target.value }))}
+              placeholder="Opcional — edificio, piso, referencia"
               disabled={!canEdit}
             />
           </div>
+        </Section>
 
-          <div className="space-y-2">
-            <Label>Número de Licencia de la Empresa</Label>
-            <Input
-              value={form.license}
-              onChange={(e) => setForm((s) => ({ ...s, license: e.target.value }))}
-              placeholder="Licencia"
-              disabled={!canEdit}
-            />
-          </div>
-          </Section>
-
-          <Section title="Zona horaria" icon={<Clock />} contentClassName="grid grid-cols-1 gap-6">
-          <div className="space-y-2">
-            <Label>Zona Horaria</Label>
-            <Select
-              value={form.timezone}
-              onValueChange={(v) => setForm((s) => ({ ...s, timezone: v }))}
-              disabled={!canEdit}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Seleccionar zona horaria" />
-              </SelectTrigger>
-              <SelectContent className="max-h-72">
-                <SelectItem value="America/Guayaquil">UTC-5 Quito (America/Guayaquil)</SelectItem>
-                <SelectItem value="America/Bogota">UTC-5 Bogotá (America/Bogota)</SelectItem>
-                <SelectItem value="America/Lima">UTC-5 Lima (America/Lima)</SelectItem>
-                <SelectItem value="America/Mexico_City">UTC-6 Ciudad de México</SelectItem>
-                <SelectItem value="America/Santiago">UTC-3 Santiago</SelectItem>
-                <SelectItem value="America/Buenos_Aires">UTC-3 Buenos Aires</SelectItem>
-                <SelectItem value="Europe/Madrid">UTC+1 Madrid</SelectItem>
-                <SelectItem value="UTC">UTC</SelectItem>
-              </SelectContent>
-            </Select>
-            {canEdit && (
-              <button
-                type="button"
-                onClick={() => {
-                  const tz = tzFromText(form.country, form.address);
-                  if (tz) {
-                    setForm((s) => ({ ...s, timezone: tz }));
-                    toast.success(`Zona horaria detectada por la dirección: ${tz}`);
-                  } else {
-                    toast.info("No se pudo detectar la zona horaria; selecciónala manualmente.");
-                  }
-                }}
-                className="text-xs font-medium text-primary hover:underline"
+        {/* ── Preferencias ────────────────────────────────────────────── */}
+        <Section title="Preferencias" icon={<Clock />} contentClassName="space-y-2">
+          <div className="grid gap-5 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label>Zona horaria</Label>
+              <Select
+                value={form.timezone}
+                onValueChange={(v) => setForm((s) => ({ ...s, timezone: v }))}
+                disabled={!canEdit}
               >
-                Detectar por dirección
-              </button>
-            )}
-            <p className="text-xs text-muted-foreground">La zona horaria es la <strong>única fuente de verdad</strong> para los horarios: determina cómo se muestran y calculan turnos, registros y reportes — para todos (administradores y vigilantes), sin importar la zona del dispositivo.</p>
-          </div>
-          </Section>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Seleccionar zona horaria" />
+                </SelectTrigger>
+                <SelectContent className="max-h-72">
+                  <SelectItem value="America/Guayaquil">UTC-5 Quito (America/Guayaquil)</SelectItem>
+                  <SelectItem value="America/Bogota">UTC-5 Bogotá (America/Bogota)</SelectItem>
+                  <SelectItem value="America/Lima">UTC-5 Lima (America/Lima)</SelectItem>
+                  <SelectItem value="America/Mexico_City">UTC-6 Ciudad de México</SelectItem>
+                  <SelectItem value="America/Santiago">UTC-3 Santiago</SelectItem>
+                  <SelectItem value="America/Buenos_Aires">UTC-3 Buenos Aires</SelectItem>
+                  <SelectItem value="Europe/Madrid">UTC+1 Madrid</SelectItem>
+                  <SelectItem value="UTC">UTC</SelectItem>
+                </SelectContent>
+              </Select>
+              {canEdit && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const tz = tzFromText(form.country, form.address);
+                    if (tz) {
+                      setForm((s) => ({ ...s, timezone: tz }));
+                      toast.success(`Zona horaria detectada por la dirección: ${tz}`);
+                    } else {
+                      toast.info("No se pudo detectar la zona horaria; selecciónala manualmente.");
+                    }
+                  }}
+                  className="cg-focus inline-flex items-center gap-1.5 rounded-lg text-xs font-semibold hover:underline"
+                  style={{ color: 'var(--brand-text)' }}
+                >
+                  <Wand2 className="h-3.5 w-3.5" />
+                  Detectar por la dirección
+                </button>
+              )}
+            </div>
 
-          <div className="flex justify-end">
-            <Button
-              variant="brand"
-              type="submit"
-              disabled={!canEdit}
-              title={!canEdit ? 'Solo admins pueden guardar cambios' : undefined}
+            <div
+              className="glass-sunken p-4 text-xs leading-relaxed"
+              style={{ color: 'var(--ink-soft)' }}
             >
-              Guardar
-            </Button>
+              La zona horaria es la <strong style={{ color: 'var(--ink)' }}>única fuente de verdad</strong> para
+              los horarios: determina cómo se muestran y calculan turnos, registros e informes — para todos
+              (administradores y vigilantes), sin importar la zona del dispositivo.
+            </div>
           </div>
-        </div>
+        </Section>
 
-      
+        <CompanyDocumentsSection
+          documents={companyDocuments}
+          onUpload={handleUploadDocument}
+          onDelete={handleDeleteDocument}
+          canEdit={canEdit && !uploadingDoc}
+        />
 
-        <div className="mt-6">
-          <CompanyDocumentsSection
-            documents={companyDocuments}
-            onUpload={handleUploadDocument}
-            onDelete={handleDeleteDocument}
-            canEdit={canEdit && !uploadingDoc}
-          />
+        <div className="flex justify-end">
+          <Button
+            variant="brand"
+            type="submit"
+            className="px-6"
+            disabled={!canEdit}
+            title={!canEdit ? 'Sólo los administradores pueden guardar cambios' : undefined}
+          >
+            Guardar
+          </Button>
         </div>
-      </form>
-    </>
+      </Stagger>
+    </form>
   );
 }

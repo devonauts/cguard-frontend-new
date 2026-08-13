@@ -22,15 +22,17 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet";
 
-import { Search, Filter as FilterIcon, MoreVertical, Eye, Edit, Archive, Car, CheckCircle2, PauseCircle } from "lucide-react";
-import { PageContainer, PageHeader, Section, Stagger, StatCard, StatusBadge, EmptyState } from '@/components/kit';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import {
-        DropdownMenu,
-        DropdownMenuTrigger,
-        DropdownMenuContent,
-        DropdownMenuItem,
-} from '@/components/ui/dropdown-menu';
+    Filter as FilterIcon, Eye, Edit, Archive, Car,
+    CheckCircle2, PauseCircle, Plus, Palette, Gauge, KeyRound, ImageOff,
+} from "lucide-react";
+import {
+    PageContainer, PageHeader, Section, Stagger, StatCard, StatusBadge, EmptyState,
+    Toolbar, Segmented, GlassPanel, IconTile, Field, SkeletonCards,
+} from '@/components/kit';
+import { TableSearch } from '@/components/table/TableToolbar';
+import { RowActionsMenu } from '@/components/table/RowActionsMenu';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -50,6 +52,19 @@ import {
 } from "@/lib/validators/vehicle-filters";
 import vehicleService from '@/lib/api/vehicleService';
 
+/** Cómo se llama la propiedad del vehículo en la ficha. */
+const OWNERSHIP_LABELS: Record<string, string> = {
+    propio: 'Propio',
+    alquilado: 'Alquilado',
+    cliente: 'Del cliente',
+};
+
+/** Primera foto utilizable del vehículo, si la hay. */
+const fotoVehiculo = (v: any): string | null => {
+    const img = Array.isArray(v?.imageUrl) ? v.imageUrl[0] : null;
+    return img?.downloadUrl || img?.publicUrl || null;
+};
+
 export default function VehiclesPage() {
     const [openFilter, setOpenFilter] = useState(false);
     const [filters, setFilters] = useState<VehicleFilters>(defaultVehicleFilters);
@@ -67,6 +82,7 @@ export default function VehiclesPage() {
     const [detailsId, setDetailsId] = useState<string | null>(null);
     const [detailsLoading, setDetailsLoading] = useState<boolean>(false);
     const [detailsVehicle, setDetailsVehicle] = useState<any | null>(null);
+    const [vista, setVista] = useState<'tarjetas' | 'lista'>('tarjetas');
 
     const aplicarFiltros = () => {
         const parse = vehicleFiltersSchema.safeParse(filters);
@@ -212,6 +228,21 @@ export default function VehiclesPage() {
         }
     };
 
+    const activos = rows.filter((r) => r.active).length;
+    const inactivos = rows.filter((r) => !r.active).length;
+    const sinResultados = !loading && rows.length === 0;
+
+    /** El menú «…» del kit — el mismo que usan las tablas del resto del CRM. */
+    const menuVehiculo = (id: string) => (
+        <RowActionsMenu
+            actions={[
+                { label: 'Ver detalles', icon: <Eye />, onClick: () => viewVehicle(id) },
+                { label: 'Editar', icon: <Edit />, onClick: () => editVehicle(id) },
+                { label: 'Inactivar', icon: <Archive />, onClick: () => archiveVehicle(id) },
+            ]}
+        />
+    );
+
     return (
         <AppLayout>
             <Breadcrumb
@@ -226,10 +257,20 @@ export default function VehiclesPage() {
                     icon={<Car />}
                     title="Vehículos"
                     subtitle="Flota de la empresa y su estado operativo"
+                    badges={(
+                        <>
+                            <StatusBadge tone="brand">{count} en la flota</StatusBadge>
+                            {selectedCount > 0 && (
+                                <StatusBadge tone="info">{selectedCount} seleccionado{selectedCount === 1 ? '' : 's'}</StatusBadge>
+                            )}
+                        </>
+                    )}
                     actions={(
                         <>
                             <Button variant="brand" asChild>
-                                <Link to="/vehicle-patrol/vehicles/add-vehicle">Nuevo vehículo</Link>
+                                <Link to="/vehicle-patrol/vehicles/add-vehicle">
+                                    <Plus className="mr-1 h-4 w-4" /> Nuevo vehículo
+                                </Link>
                             </Button>
                             <Sheet open={openFilter} onOpenChange={setOpenFilter}>
                                 <SheetTrigger asChild>
@@ -295,124 +336,209 @@ export default function VehiclesPage() {
 
                 <Stagger className="grid gap-4 sm:grid-cols-3">
                     <StatCard label="Total" value={count} icon={<Car />} accent="primary" />
-                    <StatCard label="Activos" value={rows.filter((r) => r.active).length} icon={<CheckCircle2 />} accent="green" />
-                    <StatCard label="Inactivos" value={rows.filter((r) => !r.active).length} icon={<PauseCircle />} accent="slate" />
+                    <StatCard label="Activos" value={activos} icon={<CheckCircle2 />} accent="ok" hint="En esta página" />
+                    <StatCard label="Inactivos" value={inactivos} icon={<PauseCircle />} accent="neutral" hint="En esta página" />
                 </Stagger>
+
+                <Toolbar>
+                    {/* `TableSearch` del kit — el mismo buscador que Inventario
+                        y que las tablas del CRM, con su botón de limpiar. */}
+                    <div className="min-w-48 flex-1">
+                        <TableSearch
+                            value={filters.search ?? ''}
+                            onChange={(v) => setFilters((s) => ({ ...s, search: v }))}
+                            placeholder="Buscar vehículo"
+                        />
+                    </div>
+                    <Select disabled={selectedIds.length === 0} value={selectedAction ?? undefined} onValueChange={(v) => handleBulkActionSelect(v)}>
+                        <SelectTrigger className="w-40">
+                            <SelectValue placeholder="Acciones" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {availableActions.map((a) => (
+                                <SelectItem key={a.value} value={a.value}>{a.label}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <div className="ml-auto">
+                        <Segmented
+                            value={vista}
+                            onChange={setVista}
+                            options={[
+                                { value: 'tarjetas', label: 'Tarjetas' },
+                                { value: 'lista', label: 'Lista' },
+                            ]}
+                        />
+                    </div>
+                </Toolbar>
 
                 <Section
                     title="Listado de vehículos"
                     icon={<Car />}
-                    action={(
-                        <div className="flex items-center gap-2">
-                            <Select disabled={selectedIds.length === 0} value={selectedAction ?? undefined} onValueChange={(v) => handleBulkActionSelect(v)}>
-                                <SelectTrigger className="w-40">
-                                    <SelectValue placeholder="Acciones" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {availableActions.map((a) => (
-                                        <SelectItem key={a.value} value={a.value}>{a.label}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <div className="relative">
-                                <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                                <Input
-                                    className="w-56 pl-9"
-                                    placeholder="Buscar vehículo"
-                                    value={filters.search ?? ''}
-                                    onChange={(e) => setFilters((s) => ({ ...s, search: e.target.value }))}
-                                />
-                            </div>
-                        </div>
-                    )}
-                    contentClassName="-mx-5 -mb-5"
+                    action={vista === 'tarjetas' && rows.length > 0 ? (
+                        <label className="flex cursor-pointer items-center gap-2 text-xs font-medium" style={{ color: 'var(--ink-soft)' }}>
+                            <Checkbox
+                                checked={rows.length > 0 && selectedIds.length === rows.length}
+                                onCheckedChange={(c) => handleSelectAll(c === true)}
+                                aria-label="Seleccionar todos"
+                            />
+                            Seleccionar todos
+                        </label>
+                    ) : undefined}
+                    contentClassName={vista === 'lista' ? '-mx-5 -mb-5' : undefined}
                 >
-                    <div className="overflow-hidden">
+                    {loading ? (
+                        <div className={vista === 'lista' ? 'p-5' : undefined}>
+                            <SkeletonCards count={6} className="lg:grid-cols-3" />
+                        </div>
+                    ) : sinResultados ? (
+                        <div className={vista === 'lista' ? 'p-5' : undefined}>
+                            <EmptyState
+                                icon={<Car />}
+                                title="No se encontraron resultados"
+                                description="No hay vehículos que coincidan con los filtros."
+                                action={(
+                                    <Button size="sm" variant="brand" asChild>
+                                        <Link to="/vehicle-patrol/vehicles/add-vehicle">
+                                            <Plus className="mr-1 h-3.5 w-3.5" /> Nuevo vehículo
+                                        </Link>
+                                    </Button>
+                                )}
+                            />
+                        </div>
+                    ) : vista === 'tarjetas' ? (
+                        <Stagger className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                            {rows.map((r) => {
+                                const foto = fotoVehiculo(r);
+                                const seleccionado = selectedIds.includes(r.id);
+                                return (
+                                    <GlassPanel
+                                        key={r.id}
+                                        flat
+                                        brand={seleccionado}
+                                        className="flex h-full flex-col gap-3 p-4"
+                                    >
+                                        <div className="flex items-start gap-3">
+                                            <Checkbox
+                                                className="mt-1"
+                                                checked={seleccionado}
+                                                onCheckedChange={(c) => handleSelectOne(r.id, c === true)}
+                                                aria-label={`Seleccionar ${r.licensePlate || r.name || 'vehículo'}`}
+                                            />
+                                            <div className="min-w-0 flex-1">
+                                                <div className="truncate font-mono text-sm font-semibold text-foreground">
+                                                    {r.licensePlate || 'Sin placa'}
+                                                </div>
+                                                <div className="cg-eyebrow mt-1 truncate">
+                                                    {[r.make, r.model, r.year].filter(Boolean).join(' · ') || 'Sin datos'}
+                                                </div>
+                                            </div>
+                                            {menuVehiculo(r.id)}
+                                        </div>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => viewVehicle(r.id)}
+                                            className="cg-focus block h-32 w-full overflow-hidden rounded-xl border"
+                                            style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}
+                                            aria-label={`Ver detalles de ${r.licensePlate || 'vehículo'}`}
+                                        >
+                                            {foto ? (
+                                                <img src={foto} alt="" className="h-full w-full object-cover" />
+                                            ) : (
+                                                <span className="flex h-full w-full items-center justify-center" style={{ color: 'var(--ink-faint)' }}>
+                                                    <ImageOff className="h-6 w-6" />
+                                                </span>
+                                            )}
+                                        </button>
+
+                                        <div className="flex flex-wrap items-center gap-2">
+                                            <StatusBadge tone={r.active ? 'ok' : 'neutral'}>
+                                                {r.active ? 'Activo' : 'Inactivo'}
+                                            </StatusBadge>
+                                            {r.ownership && (
+                                                <StatusBadge tone="info" dot={false}>
+                                                    {OWNERSHIP_LABELS[r.ownership] || r.ownership}
+                                                </StatusBadge>
+                                            )}
+                                        </div>
+
+                                        <div className="glass-sunken mt-auto grid grid-cols-2 gap-3 p-3">
+                                            <Field label="Color" value={r.color || '—'} />
+                                            <Field
+                                                label="Kilometraje"
+                                                value={r.initialMileage != null ? Number(r.initialMileage).toLocaleString() : '—'}
+                                            />
+                                        </div>
+                                    </GlassPanel>
+                                );
+                            })}
+                        </Stagger>
+                    ) : (
                         <div className="overflow-x-auto">
                             <table className="min-w-full divide-y divide-border">
-                                <thead className="bg-muted/30 text-left text-sm text-foreground/70">
+                                <thead className="text-left text-sm" style={{ color: 'var(--ink-soft)', background: 'var(--glass-sunken)' }}>
                                     <tr>
                                         <th className="px-4 py-2">
-                                            <input
-                                                type="checkbox"
+                                            <Checkbox
                                                 checked={rows.length > 0 && selectedIds.length === rows.length}
-                                                onChange={(e) => handleSelectAll(e.target.checked)}
+                                                onCheckedChange={(c) => handleSelectAll(c === true)}
+                                                aria-label="Seleccionar todos"
                                             />
                                         </th>
-                                        <th className="px-4 py-2">Año</th>
-                                        <th className="px-4 py-2">Marca</th>
-                                        <th className="px-4 py-2">Modelo</th>
-                                        <th className="px-4 py-2">Placa</th>
-                                        <th className="px-4 py-2">Estado</th>
+                                        <th className="px-4 py-2 font-semibold">Año</th>
+                                        <th className="px-4 py-2 font-semibold">Marca</th>
+                                        <th className="px-4 py-2 font-semibold">Modelo</th>
+                                        <th className="px-4 py-2 font-semibold">Placa</th>
+                                        <th className="px-4 py-2 font-semibold">Estado</th>
                                         <th className="px-4 py-2 text-right" />
                                     </tr>
                                 </thead>
 
-                                <tbody className="bg-card divide-y divide-border text-sm">
-                                    {loading ? (
-                                        <tr>
-                                            <td colSpan={7} className="p-6 text-center text-muted-foreground">Cargando...</td>
-                                        </tr>
-                                    ) : rows.length === 0 ? (
-                                        <tr>
-                                            <td colSpan={7} className="p-6">
-                                                <EmptyState icon={<Car />} title="No se encontraron resultados" description="No hay vehículos que coincidan con los filtros." />
+                                <tbody className="divide-y divide-border text-sm">
+                                    {rows.map((r) => (
+                                        <tr
+                                            key={r.id}
+                                            className="text-sm transition-colors hover:bg-[var(--glass-sunken)]"
+                                            style={selectedIds.includes(r.id) ? { background: 'var(--brand-wash)' } : undefined}
+                                        >
+                                            <td className="px-4 py-3">
+                                                <Checkbox
+                                                    checked={selectedIds.includes(r.id)}
+                                                    onCheckedChange={(c) => handleSelectOne(r.id, c === true)}
+                                                    aria-label={`Seleccionar ${r.licensePlate || 'vehículo'}`}
+                                                />
+                                            </td>
+                                            <td className="px-4 py-3 tabular-nums">{r.year || '—'}</td>
+                                            <td className="px-4 py-3">{r.make || '—'}</td>
+                                            <td className="px-4 py-3">{r.model || '—'}</td>
+                                            <td className="px-4 py-3 font-mono">{r.licensePlate || '—'}</td>
+                                            <td className="px-4 py-3">
+                                                <StatusBadge tone={r.active ? 'ok' : 'neutral'}>
+                                                    {r.active ? 'Activo' : 'Inactivo'}
+                                                </StatusBadge>
+                                            </td>
+                                            <td className="px-2 py-3 text-right">
+                                                {menuVehiculo(r.id)}
                                             </td>
                                         </tr>
-                                    ) : (
-                                        rows.map((r) => (
-                                            <tr key={r.id} className="text-sm">
-                                                        <td className="px-4 py-3">
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={selectedIds.includes(r.id)}
-                                                                onChange={(e) => handleSelectOne(r.id, e.target.checked)}
-                                                            />
-                                                        </td>
-                                                <td className="px-4 py-3">{r.year || '-'}</td>
-                                                <td className="px-4 py-3">{r.make || '-'}</td>
-                                                <td className="px-4 py-3">{r.model || '-'}</td>
-                                                <td className="px-4 py-3">{r.licensePlate || '-'}</td>
-                                                <td className="px-4 py-3"><StatusBadge tone={r.active ? 'green' : 'slate'}>{r.active ? 'Activo' : 'Inactivo'}</StatusBadge></td>
-                                                <td className="px-2 py-3">
-                                                    <DropdownMenu>
-                                                        <DropdownMenuTrigger asChild>
-                                                            <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full border-slate-200 text-foreground/70" type="button">
-                                                                <MoreVertical className="h-4 w-4" />
-                                                            </Button>
-                                                        </DropdownMenuTrigger>
-                                                        <DropdownMenuContent align="end" className="w-40">
-                                                            <DropdownMenuItem onClick={() => viewVehicle(r.id)}>
-                                                                <Eye className="mr-2 h-4 w-4" /> Ver detalles
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuItem onClick={() => editVehicle(r.id)}>
-                                                                <Edit className="mr-2 h-4 w-4" /> Editar
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuItem onClick={() => archiveVehicle(r.id)}>
-                                                                <Archive className="mr-2 h-4 w-4" /> Inactivar
-                                                            </DropdownMenuItem>
-                                                        </DropdownMenuContent>
-                                                    </DropdownMenu>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    )}
+                                    ))}
                                 </tbody>
                             </table>
                         </div>
-                    </div>
+                    )}
 
                     <AlertDialog open={!!archiveConfirmId} onOpenChange={(open) => !open && setArchiveConfirmId(null)}>
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
                                         <AlertDialogTitle>Inactivar vehículos</AlertDialogTitle>
                                     </AlertDialogHeader>
-                                    <div className="p-4">
+                                    <div className="p-4 text-sm" style={{ color: 'var(--ink-soft)' }}>
                                         ¿Estás seguro de que deseas inactivar 1 vehículo(s)?
                                     </div>
                                     <AlertDialogFooter>
                                         <AlertDialogCancel onClick={() => setArchiveConfirmId(null)}>Cancelar</AlertDialogCancel>
-                                        <AlertDialogAction onClick={confirmArchive} className="bg-red-600 hover:bg-red-700" disabled={archiveLoading}>
+                                        <AlertDialogAction onClick={confirmArchive} className="cg-btn-bad" disabled={archiveLoading}>
                                             Confirmar
                                         </AlertDialogAction>
                                     </AlertDialogFooter>
@@ -428,7 +554,7 @@ export default function VehiclesPage() {
                                     {bulkActionConfirm === 'eliminar' && 'Eliminar vehículos'}
                                 </AlertDialogTitle>
                             </AlertDialogHeader>
-                            <div className="p-4">
+                            <div className="p-4 text-sm" style={{ color: 'var(--ink-soft)' }}>
                                 ¿Estás seguro de que deseas {bulkActionConfirm} {selectedIds.length} vehículo(s)?
                             </div>
                             <AlertDialogFooter>
@@ -465,7 +591,7 @@ export default function VehiclesPage() {
                                             setBulkActionLoading(false);
                                         }
                                     }}
-                                    className="bg-red-600 hover:bg-red-700"
+                                    className="cg-btn-bad"
                                     disabled={bulkActionLoading}
                                 >
                                     Confirmar
@@ -484,54 +610,76 @@ export default function VehiclesPage() {
                             </DialogHeader>
 
                             {detailsLoading ? (
-                                <div className="p-4">Cargando...</div>
+                                <div className="p-4">
+                                    <SkeletonCards count={2} />
+                                </div>
                             ) : detailsVehicle ? (
-                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 p-4">
-                                    <div>
-                                        <div className="mb-2 text-sm font-medium">Nombre</div>
-                                        <div className="text-sm">{detailsVehicle.name || '-'}</div>
-
-                                        <div className="mt-4 text-sm font-medium">Placa</div>
-                                        <div className="text-sm">{detailsVehicle.licensePlate || '-'}</div>
-
-                                        <div className="mt-4 text-sm font-medium">Año</div>
-                                        <div className="text-sm">{detailsVehicle.year || '-'}</div>
-
-                                        <div className="mt-4 text-sm font-medium">Marca</div>
-                                        <div className="text-sm">{detailsVehicle.make || '-'}</div>
-
-                                        <div className="mt-4 text-sm font-medium">Modelo</div>
-                                        <div className="text-sm">{detailsVehicle.model || '-'}</div>
-
-                                        <div className="mt-4 text-sm font-medium">Color</div>
-                                        <div className="text-sm">{detailsVehicle.color || '-'}</div>
-                                    </div>
-
-                                    <div>
-                                        <div className="mb-2 text-sm font-medium">VIN</div>
-                                        <div className="text-sm">{detailsVehicle.vin || '-'}</div>
-
-                                        <div className="mt-4 text-sm font-medium">Kilometraje inicial</div>
-                                        <div className="text-sm">{detailsVehicle.initialMileage ?? '-'}</div>
-
-                                        <div className="mt-4 text-sm font-medium">Propiedad</div>
-                                        <div className="text-sm">{detailsVehicle.ownership || '-'}</div>
-
-                                        <div className="mt-4 text-sm font-medium">Descripción</div>
-                                        <div className="text-sm">{detailsVehicle.description || '-'}</div>
-
-                                        <div className="mt-4 text-sm font-medium">Imagen</div>
-                                        <div className="text-sm">
-                                            {detailsVehicle.imageUrl && detailsVehicle.imageUrl.length > 0 ? (
-                                                <img src={detailsVehicle.imageUrl[0].downloadUrl || detailsVehicle.imageUrl[0].publicUrl} alt="vehículo" className="max-h-48 rounded" />
-                                            ) : (
-                                                <span className="text-muted-foreground">Sin imagen</span>
-                                            )}
+                                <div className="space-y-4 p-4">
+                                    <div className="flex items-center gap-3">
+                                        <IconTile size="lg"><Car /></IconTile>
+                                        <div className="min-w-0 flex-1">
+                                            <div className="truncate font-mono text-base font-semibold">
+                                                {detailsVehicle.licensePlate || 'Sin placa'}
+                                            </div>
+                                            <div className="cg-eyebrow mt-1 truncate">{detailsVehicle.name || '—'}</div>
                                         </div>
+                                        <StatusBadge tone={detailsVehicle.active ? 'ok' : 'neutral'}>
+                                            {detailsVehicle.active ? 'Activo' : 'Inactivo'}
+                                        </StatusBadge>
                                     </div>
+
+                                    {detailsVehicle.imageUrl && detailsVehicle.imageUrl.length > 0 && (
+                                        <div
+                                            className="overflow-hidden rounded-xl border"
+                                            style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}
+                                        >
+                                            <img
+                                                src={detailsVehicle.imageUrl[0].downloadUrl || detailsVehicle.imageUrl[0].publicUrl}
+                                                alt="vehículo"
+                                                className="max-h-52 w-full object-cover"
+                                            />
+                                        </div>
+                                    )}
+
+                                    <div className="glass-sunken grid grid-cols-2 gap-4 p-4">
+                                        <Field label="Año" value={detailsVehicle.year || '—'} />
+                                        <Field label="Marca" value={detailsVehicle.make || '—'} />
+                                        <Field label="Modelo" value={detailsVehicle.model || '—'} />
+                                        <Field
+                                            label={<span className="inline-flex items-center gap-1"><Palette className="h-3 w-3" /> Color</span>}
+                                            value={detailsVehicle.color || '—'}
+                                        />
+                                        <Field
+                                            label={<span className="inline-flex items-center gap-1"><KeyRound className="h-3 w-3" /> VIN</span>}
+                                            value={detailsVehicle.vin ? <span className="font-mono text-xs">{detailsVehicle.vin}</span> : '—'}
+                                        />
+                                        <Field
+                                            label={<span className="inline-flex items-center gap-1"><Gauge className="h-3 w-3" /> Kilometraje inicial</span>}
+                                            value={detailsVehicle.initialMileage != null ? Number(detailsVehicle.initialMileage).toLocaleString() : '—'}
+                                        />
+                                        <Field
+                                            label="Propiedad"
+                                            value={detailsVehicle.ownership
+                                                ? (OWNERSHIP_LABELS[detailsVehicle.ownership] || detailsVehicle.ownership)
+                                                : '—'}
+                                        />
+                                    </div>
+
+                                    {detailsVehicle.description && (
+                                        <div>
+                                            <div className="cg-eyebrow mb-1">Descripción</div>
+                                            <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>{detailsVehicle.description}</p>
+                                        </div>
+                                    )}
                                 </div>
                             ) : (
-                                <div className="p-4">No se encontró información del vehículo.</div>
+                                <div className="p-4">
+                                    <EmptyState
+                                        icon={<Car />}
+                                        title="Sin información"
+                                        description="No se encontró información del vehículo."
+                                    />
+                                </div>
                             )}
 
                             <DialogFooter>
@@ -540,7 +688,17 @@ export default function VehiclesPage() {
                         </DialogContent>
                     </Dialog>
 
-                    <div className="flex items-center justify-between bg-muted/30 px-4 py-3 text-sm text-foreground/70">
+                    <div
+                        className={`flex flex-wrap items-center justify-between gap-3 text-sm ${vista === 'lista' ? 'border-t px-4 py-3' : 'mt-4 pt-1'}`}
+                        style={{
+                            color: 'var(--ink-soft)',
+                            // Mismo pie que Inventario: filo y fondo de los
+                            // tokens, no el borde por defecto de Tailwind.
+                            ...(vista === 'lista'
+                                ? { borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }
+                                : null),
+                        }}
+                    >
                         <div className="flex items-center gap-2">
                             <span>Elementos por página</span>
                             <Select
@@ -558,7 +716,7 @@ export default function VehiclesPage() {
                             </Select>
                         </div>
 
-                        <div className="text-center w-full">{start} - {end} de {count}</div>
+                        <div className="tabular-nums">{start} - {end} de {count}</div>
 
                         <div className="flex items-center gap-2">
                             <Button variant="outline" size="sm" onClick={handlePrevPage} disabled={page <= 1}>Anterior</Button>

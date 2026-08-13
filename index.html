@@ -84,7 +84,20 @@
 
     <!-- Styles -->
     <link rel="stylesheet" href="style.css" />
-  </head>
+    <script>
+    /* Acento guardado ANTES del primer pintado. Sin esto, la app arranca en
+       mostaza y salta al color del usuario en cuanto React monta. */
+    (function () {
+      try {
+        var a = JSON.parse(localStorage.getItem('cguard-accent') || 'null');
+        if (a && typeof a.h === 'number') {
+          document.documentElement.style.setProperty('--brand-h', a.h);
+          document.documentElement.style.setProperty('--brand-c', a.c);
+        }
+      } catch (e) {}
+    })();
+  </script>
+</head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>

@@ -29,9 +29,8 @@ import {
   Inbox, MailQuestion, MailOpen, Layers,
 } from "lucide-react";
 import Breadcrumb from "@/components/ui/breadcrumb";
-import { Badge } from "@/components/ui/badge";
 import customerRequestService, { CustomerRequestRecord } from "@/lib/api/customerRequestService";
-import { PageContainer, PageHeader, Section, StatCard, StatusBadge, EmptyState, Stagger } from "@/components/kit";
+import { PageContainer, PageHeader, Section, MetricTile, StatusBadge, EmptyState, Stagger, Toolbar } from "@/components/kit";
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -117,11 +116,11 @@ export default function CustomerRequests() {
   const getStatusBadge = (status: string | null) => {
     switch (status) {
       case "abierto":
-        return <StatusBadge tone="orange">Abierta</StatusBadge>;
+        return <StatusBadge tone="warn">Abierta</StatusBadge>;
       case "cerrado":
-        return <StatusBadge tone="green">Atendida</StatusBadge>;
+        return <StatusBadge tone="ok">Atendida</StatusBadge>;
       default:
-        return <Badge variant="outline">{status ?? "—"}</Badge>;
+        return <StatusBadge tone="neutral">{status ?? "—"}</StatusBadge>;
     }
   };
 
@@ -142,14 +141,19 @@ export default function CustomerRequests() {
 
         {/* Stats */}
         <Stagger className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <StatCard label="Abiertas" value={stats.open} icon={<MailQuestion />} accent="orange" />
-          <StatCard label="Atendidas" value={stats.closed} icon={<MailOpen />} accent="green" />
-          <StatCard label="Total" value={stats.total} icon={<Layers />} accent="primary" />
+          <MetricTile
+            label="Abiertas"
+            value={stats.open}
+            icon={<MailQuestion />}
+            delta={stats.total > 0 ? { value: `${Math.round((stats.open / stats.total) * 100)} %`, direction: stats.open > 0 ? "up" : "flat" } : undefined}
+            hint="Sobre el total recibido"
+          />
+          <MetricTile label="Atendidas" value={stats.closed} icon={<MailOpen />} hint="Solicitudes ya cerradas" />
+          <MetricTile label="Total" value={stats.total} icon={<Layers />} hint="Recibidas desde la app de clientes" />
         </Stagger>
 
-        <Section>
-        {/* Toolbar */}
-        <div className="flex flex-col md:flex-row justify-between gap-4">
+        {/* Barra de filtros */}
+        <Toolbar className="justify-between gap-4">
           <div className="w-full md:w-52">
             <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v as "all" | "abierto" | "cerrado"); setPage(1); }}>
               <SelectTrigger>
@@ -164,27 +168,28 @@ export default function CustomerRequests() {
           </div>
 
           <div className="relative w-full md:w-80">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: "var(--ink-faint)" }} />
             <Input
-              placeholder="Buscar por asunto, cliente o estación..."
+              placeholder="Buscar por asunto, cliente o puesto…"
               className="pl-9"
               value={searchQuery}
               onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
             />
           </div>
-        </div>
+        </Toolbar>
 
-        {/* Table */}
-        <div className="mt-4 border rounded-xl overflow-hidden">
+        <Section title="Solicitudes" icon={<Inbox />}>
+        {/* Tabla */}
+        <div className="overflow-hidden rounded-2xl" style={{ border: "1px solid var(--hairline)" }}>
           <Table>
-            <TableHeader className="bg-muted/50">
+            <TableHeader style={{ background: "var(--glass-sunken)" }}>
               <TableRow>
-                <TableHead className="font-bold text-foreground">Fecha</TableHead>
-                <TableHead className="font-bold text-foreground">Cliente</TableHead>
-                <TableHead className="font-bold text-foreground">Asunto</TableHead>
-                <TableHead className="font-bold text-foreground">Mensaje</TableHead>
-                <TableHead className="font-bold text-foreground">Estación</TableHead>
-                <TableHead className="font-bold text-foreground">Estado</TableHead>
+                <TableHead className="cg-eyebrow">Fecha</TableHead>
+                <TableHead className="cg-eyebrow">Cliente</TableHead>
+                <TableHead className="cg-eyebrow">Asunto</TableHead>
+                <TableHead className="cg-eyebrow">Mensaje</TableHead>
+                <TableHead className="cg-eyebrow">Puesto</TableHead>
+                <TableHead className="cg-eyebrow">Estado</TableHead>
                 <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
@@ -192,20 +197,23 @@ export default function CustomerRequests() {
               {loading ? (
                 <TableRow>
                   <TableCell colSpan={7} className="h-[200px] text-center">
-                    <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground" />
+                    <Loader2 className="mx-auto h-6 w-6 animate-spin" style={{ color: "var(--ink-faint)" }} />
                   </TableCell>
                 </TableRow>
               ) : error ? (
                 <TableRow>
                   <TableCell colSpan={7} className="h-[300px] text-center">
-                    <div className="flex flex-col items-center justify-center text-muted-foreground">
-                      <AlertCircle className="h-10 w-10 text-red-300 mb-3" />
-                      <h3 className="text-lg font-medium text-foreground mb-1">No se pudo cargar la información</h3>
-                      <p className="text-sm max-w-xs mb-4">Ocurrió un error al obtener las solicitudes.</p>
-                      <Button variant="outline" onClick={fetchRecords}>
-                        <RotateCcw className="h-4 w-4 mr-2" /> Reintentar
-                      </Button>
-                    </div>
+                    <EmptyState
+                      icon={<AlertCircle />}
+                      title="No se pudo cargar la información"
+                      description="Ocurrió un error al obtener las solicitudes."
+                      action={
+                        <Button variant="outline" onClick={fetchRecords}>
+                          <RotateCcw className="mr-2 h-4 w-4" /> Reintentar
+                        </Button>
+                      }
+                      className="border-0"
+                    />
                   </TableCell>
                 </TableRow>
               ) : paginated.length === 0 ? (
@@ -222,10 +230,10 @@ export default function CustomerRequests() {
               ) : (
                 paginated.map((rec) => (
                   <TableRow key={rec.id}>
-                    <TableCell className="whitespace-nowrap">{formatDate(rec.dateTime || rec.createdAt)}</TableCell>
+                    <TableCell className="whitespace-nowrap tabular-nums">{formatDate(rec.dateTime || rec.createdAt)}</TableCell>
                     <TableCell>{rec.callerName ?? "—"}</TableCell>
                     <TableCell className="font-medium">{rec.subject ?? "—"}</TableCell>
-                    <TableCell className="max-w-[280px] truncate text-muted-foreground" title={rec.content ?? undefined}>
+                    <TableCell className="max-w-[280px] truncate" style={{ color: "var(--ink-soft)" }} title={rec.content ?? undefined}>
                       {rec.content ?? "—"}
                     </TableCell>
                     <TableCell>{rec.station?.stationName ?? "—"}</TableCell>
@@ -234,17 +242,17 @@ export default function CustomerRequests() {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon">
-                            <EllipsisVertical className="h-4 w-4 text-muted-foreground" />
+                            <EllipsisVertical className="h-4 w-4" style={{ color: "var(--ink-soft)" }} />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           {rec.status !== "cerrado" ? (
                             <DropdownMenuItem onClick={() => handleSetStatus(rec.id, "cerrado")}>
-                              <CheckCircle className="mr-2 h-4 w-4 text-green-500" /> Marcar como atendida
+                              <CheckCircle className="mr-2 h-4 w-4" style={{ color: "var(--ok-text)" }} /> Marcar como atendida
                             </DropdownMenuItem>
                           ) : (
                             <DropdownMenuItem onClick={() => handleSetStatus(rec.id, "abierto")}>
-                              <RotateCcw className="mr-2 h-4 w-4 text-yellow-500" /> Reabrir
+                              <RotateCcw className="mr-2 h-4 w-4" style={{ color: "var(--warn-text)" }} /> Reabrir
                             </DropdownMenuItem>
                           )}
                         </DropdownMenuContent>
@@ -259,7 +267,7 @@ export default function CustomerRequests() {
 
         {/* Pagination */}
         <div className="flex items-center justify-end space-x-2 py-4">
-          <div className="text-sm text-muted-foreground">Elementos por página</div>
+          <div className="text-sm" style={{ color: "var(--ink-soft)" }}>Elementos por página</div>
           <Select value={String(pageSize)} onValueChange={(v) => { setPageSize(Number(v)); setPage(1); }}>
             <SelectTrigger className="w-[70px]"><SelectValue /></SelectTrigger>
             <SelectContent>
@@ -268,7 +276,7 @@ export default function CustomerRequests() {
               <SelectItem value="100">100</SelectItem>
             </SelectContent>
           </Select>
-          <div className="text-sm text-muted-foreground mx-4">
+          <div className="mx-4 text-sm tabular-nums" style={{ color: "var(--ink-soft)" }}>
             {filtered.length === 0
               ? "0 de 0"
               : `${(page - 1) * pageSize + 1}–${Math.min(page * pageSize, filtered.length)} de ${filtered.length}`}

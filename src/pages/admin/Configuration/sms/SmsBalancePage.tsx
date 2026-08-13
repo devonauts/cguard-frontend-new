@@ -3,13 +3,14 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Loader2, MessageSquare, Wallet, Plus, RefreshCw, AlertTriangle, CheckCircle2, Phone, Search, ArrowRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 import AppLayout from "@/layouts/app-layout";
 import SettingsLayout from "@/layouts/SettingsLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { PageContainer, PageHeader, Section, StatusBadge, EmptyState, Modal } from "@/components/kit";
+import { PageContainer, PageHeader, Section, StatusBadge, EmptyState, Modal, SkeletonCards, IconTile } from "@/components/kit";
 import { smsAccountService, SmsAccount, SmsTransaction, AvailableNumber } from "@/lib/api/smsAccountService";
 
 const COUNTRIES = [
@@ -18,6 +19,25 @@ const COUNTRIES = [
   { code: "GB", label: "Reino Unido (+44)" },
   { code: "ES", label: "España (+34)" },
 ];
+
+/** Aviso en línea: el tono manda el color, nunca el acento. */
+function Aviso({ tone, icon, children }: {
+  tone: "warn" | "info" | "bad"; icon: React.ReactNode; children: React.ReactNode;
+}) {
+  return (
+    <div
+      className="flex items-start gap-2 rounded-xl border p-3 text-xs"
+      style={{
+        background: `color-mix(in oklab, var(--${tone}) 10%, transparent)`,
+        borderColor: `color-mix(in oklab, var(--${tone}) 28%, transparent)`,
+        color: `var(--${tone}-text)`,
+      }}
+    >
+      <span className="mt-0.5 shrink-0 [&_svg]:size-3.5">{icon}</span>
+      <span className="min-w-0">{children}</span>
+    </div>
+  );
+}
 
 function money(cents: number, currency = "USD") {
   return new Intl.NumberFormat("es-EC", { style: "currency", currency }).format((cents || 0) / 100);
@@ -122,6 +142,17 @@ export default function SmsBalancePage() {
             icon={<MessageSquare />}
             title={t("settings.configuracion.sms", { defaultValue: "Saldo SMS" })}
             subtitle={t("sms.balanceTitle", { defaultValue: "Saldo de mensajería SMS" })}
+            badges={
+              !loading ? (
+                <StatusBadge tone={account?.hasSender ? "ok" : account?.provisioned ? "warn" : "neutral"}>
+                  {account?.hasSender
+                    ? t("sms.badgeReady", { defaultValue: "Listo para enviar" })
+                    : account?.provisioned
+                    ? t("sms.badgeNoSender", { defaultValue: "Falta el número remitente" })
+                    : t("sms.badgeOff", { defaultValue: "Sin activar" })}
+                </StatusBadge>
+              ) : undefined
+            }
             actions={
               !loading ? (
                 <Button variant="outline" size="sm" onClick={load}>
@@ -131,17 +162,18 @@ export default function SmsBalancePage() {
             }
           />
           {loading ? (
-            <div className="flex min-h-[30vh] items-center justify-center">
-              <Loader2 className="animate-spin text-primary" size={28} />
-            </div>
+            <SkeletonCards count={2} />
           ) : (
             <div className="space-y-6">
               {/* Balance moved to the unified communications wallet */}
               <Section title={t("sms.balanceMovedTitle", { defaultValue: "El saldo de SMS ahora se gestiona en Comunicaciones" })} icon={<Wallet />}>
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="text-sm text-muted-foreground">
-                    {t("sms.balanceMovedHint", { defaultValue: "Recarga tu saldo y revisa el consumo de SMS en la pestaña SMS de Comunicaciones." })}
-                  </p>
+                <div className="glass-flat flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex min-w-0 items-start gap-3">
+                    <IconTile tone="brand" size="sm"><Wallet /></IconTile>
+                    <p className="min-w-0 text-sm" style={{ color: "var(--ink-soft)" }}>
+                      {t("sms.balanceMovedHint", { defaultValue: "Recarga tu saldo y revisa el consumo de SMS en la pestaña SMS de Comunicaciones." })}
+                    </p>
+                  </div>
                   <Button variant="brand" size="sm" asChild className="shrink-0">
                     <Link to="/setting/comunicaciones">
                       {t("sms.goToComms", { defaultValue: "Ir a Comunicaciones" })}
@@ -155,26 +187,32 @@ export default function SmsBalancePage() {
               <Section title={t("sms.accountTitle", { defaultValue: "Cuenta de envío (Twilio)" })} icon={<MessageSquare />}>
                 <div className="space-y-3">
                   {!account?.platformConfigured && (
-                    <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-500/10 p-3 text-xs text-amber-700">
-                      <AlertTriangle size={14} className="mt-0.5 shrink-0" />
-                      <span>{t("sms.notConfigured", { defaultValue: "La mensajería SMS aún no está habilitada en la plataforma. El envío se activará en cuanto la plataforma habilite Twilio." })}</span>
-                    </div>
+                    <Aviso tone="warn" icon={<AlertTriangle />}>
+                      {t("sms.notConfigured", { defaultValue: "La mensajería SMS aún no está habilitada en la plataforma. El envío se activará en cuanto la plataforma habilite Twilio." })}
+                    </Aviso>
                   )}
 
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">{t("sms.subaccount", { defaultValue: "Subcuenta dedicada" })}</span>
+                  <div
+                    className="flex items-center justify-between gap-3 border-b pb-3 text-sm"
+                    style={{ borderColor: "var(--hairline)" }}
+                  >
+                    <span style={{ color: "var(--ink-soft)" }}>{t("sms.subaccount", { defaultValue: "Subcuenta dedicada" })}</span>
                     {account?.provisioned ? (
-                      <StatusBadge tone="green">
+                      <StatusBadge tone="ok" dot={false}>
                         <CheckCircle2 size={12} /> {account.subaccountSid?.slice(0, 10)}…
                       </StatusBadge>
                     ) : (
-                      <span className="text-muted-foreground">{t("sms.notProvisioned", { defaultValue: "No creada" })}</span>
+                      <StatusBadge tone="neutral">{t("sms.notProvisioned", { defaultValue: "No creada" })}</StatusBadge>
                     )}
                   </div>
 
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">{t("sms.sender", { defaultValue: "Número remitente" })}</span>
-                    <span className="text-foreground">{account?.phoneNumber || t("sms.noSender", { defaultValue: "Pendiente" })}</span>
+                  <div className="flex items-center justify-between gap-3 text-sm">
+                    <span style={{ color: "var(--ink-soft)" }}>{t("sms.sender", { defaultValue: "Número remitente" })}</span>
+                    {account?.phoneNumber ? (
+                      <span className="font-medium tabular-nums">{account.phoneNumber}</span>
+                    ) : (
+                      <StatusBadge tone="warn">{t("sms.noSender", { defaultValue: "Pendiente" })}</StatusBadge>
+                    )}
                   </div>
 
                   {!account?.provisioned && (
@@ -207,16 +245,20 @@ export default function SmsBalancePage() {
                   <EmptyState
                     icon={<Wallet />}
                     title={t("sms.noHistory", { defaultValue: "Sin movimientos todavía" })}
+                    description={t("sms.noHistoryDesc", { defaultValue: "Aquí aparecerán las recargas y el consumo de tus mensajes." })}
                   />
                 ) : (
-                  <div className="divide-y">
+                  <div className="space-y-2">
                     {transactions.map((tx) => (
-                      <div key={tx.id} className="flex items-center justify-between gap-3 py-2.5">
+                      <div key={tx.id} className="glass-flat flex items-center justify-between gap-3 px-4 py-3">
                         <div className="min-w-0">
-                          <p className="truncate text-sm text-foreground">{tx.description || tx.type}</p>
-                          <p className="text-xs text-muted-foreground">{fmtDate(tx.createdAt)}</p>
+                          <p className="truncate text-sm font-medium">{tx.description || tx.type}</p>
+                          <p className="text-xs" style={{ color: "var(--ink-faint)" }}>{fmtDate(tx.createdAt)}</p>
                         </div>
-                        <div className={`shrink-0 text-sm font-semibold ${tx.amountCents >= 0 ? "text-green-700" : "text-foreground"}`}>
+                        <div
+                          className="shrink-0 text-sm font-semibold tabular-nums"
+                          style={{ color: tx.amountCents >= 0 ? "var(--ok-text)" : "var(--ink)" }}
+                        >
                           {tx.amountCents >= 0 ? "+" : "−"}{money(Math.abs(tx.amountCents), tx.currency || currency)}
                         </div>
                       </div>
@@ -241,7 +283,7 @@ export default function SmsBalancePage() {
                       <select
                         value={country}
                         onChange={(e) => setCountry(e.target.value)}
-                        className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                        className="cg-input cg-focus mt-1 h-9 w-full px-3 text-sm"
                       >
                         {COUNTRIES.map((c) => (
                           <option key={c.code} value={c.code}>{c.label}</option>
@@ -257,18 +299,19 @@ export default function SmsBalancePage() {
                     </Button>
                   </div>
 
-                  <div className="max-h-72 overflow-y-auto rounded-lg border">
+                  <div className={cn("max-h-72 overflow-y-auto", numbers.length ? "space-y-2" : "")}>
                     {numbers.length === 0 ? (
-                      <p className="p-6 text-center text-sm text-muted-foreground">
-                        {t("sms.searchPrompt", { defaultValue: "Busca números disponibles para comprar." })}
-                      </p>
+                      <EmptyState
+                        icon={<Search />}
+                        title={t("sms.searchPrompt", { defaultValue: "Busca números disponibles para comprar." })}
+                      />
                     ) : (
-                      <div className="divide-y">
+                      <div className="space-y-2">
                         {numbers.map((n) => (
-                          <div key={n.phoneNumber} className="flex items-center justify-between gap-3 p-3">
+                          <div key={n.phoneNumber} className="glass-flat flex items-center justify-between gap-3 p-3">
                             <div className="min-w-0">
-                              <p className="text-sm font-semibold text-foreground">{n.phoneNumber}</p>
-                              <p className="truncate text-xs text-muted-foreground">
+                              <p className="text-sm font-semibold tabular-nums">{n.phoneNumber}</p>
+                              <p className="truncate text-xs" style={{ color: "var(--ink-soft)" }}>
                                 {[n.locality, n.region, n.isoCountry].filter(Boolean).join(", ")}
                               </p>
                             </div>
@@ -286,7 +329,7 @@ export default function SmsBalancePage() {
                     )}
                   </div>
 
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
                     {t("sms.buyNumberHint", { defaultValue: "El número se adquiere dentro de tu subcuenta y queda como remitente para tus SMS. Algunos países requieren documentación regulatoria de Twilio." })}
                   </p>
                 </div>

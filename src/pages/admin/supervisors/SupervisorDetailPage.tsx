@@ -3,11 +3,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import AppLayout from "@/layouts/app-layout";
 import GuardsLayout from "@/layouts/GuardsLayout";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import {
-  ArrowLeft, CalendarClock, Car, MapPin, User as UserIcon,
-  Pencil, Mail, Phone, Check,
-} from "lucide-react";
+import { CalendarClock, Car, MapPin, Pencil, Check, IdCard, UserCog } from "lucide-react";
+import { Section, Field, EmptyState, SkeletonCards, PageContainer } from "@/components/kit";
 import { supervisorService, type Supervisor } from "@/lib/api/supervisorService";
 
 const WEEKDAYS = [
@@ -33,35 +32,20 @@ function fmtDate(v: string | number | Date | null | undefined): string | null {
   return isNaN(d.getTime()) ? String(v) : d.toLocaleDateString("es");
 }
 
-// ── presentational helpers (match the vigilante profile) ────────────────────
-const Section = ({ title, icon, action, children }: { title: string; icon?: React.ReactNode; action?: React.ReactNode; children: React.ReactNode }) => (
-  <div className="bg-card border rounded-2xl p-5 shadow-sm">
-    <div className="flex items-center justify-between mb-4">
-      <div className="flex items-center gap-2">
-        {icon && <span className="text-muted-foreground">{icon}</span>}
-        <h4 className="font-semibold text-sm tracking-tight">{title}</h4>
-      </div>
-      {action}
-    </div>
-    {children}
-  </div>
-);
+// ── Campos de edición — mismo lenguaje que la ficha del vigilante ───────────
 const ReadField = ({ label, value }: { label: string; value: React.ReactNode }) => (
-  <div className="min-w-0">
-    <div className="text-[11px] uppercase tracking-wide text-muted-foreground mb-0.5">{label}</div>
-    <div className="font-medium text-sm text-foreground truncate">{value || "—"}</div>
-  </div>
+  <Field label={label} value={value} />
 );
 const EditText = ({ label, value, onChange, type = "text" }: { label: string; value: string; onChange: (v: string) => void; type?: string }) => (
   <div>
-    <div className="text-[11px] uppercase tracking-wide text-muted-foreground mb-1">{label}</div>
+    <div className="cg-eyebrow mb-1">{label}</div>
     <Input type={type} value={value || ""} onChange={(e) => onChange(e.target.value)} className="h-9 text-sm" />
   </div>
 );
 const EditSelect = ({ label, value, field, onChange }: { label: string; value: string; field: string; onChange: (v: string) => void }) => (
   <div>
-    <div className="text-[11px] uppercase tracking-wide text-muted-foreground mb-1">{label}</div>
-    <select value={value || ""} onChange={(e) => onChange(e.target.value)} className="h-9 text-sm flex w-full rounded-md border border-input bg-background px-2">
+    <div className="cg-eyebrow mb-1">{label}</div>
+    <select value={value || ""} onChange={(e) => onChange(e.target.value)} className="cg-input cg-focus flex h-9 w-full px-2 text-sm">
       <option value="">Seleccionar…</option>
       {(FIELD_OPTIONS[field] || []).map((o) => <option key={o} value={o}>{o}</option>)}
     </select>
@@ -123,35 +107,44 @@ export default function SupervisorDetailPage() {
   return (
     <AppLayout>
       <GuardsLayout navKey="supervisors" title="Perfil del supervisor">
-        <div className="mx-auto max-w-5xl space-y-6 pb-24">
+        <PageContainer>
           {loading ? (
-            <div className="h-40 rounded-2xl border bg-card animate-pulse" />
+            <SkeletonCards count={2} />
           ) : sup ? (
             <>
-              {/* Edit toolbar — the supervisor's identity (avatar/name/status)
-                  lives in the shared GuardsLayout header card above. */}
+              {/* Barra de edición — la identidad del supervisor (avatar, nombre,
+                  estado) vive en la cabecera compartida de GuardsLayout. */}
               <div className="flex items-center justify-between gap-2">
                 <h2 className="text-sm font-semibold text-foreground">Información del supervisor</h2>
                 <div className="flex items-center gap-2">
                   {!editing ? (
-                    <button onClick={beginEdit} className="inline-flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg bg-primary text-primary-foreground shadow-sm hover:opacity-90 transition">
-                      <Pencil className="h-4 w-4" /> Editar
-                    </button>
+                    <Button variant="brand" size="sm" onClick={beginEdit}>
+                      <Pencil className="mr-2 h-4 w-4" /> Editar
+                    </Button>
                   ) : (
                     <>
-                      <button onClick={cancelEdit} disabled={saving} className="text-sm px-3 py-2 rounded-lg border hover:bg-muted transition disabled:opacity-50">Cancelar</button>
-                      <button onClick={save} disabled={saving} className="inline-flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg bg-primary text-primary-foreground shadow-sm disabled:opacity-50">
-                        {saving ? <span className="w-3.5 h-3.5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" /> : <Check className="h-4 w-4" />}
+                      <Button variant="outline" size="sm" onClick={cancelEdit} disabled={saving}>Cancelar</Button>
+                      <Button variant="brand" size="sm" onClick={save} disabled={saving}>
+                        {saving
+                          ? <span className="mr-2 h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                          : <Check className="mr-2 h-4 w-4" />}
                         {saving ? "Guardando…" : "Guardar"}
-                      </button>
+                      </Button>
                     </>
                   )}
                 </div>
               </div>
 
               {editing && (
-                <div className="text-xs text-muted-foreground bg-amber-500/10 border border-amber-500/20 rounded-lg px-3 py-2">
-                  El nombre, correo y teléfono son la identidad del supervisor y se gestionan desde la invitación de acceso (Usuarios de administración).
+                <div
+                  className="rounded-xl border px-3 py-2 text-xs"
+                  style={{
+                    background: "color-mix(in oklab, var(--warn) 12%, transparent)",
+                    borderColor: "color-mix(in oklab, var(--warn) 28%, transparent)",
+                    color: "var(--warn-text)",
+                  }}
+                >
+                  El nombre, el correo y el teléfono son la identidad del supervisor y se gestionan desde la invitación de acceso (Usuarios de administración).
                 </div>
               )}
 
@@ -159,7 +152,7 @@ export default function SupervisorDetailPage() {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* MAIN (2/3) */}
                 <div className="lg:col-span-2 space-y-6">
-                  <Section title="Información general">
+                  <Section title="Información general" icon={<IdCard />}>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <ReadField label="Nombres" value={sup.firstName} />
                       <ReadField label="Apellidos" value={sup.lastName} />
@@ -181,7 +174,7 @@ export default function SupervisorDetailPage() {
                     </div>
                   </Section>
 
-                  <Section title="Información personal">
+                  <Section title="Información personal" icon={<UserCog />}>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {editing ? (
                         <>
@@ -205,24 +198,24 @@ export default function SupervisorDetailPage() {
                     </div>
                   </Section>
 
-                  <Section title="Cobertura y horario" icon={<CalendarClock className="h-4 w-4" />}>
-                    <p className="text-sm text-muted-foreground">
-                      La zona y estaciones que cubre este supervisor, y su horario generado, se ven en sus pestañas dedicadas.
+                  <Section title="Cobertura y horario" icon={<CalendarClock />}>
+                    <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+                      La zona y los puestos que cubre este supervisor, y su horario generado, se ven en sus pestañas dedicadas.
                     </p>
                     <div className="mt-3 flex flex-wrap gap-2">
-                      <button onClick={() => navigate(`/supervisors/${id}/cobertura`)} className="inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium hover:bg-muted transition">
-                        <MapPin className="h-4 w-4" /> Cobertura
-                      </button>
-                      <button onClick={() => navigate(`/supervisors/${id}/horario`)} className="inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium hover:bg-muted transition">
-                        <CalendarClock className="h-4 w-4" /> Horario
-                      </button>
+                      <Button variant="outline" size="sm" onClick={() => navigate(`/supervisors/${id}/cobertura`)}>
+                        <MapPin className="mr-2 h-4 w-4" /> Cobertura
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => navigate(`/supervisors/${id}/horario`)}>
+                        <CalendarClock className="mr-2 h-4 w-4" /> Horario
+                      </Button>
                     </div>
                   </Section>
                 </div>
 
                 {/* SIDEBAR (1/3) */}
                 <div className="space-y-6">
-                  <Section title="Operación" icon={<Car className="h-4 w-4" />}>
+                  <Section title="Operación" icon={<Car />}>
                     <div className="space-y-4">
                       {editing ? (
                         <>
@@ -241,9 +234,13 @@ export default function SupervisorDetailPage() {
               </div>
             </>
           ) : (
-            <div className="py-10 text-center text-sm text-muted-foreground">Supervisor no encontrado</div>
+            <EmptyState
+              icon={<UserCog />}
+              title="Supervisor no encontrado"
+              description="Puede que se haya dado de baja o que el enlace ya no sea válido."
+            />
           )}
-        </div>
+        </PageContainer>
       </GuardsLayout>
     </AppLayout>
   );

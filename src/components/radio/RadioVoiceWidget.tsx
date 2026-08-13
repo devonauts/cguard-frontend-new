@@ -107,16 +107,22 @@ export default function RadioVoiceWidget() {
   if (!snap.open) return null;
 
   return (
+    // `position: fixed` en línea: `.glass-raised` fija `relative` y glass.css va
+    // sin `@layer`, así que gana a la utilidad `fixed` (ver su cabecera).
     <div
       onPointerDown={() => radioResume()}
-      className="fixed right-3 top-16 z-[80] w-80 max-w-[calc(100vw-1.5rem)] rounded-2xl border border-border bg-card shadow-2xl"
+      className="glass-raised fixed right-3 top-16 z-[80] w-80 max-w-[calc(100vw-1.5rem)]"
+      style={{ position: "fixed" }}
     >
       {/* Header + on/off switch */}
-      <div className="flex items-center gap-2 border-b border-border px-3 py-2.5">
-        <Radio size={16} className={snap.on ? "text-amber-500" : "text-muted-foreground"} />
+      <div className="flex items-center gap-2 border-b px-3 py-2.5" style={{ borderColor: "var(--hairline)" }}>
+        {/* El icono en marcha lleva el ACENTO: «el canal está encendido» es un
+            estado de la aplicación, no un semáforo — el ámbar suelto de antes no
+            se enteraba del tono elegido. */}
+        <Radio size={16} style={{ color: snap.on ? "var(--brand-text)" : "var(--ink-faint)" }} />
         <div className="flex-1">
           <p className="text-sm font-semibold leading-tight">Canal general</p>
-          <p className="text-[11px] leading-tight text-muted-foreground">
+          <p className="text-[11px] leading-tight" style={{ color: "var(--ink-soft)" }}>
             {snap.on ? (live ? "En vivo · todos pueden hablar" : connecting ? "Conectando…" : "Sin conexión") : "Apagado"}
           </p>
         </div>
@@ -126,26 +132,42 @@ export default function RadioVoiceWidget() {
           aria-checked={snap.on}
           onClick={toggleOn}
           title={snap.on ? "Apagar canal" : "Encender canal"}
-          className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${snap.on ? "bg-emerald-500" : "bg-muted"}`}
+          className="cg-focus relative h-6 w-11 shrink-0 rounded-full transition-colors"
+          style={{ background: snap.on ? "var(--ok)" : "var(--glass-sunken)", border: "1px solid var(--hairline)" }}
         >
-          <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${snap.on ? "left-[22px]" : "left-0.5"}`} />
+          {/* La perilla es blanca a propósito: se desliza entre un verde de
+              «encendido» y un hueco oscuro, y tiene que verse sobre los dos. */}
+          <span
+            className={`absolute top-0.5 rounded-full transition-all ${snap.on ? "left-[23px]" : "left-0.5"}`}
+            style={{ height: 18, width: 18, background: "oklch(1 0 0)", boxShadow: "var(--lift-1)" }}
+          />
         </button>
-        <button onClick={() => setWidgetOpen(false)} title="Cerrar" className="grid h-7 w-7 place-items-center rounded-full text-muted-foreground hover:bg-muted">
+        <button
+          onClick={() => setWidgetOpen(false)}
+          title="Cerrar"
+          className="cg-focus grid h-7 w-7 place-items-center rounded-full transition-colors"
+          style={{ color: "var(--ink-faint)" }}
+        >
           <X size={16} />
         </button>
       </div>
 
       {!snap.on ? (
         <div className="flex flex-col items-center gap-2 px-4 py-6 text-center">
-          <Volume2 size={26} className="text-muted-foreground" />
-          <p className="text-xs text-muted-foreground">
+          <Volume2 size={26} style={{ color: "var(--ink-faint)" }} />
+          <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
             Enciende el canal general para escuchar y hablar con los vigilantes en tiempo real. Sigue activo aunque cierres esta ventana.
           </p>
         </div>
       ) : (
         <div className="space-y-3 p-3">
           {/* Who's talking */}
-          <div className={`flex items-center justify-between rounded-lg px-3 py-2 text-sm font-semibold ${snap.speaker ? "bg-amber-500/10 text-amber-600" : "bg-muted text-muted-foreground"}`}>
+          <div
+            className="flex items-center justify-between rounded-lg px-3 py-2 text-sm font-semibold"
+            style={snap.speaker
+              ? { background: "var(--brand-wash)", color: "var(--brand-text)", boxShadow: "inset 0 0 0 1px var(--brand-line)" }
+              : { background: "var(--glass-sunken)", color: "var(--ink-soft)" }}
+          >
             <span>
               {snap.speaker
                 ? `${snap.speaker.userId === myId ? "Estás hablando" : `${snap.speaker.name} está hablando`}…`
@@ -156,29 +178,40 @@ export default function RadioVoiceWidget() {
             </span>
           </div>
 
-          {/* PTT */}
+          {/* PTT — el rojo de «al aire» es `--bad`, fijo: transmitir en abierto es
+              un estado que tiene que leerse igual con cualquier acento. */}
           <button
             onPointerDown={onPttDown}
             onPointerUp={onPttUp}
             onPointerCancel={onPttUp}
             onContextMenu={(e) => e.preventDefault()}
             disabled={!live}
-            style={{ touchAction: "none", WebkitUserSelect: "none", userSelect: "none" } as any}
-            className={`flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-white transition-colors disabled:opacity-40 ${snap.talking ? "bg-red-500" : "bg-amber-500 hover:bg-amber-600"}`}
+            style={{
+              touchAction: "none",
+              WebkitUserSelect: "none",
+              userSelect: "none",
+              ...(snap.talking
+                ? { background: "var(--bad)", color: "oklch(1 0 0)", boxShadow: "0 0 26px -6px color-mix(in oklab, var(--bad) 55%, transparent)" }
+                : { background: "var(--brand)", color: "var(--brand-ink)", boxShadow: "0 6px 20px -8px var(--brand-glow)" }),
+            } as any}
+            className="cg-focus flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold transition-[filter] hover:brightness-105 disabled:opacity-40"
           >
             <Mic size={18} /> {snap.talking ? "Transmitiendo…" : "Mantén para hablar"}
           </button>
 
-          {snap.hint && <p className="text-center text-[11px] text-red-600">{snap.hint}</p>}
+          {snap.hint && <p className="text-center text-[11px]" style={{ color: "var(--bad-text)" }}>{snap.hint}</p>}
 
           {/* Roster */}
           {snap.roster.length > 0 && (
-            <div className="max-h-40 divide-y divide-border overflow-y-auto rounded-lg border border-border">
+            <div className="max-h-40 divide-y overflow-y-auto rounded-lg border" style={{ borderColor: "var(--hairline)" }}>
               {snap.roster.map((m) => (
-                <div key={m.userId} className="flex items-center gap-2 px-3 py-1.5 text-xs">
-                  <span className={`h-2 w-2 rounded-full ${snap.speaker?.userId === m.userId ? "bg-amber-500 animate-pulse" : "bg-emerald-500"}`} />
+                <div key={m.userId} className="flex items-center gap-2 px-3 py-1.5 text-xs" style={{ borderColor: "var(--hairline)" }}>
+                  <span
+                    className={snap.speaker?.userId === m.userId ? "cc-dot" : "h-2 w-2 rounded-full"}
+                    style={{ background: snap.speaker?.userId === m.userId ? "var(--brand)" : "var(--ok)" }}
+                  />
                   <span className="flex-1 truncate">{m.name}{m.userId === myId ? " (tú)" : ""}</span>
-                  {snap.speaker?.userId === m.userId && <Mic size={12} className="text-amber-500" />}
+                  {snap.speaker?.userId === m.userId && <Mic size={12} style={{ color: "var(--brand-text)" }} />}
                 </div>
               ))}
             </div>
@@ -188,12 +221,17 @@ export default function RadioVoiceWidget() {
 
       {/* Pase de novedades (roll call) — started from this same widget. */}
       {pasePermitted !== false && (
-        <div className="border-t border-border p-3">
+        <div className="border-t p-3" style={{ borderColor: "var(--hairline)" }}>
           {runningId ? (
             <button
               onClick={endPase}
               disabled={paseBusy}
-              className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-500/40 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-500/10 disabled:opacity-50"
+              className="cg-focus flex w-full items-center justify-center gap-2 rounded-xl border py-2.5 text-sm font-semibold disabled:opacity-50"
+              style={{
+                borderColor: "color-mix(in oklab, var(--bad) 40%, transparent)",
+                background: "color-mix(in oklab, var(--bad) 8%, transparent)",
+                color: "var(--bad-text)",
+              }}
             >
               {paseBusy ? <Loader2 size={16} className="animate-spin" /> : <Square size={16} />} Finalizar pase de novedades
             </button>
@@ -201,7 +239,7 @@ export default function RadioVoiceWidget() {
             <button
               onClick={startPase}
               disabled={paseBusy}
-              className="flex w-full items-center justify-center gap-2 rounded-xl border border-border py-2.5 text-sm font-semibold text-foreground hover:bg-accent disabled:opacity-50"
+              className="cg-btn-glass cg-focus flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold disabled:opacity-50"
             >
               {paseBusy ? <Loader2 size={16} className="animate-spin" /> : <Megaphone size={16} />} Iniciar pase de novedades
             </button>

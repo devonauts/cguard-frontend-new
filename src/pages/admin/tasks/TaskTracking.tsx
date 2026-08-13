@@ -2,7 +2,6 @@ import { useEffect, useState, useCallback, type ReactNode } from "react";
 import AppLayout from "@/layouts/app-layout";
 import { DataTable, type Column } from "@/components/table/DataTable";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -13,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { CheckSquare, Plus, ListChecks } from "lucide-react";
-import { PageContainer, PageHeader, Section, SkeletonCards } from "@/components/kit";
+import { PageContainer, PageHeader, Section, SkeletonCards, StatusBadge, Segmented, EmptyState } from "@/components/kit";
 import taskService, { type TaskRow, type TaskStatus, type TaskImage } from "@/lib/api/taskService";
 
 function fmtDate(s?: string | null): string {
@@ -22,13 +21,17 @@ function fmtDate(s?: string | null): string {
   return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString("es-EC");
 }
 
-const STATUS_META: Record<string, { label: string; cls: string }> = {
-  pending_approval: { label: "Por aprobar", cls: "bg-amber-500/15 text-amber-600" },
-  approved: { label: "Aprobada", cls: "bg-blue-500/15 text-blue-600" },
-  completed: { label: "Completada", cls: "bg-emerald-500/15 text-emerald-600" },
-  rejected: { label: "Rechazada", cls: "bg-red-500/15 text-red-600" },
-  cancelled: { label: "Cancelada", cls: "bg-muted text-muted-foreground" },
+/** Estado de la tarea → etiqueta + papel de color del sistema. */
+const STATUS_META: Record<string, { label: string; tone: "warn" | "info" | "ok" | "bad" | "neutral" }> = {
+  pending_approval: { label: "Por aprobar", tone: "warn" },
+  approved: { label: "Aprobada", tone: "info" },
+  completed: { label: "Completada", tone: "ok" },
+  rejected: { label: "Rechazada", tone: "bad" },
+  cancelled: { label: "Cancelada", tone: "neutral" },
 };
+
+const PRIORITY_LABEL: Record<string, string> = { alta: "Alta", media: "Media", baja: "Baja" };
+const PRIORITY_TONE: Record<string, "bad" | "warn" | "neutral"> = { alta: "bad", media: "warn", baja: "neutral" };
 
 const FILTERS: Array<{ key: TaskStatus | "all"; label: string }> = [
   { key: "all", label: "Todas" },
@@ -113,18 +116,23 @@ export default function TaskTracking() {
   };
 
   const columns: Column<TaskRow>[] = [
-    { key: "taskToDo", header: "Tarea", render: (_v, r) => <span className="font-medium text-foreground">{r.taskToDo}</span> },
-    { key: "station", header: "Puesto", render: (_v, r) => <span className="text-xs text-muted-foreground">{r.taskBelongsToStation?.stationName || "—"}</span> },
+    { key: "taskToDo", header: "Tarea", render: (_v, r) => <span className="font-semibold">{r.taskToDo}</span> },
+    { key: "station", header: "Puesto", render: (_v, r) => <span className="text-xs" style={{ color: "var(--ink-soft)" }}>{r.taskBelongsToStation?.stationName || "—"}</span> },
     {
       key: "status", header: "Estado", render: (_v, r) => {
         const m = STATUS_META[r.status] || STATUS_META.pending_approval;
-        return <Badge className={`${m.cls} border-0`}>{m.label}</Badge>;
+        return <StatusBadge tone={m.tone}>{m.label}</StatusBadge>;
       },
     },
-    { key: "priority", header: "Prioridad", render: (_v, r) => <span className="text-xs text-muted-foreground">{r.priority || "media"}</span> },
-    { key: "source", header: "Origen", render: (_v, r) => <span className="text-xs text-muted-foreground">{r.source === "client" ? "Cliente" : r.source === "passdown" ? "Pase de turno" : "Operación"}</span> },
-    { key: "dateToDoTheTask", header: "Fecha límite", render: (_v, r) => <span className="text-xs text-muted-foreground">{fmtDate(r.dateToDoTheTask)}</span> },
-    { key: "dateCompletedTask", header: "Completada", render: (_v, r) => <span className="text-xs text-muted-foreground">{fmtDate(r.dateCompletedTask)}</span> },
+    {
+      key: "priority", header: "Prioridad", render: (_v, r) => {
+        const k = r.priority || "media";
+        return <StatusBadge tone={PRIORITY_TONE[k] ?? "neutral"} dot={false}>{PRIORITY_LABEL[k] ?? k}</StatusBadge>;
+      },
+    },
+    { key: "source", header: "Origen", render: (_v, r) => <span className="text-xs" style={{ color: "var(--ink-soft)" }}>{r.source === "client" ? "Cliente" : r.source === "passdown" ? "Pase de turno" : "Operación"}</span> },
+    { key: "dateToDoTheTask", header: "Fecha límite", render: (_v, r) => <span className="text-xs tabular-nums" style={{ color: "var(--ink-soft)" }}>{fmtDate(r.dateToDoTheTask)}</span> },
+    { key: "dateCompletedTask", header: "Completada", render: (_v, r) => <span className="text-xs tabular-nums" style={{ color: "var(--ink-soft)" }}>{fmtDate(r.dateCompletedTask)}</span> },
   ];
 
   return (
@@ -143,13 +151,11 @@ export default function TaskTracking() {
           />
 
           <Section title="Tareas" icon={<ListChecks />} action={
-            <div className="flex flex-wrap gap-2">
-              {FILTERS.map((f) => (
-                <Button key={f.key} size="sm" variant={filter === f.key ? "default" : "outline"} onClick={() => setFilter(f.key)}>
-                  {f.label}
-                </Button>
-              ))}
-            </div>
+            <Segmented<TaskStatus | "all">
+              value={filter}
+              onChange={setFilter}
+              options={FILTERS.map((f) => ({ value: f.key, label: f.label }))}
+            />
           }>
             {loading ? (
               <SkeletonCards count={4} />
@@ -158,7 +164,13 @@ export default function TaskTracking() {
                 columns={columns}
                 data={rows}
                 onRowClick={(r) => setSelected(r)}
-                emptyState={<div className="py-10 text-center text-sm text-muted-foreground">No hay tareas</div>}
+                emptyState={
+                  <EmptyState
+                    icon={<ListChecks />}
+                    title="No hay tareas"
+                    description="Las tareas de los puestos aparecerán aquí en cuanto se creen."
+                  />
+                }
               />
             )}
           </Section>
@@ -202,14 +214,16 @@ export default function TaskTracking() {
           {selected && (
             <div className="space-y-4">
               <div>
-                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Tarea</p>
-                <p className="mt-0.5 whitespace-pre-wrap text-sm font-medium text-foreground">{selected.taskToDo}</p>
+                <p className="cg-eyebrow">Tarea</p>
+                <p className="glass-sunken mt-1 whitespace-pre-wrap p-3 text-sm font-medium">{selected.taskToDo}</p>
               </div>
               <div className="grid grid-cols-2 gap-x-4 gap-y-3">
                 <DetailField label="Estado">
-                  {(() => { const m = STATUS_META[selected.status] || STATUS_META.pending_approval; return <Badge className={`${m.cls} border-0`}>{m.label}</Badge>; })()}
+                  {(() => { const m = STATUS_META[selected.status] || STATUS_META.pending_approval; return <StatusBadge tone={m.tone}>{m.label}</StatusBadge>; })()}
                 </DetailField>
-                <DetailField label="Prioridad"><span className="capitalize">{selected.priority || "media"}</span></DetailField>
+                <DetailField label="Prioridad">
+                  {(() => { const k = selected.priority || "media"; return <StatusBadge tone={PRIORITY_TONE[k] ?? "neutral"} dot={false}>{PRIORITY_LABEL[k] ?? k}</StatusBadge>; })()}
+                </DetailField>
                 <DetailField label="Puesto">{selected.taskBelongsToStation?.stationName || "—"}</DetailField>
                 <DetailField label="Origen">{selected.source === "client" ? "Cliente" : selected.source === "passdown" ? "Pase de turno" : selected.source === "staff" ? "Operación" : "—"}</DetailField>
                 <DetailField label="Fecha límite">{fmtDate(selected.dateToDoTheTask)}</DetailField>
@@ -229,7 +243,7 @@ export default function TaskTracking() {
           <DialogFooter>
             {selected?.status === "pending_approval" && (
               <>
-                <Button variant="outline" className="text-red-600" disabled={acting} onClick={() => doApproval("reject")}>Rechazar</Button>
+                <Button variant="destructive" disabled={acting} onClick={() => doApproval("reject")}>Rechazar</Button>
                 <Button variant="brand" disabled={acting} onClick={() => doApproval("approve")}>{acting ? "…" : "Aprobar"}</Button>
               </>
             )}
@@ -243,9 +257,9 @@ export default function TaskTracking() {
 
 function DetailField({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="flex flex-col gap-0.5">
-      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
-      <div className="text-sm text-foreground">{children}</div>
+    <div className="flex flex-col gap-1">
+      <p className="cg-eyebrow">{label}</p>
+      <div className="text-sm">{children}</div>
     </div>
   );
 }
@@ -255,15 +269,15 @@ function TaskImages({ label, images }: { label: string; images?: TaskImage[] | n
   if (!items.length) return null;
   return (
     <div className="flex flex-col gap-1.5">
-      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
+      <p className="cg-eyebrow">{label}</p>
       <div className="flex flex-wrap gap-2">
         {items.map((src, i) => (
-          <a key={i} href={src} target="_blank" rel="noreferrer" className="block">
+          <a key={i} href={src} target="_blank" rel="noreferrer" className="glass-flat block h-24 w-24 overflow-hidden">
             <img
               src={src}
               alt={label}
               loading="lazy"
-              className="h-24 w-24 rounded-md border border-border object-cover transition-opacity hover:opacity-80"
+              className="h-full w-full object-cover transition-opacity hover:opacity-80"
             />
           </a>
         ))}

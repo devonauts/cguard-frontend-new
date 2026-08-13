@@ -1,8 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
-import { LogIn, LogOut, Smartphone, AlertTriangle, RefreshCw, Search, History, ShieldCheck, Loader2 } from "lucide-react";
+import { RefreshCw, History, Inbox } from "lucide-react";
 import AppLayout from "@/layouts/app-layout";
-import { PageContainer, PageHeader, Section } from "@/components/kit";
+import { Button } from "@/components/ui/button";
+import {
+  PageContainer, PageHeader, Section, Toolbar, Segmented, StatusBadge, EmptyState,
+} from "@/components/kit";
 import { useInfiniteAuditList } from "./useInfiniteAuditList";
+import {
+  AuditRow, AuditSearch, AuditSkeleton, AuditTable, InfiniteFooter, SeverityRail,
+  fmtStamp, metaFor,
+} from "./shared";
 
 type Row = {
   id: string; event: string; outcome?: string | null; email?: string | null;
@@ -12,14 +19,6 @@ type Row = {
 
 const PAGE_SIZE = 100;
 
-const EVENT_META: Record<string, { label: string; icon: JSX.Element; color: string }> = {
-  login: { label: "Inicio de sesión", icon: <LogIn className="size-3.5" />, color: "#16a34a" },
-  login_failed: { label: "Intento fallido", icon: <AlertTriangle className="size-3.5" />, color: "#dc2626" },
-  logout: { label: "Cierre de sesión", icon: <LogOut className="size-3.5" />, color: "#64748b" },
-  device_registered: { label: "Dispositivo registrado", icon: <Smartphone className="size-3.5" />, color: "#0ea5e9" },
-  device_evicted: { label: "Dispositivo retirado", icon: <Smartphone className="size-3.5" />, color: "#f59e0b" },
-};
-
 // Chip key → backend `event` param (comma-separated allowed).
 const FILTERS = [
   { key: "", label: "Todos", event: "" },
@@ -28,14 +27,6 @@ const FILTERS = [
   { key: "logout", label: "Cierres", event: "logout" },
   { key: "device", label: "Dispositivos", event: "device_registered,device_evicted" },
 ];
-
-const fmt = (d?: string) => {
-  try {
-    return new Date(d as string).toLocaleString(undefined, {
-      day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit",
-    });
-  } catch { return ""; }
-};
 
 export default function LoginHistory() {
   const [q, setQ] = useState("");
@@ -69,6 +60,8 @@ export default function LoginHistory() {
     deps: [filter, debouncedQ],
   });
 
+  const primeraCarga = loading && items.length === 0;
+
   return (
     <AppLayout>
       <PageContainer width="wide">
@@ -76,88 +69,84 @@ export default function LoginHistory() {
           icon={<History />}
           title="Historial de Inicio de Sesión"
           subtitle="Inicios y cierres de sesión, intentos fallidos y eventos de dispositivos de esta empresa."
-          actions={
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                <input
-                  value={q}
-                  onChange={(e) => setQ(e.target.value)}
-                  placeholder="Buscar por usuario, IP o dispositivo…"
-                  className="h-9 w-64 rounded-lg border border-input bg-background pl-8 pr-3 text-sm focus:border-primary focus:outline-none"
-                />
-              </div>
-              <button onClick={() => load(true)} className="grid h-9 w-9 place-items-center rounded-lg border border-input text-muted-foreground hover:text-foreground" title="Recargar">
-                <RefreshCw className={`size-4 ${loading && items.length === 0 ? "animate-spin" : ""}`} />
-              </button>
-            </div>
+          badges={
+            !primeraCarga ? (
+              <StatusBadge tone="neutral" dot={false}>
+                {items.length}{total ? ` de ${total}` : ""} evento{items.length === 1 ? "" : "s"}
+              </StatusBadge>
+            ) : undefined
           }
         />
 
-        <div className="flex flex-wrap gap-1.5">
-          {FILTERS.map((f) => (
-            <button
-              key={f.key}
-              onClick={() => setFilter(f.key)}
-              className={
-                "rounded-full px-3 py-1 text-xs font-medium transition-colors " +
-                (filter === f.key ? "bg-primary text-white" : "bg-muted text-muted-foreground hover:bg-muted/70")
-              }
-            >
-              {f.label}
-            </button>
-          ))}
-          <span className="ml-auto self-center text-xs text-muted-foreground">
-            {items.length}{total ? ` / ${total}` : ""} evento(s)
-          </span>
-        </div>
+        <Toolbar>
+          <AuditSearch value={q} onChange={setQ} placeholder="Buscar por usuario, dirección o dispositivo…" />
+
+          <Segmented
+            value={filter}
+            onChange={setFilter}
+            options={FILTERS.map((f) => ({ value: f.key, label: f.label }))}
+          />
+
+          <Button variant="outline" size="icon" className="ml-auto" onClick={() => load(true)} title="Recargar" aria-label="Recargar">
+            <RefreshCw className={`size-4 ${primeraCarga ? "animate-spin" : ""}`} />
+          </Button>
+        </Toolbar>
 
         <Section contentClassName="-mx-5 -mb-5">
-          <div className="overflow-x-auto rounded-t-2xl">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-left text-xs text-muted-foreground">
-                  <th className="px-4 py-2">Evento</th>
-                  <th className="px-3 py-2">Usuario</th>
-                  <th className="px-3 py-2">IP</th>
-                  <th className="px-3 py-2">Plataforma</th>
-                  <th className="px-3 py-2">Detalle</th>
-                  <th className="px-3 py-2 text-right">Fecha</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading && items.length === 0 ? (
-                  <tr><td colSpan={6} className="px-4 py-10 text-center text-muted-foreground">Cargando…</td></tr>
-                ) : items.length === 0 ? (
-                  <tr><td colSpan={6} className="px-4 py-10 text-center text-muted-foreground">Sin eventos.</td></tr>
-                ) : items.map((r) => {
-                  const m = EVENT_META[r.event] || { label: r.event, icon: <ShieldCheck className="size-3.5" />, color: "#64748b" };
-                  return (
-                    <tr key={r.id} className="border-b border-border/50">
-                      <td className="px-4 py-2">
-                        <span className="inline-flex items-center gap-1.5 font-medium" style={{ color: m.color }}>{m.icon}{m.label}</span>
-                      </td>
-                      <td className="px-3 py-2 text-muted-foreground">{r.email || "—"}</td>
-                      <td className="px-3 py-2 font-mono text-xs text-muted-foreground">{r.ip || "—"}</td>
-                      <td className="px-3 py-2 text-muted-foreground">{r.platform || "—"}</td>
-                      <td className="px-3 py-2 text-xs text-muted-foreground" title={r.detail || ""}>{(r.detail || "").slice(0, 60)}</td>
-                      <td className="px-3 py-2 text-right text-xs text-muted-foreground">{fmt(r.at)}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          {primeraCarga ? (
+            <AuditSkeleton />
+          ) : items.length === 0 ? (
+            <div className="p-6">
+              <EmptyState
+                className="border-0"
+                icon={<Inbox />}
+                title="Sin eventos"
+                description={
+                  q.trim() || filter
+                    ? "Ningún evento coincide con la búsqueda o el filtro elegido."
+                    : "Todavía no se ha registrado ningún acceso."
+                }
+              />
+            </div>
+          ) : (
+            <AuditTable
+              head={
+                <>
+                  <th className="px-4 py-3">Evento</th>
+                  <th className="px-3 py-3">Usuario</th>
+                  <th className="px-3 py-3">Dirección</th>
+                  <th className="px-3 py-3">Plataforma</th>
+                  <th className="px-3 py-3">Detalle</th>
+                  <th className="px-3 py-3 text-right">Fecha</th>
+                </>
+              }
+            >
+              {items.map((r) => {
+                const m = metaFor(r.event);
+                return (
+                  <AuditRow key={r.id} tone={m.tone}>
+                    <td className="relative px-4 py-2.5">
+                      <SeverityRail tone={m.tone} />
+                      <StatusBadge tone={m.tone} dot={false}>{m.icon}{m.label}</StatusBadge>
+                    </td>
+                    <td className="px-3 py-2.5" style={{ color: "var(--ink-soft)" }}>{r.email || "—"}</td>
+                    <td className="px-3 py-2.5 font-mono text-xs" style={{ color: "var(--ink-soft)" }}>{r.ip || "—"}</td>
+                    <td className="px-3 py-2.5" style={{ color: "var(--ink-soft)" }}>{r.platform || "—"}</td>
+                    <td className="px-3 py-2.5 text-xs" style={{ color: "var(--ink-faint)" }} title={r.detail || ""}>{(r.detail || "").slice(0, 60)}</td>
+                    <td className="px-3 py-2.5 text-right text-xs tabular-nums" style={{ color: "var(--ink-faint)" }}>{fmtStamp(r.at)}</td>
+                  </AuditRow>
+                );
+              })}
+            </AuditTable>
+          )}
 
-          <div ref={sentinelRef} className="flex items-center justify-center py-4 text-xs text-muted-foreground">
-            {loading && items.length > 0 ? (
-              <span className="flex items-center gap-2"><Loader2 className="size-4 animate-spin" /> Cargando más…</span>
-            ) : hasMore ? (
-              <span>Desplázate para ver más</span>
-            ) : items.length > 0 ? (
-              <span>— Fin del historial —</span>
-            ) : null}
-          </div>
+          <InfiniteFooter
+            sentinelRef={sentinelRef}
+            loading={loading}
+            hasMore={hasMore}
+            count={items.length}
+            endLabel="Fin del historial"
+          />
         </Section>
       </PageContainer>
     </AppLayout>

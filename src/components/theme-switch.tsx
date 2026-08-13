@@ -1,82 +1,86 @@
-import { FC, useState, useEffect } from "react";
-import { VisuallyHidden } from "@react-aria/visually-hidden";
-import { SwitchProps, useSwitch } from "@heroui/switch";
+/**
+ * ════════════════════════════════════════════════════════════════════════════
+ * CONMUTADOR CLARO / OSCURO
+ * Un riel hundido con un botón que se desliza. Dos estados, un solo control: es
+ * más legible de un vistazo que un icono que cambia de forma, porque la POSICIÓN
+ * ya dice en qué modo estás antes de mirar el icono.
+ *
+ * Los radios van en `style` y no en clases: `.glass-sunken` llega de una hoja
+ * SIN capa y le gana a las utilidades de Tailwind, así que un `rounded-full`
+ * suelto no se aplicaría. El estilo en línea sí.
+ * ════════════════════════════════════════════════════════════════════════════
+ */
+import { FC } from "react";
+import { Moon, Sun } from "lucide-react";
 import clsx from "clsx";
 import { useThemeContext } from "@/contexts/ThemeContext";
 
-import { SunFilledIcon, MoonFilledIcon } from "@/components/icons";
-
 export interface ThemeSwitchProps {
   className?: string;
-  classNames?: SwitchProps["classNames"];
+  /** Sólo el botón redondo con el icono — para barras muy estrechas. */
+  compact?: boolean;
 }
 
-export const ThemeSwitch: FC<ThemeSwitchProps> = ({
-  className,
-  classNames,
-}) => {
-  const [isMounted, setIsMounted] = useState(false);
-
+export const ThemeSwitch: FC<ThemeSwitchProps> = ({ className, compact = false }) => {
   const { theme, toggleTheme } = useThemeContext();
+  const oscuro = theme === "dark";
+  const etiqueta = oscuro ? "Cambiar a modo claro" : "Cambiar a modo oscuro";
 
-  const {
-    Component,
-    slots,
-    isSelected,
-    getBaseProps,
-    getInputProps,
-    getWrapperProps,
-  } = useSwitch({
-    isSelected: theme === "light",
-    onChange: () => toggleTheme(),
-  });
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, [isMounted]);
-
-  // Prevent Hydration Mismatch
-  if (!isMounted) return <div className="w-6 h-6" />;
+  if (compact) {
+    return (
+      <button
+        type="button"
+        role="switch"
+        aria-checked={oscuro}
+        aria-label={etiqueta}
+        title={etiqueta}
+        onClick={toggleTheme}
+        className={clsx(
+          "cg-focus cg-btn-glass grid h-9 w-9 shrink-0 place-items-center transition-all duration-200 active:scale-95",
+          className,
+        )}
+        style={{ borderRadius: 9999, color: "var(--ink-soft)" }}
+      >
+        {oscuro ? <Moon className="h-[18px] w-[18px]" /> : <Sun className="h-[18px] w-[18px]" />}
+      </button>
+    );
+  }
 
   return (
-    <Component
-      aria-label={isSelected ? "Switch to dark mode" : "Switch to light mode"}
-      {...getBaseProps({
-        className: clsx(
-          "px-px transition-opacity hover:opacity-80 cursor-pointer",
-          className,
-          classNames?.base,
-        ),
-      })}
+    <button
+      type="button"
+      role="switch"
+      aria-checked={oscuro}
+      aria-label={etiqueta}
+      title={etiqueta}
+      onClick={toggleTheme}
+      className={clsx("glass-sunken cg-focus relative h-9 w-[62px] shrink-0 p-1 transition-colors", className)}
+      style={{ borderRadius: 9999 }}
     >
-      <VisuallyHidden>
-        <input {...getInputProps()} />
-      </VisuallyHidden>
-      <div
-        {...getWrapperProps()}
-        className={slots.wrapper({
-          class: clsx(
-            [
-              "w-auto h-auto",
-              "bg-transparent",
-              "rounded-lg",
-              "flex items-center justify-center",
-              "group-data-[selected=true]:bg-transparent",
-              "!text-default-500",
-              "pt-px",
-              "px-0",
-              "mx-0",
-            ],
-            classNames?.wrapper,
-          ),
-        })}
+      {/* El botón que se desliza. Lleva el relleno del acento, así que el
+          conmutador cambia de color con el acento elegido sin tocar nada. */}
+      <span
+        aria-hidden
+        className="absolute top-1 grid h-7 w-7 place-items-center transition-[left] duration-300"
+        style={{
+          left: oscuro ? "calc(100% - 2rem)" : "0.25rem",
+          borderRadius: 9999,
+          background: "var(--brand)",
+          color: "var(--brand-ink)",
+          boxShadow: "0 0 16px -4px var(--brand-glow), inset 0 1px 0 0 oklch(1 0 0 / 0.25)",
+          transitionTimingFunction: "var(--ease)",
+        }}
       >
-        {isSelected ? (
-          <MoonFilledIcon size={22} />
-        ) : (
-          <SunFilledIcon size={22} />
-        )}
-      </div>
-    </Component>
+        {oscuro ? <Moon className="h-3.5 w-3.5" /> : <Sun className="h-3.5 w-3.5" />}
+      </span>
+
+      {/* Los dos destinos, en tinta tenue: marcan a dónde va el botón. */}
+      <span aria-hidden className="relative flex h-7 items-center justify-between px-[7px]">
+        <Sun className="h-3.5 w-3.5" style={{ color: oscuro ? "var(--ink-faint)" : "transparent" }} />
+        <Moon className="h-3.5 w-3.5" style={{ color: oscuro ? "transparent" : "var(--ink-faint)" }} />
+      </span>
+    </button>
   );
 };
+
+export default ThemeSwitch;

@@ -36,6 +36,7 @@ export const DEFAULT_PREFS: DashboardPrefs = {
     supervisor: "#a855f7",
     guard: "#22c55e",
     incident: "#ef4444",
+    client: "#94a3b8",
   },
   pinIcons: {
     tenant: "Building2",
@@ -43,6 +44,7 @@ export const DEFAULT_PREFS: DashboardPrefs = {
     supervisor: "UserCog",
     guard: "User",
     incident: "AlertTriangle",
+    client: "Home",
   },
   statusColors: {
     online: "#22c55e",

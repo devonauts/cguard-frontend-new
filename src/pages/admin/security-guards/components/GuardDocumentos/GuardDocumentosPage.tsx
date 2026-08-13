@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { UploadCloud, FileText, Trash2, Download, FileImage, X } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import GuardsLayout from '@/layouts/GuardsLayout';
-import { Section, EmptyState, SkeletonCards, Modal } from '@/components/kit';
+import { Section, EmptyState, SkeletonCards, Modal, IconTile } from "@/components/kit";
 import securityGuardService from '@/lib/api/securityGuardService';
 import type { FileDescriptor } from '../../guardDetailTypes';
 
@@ -159,12 +159,10 @@ export default function GuardDocumentosPage() {
               onDrop={onDrop}
               onClick={() => !uploading && fileInputRef.current?.click()}
               className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed px-6 py-8 text-center transition ${
-                dragOver ? 'border-[color:var(--primary)] bg-primary/5' : 'hover:border-foreground/30'
+                dragOver ? '[border-color:var(--brand-line)] [background:var(--brand-wash)]' : 'hover:[border-color:var(--brand-line)]'
               } ${uploading ? 'pointer-events-none opacity-60' : ''}`}
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
-                <UploadCloud className="h-6 w-6 text-primary" />
-              </div>
+              <IconTile size="lg"><UploadCloud /></IconTile>
               <div className="text-sm font-medium text-foreground">
                 {uploading
                   ? t('guards.documents.uploading', { defaultValue: 'Subiendo…' })
@@ -195,7 +193,7 @@ export default function GuardDocumentosPage() {
                   action={
                     <button
                       onClick={loadDocs}
-                      className="inline-flex h-9 items-center gap-2 rounded-lg px-4 text-sm font-medium bg-primary text-primary-foreground shadow-sm transition hover:opacity-90"
+                      className="cg-btn-brand cg-focus inline-flex h-9 items-center gap-2 rounded-full px-4 text-sm font-semibold transition"
                     >
                       {t('guards.documents.retry', { defaultValue: 'Reintentar' })}
                     </button>
@@ -214,7 +212,7 @@ export default function GuardDocumentosPage() {
                     return (
                       <div
                         key={doc.id}
-                        className="group flex items-center gap-3 rounded-xl border bg-card p-3 shadow-sm transition hover:border-foreground/20 hover:shadow"
+                        className="group flex items-center gap-3 glass-flat p-3 transition hover:border-foreground/20 hover:shadow"
                       >
                         {/* Thumbnail / icon */}
                         <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-muted">
@@ -255,7 +253,8 @@ export default function GuardDocumentosPage() {
                           <button
                             onClick={() => setToDelete(doc)}
                             title={t('actions.delete', { defaultValue: 'Eliminar' }) as string}
-                            className="rounded-lg p-2 text-muted-foreground transition hover:bg-red-500/10 hover:text-red-600"
+                            className="cg-focus rounded-lg p-2 transition hover:[color:var(--bad-text)]"
+                            style={{ color: 'var(--ink-faint)' }}
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
@@ -280,14 +279,14 @@ export default function GuardDocumentosPage() {
               <button
                 onClick={() => setToDelete(null)}
                 disabled={deleting}
-                className="h-9 rounded-lg border px-4 text-sm font-medium text-foreground transition hover:bg-muted"
+                className="cg-btn-glass cg-focus h-9 rounded-full px-4 text-sm font-semibold transition"
               >
                 {t('actions.cancel', { defaultValue: 'Cancelar' })}
               </button>
               <button
                 onClick={confirmDelete}
                 disabled={deleting}
-                className="h-9 rounded-lg bg-red-600 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-red-700 disabled:opacity-60"
+                className="cg-btn-bad cg-focus h-9 rounded-full px-4 text-sm font-semibold transition disabled:opacity-60"
               >
                 {deleting
                   ? t('actions.deleting', { defaultValue: 'Eliminando…' })

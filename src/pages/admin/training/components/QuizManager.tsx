@@ -96,9 +96,9 @@ export default function QuizManager({ courseId, quiz, passingScore, readOnly, on
             <div className="flex items-center justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2 font-medium">
-                  <CheckCircle2 className="h-5 w-5 text-green-600" /> Cuestionario configurado
+                  <CheckCircle2 className="h-5 w-5" style={{ color: 'var(--ok-text)' }} /> Cuestionario configurado
                 </div>
-                <p className="text-sm text-muted-foreground mt-1 flex items-center gap-2">
+                <p className="mt-1 flex items-center gap-2 text-sm" style={{ color: 'var(--ink-soft)' }}>
                   Puntaje para aprobar: <StatusBadge tone="green" dot={false}>{quiz.passPct}%</StatusBadge>
                 </p>
               </div>
@@ -142,18 +142,18 @@ export default function QuizManager({ courseId, quiz, passingScore, readOnly, on
         </div>
 
         {quiz && (
-          <p className="text-xs text-amber-600">
+          <p className="text-xs" style={{ color: 'var(--warn-text)' }}>
             Al guardar se reemplazarán las preguntas existentes del cuestionario.
           </p>
         )}
 
         <div className="space-y-4">
           {questions.map((q, qi) => (
-            <div key={qi} className="rounded-2xl border p-4 space-y-3 bg-muted/20">
+            <div key={qi} className="glass-sunken space-y-3 p-4">
               <div className="flex items-start justify-between gap-2">
                 <Label className="pt-2">Pregunta {qi + 1}</Label>
                 {questions.length > 1 && (
-                  <button className="p-1.5 text-red-600" onClick={() => removeQuestion(qi)}><Trash2 className="h-4 w-4" /></button>
+                  <button className="p-1.5" style={{ color: 'var(--bad-text)' }} onClick={() => removeQuestion(qi)}><Trash2 className="h-4 w-4" /></button>
                 )}
               </div>
               <Input placeholder="Enunciado de la pregunta" value={q.prompt} onChange={(e) => setQ(qi, { prompt: e.target.value })} />
@@ -169,7 +169,7 @@ export default function QuizManager({ courseId, quiz, passingScore, readOnly, on
                     />
                     <Input placeholder={`Opción ${oi + 1}`} value={o} onChange={(e) => setOption(qi, oi, e.target.value)} />
                     {q.options.length > 2 && (
-                      <button className="p-1.5 text-red-600" onClick={() => removeOption(qi, oi)}><Trash2 className="h-4 w-4" /></button>
+                      <button className="p-1.5" style={{ color: 'var(--bad-text)' }} onClick={() => removeOption(qi, oi)}><Trash2 className="h-4 w-4" /></button>
                     )}
                   </div>
                 ))}

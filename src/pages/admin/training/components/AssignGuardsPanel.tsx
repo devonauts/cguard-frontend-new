@@ -2,7 +2,6 @@ import { useEffect, useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
 import {
   Select,
   SelectContent,
@@ -12,13 +11,15 @@ import {
 } from '@/components/ui/select';
 import { UserPlus, Users, Search } from 'lucide-react';
 import { toast } from 'sonner';
-import { Section, FadeIn } from '@/components/kit';
+import { Section, FadeIn, StatusBadge, EmptyState } from '@/components/kit';
+import { DataTable, type Column } from '@/components/table/DataTable';
+import { MeterBar } from '@/components/charts';
 import { securityGuardService } from '@/lib/api/securityGuardService';
 import {
   trainingEnrollmentService,
   type EnrollmentRow,
 } from '@/lib/api/trainingEnrollmentService';
-import { ENROLLMENT_STATUS_LABELS, ENROLLMENT_STATUS_VARIANT } from '../trainingConstants';
+import { ENROLLMENT_STATUS_LABELS, ENROLLMENT_STATUS_TONE } from '../trainingConstants';
 
 interface GuardOption {
   id: string;
@@ -119,12 +120,59 @@ export default function AssignGuardsPanel({ courseId, published }: Props) {
     }
   };
 
+  const assignedColumns: Column<EnrollmentRow>[] = [
+    {
+      key: 'guardName',
+      header: 'Vigilante',
+      render: (_v, e) => (e.assignmentType === 'all_guards' && !e.guardId
+        ? <StatusBadge tone="neutral" dot={false}>Todos los vigilantes (plantilla)</StatusBadge>
+        : (e.guardName || '—')),
+    },
+    {
+      key: 'status',
+      header: 'Estado',
+      render: (_v, e) => (
+        <StatusBadge tone={ENROLLMENT_STATUS_TONE[e.status]} dot={false}>
+          {ENROLLMENT_STATUS_LABELS[e.status]}
+        </StatusBadge>
+      ),
+    },
+    {
+      key: 'progressPercentage',
+      header: 'Progreso',
+      /* La página hermana pinta este mismo dato con `MeterBar`; una columna que
+         sólo dice «40 %» y otra que lo dibuja son dos idiomas para lo mismo. */
+      render: (_v, e) => (
+        <div className="flex items-center gap-2">
+          <MeterBar className="w-24" height={6} pct={e.progressPercentage ?? 0} ariaLabel="Progreso" />
+          <span className="text-xs tabular-nums" style={{ color: 'var(--ink-soft)' }}>{e.progressPercentage ?? 0}%</span>
+        </div>
+      ),
+    },
+    {
+      key: 'quizPassed',
+      header: 'Cuestionario',
+      render: (_v, e) => (e.quizPassed
+        ? <StatusBadge tone="ok" dot={false}><span className="tabular-nums">Aprobado{e.quizScore != null ? ` (${e.quizScore}%)` : ''}</span></StatusBadge>
+        : <span style={{ color: 'var(--ink-soft)' }}>—</span>),
+    },
+    {
+      key: 'completedAt',
+      header: 'Completado',
+      render: (_v, e) => (
+        <span className="tabular-nums" style={{ color: 'var(--ink-soft)' }}>
+          {e.completedAt ? new Date(e.completedAt).toLocaleDateString('es-EC') : '—'}
+        </span>
+      ),
+    },
+  ];
+
   return (
     <FadeIn className="space-y-4">
       <Section title="Asignar curso" icon={<UserPlus />}>
         <div className="space-y-4 max-w-2xl">
           {!published && (
-            <p className="text-sm text-amber-600">Este curso es un borrador. Publícalo para poder asignarlo.</p>
+            <p className="text-sm" style={{ color: 'var(--warn-text)' }}>Este curso es un borrador. Publícalo para poder asignarlo.</p>
           )}
           <div className="space-y-2">
             <Label>Tipo de asignación</Label>
@@ -142,20 +190,20 @@ export default function AssignGuardsPanel({ courseId, published }: Props) {
               <Label>Buscar vigilante</Label>
               {selected ? (
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="gap-1"><Users className="h-3 w-3" /> {selected.name}</Badge>
+                  <StatusBadge tone="neutral" dot={false}><Users className="h-3 w-3" /> {selected.name}</StatusBadge>
                   <Button size="sm" variant="ghost" onClick={() => setSelected(null)}>Cambiar</Button>
                 </div>
               ) : (
                 <div className="relative">
-                  <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
                   <Input className="pl-9" placeholder="Nombre del vigilante" value={query} onChange={(e) => setQuery(e.target.value)} />
                   {(options.length > 0 || searching) && (
-                    <div className="absolute z-10 mt-1 w-full rounded-md border bg-popover shadow">
-                      {searching && <div className="px-3 py-2 text-sm text-muted-foreground">Buscando...</div>}
+                    <div className="glass-raised absolute z-10 mt-1 w-full overflow-hidden">
+                      {searching && <div className="px-3 py-2 text-sm" style={{ color: 'var(--ink-soft)' }}>Buscando…</div>}
                       {options.map((o) => (
                         <button
                           key={o.id}
-                          className="block w-full text-left px-3 py-2 text-sm hover:bg-muted"
+                          className="cg-focus block w-full px-3 py-2 text-left text-sm transition-colors hover:[background:var(--glass-sunken)]"
                           onClick={() => { setSelected(o); setOptions([]); }}
                         >
                           {o.name}
@@ -180,46 +228,20 @@ export default function AssignGuardsPanel({ courseId, published }: Props) {
       </Section>
 
       <Section title="Vigilantes asignados" icon={<Users />} contentClassName="-mx-5 -mb-5">
-        <div className="border-t overflow-hidden">
-          <table className="min-w-full text-sm text-left">
-            <thead className="bg-muted/30">
-              <tr className="border-b">
-                <th className="px-4 py-3 font-semibold">Vigilante</th>
-                <th className="px-4 py-3 font-semibold">Estado</th>
-                <th className="px-4 py-3 font-semibold">Progreso</th>
-                <th className="px-4 py-3 font-semibold">Cuestionario</th>
-                <th className="px-4 py-3 font-semibold">Completado</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loadingList && <tr><td colSpan={5} className="py-12 text-center text-muted-foreground">Cargando...</td></tr>}
-              {!loadingList && enrollments.length === 0 && (
-                <tr><td colSpan={5} className="py-12 text-center text-muted-foreground">Aún no hay vigilantes asignados</td></tr>
-              )}
-              {!loadingList && enrollments.map((e) => (
-                <tr key={e.id} className="border-b">
-                  <td className="px-4 py-3">
-                    {e.assignmentType === 'all_guards' && !e.guardId
-                      ? <Badge variant="outline">Todos los vigilantes (plantilla)</Badge>
-                      : (e.guardName || '-')}
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge variant={ENROLLMENT_STATUS_VARIANT[e.status]}>{ENROLLMENT_STATUS_LABELS[e.status]}</Badge>
-                  </td>
-                  <td className="px-4 py-3">{e.progressPercentage ?? 0}%</td>
-                  <td className="px-4 py-3">
-                    {e.quizPassed
-                      ? <Badge variant="default">Aprobado{e.quizScore != null ? ` (${e.quizScore}%)` : ''}</Badge>
-                      : <span className="text-muted-foreground">—</span>}
-                  </td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {e.completedAt ? new Date(e.completedAt).toLocaleDateString() : '—'}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <DataTable
+          surface="none"
+          loading={loadingList}
+          data={enrollments}
+          columns={assignedColumns}
+          emptyState={
+            <EmptyState
+              icon={<Users />}
+              title="Aún no hay vigilantes asignados"
+              description="Asigna el curso arriba y el progreso aparecerá aquí."
+              className="border-0"
+            />
+          }
+        />
       </Section>
     </FadeIn>
   );

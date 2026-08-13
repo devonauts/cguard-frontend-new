@@ -6,19 +6,14 @@ import { clientService } from '@/lib/api/clientService';
 import guardRatingService from '@/lib/api/guardRatingService';
 import GuardRatingLevel from '@/pages/admin/security-guards/GuardRatingLevel';
 import { Section, EmptyState, StatusBadge } from '@/components/kit';
-import { Button } from '@/components/ui/button';
-import {
-  Search, Users, UserCheck, UserX, Coffee, Clock, ShieldCheck, Timer,
-  Eye, MoreVertical, RefreshCw, Route as RouteIcon, Pencil, UserMinus,
-} from 'lucide-react';
+import { FIELD_CLS, TabTable, THead, Th, Tr, RowAction, RowActions, Pager, TabFooter, TabLoading, Avatar } from '../_shared/tab-kit';
+import { Donut, MeterBar } from '@/components/charts';
+import { seriesVar } from '@/lib/chartColors';
+import { Search, Users, UserX, ShieldCheck, Eye, MoreVertical, RefreshCw, Route as RouteIcon, Pencil, UserMinus } from 'lucide-react';
 import { toast } from 'sonner';
 import { ApiService } from '@/services/api/apiService';
 import { confirmDialog } from '@/components/ui/confirmDialog';
-import {
-  DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu';
-
-const inputCls = 'flex h-9 w-full rounded-lg border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-all placeholder:text-muted-foreground hover:border-ring/40 focus-visible:outline-none focus-visible:border-ring focus-visible:ring-ring/40 focus-visible:ring-[3px]';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 
 type BadgeTone = 'green' | 'blue' | 'orange' | 'red' | 'primary' | 'slate';
 
@@ -73,42 +68,15 @@ const ESTADO_META: Record<string, { label: string; tone: BadgeTone }> = {
   ausente:     { label: 'Ausente',       tone: 'red' },
   en_ruta:     { label: 'En ruta',       tone: 'primary' },
 };
+/* Los cuatro roles son categorías sin orden ni estado: van a los escalones de
+   serie del acento, asignados SIEMPRE en el mismo orden. Que un filtro deje
+   fuera a los supervisores no puede repintar a los guardias. */
 const ROLE_META: Record<string, { label: string; tone: BadgeTone; color: string }> = {
-  guardia:    { label: 'Guardia',    tone: 'slate',   color: '#2563eb' },
-  supervisor: { label: 'Supervisor', tone: 'blue',    color: '#16a34a' },
-  patrullero: { label: 'Patrullero', tone: 'primary', color: '#9333ea' },
-  operador:   { label: 'Operador',   tone: 'orange',  color: '#f59e0b' },
+  guardia:    { label: 'Guardia',    tone: 'slate',   color: seriesVar(0) },
+  supervisor: { label: 'Supervisor', tone: 'blue',    color: seriesVar(1) },
+  patrullero: { label: 'Patrullero', tone: 'primary', color: seriesVar(2) },
+  operador:   { label: 'Operador',   tone: 'orange',  color: seriesVar(3) },
 };
-
-// ── Pure-SVG donut ─────────────────────────────────────────────────────────
-function Donut({ segments, total }: { segments: Array<{ value: number; color: string }>; total: number }) {
-  const R = 52, C = 2 * Math.PI * R, sum = segments.reduce((a, s) => a + s.value, 0) || 1;
-  let offset = 0;
-  return (
-    <div className="relative h-[150px] w-[150px] shrink-0">
-      <svg viewBox="0 0 130 130" className="h-full w-full -rotate-90">
-        <circle cx="65" cy="65" r={R} fill="none" stroke="currentColor" className="text-muted" strokeWidth="16" />
-        {segments.map((s, i) => {
-          const len = (s.value / sum) * C;
-          const el = <circle key={i} cx="65" cy="65" r={R} fill="none" stroke={s.color} strokeWidth="16" strokeDasharray={`${len} ${C - len}`} strokeDashoffset={-offset} />;
-          offset += len;
-          return el;
-        })}
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <div className="font-display text-2xl font-bold leading-none">{total}</div>
-        <div className="text-xs text-muted-foreground">Total</div>
-      </div>
-    </div>
-  );
-}
-
-function Avatar({ url, name }: { url?: string | null; name: string }) {
-  const initials = (name || '?').split(' ').filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
-  return url
-    ? <img src={url} alt={name} className="h-9 w-9 shrink-0 rounded-full object-cover" />
-    : <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary/12 text-xs font-semibold text-primary">{initials}</span>;
-}
 
 export default function ClientStaff({ client }: { client: Client }) {
   const navigate = useNavigate();
@@ -167,7 +135,7 @@ export default function ClientStaff({ client }: { client: Client }) {
   const pageCount = Math.max(1, Math.ceil(total / perPage));
   const fmtUpdated = data?.updatedAt ? new Date(data.updatedAt).toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '';
 
-  const donutSegments = useMemo(() => dist.filter((d) => d.count > 0).map((d) => ({ value: d.count, color: ROLE_META[d.key]?.color || '#94a3b8' })), [dist]);
+  const donutSegments = useMemo(() => dist.filter((d) => d.count > 0).map((d) => ({ value: d.count, color: ROLE_META[d.key]?.color, tone: 'neutral' as const, label: d.label })), [dist]);
 
   const resetPage = (fn: (v: string) => void) => (v: string) => { fn(v); setPage(1); };
 
@@ -197,7 +165,7 @@ export default function ClientStaff({ client }: { client: Client }) {
     }
   };
 
-  if (loading && !data) return <div className="p-8 text-sm text-muted-foreground">Cargando personal asignado…</div>;
+  if (loading && !data) return <TabLoading />;
 
   return (
     <div ref={containerRef} className="space-y-4">
@@ -209,20 +177,20 @@ export default function ClientStaff({ client }: { client: Client }) {
           <div className="mb-3 grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-6">
             <div className="relative col-span-2 md:col-span-3 xl:col-span-1">
               <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <input className={`${inputCls} pl-8`} placeholder="Buscar por nombre, ID o estación" value={q} onChange={(e) => resetPage(setQ)(e.target.value)} />
+              <input className={`${FIELD_CLS} pl-8`} placeholder="Buscar por nombre, ID o estación" value={q} onChange={(e) => resetPage(setQ)(e.target.value)} />
             </div>
-            <select className={inputCls} value={sede} onChange={(e) => resetPage(setSede)(e.target.value)}>
+            <select className={FIELD_CLS} value={sede} onChange={(e) => resetPage(setSede)(e.target.value)}>
               <option value="todos">Sede: Todas</option>
               {sedes.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
-            <select className={inputCls} value={role} onChange={(e) => resetPage(setRole)(e.target.value)}>
+            <select className={FIELD_CLS} value={role} onChange={(e) => resetPage(setRole)(e.target.value)}>
               <option value="todos">Rol: Todos</option>
               <option value="guardia">Guardia</option>
               <option value="supervisor">Supervisor</option>
               <option value="patrullero">Patrullero</option>
               <option value="operador">Operador</option>
             </select>
-            <select className={inputCls} value={estado} onChange={(e) => resetPage(setEstado)(e.target.value)}>
+            <select className={FIELD_CLS} value={estado} onChange={(e) => resetPage(setEstado)(e.target.value)}>
               <option value="todos">Estado: Todos</option>
               <option value="en_turno">En turno</option>
               <option value="fuera_turno">Fuera de turno</option>
@@ -230,7 +198,7 @@ export default function ClientStaff({ client }: { client: Client }) {
               <option value="ausente">Ausente</option>
               <option value="en_ruta">En ruta</option>
             </select>
-            <select className={inputCls} value={turno} onChange={(e) => resetPage(setTurno)(e.target.value)}>
+            <select className={FIELD_CLS} value={turno} onChange={(e) => resetPage(setTurno)(e.target.value)}>
               <option value="todos">Turno: Todos</option>
               <option value="Diurno">Diurno</option>
               <option value="Vespertino">Vespertino</option>
@@ -241,27 +209,24 @@ export default function ClientStaff({ client }: { client: Client }) {
           {personal.length === 0 ? (
             <EmptyState icon={<Users className="h-5 w-5" />} title="Sin personal" description="No hay personal que coincida con los filtros para este cliente." />
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[720px] text-sm">
-                <thead>
-                  <tr className="border-b text-left text-xs uppercase tracking-wide text-muted-foreground">
-                    <th className="px-2 py-2 font-medium">Personal</th>
-                    <th className="px-2 py-2 font-medium">Rol</th>
-                    <th className="px-2 py-2 font-medium">Estación</th>
-                    <th className="px-2 py-2 font-medium">Sede / Sitio</th>
-                    <th className="px-2 py-2 font-medium">Turno</th>
-                    <th className="px-2 py-2 font-medium">Estado</th>
-                    <th className="px-2 py-2 font-medium">Inicio</th>
-                    <th className="px-2 py-2 font-medium">Última actividad</th>
-                    <th className="px-2 py-2 font-medium text-right">Acciones</th>
-                  </tr>
-                </thead>
+            <TabTable>
+                <THead>
+                  <Th>Personal</Th>
+                  <Th>Rol</Th>
+                  <Th>Estación</Th>
+                  <Th>Sede / Sitio</Th>
+                  <Th>Turno</Th>
+                  <Th>Estado</Th>
+                  <Th>Inicio</Th>
+                  <Th>Última actividad</Th>
+                  <Th align="right">Acciones</Th>
+                </THead>
                 <tbody>
                   {personal.map((p) => {
                     const em = ESTADO_META[p.estado] || ESTADO_META.fuera_turno;
                     const rm = ROLE_META[p.role] || ROLE_META.guardia;
                     return (
-                      <tr key={p.id} className="border-b last:border-0 hover:bg-muted/40">
+                      <Tr key={p.id}>
                         <td className="px-2 py-2.5">
                           <div className="flex items-center gap-2.5">
                             <Avatar url={p.photoUrl} name={p.name} />
@@ -285,16 +250,16 @@ export default function ClientStaff({ client }: { client: Client }) {
                         <td className="px-2 py-2.5"><StatusBadge tone={em.tone}>{em.label}</StatusBadge></td>
                         <td className="px-2 py-2.5 tabular-nums">{p.inicioTurno || '—'}</td>
                         <td className="px-2 py-2.5">
-                          {p.ultimaActividad?.type === 'ronda' ? <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600"><RouteIcon className="h-3.5 w-3.5" /> {p.ultimaActividad.label || 'Ronda activa'}</span>
+                          {p.ultimaActividad?.type === 'ronda' ? <span className="inline-flex items-center gap-1 text-xs font-semibold" style={{ color: 'var(--ok-text)' }}><RouteIcon className="h-3.5 w-3.5" /> {p.ultimaActividad.label || 'Ronda activa'}</span>
                             : p.ultimaActividad?.label ? <div><div className="tabular-nums">{p.ultimaActividad.time || ''}</div><div className="text-xs text-muted-foreground">{p.ultimaActividad.label}</div></div>
                             : <span className="text-xs text-muted-foreground">—</span>}
                         </td>
                         <td className="px-2 py-2.5">
-                          <div className="flex justify-end gap-1 text-muted-foreground">
-                            <button title="Ver detalle" onClick={() => openWorker(p)} className="rounded-md p-1.5 hover:bg-muted hover:text-foreground"><Eye className="h-3.5 w-3.5" /></button>
+                          <RowActions>
+                            <RowAction title="Ver detalle" onClick={() => openWorker(p)}><Eye className="h-3.5 w-3.5" /></RowAction>
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <button title="Acciones" className="rounded-md p-1.5 hover:bg-muted hover:text-foreground"><MoreVertical className="h-3.5 w-3.5" /></button>
+                                <button title="Acciones" className="cg-focus rounded-md p-1.5 transition-opacity hover:opacity-70" style={{ color: 'var(--ink-soft)' }}><MoreVertical className="h-3.5 w-3.5" /></button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
                                 <DropdownMenuItem onClick={() => openWorker(p)}>
@@ -309,7 +274,7 @@ export default function ClientStaff({ client }: { client: Client }) {
                                   <>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem
-                                      className="text-red-500 focus:text-red-500"
+                                      style={{ color: 'var(--bad-text)' }}
                                       onClick={() => void removeFromStation(p)}
                                     >
                                       <UserMinus className="mr-2 h-3.5 w-3.5" /> Quitar de la estación
@@ -318,38 +283,27 @@ export default function ClientStaff({ client }: { client: Client }) {
                                 )}
                               </DropdownMenuContent>
                             </DropdownMenu>
-                          </div>
+                          </RowActions>
                         </td>
-                      </tr>
+                      </Tr>
                     );
                   })}
                 </tbody>
-              </table>
-            </div>
+            </TabTable>
           )}
 
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground">
-            <span>Mostrando {total === 0 ? 0 : (page - 1) * perPage + 1} a {Math.min(page * perPage, total)} de {total} resultados</span>
-            <div className="flex items-center gap-1">
-              <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)} className="rounded-md border px-2 py-1 disabled:opacity-40">‹</button>
-              {Array.from({ length: Math.min(5, pageCount) }).map((_, i) => {
-                const n = i + 1;
-                return <button key={n} onClick={() => setPage(n)} className={`grid h-7 min-w-[28px] place-items-center rounded-md px-2 text-xs font-semibold ${n === page ? 'bg-primary text-primary-foreground' : 'border text-foreground'}`}>{n}</button>;
-              })}
-              <button disabled={page >= pageCount} onClick={() => setPage((p) => p + 1)} className="rounded-md border px-2 py-1 disabled:opacity-40">›</button>
-            </div>
-          </div>
+          <Pager page={page} pageCount={pageCount} total={total} perPage={perPage} noun="resultados" onPage={setPage} />
         </Section>
 
         {/* RIGHT — distribution + coverage + certs + absences */}
         <div className="space-y-4">
           <Section title="Distribución por rol" icon={<Users className="h-4 w-4" />}>
             <div className="flex items-center gap-4">
-              <Donut segments={donutSegments} total={data?.total ?? dist.reduce((a, d) => a + d.count, 0)} />
+              <Donut segments={donutSegments} size={150} thickness={16} centerTop={data?.total ?? dist.reduce((a, d) => a + d.count, 0)} centerBottom="Total" ariaLabel="Distribución por rol" />
               <div className="flex-1 space-y-2">
                 {dist.map((d) => (
                   <div key={d.key} className="flex items-center justify-between text-sm">
-                    <span className="inline-flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full" style={{ background: ROLE_META[d.key]?.color || '#94a3b8' }} />{d.label}</span>
+                    <span className="inline-flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full" style={{ background: ROLE_META[d.key]?.color || 'var(--ink-faint)' }} />{d.label}</span>
                     <span className="tabular-nums"><b>{d.count}</b> <span className="text-xs text-muted-foreground">({d.pct}%)</span></span>
                   </div>
                 ))}
@@ -363,9 +317,9 @@ export default function ClientStaff({ client }: { client: Client }) {
                 <div key={t.key}>
                   <div className="mb-1 flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">{t.label} <span className="text-xs">({t.window})</span></span>
-                    <span className="tabular-nums"><b className={t.pct >= 90 ? 'text-emerald-600' : t.pct >= 60 ? 'text-orange-600' : 'text-red-600'}>{t.pct}%</b> <span className="text-xs text-muted-foreground">{t.covered} / {t.required}</span></span>
+                    <span className="tabular-nums"><b style={{ color: t.pct >= 90 ? 'var(--ok-text)' : t.pct >= 60 ? 'var(--warn-text)' : 'var(--bad-text)' }}>{t.pct}%</b> <span className="text-xs text-muted-foreground">{t.covered} / {t.required}</span></span>
                   </div>
-                  <div className="h-2 w-full rounded-full bg-muted"><div className={`h-2 rounded-full ${t.pct >= 90 ? 'bg-emerald-500' : t.pct >= 60 ? 'bg-orange-500' : 'bg-red-500'}`} style={{ width: `${Math.max(2, Math.min(100, t.pct))}%` }} /></div>
+                  <MeterBar height={8} pct={t.pct} ariaLabel={t.label} tone={t.pct >= 90 ? 'ok' : t.pct >= 60 ? 'warn' : 'bad'} />
                 </div>
               ))}
               {coberturaTurno.length === 0 && <p className="text-sm text-muted-foreground">Sin turnos configurados.</p>}
@@ -373,9 +327,9 @@ export default function ClientStaff({ client }: { client: Client }) {
           </Section>
 
           <Section title="Certificaciones próximas a vencer" icon={<ShieldCheck className="h-4 w-4" />}
-            action={<button onClick={() => navigate('/security-guards')} className="text-xs font-medium text-primary hover:underline">Ver todas</button>}>
+            action={<button onClick={() => navigate('/security-guards')} className="cg-focus rounded-md text-xs font-semibold hover:underline" style={{ color: 'var(--brand-text)' }}>Ver todas</button>}>
             {certs.length === 0 ? (
-              <div className="py-2 text-sm text-emerald-600">Sin certificaciones próximas a vencer.</div>
+              <div className="py-2 text-sm" style={{ color: 'var(--ok-text)' }}>Sin certificaciones próximas a vencer.</div>
             ) : (
               <div className="divide-y">
                 {certs.slice(0, 6).map((c) => (
@@ -384,7 +338,12 @@ export default function ClientStaff({ client }: { client: Client }) {
                       <Avatar url={c.photoUrl} name={c.name} />
                       <div><div className="text-sm font-medium">{c.name}</div><div className="text-xs text-muted-foreground">{c.cert}</div></div>
                     </div>
-                    <span className={`shrink-0 text-xs font-medium ${c.expiresInDays <= 15 ? 'text-red-600' : c.expiresInDays <= 30 ? 'text-orange-600' : 'text-blue-600'}`}>{c.expiresInDays < 0 ? 'Vencida' : `Vence en ${c.expiresInDays} días`}</span>
+                    <span
+                      className="shrink-0 text-xs font-semibold"
+                      style={{ color: c.expiresInDays <= 15 ? 'var(--bad-text)' : c.expiresInDays <= 30 ? 'var(--warn-text)' : 'var(--info-text)' }}
+                    >
+                      {c.expiresInDays < 0 ? 'Vencida' : `Vence en ${c.expiresInDays} días`}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -393,7 +352,7 @@ export default function ClientStaff({ client }: { client: Client }) {
 
           <Section title={`Ausencias hoy (${ausencias.length})`} icon={<UserX className="h-4 w-4" />}>
             {ausencias.length === 0 ? (
-              <div className="py-2 text-sm text-emerald-600">Sin ausencias hoy.</div>
+              <div className="py-2 text-sm" style={{ color: 'var(--ok-text)' }}>Sin ausencias hoy.</div>
             ) : (
               <div className="divide-y">
                 {ausencias.map((a) => (
@@ -402,7 +361,7 @@ export default function ClientStaff({ client }: { client: Client }) {
                       <Avatar url={a.photoUrl} name={a.name} />
                       <div><div className="text-sm font-medium">{a.name}</div><div className="text-xs text-muted-foreground">{a.turno || ''}</div></div>
                     </div>
-                    <span className={`shrink-0 text-xs font-medium ${a.tone === 'red' ? 'text-red-600' : 'text-orange-600'}`}>{a.reason}</span>
+                    <span className="shrink-0 text-xs font-semibold" style={{ color: a.tone === 'red' ? 'var(--bad-text)' : 'var(--warn-text)' }}>{a.reason}</span>
                   </div>
                 ))}
               </div>
@@ -411,14 +370,12 @@ export default function ClientStaff({ client }: { client: Client }) {
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border bg-muted/30 px-4 py-2.5 text-xs text-muted-foreground">
-        <span className="inline-flex items-center gap-1.5"><RefreshCw className="h-3.5 w-3.5" /> Los estados se actualizan en tiempo real según el check-in de guardias.</span>
-        <span className="inline-flex items-center gap-2">
-          {fmtUpdated && <>Última actualización: {fmtUpdated}</>}
-          <button onClick={() => load()} className="inline-flex items-center gap-1 font-medium text-primary hover:underline"><RefreshCw className="h-3.5 w-3.5" /> Actualizar</button>
-        </span>
-      </div>
+      <TabFooter
+        icon={<RefreshCw />}
+        note="Los estados se actualizan en tiempo real según el check-in de guardias."
+        updatedAt={fmtUpdated}
+        onRefresh={() => load()}
+      />
     </div>
   );
 }

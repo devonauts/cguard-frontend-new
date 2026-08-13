@@ -305,7 +305,13 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
     };
     const fmtHM = (d: any) => (d ? new Date(d).toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' }) : null);
     const fmtDay = (d: any) => (d ? new Date(d).toLocaleDateString('es', { day: '2-digit', month: 'short' }) : '');
-    const guardHue = (nm: string) => { let h = 0; for (let i = 0; i < nm.length; i++) h = (h * 31 + nm.charCodeAt(i)) >>> 0; return [205, 150, 265, 28, 340, 95, 180, 12][h % 8]; };
+    // Tinte estable por vigilante: el acento del usuario ROTADO de tono. No es un
+    // color escrito — se repinta solo al cambiar el acento y funciona en ambos temas.
+    const guardHue = (nm: string) => { let h = 0; for (let i = 0; i < nm.length; i++) h = (h * 31 + nm.charCodeAt(i)) >>> 0; return [0, 200, 45, 250, 100, 310, 155, 25][h % 8]; };
+    const guardChip = (nm: string): React.CSSProperties => ({
+      backgroundColor: `color-mix(in oklab, oklch(from var(--brand) l c calc(h + ${guardHue(nm)})) 22%, transparent)`,
+      color: `oklch(from var(--brand-text) l c calc(h + ${guardHue(nm)}))`,
+    });
 
     return (
       <div className="space-y-4">
@@ -314,16 +320,16 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
           <StatCard
             icon={<ShieldCheck />}
             label="De turno ahora"
-            accent={openNow.length ? 'green' : 'red'}
+            accent={openNow.length ? 'ok' : 'bad'}
             value={recentShifts === null ? '…' : openNow.length}
             hint={openNow.length ? openNow.map((r) => r.guardName?.fullName || 'Vigilante').join(', ') : 'Nadie fichado'}
           />
-          <StatCard icon={<Users />} label="Fijos requeridos" accent="blue" value={fijos || '—'} />
+          <StatCard icon={<Users />} label="Fijos requeridos" accent="info" value={fijos || '—'} />
           <StatCard icon={<Activity />} label="Marcaciones hoy" value={recentShifts === null ? '…' : todayCount} />
           <StatCard
             icon={<Clock />}
             label="Horario"
-            accent="primary"
+            accent="brand"
             value={turnoInfo ? turnoInfo.label : 'Sin configurar'}
             hint={turnoInfo ? turnoInfo.sub : 'Usa Editar para asignarlo'}
           />
@@ -337,7 +343,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
             action={
               <button
                 onClick={() => setEditing(true)}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-muted/20 px-3 py-1.5 text-xs font-medium text-muted-foreground transition-all hover:bg-muted/40 hover:text-foreground"
+                className="cg-btn-glass cg-focus inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-all"
                 title="Editar horario, tolerancias y ubicación"
               >
                 <Pencil size={14} /> Editar puesto
@@ -345,9 +351,9 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
             }
           >
             {recentShifts === null ? (
-              <div className="py-8 text-center text-sm text-muted-foreground">Cargando…</div>
+              <div className="py-8 text-center text-sm" style={{ color: 'var(--ink-soft)' }}>Cargando…</div>
             ) : rows.length === 0 ? (
-              <div className="py-8 text-center text-sm text-muted-foreground">
+              <div className="py-8 text-center text-sm" style={{ color: 'var(--ink-soft)' }}>
                 Aún no hay marcaciones en este puesto.
               </div>
             ) : (
@@ -359,18 +365,18 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
                     <li key={r.id} className="flex items-center gap-3 py-2.5">
                       <span
                         className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold"
-                        style={{ backgroundColor: `hsl(${guardHue(gname)} 65% 88%)`, color: `hsl(${guardHue(gname)} 55% 30%)` }}
+                        style={guardChip(gname)}
                       >
                         {gname.charAt(0).toUpperCase()}
                       </span>
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-medium">{gname}</p>
                         <p className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <span className="flex items-center gap-1"><LogIn className="h-3 w-3 text-emerald-500" />{fmtDay(r.punchInTime)} {fmtHM(r.punchInTime)}</span>
+                          <span className="flex items-center gap-1"><LogIn className="h-3 w-3" style={{ color: 'var(--ok-text)' }} />{fmtDay(r.punchInTime)} {fmtHM(r.punchInTime)}</span>
                           {r.punchOutTime ? (
-                            <span className="flex items-center gap-1"><LogOut className="h-3 w-3 text-red-400" />{fmtHM(r.punchOutTime)}</span>
+                            <span className="flex items-center gap-1"><LogOut className="h-3 w-3" style={{ color: 'var(--bad-text)' }} />{fmtHM(r.punchOutTime)}</span>
                           ) : (
-                            <span className="font-medium text-emerald-600 dark:text-emerald-400">en turno</span>
+                            <span className="font-medium" style={{ color: 'var(--ok-text)' }}>en turno</span>
                           )}
                         </p>
                       </div>
@@ -398,9 +404,12 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
                 </p>
               </>
             ) : (
-              <div className="flex min-h-[200px] flex-col items-center justify-center gap-2 rounded-2xl border border-dashed bg-muted/30 text-sm text-muted-foreground">
+              <div
+                className="flex min-h-[200px] flex-col items-center justify-center gap-2 rounded-2xl border border-dashed text-sm"
+                style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)', color: 'var(--ink-soft)' }}
+              >
                 Sin ubicación configurada
-                <button onClick={() => setEditing(true)} className="text-primary underline underline-offset-2">
+                <button onClick={() => setEditing(true)} className="cg-btn-link cg-focus rounded underline underline-offset-2">
                   Definir ubicación
                 </button>
               </div>
@@ -416,18 +425,20 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
                 const gname = g.fullName || g.name || `${g.firstName || ''} ${g.lastName || ''}`.trim() || g.email || '-';
                 const onNow = openNow.some((r) => (r.guardName?.fullName || '') === gname);
                 return (
-                  <div key={g.id || i} className="flex items-center gap-2.5 rounded-xl border bg-card px-3 py-2">
+                  <div key={g.id || i} className="glass-flat flex items-center gap-2.5 px-3 py-2">
                     <span
                       className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold"
-                      style={{ backgroundColor: `hsl(${guardHue(gname)} 65% 88%)`, color: `hsl(${guardHue(gname)} 55% 30%)` }}
+                      style={{
+                        ...guardChip(gname),
+                      }}
                     >
                       {gname.charAt(0).toUpperCase()}
                     </span>
                     <span className="min-w-0 flex-1 truncate text-sm font-medium">{gname}</span>
                     {onNow && (
                       <span className="relative flex h-2.5 w-2.5" title="De turno ahora">
-                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-                        <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60" style={{ background: 'var(--ok)' }} />
+                        <span className="relative inline-flex h-2.5 w-2.5 rounded-full" style={{ background: 'var(--ok)' }} />
                       </span>
                     )}
                   </div>
@@ -443,24 +454,24 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
   // ── EDIT MODE ──
   return (
     <div className="space-y-4">
-      <div className="bg-card border border-primary/20 rounded-2xl overflow-hidden shadow-lg">
+      <div className="glass overflow-hidden">
         {/* Edit header */}
-        <div className="px-6 py-4 border-b border-border/20 flex items-center justify-between bg-primary/[0.03]">
+        <div className="flex items-center justify-between border-b px-6 py-4" style={{ borderColor: 'var(--hairline)', background: 'var(--brand-wash)' }}>
           <div>
-            <h3 className="text-sm font-semibold text-foreground">Configurar puesto</h3>
-            <p className="text-xs text-muted-foreground mt-0.5">Turno, ubicación y tolerancia de marcación. "Guardar" aplica la tolerancia.</p>
+            <h3 className="text-sm font-semibold">Configurar puesto</h3>
+            <p className="mt-0.5 text-xs" style={{ color: 'var(--ink-soft)' }}>Turno, ubicación y tolerancia de marcación. «Guardar» aplica la tolerancia.</p>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setEditing(false)}
-              className="px-3 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/20 transition-all"
+              className="cg-btn-ghost cg-focus rounded-lg px-3 py-1.5 text-xs font-medium transition-all"
             >
               Cancelar
             </button>
             <button
               onClick={handleSave}
               disabled={saving}
-              className="px-4 py-1.5 bg-primary text-primary-foreground rounded-lg text-xs font-semibold hover:bg-primary/90 disabled:opacity-50 transition-all shadow-sm flex items-center gap-1.5 active:scale-95"
+              className="cg-btn-brand cg-focus flex items-center gap-1.5 rounded-lg px-4 py-1.5 text-xs font-semibold transition-all active:scale-95 disabled:opacity-50"
             >
               {saving ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
               Guardar
@@ -469,9 +480,9 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
         </div>
 
         {/* Horario del turno — drives scheduleType + positions (engine source of truth) */}
-        <div className="p-6 border-t border-border/30 space-y-3">
+        <div className="space-y-3 border-t p-6" style={{ borderColor: 'var(--hairline)' }}>
           <div className="flex items-center gap-2">
-            <Clock size={16} className="text-primary" />
+            <Clock size={16} style={{ color: 'var(--brand-text)' }} />
             <h3 className="text-sm font-semibold text-foreground">Horario del turno</h3>
           </div>
           <p className="text-xs text-muted-foreground">
@@ -483,7 +494,10 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
                 key={o.key}
                 type="button"
                 onClick={() => setTurno(o.key)}
-                className={`rounded-xl border px-3 py-2 text-left transition-all ${turno === o.key ? 'border-primary bg-primary/10' : 'border-border/40 hover:border-primary/40'}`}
+                className="cg-focus rounded-xl border px-3 py-2 text-left transition-all"
+                style={turno === o.key
+                  ? { background: 'var(--brand-wash)', borderColor: 'var(--brand-line)' }
+                  : { background: 'var(--glass-sunken)', borderColor: 'var(--hairline)' }}
               >
                 <div className="text-xs font-semibold text-foreground">{o.label}</div>
                 <div className="text-[10px] text-muted-foreground">{o.sub}</div>
@@ -494,15 +508,15 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Hora inicio</label>
-                <input type="time" value={customStart} onChange={(e) => setCustomStart(e.target.value)} className="w-full px-3 py-2 border border-border/40 rounded-lg text-sm bg-background font-mono focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" />
+                <input type="time" value={customStart} onChange={(e) => setCustomStart(e.target.value)} className="cg-input cg-focus w-full px-3 py-2 font-mono text-sm" />
               </div>
               <div>
                 <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Hora fin</label>
-                <input type="time" value={customEnd} onChange={(e) => setCustomEnd(e.target.value)} className="w-full px-3 py-2 border border-border/40 rounded-lg text-sm bg-background font-mono focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" />
+                <input type="time" value={customEnd} onChange={(e) => setCustomEnd(e.target.value)} className="cg-input cg-focus w-full px-3 py-2 font-mono text-sm" />
               </div>
               <div className="col-span-2">
                 <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Turno por vigilante</label>
-                <select value={blockHours} onChange={(e) => setBlockHours(e.target.value)} className="w-full px-3 py-2 border border-border/40 rounded-lg text-sm bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
+                <select value={blockHours} onChange={(e) => setBlockHours(e.target.value)} className="cg-input cg-focus w-full px-3 py-2 text-sm">
                   <option value="">Toda la jornada (1 fijo)</option>
                   {[4, 6, 8, 12].map((h) => {
                     const fits = winMin > 0 && winMin % (h * 60) === 0;
@@ -517,7 +531,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
               </div>
               <div className="col-span-2">
                 <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Cobertura de descansos</label>
-                <select value={restCoverage} onChange={(e) => setRestCoverage(e.target.value as any)} className="w-full px-3 py-2 border border-border/40 rounded-lg text-sm bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
+                <select value={restCoverage} onChange={(e) => setRestCoverage(e.target.value as any)} className="cg-input cg-focus w-full px-3 py-2 text-sm">
                   <option value="sacafranco">Sacafranco cubre los descansos</option>
                   <option value="alternate">Alternancia entre fijos (sin sacafranco)</option>
                 </select>
@@ -540,11 +554,11 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
             <RotationStyleSelect scheduleType={turnoToScheduleType(turno)} value={rotationStyleId} onChange={setRotationStyleId} onStyleChange={setRotStyle} />
           )}
           <div className="flex items-center justify-between gap-3">
-            <p className="text-[11px] text-amber-600">Cambiar el horario reconfigura los puestos; los vigilantes asignados deberán reasignarse.</p>
+            <p className="text-[11px]" style={{ color: 'var(--warn-text)' }}>Cambiar el horario reconfigura los puestos; los vigilantes asignados deberán reasignarse.</p>
             <button
               onClick={updateHorario}
               disabled={savingHorario}
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+              className="cg-btn-brand cg-focus inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold disabled:opacity-50"
             >
               {savingHorario ? <Loader2 size={13} className="animate-spin" /> : <Check size={13} />}
               Actualizar horario
@@ -554,16 +568,16 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
 
         {/* Ubicación y geocerca — ONE map: search the address / "igual que el sitio"
             to set where the guard clocks in, then draw the geofence on the same map. */}
-        <div className="p-6 border-t border-border/30 space-y-3">
+        <div className="space-y-3 border-t p-6" style={{ borderColor: 'var(--hairline)' }}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <MapPin size={16} className="text-primary" />
+              <MapPin size={16} style={{ color: 'var(--brand-text)' }} />
               <h3 className="text-sm font-semibold text-foreground">Ubicación y geocerca</h3>
             </div>
             <button
               onClick={saveLocation}
               disabled={savingLoc}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+              className="cg-btn-brand cg-focus inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold disabled:opacity-50"
             >
               {savingLoc ? <Loader2 size={13} className="animate-spin" /> : <Check size={13} />}
               Guardar ubicación y geocerca
@@ -584,9 +598,9 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
         </div>
 
         {/* Clock-in tolerance windows */}
-        <div className="p-6 border-t border-border/30 space-y-3">
+        <div className="space-y-3 border-t p-6" style={{ borderColor: 'var(--hairline)' }}>
           <div className="flex items-center gap-2">
-            <Clock size={16} className="text-primary" />
+            <Clock size={16} style={{ color: 'var(--brand-text)' }} />
             <h3 className="text-sm font-semibold text-foreground">Tolerancia de marcación de entrada</h3>
           </div>
           <p className="text-xs text-muted-foreground">
@@ -602,7 +616,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
                 value={clockInEarlyBufferMin}
                 onChange={(e) => setClockInEarlyBufferMin(e.target.value)}
                 placeholder="Por defecto"
-                className="w-full px-3 py-2 border border-border/40 rounded-lg text-sm bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+                className="cg-input cg-focus w-full px-3 py-2 text-sm"
               />
             </div>
             <div>
@@ -614,7 +628,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
                 value={clockInLateGraceMin}
                 onChange={(e) => setClockInLateGraceMin(e.target.value)}
                 placeholder="Por defecto"
-                className="w-full px-3 py-2 border border-border/40 rounded-lg text-sm bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+                className="cg-input cg-focus w-full px-3 py-2 text-sm"
               />
             </div>
           </div>

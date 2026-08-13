@@ -5,25 +5,96 @@
       {
         "label": "",
         "items": [
-          { "id": "resumen", "label": "guards.nav.resumen", "path": "/guards/:id/resumen" },
-          { "id": "perfil", "label": "guards.nav.perfil", "path": "/guards/:id/perfil" },
-          { "id": "horario", "label": "guards.nav.horario", "path": "/guards/:id/horario" },
-          { "id": "asistencia", "label": "guards.nav.asistencia", "path": "/guards/:id/asistencia" },
-          { "id": "asignar-sitios", "label": "guards.nav.asignarSitios", "path": "/guards/:id/asignar-sitios" },
-          { "id": "desempeno", "label": "guards.nav.desempeno", "path": "/guards/:id/desempeno" },
-          { "id": "reviews", "label": "guards.nav.reviews", "path": "/guards/:id/reviews" },
-          { "id": "licencias", "label": "guards.nav.licencias", "path": "/guards/:id/licencias" },
-          { "id": "documentos", "label": "guards.nav.documentos", "path": "/guards/:id/documentos" },
-          { "id": "notas", "label": "guards.nav.notas", "path": "/guards/:id/notas" },
-          { "id": "memos", "label": "guards.nav.memos", "path": "/guards/:id/memos" },
-          { "id": "dispositivo", "label": "guards.nav.dispositivo", "path": "/guards/:id/dispositivo" },
-          { "id": "disponibilidad", "label": "guards.nav.disponibilidad", "path": "/guards/:id/availability" },
-          { "id": "indicadores-kpi", "label": "guards.nav.indicadores", "path": "/guards/:id/indicadores" },
-          { "id": "recordatorios", "label": "guards.nav.recordatorios", "path": "/guards/:id/recordatorios" },
-          { "id": "archivos", "label": "guards.nav.archivos", "path": "/guards/:id/archivos" },
-          { "id": "conjunto-habilidades", "label": "guards.nav.conjuntoHabilidades", "path": "/guards/:id/habilidades" },
-          { "id": "departamento", "label": "guards.nav.departamento", "path": "/guards/:id/departamento" },
-          { "id": "configuracion", "label": "guards.nav.configuracion", "path": "/guards/:id/configuracion" }
+          {
+            "id": "resumen",
+            "label": "guards.nav.resumen",
+            "path": "/guards/:id/resumen"
+          },
+          {
+            "id": "perfil",
+            "label": "guards.nav.perfil",
+            "path": "/guards/:id/perfil"
+          },
+          {
+            "id": "horario",
+            "label": "guards.nav.horario",
+            "path": "/guards/:id/horario"
+          },
+          {
+            "id": "asistencia",
+            "label": "guards.nav.asistencia",
+            "path": "/guards/:id/asistencia"
+          },
+          {
+            "id": "asignar-sitios",
+            "label": "guards.nav.asignarSitios",
+            "path": "/guards/:id/asignar-sitios"
+          },
+          {
+            "id": "desempeno",
+            "label": "guards.nav.desempeno",
+            "path": "/guards/:id/desempeno"
+          },
+          {
+            "id": "reviews",
+            "label": "guards.nav.reviews",
+            "path": "/guards/:id/reviews"
+          },
+          {
+            "id": "licencias",
+            "label": "guards.nav.licencias",
+            "path": "/guards/:id/licencias"
+          },
+          {
+            "id": "documentos",
+            "label": "guards.nav.documentos",
+            "path": "/guards/:id/documentos"
+          },
+          {
+            "id": "notas",
+            "label": "guards.nav.notas",
+            "path": "/guards/:id/notas"
+          },
+          {
+            "id": "memos",
+            "label": "guards.nav.memos",
+            "path": "/guards/:id/memos"
+          },
+          {
+            "id": "dispositivo",
+            "label": "guards.nav.dispositivo",
+            "path": "/guards/:id/dispositivo"
+          },
+          {
+            "id": "disponibilidad",
+            "label": "guards.nav.disponibilidad",
+            "path": "/guards/:id/availability"
+          },
+          {
+            "id": "indicadores-kpi",
+            "label": "guards.nav.indicadores",
+            "path": "/guards/:id/indicadores"
+          },
+          {
+            "id": "recordatorios",
+            "label": "guards.nav.recordatorios",
+            "path": "/guards/:id/recordatorios"
+          },
+          {
+            "id": "archivos",
+            "label": "guards.nav.archivos",
+            "path": "/guards/:id/archivos"
+          },
+          {
+            "id": "departamento",
+            "label": "guards.nav.departamento",
+            "path": "/guards/:id/departamento"
+          },
+          {
+            "id": "configuracion",
+            "label": "guards.nav.configuracion",
+            "path": "/guards/:id/configuracion"
+          }
         ]
       }
     ]
@@ -34,13 +105,41 @@
       {
         "label": "",
         "items": [
-          { "id": "sup-perfil", "label": "Perfil", "path": "/supervisors/:id/perfil" },
-          { "id": "sup-cobertura", "label": "Cobertura", "path": "/supervisors/:id/cobertura" },
-          { "id": "sup-horario", "label": "Horario", "path": "/supervisors/:id/horario" },
-          { "id": "sup-indicadores", "label": "Desempeño", "path": "/supervisors/:id/indicadores" },
-          { "id": "sup-licencias", "label": "Licencias", "path": "/supervisors/:id/licencias" },
-          { "id": "sup-notas", "label": "Notas", "path": "/supervisors/:id/notas" },
-          { "id": "sup-dispositivo", "label": "Dispositivo", "path": "/supervisors/:id/dispositivo" }
+          {
+            "id": "sup-perfil",
+            "label": "Perfil",
+            "path": "/supervisors/:id/perfil"
+          },
+          {
+            "id": "sup-cobertura",
+            "label": "Cobertura",
+            "path": "/supervisors/:id/cobertura"
+          },
+          {
+            "id": "sup-horario",
+            "label": "Horario",
+            "path": "/supervisors/:id/horario"
+          },
+          {
+            "id": "sup-indicadores",
+            "label": "Desempeño",
+            "path": "/supervisors/:id/indicadores"
+          },
+          {
+            "id": "sup-licencias",
+            "label": "Licencias",
+            "path": "/supervisors/:id/licencias"
+          },
+          {
+            "id": "sup-notas",
+            "label": "Notas",
+            "path": "/supervisors/:id/notas"
+          },
+          {
+            "id": "sup-dispositivo",
+            "label": "Dispositivo",
+            "path": "/supervisors/:id/dispositivo"
+          }
         ]
       }
     ]

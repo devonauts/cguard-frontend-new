@@ -129,15 +129,15 @@ export default function SacafrancoAssignModal({
     >
       <div className="space-y-3">
         {/* Legend */}
-        <div className="flex flex-wrap items-center gap-4 text-[10px] text-muted-foreground">
-          <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded-sm bg-red-500/40" /> Día a cubrir (descanso fijo)</span>
-          <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded-sm bg-amber-500/50" /> Ocupado en otro puesto</span>
-          <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded-sm bg-emerald-500/40" /> Libre</span>
+        <div className="flex flex-wrap items-center gap-4 text-[10px]" style={{ color: 'var(--ink-soft)' }}>
+          <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded-sm" style={{ background: 'color-mix(in oklab, var(--bad) 45%, transparent)' }} /> Día a cubrir (descanso del fijo)</span>
+          <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded-sm" style={{ background: 'color-mix(in oklab, var(--warn) 55%, transparent)' }} /> Ocupado en otro puesto</span>
+          <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded-sm" style={{ background: 'color-mix(in oklab, var(--ok) 45%, transparent)' }} /> Libre</span>
         </div>
 
         <div className="space-y-2">
           {loading ? (
-            <div className="flex items-center justify-center py-12 text-muted-foreground"><Loader2 className="animate-spin" /></div>
+            <div className="flex items-center justify-center py-12" style={{ color: 'var(--ink-soft)' }}><Loader2 className="animate-spin" /></div>
           ) : candidates.length === 0 ? (
             <EmptyState
               icon={<Shield />}
@@ -145,15 +145,15 @@ export default function SacafrancoAssignModal({
               description="Todos los vigilantes tienen una rotación activa."
             />
           ) : candidates.map((g) => (
-            <div key={g.id} className="rounded-xl border border-border/30 bg-background/40 p-3">
+            <div key={g.id} className="glass-flat p-3">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2 min-w-0">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-500 text-sm font-bold">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold" style={{ background: 'color-mix(in oklab, var(--ok) 16%, transparent)', color: 'var(--ok-text)' }}>
                     {g.name.split(' ').map(w => w[0]).slice(0, 2).join('')}
                   </div>
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-foreground">{g.name}</p>
-                    <p className="text-[11px] text-muted-foreground">
+                    <p className="truncate text-sm font-semibold">{g.name}</p>
+                    <p className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>
                       <CalendarDays size={11} className="inline mr-1" />
                       Libre {g.freeForGaps}/{gapDates.length} días a cubrir{g.busyOnGaps > 0 ? ` · ocupado ${g.busyOnGaps}` : ''}
                     </p>
@@ -162,7 +162,8 @@ export default function SacafrancoAssignModal({
                 <button
                   onClick={() => assign(g)}
                   disabled={!!assigning}
-                  className="flex shrink-0 items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
+                  className="cg-focus flex shrink-0 items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold disabled:opacity-50"
+                  style={{ background: 'var(--ok)', color: 'var(--brand-ink)' }}
                 >
                   {assigning === g.id ? <Loader2 size={13} className="animate-spin" /> : <CheckCircle2 size={13} />}
                   Asignar
@@ -173,8 +174,12 @@ export default function SacafrancoAssignModal({
                 {days.map((d) => {
                   const isGap = gapSet.has(d);
                   const isBusy = g.busy.has(d);
-                  const cls = isBusy ? 'bg-amber-500/50' : isGap ? 'bg-red-500/40' : 'bg-emerald-500/25';
-                  return <div key={d} title={`${d}${isGap ? ' · descanso fijo' : ''}${isBusy ? ' · ocupado' : ''}`} className={`h-4 flex-1 rounded-sm ${cls}`} />;
+                  const fondo = isBusy
+                    ? 'color-mix(in oklab, var(--warn) 55%, transparent)'
+                    : isGap
+                    ? 'color-mix(in oklab, var(--bad) 45%, transparent)'
+                    : 'color-mix(in oklab, var(--ok) 28%, transparent)';
+                  return <div key={d} title={`${d}${isGap ? ' · descanso del fijo' : ''}${isBusy ? ' · ocupado' : ''}`} className="h-4 flex-1 rounded-sm" style={{ background: fondo }} />;
                 })}
               </div>
             </div>

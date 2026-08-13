@@ -26,7 +26,28 @@ interface AppLayoutProps {
 // children into the persistent shell, so the topbar/side menu never reload.
 const AppLayoutMountedContext = createContext(false);
 
+/**
+ * Marca de «ya hay un armazón montado» para que anidar no duplique el cromo.
+ *
+ * EL FALLO QUE ARREGLA: `PersistentChrome` (App.tsx) envuelve TODA ruta
+ * autenticada en `AppLayout`, y además 112 páginas se envuelven ellas mismas en
+ * otro `AppLayout` — una costumbre anterior a que existiera el armazón
+ * persistente. Resultado: dos barras superiores y dos menús laterales, uno
+ * dentro del otro.
+ *
+ * Se arregla aquí y no en las 112 páginas por dos razones: una, es un cambio en
+ * lugar de ciento doce; dos, la siguiente página que alguien escriba copiando a
+ * una vecina volverá a traer su `AppLayout`, y con esto dará igual.
+ */
+const YaHayArmazon = createContext(false);
+
 export default function AppLayout({ children }: AppLayoutProps) {
+  const anidado = useContext(YaHayArmazon);
+  if (anidado) return <>{children}</>;
+  return <YaHayArmazon.Provider value={true}><AppLayoutInterno>{children}</AppLayoutInterno></YaHayArmazon.Provider>;
+}
+
+function AppLayoutInterno({ children }: AppLayoutProps) {
   const alreadyInShell = useContext(AppLayoutMountedContext);
   // Nested (page-level) AppLayout → passthrough. No hooks below run here, so the
   // persistent shell above owns all the shell state/effects exactly once.
@@ -225,26 +246,38 @@ function AppLayoutShell({ children }: AppLayoutProps) {
   return (
     <AppLayoutMountedContext.Provider value={true}>
     <div className="app-shell h-screen w-full bg-background">
-      <div className={["app-header sticky top-0 z-50 h-14 transition-[margin] duration-300", sidebarOpen ? "lg:ml-64" : "lg:ml-0"].join(" ")}>
-        <Header toggleSidebar={toggleSidebar} />
+      {/* El velo de los menús flotantes vive AQUÍ DENTRO, no en el <body>.
+          `.app-shell` lleva `isolation: isolate`, así que crea su propio contexto
+          de apilamiento: un velo hermano suyo pintaba por encima del armazón
+          ENTERO —cabecera y menú incluidos— y desenfocaba también el menú que
+          venía a destacar. Dentro, con z-40, queda por debajo de la cabecera
+          (z-50) y por encima del contenido, que es exactamente lo que hace falta. */}
+      <div className="cg-scrim-menu" aria-hidden />
+      <div className={["app-header sticky top-0 z-50 h-14 transition-[margin] duration-300", sidebarOpen ? "lg:ml-[17rem]" : "lg:ml-16"].join(" ")}>
+        <Header toggleSidebar={toggleSidebar} sidebarOpen={sidebarOpen} />
       </div>
 
+      {/* 17rem es el menú SOLO: la barra ya no lleva un riel de secciones de
+          4rem pegado al panel, así que no hay que pagar ese ancho extra.
+          Colapsar tampoco es «esconder»: quedan los 4rem con TODOS los destinos
+          en iconos. El `overflow-visible` deja salir el submenú flotante de los
+          desplegables; el desplazamiento vive dentro de la propia barra. */}
       <aside
         className={[
-          "hidden lg:block fixed left-0 top-0 h-screen overflow-y-auto transition-[width] duration-300",
-          sidebarOpen ? "w-64" : "w-0",
+          "hidden lg:block fixed left-0 top-0 z-40 h-screen overflow-visible transition-[width] duration-300",
+          sidebarOpen ? "w-[17rem]" : "w-16",
         ].join(" ")}
       >
-        <Sidebar />
+        <Sidebar collapsed={!sidebarOpen} />
       </aside>
 
       <div
         className={[
-          "fixed left-0 top-0 z-[60] w-64 h-screen lg:hidden transform transition-transform duration-300",
+          "fixed left-0 top-0 z-[60] w-[17rem] h-screen lg:hidden transform transition-transform duration-300",
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
         ].join(" ")}
       >
-        <Sidebar />
+        <Sidebar onNavigate={closeSidebar} />
       </div>
 
       {sidebarOpen && (
@@ -255,7 +288,7 @@ function AppLayoutShell({ children }: AppLayoutProps) {
         ref={mainRef}
         className={[
           "relative h-[calc(100vh-56px)] overflow-y-auto transition-[margin] duration-300",
-          sidebarOpen ? "lg:ml-64" : "lg:ml-0",
+          sidebarOpen ? "lg:ml-[17rem]" : "lg:ml-16",
         ].join(" ")}
       >
         <OnboardingProvider>

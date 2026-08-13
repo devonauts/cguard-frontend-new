@@ -84,7 +84,7 @@ export default function UserRoleDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Rol <span className="text-destructive">*</span>
+                    Rol <span style={{ color: 'var(--bad-text)' }}>*</span>
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -116,13 +116,16 @@ export default function UserRoleDialog({
                 </FormItem>
               )}
             />
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-2 border-t pt-4" style={{ borderColor: 'var(--hairline)' }}>
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                Cancelar
+              </Button>
               <Button
                 variant="brand"
                 type="submit"
                 disabled={submitting}
               >
-                {submitting ? "Guardando..." : "Guardar"}
+                {submitting ? "Guardando…" : "Guardar"}
               </Button>
             </div>
           </form>

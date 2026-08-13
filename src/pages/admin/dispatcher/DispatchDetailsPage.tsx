@@ -17,9 +17,9 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { clientService } from '@/lib/api/clientService';
 import { postSiteService } from '@/lib/api/postSiteService';
 import IncidentTypesService from '@/services/incident-types.service';
-import IncidentMap from '@/components/IncidentMap/IncidentMap';
+import DispatchIncidentMap, { coordDeSitio } from './DispatchIncidentMap';
 import { toast } from 'sonner';
-import { PageContainer, PageHeader, Modal } from '@/components/kit';
+import { PageContainer, PageHeader, Modal, StatusBadge } from '@/components/kit';
 import { FileSearch, MessageSquarePlus } from 'lucide-react';
 
 import { useLocation } from 'react-router-dom';
@@ -280,19 +280,17 @@ export function DispatchDetailsContent({ requestId, resourceTypeProp }: { reques
       if (m.length === 2 && !isNaN(Number(m[0])) && !isNaN(Number(m[1]))) return { lat: Number(m[0]), lng: Number(m[1]) };
     }
     // fallback: try to find coordinates from related postSite
+    //
+    // Se resuelve con `coordDeSitio` porque la sonda de aquí miraba `latitude` y
+    // `lat`… y `postSiteService.list` devuelve `latitud`/`longitud`, en español.
+    // Resultado: el respaldo por puesto NUNCA entraba y un incidente sin
+    // coordenadas propias se quedaba sin mapa aunque su puesto las tuviera.
     try {
       const siteId = requestPayload.siteId || requestPayload.postSiteId || requestPayload.site?.id;
       if (siteId && postSites && postSites.length > 0) {
         const site = postSites.find((s) => s.id === siteId || s._id === siteId || s.id === String(siteId));
-        if (site) {
-          const sLat = site.latitude || site.lat || site.locationLat || site.coords?.lat || null;
-          const sLng = site.longitude || site.lng || site.locationLng || site.coords?.lng || null;
-          if (sLat && sLng) return { lat: Number(sLat), lng: Number(sLng) };
-          if (site.location && typeof site.location === 'string') {
-            const parts = site.location.split(',').map((s: string) => s.trim());
-            if (parts.length === 2 && !isNaN(Number(parts[0])) && !isNaN(Number(parts[1]))) return { lat: Number(parts[0]), lng: Number(parts[1]) };
-          }
-        }
+        const c = coordDeSitio(site);
+        if (c) return c;
       }
     } catch (e) {
       // ignore
@@ -346,10 +344,26 @@ export function DispatchDetailsContent({ requestId, resourceTypeProp }: { reques
       {/* Basic Details card */}
       {requestPayload && (
         <div>
-          {/* Map (if coordinates found) */}
+          {/* El mapa de despacho: el incidente, quién está cerca, a qué distancia
+              y en cuánto tiempo. Antes aquí sólo había una chincheta sin nada
+              alrededor, y decidir a quién mandar era mirar otra pantalla. */}
           {coords && (
             <div className="mb-4">
-              <IncidentMap lat={coords.lat} lng={coords.lng} label={ticketShort || undefined} />
+              <DispatchIncidentMap
+                lat={coords.lat}
+                lng={coords.lng}
+                ticket={ticketShort || undefined}
+                tipo={incidentTypeDisplay !== '-' ? incidentTypeDisplay : undefined}
+                estado={statusDisplay || undefined}
+                prioridad={requestPayload.priority || undefined}
+                direccion={requestPayload.location || requestPayload.incidentLocation || undefined}
+                cliente={
+                  clientDisplayName(requestPayload.client, '') ||
+                  clientDisplayName(clients.find((c) => c.id === requestPayload.clientId), '') ||
+                  undefined
+                }
+                sites={postSites}
+              />
             </div>
           )}
           <div className="cg-card overflow-hidden p-0">
@@ -367,7 +381,13 @@ export function DispatchDetailsContent({ requestId, resourceTypeProp }: { reques
                 <tbody>
                   <tr className="border-b">
                     <td className="py-3 px-4 text-xs font-medium text-muted-foreground">{t('dispatcher.ticket_id')}</td>
-                    <td className="py-3 px-4 text-sm text-foreground">{ticketShort} <span className={`inline-block text-xs ml-2 px-2 py-0.5 rounded-full ${statusIsOpen ? 'bg-red-500/15 text-red-700' : 'bg-green-100 text-green-700'}`}>{statusDisplay || ''}</span></td>
+                    <td className="py-3 px-4 text-sm text-foreground">
+                      {ticketShort}{' '}
+                      {/* Abierto = pendiente (`warn`), no fallo (`bad`). Ver la
+                          nota en DispatcherPage: el rojo se reserva para lo que
+                          de verdad es una emergencia. */}
+                      <StatusBadge tone={statusIsOpen ? 'warn' : 'ok'} className="ml-2">{statusDisplay || ''}</StatusBadge>
+                    </td>
                     <td className="py-3 px-4 text-xs font-medium text-muted-foreground">{t('dispatcher.date_time')}</td>
                     <td className="py-3 px-4 text-sm text-foreground">{requestPayload.createdAt ? new Date(requestPayload.createdAt).toLocaleString() : '-'}</td>
                   </tr>
@@ -527,7 +547,7 @@ export function DispatchDetailsContent({ requestId, resourceTypeProp }: { reques
                       <div className="mt-1 text-sm text-foreground whitespace-pre-wrap">{c.text || c.body || c.message}</div>
                       {c.attachment && c.attachment.url && (
                         <div className="mt-2">
-                          <a className="text-xs text-blue-600 underline" href={c.attachment.url} target="_blank" rel="noreferrer">Adjunto: {c.attachment.name || c.attachment.url}</a>
+                          <a className="text-xs underline" style={{ color: 'var(--brand-text)' }} href={c.attachment.url} target="_blank" rel="noreferrer">Adjunto: {c.attachment.name || c.attachment.url}</a>
                         </div>
                       )}
                     </div>
@@ -539,7 +559,7 @@ export function DispatchDetailsContent({ requestId, resourceTypeProp }: { reques
         </div>
 
       </div>
-      <Button className="bg-primary text-primary-foreground text-sm" onClick={() => setShowCommentModal((s) => !s)}>
+      <Button variant="brand" className="text-sm" onClick={() => setShowCommentModal((s) => !s)}>
         {showCommentModal ? t('dispatcher.close') : t('dispatcher.add_comment_button')}
       </Button>
     </div>

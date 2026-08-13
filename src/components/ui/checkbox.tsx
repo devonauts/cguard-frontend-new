@@ -1,6 +1,6 @@
 import * as React from "react"
-import * as CheckboxPrimitive from "@radix-ui/react-checkbox"
 import { Check } from "lucide-react"
+import * as CheckboxPrimitive from "@radix-ui/react-checkbox"
 
 import { cn } from "@/lib/utils"
 
@@ -11,7 +11,10 @@ const Checkbox = React.forwardRef<
   <CheckboxPrimitive.Root
     ref={ref}
     className={cn(
-      "grid place-content-center peer h-4 w-4 shrink-0 rounded-sm border border-primary shadow focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground",
+      "peer cg-focus grid h-4 w-4 shrink-0 place-content-center rounded-[6px] border transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none",
+      "border-[color:var(--hairline)] bg-[var(--glass-sunken)]",
+      "data-[state=checked]:border-transparent data-[state=checked]:bg-[var(--brand)] data-[state=checked]:text-[color:var(--brand-ink)] data-[state=checked]:shadow-[0_0_14px_-4px_var(--brand-glow)]",
+      "data-[state=indeterminate]:border-transparent data-[state=indeterminate]:bg-[var(--brand)] data-[state=indeterminate]:text-[color:var(--brand-ink)]",
       className
     )}
     {...props}
@@ -19,7 +22,7 @@ const Checkbox = React.forwardRef<
     <CheckboxPrimitive.Indicator
       className={cn("grid place-content-center text-current")}
     >
-      <Check className="h-4 w-4" />
+      <Check className="h-3.5 w-3.5" strokeWidth={3} />
     </CheckboxPrimitive.Indicator>
   </CheckboxPrimitive.Root>
 ))

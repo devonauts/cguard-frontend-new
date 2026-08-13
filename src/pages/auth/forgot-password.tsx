@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { Mail } from "lucide-react";
-import AuthLayout from "@/layouts/auth-layout";
-import { FadeIn } from "@/components/kit";
+import { Mail, Send } from "lucide-react";
+import AuthShell, { CAMPO_ICONO, BOTON_PRINCIPAL, Etiqueta, Separador, AvisoError } from "./AuthShell";
 import { toast } from "sonner";
 import { AuthService } from "@/services/auth/authService";
 import { NavLink } from "react-router-dom";
@@ -43,66 +42,49 @@ export default function ForgotPassword() {
   };
 
   return (
-    <AuthLayout
-      title={t('auth.forgot_title', { defaultValue: 'Forgot your password?' })}
+    <AuthShell
+      title={t('auth.forgot_title', { defaultValue: '¿Olvidaste tu contraseña?' })}
+      subtitle={t('auth.forgot_subtitle', { defaultValue: 'Escribe tu correo y te enviamos un enlace para crear una nueva.' })}
+      showFeatures={false}
     >
-      <FadeIn>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="email" className="mb-2 block text-sm font-medium text-foreground dark:text-muted-foreground/60">
-            {t('auth.email_label', { defaultValue: 'Email' })}<span className="text-primary">*</span>
-          </label>
+          <Etiqueta htmlFor="email">{t('auth.email_label', { defaultValue: 'Correo electrónico' })}</Etiqueta>
           <div className="relative">
-            <Mail className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+            <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4.5 w-4.5 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
             <input
               id="email"
               type="email"
-              placeholder={t('auth.email_placeholder', { defaultValue: 'you@company.com' })}
+              placeholder={t('auth.email_placeholder', { defaultValue: 'tu@correo.com' })}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
               disabled={isLoading}
-              className="w-full rounded-lg border border-slate-200 bg-card py-3 pl-10 pr-4 text-foreground placeholder-slate-400 transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-primary dark:focus:ring-primary/20"
+              className={CAMPO_ICONO}
               autoComplete="email"
             />
           </div>
         </div>
 
-        {formError && (
-          <div className="rounded-lg border border-red-200 bg-red-500/10 px-4 py-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-200">
-            {formError}
-          </div>
-        )}
+        {formError && <AvisoError>{formError}</AvisoError>}
 
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="cg-gradient-brand w-full rounded-lg py-3 font-semibold text-primary-foreground transition-all hover:shadow-lg hover:brightness-[1.04] disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {isLoading ? t('auth.sending', { defaultValue: 'Sending link...' }) : t('auth.send_reset', { defaultValue: 'SEND RESET LINK' })}
+        <button type="submit" disabled={isLoading} className={BOTON_PRINCIPAL}>
+          {isLoading
+            ? t('auth.sending', { defaultValue: 'Enviando enlace…' })
+            : <><Send className="h-4 w-4" /> {t('auth.send_reset', { defaultValue: 'Enviar enlace' })}</>}
         </button>
 
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-slate-200 dark:border-white/10" />
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="bg-white/80 px-4 text-muted-foreground dark:bg-[#171717] dark:text-muted-foreground">
-              {t('common.or', { defaultValue: 'or' })}
-            </span>
-          </div>
-        </div>
+        <Separador>{t('common.or', { defaultValue: 'o' })}</Separador>
 
         <div className="flex items-center justify-between text-sm">
-          <NavLink to="/login" className="font-medium text-primary hover:underline">
-            {t('auth.back_to_login', { defaultValue: 'Back to login' })}
+          <NavLink to="/login" className="font-semibold hover:underline" style={{ color: 'var(--brand-text)' }}>
+            {t('auth.back_to_login', { defaultValue: 'Volver a iniciar sesión' })}
           </NavLink>
-          <NavLink to="/register" className="text-foreground/70 hover:underline dark:text-muted-foreground">
-            {t('auth.create_account', { defaultValue: 'Create account' })}
+          <NavLink to="/register" className="hover:underline" style={{ color: 'var(--ink-soft)' }}>
+            {t('auth.create_account', { defaultValue: 'Crear cuenta' })}
           </NavLink>
         </div>
       </form>
-      </FadeIn>
-    </AuthLayout>
+    </AuthShell>
   );
 }

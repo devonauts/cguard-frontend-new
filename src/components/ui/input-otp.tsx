@@ -24,10 +24,14 @@ const InputOTPGroup = React.forwardRef<
   React.ElementRef<"div">,
   React.ComponentPropsWithoutRef<"div">
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("flex items-center", className)} {...props} />
+  <div ref={ref} className={cn("flex items-center gap-2", className)} {...props} />
 ))
 InputOTPGroup.displayName = "InputOTPGroup"
 
+/* Cada dígito es su propio pozo separado, no una tira con bordes compartidos:
+   con radios grandes los cantos pegados se cruzan y salen muescas. La casilla
+   activa se marca con anillo de acento (box-shadow) porque `.cg-input` va sin
+   capa y su `border` abreviado gana a las utilidades de color de borde. */
 const InputOTPSlot = React.forwardRef<
   React.ElementRef<"div">,
   React.ComponentPropsWithoutRef<"div"> & { index: number }
@@ -39,8 +43,9 @@ const InputOTPSlot = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "relative flex h-9 w-9 items-center justify-center border-y border-r border-input text-sm shadow-sm transition-all first:rounded-l-md first:border-l last:rounded-r-md",
-        isActive && "z-10 ring-1 ring-ring",
+        "cg-input relative flex h-11 w-11 items-center justify-center text-base font-semibold",
+        isActive &&
+          "z-10 shadow-[0_0_0_3px_var(--brand-glow),inset_0_0_0_1px_var(--brand)]",
         className
       )}
       {...props}
@@ -48,7 +53,7 @@ const InputOTPSlot = React.forwardRef<
       {char}
       {hasFakeCaret && (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="h-4 w-px animate-caret-blink bg-foreground duration-1000" />
+          <div className="h-5 w-px animate-caret-blink bg-[var(--brand)] duration-1000 motion-reduce:animate-none!" />
         </div>
       )}
     </div>
@@ -60,7 +65,12 @@ const InputOTPSeparator = React.forwardRef<
   React.ElementRef<"div">,
   React.ComponentPropsWithoutRef<"div">
 >(({ ...props }, ref) => (
-  <div ref={ref} role="separator" {...props}>
+  <div
+    ref={ref}
+    role="separator"
+    className="text-[color:var(--ink-faint)]"
+    {...props}
+  >
     <Minus />
   </div>
 ))

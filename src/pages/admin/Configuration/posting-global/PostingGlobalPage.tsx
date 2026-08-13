@@ -11,12 +11,10 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import { ShieldCheck, Route as RouteIcon, MapPin, ExternalLink, ClipboardList, BellRing } from "lucide-react";
-import AppLayout from "@/layouts/app-layout";
-import SettingsLayout from "@/layouts/SettingsLayout";
-import { PageContainer, PageHeader, Section } from "@/components/kit";
-import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/ui/button";
+import { ShieldCheck, Route as RouteIcon, MapPin, ClipboardList, BellRing } from "lucide-react";
+import { Section, Stagger, SkeletonCards } from "@/components/kit";
+import SettingsPageShell from "../components/SettingsPageShell";
+import { ToggleRow, SaveBar, SettingsLinkCard, SettingsLinkGrid } from "../components/SettingsForm";
 import { usePermissions } from "@/hooks/usePermissions";
 import api from "@/lib/api";
 
@@ -42,50 +40,6 @@ type SettingsRow = {
 };
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
-
-function RuleRow({
-    title,
-    description,
-    checked,
-    onChange,
-    disabled,
-}: {
-    title: string;
-    description: string;
-    checked: boolean;
-    onChange: (v: boolean) => void;
-    disabled?: boolean;
-}) {
-    return (
-        <div className="flex items-start justify-between gap-4 py-4">
-            <div className="min-w-0">
-                <div className="font-medium">{title}</div>
-                <p className="mt-0.5 text-sm text-muted-foreground">{description}</p>
-            </div>
-            <Switch checked={checked} onCheckedChange={onChange} disabled={disabled} />
-        </div>
-    );
-}
-
-function LinkCard({ to, icon, title, description }: { to: string; icon: React.ReactNode; title: string; description: string }) {
-    return (
-        <Link
-            to={to}
-            className="flex items-start gap-3 rounded-2xl border bg-card p-4 transition-colors hover:bg-muted/40"
-        >
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                {icon}
-            </div>
-            <div className="min-w-0">
-                <div className="flex items-center gap-1.5 font-medium">
-                    {title}
-                    <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
-                </div>
-                <p className="mt-0.5 text-sm text-muted-foreground">{description}</p>
-            </div>
-        </Link>
-    );
-}
 
 export default function PostingGlobalPage() {
     const { hasPermission } = usePermissions();
@@ -135,93 +89,89 @@ export default function PostingGlobalPage() {
     };
 
     return (
-        <AppLayout>
-            <SettingsLayout
-                navKey="configuracion"
-                title="Configuración Global de Puestos de Vigilancia"
-            >
-                <PageContainer>
-                    <PageHeader
-                        icon={<ShieldCheck />}
-                        title="Configuración Global de Puestos"
-                        subtitle="Reglas operativas aplicadas a todos los puestos de vigilancia de tu empresa."
-                    />
-
-                    <div className="space-y-6">
-                        <Section title="Rondas" icon={<RouteIcon />} contentClassName="divide-y divide-border/60">
-                            <RuleRow
-                                title="Exigir turno activo para escanear rondas"
-                                description="El vigilante debe haber marcado su entrada para que un escaneo de punto de control cuente. Evita rondas registradas fuera de turno."
+        <SettingsPageShell
+            icon={<ShieldCheck />}
+            title="Configuración Global de Puestos"
+            navTitle="Configuración Global de Puestos de Vigilancia"
+            subtitle="Reglas operativas aplicadas a todos los puestos de vigilancia de tu empresa."
+        >
+                    {loading ? (
+                        <SkeletonCards count={3} className="sm:grid-cols-1" />
+                    ) : (
+                    <Stagger className="space-y-6">
+                        <Section title="Rondas" icon={<RouteIcon />} contentClassName="divide-y">
+                            <ToggleRow
+                                label="Exigir turno activo para escanear rondas"
+                                hint="El vigilante debe haber marcado su entrada para que un escaneo de punto de control cuente. Evita rondas registradas fuera de turno."
                                 checked={rules.requireActiveShiftForRounds}
-                                onChange={(v) => set("requireActiveShiftForRounds", v)}
+                                onCheckedChange={(v) => set("requireActiveShiftForRounds", v)}
                                 disabled={!canEdit || loading}
                             />
                         </Section>
 
-                        <Section title="Alertas de geocerca en turno" icon={<MapPin />} contentClassName="divide-y divide-border/60">
-                            <RuleRow
-                                title="Alertar cuando el vigilante salga de la geocerca"
-                                description="Con el GPS del turno, detecta cuando el vigilante abandona el área de su puesto estando de servicio y notifica a los supervisores (requiere 2 lecturas consecutivas fuera, para evitar falsos positivos del GPS). Los puestos móviles quedan exentos."
+                        <Section title="Alertas de geocerca en turno" icon={<MapPin />} contentClassName="divide-y">
+                            <ToggleRow
+                                label="Alertar cuando el vigilante salga de la geocerca"
+                                hint="Con el GPS del turno, detecta cuando el vigilante abandona el área de su puesto estando de servicio y notifica a los supervisores (requiere 2 lecturas consecutivas fuera, para evitar falsos positivos del GPS). Los puestos móviles quedan exentos."
                                 checked={rules.geofenceExitAlert}
-                                onChange={(v) => {
+                                onCheckedChange={(v) => {
                                     set("geofenceExitAlert", v);
                                     if (!v) set("geofenceReturnAlert", false);
                                 }}
                                 disabled={!canEdit || loading}
                             />
-                            <RuleRow
-                                title="Alertar también cuando regrese"
-                                description="Envía una segunda notificación cuando el vigilante vuelve a entrar a la geocerca."
+                            <ToggleRow
+                                label="Alertar también cuando regrese"
+                                hint="Envía una segunda notificación cuando el vigilante vuelve a entrar a la geocerca."
                                 checked={rules.geofenceReturnAlert}
-                                onChange={(v) => set("geofenceReturnAlert", v)}
+                                onCheckedChange={(v) => set("geofenceReturnAlert", v)}
                                 disabled={!canEdit || loading || !rules.geofenceExitAlert}
                             />
-                            <p className="pt-3 text-xs text-muted-foreground">
-                                Los canales (panel, correo, SMS) de estas alertas se controlan en{" "}
-                                <Link to="/setting/notifications" className="underline underline-offset-2">
-                                    Configuración › Notificaciones
+                            <p className="pt-3 text-xs" style={{ color: "var(--ink-faint)" }}>
+                                Por dónde llegan estas alertas (panel, correo o SMS) se decide en{" "}
+                                <Link
+                                    to="/setting/notifications"
+                                    className="font-semibold underline underline-offset-2"
+                                    style={{ color: "var(--brand-text)" }}
+                                >
+                                    Configuración › Avisos
                                 </Link>{" "}
                                 (fila «Alertas de geovalla al entrar/salir»).
                             </p>
                         </Section>
 
-                        <Section title="Reglas relacionadas (viven en su propia página)" icon={<ClipboardList />}>
-                            <div className="grid gap-3 sm:grid-cols-2">
-                                <LinkCard
+                        <Section title="Reglas relacionadas" icon={<ClipboardList />}>
+                            <SettingsLinkGrid>
+                                <SettingsLinkCard
                                     to="/nomina/settings"
                                     icon={<MapPin className="h-4 w-4" />}
                                     title="Geocerca al marcar entrada"
                                     description="Bloquear marcaciones fuera de geocerca, radio por defecto y auto-cierre de turnos sin salida: Asistencia › Ajustes."
                                 />
-                                <LinkCard
+                                <SettingsLinkCard
                                     to="/setting/notifications"
                                     icon={<BellRing className="h-4 w-4" />}
                                     title="Canales de notificación"
                                     description="Qué llega al panel, correo o SMS por cada tipo de evento."
                                 />
-                                <LinkCard
+                                <SettingsLinkCard
                                     to="/post-sites"
                                     icon={<ClipboardList className="h-4 w-4" />}
                                     title="Consignas del puesto"
                                     description="Las órdenes permanentes (consignas específicas) se gestionan por estación, en el detalle de cada puesto."
                                 />
-                                <LinkCard
+                                <SettingsLinkCard
                                     to="/setting/rondas"
                                     icon={<RouteIcon className="h-4 w-4" />}
                                     title="Reglas de rondas"
                                     description="Foto/nota obligatoria y geocerca por punto de control: Configuración › Rondas."
                                 />
-                            </div>
+                            </SettingsLinkGrid>
                         </Section>
 
-                        <div className="flex justify-end">
-                            <Button variant="brand" className="px-6" onClick={save} disabled={!canEdit || loading || saving}>
-                                {saving ? "Guardando…" : "Guardar Configuración"}
-                            </Button>
-                        </div>
-                    </div>
-                </PageContainer>
-            </SettingsLayout>
-        </AppLayout>
+                        <SaveBar onSave={save} saving={saving} disabled={!canEdit || loading} />
+                    </Stagger>
+                    )}
+        </SettingsPageShell>
     );
 }

@@ -17,16 +17,29 @@ export default function NoWorkspaceAccess() {
   const email = user?.email || ""
 
   return (
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-[#0A0A0A] p-4 backdrop-blur-sm">
+    // El lienzo del sistema (`.app-shell`) trae sus halos de acento detrás, que
+    // es justamente lo que el cristal del diálogo tiene que desenfocar. Sin algo
+    // detrás, el desenfoque no se nota y el panel parece un rectángulo gris.
+    //
+    // `position` va en línea a propósito: `.app-shell` fija `position: relative`
+    // y glass.css va sin `@layer`, así que gana a la utilidad `fixed` de Tailwind
+    // y el gate caería en el flujo del documento en vez de cubrir la pantalla.
+    <div
+      className="app-shell fixed inset-0 z-[1000] flex items-center justify-center p-4"
+      style={{ position: "fixed" }}
+    >
       <div
         role="alertdialog"
         aria-modal="true"
         aria-labelledby="no-workspace-title"
-        className="w-full max-w-md rounded-2xl bg-white p-7 shadow-2xl dark:bg-[#171717]"
+        className="glass-raised w-full max-w-md p-7"
       >
-        <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+        <div
+          className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full border"
+          style={{ background: "var(--brand-wash)", borderColor: "var(--brand-line)", color: "var(--brand-text)" }}
+        >
           <svg
-            className="h-7 w-7 text-primary"
+            className="h-7 w-7"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -42,18 +55,19 @@ export default function NoWorkspaceAccess() {
 
         <h2
           id="no-workspace-title"
-          className="text-center text-lg font-semibold text-slate-900 dark:text-slate-50"
+          className="font-display text-center text-lg font-semibold"
+          style={{ color: "var(--ink)" }}
         >
           Sin acceso a un espacio de trabajo
         </h2>
 
-        <p className="mt-3 text-center text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+        <p className="mt-3 text-center text-sm leading-relaxed" style={{ color: "var(--ink-soft)" }}>
           Tu cuenta no está asociada a ninguna empresa. Pídele a un administrador
           que te asigne a un espacio de trabajo para poder ingresar.
         </p>
 
         {email && (
-          <p className="mt-2 text-center text-xs text-slate-400 dark:text-slate-500">
+          <p className="mt-2 text-center text-xs" style={{ color: "var(--ink-faint)" }}>
             Sesión iniciada como <span className="font-medium">{email}</span>
           </p>
         )}
@@ -62,14 +76,14 @@ export default function NoWorkspaceAccess() {
           <button
             type="button"
             onClick={() => signOut()}
-            className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#a96f08] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+            className="cg-btn-brand cg-focus w-full rounded-full px-4 py-2.5 text-sm font-semibold transition-[filter] hover:brightness-110"
           >
             Cerrar sesión
           </button>
           <button
             type="button"
             onClick={() => window.location.reload()}
-            className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 dark:border-white/10 dark:text-slate-300 dark:hover:bg-[#202020]"
+            className="cg-btn-glass cg-focus w-full rounded-full px-4 py-2.5 text-sm font-medium"
           >
             Reintentar
           </button>

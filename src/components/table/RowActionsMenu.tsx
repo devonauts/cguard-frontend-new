@@ -1,10 +1,16 @@
+/**
+ * Menú «…» de una fila. Se dibuja una vez por fila, así que NO lleva cristal
+ * desenfocado: el disparador es plano y sólo el desplegable (que es único y
+ * flota) usa la superficie elevada de Radix.
+ * La acción destructiva se pinta con `--bad-text`, no con un rojo escrito a
+ * mano: así sigue siendo legible en claro y en oscuro.
+ */
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
 import { EllipsisVertical } from "lucide-react";
 
 export type RowAction = {
@@ -22,9 +28,13 @@ export function RowActionsMenu({ actions }: RowActionsMenuProps) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
+                <button
+                    type="button"
+                    aria-label="Acciones de la fila"
+                    className="cg-focus inline-grid h-8 w-8 place-items-center rounded-lg border border-transparent text-[var(--ink-faint)] transition-colors hover:border-[var(--hairline)] hover:bg-[var(--glass-sunken)] hover:text-[var(--ink)] data-[state=open]:border-[var(--brand-line)] data-[state=open]:bg-[var(--brand-wash)] data-[state=open]:text-[var(--brand-text)]"
+                >
                     <EllipsisVertical className="h-4 w-4" />
-                </Button>
+                </button>
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end" className="w-52">
@@ -32,8 +42,8 @@ export function RowActionsMenu({ actions }: RowActionsMenuProps) {
                     <DropdownMenuItem
                         key={index}
                         onClick={act.onClick}
-                        className={`flex items-center gap-2 ${act.destructive ? "text-red-600 focus:text-red-600" : ""
-                            }`}
+                        className="flex items-center gap-2 [&_svg]:size-4"
+                        style={act.destructive ? { color: "var(--bad-text)" } : undefined}
                     >
                         {act.icon}
                         <span>{act.label}</span>

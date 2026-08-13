@@ -5,15 +5,18 @@ import {
   Activity, Clock, Send, ShieldCheck, TrendingUp, AlertTriangle, PhoneCall, Download, Users, RefreshCw, BarChart3,
 } from "lucide-react";
 import AppLayout from "@/layouts/app-layout";
-import { MetricCard, DayBars, HBars, Section, GOLD } from "@/pages/admin/analytics/_shared";
+import { MetricCard, DayBars, HBars, Section, GOLD, TONES } from "@/pages/admin/analytics/_shared";
 import { alarmService } from "@/lib/api/alarmService";
+import { SeverityBars, categoryTone, priorityTone } from "./shared";
 import {
   PageContainer,
   PageHeader,
   Stagger,
   SkeletonCards,
   EmptyState,
+  Segmented,
 } from "@/components/kit";
+import { Button } from "@/components/ui/button";
 
 const PERIODS = [7, 30, 90, 365];
 
@@ -31,9 +34,12 @@ const CAT_LABEL: Record<string, string> = {
   supervisory: "Supervisión", restore: "Restauración", desconocido: "Desconocido",
 };
 
+/** `raw` conserva la clave original del backend además de la etiqueta ya
+ *  traducida: es lo que permite decidir la GRAVEDAD de cada barra después de
+ *  ordenarlas, cuando el orden ya no coincide con el del objeto de entrada. */
 function toItems(obj: Record<string, number>, labeler?: (k: string) => string) {
   return Object.entries(obj || {})
-    .map(([k, v]) => ({ label: labeler ? labeler(k) : k, count: v as number }))
+    .map(([k, v]) => ({ raw: k, label: labeler ? labeler(k) : k, count: v as number }))
     .sort((a, b) => b.count - a.count);
 }
 
@@ -94,22 +100,21 @@ export default function AlarmAnalytics() {
         <PageHeader
           icon={<Activity />}
           title="Análisis de Monitoreo"
-          subtitle="Tiempos de respuesta, cumplimiento de SLA y desempeño de operadores."
+          subtitle="Tiempos de respuesta, cumplimiento de los plazos comprometidos y desempeño de los operadores."
           actions={
             <>
-              <div className="flex rounded-lg border border-border p-0.5">
-                {PERIODS.map((p) => (
-                  <button key={p} onClick={() => setDays(p)}
-                    className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${days === p ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
-                    {p}d
-                  </button>
-                ))}
-              </div>
-              <button onClick={exportAudit} disabled={exporting}
-                className="inline-flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-foreground transition-colors hover:border-primary disabled:opacity-50">
-                {exporting ? <RefreshCw className="size-3.5 animate-spin" /> : <Download className="size-3.5" />} Exportar auditoría
-              </button>
-              <Link to="/alarm/reports" className="text-xs text-primary hover:underline">Falsas alarmas →</Link>
+              <Segmented
+                value={String(days)}
+                onChange={(v) => setDays(Number(v))}
+                options={PERIODS.map((p) => ({ value: String(p), label: p === 365 ? "1 año" : `${p} días` }))}
+              />
+              <Button variant="outline" size="sm" onClick={exportAudit} disabled={exporting}>
+                {exporting ? <RefreshCw className="size-3.5 animate-spin" /> : <Download className="size-3.5" />}
+                Exportar historial
+              </Button>
+              <Button asChild variant="ghost" size="sm">
+                <Link to="/alarm/reports">Falsas alarmas →</Link>
+              </Button>
             </>
           }
         />
@@ -120,13 +125,13 @@ export default function AlarmAnalytics() {
           <>
             <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
               <MetricCard icon={<BarChart3 size={16} />} accent={GOLD} value={d.total} label="Casos" sub={`${d.open} abiertos`} />
-              <MetricCard icon={<Clock size={16} />} accent="#0ea5e9" value={fmtDur(d.avgTtaSec)} label="Reconocimiento prom." sub="tiempo a reconocer" />
-              <MetricCard icon={<Send size={16} />} accent="#8b5cf6" value={fmtDur(d.avgTtdSec)} label="Despacho prom." sub="tiempo a despachar" />
-              <MetricCard icon={<TrendingUp size={16} />} accent="#22c55e" value={fmtDur(d.avgTtrSec)} label="Resolución prom." sub="tiempo a resolver" />
-              <MetricCard icon={<ShieldCheck size={16} />} accent="#22c55e" value={`${d.slaAckCompliance}%`} label="Cumplimiento SLA" sub="reconocidos a tiempo" pct={d.slaAckCompliance} />
-              <MetricCard icon={<AlertTriangle size={16} />} accent="#f59e0b" value={`${d.escalationRate}%`} label="Tasa de escalado" sub="superaron el SLA" pct={d.escalationRate} />
-              <MetricCard icon={<AlertTriangle size={16} />} accent="#ef4444" value={`${d.falseRate}%`} label="Tasa de falsas" sub="falsas + runaway" pct={d.falseRate} />
-              <MetricCard icon={<PhoneCall size={16} />} accent="#0ea5e9" value={d.ecvSatisfiedCases} label="ECV satisfecho" sub={`${d.totalCalls} llamadas`} />
+              <MetricCard icon={<Clock size={16} />} accent={TONES.info} value={fmtDur(d.avgTtaSec)} label="Reconocimiento prom." sub="tiempo a reconocer" />
+              <MetricCard icon={<Send size={16} />} accent={TONES.serie2} value={fmtDur(d.avgTtdSec)} label="Despacho prom." sub="tiempo a despachar" />
+              <MetricCard icon={<TrendingUp size={16} />} accent={TONES.ok} value={fmtDur(d.avgTtrSec)} label="Resolución prom." sub="tiempo a resolver" />
+              <MetricCard icon={<ShieldCheck size={16} />} accent={TONES.ok} value={`${d.slaAckCompliance}%`} label="Plazos cumplidos" sub="reconocidos a tiempo" pct={d.slaAckCompliance} />
+              <MetricCard icon={<AlertTriangle size={16} />} accent={TONES.warn} value={`${d.escalationRate}%`} label="Tasa de escalado" sub="superaron el plazo" pct={d.escalationRate} />
+              <MetricCard icon={<AlertTriangle size={16} />} accent={TONES.bad} value={`${d.falseRate}%`} label="Tasa de falsas" sub="falsas y reincidentes" pct={d.falseRate} />
+              <MetricCard icon={<PhoneCall size={16} />} accent={TONES.info} value={d.ecvSatisfiedCases} label="Verificación por llamada" sub={`${d.totalCalls} llamadas`} />
             </Stagger>
 
             <div className="mt-5">
@@ -134,21 +139,28 @@ export default function AlarmAnalytics() {
             </div>
 
             <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-3">
-              <Section title="Por categoría" icon={<AlertTriangle size={16} className="text-primary" />}>
-                <HBars items={toItems(d.byCategory, (k) => CAT_LABEL[k] || k)} color={GOLD} empty="Sin datos" />
+              {/* Categoría y prioridad SON severidad: cada barra lleva su tono
+                  del sistema. Iban las dos series de un color plano —dorado de
+                  marca y azul decorativo—, así que «Incendio» se pintaba igual
+                  que «Prueba» y una P1 igual que una P5. */}
+              <Section title="Por categoría" icon={<AlertTriangle size={16} />}>
+                <SeverityBars
+                  items={toItems(d.byCategory, (k) => CAT_LABEL[k] || k)
+                    .map((i) => ({ ...i, tone: categoryTone(i.raw) }))}
+                />
               </Section>
-              <Section title="Por prioridad" icon={<BarChart3 size={16} className="text-primary" />}>
-                <HBars items={toItems(d.byPriority)} color="#8b5cf6" empty="Sin datos" />
+              <Section title="Por prioridad" icon={<BarChart3 size={16} />}>
+                <SeverityBars items={toItems(d.byPriority).map((i) => ({ ...i, tone: priorityTone(i.raw) }))} />
               </Section>
-              <Section title="Despachos" icon={<Send size={16} className="text-primary" />}>
+              <Section title="Despachos" icon={<Send size={16} />}>
                 <HBars
                   items={toItems(d.dispatchByType, (k) => ({ guard: "Vigilante", police: "Policía", fire: "Bomberos", medical: "Médico" }[k] || k))}
-                  color="#0ea5e9" empty="Sin despachos" />
+                  color={TONES.info} empty="Sin despachos" />
               </Section>
             </div>
 
             <div className="mt-5">
-              <Section title="Desempeño de operadores" icon={<Users size={16} className="text-primary" />}>
+              <Section title="Desempeño de operadores" icon={<Users size={16} />}>
                 {(!d.operators || d.operators.length === 0) ? (
                   <EmptyState
                     icon={<Users />}
@@ -168,11 +180,11 @@ export default function AlarmAnalytics() {
                       </thead>
                       <tbody>
                         {d.operators.map((o) => (
-                          <tr key={o.operatorId} className="border-b border-border/50">
+                          <tr key={o.operatorId} className="border-b" style={{ borderColor: 'var(--hairline)' }}>
                             <td className="px-2 py-2 font-medium text-foreground">{o.name}</td>
-                            <td className="px-2 py-2 text-right">{o.handled}</td>
-                            <td className="px-2 py-2 text-right text-muted-foreground">{fmtDur(o.avgTtaSec)}</td>
-                            <td className="px-2 py-2 text-right text-muted-foreground">{fmtDur(o.avgTtdSec)}</td>
+                            <td className="px-2 py-2 text-right tabular-nums">{o.handled}</td>
+                            <td className="px-2 py-2 text-right tabular-nums" style={{ color: 'var(--ink-soft)' }}>{fmtDur(o.avgTtaSec)}</td>
+                            <td className="px-2 py-2 text-right tabular-nums" style={{ color: 'var(--ink-soft)' }}>{fmtDur(o.avgTtdSec)}</td>
                           </tr>
                         ))}
                       </tbody>

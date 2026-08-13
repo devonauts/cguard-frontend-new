@@ -319,8 +319,8 @@ export default function ScheduleTimeline({
 
   const saveBlock = async () => {
     if (!blockModal) return;
-    if (!blockModal.stationId) { toast.error('Seleccione una estación'); return; }
-    if (!blockModal.guardId) { toast.error('Seleccione un vigilante'); return; }
+    if (!blockModal.stationId) { toast.error('Elige un puesto'); return; }
+    if (!blockModal.guardId) { toast.error('Elige un vigilante'); return; }
     const start = wallStrToDate(blockModal.startStr, tz);
     const end = wallStrToDate(blockModal.endStr, tz);
     if (!start || !end) { toast.error('Fechas inválidas'); return; }
@@ -431,9 +431,11 @@ export default function ScheduleTimeline({
   const guardLabelOf = (s: ShiftRecord) =>
     s.guard ? `${s.guard.firstName || ''} ${s.guard.lastName || ''}`.trim() : (guardsPool.find(g => g.id === s.guardId)?.label || '?');
 
+  // El tinte de la columna sale de los tokens: hoy lleva el acento del usuario,
+  // el domingo un rojo tenue. Nada de colores fijos que se peleen con el acento.
   const dayTint = (day: Date): string | null => {
-    if (fmtDate(day) === todayStr) return 'rgba(200,134,10,0.07)';
-    if (day.getDay() === 0) return 'rgba(239,68,68,0.04)';
+    if (fmtDate(day) === todayStr) return 'color-mix(in oklab, var(--brand) 8%, transparent)';
+    if (day.getDay() === 0) return 'color-mix(in oklab, var(--bad) 5%, transparent)';
     return null;
   };
 
@@ -446,7 +448,7 @@ export default function ScheduleTimeline({
 
   const draftStationIdx = draft ? (stationIndexById.get(draft.stationId) ?? 0) : 0;
 
-  const inputCls = 'w-full rounded-xl border border-border/40 bg-background px-3 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20';
+  const inputCls = 'cg-input cg-focus w-full px-3 py-2.5 text-sm';
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -454,37 +456,61 @@ export default function ScheduleTimeline({
     <>
       <div
         ref={scrollRef}
-        className="flex-1 min-w-0 overflow-auto select-none bg-card border border-border/40 rounded-xl shadow-sm"
+        className="glass flex-1 min-w-0 select-none overflow-auto"
         onMouseDown={e => startPan(e, scrollRef.current)}
       >
         <div style={{ minWidth: GUTTER_W + canvasW }}>
           {/* ─── Frozen header: days row + estación sub-columns row ─── */}
-          <div className="sticky top-0 z-30 border-b border-border/30 bg-card">
+          {/* Cabecera pegajosa: fondo OPACO, nunca `backdrop-filter`. Está por
+              encima de una rejilla que puede pintar un año entero de celdas y
+              cualquier desenfoque aquí obliga a rasterizarla en cada fotograma
+              del desplazamiento. */}
+          <div className="sticky top-0 z-30" style={{ background: 'var(--glass-solid)', borderBottom: '1px solid var(--hairline)' }}>
             <div className="flex" style={{ height: HEADER_H }}>
-              <div className="sticky left-0 z-40 shrink-0 bg-card border-r border-border/20 flex items-center justify-center text-[10px] font-semibold text-muted-foreground uppercase tracking-wide" style={{ width: GUTTER_W }}>
+              <div
+                className="cg-eyebrow sticky left-0 z-40 flex shrink-0 items-center justify-center"
+                style={{ width: GUTTER_W, background: 'var(--glass-solid)', borderRight: '1px solid var(--hairline)' }}
+              >
                 Hora
               </div>
               <div className="relative" style={{ width: canvasW }}>
                 {days.map((day, di) => {
                   const isToday = fmtDate(day) === todayStr;
                   return (
-                    <div key={di} className={`absolute top-0 bottom-0 border-r border-border/30 ${isToday ? 'bg-primary/5' : ''}`} style={{ left: di * dayW, width: dayW }}>
-                      <div className={`px-2 pt-0.5 text-[11px] font-semibold truncate ${isToday ? 'text-primary' : 'text-foreground'}`}>
-                        {DAYS_ES[day.getDay()]} {day.getDate()} <span className="font-normal text-muted-foreground">{day.toLocaleDateString('es', { month: 'short' })}</span>
-                        {view === 'day' && di === 1 && <span className="ml-1 text-[9px] font-normal text-muted-foreground">(siguiente)</span>}
+                    <div
+                      key={di}
+                      className="absolute bottom-0 top-0"
+                      style={{
+                        left: di * dayW,
+                        width: dayW,
+                        borderRight: '1px solid var(--hairline)',
+                        background: isToday ? 'var(--brand-wash)' : undefined,
+                      }}
+                    >
+                      <div
+                        className="truncate px-2 pt-0.5 text-[11px] font-semibold"
+                        style={{ color: isToday ? 'var(--brand-text)' : 'var(--ink)' }}
+                      >
+                        {DAYS_ES[day.getDay()]} {day.getDate()} <span className="font-normal" style={{ color: 'var(--ink-faint)' }}>{day.toLocaleDateString('es', { month: 'short' })}</span>
+                        {view === 'day' && di === 1 && <span className="ml-1 text-[9px] font-normal" style={{ color: 'var(--ink-faint)' }}>(siguiente)</span>}
                       </div>
                       {/* Estación sub-columns */}
                       <div className="absolute left-0 right-0 bottom-0 flex" style={{ height: 22 }}>
                         {stations.map(st => (
-                          <div key={st.id} className="shrink-0 border-r border-border/15 last:border-r-0 px-1.5 flex items-center overflow-hidden" style={{ width: SUBCOL_W }} title={stationLabel(st)}>
+                          <div
+                            key={st.id}
+                            className="flex shrink-0 items-center overflow-hidden px-1.5 last:border-r-0"
+                            style={{ width: SUBCOL_W, borderRight: '1px solid var(--hairline)' }}
+                            title={stationLabel(st)}
+                          >
                             {/* Too narrow for both — show the nominativo, which
                                 is the UNIQUE identifier, and keep the full
                                 "P-031 · Caseta Principal" in the tooltip. */}
-                            <span className="text-[9px] font-mono font-semibold text-muted-foreground truncate">{stationShort(st)}</span>
+                            <span className="truncate font-mono text-[9px] font-semibold" style={{ color: 'var(--ink-soft)' }}>{stationShort(st)}</span>
                           </div>
                         ))}
                       </div>
-                      {isToday && <div className="absolute left-0 right-0 bottom-0 h-[2px] bg-primary" />}
+                      {isToday && <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ background: 'var(--brand)' }} />}
                     </div>
                   );
                 })}
@@ -495,18 +521,21 @@ export default function ScheduleTimeline({
           {/* ─── Body: hour gutter (frozen left) + canvas ─── */}
           <div className="flex">
             {/* Hour axis */}
-            <div className="sticky left-0 z-20 shrink-0 bg-card border-r border-border/20 relative" style={{ width: GUTTER_W, height: bodyH }}>
+            <div
+              className="sticky left-0 z-20 relative shrink-0"
+              style={{ width: GUTTER_W, height: bodyH, background: 'var(--glass-solid)', borderRight: '1px solid var(--hairline)' }}
+            >
               {Array.from({ length: 24 }, (_, h) => h).map(h => (
                 <span
                   key={h}
-                  className="absolute right-1.5 text-[9px] text-muted-foreground -translate-y-1/2"
-                  style={{ top: h * hourH || 6 }}
+                  className="absolute right-1.5 -translate-y-1/2 text-[9px] tabular-nums"
+                  style={{ top: h * hourH || 6, color: 'var(--ink-faint)' }}
                 >
                   {pad2(h)}:00
                 </span>
               ))}
               {now && (
-                <div className="absolute left-0 right-0 h-px bg-primary z-10" style={{ top: now.minutes * pxPerMin }} />
+                <div className="absolute left-0 right-0 z-10 h-px" style={{ top: now.minutes * pxPerMin, background: 'var(--brand)' }} />
               )}
             </div>
 
@@ -516,7 +545,7 @@ export default function ScheduleTimeline({
               style={{
                 width: canvasW,
                 height: bodyH,
-                backgroundImage: `repeating-linear-gradient(to bottom, rgba(128,128,128,0.10) 0, rgba(128,128,128,0.10) 1px, transparent 1px, transparent ${hourH}px)`,
+                backgroundImage: `repeating-linear-gradient(to bottom, var(--hairline) 0, var(--hairline) 1px, transparent 1px, transparent ${hourH}px)`,
               }}
               onMouseDown={beginDraw}
               onDragOver={e => e.preventDefault()}
@@ -529,16 +558,16 @@ export default function ScheduleTimeline({
                 return (
                   <div key={di} className="pointer-events-none">
                     <div
-                      className="absolute top-0 bottom-0 border-r border-border/40"
-                      style={{ left: di * dayW, width: dayW, backgroundColor: tint || undefined }}
+                      className="absolute bottom-0 top-0"
+                      style={{ left: di * dayW, width: dayW, backgroundColor: tint || undefined, borderRight: '1px solid var(--hairline)' }}
                     />
                     {stations.slice(0, -1).map((st, si) => (
-                      <div key={st.id} className="absolute top-0 bottom-0 border-r border-border/15" style={{ left: di * dayW + (si + 1) * SUBCOL_W, width: 0 }} />
+                      <div key={st.id} className="absolute bottom-0 top-0" style={{ left: di * dayW + (si + 1) * SUBCOL_W, width: 0, borderRight: '1px solid var(--hairline)' }} />
                     ))}
                     {isToday && (
                       <>
-                        <div className="absolute top-0 bottom-0 w-[3px] bg-primary/70 rounded-full" style={{ left: di * dayW }} />
-                        <div className="absolute top-0 bottom-0 w-[3px] bg-primary/70 rounded-full" style={{ left: (di + 1) * dayW - 3 }} />
+                        <div className="absolute bottom-0 top-0 w-[3px] rounded-full" style={{ left: di * dayW, background: 'var(--brand)', opacity: 0.7 }} />
+                        <div className="absolute bottom-0 top-0 w-[3px] rounded-full" style={{ left: (di + 1) * dayW - 3, background: 'var(--brand)', opacity: 0.7 }} />
                       </>
                     )}
                   </div>
@@ -548,8 +577,8 @@ export default function ScheduleTimeline({
               {/* Now line (today's band only) */}
               {now && (
                 <div
-                  className="absolute h-[2px] bg-primary/80 pointer-events-none z-10"
-                  style={{ top: now.minutes * pxPerMin, left: now.dayIdx * dayW, width: dayW }}
+                  className="pointer-events-none absolute z-10 h-[2px]"
+                  style={{ top: now.minutes * pxPerMin, left: now.dayIdx * dayW, width: dayW, background: 'var(--brand)', boxShadow: '0 0 10px 0 var(--brand-glow)' }}
                 />
               )}
 
@@ -559,7 +588,7 @@ export default function ScheduleTimeline({
                 const di = Number(diStr), si = Number(siStr);
                 const laneW = (SUBCOL_W - 8) / cell.lanes;
                 return cell.items.map(({ seg, shift: s, lane }) => {
-                  const color = guardColorMap[s.guardId] || '#888';
+                  const color = guardColorMap[s.guardId] || 'var(--ink-faint)';
                   const isEngine = !!s.positionId;
                   const h = (seg.bottom - seg.top) * pxPerMin;
                   const name = guardLabelOf(s);
@@ -569,14 +598,17 @@ export default function ScheduleTimeline({
                   return (
                     <div
                       key={`${s.id}-${seg.dayIdx}`}
-                      className={`absolute px-1.5 py-0.5 overflow-hidden cursor-pointer transition-all hover:brightness-110 ${isEngine ? 'border border-dashed' : 'border'} ${seg.first ? 'rounded-t-md' : ''} ${seg.last ? 'rounded-b-md' : ''}`}
+                      /* Cristal PLANO: se pinta uno por turno y por día. Un
+                         `backdrop-filter` aquí multiplica el coste por cada
+                         bloque de la rejilla. */
+                      className={`absolute cursor-pointer overflow-hidden px-1.5 py-0.5 transition-all hover:brightness-110 ${isEngine ? 'border border-dashed' : 'border'} ${seg.first ? 'rounded-t-md' : ''} ${seg.last ? 'rounded-b-md' : ''}`}
                       style={{
                         top: seg.top * pxPerMin,
                         height: Math.max(8, h - 1),
                         left: di * dayW + si * SUBCOL_W + 4 + lane * laneW,
                         width: laneW - 2,
-                        backgroundColor: `${color}${isEngine ? '14' : '26'}`,
-                        borderColor: `${color}66`,
+                        backgroundColor: `color-mix(in oklab, ${color} ${isEngine ? 10 : 18}%, transparent)`,
+                        borderColor: `color-mix(in oklab, ${color} 42%, transparent)`,
                         ...(seg.first ? { borderTop: `3px solid ${color}` } : {}),
                       }}
                       title={`${name} · ${timeLbl}${isEngine ? ' · generado por rotación' : ' · turno manual'} — clic: detalle · clic derecho: opciones`}
@@ -585,12 +617,12 @@ export default function ScheduleTimeline({
                       onContextMenu={e => openBlockCtx(e, s)}
                     >
                       {seg.first && h > 20 && (
-                        <span className="block text-[9px] font-semibold truncate" style={{ color }}>
+                        <span className="block truncate text-[9px] font-semibold" style={{ color: 'var(--ink)' }}>
                           {name.split(' ')[0]}
                         </span>
                       )}
                       {seg.first && h > 38 && (
-                        <span className="block text-[8px] text-muted-foreground truncate">{timeLbl}</span>
+                        <span className="block truncate text-[8px] tabular-nums" style={{ color: 'var(--ink-soft)' }}>{timeLbl}</span>
                       )}
                     </div>
                   );
@@ -601,16 +633,18 @@ export default function ScheduleTimeline({
               {draftSegs.map(seg => (
                 <div
                   key={`draft-${seg.dayIdx}`}
-                  className={`absolute bg-primary/20 border-2 border-primary/60 pointer-events-none flex items-start justify-center ${seg.first ? 'rounded-t-md' : ''} ${seg.last ? 'rounded-b-md' : ''}`}
+                  className={`brand-glow pointer-events-none absolute flex items-start justify-center border-2 ${seg.first ? 'rounded-t-md' : ''} ${seg.last ? 'rounded-b-md' : ''}`}
                   style={{
                     top: seg.top * pxPerMin,
                     height: (seg.bottom - seg.top) * pxPerMin,
                     left: seg.dayIdx * dayW + draftStationIdx * SUBCOL_W + 3,
                     width: SUBCOL_W - 6,
+                    background: 'var(--brand-wash)',
+                    borderColor: 'var(--brand)',
                   }}
                 >
                   {seg.first && draft && (
-                    <span className="text-[9px] font-bold text-primary whitespace-nowrap px-1 pt-0.5">
+                    <span className="whitespace-nowrap px-1 pt-0.5 text-[9px] font-bold tabular-nums" style={{ color: 'var(--brand-text)' }}>
                       {minLabel(Math.min(draft.anchor, draft.head))} – {minLabel(Math.max(draft.anchor, draft.head))} · {((Math.max(draft.anchor, draft.head) - Math.min(draft.anchor, draft.head)) / 60).toFixed(1).replace('.0', '')}h
                     </span>
                   )}
@@ -629,28 +663,35 @@ export default function ScheduleTimeline({
         const end = wallStrToDate(blockModal.endStr, tz);
         const hours = start && end && end > start ? (end.getTime() - start.getTime()) / 3600000 : 0;
         const editing = !!blockModal.editingId;
+        // Velo SIN desenfoque: cubre la rejilla entera, y un `backdrop-filter`
+        // a pantalla completa sobre un año de celdas cuesta un rasterizado por
+        // fotograma. El diálogo ya trae su propio cristal.
         return (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setBlockModal(null)}>
-            <div className="bg-card border border-border/30 rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
-              <div className="px-5 py-4 border-b border-border/20 flex items-center justify-between">
-                <h4 className="text-sm font-semibold text-foreground">{editing ? 'Editar turno' : 'Nuevo bloque de trabajo'}</h4>
-                <button onClick={() => setBlockModal(null)} className="p-1.5 rounded-lg hover:bg-muted/30 text-muted-foreground"><X size={15} /></button>
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center"
+            style={{ background: 'oklch(0 0 0 / 0.55)' }}
+            onClick={() => setBlockModal(null)}
+          >
+            <div className="glass-raised mx-4 w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+              <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--hairline)' }}>
+                <h4 className="text-sm font-semibold">{editing ? 'Editar turno' : 'Nuevo bloque de trabajo'}</h4>
+                <button onClick={() => setBlockModal(null)} className="cg-btn-ghost cg-focus rounded-lg p-1.5"><X size={15} /></button>
               </div>
               <div className="p-5 space-y-4">
                 <div>
-                  <label className="block text-[11px] font-medium text-muted-foreground mb-1.5 uppercase tracking-wide">Estación</label>
+                  <label className="cg-eyebrow mb-1.5 block">Puesto</label>
                   <select
                     value={blockModal.stationId}
                     onChange={e => setBlockModal(m => m ? { ...m, stationId: e.target.value } : m)}
                     className={inputCls}
                   >
-                    <option value="">Seleccionar estación...</option>
+                    <option value="">Elige un puesto…</option>
                     {stations.map(s => <option key={s.id} value={s.id}>{stationLabel(s)}</option>)}
                   </select>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[11px] font-medium text-muted-foreground mb-1.5 uppercase tracking-wide">Inicio</label>
+                    <label className="cg-eyebrow mb-1.5 block">Inicio</label>
                     <input
                       type="datetime-local"
                       value={blockModal.startStr}
@@ -659,7 +700,7 @@ export default function ScheduleTimeline({
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-medium text-muted-foreground mb-1.5 uppercase tracking-wide">Fin</label>
+                    <label className="cg-eyebrow mb-1.5 block">Fin</label>
                     <input
                       type="datetime-local"
                       value={blockModal.endStr}
@@ -668,36 +709,36 @@ export default function ScheduleTimeline({
                     />
                   </div>
                 </div>
-                <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+                <div className="flex items-center gap-2 text-[11px]" style={{ color: 'var(--ink-soft)' }}>
                   <Clock size={12} />
                   {hours > 0
-                    ? <span>Duración: <b className="text-foreground">{hours % 1 === 0 ? hours : hours.toFixed(1)}h</b>{hours === 24 ? ' (turno completo)' : ''} · hora de la empresa</span>
-                    : <span className="text-red-500">El fin debe ser posterior al inicio</span>}
-                  {hours > 24 && <span className="text-red-500">· máximo 24h</span>}
+                    ? <span>Duración: <b className="tabular-nums" style={{ color: 'var(--ink)' }}>{hours % 1 === 0 ? hours : hours.toFixed(1)}h</b>{hours === 24 ? ' (turno completo)' : ''} · hora de la empresa</span>
+                    : <span className="font-medium" style={{ color: 'var(--bad-text)' }}>El fin debe ser posterior al inicio</span>}
+                  {hours > 24 && <span className="font-medium" style={{ color: 'var(--bad-text)' }}>· máximo 24h</span>}
                 </div>
                 <div>
-                  <label className="block text-[11px] font-medium text-muted-foreground mb-1.5 uppercase tracking-wide">Vigilante</label>
+                  <label className="cg-eyebrow mb-1.5 block">Vigilante</label>
                   <select
                     value={blockModal.guardId}
                     onChange={e => setBlockModal(m => m ? { ...m, guardId: e.target.value } : m)}
                     className={inputCls}
                   >
-                    <option value="">Seleccionar vigilante...</option>
+                    <option value="">Elige un vigilante…</option>
                     {guardsPool.map(g => <option key={g.id} value={g.id}>{g.label}</option>)}
                   </select>
                   {!editing && (
-                    <p className="text-[10px] text-muted-foreground mt-1">
+                    <p className="mt-1.5 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
                       Si el vigilante tiene turnos que se solapan con este bloque, se reemplazan.
                     </p>
                   )}
                 </div>
               </div>
-              <div className="px-5 py-3 border-t border-border/20 flex items-center justify-end gap-2">
-                <button onClick={() => setBlockModal(null)} className="px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/20 transition-all">Cancelar</button>
+              <div className="flex items-center justify-end gap-2 px-5 py-3" style={{ borderTop: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>
+                <button onClick={() => setBlockModal(null)} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all">Cancelar</button>
                 <button
                   onClick={saveBlock}
                   disabled={blockSaving || !blockModal.guardId || !blockModal.stationId || hours <= 0 || hours > 24}
-                  className="px-5 py-2 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-primary/90 disabled:opacity-40 transition-all shadow-sm"
+                  className="cg-btn-brand cg-focus rounded-full px-5 py-2 text-sm font-semibold transition-all disabled:opacity-40"
                 >
                   {blockSaving ? <Loader2 size={14} className="animate-spin" /> : (editing ? 'Guardar cambios' : 'Crear turno')}
                 </button>
@@ -714,48 +755,63 @@ export default function ScheduleTimeline({
         const ew = dateToWall(new Date(detail.endTime), tz);
         const sameDay = sw.dateStr === ew.dateStr;
         const isEngine = !!detail.positionId;
+        // Velo SIN desenfoque: cubre la rejilla entera, y un `backdrop-filter`
+        // a pantalla completa sobre un año de celdas cuesta un rasterizado por
+        // fotograma. El diálogo ya trae su propio cristal.
         return (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setDetail(null)}>
-            <div className="bg-card border border-border/30 rounded-2xl shadow-2xl w-full max-w-xs mx-4 overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
-              <div className="px-5 py-4 border-b border-border/20 flex items-center justify-between">
-                <h4 className="text-sm font-semibold text-foreground">Turno</h4>
-                <button onClick={() => setDetail(null)} className="p-1.5 rounded-lg hover:bg-muted/30 text-muted-foreground"><X size={15} /></button>
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center"
+            style={{ background: 'oklch(0 0 0 / 0.55)' }}
+            onClick={() => setDetail(null)}
+          >
+            <div className="glass-raised mx-4 w-full max-w-xs overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+              <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--hairline)' }}>
+                <h4 className="text-sm font-semibold">Turno</h4>
+                <button onClick={() => setDetail(null)} className="cg-btn-ghost cg-focus rounded-lg p-1.5"><X size={15} /></button>
               </div>
-              <div className="p-5 space-y-2.5 text-sm">
-                <div className="flex items-center gap-2 text-foreground">
-                  <User size={14} className="text-muted-foreground" />
+              <div className="space-y-2.5 p-5 text-sm">
+                <div className="flex items-center gap-2">
+                  <User size={14} style={{ color: 'var(--ink-faint)' }} />
                   <span className="font-medium">{guardLabelOf(detail)}</span>
                 </div>
-                <div className="flex items-center gap-2 text-foreground">
-                  <MapPin size={14} className="text-muted-foreground" />
-                  <span>{station ? stationLabel(station) : 'Estación'}</span>
+                <div className="flex items-center gap-2">
+                  <MapPin size={14} style={{ color: 'var(--ink-faint)' }} />
+                  <span>{station ? stationLabel(station) : 'Puesto'}</span>
                 </div>
-                <div className="flex items-center gap-2 text-foreground">
-                  <Clock size={14} className="text-muted-foreground" />
-                  <span>
+                <div className="flex items-center gap-2">
+                  <Clock size={14} style={{ color: 'var(--ink-faint)' }} />
+                  <span className="tabular-nums">
                     {sw.dateStr} {minLabel(sw.minutes)} → {sameDay ? '' : `${ew.dateStr} `}{minLabel(ew.minutes)}
                   </span>
                 </div>
-                <div className={`text-[11px] px-2.5 py-1.5 rounded-lg ${isEngine ? 'bg-amber-500/10 text-amber-700' : 'bg-emerald-500/10 text-emerald-600'}`}>
-                  {isEngine ? 'Generado por la rotación de la estación (puede regenerarse si lo eliminas).' : 'Turno manual (bloque dibujado o turno único).'}
+                <div
+                  className="rounded-xl px-2.5 py-1.5 text-[11px] font-medium"
+                  style={{
+                    background: `color-mix(in oklab, var(--${isEngine ? 'warn' : 'ok'}) 12%, transparent)`,
+                    color: `var(--${isEngine ? 'warn' : 'ok'}-text)`,
+                  }}
+                >
+                  {isEngine ? 'Generado por la rotación del puesto (puede volver a aparecer si lo eliminas).' : 'Turno manual (bloque dibujado o turno único).'}
                 </div>
               </div>
-              <div className="px-5 py-3 border-t border-border/20 flex items-center justify-between gap-2">
+              <div className="flex items-center justify-between gap-2 px-5 py-3" style={{ borderTop: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>
                 <button
                   onClick={() => void deleteShift(detail)}
                   disabled={deleting}
-                  className="px-3 py-2 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-500/10 disabled:opacity-50 transition-all flex items-center gap-1.5"
+                  className="cg-focus flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-semibold transition-all disabled:opacity-50"
+                  style={{ color: 'var(--bad-text)' }}
                 >
                   {deleting ? <Loader2 size={13} className="animate-spin" /> : <Trash2 size={13} />} Eliminar
                 </button>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => { setDetail(null); openEditModal(detail); }}
-                    className="px-3 py-2 rounded-xl text-xs font-semibold text-primary hover:bg-primary/10 transition-all flex items-center gap-1.5"
+                    className="cg-focus flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-semibold transition-all"
+                    style={{ color: 'var(--brand-text)' }}
                   >
                     <Pencil size={13} /> Editar
                   </button>
-                  <button onClick={() => setDetail(null)} className="px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground transition-all">Cerrar</button>
+                  <button onClick={() => setDetail(null)} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all">Cerrar</button>
                 </div>
               </div>
             </div>

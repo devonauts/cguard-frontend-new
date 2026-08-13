@@ -4,7 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Select, SelectTrigger, SelectContent, SelectItem, SelectValue,
 } from "@/components/ui/select";
-import { Modal } from "@/components/kit";
+import { Modal, Segmented } from "@/components/kit";
 import { ArrowRightLeft } from "lucide-react";
 import { toast } from "sonner";
 import coverageService, { coverageErrorCode, stationLabel } from "@/lib/api/coverageService";
@@ -116,7 +116,7 @@ export default function TransferShiftModal({
     <Modal
       open={!!target}
       onOpenChange={(o) => !o && close()}
-      title="Trasladar a otra estación"
+      title="Trasladar a otro puesto"
       description={`${target?.guardName || ""}${target?.stationName ? ` · desde ${target.stationName}` : ""}`}
       icon={<ArrowRightLeft />}
       footer={
@@ -126,11 +126,11 @@ export default function TransferShiftModal({
         </>
       }
     >
-      <div className="space-y-3 p-5">
+      <div className="space-y-4">
         <div>
-          <label className="mb-1 block text-xs font-medium text-muted-foreground">Estación destino</label>
+          <label className="cg-eyebrow mb-1.5 block">Puesto destino</label>
           <Select value={toStationId} onValueChange={setToStationId}>
-            <SelectTrigger><SelectValue placeholder="Seleccione una estación" /></SelectTrigger>
+            <SelectTrigger><SelectValue placeholder="Elige un puesto" /></SelectTrigger>
             <SelectContent>
               {stations
                 .filter((s) => String(s.id) !== String(target?.stationId))
@@ -142,43 +142,44 @@ export default function TransferShiftModal({
         </div>
 
         <div>
-          <label className="mb-1 block text-xs font-medium text-muted-foreground">Duración</label>
-          <div className="flex gap-2">
-            <Button type="button" size="sm" variant={mode === "shift" ? "default" : "outline"}
-              onClick={() => setMode("shift")}>
-              Solo este turno
-            </Button>
-            <Button type="button" size="sm" variant={mode === "range" ? "default" : "outline"}
-              onClick={() => { setMode("range"); if (!until) setUntil(target?.dateStr || ""); }}>
-              Hasta una fecha
-            </Button>
-          </div>
+          <label className="cg-eyebrow mb-1.5 block">Duración</label>
+          <Segmented<"shift" | "range">
+            value={mode}
+            onChange={(v) => {
+              setMode(v);
+              if (v === "range" && !until) setUntil(target?.dateStr || "");
+            }}
+            options={[
+              { value: "shift", label: "Solo este turno" },
+              { value: "range", label: "Hasta una fecha" },
+            ]}
+          />
           {mode === "range" && (
             <input
               type="date"
               value={until}
               min={target?.dateStr}
               onChange={(e) => setUntil(e.target.value)}
-              className="mt-2 w-full rounded-md border bg-background px-3 py-2 text-sm"
+              className="cg-input cg-focus mt-2 w-full px-3 py-2 text-sm tabular-nums"
             />
           )}
         </div>
 
         <div>
-          <label className="mb-1 block text-xs font-medium text-muted-foreground">Motivo (opcional)</label>
+          <label className="cg-eyebrow mb-1.5 block">Motivo (opcional)</label>
           <Textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2}
             placeholder="Ej.: cubre falta en el otro puesto" />
         </div>
 
         {/* The traslado ends by itself — say so, or the natural assumption is
             that it runs until somebody remembers to undo it. */}
-        <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 text-xs">
-          <p className="font-semibold text-foreground">
+        <div className="glass-brand rounded-xl p-3 text-xs">
+          <p className="font-semibold">
             {mode === "range" && until
               ? `Cubre ${dest ? stationLabel(dest) : "el destino"} hasta el ${until}.`
               : `Cubre ${dest ? stationLabel(dest) : "el destino"} solo en este turno.`}
           </p>
-          <p className="mt-1 text-muted-foreground">
+          <p className="mt-1" style={{ color: "var(--ink-soft)" }}>
             Después vuelve automáticamente a <strong>{target?.stationName || "su puesto"}</strong>.
             Podrá marcar entrada en el destino como en cualquier turno normal.
           </p>

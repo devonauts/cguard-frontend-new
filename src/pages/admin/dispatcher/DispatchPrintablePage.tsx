@@ -19,8 +19,11 @@ import { clientService } from '@/lib/api/clientService';
 import { postSiteService } from '@/lib/api/postSiteService';
 import IncidentTypesService from '@/services/incident-types.service';
 import IncidentMap from '@/components/IncidentMap/IncidentMap';
+// El acta impresa se queda con el mapa PLANO a propósito (nadie despacha desde
+// un papel); lo que se comparte es la sonda de coordenadas.
+import { coordDeSitio } from './DispatchIncidentMap';
 import { toast } from 'sonner';
-import { PageContainer, PageHeader, Modal } from '@/components/kit';
+import { PageContainer, PageHeader, Modal, StatusBadge } from '@/components/kit';
 import { Printer, MessageSquarePlus } from 'lucide-react';
 import type { DirectoryOption, NamedEntity, DispatchComment, CommentAttachment } from './types';
 
@@ -269,19 +272,16 @@ export function DispatchDetailsContent({ requestId }: { requestId?: string | nul
       if (m.length === 2 && !isNaN(Number(m[0])) && !isNaN(Number(m[1]))) return { lat: Number(m[0]), lng: Number(m[1]) };
     }
     // fallback: try to find coordinates from related postSite
+    //
+    // Misma sonda que en la ficha, y por la misma razón: `postSiteService.list`
+    // devuelve `latitud`/`longitud` en español, así que mirar sólo `latitude`
+    // dejaba el acta impresa sin mapa.
     try {
       const siteId = requestPayload.siteId || requestPayload.postSiteId || requestPayload.site?.id;
       if (siteId && postSites && postSites.length > 0) {
         const site = postSites.find((s) => s.id === siteId || s._id === siteId || s.id === String(siteId));
-        if (site) {
-          const sLat = site.latitude || site.lat || site.locationLat || site.coords?.lat || null;
-          const sLng = site.longitude || site.lng || site.locationLng || site.coords?.lng || null;
-          if (sLat && sLng) return { lat: Number(sLat), lng: Number(sLng) };
-          if (site.location && typeof site.location === 'string') {
-            const parts = site.location.split(',').map((s: string) => s.trim());
-            if (parts.length === 2 && !isNaN(Number(parts[0])) && !isNaN(Number(parts[1]))) return { lat: Number(parts[0]), lng: Number(parts[1]) };
-          }
-        }
+        const c = coordDeSitio(site);
+        if (c) return c;
       }
     } catch (e) {
       // ignore
@@ -343,7 +343,17 @@ export function DispatchDetailsContent({ requestId }: { requestId?: string | nul
                 <tbody>
                   <tr className="border-b">
                     <td className="py-3 px-4 text-xs font-medium text-muted-foreground">{t('dispatcher.ticket_id') || 'Ticket ID'}</td>
-                    <td className="py-3 px-4 text-sm text-foreground">{ticketShort} <span className={`inline-block text-xs ml-2 px-2 py-0.5 rounded-full ${requestPayload.status === 'open' || requestPayload.status === 'abierto' ? 'bg-red-500/15 text-red-700' : 'bg-green-100 text-green-700'}`}>{requestPayload.status ?? ''}</span></td>
+                    <td className="py-3 px-4 text-sm text-foreground">
+                      {ticketShort}{' '}
+                      <StatusBadge
+                        /* Abierto = pendiente, no fallo — igual que en la lista
+                           y en el detalle. */
+                        tone={requestPayload.status === 'open' || requestPayload.status === 'abierto' ? 'warn' : 'ok'}
+                        className="ml-2"
+                      >
+                        {requestPayload.status ?? ''}
+                      </StatusBadge>
+                    </td>
                     <td className="py-3 px-4 text-xs font-medium text-muted-foreground">{t('dispatcher.date_time') || 'Date/Time'}</td>
                     <td className="py-3 px-4 text-sm text-foreground">{requestPayload.createdAt ? new Date(requestPayload.createdAt).toLocaleString() : '-'}</td>
                   </tr>
@@ -504,7 +514,7 @@ export function DispatchDetailsContent({ requestId }: { requestId?: string | nul
                       <div className="mt-1 text-sm text-foreground whitespace-pre-wrap">{c.text || c.body || c.message}</div>
                       {c.attachment && c.attachment.url && (
                         <div className="mt-2">
-                          <a className="text-xs text-blue-600 underline" href={c.attachment.url} target="_blank" rel="noreferrer">Adjunto: {c.attachment.name || c.attachment.url}</a>
+                          <a className="text-xs underline" style={{ color: 'var(--brand-text)' }} href={c.attachment.url} target="_blank" rel="noreferrer">Adjunto: {c.attachment.name || c.attachment.url}</a>
                         </div>
                       )}
                     </div>
@@ -516,7 +526,7 @@ export function DispatchDetailsContent({ requestId }: { requestId?: string | nul
         </div>
 
       </div>
-      <Button className="bg-primary text-primary-foreground text-sm" onClick={() => setShowCommentModal((s) => !s)}>
+      <Button variant="brand" className="text-sm" onClick={() => setShowCommentModal((s) => !s)}>
         {showCommentModal ? (t('dispatcher.close') || 'Cerrar') : (t('dispatcher.add_comment_button') || 'Agregar comentario')}
       </Button>
     </div>

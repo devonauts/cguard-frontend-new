@@ -1,10 +1,42 @@
-import { useMemo, useState, type KeyboardEvent } from "react";
-import { useNavigate } from "react-router-dom";
+/**
+ * ════════════════════════════════════════════════════════════════════════════
+ * CENTRO DE MANDO
+ * El tablero de la operación de seguridad: quién está en servicio, qué puestos
+ * están cubiertos, qué acaba de pasar y dónde está cada uno.
+ *
+ * ── CÓMO ESTÁ ARMADO ───────────────────────────────────────────────────────
+ * 1. CABECERA DE MANDO — quién está al mando y si el enlace en vivo está sano.
+ *    Si esa línea miente, todo lo de abajo miente; por eso va primero.
+ * 2. SIGNOS VITALES — cuatro cifras enormes. Son las cuatro preguntas que un
+ *    jefe de operaciones hace al llegar, en ese orden: ¿cuánta gente tengo?,
+ *    ¿están los puestos cubiertos?, ¿hay algo abierto?, ¿se están haciendo las
+ *    rondas?
+ * 3. REJILLA ASIMÉTRICA — el mapa manda (8 de 12 columnas) porque es lo único
+ *    que se mira en continuo; a su lado, el dial de cobertura y el riel de
+ *    recursos. Debajo, tendencia y parte de novedades repartidos 7/5.
+ * 4. BANDA DE ESTADO — el pie: enlace, equipos, tamaño de la operación.
+ *
+ * ── EN UN TELÉFONO ES OTRA COSA ────────────────────────────────────────────
+ * Por debajo de `md` manda `MobileCommandCenter`: el mapa a sangre, las cifras
+ * flotando encima en un carrusel y el resto en una hoja que se sube con el
+ * pulgar. La rejilla de arriba no cabe en 390 px sin convertirse en una lista
+ * larguísima con el mapa perdido en medio. Los datos son EXACTAMENTE los mismos
+ * —este archivo los calcula una vez y los reparte—; lo que cambia es la
+ * composición.
+ *
+ * ── LO QUE NO CAMBIA ───────────────────────────────────────────────────────
+ * Los datos. `useControlCenter` sigue siendo la única fuente (mismos endpoints,
+ * mismo sondeo, mismo SSE, mismo socket de posiciones) y `navigation.ts` sigue
+ * decidiendo a dónde lleva cada tarjeta. Esto es una cara nueva sobre la misma
+ * maquinaria.
+ * ════════════════════════════════════════════════════════════════════════════
+ */
+import { useMemo, useState } from "react";
 import {
   User, Shield, UserCog, AlertTriangle, Building2, Timer, Route, ShieldCheck,
-  Activity, Cpu, Radio, Map as MapIcon, Maximize2, LayoutDashboard, type LucideIcon,
+  LayoutDashboard, Boxes, type LucideIcon,
 } from "lucide-react";
-import { Stagger, EmptyState } from "@/components/kit";
+import { EmptyState, GlassPanel, SkeletonCards, Stagger } from "@/components/kit";
 import AppLayout from "@/layouts/app-layout";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useAuth } from "@/contexts/AuthContext";
@@ -12,28 +44,47 @@ import "./control-center.css";
 import { useControlCenter } from "./useControlCenter";
 import { useDemoData } from "./demoData";
 import { loadPrefs, savePrefs, type DashboardPrefs } from "./prefs";
-import { GlassCard, SectionHeader, StatusDot } from "./components/primitives";
-import { KpiCard } from "./components/KpiCard";
-import { OperationsMap } from "./components/OperationsMap";
-import { ActivityFeed } from "./components/ActivityFeed";
-import { AreaChart } from "./components/AreaChart";
-import { Toolbar, type RangeKey } from "./components/Toolbar";
+import { KPI_ROUTES } from "./navigation";
+import type { Kpi } from "./types";
+import { CommandBar } from "./components/CommandBar";
+import { MetricHero } from "./components/MetricHero";
+import { MapPanel } from "./components/MapPanel";
+import { Panel, PanelLink } from "./components/Panel";
+import { CoverageGauge } from "./components/CoverageGauge";
+import { StatRail, type RailItem } from "./components/StatRail";
+import { TrendPanel } from "./components/TrendPanel";
+import { ActivityStream } from "./components/ActivityStream";
+import { SystemStatus } from "./components/SystemStatus";
 import { CustomizePanel } from "./components/CustomizePanel";
 import { DashboardErrorBoundary } from "./components/ErrorBoundary";
-import { HEALTH_ROUTES } from "./navigation";
+import { MobileCommandCenter } from "./components/MobileCommandCenter";
+import { useEsMovil } from "./useMovil";
 
 const KPI_ICON: Record<string, LucideIcon> = {
   onDuty: User, stations: Shield, supervisors: UserCog, openIncidents: AlertTriangle,
   clients: Building2, response: Timer, patrolsToday: Route, coverage: ShieldCheck,
 };
 
+/** Signos vitales, en el orden en que se preguntan. */
+const VITALES = ["onDuty", "coverage", "openIncidents", "patrolsToday"] as const;
+/** Recursos — se consultan, no se vigilan. */
+const RECURSOS = ["stations", "supervisors", "response", "clients"] as const;
+
+function nombreDe(user?: { firstName?: string; lastName?: string; email?: string } | null): string {
+  const nombre = user?.firstName?.trim();
+  if (nombre) return nombre;
+  const apellido = user?.lastName?.trim();
+  if (apellido) return apellido;
+  const correo = user?.email || "";
+  return correo.split("@")[0] || "operador";
+}
+
 export default function ControlCenter() {
   usePageTitle("Panel de control");
-  const navigate = useNavigate();
   const { user } = useAuth();
+  const esMovil = useEsMovil();
   const [prefs, setPrefs] = useState<DashboardPrefs>(() => loadPrefs());
   const [customizeOpen, setCustomizeOpen] = useState(false);
-  const [range, setRange] = useState<RangeKey>("12m");
   const [demo, setDemo] = useState<boolean>(() => {
     try { return localStorage.getItem("cc_demo") === "1"; } catch { return false; }
   });
@@ -44,167 +95,174 @@ export default function ControlCenter() {
 
   const live = useControlCenter(prefs.liveTracking ? prefs.locationIntervalSec : 3600);
   const demoData = useDemoData(demo);
-  // In demo mode, show the populated sample so a new tenant can preview the UI.
+  // En modo demo se muestra la muestra poblada para que un negocio nuevo pueda
+  // ver el panel en operación. El refresco sigue siendo el real.
   const data = demo ? { ...demoData, refresh: live.refresh } : live;
 
   const openFullMap = () =>
     window.open(`${window.location.origin}/dashboard/operations-map`, "_blank", "noopener,noreferrer");
 
-  const accentStyle = useMemo(() => ({ ["--cc-accent" as any]: prefs.accent }), [prefs.accent]);
-  const legend = [
-    { k: "tenant", label: "Sede" }, { k: "station", label: "Puestos" },
-    { k: "guard", label: "Vigilantes" }, { k: "supervisor", label: "Supervisores" },
-  ] as const;
+  // Reparto de los KPIs por papel. Lo que el hook devuelva y no esté en ninguna
+  // de las dos listas se añade al riel: así una métrica nueva del backend
+  // aparece sola en vez de desaparecer sin que nadie se entere.
+  const { vitales, recursos, cobertura } = useMemo(() => {
+    const porClave = new Map(data.kpis.map((k) => [k.key, k]));
+    const usadas = new Set<string>([...VITALES, ...RECURSOS]);
+    const v = VITALES.map((k) => porClave.get(k)).filter(Boolean) as Kpi[];
+    const r = [
+      ...RECURSOS.map((k) => porClave.get(k)).filter(Boolean) as Kpi[],
+      ...data.kpis.filter((k) => !usadas.has(k.key)),
+    ];
+    const cob = porClave.get("coverage");
+    return {
+      vitales: v,
+      recursos: r,
+      cobertura: typeof cob?.value === "number" ? cob.value : null,
+    };
+  }, [data.kpis]);
+
+  const c = data.counts;
+  const resumen = [
+    `${c.onDuty ?? 0} en servicio`,
+    `${c.stations ?? 0} puestos activos`,
+    `${c.openIncidents ?? 0} incidentes abiertos`,
+  ].join(" · ");
+
+  const railItems: RailItem[] = recursos.map((k) => ({ kpi: k, icon: KPI_ICON[k.key], to: k.to ?? KPI_ROUTES[k.key] }));
+  const cargando = data.loading && data.kpis.length === 0;
+
+  // Teléfono: el mapa es la pantalla. Se decide con una consulta de medios en
+  // JavaScript y no con clases `md:` porque pintar las dos composiciones a la
+  // vez montaría dos mapas de Google para enseñar uno.
+  if (esMovil) {
+    return (
+      <AppLayout>
+        <DashboardErrorBoundary>
+          <MobileCommandCenter
+            data={data}
+            prefs={prefs}
+            demo={demo}
+            onDemo={toggleDemo}
+            onCustomize={() => setCustomizeOpen(true)}
+            onFullMap={openFullMap}
+            cifras={[...vitales, ...recursos]}
+            railItems={railItems}
+            cobertura={cobertura}
+            resumen={resumen}
+            userName={nombreDe(user)}
+            cargando={cargando}
+          />
+          <CustomizePanel
+            open={customizeOpen}
+            value={prefs}
+            onClose={() => setCustomizeOpen(false)}
+            onSave={(p) => { setPrefs(p); savePrefs(p); setCustomizeOpen(false); }}
+          />
+        </DashboardErrorBoundary>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout>
       <DashboardErrorBoundary>
-      <div className="cc-root min-h-screen" style={accentStyle as any}>
-        <div className="cc-backdrop">
-          <div className="cc-blob" style={{ width: 460, height: 460, top: -120, right: -80, background: prefs.accent }} />
-          <div className="cc-blob" style={{ width: 380, height: 380, bottom: -120, left: -60, background: "#38bdf8" }} />
-        </div>
-
-        <div className="relative z-10 p-4 sm:p-6">
-          <Toolbar
-            range={range} onRange={setRange} onRefresh={data.refresh}
+        <div className="cc-root cmd-shell mx-auto w-full max-w-[1680px] space-y-5 p-4 pb-16 sm:p-6">
+          <CommandBar
+            userName={nombreDe(user)}
+            sseConnected={data.health.sseConnected}
+            lastSync={data.health.lastSync}
+            demo={demo}
+            onDemo={toggleDemo}
+            onRefresh={data.refresh}
             onCustomize={() => setCustomizeOpen(true)}
-            sseConnected={data.health.sseConnected} lastSync={data.health.lastSync}
-            demo={demo} onDemo={toggleDemo}
+            onFullMap={openFullMap}
+            resumen={resumen}
           />
 
           {data.error === "no-tenant" ? (
-            <GlassCard className="p-4" hover={false}>
+            <GlassPanel className="p-4">
               <EmptyState
                 icon={<LayoutDashboard />}
                 title="Selecciona un negocio"
-                description="Elige un negocio (inquilino) para ver el panel de control en tiempo real."
+                description="Elige un negocio para ver su centro de mando en tiempo real."
               />
-            </GlassCard>
+            </GlassPanel>
+          ) : cargando ? (
+            <SkeletonCards count={4} className="lg:grid-cols-4" />
           ) : (
             <>
-              {/* KPI grid — wider cards (4-up) so each carries real context. */}
-              <Stagger className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
-                {data.kpis.map((k, i) => (
-                  <KpiCard key={k.key} kpi={k} icon={KPI_ICON[k.key]} index={i} />
+              {/* ── 1. SIGNOS VITALES ─────────────────────────────────────── */}
+              <Stagger className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4" gap={0.05}>
+                {vitales.map((k) => (
+                  <MetricHero key={k.key} kpi={k} icon={KPI_ICON[k.key]} to={k.to ?? KPI_ROUTES[k.key]} />
                 ))}
               </Stagger>
 
-              {/* Map + side column */}
-              <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-3">
-                <GlassCard className="xl:col-span-2 overflow-hidden" hover={false}>
-                  <SectionHeader title="Operaciones en tiempo real" icon={<MapIcon size={16} />} live
-                    right={
-                      <div className="flex flex-wrap items-center gap-3 pr-1">
-                        {legend.map((l) => (
-                          <span key={l.k} className="flex items-center gap-1 text-[11px] text-muted-foreground">
-                            <span className="h-2 w-2 rounded-full" style={{ background: prefs.pinColors[l.k as keyof typeof prefs.pinColors] }} />
-                            {l.label}
-                          </span>
-                        ))}
-                        <button
-                          onClick={openFullMap}
-                          title="Abrir en pantalla completa (nueva pestaña)"
-                          className="grid h-7 w-7 place-items-center rounded-lg border border-border/60 bg-white/[0.03] text-muted-foreground hover:text-foreground active:scale-95 transition"
-                        >
-                          <Maximize2 size={14} />
-                        </button>
-                      </div>
-                    } />
-                  <div className="relative">
-                    <OperationsMap entities={data.entities} prefs={prefs} height={480} defaultCenter={data.defaultCenter} />
-                    {/* Click anywhere on the preview → open the interactive map full screen. */}
-                    <button
-                      onClick={openFullMap}
-                      title="Abrir en pantalla completa (nueva pestaña)"
-                      aria-label="Pantalla completa"
-                      className="group absolute inset-0 flex items-end justify-end p-3"
-                    >
-                      <span className="flex items-center gap-1.5 rounded-lg border border-white/15 bg-black/55 px-2.5 py-1.5 text-xs font-medium text-white/90 opacity-0 transition group-hover:opacity-100">
-                        <Maximize2 size={13} /> Pantalla completa
-                      </span>
-                    </button>
-                  </div>
-                </GlassCard>
+              {/* ── 2. MAPA + DIAL + RIEL ─────────────────────────────────── */}
+              <div className="grid gap-5 xl:grid-cols-12">
+                <MapPanel
+                  className="xl:col-span-8"
+                  entities={data.entities}
+                  prefs={prefs}
+                  defaultCenter={data.defaultCenter}
+                  live={data.health.sseConnected}
+                  onFull={openFullMap}
+                />
 
-                <div className="flex flex-col gap-5">
-                  <ActivityFeed items={data.activity} live={data.health.sseConnected} />
-                  <SystemHealth data={data} />
+                <div className="flex flex-col gap-5 xl:col-span-4">
+                  <Panel
+                    icon={<ShieldCheck />}
+                    title="Cobertura de puestos"
+                    subtitle="Ahora mismo, sobre el terreno"
+                    action={<PanelLink to="/live-tracking">Ver en vivo</PanelLink>}
+                    bodyClassName="pt-1"
+                  >
+                    <CoverageGauge coverage={cobertura} onDuty={c.onDuty ?? 0} stations={c.stations ?? 0} />
+                  </Panel>
+
+                  <StatRail
+                    icon={<Boxes />}
+                    title="Recursos de la operación"
+                    subtitle="Puestos, mando y cartera"
+                    items={railItems}
+                  />
                 </div>
               </div>
 
-              {/* Trends */}
-              <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-3">
-                <GlassCard className="overflow-hidden" onClick={() => navigate("/activities")} ariaLabel="Ver incidentes">
-                  <SectionHeader title="Incidentes (tendencia)" icon={<AlertTriangle size={16} />} />
-                  <div className="px-2 pb-3">
-                    <AreaChart data={data.incidentsTrend} color="#ef4444" height={150} />
-                  </div>
-                </GlassCard>
-                <GlassCard className="overflow-hidden" onClick={() => navigate("/analytics/reporting")} ariaLabel="Ver analítica de tiempo de respuesta">
-                  <SectionHeader title="Tiempo de respuesta (min)" icon={<Timer size={16} />} />
-                  <div className="px-2 pb-3"><AreaChart data={data.responseTrend} color="#38bdf8" height={150} valueSuffix=" min" /></div>
-                </GlassCard>
-                <GlassCard className="overflow-hidden" onClick={() => navigate("/clients")} ariaLabel="Ver clientes">
-                  <SectionHeader title="Adquisición de clientes" icon={<Building2 size={16} />} />
-                  <div className="px-2 pb-3"><AreaChart data={data.acquisitionTrend} color={prefs.accent} height={150} /></div>
-                </GlassCard>
+              {/* ── 3. TENDENCIA + NOVEDADES ──────────────────────────────── */}
+              <div className="grid gap-5 xl:grid-cols-12">
+                <TrendPanel
+                  className="xl:col-span-7"
+                  incidents={data.incidentsTrend}
+                  response={data.responseTrend}
+                  acquisition={data.acquisitionTrend}
+                />
+                <ActivityStream
+                  className="xl:col-span-5"
+                  items={data.activity}
+                  live={data.health.sseConnected}
+                />
               </div>
+
+              {/* ── 4. BANDA DE ESTADO ────────────────────────────────────── */}
+              <SystemStatus
+                sseConnected={data.health.sseConnected}
+                onlineDevices={data.health.onlineDevices}
+                stations={c.stations ?? 0}
+                clients={c.clients ?? 0}
+                team={c.team ?? 0}
+              />
             </>
           )}
         </div>
 
         <CustomizePanel
-          open={customizeOpen} value={prefs} onClose={() => setCustomizeOpen(false)}
+          open={customizeOpen}
+          value={prefs}
+          onClose={() => setCustomizeOpen(false)}
           onSave={(p) => { setPrefs(p); savePrefs(p); setCustomizeOpen(false); }}
         />
-      </div>
       </DashboardErrorBoundary>
     </AppLayout>
-  );
-}
-
-function SystemHealth({ data }: { data: ReturnType<typeof useControlCenter> }) {
-  const navigate = useNavigate();
-  const items = [
-    { icon: Radio, label: "Tiempo real (SSE)", value: data.health.sseConnected ? "Conectado" : "Sondeo", ok: data.health.sseConnected },
-    { icon: Cpu, label: "Dispositivos en línea", value: String(data.health.onlineDevices), ok: data.health.onlineDevices > 0 },
-    { icon: Activity, label: "Puestos / Clientes", value: `${data.counts.stations ?? 0} / ${data.counts.clients ?? 0}`, ok: true },
-    { icon: User, label: "Equipo administrativo", value: String(data.counts.team ?? 0), ok: true },
-  ];
-  return (
-    <GlassCard>
-      <SectionHeader title="Estado del sistema" icon={<Cpu size={16} />} />
-      <div className="grid grid-cols-2 gap-2 px-3 pb-3">
-        {items.map((it) => {
-          const to = HEALTH_ROUTES[it.label];
-          return (
-            <div
-              key={it.label}
-              {...(to
-                ? {
-                    role: "button" as const,
-                    tabIndex: 0,
-                    "aria-label": it.label,
-                    onClick: () => navigate(to),
-                    onKeyDown: (e: KeyboardEvent) => {
-                      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate(to); }
-                    },
-                  }
-                : {})}
-              className={`rounded-lg bg-white/[0.03] p-3 ${to ? "cursor-pointer transition-colors hover:bg-white/[0.06]" : ""}`}
-            >
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <it.icon size={14} /><span className="text-[11px]">{it.label}</span>
-              </div>
-              <div className="mt-1 flex items-center gap-1.5">
-                <StatusDot status={it.ok ? "online" : "delayed"} />
-                <span className="text-sm font-semibold text-foreground">{it.value}</span>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </GlassCard>
   );
 }

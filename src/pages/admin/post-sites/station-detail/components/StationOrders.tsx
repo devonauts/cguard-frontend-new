@@ -2,12 +2,10 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { confirmDialog } from '@/components/ui/confirmDialog';
-import {
-  Plus, Clock, Pencil, Trash2, X, ClipboardList, Loader2, Repeat, CalendarDays, AlertCircle,
-  Bell, Image as ImageIcon, Video, Mic, User, CheckCircle2, FileText,
-} from 'lucide-react';
+import { Plus, Clock, Pencil, Trash2, X, ClipboardList, Loader2, Repeat, CalendarDays, AlertCircle, Bell, Video, Mic, User, CheckCircle2, FileText } from 'lucide-react';
 import { stationOrderService } from '@/lib/api/stationOrderService';
-import { Section, EmptyState, SkeletonCards } from '@/components/kit';
+import { Section, EmptyState, SkeletonCards, StatusBadge, Segmented } from '@/components/kit';
+import { FIELD_CLS_LG, LabeledField } from '@/pages/admin/clientes/components/_shared/tab-kit';
 import { Button } from '@/components/ui/button';
 import type { Station } from '@/types';
 
@@ -27,10 +25,11 @@ const API_BASE = (import.meta as any).env?.VITE_API_URL || '';
 const fileUrl = (u?: string | null) => (u ? `${API_BASE}${u}` : null);
 const DOW = ['D', 'L', 'M', 'X', 'J', 'V', 'S']; // Sun..Sat (index = JS getDay)
 const DOW_FULL = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-const PRIO: Record<string, { label: string; cls: string }> = {
-  alta: { label: 'Alta', cls: 'bg-red-500/15 text-red-400 border-red-500/30' },
-  media: { label: 'Media', cls: 'bg-amber-500/15 text-amber-400 border-amber-500/30' },
-  baja: { label: 'Baja', cls: 'bg-sky-500/15 text-sky-400 border-sky-500/30' },
+// La prioridad de la consigna se lee con los semánticos fijos del sistema.
+const PRIO: Record<string, { label: string; tone: 'bad' | 'warn' | 'info' }> = {
+  alta: { label: 'Alta', tone: 'bad' as const },
+  media: { label: 'Media', tone: 'warn' as const },
+  baja: { label: 'Baja', tone: 'info' as const },
 };
 
 function recurrenceSummary(o: Order, t: any): string {
@@ -110,10 +109,14 @@ export default function StationOrders({ stationId }: Props) {
         title={t('station.orders.title', 'Consignas específicas')}
         action={
           <div className="flex items-center gap-2">
-            <div className="flex rounded-lg border border-border bg-background p-0.5">
-              <button onClick={() => setView('list')} className={`rounded-md px-3 py-1.5 text-xs font-medium ${view === 'list' ? 'bg-primary/14 text-primary' : 'text-muted-foreground'}`}>{t('station.orders.tabList', 'Consignas')}</button>
-              <button onClick={() => setView('log')} className={`rounded-md px-3 py-1.5 text-xs font-medium ${view === 'log' ? 'bg-primary/14 text-primary' : 'text-muted-foreground'}`}>{t('station.orders.tabLog', 'Registro de actividad')}</button>
-            </div>
+            <Segmented
+              value={view}
+              onChange={(v) => setView(v)}
+              options={[
+                { value: 'list', label: t('station.orders.tabList', 'Consignas') },
+                { value: 'log', label: t('station.orders.tabLog', 'Registro de actividad') },
+              ]}
+            />
             {view === 'list' && (
               <Button variant="brand" size="sm" onClick={() => setModal({ ...EMPTY })}>
                 <Plus size={16} /> {t('station.orders.add', 'Agregar consigna')}
@@ -122,7 +125,7 @@ export default function StationOrders({ stationId }: Props) {
           </div>
         }
       >
-        <p className="-mt-2 text-xs text-muted-foreground">{t('station.orders.subtitle', 'Requisitos recurrentes que los vigilantes deben completar en esta estación.')}</p>
+        <p className="-mt-2 text-xs" style={{ color: 'var(--ink-soft)' }}>{t('station.orders.subtitle', 'Requisitos recurrentes que los vigilantes deben completar en esta estación.')}</p>
       </Section>
 
       {view === 'log' ? (
@@ -138,26 +141,26 @@ export default function StationOrders({ stationId }: Props) {
       ) : (
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
           {rows.map((o) => (
-            <div key={o.id} className={`glass cc-glass-hover p-4 ${o.active ? '' : 'opacity-60'}`}>
+            <div key={o.id} className={`glass-flat glass-hover p-4 ${o.active ? '' : 'opacity-60'}`}>
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <h3 className="truncate text-sm font-semibold text-foreground">{o.title}</h3>
-                    <span className={`shrink-0 rounded-md border px-1.5 py-0.5 text-[10px] font-semibold ${PRIO[o.priority]?.cls || PRIO.media.cls}`}>{PRIO[o.priority]?.label || o.priority}</span>
+                    <h3 className="truncate text-sm font-semibold">{o.title}</h3>
+                    <StatusBadge tone={PRIO[o.priority]?.tone || 'warn'} dot={false} className="shrink-0">{PRIO[o.priority]?.label || o.priority}</StatusBadge>
                   </div>
-                  {o.description && <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">{o.description}</p>}
-                  <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                    {o.time && <span className="flex items-center gap-1"><Clock size={12} className="text-[color:var(--cc-accent)]" />{o.time}</span>}
-                    <span className="flex items-center gap-1"><Repeat size={12} className="text-[color:var(--cc-accent)]" />{recurrenceSummary(o, t)}</span>
+                  {o.description && <p className="mt-0.5 line-clamp-2 text-xs" style={{ color: 'var(--ink-soft)' }}>{o.description}</p>}
+                  <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs" style={{ color: 'var(--ink-soft)' }}>
+                    {o.time && <span className="flex items-center gap-1"><Clock size={12} style={{ color: 'var(--brand-text)' }} />{o.time}</span>}
+                    <span className="flex items-center gap-1"><Repeat size={12} style={{ color: 'var(--brand-text)' }} />{recurrenceSummary(o, t)}</span>
                   </div>
                 </div>
                 <div className="flex shrink-0 items-center gap-1">
-                  <button onClick={() => toggleActive(o)} title={o.active ? t('station.orders.deactivate', 'Desactivar') : t('station.orders.activate', 'Activar')}
-                    className={`h-5 w-9 rounded-full transition-colors relative ${o.active ? '' : 'bg-white/10'}`} style={o.active ? { background: 'var(--cc-accent)' } : undefined}>
-                    <span className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-all ${o.active ? 'left-[18px]' : 'left-0.5'}`} />
+                  <button onClick={() => toggleActive(o)} aria-pressed={o.active} title={o.active ? t('station.orders.deactivate', 'Desactivar') : t('station.orders.activate', 'Activar')}
+                    className="cg-focus relative h-5 w-9 rounded-full transition-colors" style={{ background: o.active ? 'var(--brand)' : 'var(--glass-sunken)' }}>
+                    <span className={`absolute top-0.5 h-4 w-4 rounded-full transition-all ${o.active ? 'left-[18px]' : 'left-0.5'}`} style={{ background: o.active ? 'var(--brand-ink)' : 'var(--ink-faint)' }} />
                   </button>
-                  <button onClick={() => setModal({ ...o })} className="rounded-md p-1.5 text-muted-foreground hover:text-foreground"><Pencil size={15} /></button>
-                  <button onClick={() => remove(o)} className="rounded-md p-1.5 text-muted-foreground hover:text-red-400"><Trash2 size={15} /></button>
+                  <button onClick={() => setModal({ ...o })} aria-label={t('station.orders.edit', 'Editar consigna')} className="cg-btn-ghost cg-focus rounded-md p-1.5"><Pencil size={15} /></button>
+                  <button onClick={() => remove(o)} aria-label={t('actions.delete', 'Eliminar')} className="cg-focus rounded-md p-1.5" style={{ color: 'var(--bad-text)' }}><Trash2 size={15} /></button>
                 </div>
               </div>
             </div>
@@ -181,40 +184,39 @@ function OrderModal({ value, onChange, onClose, onSave, saving, t }: {
   const o: Order = value;
   const set = (patch: Partial<Order>) => onChange({ ...o, ...patch });
   const toggleDay = (d: number) => set({ days: o.days?.includes(d) ? o.days.filter((x) => x !== d) : [...(o.days || []), d] });
-  const inputCls = 'w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-[color:var(--cc-accent)]';
 
   return (
     <div className="fixed inset-0 z-[120] flex items-center justify-center p-4" onClick={onClose}>
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-      <div className="glass relative max-h-[90vh] w-full max-w-lg overflow-y-auto p-5" onClick={(e) => e.stopPropagation()}>
+      <div className="glass-scrim absolute inset-0" />
+      <div className="glass-raised relative max-h-[90vh] w-full max-w-lg overflow-y-auto p-5" onClick={(e) => e.stopPropagation()}>
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-base font-semibold text-foreground">{o.id ? t('station.orders.edit', 'Editar consigna') : t('station.orders.add', 'Agregar consigna')}</h3>
-          <button onClick={onClose} className="rounded-lg p-1.5 text-muted-foreground hover:bg-white/5"><X size={18} /></button>
+          <h3 className="font-display text-base font-semibold">{o.id ? t('station.orders.edit', 'Editar consigna') : t('station.orders.add', 'Agregar consigna')}</h3>
+          <button onClick={onClose} aria-label={t('actions.close', 'Cerrar')} className="cg-btn-ghost cg-focus rounded-lg p-1.5"><X size={18} /></button>
         </div>
 
         <div className="space-y-3">
-          <Field label={t('station.orders.fTitle', 'Título')}>
-            <input className={inputCls} value={o.title} onChange={(e) => set({ title: e.target.value })} placeholder={t('station.orders.fTitlePh', 'Ej: Abrir baños públicos')} />
-          </Field>
-          <Field label={t('station.orders.fDesc', 'Descripción')}>
-            <textarea className={inputCls} rows={2} value={o.description || ''} onChange={(e) => set({ description: e.target.value })} placeholder={t('station.orders.fDescPh', 'Detalles de lo que debe hacerse...')} />
-          </Field>
+          <LabeledField label={t('station.orders.fTitle', 'Título')}>
+            <input className={FIELD_CLS_LG} value={o.title} onChange={(e) => set({ title: e.target.value })} placeholder={t('station.orders.fTitlePh', 'Ej: Abrir baños públicos')} />
+          </LabeledField>
+          <LabeledField label={t('station.orders.fDesc', 'Descripción')}>
+            <textarea className={FIELD_CLS_LG} rows={2} value={o.description || ''} onChange={(e) => set({ description: e.target.value })} placeholder={t('station.orders.fDescPh', 'Detalles de lo que debe hacerse...')} />
+          </LabeledField>
 
           <div className="grid grid-cols-2 gap-3">
-            <Field label={<span className="flex items-center gap-1"><Clock size={12} />{t('station.orders.fTime', 'Hora')}</span>}>
-              <input type="time" className={inputCls} value={o.time || ''} onChange={(e) => set({ time: e.target.value })} />
-            </Field>
-            <Field label={<span className="flex items-center gap-1"><AlertCircle size={12} />{t('station.orders.fPriority', 'Prioridad')}</span>}>
-              <select className={inputCls} value={o.priority} onChange={(e) => set({ priority: e.target.value as any })}>
+            <LabeledField label={<span className="flex items-center gap-1"><Clock size={12} />{t('station.orders.fTime', 'Hora')}</span>}>
+              <input type="time" className={FIELD_CLS_LG} value={o.time || ''} onChange={(e) => set({ time: e.target.value })} />
+            </LabeledField>
+            <LabeledField label={<span className="flex items-center gap-1"><AlertCircle size={12} />{t('station.orders.fPriority', 'Prioridad')}</span>}>
+              <select className={FIELD_CLS_LG} value={o.priority} onChange={(e) => set({ priority: e.target.value as any })}>
                 <option value="alta">{t('station.orders.prio.alta', 'Alta')}</option>
                 <option value="media">{t('station.orders.prio.media', 'Media')}</option>
                 <option value="baja">{t('station.orders.prio.baja', 'Baja')}</option>
               </select>
-            </Field>
+            </LabeledField>
           </div>
 
-          <Field label={<span className="flex items-center gap-1"><Repeat size={12} />{t('station.orders.fRecurrence', 'Recurrencia')}</span>}>
-            <select className={inputCls} value={o.recurrence} onChange={(e) => set({ recurrence: e.target.value as Recurrence })}>
+          <LabeledField label={<span className="flex items-center gap-1"><Repeat size={12} />{t('station.orders.fRecurrence', 'Recurrencia')}</span>}>
+            <select className={FIELD_CLS_LG} value={o.recurrence} onChange={(e) => set({ recurrence: e.target.value as Recurrence })}>
               <option value="daily">{t('station.orders.rec.daily', 'Todos los días')}</option>
               <option value="weekdays">{t('station.orders.rec.weekdays', 'Lunes a viernes')}</option>
               <option value="weekend">{t('station.orders.rec.weekend', 'Fines de semana')}</option>
@@ -222,45 +224,47 @@ function OrderModal({ value, onChange, onClose, onSave, saving, t }: {
               <option value="monthly">{t('station.orders.recSel.monthly', 'Mensual')}</option>
               <option value="once">{t('station.orders.recSel.once', 'Una sola vez')}</option>
             </select>
-          </Field>
+          </LabeledField>
 
           {o.recurrence === 'weekly' && (
-            <Field label={t('station.orders.fDays', 'Días')}>
+            <LabeledField label={t('station.orders.fDays', 'Días')}>
               <div className="flex gap-1.5">
                 {DOW.map((d, i) => (
-                  <button key={i} type="button" onClick={() => toggleDay(i)}
-                    className={`grid h-9 w-9 place-items-center rounded-lg border text-xs font-semibold transition-colors ${o.days?.includes(i) ? 'text-foreground' : 'border-border text-muted-foreground hover:text-foreground'}`}
-                    style={o.days?.includes(i) ? { background: 'var(--cc-accent)', borderColor: 'var(--cc-accent)' } : undefined}>
+                  <button key={i} type="button" onClick={() => toggleDay(i)} aria-pressed={!!o.days?.includes(i)}
+                    className="cg-focus grid h-9 w-9 place-items-center rounded-lg border text-xs font-semibold transition-colors"
+                    style={o.days?.includes(i)
+                      ? { background: 'var(--brand)', borderColor: 'var(--brand)', color: 'var(--brand-ink)' }
+                      : { borderColor: 'var(--hairline)', color: 'var(--ink-soft)' }}>
                     {d}
                   </button>
                 ))}
               </div>
-            </Field>
+            </LabeledField>
           )}
           {o.recurrence === 'monthly' && (
-            <Field label={t('station.orders.fDayOfMonth', 'Día del mes')}>
-              <input type="number" min={1} max={31} className={`${inputCls} w-24`} value={o.dayOfMonth || ''} onChange={(e) => set({ dayOfMonth: Number(e.target.value) || null })} />
-            </Field>
+            <LabeledField label={t('station.orders.fDayOfMonth', 'Día del mes')}>
+              <input type="number" min={1} max={31} className={`${FIELD_CLS_LG} w-24`} value={o.dayOfMonth || ''} onChange={(e) => set({ dayOfMonth: Number(e.target.value) || null })} />
+            </LabeledField>
           )}
           {o.recurrence === 'once' && (
-            <Field label={<span className="flex items-center gap-1"><CalendarDays size={12} />{t('station.orders.fDate', 'Fecha')}</span>}>
-              <input type="date" className={inputCls} value={o.date || ''} onChange={(e) => set({ date: e.target.value })} />
-            </Field>
+            <LabeledField label={<span className="flex items-center gap-1"><CalendarDays size={12} />{t('station.orders.fDate', 'Fecha')}</span>}>
+              <input type="date" className={FIELD_CLS_LG} value={o.date || ''} onChange={(e) => set({ date: e.target.value })} />
+            </LabeledField>
           )}
 
           {/* Notifications */}
-          <div className="rounded-lg border border-border bg-white/[0.02] p-3">
+          <div className="glass-sunken p-3">
             <label className="flex items-center justify-between">
-              <span className="flex items-center gap-1.5 text-sm font-medium text-foreground"><Bell size={14} className="text-[color:var(--cc-accent)]" />{t('station.orders.fNotify', 'Notificar a los vigilantes por push')}</span>
-              <button type="button" onClick={() => set({ notifyEnabled: !o.notifyEnabled })}
-                className={`relative h-5 w-9 rounded-full transition-colors ${o.notifyEnabled ? '' : 'bg-white/10'}`} style={o.notifyEnabled ? { background: 'var(--cc-accent)' } : undefined}>
-                <span className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-all ${o.notifyEnabled ? 'left-[18px]' : 'left-0.5'}`} />
+              <span className="flex items-center gap-1.5 text-sm font-medium"><Bell size={14} style={{ color: 'var(--brand-text)' }} />{t('station.orders.fNotify', 'Avisar a los vigilantes en su teléfono')}</span>
+              <button type="button" aria-pressed={o.notifyEnabled} onClick={() => set({ notifyEnabled: !o.notifyEnabled })}
+                className="cg-focus relative h-5 w-9 rounded-full transition-colors" style={{ background: o.notifyEnabled ? 'var(--brand)' : 'var(--glass-sunken)' }}>
+                <span className={`absolute top-0.5 h-4 w-4 rounded-full transition-all ${o.notifyEnabled ? 'left-[18px]' : 'left-0.5'}`} style={{ background: o.notifyEnabled ? 'var(--brand-ink)' : 'var(--ink-faint)' }} />
               </button>
             </label>
             {o.notifyEnabled && (
-              <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="mt-2 flex items-center gap-2 text-sm" style={{ color: 'var(--ink-soft)' }}>
                 <span>{t('station.orders.fNotifyBefore', 'Avisar')}</span>
-                <input type="number" min={0} max={120} className={`${inputCls} w-20`} value={o.notifyMinutesBefore} onChange={(e) => set({ notifyMinutesBefore: Number(e.target.value) || 0 })} />
+                <input type="number" min={0} max={120} className={`${FIELD_CLS_LG} w-20`} value={o.notifyMinutesBefore} onChange={(e) => set({ notifyMinutesBefore: Number(e.target.value) || 0 })} />
                 <span>{t('station.orders.fNotifyMin', 'minutos antes de la hora')}</span>
               </div>
             )}
@@ -269,20 +273,11 @@ function OrderModal({ value, onChange, onClose, onSave, saving, t }: {
 
         <div className="mt-5 flex justify-end gap-2">
           <button onClick={onClose} className="rounded-lg border border-border px-4 py-2 text-sm text-muted-foreground hover:text-foreground">{t('common.cancel', 'Cancelar')}</button>
-          <button onClick={onSave} disabled={saving} className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold text-foreground disabled:opacity-50" style={{ background: 'var(--cc-accent)' }}>
+          <button onClick={onSave} disabled={saving} className="cg-btn-brand cg-focus flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold disabled:opacity-50">
             {saving ? <Loader2 size={15} className="animate-spin" /> : null} {t('common.save', 'Guardar')}
           </button>
         </div>
       </div>
-    </div>
-  );
-}
-
-function Field({ label, children }: { label: React.ReactNode; children: React.ReactNode }) {
-  return (
-    <div>
-      <label className="mb-1 block text-xs font-medium text-muted-foreground">{label}</label>
-      {children}
     </div>
   );
 }
@@ -324,11 +319,18 @@ function ActivityLog({ stationId, t }: { stationId: string; t: (key: string, def
 
   return (
     <div className="space-y-3">
+      {/* `glass-flat` y no `glass`: el registro de actividad se repite por fila y
+          un `backdrop-filter` por fila tumba el desplazamiento. */}
       {rows.map((c) => (
-        <div key={c.id} className="glass p-4">
+        <div key={c.id} className="glass-flat p-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <span className="grid h-8 w-8 place-items-center rounded-lg bg-online-soft text-online"><CheckCircle2 size={16} /></span>
+              <span
+                className="grid h-8 w-8 place-items-center rounded-lg"
+                style={{ background: 'color-mix(in oklab, var(--ok) 14%, transparent)', color: 'var(--ok-text)' }}
+              >
+                <CheckCircle2 size={16} />
+              </span>
               <div>
                 <p className="text-sm font-semibold text-foreground">{c.order?.title || t('station.orders.order', 'Consigna')}</p>
                 <p className="flex items-center gap-1 text-xs text-muted-foreground"><User size={11} />{c.guardName || '—'} · {new Date(c.completedAt).toLocaleString('es-EC', { dateStyle: 'short', timeStyle: 'short' })}</p>
@@ -345,7 +347,7 @@ function ActivityLog({ stationId, t }: { stationId: string; t: (key: string, def
                 </a>
               ))}
               {c.videoDownloadUrl && (
-                <a href={fileUrl(c.videoDownloadUrl)!} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs text-foreground hover:text-[color:var(--cc-accent)]">
+                <a href={fileUrl(c.videoDownloadUrl)!} target="_blank" rel="noreferrer" className="cg-btn-glass cg-focus flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs">
                   <Video size={14} /> {t('station.orders.viewVideo', 'Ver video')}
                 </a>
               )}

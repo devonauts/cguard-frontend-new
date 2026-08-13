@@ -30,7 +30,8 @@ import {
   PanelRightOpen,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { StatusBadge } from "@/components/kit";
+import { StatusBadge, Segmented, IconTile, EmptyState } from "@/components/kit";
+import { MeterBar } from "@/components/charts";
 import { ApiService } from "@/services/api/apiService";
 import { toast } from "sonner";
 import { confirmDialog } from "@/components/ui/confirmDialog";
@@ -214,25 +215,81 @@ type ViewMode = 'month' | 'week' | 'day';
 
 const VIEW_KEY = 'programador.horario.view';
 
-const POSITION_COLORS: Record<string, { bg: string; border: string; text: string; icon: LucideIcon }> = {
-  fijo: { bg: 'bg-amber-500/10', border: 'border-amber-500/30', text: 'text-amber-600', icon: Sun },
-  sacafranco: { bg: 'bg-emerald-500/10', border: 'border-emerald-500/30', text: 'text-emerald-500', icon: Shield },
+/* ─── Papeles de color ───────────────────────────────────────────────────────
+   Ni un color escrito a mano. Cada cosa que se pinta declara su PAPEL
+   (`brand` / `ok` / `warn` / `bad` / `info` / `neutral`) y el relleno sale de
+   los tokens, así que el mismo código se lee bien en claro y en oscuro y sigue
+   funcionando cuando el usuario cambia el acento.                              */
+type Tone = 'brand' | 'ok' | 'warn' | 'bad' | 'info' | 'neutral';
+
+const toneFill = (t: Tone) => (t === 'brand' ? 'var(--brand)' : t === 'neutral' ? 'var(--ink-faint)' : `var(--${t})`);
+const toneInk = (t: Tone) => (t === 'brand' ? 'var(--brand-text)' : t === 'neutral' ? 'var(--ink-soft)' : `var(--${t}-text)`);
+
+/** Píldora tenue del papel: fondo mezclado con el lienzo + tinta legible. */
+const tonePill = (t: Tone, fill = 15): React.CSSProperties => ({
+  background: `color-mix(in oklab, ${toneFill(t)} ${fill}%, transparent)`,
+  color: toneInk(t),
+});
+/** Igual, con filo — para lo que tiene que separarse del fondo. */
+const toneCard = (t: Tone, fill = 12, edge = 30): React.CSSProperties => ({
+  ...tonePill(t, fill),
+  border: `1px solid color-mix(in oklab, ${toneFill(t)} ${edge}%, transparent)`,
+});
+
+const POSITION_TONE: Record<string, { tone: Tone; icon: LucideIcon }> = {
+  fijo: { tone: 'warn', icon: Sun },
+  sacafranco: { tone: 'ok', icon: Shield },
 };
 
-const GUARD_COLORS = [
-  '#C8860A', '#3B82F6', '#A855F7', '#10B981', '#EF4444',
-  '#EC4899', '#06B6D4', '#F59E0B', '#8B5CF6', '#14B8A6',
-];
+/* Colores de IDENTIDAD de cada vigilante. No son diez colores elegidos a mano:
+   son diez giros de tono SOBRE el acento del usuario, a la misma luminosidad y
+   croma. El primero es exactamente su color de marca, y si cambia el acento la
+   rueda entera gira con él. Sólo se usan como filo/rail — nunca como tinta de
+   texto pequeño, que es donde ese nivel de luminosidad no da contraste. */
+const GUARD_HUE_STEPS = [0, 150, 60, 210, 105, 255, 30, 180, 300, 135];
+const guardHueColor = (i: number) =>
+  `oklch(0.66 0.15 calc(var(--brand-h) + ${GUARD_HUE_STEPS[i % GUARD_HUE_STEPS.length]}))`;
 
-const OVERRIDE_STYLES: Record<string, { bg: string; text: string }> = {
-  V: { bg: 'bg-purple-500/20', text: 'text-purple-400' },
-  PM: { bg: 'bg-orange-500/20', text: 'text-orange-400' },
-  F: { bg: 'bg-red-500/20', text: 'text-red-400' },
-  '24': { bg: 'bg-amber-500/15', text: 'text-amber-500' },
-  D: { bg: 'bg-sky-500/15', text: 'text-sky-500' },
-  N: { bg: 'bg-indigo-500/15', text: 'text-indigo-400' },
-  L: { bg: 'bg-muted/30', text: 'text-muted-foreground/50' },
+/** Códigos tipados del Horario → papel del sistema. Vacaciones no son «morado»:
+ *  son una ausencia aprobada, y por eso van en verde; una falta va en rojo pase
+ *  lo que pase con el acento. */
+const OVERRIDE_TONE: Record<string, Tone> = {
+  V: 'ok',       // vacaciones aprobadas
+  PM: 'warn',    // permiso
+  F: 'bad',      // falta
+  '24': 'brand', // turno completo — lo más fuerte de la rejilla
+  D: 'brand',    // diurno
+  N: 'info',     // nocturno
+  L: 'neutral',  // libre
 };
+
+/** El nombre de cada código, en un solo sitio. La leyenda, el selector de
+ *  novedades y los rótulos emergentes de la rejilla salen todos de aquí: si un
+ *  código cambia de nombre, cambia en los tres a la vez. */
+const CODE_LABEL: Record<string, string> = {
+  D: 'Diurno', N: 'Nocturno', L: 'Libre',
+  V: 'Vacaciones', PM: 'Permiso', F: 'Falta', '24': '24 horas',
+};
+
+/** Orden de lectura de la leyenda. */
+const CODE_ORDER = ['D', 'N', 'L', 'V', 'PM', 'F', '24'] as const;
+
+/* La celda y la leyenda tienen que salir del MISMO sitio, si no el usuario
+   aprende un color en la leyenda y ve otro en la rejilla. Una sola función
+   decide el relleno de un código; el 24 va más denso porque es turno completo. */
+const codeFill = (code: string) => (code === '24' ? 26 : 18);
+/** Píldora de un código tipado — leyenda, celda de fijo, celda de sacafranco. */
+const codePill = (code: string): React.CSSProperties =>
+  tonePill(OVERRIDE_TONE[code] ?? 'neutral', codeFill(code));
+/** Igual, con filo — el selector de novedades. */
+const codeCard = (code: string): React.CSSProperties =>
+  toneCard(OVERRIDE_TONE[code] ?? 'neutral', codeFill(code), 30);
+
+/* Tintes de columna. Hoy y domingo se pintan en la cabecera congelada Y en el
+   cuerpo; con dos valores sueltos la cabecera salía más densa que su propia
+   columna. Una constante por papel y las dos capas coinciden. */
+const TINT_TODAY = 'color-mix(in oklab, var(--brand) 8%, transparent)';
+const TINT_SUNDAY = 'color-mix(in oklab, var(--bad) 5%, transparent)';
 
 // Keyboard → novedad code (spreadsheet typing).
 const KEY_CODES: Record<string, string> = { d: 'D', n: 'N', l: 'L', v: 'V', f: 'F', p: 'PM', '2': '24' };
@@ -474,13 +531,13 @@ export default function Schedule() {
     let idx = 0;
     assignments.forEach(a => {
       if (a.guardId && !map[a.guardId]) {
-        map[a.guardId] = GUARD_COLORS[idx % GUARD_COLORS.length];
+        map[a.guardId] = guardHueColor(idx);
         idx++;
       }
     });
     shifts.forEach(s => {
       if (s.guardId && !map[s.guardId]) {
-        map[s.guardId] = GUARD_COLORS[idx % GUARD_COLORS.length];
+        map[s.guardId] = guardHueColor(idx);
         idx++;
       }
     });
@@ -723,6 +780,10 @@ export default function Schedule() {
     const r = rowIndexByKey.get(rowKey);
     if (r == null || r < selBounds.r1 || r > selBounds.r2 || c < selBounds.c1 || c > selBounds.c2) return '';
     const isFocus = r === sel.fr && c === sel.fc;
+    // `ring-primary`/`bg-primary` son los tokens PUENTE de shadcn: apuntan a
+    // `--brand`, así que la selección se repinta sola cuando el usuario cambia
+    // el acento. Van como clases y no como estilo en línea porque esta función
+    // devuelve className (la celda ya usa `style` para su propio tinte).
     return isFocus ? ' ring-2 ring-inset ring-primary bg-primary/10' : ' ring-1 ring-inset ring-primary/40 bg-primary/5';
   }, [selBounds, sel, rowIndexByKey]);
 
@@ -1671,12 +1732,27 @@ export default function Schedule() {
     const dateStr = fmtDate(day);
     const isToday = dateStr === todayStr;
     const isSunday = day.getDay() === 0;
+    // La selección se pinta con clases (`cellSelCls`), y un `background` en
+    // línea le ganaría siempre: el tinte de hoy/domingo se cede mientras la
+    // celda está seleccionada, o la selección no se vería en esas columnas.
+    const selCls = cellSelCls(pos.id, dayIdx);
 
     return (
       <div
         key={dayIdx}
         id={`hc-${pos.id}-${dayIdx}`}
-        className={`border-r border-border/10 last:border-r-0 px-0.5 py-0.5 min-h-[36px] flex ${isToday ? 'bg-primary/3' : ''} ${isSunday ? 'bg-red-500/3' : ''}${cellSelCls(pos.id, dayIdx)}`}
+        /* Celda de rejilla: estilos PLANOS, jamás `backdrop-filter`. Este nodo
+           se pinta una vez por puesto y por día — un mes de un turno grande son
+           miles. */
+        className={`flex min-h-[36px] px-0.5 py-0.5${selCls}`}
+        style={{
+          borderRight: '1px solid var(--hairline)',
+          background: selCls
+            ? undefined
+            : isToday
+              ? TINT_TODAY
+              : isSunday ? TINT_SUNDAY : undefined,
+        }}
         onMouseDown={e => { if (e.button === 0) startCellSelect(pos.id, dayIdx, e.shiftKey); }}
         onMouseEnter={() => hoverCellSelect(pos.id, dayIdx)}
         onDragOver={e => e.preventDefault()}
@@ -1689,11 +1765,12 @@ export default function Schedule() {
           // que nadie trabaja, que es de dónde salían las "L" que no cuadraban
           // con nadie. La fase es del vigilante; sin vigilante no hay fase.
           <div
-            className="flex-1 rounded bg-muted/10 border border-dashed border-border/40 flex items-center justify-center cursor-pointer"
+            className="flex flex-1 cursor-pointer items-center justify-center rounded border border-dashed"
+            style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}
             title="Puesto sin vigilante — doble clic para asignar"
             onDoubleClick={() => openAssignForm(station.id, pos.id, dateStr)}
           >
-            <span className="text-[10px] font-bold text-muted-foreground/30">·</span>
+            <span className="text-[10px] font-bold" style={{ color: 'var(--ink-faint)' }}>·</span>
           </div>
         ) : (
           <div className="flex-1 flex flex-col gap-0.5">
@@ -1701,30 +1778,26 @@ export default function Schedule() {
               const guardName = assignment.guard
                 ? `${assignment.guard.firstName || ''} ${assignment.guard.lastName || ''}`.trim()
                 : '?';
-              const color = guardColorMap[assignment.guardId] || '#666';
+              const color = guardColorMap[assignment.guardId] || 'var(--ink-faint)';
               const override = getOverride(assignment.guardId, dateStr);
 
               // If there's an override, show it instead of calculated rotation
               if (override) {
                 const oType = override.type;
-                const s = OVERRIDE_STYLES[oType] || { bg: 'bg-muted/30', text: 'text-foreground' };
                 return (
                   <div
                     key={assignment.id}
-                    className={`flex-1 min-h-[18px] rounded flex items-center justify-center cursor-pointer ${s.bg}`}
-                    style={{ borderLeft: `2px solid ${color}` }}
-                    title={`${guardName} — ${oType}${override.note ? ': ' + override.note : ''} (doble clic para editar)`}
+                    className="flex min-h-[18px] flex-1 cursor-pointer items-center justify-center rounded"
+                    style={{ ...codePill(oType), borderLeft: `2px solid ${color}` }}
+                    title={`${guardName} — ${CODE_LABEL[oType] ?? oType}${override.note ? ': ' + override.note : ''} (doble clic para editar)`}
                     onDoubleClick={() => setOverrideTarget({ guardId: assignment.guardId, guardName, date: dateStr, assignmentId: assignment.id })}
                   >
-                    <span className={`text-[10px] font-bold ${s.text}`}>{oType}</span>
+                    <span className="text-[10px] font-bold">{oType}</span>
                   </div>
                 );
               }
 
               const workStatus = isWorkDay(assignment, day);
-              // is24h drives the cell COLOR (amber vs sky); the D/N letter itself
-              // comes from dnCode (which also handles custom night puestos).
-              const is24h = station.scheduleType === '24h';
 
               if (workStatus === 'rest') {
                 const coverKey = `${station.id}-${dateStr}`;
@@ -1734,36 +1807,35 @@ export default function Schedule() {
                 return (
                   <div
                     key={assignment.id}
-                    className={`flex-1 min-h-[18px] rounded flex items-center justify-center cursor-pointer relative ${sfLabel ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-muted/30 hover:bg-muted/50'}`}
+                    className="relative flex min-h-[18px] flex-1 cursor-pointer items-center justify-center rounded"
+                    style={sfLabel ? toneCard('ok', 12, 22) : { background: 'var(--glass-sunken)' }}
                     title={`${guardName} — Libre${sfTooltip ? ` · Cubre: ${sfTooltip}` : ' (clic derecho: asignar sacafranco)'}`}
                     onDoubleClick={() => setOverrideTarget({ guardId: assignment.guardId, guardName, date: dateStr, assignmentId: assignment.id })}
                   >
                     {sfLabel ? (
-                      <span className="text-[8px] font-bold text-emerald-600">{sfLabel}</span>
+                      <span className="text-[8px] font-bold">{sfLabel}</span>
                     ) : (
-                      <span className="text-[10px] font-bold text-muted-foreground/50">L</span>
+                      <span className="text-[10px] font-bold" style={{ color: 'var(--ink-faint)' }}>L</span>
                     )}
                   </div>
                 );
               }
 
               const code = dnCode(station.scheduleType, pos.startTime, workStatus as 'day' | 'night');
-              const bg = code === 'N'
-                ? 'bg-indigo-500/15'
-                : is24h ? 'bg-amber-500/15' : 'bg-sky-500/15';
-              const textColor = code === 'N'
-                ? 'text-indigo-400'
-                : is24h ? 'text-amber-500' : 'text-sky-500';
+              // El color sale del MISMO mapa que la leyenda; el 24 h se pinta con
+              // su propio código, que ya es el más denso de la rejilla.
+              const is24h = station.scheduleType === '24h';
+              const pillCode = is24h && code !== 'N' ? '24' : code;
 
               return (
                 <div
                   key={assignment.id}
-                  className={`flex-1 min-h-[18px] rounded flex items-center justify-center cursor-pointer hover:opacity-80 ${bg}`}
-                  style={{ borderLeft: `2px solid ${color}` }}
-                  title={`${guardName} — ${code === 'N' ? 'Nocturno' : 'Diurno'} (doble clic para novedad)`}
+                  className="flex min-h-[18px] flex-1 cursor-pointer items-center justify-center rounded hover:opacity-80"
+                  style={{ ...codePill(pillCode), borderLeft: `2px solid ${color}` }}
+                  title={`${guardName} — ${CODE_LABEL[code] ?? code}${is24h ? ' · 24 h' : ''} (doble clic para novedad)`}
                   onDoubleClick={() => setOverrideTarget({ guardId: assignment.guardId, guardName, date: dateStr, assignmentId: assignment.id })}
                 >
-                  <span className={`text-[10px] font-bold ${textColor}`}>{code}</span>
+                  <span className="text-[10px] font-bold">{code}</span>
                 </div>
               );
             })}
@@ -1781,39 +1853,35 @@ export default function Schedule() {
         {/* ─── Compact toolbar ─── */}
         <div className="flex items-center gap-2 flex-wrap pb-2">
           <div className="flex items-center gap-2 mr-1">
-            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-              <CalendarDays size={16} className="text-primary" />
-            </div>
+            <IconTile size="sm"><CalendarDays /></IconTile>
             <div className="leading-tight">
-              <div className="text-sm font-bold text-foreground">Horario</div>
-              <div className="text-[10px] text-muted-foreground hidden sm:block">Programador de rotaciones y coberturas</div>
+              <div className="font-display text-sm font-bold">Horario</div>
+              <div className="hidden text-[10px] sm:block" style={{ color: 'var(--ink-soft)' }}>Rotaciones y coberturas</div>
             </div>
           </div>
 
           <div className="flex items-center gap-1.5">
             <Button variant="outline" size="sm" onClick={() => nav(-1)} title="Anterior (Re Pág)"><ChevronLeft size={16} /></Button>
             <Button variant="outline" size="sm" onClick={goToday}>Hoy</Button>
-            <span className="text-sm font-medium text-foreground min-w-[130px] text-center">{rangeLabel}</span>
+            <span className="min-w-[130px] text-center text-sm font-semibold">{rangeLabel}</span>
             <Button variant="outline" size="sm" onClick={() => nav(1)} title="Siguiente (Av Pág)"><ChevronRight size={16} /></Button>
           </div>
 
-          {/* View switcher: Mes = spreadsheet · Semana/Día = draw-a-block timeline */}
-          <div className="flex items-center rounded-lg border border-border/40 overflow-hidden">
-            {([['month', 'Mes'], ['week', 'Semana'], ['day', 'Día']] as [ViewMode, string][]).map(([v, label]) => (
-              <button
-                key={v}
-                onClick={() => { setView(v); setSel(null); }}
-                className={`px-3 py-1.5 text-xs font-semibold transition-colors ${view === v ? 'bg-primary text-white' : 'text-muted-foreground hover:text-foreground hover:bg-muted/30'}`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
+          {/* Rango: Mes = hoja de cálculo · Semana/Día = línea de tiempo dibujable */}
+          <Segmented<ViewMode>
+            value={view}
+            onChange={v => { setView(v); setSel(null); }}
+            options={[
+              { value: 'month', label: 'Mes' },
+              { value: 'week', label: 'Semana' },
+              { value: 'day', label: 'Día' },
+            ]}
+          />
 
           {coverage && typeof coverage.coveredPct === 'number' && (() => {
             const ok = (coverage.gapCount || 0) === 0;
             return (
-              <StatusBadge tone={ok ? 'green' : 'red'} dot={false}>
+              <StatusBadge tone={ok ? 'ok' : 'bad'} dot={false}>
                 {ok ? <CheckCircle2 size={13} /> : <AlertTriangle size={13} />}
                 Cobertura {coverage.coveredPct}%
                 {(coverage.gapCount || 0) > 0 && <span>· {coverage.gapCount} sin cubrir</span>}
@@ -1821,7 +1889,7 @@ export default function Schedule() {
             );
           })()}
 
-          {refreshing && <Loader2 size={14} className="animate-spin text-muted-foreground" />}
+          {refreshing && <Loader2 size={14} className="animate-spin" style={{ color: 'var(--ink-faint)' }} />}
 
           <div className="flex-1" />
 
@@ -1839,33 +1907,32 @@ export default function Schedule() {
 
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="animate-spin text-primary" size={32} />
+            <Loader2 className="animate-spin" size={32} style={{ color: 'var(--brand-text)' }} />
           </div>
         ) : stations.length === 0 ? (
-          <div className="text-center py-20 text-muted-foreground">
-            <p className="text-lg">No hay estaciones configuradas</p>
-            <p className="text-sm mt-2">Crea una estación desde la sección de Puestos para comenzar.</p>
+          <div className="py-10">
+            <EmptyState
+              icon={<MapPin />}
+              title="Todavía no hay puestos configurados"
+              description="Crea un puesto desde la sección de Puestos y el horario aparecerá aquí."
+            />
           </div>
         ) : (
           <>
             {/* ─── Onboarding CTA: stations exist but unconfigured ─── */}
             {(positions.length === 0 || assignments.length === 0) && (
-              <div className="mb-2 bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/30 rounded-xl px-4 py-2.5 flex flex-col sm:flex-row sm:items-center gap-3">
-                <div className="flex items-start gap-3 flex-1">
-                  <Sparkles size={18} className="text-primary shrink-0 mt-0.5" />
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    <span className="font-bold text-foreground">Tus estaciones aún no tienen horario. </span>
+              <div className="glass glass-brand mb-2 flex flex-col gap-3 px-4 py-2.5 sm:flex-row sm:items-center">
+                <div className="flex flex-1 items-start gap-3">
+                  <Sparkles size={18} className="mt-0.5 shrink-0" style={{ color: 'var(--brand-text)' }} />
+                  <p className="text-xs leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
+                    <span className="font-bold" style={{ color: 'var(--ink)' }}>Tus puestos aún no tienen horario. </span>
                     Genera la asignación automática para crear los puestos, asignar vigilantes por cercanía y escalonar los turnos (sacafrancos incluidos).
                   </p>
                 </div>
-                <button
-                  onClick={runAutoAssign}
-                  disabled={autoAssigning}
-                  className="shrink-0 px-4 py-2 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-primary/90 disabled:opacity-50 transition-all shadow-sm flex items-center justify-center gap-2 whitespace-nowrap"
-                >
+                <Button variant="brand" onClick={runAutoAssign} disabled={autoAssigning} className="shrink-0 whitespace-nowrap">
                   {autoAssigning ? <Loader2 size={16} className="animate-spin" /> : <Zap size={16} />}
-                  {autoAssigning ? 'Asignando...' : 'Generar asignación automática'}
-                </button>
+                  {autoAssigning ? 'Asignando…' : 'Generar asignación automática'}
+                </Button>
               </div>
             )}
 
@@ -1891,7 +1958,7 @@ export default function Schedule() {
                 onScroll={onGridScroll}
                 onMouseDown={e => startPan(e, gridScrollRef.current)}
                 tabIndex={0}
-                className="flex-1 min-w-0 overflow-auto outline-none select-none bg-card border border-border/40 rounded-xl shadow-sm"
+                className="glass flex-1 min-w-0 select-none overflow-auto outline-none"
               >
                 <div className="relative" style={{ minWidth: gridMinWidth }}>
                   {/* Today guide: a full-height vertical line framing today's
@@ -1902,28 +1969,44 @@ export default function Schedule() {
                     if (idx < 0 || idx >= monthDays.length) return null;
                     return (
                       <div className="absolute inset-y-0 pointer-events-none z-[15]" style={{ left: 240 + idx * 44, width: 44 }}>
-                        <div className="absolute inset-y-0 left-0 w-[2.5px] rounded-full bg-primary/80 shadow-[0_0_6px_rgba(200,134,10,0.45)]" />
-                        <div className="absolute inset-y-0 right-0 w-[2.5px] rounded-full bg-primary/35" />
+                        <div className="brand-glow-sm absolute inset-y-0 left-0 w-[2.5px] rounded-full" style={{ background: 'var(--brand)' }} />
+                        <div className="absolute inset-y-0 right-0 w-[2.5px] rounded-full" style={{ background: 'var(--brand)', opacity: 0.4 }} />
                       </div>
                     );
                   })()}
                   {/* Header row (frozen) */}
-                  <div className="grid sticky top-0 z-30 border-b border-border/30" style={{ gridTemplateColumns: gridCols }}>
-                    <div className="px-4 py-2.5 text-xs font-semibold text-muted-foreground uppercase tracking-wide border-r border-border/20 sticky left-0 z-40 bg-card">
-                      Estación / Puesto
+                  {/* Fila de cabecera congelada. Fondo OPACO, sin desenfoque: se
+                      queda fija sobre una rejilla que puede pintar un año entero. */}
+                  <div className="sticky top-0 z-30 grid" style={{ gridTemplateColumns: gridCols, borderBottom: '1px solid var(--hairline)' }}>
+                    <div
+                      className="cg-eyebrow sticky left-0 z-40 px-4 py-2.5"
+                      style={{ background: 'var(--glass-solid)', borderRight: '1px solid var(--hairline)' }}
+                    >
+                      Puesto
                     </div>
                     {monthDays.map((day, i) => {
                       const isToday = fmtDate(day) === todayStr;
                       const isSunday = day.getDay() === 0;
                       return (
-                        <div key={i} className="relative px-0.5 py-1.5 text-center border-r border-border/20 last:border-r-0 bg-card">
-                          {/* Tint as an overlay: the cell itself stays OPAQUE so grid
-                              content never shows through the frozen header. */}
+                        <div
+                          key={i}
+                          className="relative px-0.5 py-1.5 text-center last:border-r-0"
+                          style={{ background: 'var(--glass-solid)', borderRight: '1px solid var(--hairline)' }}
+                        >
+                          {/* El tinte va de capa encima: la celda en sí queda OPACA
+                              para que el contenido de la rejilla nunca se
+                              transparente bajo la cabecera congelada. */}
                           {(isToday || isSunday) && (
-                            <div className={`absolute inset-0 pointer-events-none ${isToday ? 'bg-primary/10' : 'bg-red-500/5'}`} />
+                            <div
+                              className="pointer-events-none absolute inset-0"
+                              style={{ background: isToday ? TINT_TODAY : TINT_SUNDAY }}
+                            />
                           )}
-                          <div className="relative text-[9px] font-medium text-muted-foreground uppercase">{DAYS_ES[day.getDay()]}</div>
-                          <div className={`relative text-xs font-semibold mt-0.5 ${isToday ? 'text-primary' : 'text-foreground'}`}>
+                          <div className="cg-eyebrow relative">{DAYS_ES[day.getDay()]}</div>
+                          <div
+                            className="relative mt-0.5 text-xs font-semibold tabular-nums"
+                            style={{ color: isToday ? 'var(--brand-text)' : 'var(--ink)' }}
+                          >
                             {day.getDate()}
                           </div>
                         </div>
@@ -1938,24 +2021,28 @@ export default function Schedule() {
                     const stationAlert = stationAlertByStationId.get(station.id);
 
                     return (
-                      <div key={station.id} className="border-b border-border/20 last:border-b-0">
+                      <div key={station.id} className="last:border-b-0" style={{ borderBottom: '1px solid var(--hairline)' }}>
                         {/* Station header */}
-                        <div className="grid bg-muted/10" style={{ gridTemplateColumns: gridCols }}>
-                          <div className="px-4 py-2 flex items-center gap-2 border-r border-border/20 sticky left-0 z-20 bg-card">
+                        <div className="grid" style={{ gridTemplateColumns: gridCols, background: 'var(--glass-sunken)' }}>
+                          <div
+                            className="sticky left-0 z-20 flex items-center gap-2 px-4 py-2"
+                            style={{ background: 'var(--glass-solid)', borderRight: '1px solid var(--hairline)' }}
+                          >
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-1.5 min-w-0">
                                 {/* Nominativo: several puestos share a name, so
                                     the name alone identifies nothing. */}
                                 {station.nickname && (
-                                  <span className="shrink-0 rounded bg-muted px-1.5 py-0.5 font-mono text-[10px] font-bold text-muted-foreground">
+                                  <span className="glass-sunken shrink-0 px-1.5 py-0.5 font-mono text-[10px] font-bold" style={{ color: 'var(--ink-soft)' }}>
                                     {station.nickname}
                                   </span>
                                 )}
-                                <div className="text-sm font-semibold text-foreground truncate">{station.stationName}</div>
+                                <div className="truncate text-sm font-semibold">{station.stationName}</div>
                               </div>
                               <button
                                 onClick={() => configureStation(station)}
-                                className="text-[11px] text-muted-foreground hover:text-primary transition-colors"
+                                className="cg-focus text-[11px] transition-colors hover:underline"
+                                style={{ color: 'var(--ink-soft)' }}
                                 title="Cambiar tipo de horario / rotación"
                               >
                                 {station.scheduleType ? station.scheduleType.replace('-', ' ').toUpperCase() : 'Sin configurar'}
@@ -1963,13 +2050,13 @@ export default function Schedule() {
                               {stationAlert && (
                                 <div className="mt-1 flex items-center gap-1 flex-wrap">
                                   {stationAlert.missingFijoCount > 0 && (
-                                    <span className="inline-flex items-center gap-1 text-[9px] px-1.5 py-0.5 rounded bg-red-500/10 border border-red-500/30 text-red-600 font-medium">
+                                    <span className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[9px] font-semibold tabular-nums" style={toneCard('bad')}>
                                       <AlertTriangle size={9} />
                                       {stationAlert.missingFijoCount} fijo(s) faltan
                                     </span>
                                   )}
                                   {stationAlert.sfUncoveredDays > 0 && (
-                                    <span className="inline-flex items-center gap-1 text-[9px] px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-700 font-medium">
+                                    <span className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[9px] font-semibold tabular-nums" style={toneCard('warn')}>
                                       <AlertTriangle size={9} />
                                       {stationAlert.sfUncoveredDays} L sin SF
                                     </span>
@@ -1986,14 +2073,14 @@ export default function Schedule() {
                               <div className="flex items-center gap-1">
                                 <button
                                   onClick={() => configureStation(station)}
-                                  className="p-1 rounded hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors"
-                                  title="Reconfigurar estación (tipo de horario y rotación)"
+                                  className="cg-btn-ghost cg-focus rounded p-1 transition-colors"
+                                  title="Reconfigurar el puesto (tipo de horario y rotación)"
                                 >
                                   <Clock size={14} />
                                 </button>
                                 <button
                                   onClick={() => addPosition(station.id)}
-                                  className="p-1 rounded hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors"
+                                  className="cg-btn-ghost cg-focus rounded p-1 transition-colors"
                                   title="Agregar posición sacafranco"
                                 >
                                   <Plus size={14} />
@@ -2002,30 +2089,31 @@ export default function Schedule() {
                             )}
                           </div>
                           {monthDays.map((_, i) => (
-                            <div key={i} className="border-r border-border/10 last:border-r-0" />
+                            <div key={i} className="last:border-r-0" style={{ borderRight: '1px solid var(--hairline)' }} />
                           ))}
                         </div>
 
                         {/* Position rows */}
                         {stationPositions.map(pos => {
                           const posAssignments = getAssignmentsForPosition(pos.id);
-                          const colors = POSITION_COLORS[pos.type] || POSITION_COLORS.fijo;
-                          const Icon = colors.icon;
+                          const meta = POSITION_TONE[pos.type] || POSITION_TONE.fijo;
+                          const Icon = meta.icon;
 
                           return (
-                            <div key={pos.id} className="grid border-t border-border/10" style={{ gridTemplateColumns: gridCols }}>
-                              {/* Position label */}
+                            <div key={pos.id} className="grid" style={{ gridTemplateColumns: gridCols, borderTop: '1px solid var(--hairline)' }}>
+                              {/* Nombre del puesto */}
                               <div
-                                className="px-4 py-2 flex items-center gap-2 border-r border-border/20 sticky left-0 z-20 bg-card"
+                                className="sticky left-0 z-20 flex items-center gap-2 px-4 py-2"
+                                style={{ background: 'var(--glass-solid)', borderRight: '1px solid var(--hairline)' }}
                                 onDragOver={e => e.preventDefault()}
                                 onDrop={e => handleDrop(e, station.id, pos.id)}
                               >
-                                <div className={`w-6 h-6 rounded flex items-center justify-center ${colors.bg}`}>
-                                  <Icon size={12} className={colors.text} />
+                                <div className="flex h-6 w-6 items-center justify-center rounded" style={tonePill(meta.tone, 14)}>
+                                  <Icon size={12} />
                                 </div>
-                                <div className="flex-1 min-w-0">
-                                  <div className="text-xs font-medium text-foreground truncate">{pos.name}</div>
-                                  <div className="text-[10px] text-muted-foreground">
+                                <div className="min-w-0 flex-1">
+                                  <div className="truncate text-xs font-semibold">{pos.name}</div>
+                                  <div className="text-[10px] tabular-nums" style={{ color: 'var(--ink-soft)' }}>
                                     {(() => {
                                       // Real hours come from the POSITION (custom blocks carry
                                       // their own window; start==end wraps the full day).
@@ -2044,15 +2132,22 @@ export default function Schedule() {
                                   <div className="flex flex-col gap-0.5">
                                     {posAssignments.map(a => {
                                       const name = a.guard ? `${a.guard.firstName || ''} ${a.guard.lastName || ''}`.trim().split(' ')[0] : '?';
-                                      const color = guardColorMap[a.guardId] || '#666';
+                                      const color = guardColorMap[a.guardId] || 'var(--ink-faint)';
                                       return (
                                         <button
                                           key={a.id}
                                           draggable
                                           onDragStart={e => onGuardDragStart(e, a.guardId, a)}
                                           onClick={() => removeAssignment(a.id)}
-                                          className="text-[9px] font-medium px-1.5 py-0.5 rounded cursor-grab active:cursor-grabbing"
-                                          style={{ backgroundColor: `${color}20`, color }}
+                                          /* Ficha arrastrable: el color de identidad
+                                             va en el filo, no en la tinta — a ese
+                                             tamaño el texto necesita `--ink`. */
+                                          className="cg-focus cursor-grab rounded px-1.5 py-0.5 text-[9px] font-semibold active:cursor-grabbing"
+                                          style={{
+                                            background: `color-mix(in oklab, ${color} 16%, transparent)`,
+                                            borderLeft: `2px solid ${color}`,
+                                            color: 'var(--ink)',
+                                          }}
                                           title={`${a.guard?.firstName} ${a.guard?.lastName} — Arrastra para mover · Clic para remover`}
                                         >
                                           {name} ×
@@ -2065,14 +2160,16 @@ export default function Schedule() {
                                   <div className="flex items-center gap-1">
                                     <button
                                       onClick={() => openAssignForm(station.id, pos.id)}
-                                      className="p-1 rounded-md bg-primary/10 hover:bg-primary/20 text-primary transition-colors"
+                                      className="cg-focus rounded-md p-1 transition-colors"
+                                      style={tonePill('brand', 14)}
                                       title="Asignar vigilante"
                                     >
                                       <Plus size={12} />
                                     </button>
                                     <button
                                       onClick={() => deletePosition(station.id, pos.id)}
-                                      className="p-1 rounded-md hover:bg-red-500/10 text-muted-foreground/50 hover:text-red-500 transition-colors"
+                                      className="cg-focus rounded-md p-1 transition-colors hover:bg-[color-mix(in_oklab,var(--bad)_12%,transparent)]"
+                                      style={{ color: 'var(--ink-faint)' }}
                                       title="Eliminar posición"
                                     >
                                       <X size={11} />
@@ -2089,9 +2186,9 @@ export default function Schedule() {
 
                         {/* No positions configured */}
                         {!hasPositions && (
-                          <div className="grid border-t border-border/10" style={{ gridTemplateColumns: gridCols }}>
+                          <div className="grid" style={{ gridTemplateColumns: gridCols, borderTop: '1px solid var(--hairline)' }}>
                             <div className="col-span-full px-4 py-4 text-center">
-                              <p className="text-xs text-muted-foreground mb-2">Esta estación no tiene posiciones configuradas</p>
+                              <p className="mb-2 text-xs" style={{ color: 'var(--ink-soft)' }}>Este puesto no tiene posiciones configuradas</p>
                               <Button size="sm" variant="outline" className="text-xs" onClick={() => configureStation(station)}>
                                 Configurar posiciones
                               </Button>
@@ -2111,17 +2208,36 @@ export default function Schedule() {
                       // the scroll viewport (sticky bottom-0) so the fijo stations
                       // scroll BEHIND it — you can reach a puesto high up the grid
                       // and still drag/assign an SF from here without it scrolling away.
-                      <div className={`border-t-2 border-emerald-500/30${sfSectionOpen ? ' sticky bottom-0 z-30 bg-card shadow-[0_-8px_20px_-6px_rgba(0,0,0,0.30)]' : ''}`}>
-                        {/* SF Header - clickable to expand/collapse */}
-                        <div className="grid cursor-pointer bg-card" style={{ gridTemplateColumns: gridCols }} onClick={() => setSfSectionOpen(!sfSectionOpen)}>
-                          <div className="px-4 py-2.5 flex items-center gap-2 border-r border-border/20 sticky left-0 z-20 bg-card">
-                            <Shield size={14} className="text-emerald-500" />
+                      <div
+                        className={sfSectionOpen ? 'sticky bottom-0 z-30' : undefined}
+                        style={{
+                          borderTop: '2px solid color-mix(in oklab, var(--ok) 30%, transparent)',
+                          ...(sfSectionOpen ? { background: 'var(--glass-solid)', boxShadow: 'var(--lift-3)' } : {}),
+                        }}
+                      >
+                        {/* Cabecera de sacafrancos — clic para plegar/desplegar */}
+                        <div
+                          className="grid cursor-pointer"
+                          style={{ gridTemplateColumns: gridCols, background: 'var(--glass-solid)' }}
+                          onClick={() => setSfSectionOpen(!sfSectionOpen)}
+                        >
+                          <div
+                            className="sticky left-0 z-20 flex items-center gap-2 px-4 py-2.5"
+                            style={{ background: 'var(--glass-solid)', borderRight: '1px solid var(--hairline)' }}
+                          >
+                            <Shield size={14} style={{ color: 'var(--ok-text)' }} />
                             <div className="flex-1">
-                              <div className="text-sm font-semibold text-emerald-600">Sacafrancos</div>
-                              <div className="text-[10px] text-muted-foreground">{sfPositions.length} posiciones {sfSectionOpen ? '▾' : '▸ (clic para expandir)'}</div>
+                              <div className="text-sm font-semibold" style={{ color: 'var(--ok-text)' }}>Sacafrancos</div>
+                              <div className="text-[10px]" style={{ color: 'var(--ink-soft)' }}>{sfPositions.length} posiciones {sfSectionOpen ? '▾' : '▸ (clic para expandir)'}</div>
                             </div>
                           </div>
-                          {monthDays.map((_, i) => <div key={i} className="border-r border-border/10 last:border-r-0 bg-emerald-500/5" />)}
+                          {monthDays.map((_, i) => (
+                            <div
+                              key={i}
+                              className="last:border-r-0"
+                              style={{ borderRight: '1px solid var(--hairline)', background: 'color-mix(in oklab, var(--ok) 5%, transparent)' }}
+                            />
+                          ))}
                         </div>
 
                         {/* SF Position rows — only if expanded */}
@@ -2129,27 +2245,29 @@ export default function Schedule() {
                           const posAssignments = getAssignmentsForPosition(pos.id);
                           const assigned = posAssignments.length > 0;
                           return (
-                            <div key={pos.id} className="grid border-t border-border/10" style={{ gridTemplateColumns: gridCols }}>
-                              {/* SF label */}
+                            <div key={pos.id} className="grid" style={{ gridTemplateColumns: gridCols, borderTop: '1px solid var(--hairline)' }}>
+                              {/* Nombre del sacafranco */}
                               <div
-                                className="px-4 py-2 flex items-center gap-2 border-r border-border/20 sticky left-0 z-20 bg-card"
+                                className="sticky left-0 z-20 flex items-center gap-2 px-4 py-2"
+                                style={{ background: 'var(--glass-solid)', borderRight: '1px solid var(--hairline)' }}
                                 onDragOver={e => e.preventDefault()}
                                 onDrop={e => handleDrop(e, pos.stationId, pos.id)}
                               >
-                                <div className="w-6 h-6 rounded flex items-center justify-center bg-emerald-500/10">
-                                  <Shield size={12} className="text-emerald-500" />
+                                <div className="flex h-6 w-6 items-center justify-center rounded" style={tonePill('ok', 14)}>
+                                  <Shield size={12} />
                                 </div>
-                                <div className="flex-1 min-w-0">
-                                  <div className="text-xs font-medium text-foreground truncate">{pos.name}</div>
-                                  <div className="text-[10px] text-muted-foreground">{pos.startTime} – {pos.endTime}</div>
+                                <div className="min-w-0 flex-1">
+                                  <div className="truncate text-xs font-semibold">{pos.name}</div>
+                                  <div className="text-[10px] tabular-nums" style={{ color: 'var(--ink-soft)' }}>{pos.startTime} – {pos.endTime}</div>
                                 </div>
                                 {assigned && posAssignments[0]?.guard && (
                                   <button
                                     draggable
                                     onDragStart={e => onGuardDragStart(e, posAssignments[0].guardId, posAssignments[0])}
                                     onClick={() => removeAssignment(posAssignments[0].id)}
-                                    className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 cursor-grab active:cursor-grabbing"
-                                    title="Arrastra para mover · Clic para remover"
+                                    className="cg-focus cursor-grab rounded px-1.5 py-0.5 text-[9px] font-semibold active:cursor-grabbing"
+                                    style={tonePill('ok', 14)}
+                                    title="Arrastra para mover · Clic para quitar"
                                   >
                                     {posAssignments[0].guard.firstName?.split(' ')[0]} ×
                                   </button>
@@ -2157,7 +2275,8 @@ export default function Schedule() {
                                 {!assigned && (
                                   <button
                                     onClick={() => openAssignForm(pos.stationId, pos.id)}
-                                    className="p-1 rounded-md bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 transition-colors"
+                                    className="cg-focus rounded-md p-1 transition-colors"
+                                    style={tonePill('ok', 14)}
                                     title="Asignar vigilante sacafranco"
                                   >
                                     <Plus size={12} />
@@ -2172,9 +2291,23 @@ export default function Schedule() {
                                 const dateStr = fmtDate(day);
                                 const isToday = dateStr === todayStr;
                                 const isSunday = day.getDay() === 0;
-                                const cellBase = `border-r border-border/10 last:border-r-0 px-0.5 py-0.5 min-h-[36px] flex ${isToday ? 'bg-primary/3' : ''} ${isSunday ? 'bg-red-500/3' : ''}${cellSelCls(pos.id, dayIdx)}`;
+                                // Celda de rejilla: plana, sin desenfoque — ver la
+                                // nota en renderFijoCell. El tinte en línea se
+                                // cede mientras la celda está seleccionada, o la
+                                // selección (que va por clase) no se vería.
+                                const selCls = cellSelCls(pos.id, dayIdx);
+                                const cellBase = `flex min-h-[36px] px-0.5 py-0.5${selCls}`;
+                                const cellStyle: React.CSSProperties = {
+                                  borderRight: '1px solid var(--hairline)',
+                                  background: selCls
+                                    ? undefined
+                                    : isToday
+                                      ? TINT_TODAY
+                                      : isSunday ? TINT_SUNDAY : undefined,
+                                };
                                 const cellProps = {
                                   id: `hc-${pos.id}-${dayIdx}`,
+                                  style: cellStyle,
                                   onMouseDown: (e: React.MouseEvent) => { if (e.button === 0) startCellSelect(pos.id, dayIdx, e.shiftKey); },
                                   onMouseEnter: () => hoverCellSelect(pos.id, dayIdx),
                                   onDragOver: (e: React.DragEvent) => e.preventDefault(),
@@ -2186,16 +2319,16 @@ export default function Schedule() {
                                 const sfGuard = assigned ? posAssignments[0] : null;
                                 const override = sfGuard ? getOverride(sfGuard.guardId, dateStr) : undefined;
                                 if (override && sfGuard) {
-                                  const s = OVERRIDE_STYLES[override.type] || { bg: 'bg-muted/30', text: 'text-foreground' };
                                   const gName = sfGuard.guard ? `${sfGuard.guard.firstName || ''} ${sfGuard.guard.lastName || ''}`.trim() : '?';
                                   return (
                                     <div key={dayIdx} {...cellProps} className={cellBase}>
                                       <div
-                                        className={`flex-1 rounded flex items-center justify-center cursor-pointer ${s.bg}`}
-                                        title={`${gName} — ${override.type}${override.note ? ': ' + override.note : ''} (doble clic para editar)`}
+                                        className="flex flex-1 cursor-pointer items-center justify-center rounded"
+                                        style={codePill(override.type)}
+                                        title={`${gName} — ${CODE_LABEL[override.type] ?? override.type}${override.note ? ': ' + override.note : ''} (doble clic para editar)`}
                                         onDoubleClick={() => setOverrideTarget({ guardId: sfGuard.guardId, guardName: gName, date: dateStr, assignmentId: sfGuard.id })}
                                       >
-                                        <span className={`text-[10px] font-bold ${s.text}`}>{override.type}</span>
+                                        <span className="text-[10px] font-bold">{override.type}</span>
                                       </div>
                                     </div>
                                   );
@@ -2221,11 +2354,14 @@ export default function Schedule() {
                                           e.dataTransfer.setData('sfCoverGuardId', sfGuard.guardId);
                                           e.dataTransfer.effectAllowed = 'copy';
                                         } : undefined}
-                                        className={`flex-1 rounded flex items-center justify-center ${assigned ? 'bg-muted/30 cursor-grab active:cursor-grabbing hover:bg-emerald-500/10' : 'bg-muted/20 border border-dashed border-border/30 cursor-pointer'}`}
-                                        title={assigned ? 'Libre — arrastra este día sobre un L de un puesto para cubrirlo' : 'Sin vigilante — doble clic para asignar sacafranco'}
+                                        className={`flex flex-1 items-center justify-center rounded ${assigned ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer border border-dashed'}`}
+                                        style={assigned
+                                          ? { background: 'var(--glass-sunken)' }
+                                          : { background: 'var(--glass-sunken)', borderColor: 'var(--hairline)' }}
+                                        title={assigned ? 'Libre — arrastra este día sobre una L de un puesto para cubrirlo' : 'Sin vigilante — doble clic para asignar sacafranco'}
                                         onDoubleClick={openSfDetail}
                                       >
-                                        <span className="text-[10px] font-bold text-muted-foreground/50">L</span>
+                                        <span className="text-[10px] font-bold" style={{ color: 'var(--ink-faint)' }}>L</span>
                                       </div>
                                     </div>
                                   );
@@ -2236,17 +2372,18 @@ export default function Schedule() {
                                 const isNightCov = startMin >= 18 * 60 || startMin < 6 * 60;
                                 const code = isNightCov ? 'N' : 'D';
                                 const covStName = stationsById.get(covShift.stationId)?.stationName || '';
-                                const bg = isNightCov ? 'bg-indigo-500/15' : 'bg-emerald-500/15';
-                                const textColor = isNightCov ? 'text-indigo-400' : 'text-emerald-500';
                                 return (
                                   <div key={dayIdx} {...cellProps} className={cellBase}>
+                                    {/* Mismo mapa que la leyenda: una D es una D
+                                        pinte quien la pinte, fijo o sacafranco. */}
                                     <div
-                                      className={`flex-1 rounded flex flex-col items-center justify-center cursor-pointer ${bg}`}
-                                      title={`Cubre: ${covStName} — doble clic para quitar la cobertura`}
+                                      className="flex flex-1 cursor-pointer flex-col items-center justify-center rounded"
+                                      style={codePill(code)}
+                                      title={`Cubre: ${covStName} — ${CODE_LABEL[code]} · doble clic para quitar la cobertura`}
                                       onDoubleClick={() => removeSfCoverage(covShift)}
                                     >
-                                      <span className={`text-[10px] font-bold ${textColor}`}>{code}</span>
-                                      {covStName && <span className="text-[7px] text-muted-foreground leading-none">{covStName.slice(0, 3)}</span>}
+                                      <span className="text-[10px] font-bold">{code}</span>
+                                      {covStName && <span className="text-[8px] leading-none opacity-80">{covStName.slice(0, 3)}</span>}
                                     </div>
                                   </div>
                                 );
@@ -2265,22 +2402,24 @@ export default function Schedule() {
               {panelOpen && (
                 <aside className="w-[280px] shrink-0 overflow-y-auto space-y-3 pr-0.5">
                   {/* Vigilantes disponibles — drag them onto the sheet */}
-                  <div className="bg-card border border-border/40 rounded-xl p-3">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Users size={14} className="text-muted-foreground" />
-                      <h3 className="text-xs font-semibold text-foreground">Vigilantes disponibles</h3>
-                      <span className="text-[10px] text-muted-foreground">({unassignedGuards.length})</span>
+                  <div className="glass p-3">
+                    <div className="mb-2 flex items-center gap-2">
+                      <Users size={14} style={{ color: 'var(--brand-text)' }} />
+                      <h3 className="cg-eyebrow">Vigilantes disponibles</h3>
+                      <span className="text-[10px] tabular-nums" style={{ color: 'var(--ink-faint)' }}>({unassignedGuards.length})</span>
                     </div>
                     {unassignedGuards.length === 0 ? (
-                      <p className="text-[11px] text-muted-foreground">Todos los vigilantes están asignados.</p>
+                      <p className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>Todos los vigilantes están asignados.</p>
                     ) : (
                       <>
-                        <p className="text-[10px] text-muted-foreground mb-2">Arrastra un vigilante a un puesto del horario.</p>
-                        <div className="flex flex-wrap gap-1.5 max-h-[180px] overflow-y-auto">
+                        <p className="mb-2 text-[10px]" style={{ color: 'var(--ink-soft)' }}>Arrastra un vigilante a un puesto del horario.</p>
+                        <div className="flex max-h-[180px] flex-wrap gap-1.5 overflow-y-auto">
                           {unassignedGuards.map(g => (
+                            /* Ficha arrastrable: cristal PLANO (se repiten) y
+                               brillo del acento al agarrarla. */
                             <div
                               key={g.id}
-                              className="px-2.5 py-1 rounded-lg bg-muted/30 border border-border/30 text-[11px] font-medium text-foreground cursor-grab hover:border-primary/40 hover:bg-primary/5 transition-all active:cursor-grabbing"
+                              className="glass-flat cursor-grab rounded-lg px-2.5 py-1 text-[11px] font-medium transition-all hover:border-[var(--brand-line)] active:cursor-grabbing active:shadow-[0_0_18px_-6px_var(--brand-glow)]"
                               draggable
                               onDragStart={(e) => onGuardDragStart(e, g.id)}
                             >
@@ -2293,10 +2432,10 @@ export default function Schedule() {
                   </div>
 
                   {/* AI / herramientas */}
-                  <div className="bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/30 rounded-xl p-3">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Sparkles size={14} className="text-primary" />
-                      <h3 className="text-xs font-bold text-foreground">Herramientas</h3>
+                  <div className="glass glass-brand p-3">
+                    <div className="mb-2 flex items-center gap-2">
+                      <Sparkles size={14} style={{ color: 'var(--brand-text)' }} />
+                      <h3 className="cg-eyebrow">Herramientas</h3>
                     </div>
                     {/* RETIRADOS (2026-08-05, a pedido): "Generar borrador de
                         horario" y "Auto-asignar puestos vacíos".
@@ -2339,84 +2478,84 @@ export default function Schedule() {
                     <button
                       onClick={runAiRecommend}
                       disabled={aiLoading}
-                      className="w-full mt-2 px-3 py-2 bg-purple-600 text-white rounded-xl text-xs font-semibold hover:bg-purple-700 disabled:opacity-50 transition-all shadow-sm flex items-center justify-center gap-2"
+                      className="cg-btn-brand cg-focus mt-2 flex w-full items-center justify-center gap-2 rounded-full px-3 py-2 text-xs font-semibold transition-all disabled:opacity-50"
                     >
                       {aiLoading ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
-                      {aiLoading ? 'Analizando...' : 'Recomendación IA'}
+                      {aiLoading ? 'Analizando…' : 'Recomendación IA'}
                     </button>
                     {aiRecommendation && (
-                      <div className="mt-2 p-3 bg-purple-500/5 border border-purple-500/20 rounded-lg max-h-[240px] overflow-y-auto">
-                        <div className="text-[10px] font-semibold text-purple-600 mb-1"><Bot className="inline h-3 w-3 mr-1" />Recomendación IA:</div>
-                        <div className="text-[10px] text-foreground/80 whitespace-pre-wrap leading-relaxed">{aiRecommendation}</div>
+                      <div className="glass-sunken mt-2 max-h-[240px] overflow-y-auto p-3">
+                        <div className="mb-1 text-[10px] font-semibold" style={{ color: 'var(--brand-text)' }}><Bot className="mr-1 inline h-3 w-3" />Recomendación:</div>
+                        <div className="whitespace-pre-wrap text-[10px] leading-relaxed" style={{ color: 'var(--ink-soft)' }}>{aiRecommendation}</div>
                       </div>
                     )}
                   </div>
 
                   {/* Personal necesario */}
-                  <div className="bg-card border border-border/40 rounded-xl p-3 space-y-2">
-                    <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Personal Necesario</h3>
+                  <div className="glass space-y-2 p-3">
+                    <h3 className="cg-eyebrow">Personal necesario</h3>
                     {staffing ? (
                       <>
                         <div className="grid grid-cols-3 gap-2">
-                          <div className="bg-amber-500/10 rounded-lg p-2 text-center">
-                            <div className="text-lg font-bold text-amber-600">{staffing.fijosNeeded || 0}</div>
-                            <div className="text-[9px] text-muted-foreground">Fijos</div>
+                          <div className="rounded-lg p-2 text-center" style={tonePill('warn', 12)}>
+                            <div className="text-lg font-bold tabular-nums">{staffing.fijosNeeded || 0}</div>
+                            <div className="text-[9px]" style={{ color: 'var(--ink-soft)' }}>Fijos</div>
                           </div>
-                          <div className="bg-emerald-500/10 rounded-lg p-2 text-center">
-                            <div className="text-lg font-bold text-emerald-500">{staffing.sacafrancosNeeded || 0}</div>
-                            <div className="text-[9px] text-muted-foreground">Sacafrancos</div>
+                          <div className="rounded-lg p-2 text-center" style={tonePill('ok', 12)}>
+                            <div className="text-lg font-bold tabular-nums">{staffing.sacafrancosNeeded || 0}</div>
+                            <div className="text-[9px]" style={{ color: 'var(--ink-soft)' }}>Sacafrancos</div>
                           </div>
-                          <div className="bg-sky-500/10 rounded-lg p-2 text-center">
-                            <div className="text-lg font-bold text-sky-500">{staffing.totalGuardsNeeded || 0}</div>
-                            <div className="text-[9px] text-muted-foreground">Total</div>
+                          <div className="rounded-lg p-2 text-center" style={tonePill('brand', 14)}>
+                            <div className="text-lg font-bold tabular-nums">{staffing.totalGuardsNeeded || 0}</div>
+                            <div className="text-[9px]" style={{ color: 'var(--ink-soft)' }}>Total</div>
                           </div>
                         </div>
                         <div className="grid grid-cols-2 gap-2 pt-1">
-                          <div className="bg-muted/20 rounded-lg p-2 text-center">
-                            <div className="text-sm font-bold text-foreground">{staffing.currentFijoGuards || 0}<span className="text-muted-foreground font-normal">/{staffing.fijosNeeded || 0}</span></div>
-                            <div className="text-[9px] text-muted-foreground">Fijos asignados</div>
+                          <div className="glass-sunken p-2 text-center">
+                            <div className="text-sm font-bold tabular-nums">{staffing.currentFijoGuards || 0}<span className="font-normal" style={{ color: 'var(--ink-faint)' }}>/{staffing.fijosNeeded || 0}</span></div>
+                            <div className="text-[9px]" style={{ color: 'var(--ink-soft)' }}>Fijos asignados</div>
                           </div>
-                          <div className="bg-muted/20 rounded-lg p-2 text-center">
-                            <div className="text-sm font-bold text-foreground">{staffing.currentSfGuards || 0}<span className="text-muted-foreground font-normal">/{staffing.sacafrancosNeeded || 0}</span></div>
-                            <div className="text-[9px] text-muted-foreground">SF asignados</div>
+                          <div className="glass-sunken p-2 text-center">
+                            <div className="text-sm font-bold tabular-nums">{staffing.currentSfGuards || 0}<span className="font-normal" style={{ color: 'var(--ink-faint)' }}>/{staffing.sacafrancosNeeded || 0}</span></div>
+                            <div className="text-[9px]" style={{ color: 'var(--ink-soft)' }}>SF asignados</div>
                           </div>
                         </div>
                         {/* Hiring recommendation */}
                         {(((staffing.fijosNeeded || 0) - (staffing.currentFijoGuards || 0)) > 0 || ((staffing.sacafrancosNeeded || 0) - (staffing.currentSfGuards || 0)) > 0) && (
-                          <div className="bg-red-500/5 border border-red-500/20 rounded-lg p-2 space-y-1">
-                            <div className="text-[10px] font-semibold text-red-600"><AlertTriangle className="inline h-3 w-3 mr-1" />Contratar:</div>
+                          <div className="space-y-1 rounded-lg p-2" style={toneCard('bad', 8, 22)}>
+                            <div className="text-[10px] font-semibold"><AlertTriangle className="mr-1 inline h-3 w-3" />Hace falta contratar:</div>
                             {((staffing.fijosNeeded || 0) - (staffing.currentFijoGuards || 0)) > 0 && (
-                              <div className="text-[10px] text-red-500">{(staffing.fijosNeeded || 0) - (staffing.currentFijoGuards || 0)} fijos más</div>
+                              <div className="text-[10px] tabular-nums">• {(staffing.fijosNeeded || 0) - (staffing.currentFijoGuards || 0)} fijos más</div>
                             )}
                             {((staffing.sacafrancosNeeded || 0) - (staffing.currentSfGuards || 0)) > 0 && (
-                              <div className="text-[10px] text-red-500">{(staffing.sacafrancosNeeded || 0) - (staffing.currentSfGuards || 0)} sacafrancos más</div>
+                              <div className="text-[10px] tabular-nums">• {(staffing.sacafrancosNeeded || 0) - (staffing.currentSfGuards || 0)} sacafrancos más</div>
                             )}
                           </div>
                         )}
                         {staffing.sfRotation && (
-                          <div className="text-[10px] text-muted-foreground pt-1 border-t border-border/20">
-                            Rotación SF: <span className="font-semibold text-foreground">{staffing.sfRotation.name}</span> ({staffing.sfRotation.dayShifts}D-{staffing.sfRotation.nightShifts}N-{staffing.sfRotation.restDays}L)
+                          <div className="pt-1 text-[10px]" style={{ color: 'var(--ink-soft)', borderTop: '1px solid var(--hairline)' }}>
+                            Rotación SF: <span className="font-semibold" style={{ color: 'var(--ink)' }}>{staffing.sfRotation.name}</span> ({staffing.sfRotation.dayShifts}D-{staffing.sfRotation.nightShifts}N-{staffing.sfRotation.restDays}L)
                           </div>
                         )}
-                        <div className="text-[10px] text-muted-foreground">
-                          Demanda pico: <span className="font-semibold text-foreground">{staffing.peakDemand}</span> estaciones simultáneas
+                        <div className="text-[10px]" style={{ color: 'var(--ink-soft)' }}>
+                          Demanda pico: <span className="font-semibold tabular-nums" style={{ color: 'var(--ink)' }}>{staffing.peakDemand}</span> puestos simultáneos
                         </div>
 
                         {stationAlerts.length > 0 && (
-                          <div className="pt-2 border-t border-border/20 space-y-1.5">
-                            <div className="flex items-center gap-1 text-[10px] font-semibold text-red-600">
+                          <div className="space-y-1.5 pt-2" style={{ borderTop: '1px solid var(--hairline)' }}>
+                            <div className="cg-eyebrow flex items-center gap-1 tabular-nums" style={{ color: 'var(--bad-text)' }}>
                               <AlertTriangle size={11} />
-                              Alertas por estación ({stationAlerts.length})
+                              Alertas por puesto ({stationAlerts.length})
                             </div>
-                            <div className="max-h-[160px] overflow-y-auto space-y-1 pr-1">
+                            <div className="max-h-[160px] space-y-1 overflow-y-auto pr-1">
                               {stationAlerts.map(alert => (
-                                <div key={alert.stationId} className="text-[10px] bg-red-500/5 border border-red-500/20 rounded px-2 py-1">
-                                  <div className="font-medium text-foreground truncate">{stationLabel(alert)}</div>
+                                <div key={alert.stationId} className="rounded px-2 py-1 text-[10px]" style={toneCard('bad', 8, 22)}>
+                                  <div className="truncate font-semibold" style={{ color: 'var(--ink)' }}>{stationLabel(alert)}</div>
                                   {alert.missingFijoCount > 0 && (
-                                    <div className="text-red-500">• {alert.missingFijoCount} fijo(s) sin vigilante</div>
+                                    <div className="tabular-nums">• {alert.missingFijoCount} fijo(s) sin vigilante</div>
                                   )}
                                   {alert.sfUncoveredDays > 0 && (
-                                    <div className="text-red-500">• {alert.sfUncoveredDays} día(s) L sin SF cubriendo</div>
+                                    <div className="tabular-nums">• {alert.sfUncoveredDays} día(s) L sin SF cubriendo</div>
                                   )}
                                 </div>
                               ))}
@@ -2426,13 +2565,13 @@ export default function Schedule() {
                       </>
                     ) : (
                       <div className="grid grid-cols-2 gap-2">
-                        <div className="bg-muted/20 rounded-lg p-2 text-center">
-                          <div className="text-lg font-bold text-foreground">{stations.length}</div>
-                          <div className="text-[9px] text-muted-foreground">Estaciones</div>
+                        <div className="glass-sunken p-2 text-center">
+                          <div className="text-lg font-bold tabular-nums">{stations.length}</div>
+                          <div className="text-[9px]" style={{ color: 'var(--ink-soft)' }}>Puestos</div>
                         </div>
-                        <div className="bg-muted/20 rounded-lg p-2 text-center">
-                          <div className="text-lg font-bold text-foreground">{assignments.length}</div>
-                          <div className="text-[9px] text-muted-foreground">Asignados</div>
+                        <div className="glass-sunken p-2 text-center">
+                          <div className="text-lg font-bold tabular-nums">{assignments.length}</div>
+                          <div className="text-[9px]" style={{ color: 'var(--ink-soft)' }}>Asignados</div>
                         </div>
                       </div>
                     )}
@@ -2442,15 +2581,13 @@ export default function Schedule() {
                       const covered = fijoPositions.filter(p => assignments.some(a => a.positionId === p.id)).length;
                       const pct = fijoPositions.length > 0 ? Math.round((covered / fijoPositions.length) * 100) : 0;
                       return (
-                        <div className="pt-2 border-t border-border/20">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="text-[10px] text-muted-foreground">Cobertura Fijos</span>
-                            <span className="text-[10px] font-semibold text-foreground">{pct}%</span>
+                        <div className="pt-2" style={{ borderTop: '1px solid var(--hairline)' }}>
+                          <div className="mb-1 flex items-center justify-between">
+                            <span className="text-[10px]" style={{ color: 'var(--ink-soft)' }}>Cobertura de fijos</span>
+                            <span className="text-[10px] font-semibold tabular-nums">{pct}%</span>
                           </div>
-                          <div className="h-1.5 bg-muted/30 rounded-full overflow-hidden">
-                            <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${pct}%` }} />
-                          </div>
-                          <div className="text-[9px] text-muted-foreground mt-1">{covered}/{fijoPositions.length} posiciones cubiertas</div>
+                          <MeterBar pct={pct} height={6} ariaLabel="Cobertura de fijos" />
+                          <div className="mt-1 text-[9px] tabular-nums" style={{ color: 'var(--ink-soft)' }}>{covered}/{fijoPositions.length} posiciones cubiertas</div>
                         </div>
                       );
                     })()}
@@ -2458,10 +2595,10 @@ export default function Schedule() {
 
                   {/* Sacafrancos summary */}
                   {sacafrancoData.length > 0 && (
-                    <div className="bg-card border border-emerald-500/20 rounded-xl p-3">
-                      <div className="flex items-center gap-1.5 mb-2">
-                        <Shield size={12} className="text-emerald-500" />
-                        <h3 className="text-[11px] font-semibold text-foreground">Sacafrancos ({sacafrancoData.length})</h3>
+                    <div className="glass p-3">
+                      <div className="mb-2 flex items-center gap-1.5">
+                        <Shield size={12} style={{ color: 'var(--ok-text)' }} />
+                        <h3 className="cg-eyebrow tabular-nums">Sacafrancos ({sacafrancoData.length})</h3>
                       </div>
                       <div className="space-y-1.5">
                         {sacafrancoData.map(sf => {
@@ -2470,16 +2607,16 @@ export default function Schedule() {
                           const coverDays = sf.availability.filter(a => a.status === 'covering').length;
                           const stationsCovering = [...new Set(sf.assignments.map(a => stationsById.get(a.stationId)?.stationName).filter(Boolean))];
                           return (
-                            <div key={sf.guard?.id || name} className="py-1.5 px-2 rounded bg-muted/20 space-y-0.5">
+                            <div key={sf.guard?.id || name} className="glass-sunken space-y-0.5 px-2 py-1.5">
                               <div className="flex items-center justify-between gap-2">
-                                <span className="text-[10px] text-foreground font-medium truncate">{name}</span>
-                                <span className="flex items-center gap-1 shrink-0">
-                                  <span className="text-[9px] px-1.5 py-0.5 rounded font-medium bg-emerald-500/10 text-emerald-500">{availDays} disp</span>
-                                  <span className="text-[9px] px-1.5 py-0.5 rounded font-medium bg-amber-500/10 text-amber-600">{coverDays} cubre</span>
+                                <span className="truncate text-[10px] font-medium">{name}</span>
+                                <span className="flex shrink-0 items-center gap-1">
+                                  <span className="rounded px-1.5 py-0.5 text-[9px] font-semibold tabular-nums" style={tonePill('ok', 12)}>{availDays} libre</span>
+                                  <span className="rounded px-1.5 py-0.5 text-[9px] font-semibold tabular-nums" style={tonePill('warn', 12)}>{coverDays} cubre</span>
                                 </span>
                               </div>
                               {stationsCovering.length > 0 && (
-                                <div className="text-[9px] text-muted-foreground truncate">Cubre: {stationsCovering.join(', ')}</div>
+                                <div className="truncate text-[9px]" style={{ color: 'var(--ink-soft)' }}>Cubre: {stationsCovering.join(', ')}</div>
                               )}
                             </div>
                           );
@@ -2492,29 +2629,30 @@ export default function Schedule() {
             </div>
 
             {/* ─── Sheet hint bar ─── */}
-            <div className="flex items-center gap-3 flex-wrap pt-1.5 text-[10px] text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-3 pt-1.5 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
               {view === 'month' ? (
                 <>
-                  <span className="font-medium text-foreground/70">{selInfo || 'Clic en una celda para seleccionar'}</span>
+                  <span className="font-medium" style={{ color: 'var(--ink-soft)' }}>{selInfo || 'Clic en una celda para seleccionar'}</span>
                   <span className="hidden md:inline"><b>Clic derecho</b>: editar/duplicar/eliminar turno y novedades · Escribe <b>D N L V F P 2</b> para novedad · <b>Supr</b> borra · Arrastra un día <b>L del sacafranco</b> sobre un L del puesto para cubrirlo · <b>Re/Av Pág</b> cambia mes</span>
                 </>
               ) : (
-                <span className="font-medium text-foreground/70">
-                  Arrastra sobre la fila de una estación para <b>dibujar un bloque de trabajo</b> (p. ej. 07:00 → 07:00 del día siguiente) · Clic en un bloque: detalle / eliminar · Suelta un vigilante del panel sobre la línea · <b>Re/Av Pág</b> cambia {view === 'week' ? 'de semana' : 'de día'}
+                <span className="font-medium" style={{ color: 'var(--ink-soft)' }}>
+                  Arrastra sobre la fila de un puesto para <b>dibujar un bloque de trabajo</b> (p. ej. 07:00 → 07:00 del día siguiente) · Clic en un bloque: detalle / eliminar · Suelta un vigilante del panel sobre la línea · <b>Re/Av Pág</b> cambia {view === 'week' ? 'de semana' : 'de día'}
                 </span>
               )}
               <span className="flex-1" />
-              {view === 'month' && <span className="hidden lg:flex items-center gap-1.5">
-                {[
-                  { c: 'D', cls: 'bg-sky-500/15 text-sky-500' },
-                  { c: 'N', cls: 'bg-indigo-500/15 text-indigo-400' },
-                  { c: 'L', cls: 'bg-muted/40 text-muted-foreground' },
-                  { c: 'V', cls: 'bg-purple-500/15 text-purple-400' },
-                  { c: 'PM', cls: 'bg-orange-500/15 text-orange-400' },
-                  { c: 'F', cls: 'bg-red-500/15 text-red-400' },
-                  { c: '24', cls: 'bg-amber-500/15 text-amber-500' },
-                ].map(x => (
-                  <span key={x.c} className={`px-1.5 py-0.5 rounded font-bold ${x.cls}`}>{x.c}</span>
+              {/* Leyenda de los códigos tipados: mismas píldoras que la rejilla,
+                  para que el significado se aprenda de un vistazo. */}
+              {view === 'month' && <span className="hidden items-center gap-1.5 lg:flex">
+                {CODE_ORDER.map((c) => (
+                  <span
+                    key={c}
+                    title={CODE_LABEL[c]}
+                    className="rounded px-1.5 py-0.5 font-bold"
+                    style={codePill(c)}
+                  >
+                    {c}
+                  </span>
                 ))}
               </span>}
             </div>
@@ -2540,20 +2678,20 @@ export default function Schedule() {
         const quick = (start: string, end: string) => setSfCover(m => m ? { ...m, startStr: start, endStr: end } : m);
         const fechaHuman = new Date(sfCover.dateStr + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
         return (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setSfCover(null)}>
-            <div className="bg-card border border-border/30 rounded-2xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
-              <div className="px-5 py-4 border-b border-border/20 flex items-center justify-between">
+          <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'oklch(0 0 0 / 0.55)' }} onClick={() => setSfCover(null)}>
+            <div className="glass-raised mx-4 w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+              <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--hairline)' }}>
                 <div>
-                  <h4 className="text-sm font-semibold text-foreground">Cubrir con sacafranco</h4>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                  <h4 className="text-sm font-semibold">Cubrir con sacafranco</h4>
+                  <p className="mt-0.5 text-[11px]" style={{ color: 'var(--ink-soft)' }}>
                     {sfCover.sfName} → {stationLabel(sfCover.station)} · {fechaHuman}
                   </p>
                 </div>
-                <button onClick={() => setSfCover(null)} className="p-1.5 rounded-lg hover:bg-muted/30 text-muted-foreground"><X size={15} /></button>
+                <button onClick={() => setSfCover(null)} className="cg-btn-ghost cg-focus rounded-lg p-1.5"><X size={15} /></button>
               </div>
               <div className="p-5 space-y-4">
-                <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 px-3 py-2">
-                  <p className="text-[11px] text-emerald-600">
+                <div className="rounded-xl px-3 py-2" style={toneCard('ok', 8, 26)}>
+                  <p className="text-[11px]">
                     Sugerido según lo que falta ese día: <b>{sfCover.suggested}</b>
                   </p>
                 </div>
@@ -2569,10 +2707,10 @@ export default function Schedule() {
                       <button
                         key={q.label}
                         onClick={() => quick(q.s, q.e)}
-                        className={`px-2 py-2 rounded-xl border text-center transition-all ${active ? 'border-primary bg-primary/10 text-primary' : 'border-border/40 text-foreground hover:border-primary/40'}`}
+                        className={`cg-focus rounded-xl border px-2 py-2 text-center transition-all ${active ? 'glass-brand' : 'glass-flat'}`}
                       >
                         <div className="text-xs font-semibold">{q.label}</div>
-                        <div className="text-[10px] text-muted-foreground">{q.sub}</div>
+                        <div className="text-[10px] tabular-nums" style={{ color: 'var(--ink-soft)' }}>{q.sub}</div>
                       </button>
                     );
                   })}
@@ -2580,27 +2718,27 @@ export default function Schedule() {
                 {/* Custom hours */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[11px] font-medium text-muted-foreground mb-1.5 uppercase tracking-wide">Inicio</label>
-                    <input type="time" value={sfCover.startStr} onChange={e => setSfCover(m => m ? { ...m, startStr: e.target.value } : m)} className="w-full px-3 py-2.5 border border-border/40 rounded-xl text-sm bg-background font-mono focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" />
+                    <label className="cg-eyebrow mb-1.5 block">Inicio</label>
+                    <input type="time" value={sfCover.startStr} onChange={e => setSfCover(m => m ? { ...m, startStr: e.target.value } : m)} className="cg-input cg-focus w-full px-3 py-2.5 font-mono text-sm tabular-nums" />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-medium text-muted-foreground mb-1.5 uppercase tracking-wide">Fin</label>
-                    <input type="time" value={sfCover.endStr} onChange={e => setSfCover(m => m ? { ...m, endStr: e.target.value } : m)} className="w-full px-3 py-2.5 border border-border/40 rounded-xl text-sm bg-background font-mono focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" />
+                    <label className="cg-eyebrow mb-1.5 block">Fin</label>
+                    <input type="time" value={sfCover.endStr} onChange={e => setSfCover(m => m ? { ...m, endStr: e.target.value } : m)} className="cg-input cg-focus w-full px-3 py-2.5 font-mono text-sm tabular-nums" />
                   </div>
                 </div>
-                <p className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+                <p className="flex items-center gap-1.5 text-[11px]" style={{ color: 'var(--ink-soft)' }}>
                   <Clock size={12} />
-                  Duración: <b className="text-foreground">{durH % 1 === 0 ? durH : durH.toFixed(1)}h</b>
+                  Duración: <b className="tabular-nums" style={{ color: 'var(--ink)' }}>{durH % 1 === 0 ? durH : durH.toFixed(1)}h</b>
                   {nextDay && <span>· termina al día siguiente</span>}
                   <span>· hora de la empresa</span>
                 </p>
               </div>
-              <div className="px-5 py-3 border-t border-border/20 flex items-center justify-end gap-2">
-                <button onClick={() => setSfCover(null)} className="px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/20 transition-all">Cancelar</button>
+              <div className="flex items-center justify-end gap-2 px-5 py-3" style={{ borderTop: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>
+                <button onClick={() => setSfCover(null)} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all">Cancelar</button>
                 <button
                   onClick={saveSfCover}
                   disabled={sfCoverSaving || durH <= 0 || durH > 24}
-                  className="px-5 py-2 bg-emerald-600 text-white rounded-xl text-sm font-semibold hover:bg-emerald-700 disabled:opacity-40 transition-all shadow-sm"
+                  className="cg-btn-brand cg-focus rounded-full px-5 py-2 text-sm font-semibold transition-all disabled:opacity-40"
                 >
                   {sfCoverSaving ? <Loader2 size={14} className="animate-spin" /> : 'Cubrir puesto'}
                 </button>
@@ -2625,44 +2763,45 @@ export default function Schedule() {
         const free = rows.filter(r => !r.busy);
         const busy = rows.filter(r => r.busy);
         return (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setSfPick(null)}>
-            <div className="bg-card border border-border/30 rounded-2xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
-              <div className="px-5 py-4 border-b border-border/20 flex items-center justify-between">
+          <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'oklch(0 0 0 / 0.55)' }} onClick={() => setSfPick(null)}>
+            <div className="glass-raised mx-4 w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+              <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--hairline)' }}>
                 <div>
-                  <h4 className="text-sm font-semibold text-foreground">Asignar sacafranco</h4>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">{stationLabel(station)} · {fecha}</p>
+                  <h4 className="text-sm font-semibold">Asignar sacafranco</h4>
+                  <p className="mt-0.5 text-[11px]" style={{ color: 'var(--ink-soft)' }}>{stationLabel(station)} · {fecha}</p>
                 </div>
-                <button onClick={() => setSfPick(null)} className="p-1.5 rounded-lg hover:bg-muted/30 text-muted-foreground"><X size={15} /></button>
+                <button onClick={() => setSfPick(null)} className="cg-btn-ghost cg-focus rounded-lg p-1.5"><X size={15} /></button>
               </div>
               <div className="p-4 space-y-1.5 max-h-[50vh] overflow-y-auto">
                 {rows.length === 0 && (
-                  <p className="text-[12px] text-muted-foreground text-center py-4">No hay sacafrancos configurados. Crea un puesto sacafranco en la estación primero.</p>
+                  <p className="py-4 text-center text-[12px]" style={{ color: 'var(--ink-soft)' }}>No hay sacafrancos configurados. Crea primero una posición de sacafranco en el puesto.</p>
                 )}
                 {free.map(r => (
                   <button
                     key={r.gid}
                     onClick={() => { setSfPick(null); void placeSfCoverage(station, pos, dateStr, r.gid!); }}
-                    className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl border border-border/40 hover:border-emerald-500/50 hover:bg-emerald-500/5 text-left transition-all"
+                    className="glass-flat glass-hover cg-focus flex w-full items-center gap-2 px-3 py-2.5 text-left transition-all"
                   >
-                    <span className="grid h-7 w-7 place-items-center rounded-full bg-emerald-500/15 text-emerald-600 text-xs font-bold">{(r.name[0] || '?').toUpperCase()}</span>
-                    <span className="flex-1 text-sm font-medium text-foreground">{r.name}</span>
-                    <span className="text-[10px] font-semibold text-emerald-600">Libre</span>
+                    <span className="grid h-7 w-7 place-items-center rounded-full text-xs font-bold" style={tonePill('ok', 16)}>{(r.name[0] || '?').toUpperCase()}</span>
+                    <span className="flex-1 text-sm font-medium">{r.name}</span>
+                    <span className="text-[10px] font-semibold" style={{ color: 'var(--ok-text)' }}>Libre</span>
                   </button>
                 ))}
                 {busy.map(r => (
-                  <div key={r.gid} className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl border border-border/20 opacity-60">
-                    <span className="grid h-7 w-7 place-items-center rounded-full bg-muted/40 text-muted-foreground text-xs font-bold">{(r.name[0] || '?').toUpperCase()}</span>
-                    <span className="flex-1 text-sm font-medium text-muted-foreground">{r.name}</span>
-                    <span className="text-[10px] text-muted-foreground">Cubre {r.where || 'otro puesto'}</span>
+                  <div key={r.gid} className="glass-sunken flex w-full items-center gap-2 px-3 py-2.5 opacity-60">
+                    <span className="grid h-7 w-7 place-items-center rounded-full text-xs font-bold" style={{ background: 'var(--glass-raised)', color: 'var(--ink-soft)' }}>{(r.name[0] || '?').toUpperCase()}</span>
+                    <span className="flex-1 text-sm font-medium" style={{ color: 'var(--ink-soft)' }}>{r.name}</span>
+                    <span className="text-[10px]" style={{ color: 'var(--ink-faint)' }}>Cubre {r.where || 'otro puesto'}</span>
                   </div>
                 ))}
               </div>
-              <div className="px-5 py-3 border-t border-border/20 flex items-center justify-between">
+              <div className="flex items-center justify-between px-5 py-3" style={{ borderTop: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>
                 <button
                   onClick={() => { const p = sfPick; setSfPick(null); setOverrideTarget({ guardId: p.assignment.guardId, guardName: p.guardName, date: p.dateStr, assignmentId: p.assignment.id }); }}
-                  className="text-[11px] font-medium text-muted-foreground hover:text-foreground"
+                  className="cg-focus text-[11px] font-semibold hover:underline"
+                  style={{ color: 'var(--ink-soft)' }}
                 >Marcar novedad…</button>
-                <button onClick={() => setSfPick(null)} className="px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/20">Cerrar</button>
+                <button onClick={() => setSfPick(null)} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all">Cerrar</button>
               </div>
             </div>
           </div>
@@ -2671,11 +2810,11 @@ export default function Schedule() {
 
       {/* ─── Assignment Modal ─────────────────────────────────────────────── */}
       {showAssignForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => { setShowAssignForm(false); setMoveFrom(null); }}>
-          <div className="bg-card border border-border/30 rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-            <div className="px-5 py-4 border-b border-border/20 flex items-center justify-between">
-              <h4 className="text-sm font-semibold text-foreground">{moveFrom ? 'Mover Vigilante de Puesto' : 'Asignar Vigilante a Posición'}</h4>
-              <button onClick={() => { setShowAssignForm(false); setMoveFrom(null); }} className="p-1.5 rounded-lg hover:bg-muted/30 text-muted-foreground"><X size={15} /></button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'oklch(0 0 0 / 0.55)' }} onClick={() => { setShowAssignForm(false); setMoveFrom(null); }}>
+          <div className="glass-raised mx-4 max-h-[90vh] w-full max-w-md overflow-hidden overflow-y-auto animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--hairline)' }}>
+              <h4 className="text-sm font-semibold">{moveFrom ? 'Mover vigilante de puesto' : 'Asignar vigilante a una posición'}</h4>
+              <button onClick={() => { setShowAssignForm(false); setMoveFrom(null); }} className="cg-btn-ghost cg-focus rounded-lg p-1.5"><X size={15} /></button>
             </div>
             <div className="p-5 space-y-4">
               {/* Position info */}
@@ -2683,19 +2822,19 @@ export default function Schedule() {
                 const pos = positions.find(p => p.id === assignTarget.positionId);
                 const st = stations.find(s => s.id === assignTarget.stationId);
                 if (!pos || !st) return null;
-                const colors = POSITION_COLORS[pos.type] || POSITION_COLORS.fijo;
+                const meta = POSITION_TONE[pos.type] || POSITION_TONE.fijo;
                 return (
-                  <div className={`px-3 py-2 rounded-xl border ${colors.border} ${colors.bg}`}>
-                    <div className={`text-xs font-semibold ${colors.text}`}>{stationLabel(st)} <ArrowRight className="inline h-3 w-3" /> {pos.name}</div>
-                    <div className="text-[10px] text-muted-foreground">{pos.startTime} – {pos.endTime}</div>
+                  <div className="rounded-xl px-3 py-2" style={toneCard(meta.tone)}>
+                    <div className="text-xs font-semibold">{stationLabel(st)} <ArrowRight className="inline h-3 w-3" /> {pos.name}</div>
+                    <div className="text-[10px] tabular-nums opacity-80">{pos.startTime} – {pos.endTime}</div>
                   </div>
                 );
               })()}
 
               {/* Drag-move notice */}
               {moveFrom && (
-                <div className="px-3 py-2 rounded-xl border border-amber-500/30 bg-amber-500/10">
-                  <p className="text-[11px] text-amber-700">
+                <div className="rounded-xl px-3 py-2" style={toneCard('warn')}>
+                  <p className="text-[11px]">
                     Se moverá desde <span className="font-semibold">{stationsById.get(moveFrom.stationId)?.stationName || 'su puesto actual'}</span> — sus turnos futuros allí se eliminan.
                   </p>
                 </div>
@@ -2703,7 +2842,7 @@ export default function Schedule() {
 
               {/* Guard */}
               <div>
-                <label className="block text-[11px] font-medium text-muted-foreground mb-1.5 uppercase tracking-wide">Vigilante</label>
+                <label className="cg-eyebrow mb-1.5 block">Vigilante</label>
                 {(() => {
                   // A vigilante can hold only ONE active rotation (fijo OR sacafranco).
                   // Drop everyone already assigned from the options so it's impossible
@@ -2712,32 +2851,32 @@ export default function Schedule() {
                   const availableGuards = guardsPool.filter(g => !occupiedIds.has(g.id) || g.id === assignGuard);
 
                   return (
-                    <select value={assignGuard} onChange={e => setAssignGuard(e.target.value)} className="w-full px-3 py-2.5 border border-border/40 rounded-xl text-sm bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none">
-                      <option value="">Seleccionar vigilante...</option>
+                    <select value={assignGuard} onChange={e => setAssignGuard(e.target.value)} className="cg-input cg-focus w-full px-3 py-2.5 text-sm">
+                      <option value="">Elige un vigilante…</option>
                       {availableGuards.map(g => <option key={g.id} value={g.id}>{g.label}</option>)}
                       {availableGuards.length === 0 && <option value="" disabled>Todos los vigilantes ya están asignados</option>}
                     </select>
                   );
                 })()}
                 {positions.find(p => p.id === assignTarget?.positionId)?.type === 'sacafranco' && (
-                  <p className="text-[10px] text-emerald-600 mt-1">Sacafranco: puede cubrir múltiples estaciones</p>
+                  <p className="mt-1 text-[10px]" style={{ color: 'var(--ok-text)' }}>Sacafranco: puede cubrir varios puestos</p>
                 )}
                 {positions.find(p => p.id === assignTarget?.positionId)?.type === 'fijo' && (
-                  <p className="text-[10px] text-amber-600 mt-1">Fijo: exclusivo a esta estación</p>
+                  <p className="mt-1 text-[10px]" style={{ color: 'var(--warn-text)' }}>Fijo: exclusivo de este puesto</p>
                 )}
               </div>
 
               {/* Start date: bounds when shifts begin (and sets the phase on
                   alternation stations). Defaults to the day you dropped on. */}
               <div>
-                <label className="block text-[11px] font-medium text-muted-foreground mb-1.5 uppercase tracking-wide">Primer día de turno</label>
+                <label className="cg-eyebrow mb-1.5 block">Primer día de turno</label>
                 <input
                   type="date"
                   value={assignStartDate}
                   onChange={e => setAssignStartDate(e.target.value)}
-                  className="w-full px-3 py-2.5 border border-border/40 rounded-xl text-sm bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+                  className="cg-input cg-focus w-full px-3 py-2.5 text-sm"
                 />
-                <p className="text-[10px] text-muted-foreground mt-1">Los turnos se generan desde esta fecha (hora de la empresa).</p>
+                <p className="mt-1 text-[10px]" style={{ color: 'var(--ink-faint)' }}>Los turnos se generan desde esta fecha (hora de la empresa).</p>
               </div>
 
               {/* The patrón de rotación is set on the STATION (Sitios › Estación ›
@@ -2746,17 +2885,17 @@ export default function Schedule() {
                 const st = stationsById.get(assignTarget?.stationId || '');
                 const rot = st?.rotationStyleId ? rotationStylesById.get(st.rotationStyleId) : null;
                 return (
-                  <div className="rounded-lg border border-border/40 bg-muted/10 px-3 py-2">
-                    <p className="text-[11px] text-muted-foreground">
-                      Patrón de rotación: <span className="font-semibold text-foreground">{rot?.name || 'el de la estación'}</span> · se hereda de la estación.
+                  <div className="glass-sunken px-3 py-2">
+                    <p className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>
+                      Patrón de rotación: <span className="font-semibold" style={{ color: 'var(--ink)' }}>{rot?.name || 'el del puesto'}</span> · se hereda del puesto.
                     </p>
                   </div>
                 );
               })()}
             </div>
-            <div className="px-5 py-3 border-t border-border/20 flex items-center justify-end gap-2">
-              <button onClick={() => { setShowAssignForm(false); setMoveFrom(null); }} className="px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/20 transition-all">Cancelar</button>
-              <button onClick={saveAssignment} disabled={assignSaving || !assignGuard} className="px-5 py-2 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-primary/90 disabled:opacity-40 transition-all shadow-sm">
+            <div className="flex items-center justify-end gap-2 px-5 py-3" style={{ borderTop: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>
+              <button onClick={() => { setShowAssignForm(false); setMoveFrom(null); }} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all">Cancelar</button>
+              <button onClick={saveAssignment} disabled={assignSaving || !assignGuard} className="cg-btn-brand cg-focus rounded-full px-5 py-2 text-sm font-semibold transition-all disabled:opacity-40">
                 {assignSaving ? <Loader2 size={14} className="animate-spin" /> : (moveFrom ? 'Mover' : 'Asignar')}
               </button>
             </div>
@@ -2766,14 +2905,14 @@ export default function Schedule() {
 
       {/* ─── Configure Station Modal ─────────────────────────────────────── */}
       {configStation && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setConfigStation(null)}>
-          <div className="bg-card border border-border/30 rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-            <div className="px-5 py-4 border-b border-border/20 flex items-center justify-between">
-              <h4 className="text-sm font-semibold text-foreground">Configurar: {stationLabel(configStation)}</h4>
-              <button onClick={() => setConfigStation(null)} className="p-1.5 rounded-lg hover:bg-muted/30 text-muted-foreground"><X size={15} /></button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'oklch(0 0 0 / 0.55)' }} onClick={() => setConfigStation(null)}>
+          <div className="glass-raised mx-4 max-h-[90vh] w-full max-w-md overflow-hidden overflow-y-auto animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--hairline)' }}>
+              <h4 className="text-sm font-semibold">Configurar: {stationLabel(configStation)}</h4>
+              <button onClick={() => setConfigStation(null)} className="cg-btn-ghost cg-focus rounded-lg p-1.5"><X size={15} /></button>
             </div>
             <div className="p-5 space-y-4">
-              <label className="block text-[11px] font-medium text-muted-foreground mb-2 uppercase tracking-wide">Tipo de cobertura</label>
+              <label className="cg-eyebrow mb-2 block">Tipo de cobertura</label>
               <div className="grid grid-cols-2 gap-2">
                 {[
                   { value: '24h', label: '24 Horas', desc: 'Fijo 1 + Fijo 2 + Sacafranco' },
@@ -2784,10 +2923,10 @@ export default function Schedule() {
                   <button
                     key={opt.value}
                     onClick={() => { setConfigType(opt.value); setConfigRotation(''); setCfgRotStyle(null); }}
-                    className={`p-3 rounded-xl border text-left transition-all ${configType === opt.value ? 'bg-primary/10 border-primary' : 'border-border/40 hover:border-border'}`}
+                    className={`cg-focus rounded-xl p-3 text-left transition-all ${configType === opt.value ? 'glass-flat glass-brand' : 'glass-flat glass-hover'}`}
                   >
-                    <div className={`text-sm font-medium ${configType === opt.value ? 'text-primary' : 'text-foreground'}`}>{opt.label}</div>
-                    <div className="text-[10px] text-muted-foreground mt-0.5">{opt.desc}</div>
+                    <div className="text-sm font-semibold" style={configType === opt.value ? { color: 'var(--brand-text)' } : undefined}>{opt.label}</div>
+                    <div className="mt-0.5 text-[10px]" style={{ color: 'var(--ink-soft)' }}>{opt.desc}</div>
                   </button>
                 ))}
               </div>
@@ -2798,24 +2937,24 @@ export default function Schedule() {
                   <button
                     type="button"
                     onClick={() => { setCfgStart('07:00'); setCfgEnd('07:00'); setCfgBlockHours(''); setCfgRestCoverage('alternate'); setConfigRotation(''); setCfgRotStyle(null); }}
-                    className={`w-full px-3 py-2 rounded-xl border text-left transition-all ${cfgRestCoverage === 'alternate' && cfgWinMin === 1440 && !cfgBlockHours ? 'border-primary bg-primary/10' : 'border-border/40 hover:border-primary/40'}`}
+                    className={`cg-focus w-full rounded-xl px-3 py-2 text-left transition-all ${cfgRestCoverage === 'alternate' && cfgWinMin === 1440 && !cfgBlockHours ? 'glass-flat glass-brand' : 'glass-flat glass-hover'}`}
                   >
-                    <div className="text-xs font-semibold text-foreground">Preset 24×24 (alternancia diaria)</div>
-                    <div className="text-[10px] text-muted-foreground">Un fijo trabaja las 24h, el otro va al día siguiente. Sin libres, sin sacafranco.</div>
+                    <div className="text-xs font-semibold">Plantilla 24×24 (alternancia diaria)</div>
+                    <div className="text-[10px]" style={{ color: 'var(--ink-soft)' }}>Un fijo trabaja las 24 h y el otro va al día siguiente. Sin libres y sin sacafranco.</div>
                   </button>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Hora inicio</label>
-                      <input type="time" value={cfgStart} onChange={e => setCfgStart(e.target.value)} className="w-full px-3 py-2 border border-border/40 rounded-lg text-sm bg-background font-mono focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" />
+                      <label className="cg-eyebrow mb-1.5 block">Hora inicio</label>
+                      <input type="time" value={cfgStart} onChange={e => setCfgStart(e.target.value)} className="cg-input cg-focus w-full px-3 py-2 font-mono text-sm tabular-nums" />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Hora fin</label>
-                      <input type="time" value={cfgEnd} onChange={e => setCfgEnd(e.target.value)} className="w-full px-3 py-2 border border-border/40 rounded-lg text-sm bg-background font-mono focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" />
+                      <label className="cg-eyebrow mb-1.5 block">Hora fin</label>
+                      <input type="time" value={cfgEnd} onChange={e => setCfgEnd(e.target.value)} className="cg-input cg-focus w-full px-3 py-2 font-mono text-sm tabular-nums" />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Turno por vigilante</label>
-                    <select value={cfgBlockHours} onChange={e => setCfgBlockHours(e.target.value)} className="w-full px-3 py-2 border border-border/40 rounded-lg text-sm bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
+                    <label className="cg-eyebrow mb-1.5 block">Turno por vigilante</label>
+                    <select value={cfgBlockHours} onChange={e => setCfgBlockHours(e.target.value)} className="cg-input cg-focus w-full px-3 py-2 text-sm">
                       <option value="">Toda la jornada (1 fijo{cfgWinMin === 1440 ? ' · 24h' : ''})</option>
                       {[4, 6, 8, 12].map(h => {
                         const fits = cfgWinMin > 0 && cfgWinMin % (h * 60) === 0;
@@ -2829,13 +2968,13 @@ export default function Schedule() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Cobertura de descansos</label>
-                    <select value={cfgRestCoverage} onChange={e => setCfgRestCoverage(e.target.value as 'sacafranco' | 'alternate')} className="w-full px-3 py-2 border border-border/40 rounded-lg text-sm bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
+                    <label className="cg-eyebrow mb-1.5 block">Cobertura de descansos</label>
+                    <select value={cfgRestCoverage} onChange={e => setCfgRestCoverage(e.target.value as 'sacafranco' | 'alternate')} className="cg-input cg-focus w-full px-3 py-2 text-sm">
                       <option value="sacafranco">Sacafranco cubre los descansos</option>
                       <option value="alternate">Alternancia entre fijos (sin sacafranco)</option>
                     </select>
                     {cfgRestCoverage === 'alternate' && (
-                      <p className={`mt-1.5 text-[11px] ${cfgAlternateOk ? 'text-muted-foreground' : 'text-red-500'}`}>
+                      <p className="mt-1.5 text-[11px]" style={{ color: cfgAlternateOk ? 'var(--ink-soft)' : 'var(--bad-text)' }}>
                         {!cfgRotStyle
                           ? 'Sin patrón elegido se usa 1-1: cada fijo trabaja su bloque completo y alterna con el siguiente, sin libres.'
                           : cfgAlternateOk
@@ -2844,7 +2983,7 @@ export default function Schedule() {
                       </p>
                     )}
                     {cfgRestCoverage === 'sacafranco' && cfgBlocksOk && cfgBlockCount > 1 && (
-                      <p className="mt-1.5 text-[11px] text-muted-foreground">
+                      <p className="mt-1.5 text-[11px]" style={{ color: 'var(--ink-soft)' }}>
                         {cfgWinMin / 60}h de cobertura en {cfgBlockCount} bloques consecutivos de {Number(cfgBlockHours)}h — {cfgBlockCount} fijos + sacafranco.
                       </p>
                     )}
@@ -2859,9 +2998,9 @@ export default function Schedule() {
                 onStyleChange={setCfgRotStyle}
               />
             </div>
-            <div className="px-5 py-3 border-t border-border/20 flex items-center justify-end gap-2">
-              <button onClick={() => setConfigStation(null)} className="px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground">Cancelar</button>
-              <button onClick={saveStationConfig} disabled={configSaving} className="px-5 py-2 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-primary/90 disabled:opacity-40 transition-all shadow-sm">
+            <div className="flex items-center justify-end gap-2 px-5 py-3" style={{ borderTop: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>
+              <button onClick={() => setConfigStation(null)} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all">Cancelar</button>
+              <button onClick={saveStationConfig} disabled={configSaving} className="cg-btn-brand cg-focus rounded-full px-5 py-2 text-sm font-semibold transition-all disabled:opacity-40">
                 {configSaving ? <Loader2 size={14} className="animate-spin" /> : 'Guardar'}
               </button>
             </div>
@@ -2871,28 +3010,24 @@ export default function Schedule() {
 
       {/* ─── Override Modal ───────────────────────────────────────────────── */}
       {overrideTarget && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setOverrideTarget(null)}>
-          <div className="bg-card border border-border/30 rounded-2xl shadow-2xl w-full max-w-xs mx-4 overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
-            <div className="px-5 py-4 border-b border-border/20">
-              <h4 className="text-sm font-semibold text-foreground">Registrar Novedad</h4>
-              <p className="text-[11px] text-muted-foreground mt-0.5">{overrideTarget.guardName} — {overrideTarget.date}</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'oklch(0 0 0 / 0.55)' }} onClick={() => setOverrideTarget(null)}>
+          <div className="glass-raised mx-4 w-full max-w-xs overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+            <div className="px-5 py-4" style={{ borderBottom: '1px solid var(--hairline)' }}>
+              <h4 className="text-sm font-semibold">Registrar novedad</h4>
+              <p className="mt-0.5 text-[11px]" style={{ color: 'var(--ink-soft)' }}>{overrideTarget.guardName} — {overrideTarget.date}</p>
             </div>
             <div className="p-4 grid grid-cols-2 gap-2">
-              {[
-                { type: 'V', label: 'Vacaciones', color: 'bg-purple-500/15 text-purple-400 border-purple-500/30' },
-                { type: 'PM', label: 'Permiso', color: 'bg-orange-500/15 text-orange-400 border-orange-500/30' },
-                { type: 'F', label: 'Falta', color: 'bg-red-500/15 text-red-400 border-red-500/30' },
-                { type: 'L', label: 'Libre', color: 'bg-muted/40 text-muted-foreground border-border/40' },
-                { type: 'D', label: 'Diurno', color: 'bg-sky-500/15 text-sky-500 border-sky-500/30' },
-                { type: 'N', label: 'Nocturno', color: 'bg-indigo-500/15 text-indigo-400 border-indigo-500/30' },
-                { type: '24', label: '24 Horas', color: 'bg-amber-500/15 text-amber-500 border-amber-500/30' },
-              ].map(opt => (
+              {CODE_ORDER.map(c => (
                 <button
-                  key={opt.type}
-                  onClick={() => performOverrideSave(overrideTarget, opt.type)}
-                  className={`px-3 py-2.5 rounded-xl border text-xs font-semibold transition-all hover:scale-105 ${opt.color}`}
+                  key={c}
+                  onClick={() => performOverrideSave(overrideTarget, c)}
+                  /* Misma píldora que en la rejilla: el color que se elige aquí
+                     es literalmente el que va a aparecer en la celda — los dos
+                     salen de `codePill`. */
+                  className="cg-focus rounded-xl px-3 py-2.5 text-xs font-semibold transition-all hover:scale-105"
+                  style={codeCard(c)}
                 >
-                  {opt.type} — {opt.label}
+                  {c} — {CODE_LABEL[c]}
                 </button>
               ))}
               {(() => {
@@ -2901,15 +3036,16 @@ export default function Schedule() {
                 return (
                   <button
                     onClick={() => removeOverride(existing.id)}
-                    className="col-span-2 px-3 py-2 rounded-xl border border-red-500/30 bg-red-500/10 text-red-400 text-xs font-semibold hover:bg-red-500/20 transition-all"
+                    className="cg-focus col-span-2 rounded-xl px-3 py-2 text-xs font-semibold transition-all"
+                    style={toneCard('bad')}
                   >
                     <X className="inline h-3.5 w-3.5 mr-1" />Quitar novedad actual ({existing.type})
                   </button>
                 );
               })()}
             </div>
-            <div className="px-5 py-3 border-t border-border/20 flex justify-end">
-              <button onClick={() => setOverrideTarget(null)} className="px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground transition-all">Cerrar</button>
+            <div className="flex justify-end px-5 py-3" style={{ borderTop: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>
+              <button onClick={() => setOverrideTarget(null)} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all">Cerrar</button>
             </div>
           </div>
         </div>
@@ -2917,14 +3053,14 @@ export default function Schedule() {
 
       {/* ─── Draft horario review/diff Modal ──────────────────────────────── */}
       {proposalData && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-2xl max-h-[85vh] flex flex-col rounded-2xl bg-card shadow-2xl border border-border/30 overflow-hidden">
-            <div className="px-5 py-4 border-b border-border/20">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'oklch(0 0 0 / 0.5)' }}>
+          <div className="glass-raised flex max-h-[85vh] w-full max-w-2xl flex-col overflow-hidden">
+            <div className="px-5 py-4" style={{ borderBottom: '1px solid var(--hairline)' }}>
               <div className="flex items-center gap-2">
-                {planData ? <CheckCircle2 size={18} className="text-emerald-600" /> : <FileText size={18} className="text-primary" />}
-                <h3 className="text-base font-bold text-foreground">{planData ? 'Plan de implementación' : 'Borrador de horario'}</h3>
+                {planData ? <CheckCircle2 size={18} style={{ color: 'var(--ok-text)' }} /> : <FileText size={18} style={{ color: 'var(--brand-text)' }} />}
+                <h3 className="font-display text-base font-bold">{planData ? 'Plan de implementación' : 'Borrador de horario'}</h3>
               </div>
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="mt-1 text-xs" style={{ color: 'var(--ink-soft)' }}>
                 {planData ? 'Horario publicado. Estos vigilantes fueron notificados de sus cambios.' : 'Revisa los cambios propuestos. Nada se aplica hasta que publiques.'}
               </p>
             </div>
@@ -2932,14 +3068,14 @@ export default function Schedule() {
             {planData ? (
               /* Implementation plan (post-publish): who was notified */
               <div className="flex-1 overflow-auto px-5 py-3">
-                <div className="mb-3 flex items-center gap-2 rounded-xl bg-emerald-500/10 px-3 py-2 text-emerald-700">
+                <div className="mb-3 flex items-center gap-2 rounded-xl px-3 py-2" style={tonePill('ok', 12)}>
                   <Users size={16} />
                   <span className="text-sm font-semibold">
                     {(planData?.plan?.notifiedGuards ?? 0)} de {(planData?.plan?.totalGuards ?? planData?.items?.length ?? 0)} vigilantes notificados
                   </span>
                 </div>
                 {(planData?.items || []).length ? (
-                  <div className="divide-y divide-border/20">
+                  <div className="divide-y" style={{ borderColor: 'var(--hairline)' }}>
                     {(planData.items || []).map((it: PlanItem) => {
                       const ch: string[] = [];
                       if (it.added) ch.push(`+${it.added}`);
@@ -2948,15 +3084,15 @@ export default function Schedule() {
                       const ok = it.notifyStatus === 'sent';
                       return (
                         <div key={it.id || it.guardId} className="flex items-center gap-3 py-2">
-                          <span className={`shrink-0 ${ok ? 'text-emerald-600' : 'text-muted-foreground'}`}>{ok ? <CheckCircle2 size={15} /> : <Clock size={15} />}</span>
-                          <span className="min-w-0 flex-1 truncate text-sm text-foreground">{it.guardName || 'Vigilante'}</span>
-                          <span className="shrink-0 font-mono text-xs text-muted-foreground">{ch.join(' ')}</span>
+                          <span className="shrink-0" style={{ color: ok ? 'var(--ok-text)' : 'var(--ink-faint)' }}>{ok ? <CheckCircle2 size={15} /> : <Clock size={15} />}</span>
+                          <span className="min-w-0 flex-1 truncate text-sm">{it.guardName || 'Vigilante'}</span>
+                          <span className="shrink-0 font-mono text-xs tabular-nums" style={{ color: 'var(--ink-soft)' }}>{ch.join(' ')}</span>
                         </div>
                       );
                     })}
                   </div>
                 ) : (
-                  <p className="py-8 text-center text-sm text-muted-foreground">No hubo vigilantes afectados.</p>
+                  <p className="py-8 text-center text-sm" style={{ color: 'var(--ink-soft)' }}>No hubo vigilantes afectados.</p>
                 )}
               </div>
             ) : (
@@ -2965,17 +3101,19 @@ export default function Schedule() {
             {(() => {
               const s = proposalData?.proposal?.summary || {};
               const cards = [
-                { label: 'Nuevos', value: s.added || 0, icon: <PlusIcon size={14} />, cls: 'text-emerald-600' },
-                { label: 'Eliminados', value: s.removed || 0, icon: <MinusCircle size={14} />, cls: 'text-red-600' },
-                { label: 'Modificados', value: s.changed || 0, icon: <RefreshCw size={14} />, cls: 'text-amber-600' },
-                { label: 'Vigilantes afectados', value: s.guardsAffected || 0, icon: <Users size={14} />, cls: 'text-foreground' },
+                { label: 'Nuevos', value: s.added || 0, icon: <PlusIcon size={14} />, tone: 'ok' as Tone },
+                { label: 'Eliminados', value: s.removed || 0, icon: <MinusCircle size={14} />, tone: 'bad' as Tone },
+                { label: 'Modificados', value: s.changed || 0, icon: <RefreshCw size={14} />, tone: 'warn' as Tone },
+                { label: 'Vigilantes afectados', value: s.guardsAffected || 0, icon: <Users size={14} />, tone: 'neutral' as Tone },
               ];
               return (
-                <div className="grid grid-cols-4 gap-2 px-5 py-3 border-b border-border/20">
+                <div className="grid grid-cols-4 gap-2 px-5 py-3" style={{ borderBottom: '1px solid var(--hairline)' }}>
                   {cards.map((c) => (
-                    <div key={c.label} className="rounded-xl border border-border/30 p-2 text-center">
-                      <div className={`flex items-center justify-center gap-1 ${c.cls}`}>{c.icon}<span className="text-lg font-bold tabular-nums">{c.value}</span></div>
-                      <div className="mt-0.5 text-[10px] uppercase tracking-wide text-muted-foreground">{c.label}</div>
+                    <div key={c.label} className="glass-flat p-2 text-center">
+                      <div className="flex items-center justify-center gap-1" style={{ color: toneInk(c.tone) }}>
+                        {c.icon}<span className="text-lg font-bold tabular-nums">{c.value}</span>
+                      </div>
+                      <div className="cg-eyebrow mt-0.5">{c.label}</div>
                     </div>
                   ))}
                 </div>
@@ -2992,15 +3130,15 @@ export default function Schedule() {
               if (!cov) return null;
               const ok = (cov.gapCount || 0) === 0;
               return (
-                <div className="flex items-center justify-between px-5 py-2.5 border-b border-border/20">
+                <div className="flex items-center justify-between px-5 py-2.5" style={{ borderBottom: '1px solid var(--hairline)' }}>
                   <div className="flex items-center gap-2">
-                    {ok ? <CheckCircle2 size={15} className="text-emerald-600" /> : <AlertTriangle size={15} className="text-red-600" />}
-                    <span className="text-[11px] text-muted-foreground">Cobertura de puestos <span className="text-muted-foreground/70">(14 días)</span></span>
+                    {ok ? <CheckCircle2 size={15} style={{ color: 'var(--ok-text)' }} /> : <AlertTriangle size={15} style={{ color: 'var(--bad-text)' }} />}
+                    <span className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>Cobertura de puestos <span style={{ color: 'var(--ink-faint)' }}>(14 días)</span></span>
                   </div>
                   <div className="flex items-center gap-3 text-xs">
-                    <span className={`font-bold tabular-nums ${ok ? 'text-emerald-600' : 'text-red-600'}`}>{cov.coveredPct}%</span>
-                    {(cov.gapCount || 0) > 0 && <span className="font-semibold text-red-600">{cov.gapCount} sin cubrir</span>}
-                    {(cov.overstaffCount || 0) > 0 && <span className="text-amber-600">{cov.overstaffCount} sobre-cubierto</span>}
+                    <span className="font-bold tabular-nums" style={{ color: ok ? 'var(--ok-text)' : 'var(--bad-text)' }}>{cov.coveredPct}%</span>
+                    {(cov.gapCount || 0) > 0 && <span className="font-semibold tabular-nums" style={{ color: 'var(--bad-text)' }}>{cov.gapCount} sin cubrir</span>}
+                    {(cov.overstaffCount || 0) > 0 && <span className="tabular-nums" style={{ color: 'var(--warn-text)' }}>{cov.overstaffCount} sobre-cubierto</span>}
                   </div>
                 </div>
               );
@@ -3016,8 +3154,8 @@ export default function Schedule() {
               if (w.sfStyleInconsistencies?.length) lines.push(`${w.sfStyleInconsistencies.length} sitio(s) con sacafrancos en estilos de turno distintos`);
               if (!lines.length) return null;
               return (
-                <div className="px-5 py-2.5 border-b border-border/20">
-                  <div className="flex items-start gap-2 rounded-xl bg-amber-500/10 px-3 py-2 text-amber-700">
+                <div className="px-5 py-2.5" style={{ borderBottom: '1px solid var(--hairline)' }}>
+                  <div className="flex items-start gap-2 rounded-xl px-3 py-2" style={tonePill('warn', 12)}>
                     <AlertTriangle size={15} className="mt-0.5 shrink-0" />
                     <div className="text-[11px] leading-relaxed">
                       <p className="font-semibold">Revisa antes de publicar:</p>
@@ -3037,33 +3175,29 @@ export default function Schedule() {
                 if (!changes.length) {
                   return (
                     <div className="flex flex-col items-center justify-center py-10 text-center">
-                      <CheckCircle2 size={28} className="text-emerald-600 mb-2" />
-                      <p className="text-sm font-medium text-foreground">El horario ya está al día</p>
-                      <p className="text-xs text-muted-foreground">No hay cambios que aplicar.</p>
+                      <CheckCircle2 size={28} className="mb-2" style={{ color: 'var(--ok-text)' }} />
+                      <p className="text-sm font-semibold">El horario ya está al día</p>
+                      <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>No hay cambios que aplicar.</p>
                     </div>
                   );
                 }
                 const fmt = (d: string) => {
                   try { return new Date(d).toLocaleString(undefined, { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }); } catch { return d; }
                 };
-                const badge: Record<string, string> = {
-                  add: 'bg-emerald-500/10 text-emerald-600',
-                  remove: 'bg-red-500/10 text-red-600',
-                  change: 'bg-amber-500/10 text-amber-600',
-                };
+                const badge: Record<string, Tone> = { add: 'ok', remove: 'bad', change: 'warn' };
                 const label: Record<string, string> = { add: 'Nuevo', remove: 'Eliminar', change: 'Cambio' };
                 return (
-                  <div className="divide-y divide-border/20">
+                  <div className="divide-y" style={{ borderColor: 'var(--hairline)' }}>
                     {changes.slice(0, 300).map((c: ProposalChange) => (
                       <div key={c.id} className="flex items-center gap-3 py-2">
-                        <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${badge[c.action || ''] || 'bg-muted text-foreground'}`}>{label[c.action || ''] || c.action}</span>
+                        <span className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase" style={tonePill(badge[c.action || ''] || 'neutral', 12)}>{label[c.action || ''] || c.action}</span>
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm text-foreground">{fmt(c.startTime || '')} {c.meta?.shiftType ? `· ${c.meta.shiftType === 'night' ? 'Nocturno' : c.meta.shiftType === 'day' ? 'Diurno' : c.meta.shiftType}` : ''}</p>
+                          <p className="truncate text-sm tabular-nums">{fmt(c.startTime || '')} {c.meta?.shiftType ? `· ${c.meta.shiftType === 'night' ? 'Nocturno' : c.meta.shiftType === 'day' ? 'Diurno' : c.meta.shiftType}` : ''}</p>
                         </div>
                       </div>
                     ))}
                     {changes.length > 300 && (
-                      <p className="py-2 text-center text-[11px] text-muted-foreground">+{changes.length - 300} cambios más…</p>
+                      <p className="py-2 text-center text-[11px]" style={{ color: 'var(--ink-soft)' }}>+{changes.length - 300} cambios más…</p>
                     )}
                   </div>
                 );
@@ -3072,12 +3206,12 @@ export default function Schedule() {
             </>
             )}
 
-            <div className="px-5 py-3 border-t border-border/20 flex items-center justify-between gap-3">
+            <div className="flex items-center justify-between gap-3 px-5 py-3" style={{ borderTop: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>
               {planData ? (
-                <button onClick={closeProposalModal} className="ml-auto px-6 py-2.5 rounded-xl text-sm font-semibold text-white bg-primary hover:bg-primary/90 transition-all shadow-sm">Listo</button>
+                <button onClick={closeProposalModal} className="cg-btn-brand cg-focus ml-auto rounded-full px-6 py-2.5 text-sm font-semibold transition-all">Listo</button>
               ) : (
                 <>
-                  <button onClick={discardProposal} disabled={publishing} className="px-4 py-2 rounded-xl text-sm font-medium text-red-600 hover:bg-red-500/10 disabled:opacity-50 transition-all flex items-center gap-1.5">
+                  <button onClick={discardProposal} disabled={publishing} className="cg-focus flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition-all disabled:opacity-50" style={{ color: 'var(--bad-text)' }}>
                     <Trash2 size={14} /> Descartar
                   </button>
                   {(() => {
@@ -3087,7 +3221,7 @@ export default function Schedule() {
                       <button
                         onClick={() => publishProposal(hasGaps)}
                         disabled={publishing}
-                        className={`px-6 py-2.5 rounded-xl text-sm font-semibold text-white disabled:opacity-50 transition-all shadow-sm flex items-center gap-2 ${hasGaps ? 'bg-red-600 hover:bg-red-700' : 'bg-primary hover:bg-primary/90'}`}
+                        className={`cg-focus flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold transition-all disabled:opacity-50 ${hasGaps ? 'cg-btn-bad' : 'cg-btn-brand'}`}
                       >
                         {publishing ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
                         {publishing ? 'Publicando...' : hasGaps ? 'Publicar con faltantes' : 'Publicar y aplicar'}

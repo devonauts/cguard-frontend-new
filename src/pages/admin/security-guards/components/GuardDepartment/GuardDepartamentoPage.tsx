@@ -7,7 +7,7 @@ import securityGuardService from '@/lib/api/securityGuardService';
 import departmentService, { Department } from '@/lib/api/departmentService';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
-import { PageContainer, PageHeader, Section, EmptyState, SkeletonCards, StatusBadge } from '@/components/kit';
+import { PageContainer, PageHeader, Section, EmptyState, SkeletonCards, StatusBadge, IconTile } from "@/components/kit";
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { usePermissions } from '@/hooks/usePermissions';
@@ -104,11 +104,9 @@ export default function GuardDepartamentoPage() {
             <Section title="Departamento asignado" icon={<Building2 />}>
               <div className="space-y-6">
                 {current ? (
-                  <div className="flex items-center justify-between rounded-2xl border bg-card px-4 py-3">
+                  <div className="flex items-center justify-between glass-flat px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                        <Building2 className="h-5 w-5" />
-                      </div>
+                      <IconTile><Building2 /></IconTile>
                       <div>
                         <div className="font-medium">{current.name}</div>
                         <div className="text-xs text-muted-foreground">Departamento actual</div>

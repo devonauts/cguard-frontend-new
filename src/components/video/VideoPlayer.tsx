@@ -7,7 +7,18 @@ import {
 import { cn } from "@/lib/utils";
 import { videoService, type Camera, type StreamInfo } from "@/lib/api/videoService";
 
-const GOLD = "#C8860A";
+/* ── COLOR EN UN REPRODUCTOR DE VIDEO ────────────────────────────────
+   Aquí el blanco NO se sustituye por tokens y es correcto que se quede:
+   todo lo que dibujamos va ENCIMA de la imagen de una cámara o de un velo
+   negro sobre ella. Ese lienzo es el mismo en tema claro y en oscuro (un
+   vídeo no cambia de color con las preferencias del CRM), así que la tinta
+   legible es blanca en los dos casos, y un token acromático —que SÍ se
+   invierte con el tema— pondría texto negro sobre una escena nocturna.
+
+   Lo que sí sale de los tokens es lo que significa algo: el acento de los
+   estados de carga (`--brand`) y los semáforos de transporte/estado
+   (`--ok`, `--warn`), que antes eran esmeralda y ámbar de Tailwind sueltos.
+   ------------------------------------------------------------------ */
 
 /* ------------------------------------------------------------------ */
 /* hls.js — the player engine. We deliberately run it BUFFERED (not    */
@@ -250,7 +261,9 @@ export function VideoPlayer({ camera, className, autoPlay = true, ptz = true, vi
 
       {state === "ready" && transport ? (
         <div className="absolute left-2 top-2 z-20 flex items-center gap-1 rounded bg-black/55 px-1.5 py-0.5 text-[10px] font-semibold text-white/90 backdrop-blur">
-          <span className={cn("h-1.5 w-1.5 rounded-full", transport === "webrtc" ? "bg-emerald-400" : "bg-amber-400")} />
+          {/* En vivo = `--ok`, diferido = `--warn`. Semánticos fijos: no siguen al
+              acento, porque «hay latencia» significa lo mismo con cualquier tono. */}
+          <span className="h-1.5 w-1.5 rounded-full" style={{ background: transport === "webrtc" ? "var(--ok)" : "var(--warn)" }} />
           {transport === "webrtc" ? "EN VIVO" : "HLS"}
         </div>
       ) : null}
@@ -258,16 +271,16 @@ export function VideoPlayer({ camera, className, autoPlay = true, ptz = true, vi
       {state === "ready" && ptz ? <PtzPad cameraId={camera.id} /> : null}
 
       {state === "loading" ? (
-        <Overlay><Loader2 className="size-7 animate-spin" style={{ color: GOLD }} /><p className="text-sm text-white/70">Conectando…</p></Overlay>
+        <Overlay><Loader2 className="size-7 animate-spin" style={{ color: "var(--brand)" }} /><p className="text-sm text-white/70">Conectando…</p></Overlay>
       ) : null}
       {state === "offline" ? (
         <Overlay snapshot={snapshot}><WifiOff className="size-8 text-white/60" /><p className="text-sm font-medium text-white/80">Cámara fuera de línea</p><RetryButton onClick={reload} /></Overlay>
       ) : null}
       {state === "none" ? (
-        <Overlay snapshot={snapshot}><VideoOff className="size-8" style={{ color: GOLD }} /><p className="text-sm font-medium text-white/85">Sin transmisión configurada</p></Overlay>
+        <Overlay snapshot={snapshot}><VideoOff className="size-8" style={{ color: "var(--brand)" }} /><p className="text-sm font-medium text-white/85">Sin transmisión configurada</p></Overlay>
       ) : null}
       {state === "error" ? (
-        <Overlay snapshot={snapshot}><AlertTriangle className="size-8 text-amber-400" /><p className="text-sm font-medium text-white/85">{errorMsg || "Error de transmisión"}</p><RetryButton onClick={reload} /></Overlay>
+        <Overlay snapshot={snapshot}><AlertTriangle className="size-8" style={{ color: "var(--warn)" }} /><p className="text-sm font-medium text-white/85">{errorMsg || "Error de transmisión"}</p><RetryButton onClick={reload} /></Overlay>
       ) : null}
     </div>
   );
@@ -283,9 +296,16 @@ function PtzPad({ cameraId }: { cameraId: string }) {
   };
   const stop = () => { if (!moving.current) return; moving.current = false; videoService.ptz(cameraId, { stop: true }).catch(() => {}); };
   const S = 0.7;
+  // Reposo: velo negro + tinta blanca, porque va sobre la imagen de la cámara.
+  // Pulsado: relleno de marca con `--brand-ink` encima — el mismo par que usa
+  // cualquier botón del sistema, así que sigue al acento que elija el usuario.
   const dirBtn = (icon: React.ReactNode, v: any, cls: string) => (
     <button onPointerDown={start(v)} onPointerUp={stop} onPointerLeave={stop} onPointerCancel={stop}
-      className={cn("grid place-items-center rounded-md bg-black/55 text-white/90 backdrop-blur transition-colors hover:bg-[#C8860A] active:bg-[#C8860A]", cls)}>{icon}</button>
+      className={cn(
+        "grid place-items-center rounded-md bg-black/55 text-white/90 backdrop-blur transition-colors",
+        "hover:bg-[var(--brand)] hover:text-[var(--brand-ink)] active:bg-[var(--brand)] active:text-[var(--brand-ink)]",
+        cls,
+      )}>{icon}</button>
   );
   if (!open) {
     return (

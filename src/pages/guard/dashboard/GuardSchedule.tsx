@@ -67,7 +67,8 @@ export default function GuardSchedule() {
               return (
                 <div
                   key={s.id}
-                  className={`rounded-xl border p-3.5 ${isActive ? 'border-green-400/70 bg-green-500/5' : ''}`}
+                  className="rounded-xl border p-3.5"
+                  style={isActive ? { borderColor: 'color-mix(in oklab, var(--ok) 45%, transparent)', background: 'color-mix(in oklab, var(--ok) 6%, transparent)' } : undefined}
                 >
                   <div className="flex items-center justify-between gap-3">
                     <p className="text-sm font-semibold text-foreground">

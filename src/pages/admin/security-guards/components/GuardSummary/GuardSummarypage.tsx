@@ -1,9 +1,10 @@
+import type * as React from 'react';
 import { useEffect, useState } from 'react';
 import { format as dateFnsFormat } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { ApiService } from '@/services/api/apiService';
 import securityGuardService from '@/lib/api/securityGuardService';
-import { Section, StatCard, EmptyState } from '@/components/kit';
+import { Section, StatCard, EmptyState, IconTile, StatusBadge, SkeletonBlock } from '@/components/kit';
 import { MapPin, Gauge, CalendarDays, Building2, Clock } from 'lucide-react';
 import type {
   GuardDetail,
@@ -43,12 +44,27 @@ interface StationSummary {
   window: string | null;
 }
 
-// Mirrors src/pages/admin/clientes/components/ClientCoverage/ScheduleCard.tsx
-const CELL: Record<string, { label: string; cls: string }> = {
-  day: { label: 'D', cls: 'bg-sky-500/15 text-sky-700 dark:text-sky-300' },
-  night: { label: 'N', cls: 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-300' },
-  rest: { label: 'L', cls: 'bg-muted text-muted-foreground' },
-  none: { label: '·', cls: 'text-muted-foreground/40' },
+// Espeja src/pages/admin/clientes/components/ClientCoverage/ScheduleCard.tsx.
+// Día / Noche / Libre no son estados semánticos (nada está «mal» de noche): el
+// día usa el azul informativo y la noche el acento de marca, que es lo único con
+// color en pantalla. Ambos salen de variables, así que siguen al tono elegido.
+const CELL: Record<string, { label: string; style: React.CSSProperties }> = {
+  day: {
+    label: 'D',
+    style: { background: 'color-mix(in oklab, var(--info) 16%, transparent)', color: 'var(--info-text)' },
+  },
+  night: {
+    label: 'N',
+    style: { background: 'var(--brand-wash)', color: 'var(--brand-text)' },
+  },
+  rest: {
+    label: 'L',
+    style: { background: 'var(--glass-sunken)', color: 'var(--ink-soft)' },
+  },
+  none: {
+    label: '·',
+    style: { color: 'var(--ink-faint)' },
+  },
 };
 
 const TIER_LABEL: Record<string, string> = {
@@ -57,11 +73,11 @@ const TIER_LABEL: Record<string, string> = {
   fair: 'Regular',
   needs_improvement: 'Por mejorar',
 };
-const TIER_ACCENT: Record<string, 'green' | 'orange' | 'red'> = {
-  excellent: 'green',
-  good: 'green',
-  fair: 'orange',
-  needs_improvement: 'red',
+const TIER_ACCENT: Record<string, 'ok' | 'warn' | 'bad'> = {
+  excellent: 'ok',
+  good: 'ok',
+  fair: 'warn',
+  needs_improvement: 'bad',
 };
 
 const ymd = (d: Date) =>
@@ -231,7 +247,7 @@ export default function GuardSummary({ guard }: Props) {
       {/* ── STATION / POST ASSIGNMENT ─────────────────────────────────────── */}
       <Section title="Puesto y estación" icon={<MapPin className="h-4 w-4" />}>
         {assignmentsLoading && assignments === null ? (
-          <div className="py-6 text-center text-sm text-muted-foreground">Cargando asignación…</div>
+          <div className="py-6 text-center text-sm" style={{ color: 'var(--ink-soft)' }}>Cargando asignación…</div>
         ) : stations.length === 0 ? (
           <EmptyState
             icon={<MapPin className="h-5 w-5" />}
@@ -241,21 +257,20 @@ export default function GuardSummary({ guard }: Props) {
         ) : (
           <div className="grid gap-3 sm:grid-cols-2">
             {stations.map((s, i) => (
-              <div key={i} className="rounded-2xl border bg-card p-4">
+              /* Se repite → `glass-flat`, sin desenfoque. */
+              <div key={i} className="glass-flat p-4">
                 <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                    <Building2 className="h-5 w-5" />
-                  </div>
+                  <IconTile tone="brand"><Building2 /></IconTile>
                   <div className="min-w-0">
-                    <div className="truncate font-semibold text-sm">{s.stationName || 'Estación'}</div>
+                    <div className="truncate text-sm font-semibold">{s.stationName || 'Estación'}</div>
                     {s.postSiteName && s.postSiteName !== s.stationName && (
-                      <div className="truncate text-xs text-muted-foreground">Sede: {s.postSiteName}</div>
+                      <div className="truncate text-xs" style={{ color: 'var(--ink-soft)' }}>Sede: {s.postSiteName}</div>
                     )}
                     {s.clientName && (
-                      <div className="truncate text-xs text-muted-foreground">Cliente: {s.clientName}</div>
+                      <div className="truncate text-xs" style={{ color: 'var(--ink-soft)' }}>Cliente: {s.clientName}</div>
                     )}
                     {s.window && (
-                      <div className="mt-1.5 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <div className="mt-1.5 inline-flex items-center gap-1.5 text-xs" style={{ color: 'var(--ink-soft)' }}>
                         <Clock className="h-3.5 w-3.5" /> {s.window}
                       </div>
                     )}
@@ -273,30 +288,32 @@ export default function GuardSummary({ guard }: Props) {
         icon={<Gauge className="h-4 w-4" />}
       >
         {perfLoading && perf === null ? (
-          <div className="py-6 text-center text-sm text-muted-foreground">Calculando desempeño…</div>
+          <div className="py-6 text-center text-sm" style={{ color: 'var(--ink-soft)' }}>Calculando desempeño…</div>
         ) : !perf?.hasData ? (
-          <div className="rounded-2xl border border-dashed py-8 text-center text-sm text-muted-foreground">
-            Aún no hay datos suficientes para calcular el desempeño de este vigilante.
-          </div>
+          <EmptyState
+            icon={<Gauge />}
+            title="Sin datos de desempeño"
+            description="Aún no hay datos suficientes para calcular el desempeño de este vigilante."
+          />
         ) : (
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
             <StatCard
               label="Puntaje"
               value={`${perf.score}/100`}
               hint={TIER_LABEL[perf.tier] || perf.tier}
-              accent={TIER_ACCENT[perf.tier] || 'slate'}
+              accent={TIER_ACCENT[perf.tier] || 'neutral'}
               icon={<Gauge />}
             />
             <StatCard
               label="Asistencia"
               value={stats.attendanceRate != null ? `${stats.attendanceRate}%` : '—'}
               hint={`${stats.shiftsWorked ?? 0}/${stats.shiftsScheduled ?? 0} turnos`}
-              accent="blue"
+              accent="info"
             />
             <StatCard
               label="Horas trabajadas"
               value={stats.hoursWorked != null ? `${stats.hoursWorked} h` : '—'}
-              accent="primary"
+              accent="brand"
             />
             <StatCard
               label="Faltas / Atrasos"
@@ -307,7 +324,7 @@ export default function GuardSummary({ guard }: Props) {
                   : undefined
               }
               accent={
-                (stats.absences ?? 0) > 0 || (stats.tardies ?? 0) > 0 ? 'orange' : 'green'
+                (stats.absences ?? 0) > 0 || (stats.tardies ?? 0) > 0 ? 'warn' : 'ok'
               }
             />
           </div>
@@ -317,7 +334,7 @@ export default function GuardSummary({ guard }: Props) {
       {/* ── SCHEDULE SNAPSHOT (this week) ──────────────────────────────────── */}
       <Section title="Horario esta semana" icon={<CalendarDays className="h-4 w-4" />}>
         {scheduleLoading && schedule === null ? (
-          <div className="py-6 text-center text-sm text-muted-foreground">Cargando horario…</div>
+          <div className="py-6 text-center text-sm" style={{ color: 'var(--ink-soft)' }}>Cargando horario…</div>
         ) : scheduleRows.length === 0 ? (
           <EmptyState
             icon={<CalendarDays className="h-5 w-5" />}
@@ -330,15 +347,20 @@ export default function GuardSummary({ guard }: Props) {
               <table className="w-full border-collapse text-sm">
                 <thead>
                   <tr>
-                    <th className="sticky left-0 z-10 min-w-[160px] border-b bg-card px-2 py-2 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    <th
+                      className="cg-eyebrow sticky left-0 z-10 min-w-[160px] border-b px-2 py-2 text-left"
+                      style={{ background: 'var(--glass-solid)', borderColor: 'var(--hairline)' }}
+                    >
                       Estación · Puesto
                     </th>
                     {days.map((d) => (
                       <th
                         key={d.date}
-                        className={`border-b px-1 py-1 text-center text-[11px] font-medium ${
-                          d.isToday ? 'text-primary' : d.weekend ? 'text-muted-foreground/70' : 'text-muted-foreground'
-                        }`}
+                        className="border-b px-1 py-1 text-center text-[11px] font-medium"
+                        style={{
+                          borderColor: 'var(--hairline)',
+                          color: d.isToday ? 'var(--brand-text)' : d.weekend ? 'var(--ink-faint)' : 'var(--ink-soft)',
+                        }}
                       >
                         <div>{d.dow}</div>
                         <div className={`tabular-nums ${d.isToday ? 'font-bold' : ''}`}>{d.day}</div>
@@ -348,10 +370,13 @@ export default function GuardSummary({ guard }: Props) {
                 </thead>
                 <tbody>
                   {scheduleRows.map((r, ri) => (
-                    <tr key={ri} className="hover:bg-muted/30">
-                      <td className="sticky left-0 z-10 min-w-[160px] border-b bg-card px-2 py-1.5">
-                        <div className="truncate text-xs font-semibold text-foreground">{r.stationName || 'Estación'}</div>
-                        <div className="truncate text-xs text-muted-foreground">
+                    <tr key={ri} className="transition-colors hover:[background:var(--glass-sunken)]">
+                      <td
+                        className="sticky left-0 z-10 min-w-[160px] border-b px-2 py-1.5"
+                        style={{ background: 'var(--glass-solid)', borderColor: 'var(--hairline)' }}
+                      >
+                        <div className="truncate text-xs font-semibold">{r.stationName || 'Estación'}</div>
+                        <div className="truncate text-xs" style={{ color: 'var(--ink-soft)' }}>
                           {r.positionName}
                           {r.positionType === 'sacafranco' ? ' · SF' : ''}
                           {r.window ? ` · ${r.window}` : ''}
@@ -360,8 +385,11 @@ export default function GuardSummary({ guard }: Props) {
                       {(r.cells || []).map((c) => {
                         const m = CELL[c.status] || CELL.none;
                         return (
-                          <td key={c.date} className="border-b p-0.5 text-center">
-                            <span className={`grid h-7 w-full min-w-[26px] place-items-center rounded text-[11px] font-bold ${m.cls}`}>
+                          <td key={c.date} className="border-b p-0.5 text-center" style={{ borderColor: 'var(--hairline)' }}>
+                            <span
+                              className="grid h-7 w-full min-w-[26px] place-items-center rounded-lg text-[11px] font-bold"
+                              style={m.style}
+                            >
                               {m.label}
                             </span>
                           </td>
@@ -372,10 +400,19 @@ export default function GuardSummary({ guard }: Props) {
                 </tbody>
               </table>
             </div>
-            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-              <span className="inline-flex items-center gap-1.5"><span className="grid h-4 w-4 place-items-center rounded bg-sky-500/15 text-[10px] font-bold text-sky-700">D</span> Día</span>
-              <span className="inline-flex items-center gap-1.5"><span className="grid h-4 w-4 place-items-center rounded bg-indigo-500/15 text-[10px] font-bold text-indigo-700">N</span> Noche</span>
-              <span className="inline-flex items-center gap-1.5"><span className="grid h-4 w-4 place-items-center rounded bg-muted text-[10px] font-bold text-muted-foreground">L</span> Libre</span>
+            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs" style={{ color: 'var(--ink-soft)' }}>
+              {[
+                { k: 'day', label: 'Día' },
+                { k: 'night', label: 'Noche' },
+                { k: 'rest', label: 'Libre' },
+              ].map(({ k, label }) => (
+                <span key={k} className="inline-flex items-center gap-1.5">
+                  <span className="grid h-4 w-4 place-items-center rounded text-[10px] font-bold" style={CELL[k].style}>
+                    {CELL[k].label}
+                  </span>
+                  {label}
+                </span>
+              ))}
             </div>
           </>
         )}
@@ -385,29 +422,36 @@ export default function GuardSummary({ guard }: Props) {
       <Section title={t('guards.summary.recentActivity.title')} icon={<Clock className="h-4 w-4" />}>
         <div className="space-y-4">
           {activitiesLoading ? (
-            <p className="text-sm text-muted-foreground">{t('common.loading') || 'Cargando...'}</p>
+            <div className="space-y-2">
+              <SkeletonBlock className="h-4 w-1/2" />
+              <SkeletonBlock className="h-4 w-2/3" />
+              <SkeletonBlock className="h-4 w-1/3" />
+            </div>
           ) : activities.length > 0 ? (
             activities.map((activity: SummaryActivity, idx: number) => (
-              <div key={idx} className="flex items-start gap-3 border-b pb-3 last:border-b-0">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-sm font-medium">
+              <div
+                key={idx}
+                className="flex items-start gap-3 border-b pb-3 last:border-b-0"
+                style={{ borderColor: 'var(--hairline)' }}
+              >
+                <div
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold"
+                  style={{ background: 'var(--brand-wash)', color: 'var(--brand-text)' }}
+                >
                   {activity.initial}
                 </div>
                 <div className="flex-1">
                   {activity.subject && (
-                    <p className="mb-0.5 text-xs font-semibold text-foreground/70">{activity.subject}</p>
+                    <p className="mb-0.5 text-xs font-semibold" style={{ color: 'var(--ink-soft)' }}>{activity.subject}</p>
                   )}
-                  <p className="text-sm text-foreground">{activity.message}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">{activity.timestamp}</p>
+                  <p className="text-sm">{activity.message}</p>
+                  <p className="mt-1 text-xs" style={{ color: 'var(--ink-faint)' }}>{activity.timestamp}</p>
                 </div>
-                {activity.badge && (
-                  <span className="rounded bg-yellow-500/15 px-2 py-1 text-xs text-yellow-800">
-                    {activity.badge}
-                  </span>
-                )}
+                {activity.badge && <StatusBadge tone="ok" dot={false}>{activity.badge}</StatusBadge>}
               </div>
             ))
           ) : (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
               {t('guards.summary.recentActivity.empty') || 'Sin actividad reciente'}
             </p>
           )}

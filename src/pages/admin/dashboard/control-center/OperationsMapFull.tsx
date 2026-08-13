@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Maximize, X, Radio } from "lucide-react";
+import { StatusBadge } from "@/components/kit";
 import { useControlCenter } from "./useControlCenter";
 import { useDemoData } from "./demoData";
 import { loadPrefs } from "./prefs";
@@ -29,13 +30,6 @@ export default function OperationsMapFull() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  const legend = [
-    { k: "tenant", label: "Sede" },
-    { k: "station", label: "Puestos" },
-    { k: "guard", label: "Vigilantes" },
-    { k: "supervisor", label: "Supervisores" },
-  ] as const;
-
   const goFullscreen = () => {
     try {
       const el = document.documentElement as HTMLElement & { webkitRequestFullscreen?: () => void };
@@ -49,40 +43,49 @@ export default function OperationsMapFull() {
       className="cc-root relative"
       style={{ ["--cc-accent" as any]: prefs.accent, height: "100vh", width: "100vw", overflow: "hidden" }}
     >
-      {/* overlay header */}
-      <div
-        className="absolute inset-x-0 top-0 z-20 flex flex-wrap items-center justify-between gap-3 px-4 py-3"
-        style={{ background: "linear-gradient(to bottom, rgba(8,12,20,0.82), rgba(8,12,20,0))" }}
-      >
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2 font-display text-sm font-semibold text-white">
-            <Radio size={15} className="text-emerald-400" />
+      {/* ── Barra flotante ──────────────────────────────────────────────────
+          Antes era tinta blanca sobre un azul-negro escrito a mano: se veía
+          igual en claro que en oscuro e ignoraba el acento. Ahora es una barra
+          de CRISTAL del sistema flotando sobre el mapa, así que hereda el tema
+          y el acento sin escribir dos versiones. Va como panel elevado —y no
+          como degradado a sangre— porque sobre un mapa satélite claro un velo
+          oscuro tapa la imagen sin llegar a dar contraste. */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex flex-wrap items-start justify-between gap-3 p-3">
+        <div className="glass-raised pointer-events-auto flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2.5">
+          <span className="font-display flex items-center gap-2 text-sm font-semibold">
+            {/* Verde semántico fijo: «esto está vivo» no cambia con el acento. */}
+            <Radio className="size-4" style={{ color: "var(--ok-text)" }} />
             Operaciones en tiempo real
-            {demo && <span className="rounded-full bg-[color:var(--cc-accent)]/20 px-2 py-0.5 text-[10px] font-bold text-[color:var(--cc-accent)]">DEMO</span>}
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            {legend.map((l) => (
-              <span key={l.k} className="flex items-center gap-1 text-[11px] text-white/70">
-                <span className="h-2 w-2 rounded-full" style={{ background: prefs.pinColors[l.k as keyof typeof prefs.pinColors] }} />
-                {l.label}
-              </span>
-            ))}
-          </div>
+          </span>
+          {demo && <StatusBadge tone="brand" dot={false}>Demo</StatusBadge>}
+          <span className="hidden h-5 w-px sm:block" style={{ background: "var(--hairline)" }} />
+          <span className="text-[11px]" style={{ color: "var(--ink-soft)" }}>
+            {data.entities.length} elementos · filtros y leyenda sobre el mapa
+          </span>
+          {/* ── SIN LEYENDA AQUÍ ───────────────────────────────────────────────
+              Había una con un punto de color por tipo sacado de «Personalizar».
+              Mentía: sobre el mapa, un puesto se pinta por su COBERTURA (verde /
+              ámbar / rojo / apagado), no con el color de fábrica de su tipo, así
+              que la fila de puntos decía un color y el mapa enseñaba otro. La
+              leyenda buena —la semántica— la dibuja el propio mapa abajo a la
+              izquierda, y el riel de capas de la izquierda da el filtro. */}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="pointer-events-auto flex items-center gap-2">
           <button
             onClick={goFullscreen}
             title="Pantalla completa"
-            className="grid h-8 w-8 place-items-center rounded-lg border border-white/15 bg-black/40 text-white/80 hover:text-white active:scale-95 transition"
+            aria-label="Pantalla completa"
+            className="cg-btn-glass cg-focus grid size-9 place-items-center rounded-full transition active:scale-95"
           >
-            <Maximize size={15} />
+            <Maximize className="size-4" />
           </button>
           <button
             onClick={() => window.close()}
             title="Cerrar"
-            className="grid h-8 w-8 place-items-center rounded-lg border border-white/15 bg-black/40 text-white/80 hover:text-white active:scale-95 transition"
+            aria-label="Cerrar"
+            className="cg-btn-glass cg-focus grid size-9 place-items-center rounded-full transition active:scale-95"
           >
-            <X size={16} />
+            <X className="size-4" />
           </button>
         </div>
       </div>

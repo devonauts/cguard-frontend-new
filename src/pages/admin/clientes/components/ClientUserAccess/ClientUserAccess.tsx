@@ -4,6 +4,7 @@ import useScrollToTopOnMount from '@/hooks/useScrollToTopOnMount';
 import { clientService } from '@/lib/api/clientService';
 import { Search, UserPlus, Users, Trash2, Mail, Smartphone, Loader2 } from 'lucide-react';
 import { Section, EmptyState, StatusBadge, Modal } from '@/components/kit';
+import { FIELD_CLS, LabeledField, RowAction, TabLoading, Avatar } from '../_shared/tab-kit';
 import { Button } from '@/components/ui/button';
 import type { Client } from '@/types/client';
 
@@ -13,7 +14,6 @@ interface AccessUser {
   id: string; pivotId: string | null; userId: string | null; isTitular: boolean;
   name: string; email: string | null; role: string; status?: string;
 }
-const inputCls = 'flex h-9 w-full rounded-lg border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-all placeholder:text-muted-foreground hover:border-ring/40 focus-visible:outline-none focus-visible:border-ring focus-visible:ring-ring/40 focus-visible:ring-[3px]';
 
 export default function ClientUserAccess({ client }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -55,9 +55,7 @@ export default function ClientUserAccess({ client }: Props) {
     catch { toast.error('No se pudo revocar'); }
   };
 
-  const initial = (n: string) => (n || '?').charAt(0).toUpperCase();
-
-  if (loading) return <div className="p-8 text-sm text-muted-foreground">Cargando accesos…</div>;
+  if (loading) return <TabLoading count={2} />;
 
   return (
     <div ref={containerRef} className="space-y-4">
@@ -65,7 +63,7 @@ export default function ClientUserAccess({ client }: Props) {
         action={<Button size="sm" variant="brand" onClick={() => setInviteOpen(true)}><UserPlus className="mr-1.5 h-4 w-4" /> Invitar acceso</Button>}>
         <div className="mb-3 relative max-w-sm">
           <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <input className={`${inputCls} pl-8`} placeholder="Buscar por nombre o correo" value={query} onChange={(e) => setQuery(e.target.value)} />
+          <input className={`${FIELD_CLS} pl-8`} placeholder="Buscar por nombre o correo" value={query} onChange={(e) => setQuery(e.target.value)} />
         </div>
 
         {filtered.length === 0 ? (
@@ -75,13 +73,13 @@ export default function ClientUserAccess({ client }: Props) {
             {filtered.map((u) => (
               <div key={u.id} className="flex items-center justify-between gap-3 py-3">
                 <div className="flex min-w-0 items-center gap-3">
-                  <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-full text-sm font-semibold ${u.isTitular ? 'cg-gradient-brand text-primary-foreground' : 'bg-primary/12 text-primary'}`}>{initial(u.name)}</span>
+                  <Avatar name={u.name} solid={u.isTitular} />
                   <div className="min-w-0"><div className="truncate text-sm font-medium">{u.name}</div><div className="truncate text-xs text-muted-foreground">{u.email || 'Sin correo'}</div></div>
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
                   <StatusBadge tone={u.isTitular ? 'green' : 'blue'} dot={false}>{u.role || 'Acceso'}</StatusBadge>
                   {!u.isTitular && u.pivotId && (
-                    <button onClick={() => revoke(u)} title="Revocar acceso" className="rounded-md p-1.5 text-muted-foreground hover:bg-red-500/10 hover:text-red-600"><Trash2 className="h-3.5 w-3.5" /></button>
+                    <RowAction title="Revocar acceso" tone="bad" onClick={() => revoke(u)}><Trash2 className="h-3.5 w-3.5" /></RowAction>
                   )}
                 </div>
               </div>
@@ -94,14 +92,26 @@ export default function ClientUserAccess({ client }: Props) {
       <Modal open={inviteOpen} onOpenChange={(o) => { if (!sending) setInviteOpen(o); }} title="Invitar acceso" icon={<UserPlus className="h-5 w-5" />}
         footer={<><Button variant="outline" onClick={() => setInviteOpen(false)} disabled={sending}>Cancelar</Button><Button variant="brand" onClick={invite} disabled={sending || !form.email.trim()}>{sending ? <><Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> Enviando…</> : 'Enviar invitación'}</Button></>}>
         <div className="space-y-3">
-          <div><label className="mb-1 block text-xs font-medium text-muted-foreground">Correo de la persona</label><input type="email" className={inputCls} placeholder="persona@empresa.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
-          <div>
-            <label className="mb-1 block text-xs font-medium text-muted-foreground">Tipo de acceso</label>
+          <LabeledField label="Correo de la persona"><input type="email" className={FIELD_CLS} placeholder="persona@empresa.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></LabeledField>
+          <LabeledField label="Tipo de acceso">
             <div className="grid grid-cols-2 gap-2">
-              <button onClick={() => setForm({ ...form, channel: 'app' })} className={`flex items-center gap-2 rounded-lg border p-2.5 text-sm ${form.channel === 'app' ? 'border-primary bg-primary/5 text-primary' : 'text-muted-foreground'}`}><Smartphone className="h-4 w-4" /> App Mi Seguridad</button>
-              <button onClick={() => setForm({ ...form, channel: 'portal' })} className={`flex items-center gap-2 rounded-lg border p-2.5 text-sm ${form.channel === 'portal' ? 'border-primary bg-primary/5 text-primary' : 'text-muted-foreground'}`}><Mail className="h-4 w-4" /> Portal web</button>
+              {([['app', 'App Mi Seguridad'], ['portal', 'Portal web']] as const).map(([canal, etiqueta]) => {
+                const activo = form.channel === canal;
+                return (
+                  <button
+                    key={canal}
+                    onClick={() => setForm({ ...form, channel: canal })}
+                    className="cg-focus flex items-center gap-2 rounded-lg border p-2.5 text-sm transition-all"
+                    style={activo
+                      ? { borderColor: 'var(--brand-line)', background: 'var(--brand-wash)', color: 'var(--brand-text)' }
+                      : { borderColor: 'var(--hairline)', color: 'var(--ink-soft)' }}
+                  >
+                    {canal === 'app' ? <Smartphone className="h-4 w-4" /> : <Mail className="h-4 w-4" />} {etiqueta}
+                  </button>
+                );
+              })}
             </div>
-          </div>
+          </LabeledField>
           <p className="text-xs text-muted-foreground">Se creará el acceso y se enviará un enlace para que la persona configure su contraseña.</p>
         </div>
       </Modal>

@@ -31,7 +31,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { ApiService } from '@/services/api/apiService';
 import api from '@/lib/api';
 import { useTranslation } from 'react-i18next';
-import { PageContainer, PageHeader, Section, StatCard, Stagger, EmptyState, Modal } from '@/components/kit';
+import { PageContainer, PageHeader, Section, StatCard, Stagger, EmptyState, Modal, IconTile } from '@/components/kit';
 import { Button } from '@/components/ui/button';
 import type { GuardDetail, Kpi, GuardAssignmentRow } from '../../guardDetailTypes';
 
@@ -525,13 +525,13 @@ export default function GuardIndicators({ guard }: Props) {
               label={t('guards.assignSites.assignedCount', { defaultValue: 'Assigned Sites' })}
               value={assignedSitesCount}
               icon={<MapPin />}
-              accent="blue"
+              accent="info"
             />
             <StatCard
               label={t('guards.KPI.totalKpis', { defaultValue: 'KPIs' })}
               value={kpiData.length}
               icon={<BarChart3 />}
-              accent="primary"
+              accent="brand"
             />
           </Stagger>
 
@@ -548,13 +548,13 @@ export default function GuardIndicators({ guard }: Props) {
                 <div className="relative inline-block">
                   <button
                     onClick={() => setActionOpen(!actionOpen)}
-                    className="px-3 py-2 border rounded-xl bg-card text-foreground text-sm font-medium flex items-center gap-2 hover:bg-muted/30"
+                    className="cg-btn-glass cg-focus flex items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold"
                   >
                     {actionSelection}
                     <ChevronDown size={16} />
                   </button>
                   {actionOpen && (
-                    <div className="absolute left-0 mt-1 bg-card border rounded-xl shadow-lg z-10 w-full overflow-hidden">
+                    <div className="glass-raised absolute left-0 z-10 mt-1 w-full overflow-hidden" style={{ position: 'absolute' }}>
                       <button
                         onClick={() => {
                           setActionOpen(false);
@@ -574,13 +574,13 @@ export default function GuardIndicators({ guard }: Props) {
 
                 {/* Center: Search */}
                 <div className="relative">
-                  <Search size={15} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <Search size={15} className="absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
                   <input
                     type="text"
                     placeholder={t('guards.KPI.kpisearch', 'Buscar KPI')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-48 pl-8 pr-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="cg-input w-48 py-2 pl-8 pr-3 text-sm"
                   />
                 </div>
               </div>
@@ -593,7 +593,7 @@ export default function GuardIndicators({ guard }: Props) {
                 <div className="md:block hidden">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b bg-muted/30">
+                      <tr className="border-b" style={{ background: 'var(--glass-sunken)' }}>
                         <th className="px-4 py-3 text-left">
                           <input
                             type="checkbox"
@@ -627,7 +627,7 @@ export default function GuardIndicators({ guard }: Props) {
                       ) : (
                         kpiData.map((kpi, idx) => (
                           <React.Fragment key={kpi.id || idx}>
-                            <tr onClick={() => setExpandedId(expandedId === kpi.id ? null : kpi.id)} className="border-b hover:bg-muted/30">
+                            <tr onClick={() => setExpandedId(expandedId === kpi.id ? null : kpi.id)} className="border-b transition-colors hover:[background:var(--glass-sunken)]">
                               <td className="px-4 py-3">
                                 <input
                                   type="checkbox"
@@ -662,7 +662,13 @@ export default function GuardIndicators({ guard }: Props) {
                                   </button>
 
                                   {menuOpenId === kpi.id && (
-                                    <div data-kpi-menu={"kpi-" + (kpi.id || idx)} className="absolute right-4 top-full translate-y-2 w-44 min-w-[11rem] bg-card border rounded shadow-lg z-50 py-1 divide-y divide-border overflow-hidden">
+                                    /* Este menú vive DENTRO del bucle de filas.
+                                       `.glass-raised` lleva el desenfoque más
+                                       pesado del sistema, y aunque sólo haya uno
+                                       abierto, la capa se re-rasteriza en cada
+                                       fotograma mientras se desplaza la tabla.
+                                       Plano: mismo aspecto, sin ese coste. */
+                                    <div data-kpi-menu={"kpi-" + (kpi.id || idx)} className="glass-flat absolute right-4 top-full z-50 w-44 min-w-[11rem] translate-y-2 divide-y divide-border overflow-hidden py-1" style={{ position: 'absolute', background: 'var(--glass-solid)' }}>
                                       <button onClick={() => {
                                         setEditingId(kpi.id); setFormData({
                                           frequency: kpi.frequency || '',
@@ -685,7 +691,7 @@ export default function GuardIndicators({ guard }: Props) {
                                       </button>
 
                                       <button onClick={() => { setToDeleteId(kpi.id); setDeleteModalOpen(true); setMenuOpenId(null); }} className="w-full text-left px-4 py-2 hover:bg-muted">
-                                        <div className="flex items-center gap-2 text-sm text-red-600"><Trash size={16} />{t('actions.delete', 'Delete')}</div>
+                                        <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--bad-text)' }}><Trash size={16} />{t('actions.delete', 'Delete')}</div>
                                       </button>
 
                                       <button onClick={() => { handleExportPdf(kpi); }} className="w-full text-left px-4 py-2 hover:bg-muted">
@@ -706,7 +712,7 @@ export default function GuardIndicators({ guard }: Props) {
                             </tr>
 
                             {expandedId === kpi.id && (
-                              <tr className="bg-card">
+                              <tr>
                                 <td colSpan={5} className="p-4">
                                   <div className="space-y-4 min-h-[360px]">
                                     <div className="flex items-start justify-between">
@@ -740,7 +746,7 @@ export default function GuardIndicators({ guard }: Props) {
                                           <>
                                             <table className="w-full border-collapse border">
                                               <thead>
-                                                <tr className="bg-muted/30">
+                                                <tr style={{ background: 'var(--glass-sunken)' }}>
                                                   <th className="border px-4 py-2">{t('guards.KPI.table.name', 'Name')}</th>
                                                   <th className="border px-4 py-2">{t('guards.KPI.table.target', 'Target')}</th>
                                                   <th className="border px-4 py-2">{t('guards.KPI.table.actual', 'Actual')}</th>
@@ -758,7 +764,7 @@ export default function GuardIndicators({ guard }: Props) {
                                                       <td className="border px-4 py-2 font-semibold">{m.name.toUpperCase()}</td>
                                                       <td className="border px-4 py-2">{m.target}</td>
                                                       <td className="border px-4 py-2">{m.actual}</td>
-                                                      <td className={`border px-4 py-2 ${m.actual >= m.target ? 'text-green-600' : 'text-red-600'}`}>{m.actual >= m.target ? t('guards.KPI.status.achieved', 'Achieved') : t('guards.KPI.status.notAchieved', 'Not Achieved')}</td>
+                                                      <td className="border px-4 py-2 font-semibold" style={{ color: m.actual >= m.target ? 'var(--ok-text)' : 'var(--bad-text)' }}>{m.actual >= m.target ? t('guards.KPI.status.achieved', 'Achieved') : t('guards.KPI.status.notAchieved', 'Not Achieved')}</td>
                                                     </tr>
                                                   ))
                                                 )}
@@ -771,7 +777,7 @@ export default function GuardIndicators({ guard }: Props) {
                                                 loading={false}
                                                 emptyMessage={t('guards.KPI.empty', { defaultValue: 'No KPI data' }) as string}
                                                 renderCard={(k: Kpi) => (
-                                                  <div className="p-4 bg-card border rounded-xl">
+                                                  <div className="glass-flat p-4">
                                                     <div className="text-sm font-semibold">{k.type}</div>
                                                     <div className="text-xs text-muted-foreground">{k.date} • {k.createdBy?.fullName ?? k.addedBy}</div>
                                                   </div>
@@ -801,17 +807,17 @@ export default function GuardIndicators({ guard }: Props) {
               {/* Modal */}
               {showModal && (
                 <div
-                  className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
+                  className="glass-scrim fixed inset-0 z-50"
                   onClick={handleCloseModal}
                 >
                   <div
-                    className="fixed right-0 top-0 bottom-0 w-96 bg-card shadow-2xl overflow-y-auto"
+                    className="glass-raised fixed bottom-0 right-0 top-0 w-96 overflow-y-auto rounded-l-3xl rounded-r-none" style={{ position: 'fixed' }}
                     onClick={(e) => e.stopPropagation()}
                   >
                     {/* Header */}
-                    <div className="flex items-center gap-2.5 p-6 border-b sticky top-0 bg-card">
-                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/12 text-primary [&_svg]:size-5"><BarChart3 /></div>
-                      <h2 className="text-base font-semibold text-foreground">{t('guards.KPI.modal.title', 'Añadir Nuevos KPIs (Indicadores Clave de Rendimiento)')}</h2>
+                    <div className="sticky top-0 flex items-center gap-2.5 border-b p-6" style={{ borderColor: 'var(--hairline)', background: 'var(--glass-solid)' }}>
+                      <IconTile tone="brand" size="sm"><BarChart3 /></IconTile>
+                      <h2 className="text-base font-semibold">{t('guards.KPI.modal.title', 'Añadir Nuevos KPIs (Indicadores Clave de Rendimiento)')}</h2>
                     </div>
 
                     {/* Body */}
@@ -819,12 +825,12 @@ export default function GuardIndicators({ guard }: Props) {
                       {/* Frecuencia */}
                       <div>
                         <label className="block text-sm font-medium text-foreground mb-2">
-                          {t('guards.KPI.modal.frequency', 'Frecuencia')} <span className="text-red-500">*</span>
+                          {t('guards.KPI.modal.frequency', 'Frecuencia')} <span style={{ color: 'var(--bad-text)' }}>*</span>
                         </label>
                         <select
                           value={formData.frequency}
                           onChange={(e) => setFormData({ ...formData, frequency: e.target.value })}
-                          className="w-full px-3 py-2 border rounded-md text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary bg-card"
+                          className="cg-input w-full px-3 py-2 text-sm"
                         >
                           <option value="">{t('guards.KPI.modal.frequencyOptions.select', 'Seleccionar frecuencia')}</option>
                           <option value="diario">{t('guards.KPI.modal.frequencyOptions.daily', 'Diario')}</option>
@@ -836,13 +842,13 @@ export default function GuardIndicators({ guard }: Props) {
                       {/* Descripción */}
                       <div>
                         <label className="block text-sm font-medium text-foreground mb-2">
-                          {t('guards.KPI.modal.description', 'Descripción')} <span className="text-red-500">*</span>
+                          {t('guards.KPI.modal.description', 'Descripción')} <span style={{ color: 'var(--bad-text)' }}>*</span>
                         </label>
                         <textarea
                           value={formData.description}
                           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                           placeholder={t('guards.KPI.modal.descriptionPlaceholder', 'Ingrese la descripción')}
-                          className="w-full px-3 py-2 border rounded-md text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                          className="cg-input w-full resize-none px-3 py-2 text-sm"
                           rows={4}
                         />
                       </div>
@@ -850,7 +856,7 @@ export default function GuardIndicators({ guard }: Props) {
                       {/* Checkboxes */}
                       <div className="space-y-3">
                         {/* Informes Estándar */}
-                        <div className="flex items-center justify-between p-3 border rounded-md bg-muted/30">
+                        <div className="glass-sunken flex items-center justify-between p-3">
                           <label className="text-sm font-medium text-foreground">{t('guards.KPI.modal.standardReports', 'Informes Estándar')}</label>
                           <div className="flex items-center gap-2">
                             <input
@@ -870,13 +876,13 @@ export default function GuardIndicators({ guard }: Props) {
                               }}
                               disabled={!formData.standardReports}
                               placeholder={t('guards.KPI.modal.defineNumber', 'Definir un Número')}
-                              className="w-32 px-2 py-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-300 disabled:cursor-not-allowed"
+                              className="cg-input w-32 px-2 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                             />
                           </div>
                         </div>
 
                         {/* Informes de Incidentes */}
-                        <div className="flex items-center justify-between p-3 border rounded-md bg-muted/30">
+                        <div className="glass-sunken flex items-center justify-between p-3">
                           <label className="text-sm font-medium text-foreground">{t('guards.KPI.modal.incidentReports', 'Informes de Incidentes')}</label>
                           <div className="flex items-center gap-2">
                             <input
@@ -896,13 +902,13 @@ export default function GuardIndicators({ guard }: Props) {
                               }}
                               disabled={!formData.incidentReports}
                               placeholder={t('guards.KPI.modal.defineNumber', 'Definir un Número')}
-                              className="w-32 px-2 py-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-300 disabled:cursor-not-allowed"
+                              className="cg-input w-32 px-2 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                             />
                           </div>
                         </div>
 
                         {/* Informes de Recorridos */}
-                        <div className="flex items-center justify-between p-3 border rounded-md bg-muted/30">
+                        <div className="glass-sunken flex items-center justify-between p-3">
                           <label className="text-sm font-medium text-foreground">{t('guards.KPI.modal.routeReports', 'Informes de Recorridos por el Sitio')}</label>
                           <div className="flex items-center gap-2">
                             <input
@@ -922,13 +928,13 @@ export default function GuardIndicators({ guard }: Props) {
                               }}
                               disabled={!formData.routeReports}
                               placeholder={t('guards.KPI.modal.defineNumber', 'Definir un Número')}
-                              className="w-32 px-2 py-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-300 disabled:cursor-not-allowed"
+                              className="cg-input w-32 px-2 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                             />
                           </div>
                         </div>
 
                         {/* Informes de Tareas */}
-                        <div className="flex items-center justify-between p-3 border rounded-md bg-muted/30">
+                        <div className="glass-sunken flex items-center justify-between p-3">
                           <label className="text-sm font-medium text-foreground">{t('guards.KPI.modal.taskReports', 'Informes de Tareas')}</label>
                           <div className="flex items-center gap-2">
                             <input
@@ -948,13 +954,13 @@ export default function GuardIndicators({ guard }: Props) {
                               }}
                               disabled={!formData.taskReports}
                               placeholder={t('guards.KPI.modal.defineNumber', 'Definir un Número')}
-                              className="w-32 px-2 py-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-300 disabled:cursor-not-allowed"
+                              className="cg-input w-32 px-2 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                             />
                           </div>
                         </div>
 
                         {/* Informes de Listas de Verificación */}
-                        <div className="flex items-center justify-between p-3 border rounded-md bg-muted/30">
+                        <div className="glass-sunken flex items-center justify-between p-3">
                           <label className="text-sm font-medium text-foreground">{t('guards.KPI.modal.verificationReports', 'Informes de Listas de Verificación')}</label>
                           <div className="flex items-center gap-2">
                             <input
@@ -974,7 +980,7 @@ export default function GuardIndicators({ guard }: Props) {
                               }}
                               disabled={!formData.verificationReports}
                               placeholder={t('guards.KPI.modal.defineNumber', 'Definir un Número')}
-                              className="w-32 px-2 py-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-300 disabled:cursor-not-allowed"
+                              className="cg-input w-32 px-2 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                             />
                           </div>
                         </div>
@@ -988,7 +994,7 @@ export default function GuardIndicators({ guard }: Props) {
                             type="checkbox"
                             checked={formData.emailNotification}
                             onChange={(e) => setFormData({ ...formData, emailNotification: e.target.checked })}
-                            className="rounded w-5 h-5 ml-auto accent-primary"
+                            className="ml-auto h-5 w-5 rounded-md" style={{ accentColor: "var(--brand)" }}
                           />
                         </div>
 
@@ -998,7 +1004,7 @@ export default function GuardIndicators({ guard }: Props) {
                             {formData.emails && formData.emails.length > 0 && (
                               <div className="flex flex-wrap gap-2">
                                 {formData.emails.map((email) => (
-                                  <div key={email} className="flex items-center gap-2 bg-muted text-foreground px-3 py-1 rounded-full text-sm">
+                                  <div key={email} className="flex items-center gap-2 rounded-full border px-3 py-1 text-sm" style={{ background: 'var(--glass-sunken)', borderColor: 'var(--hairline)' }}>
                                     <span>{email}</span>
                                     <button
                                       onClick={() => handleRemoveEmail(email)}
@@ -1023,18 +1029,18 @@ export default function GuardIndicators({ guard }: Props) {
                                   }}
                                   onKeyPress={handleKeyPress}
                                   placeholder={t('guards.KPI.modal.newEmailPlaceholder', 'Nuevo Correo Electrónico...')}
-                                  className={`flex-1 px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 ${emailError ? 'border-red-500 focus:ring-red-500' : 'focus:ring-primary'
-                                    }`}
+                                  className="cg-input flex-1 px-3 py-2 text-sm"
+                                  style={emailError ? { borderColor: 'var(--bad)' } : undefined}
                                 />
                                 <button
                                   onClick={handleAddEmail}
-                                  className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:bg-primary/90 transition-colors"
+                                  className="cg-btn-brand cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-colors"
                                 >
                                   {t('guards.KPI.modal.addEmail', 'Agregar')}
                                 </button>
                               </div>
                               {emailError && (
-                                <p className="text-xs text-red-500">{emailError}</p>
+                                <p className="text-xs" style={{ color: 'var(--bad-text)' }}>{emailError}</p>
                               )}
                             </div>
                           </div>
@@ -1043,7 +1049,7 @@ export default function GuardIndicators({ guard }: Props) {
                     </div>
 
                     {/* Footer */}
-                    <div className="flex items-center justify-end gap-3 p-6 border-t sticky bottom-0 bg-card">
+                    <div className="sticky bottom-0 flex items-center justify-end gap-3 border-t p-6" style={{ borderColor: 'var(--hairline)', background: 'var(--glass-solid)' }}>
                       <Button variant="outline" onClick={handleCloseModal}>
                         {t('actions.cancel', 'Cancelar')}
                       </Button>

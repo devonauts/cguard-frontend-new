@@ -782,7 +782,7 @@ export default function NewAdminUserPage() {
             <div className="flex justify-between items-center">
               <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
                 <DialogTrigger asChild>
-                  <Button className="border-primary/40 text-primary hover:bg-primary/10 transition" variant="outline"><Ticket className="mr-2 h-4 w-4" />{t('adminOfficeUsers.newUser.invite.createTrigger', { defaultValue: 'Crear código de invitación' })}</Button>
+                  <Button variant="outline" style={{ borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }}><Ticket className="mr-2 h-4 w-4" />{t('adminOfficeUsers.newUser.invite.createTrigger', { defaultValue: 'Crear código de invitación' })}</Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>

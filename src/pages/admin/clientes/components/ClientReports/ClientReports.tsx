@@ -3,7 +3,12 @@ import { clientDisplayName } from '@/lib/clientName';
 import type { Client } from '@/types/client';
 import useScrollToTopOnMount from '@/hooks/useScrollToTopOnMount';
 import { clientService } from '@/lib/api/clientService';
-import { Section, EmptyState, StatusBadge, Modal } from '@/components/kit';
+import { Section, EmptyState, StatusBadge, Modal, GlassPanel, IconTile } from '@/components/kit';
+import {
+  FIELD_CLS, LabeledField, TabTable, THead, Th, Tr, RowAction, Pager, TabFooter, TabLoading,
+} from '../_shared/tab-kit';
+import { Sparkline, Donut, AreaChart, MeterBar } from '@/components/charts';
+import { CHART_VARS, alphaVar, rampVar } from '@/lib/chartColors';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import {
@@ -12,8 +17,6 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
-
-const inputCls = 'flex h-9 w-full rounded-lg border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-all placeholder:text-muted-foreground hover:border-ring/40 focus-visible:outline-none focus-visible:border-ring focus-visible:ring-ring/40 focus-visible:ring-[3px]';
 
 // ── Shape of GET /client-account/:id/reports (clientAccountReports.ts) ──
 interface ReportKpi {
@@ -46,56 +49,38 @@ interface ReportsData {
   updatedAt: string;
 }
 
-const TONE_HEX: Record<string, string> = { red: '#ef4444', green: '#16a34a', blue: '#2563eb', violet: '#7c3aed', orange: '#f59e0b' };
-const TYPE_COLORS = ['#2563eb', '#06b6d4', '#f59e0b', '#f97316', '#ef4444', '#7c3aed', '#16a34a'];
+/**
+ * El `tone` que manda el backend por cada KPI, traducido al sistema.
+ *
+ * Rojo/ámbar/verde siguen siendo semánticos —un incidente tiene que verse como
+ * un incidente aunque el acento sea rojo—, y lo que antes era azul o violeta
+ * (dos colores sin significado propio) pasa a ser un escalón del acento.
+ */
+const TONE_VAR: Record<string, string> = {
+  red: CHART_VARS.bad,
+  green: CHART_VARS.ok,
+  orange: CHART_VARS.warn,
+  blue: CHART_VARS.series[0],
+  violet: CHART_VARS.series[1],
+};
+const toneVar = (t: string) => TONE_VAR[t] || CHART_VARS.series[0];
+
 const QUICK_ICON: Record<string, LucideIcon> = { incidents: AlertTriangle, rounds: RouteIcon, visitors: UserCheck, attendance: Users, coverage: MapPin, 'guard-activity': Users };
 const ymd = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 const fmtDT = (iso: string) => { const d = new Date(iso); return Number.isNaN(d.getTime()) ? '—' : d.toLocaleString('es-EC', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }); };
 const fmtD = (iso: string) => { const d = new Date(iso); return Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString('es-EC', { day: '2-digit', month: '2-digit', year: 'numeric' }); };
 
-function Sparkline({ data, color }: { data: number[]; color: string }) {
-  if (!data || data.length < 2) return <div className="h-8" />;
-  const max = Math.max(...data, 1), min = Math.min(...data, 0);
-  const w = 120, h = 32, rng = max - min || 1;
-  const pts = data.map((v, i) => `${(i / (data.length - 1)) * w},${h - ((v - min) / rng) * (h - 4) - 2}`).join(' ');
-  return <svg viewBox={`0 0 ${w} ${h}`} className="h-8 w-full" preserveAspectRatio="none"><polyline points={pts} fill="none" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>;
-}
-
-function Donut({ segments, centerTop, centerBottom }: { segments: Array<{ value: number; color: string }>; centerTop: string; centerBottom: string }) {
-  const R = 52, C = 2 * Math.PI * R, sum = segments.reduce((a, s) => a + s.value, 0) || 1;
-  let off = 0;
-  return (
-    <div className="relative h-[130px] w-[130px] shrink-0">
-      <svg viewBox="0 0 130 130" className="h-full w-full -rotate-90">
-        <circle cx="65" cy="65" r={R} fill="none" stroke="currentColor" className="text-muted" strokeWidth="15" />
-        {segments.map((s, i) => { const len = (s.value / sum) * C; const el = <circle key={i} cx="65" cy="65" r={R} fill="none" stroke={s.color} strokeWidth="15" strokeDasharray={`${len} ${C - len}`} strokeDashoffset={-off} />; off += len; return el; })}
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center"><div className="font-display text-xl font-bold leading-none">{centerTop}</div><div className="text-[11px] text-muted-foreground">{centerBottom}</div></div>
-    </div>
-  );
-}
-
-function AreaChart({ data }: { data: Array<{ date: string; value: number }> }) {
+/** Actividad diaria — la serie temporal de la pestaña. */
+function ActividadChart({ data }: { data: Array<{ date: string; value: number }> }) {
   if (!data || data.length < 2) return <EmptyState icon={<FileBarChart className="h-5 w-5" />} title="Sin datos" description="No hay actividad en el período." />;
-  const w = 520, h = 180, pad = 24;
-  const max = Math.max(...data.map((d) => d.value), 1);
-  const x = (i: number) => pad + (i / (data.length - 1)) * (w - pad * 2);
-  const y = (v: number) => h - pad - (v / max) * (h - pad * 2);
-  const line = data.map((d, i) => `${i === 0 ? 'M' : 'L'}${x(i)},${y(d.value)}`).join(' ');
-  const area = `${line} L${x(data.length - 1)},${h - pad} L${x(0)},${h - pad} Z`;
-  const ticks = 4;
+  const dia = (iso: string) => new Date(iso).toLocaleDateString('es-EC', { day: '2-digit', month: 'short' });
   return (
-    <div className="overflow-x-auto">
-      <svg viewBox={`0 0 ${w} ${h}`} className="h-[200px] w-full min-w-[440px]">
-        {Array.from({ length: ticks + 1 }).map((_, i) => { const yy = pad + (i / ticks) * (h - pad * 2); return <line key={i} x1={pad} y1={yy} x2={w - pad} y2={yy} stroke="currentColor" className="text-muted" strokeWidth="1" strokeDasharray="3 3" />; })}
-        <path d={area} fill="url(#areaGrad)" opacity="0.9" />
-        <path d={line} fill="none" stroke="#2563eb" strokeWidth="2" strokeLinejoin="round" />
-        <defs><linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#2563eb" stopOpacity="0.25" /><stop offset="100%" stopColor="#2563eb" stopOpacity="0" /></linearGradient></defs>
-      </svg>
-      <div className="flex justify-between px-6 text-[10px] text-muted-foreground">
-        {data.filter((_, i) => i % Math.ceil(data.length / 6) === 0).map((d) => <span key={d.date}>{new Date(d.date).toLocaleDateString('es-EC', { day: '2-digit', month: 'short' })}</span>)}
-      </div>
-    </div>
+    <AreaChart
+      height={190}
+      ariaLabel="Actividades por día"
+      data={data.map((d) => ({ label: dia(d.date), value: d.value }))}
+      formatValue={(v) => `${v.toLocaleString('es-EC')} actividades`}
+    />
   );
 }
 
@@ -104,20 +89,20 @@ function Kpi({ icon, k }: { icon: ReactNode; k: ReportKpi }) {
   const good = k.invert ? !up : up; // for incidents/response, up is bad
   const val = k.isTime && k.value != null ? `${Math.floor(k.value / 60).toString().padStart(2, '0')}:${(k.value % 60).toString().padStart(2, '0')}` : (k.value ?? 0).toLocaleString('es-EC');
   return (
-    <div className="cg-card p-4">
+    <GlassPanel flat className="p-4">
       <div className="mb-2 flex items-center justify-between">
         <div className="text-xs text-muted-foreground truncate">{k.label}</div>
-        <span className={`grid h-7 w-7 place-items-center rounded-lg [&_svg]:size-3.5`} style={{ background: `${TONE_HEX[k.tone] || '#2563eb'}1f`, color: TONE_HEX[k.tone] || '#2563eb' }}>{icon}</span>
+        <span className={`grid h-7 w-7 place-items-center rounded-lg [&_svg]:size-3.5`} style={{ background: alphaVar(toneVar(k.tone), 15), color: toneVar(k.tone) }}>{icon}</span>
       </div>
       <div className="flex items-baseline gap-2">
         <span className="font-display text-2xl font-bold leading-none">{val}{k.unit ? <span className="ml-1 text-sm font-medium text-muted-foreground">{k.unit}</span> : ''}</span>
         {k.deltaPct != null && k.deltaPct !== 0 && (
-          <span className={`inline-flex items-center gap-0.5 text-xs font-medium ${good ? 'text-emerald-600' : 'text-red-600'}`}>{up ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}{Math.abs(k.deltaPct)}%</span>
+          <span className="inline-flex items-center gap-0.5 text-xs font-medium" style={{ color: good ? 'var(--ok-text)' : 'var(--bad-text)' }}>{up ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}{Math.abs(k.deltaPct)}%</span>
         )}
       </div>
-      <div className="mt-1.5"><Sparkline data={k.spark || []} color={TONE_HEX[k.tone] || '#2563eb'} /></div>
+      <div className="mt-1.5"><Sparkline data={k.spark || []} color={toneVar(k.tone)} ariaLabel={`Tendencia de ${k.label}`} /></div>
       <div className="text-[11px] text-muted-foreground">Vs. período anterior</div>
-    </div>
+    </GlassPanel>
   );
 }
 
@@ -172,15 +157,15 @@ export default function ClientReports({ client }: { client: Client & { companyNa
   };
   const delSchedule = async (s: ProgramadoRow) => { if (!window.confirm(`¿Eliminar "${s.name}"?`)) return; try { await clientService.deleteReportSchedule(client.id, s.id); await load(true); } catch { toast.error('No se pudo eliminar'); } };
 
-  if (loading && !data) return <div className="p-8 text-sm text-muted-foreground">Cargando reportes…</div>;
+  if (loading && !data) return <TabLoading />;
 
   return (
     <div ref={containerRef} className="space-y-4">
       {/* Date range */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2 text-sm"><span className="text-xs font-medium text-muted-foreground">Período</span>
-          <input type="date" className={`${inputCls} w-auto`} value={from} onChange={(e) => setFrom(e.target.value)} /><span className="text-muted-foreground">–</span>
-          <input type="date" className={`${inputCls} w-auto`} value={to} onChange={(e) => setTo(e.target.value)} />
+          <input type="date" className={`${FIELD_CLS} w-auto`} value={from} onChange={(e) => setFrom(e.target.value)} /><span className="text-muted-foreground">–</span>
+          <input type="date" className={`${FIELD_CLS} w-auto`} value={to} onChange={(e) => setTo(e.target.value)} />
         </div>
         <Button size="sm" variant="brand" onClick={() => setSchedOpen(true)}><CalendarClock className="mr-1.5 h-4 w-4" /> Programar reporte</Button>
       </div>
@@ -188,7 +173,7 @@ export default function ClientReports({ client }: { client: Client & { companyNa
       {/* KPI row + cumplimiento */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7">
         {kpis.map((k) => <Kpi key={k.key} k={k} icon={KPI_ICONS[k.key] || <FileBarChart />} />)}
-        <div className="cg-card p-4 sm:col-span-2 lg:col-span-3 xl:col-span-2">
+        <GlassPanel flat className="p-4 sm:col-span-2 lg:col-span-3 xl:col-span-2">
           <div className="mb-2 text-xs text-muted-foreground">Cumplimiento de estaciones</div>
           {cumplimiento.hasData === false ? (
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
@@ -197,26 +182,37 @@ export default function ClientReports({ client }: { client: Client & { companyNa
             </div>
           ) : (
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-              <Donut segments={[{ value: cumplimiento.cumplidos || 0, color: '#2563eb' }, { value: cumplimiento.parciales || 0, color: '#f59e0b' }, { value: cumplimiento.incumplidos || 0, color: '#ef4444' }].filter((s) => s.value > 0)} centerTop={`${cumplimiento.pct ?? 0}%`} centerBottom="Cumplim." />
+              {/* Cumplido / parcial / incumplido es un ESTADO: verde, ámbar y rojo semánticos. */}
+              <Donut
+                segments={[
+                  { value: cumplimiento.cumplidos || 0, tone: 'ok', label: 'Cumplidos' },
+                  { value: cumplimiento.parciales || 0, tone: 'warn', label: 'Parciales' },
+                  { value: cumplimiento.incumplidos || 0, tone: 'bad', label: 'Incumplidos' },
+                ]}
+                centerTop={`${cumplimiento.pct ?? 0}%`} centerBottom="Cumplim."
+              />
               <div className="min-w-0 flex-1 space-y-1.5 text-xs">
-                <div className="flex items-center gap-1.5"><span className="h-2 w-2 shrink-0 rounded-full bg-blue-600" /><span className="truncate">Cumplidos</span><b className="ml-auto tabular-nums">{cumplimiento.cumplidosPct ?? 0}%</b></div>
-                <div className="flex items-center gap-1.5"><span className="h-2 w-2 shrink-0 rounded-full bg-amber-500" /><span className="truncate">Parciales</span><b className="ml-auto tabular-nums">{cumplimiento.parcialesPct ?? 0}%</b></div>
-                <div className="flex items-center gap-1.5"><span className="h-2 w-2 shrink-0 rounded-full bg-red-500" /><span className="truncate">Incumplidos</span><b className="ml-auto tabular-nums">{cumplimiento.incumplidosPct ?? 0}%</b></div>
+                <div className="flex items-center gap-1.5"><span className="h-2 w-2 shrink-0 rounded-full" style={{ background: CHART_VARS.ok }} /><span className="truncate">Cumplidos</span><b className="ml-auto tabular-nums">{cumplimiento.cumplidosPct ?? 0}%</b></div>
+                <div className="flex items-center gap-1.5"><span className="h-2 w-2 shrink-0 rounded-full" style={{ background: CHART_VARS.warn }} /><span className="truncate">Parciales</span><b className="ml-auto tabular-nums">{cumplimiento.parcialesPct ?? 0}%</b></div>
+                <div className="flex items-center gap-1.5"><span className="h-2 w-2 shrink-0 rounded-full" style={{ background: CHART_VARS.bad }} /><span className="truncate">Incumplidos</span><b className="ml-auto tabular-nums">{cumplimiento.incumplidosPct ?? 0}%</b></div>
               </div>
             </div>
           )}
-        </div>
+        </GlassPanel>
       </div>
 
-      {/* Charts + right column */}
+      {/* Gráficos + columna derecha */}
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[2.2fr_1fr]">
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
           <Section title="Incidentes por tipo" icon={<AlertTriangle className="h-4 w-4" />}>
             {porTipo.length === 0 ? <EmptyState icon={<AlertTriangle className="h-5 w-5" />} title="Sin incidentes" description="No hay incidentes en el período." /> : (
               <div className="flex items-center gap-3">
-                <Donut segments={porTipo.map((t, i) => ({ value: t.count, color: TYPE_COLORS[i % TYPE_COLORS.length] }))} centerTop={String(data?.incidentesTotal ?? 0)} centerBottom="Total" />
+                {/* Los tipos vienen ordenados por frecuencia: una rampa del acento
+                    hacia el gris lo dice mejor que siete colores sin relación, y
+                    admite tantos tipos como haya sin inventar tonos nuevos. */}
+                <Donut segments={porTipo.map((t, i) => ({ value: t.count, color: rampVar(i, porTipo.length), label: t.type }))} centerTop={String(data?.incidentesTotal ?? 0)} centerBottom="Total" />
                 <div className="flex-1 space-y-1.5 text-xs">
-                  {porTipo.slice(0, 6).map((t, i) => (<div key={t.type} className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full" style={{ background: TYPE_COLORS[i % TYPE_COLORS.length] }} /><span className="truncate">{t.type}</span><span className="ml-auto tabular-nums text-muted-foreground">{t.count} ({t.pct}%)</span></div>))}
+                  {porTipo.slice(0, 6).map((t, i) => (<div key={t.type} className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full" style={{ background: rampVar(i, porTipo.length) }} /><span className="truncate">{t.type}</span><span className="ml-auto tabular-nums text-muted-foreground">{t.count} ({t.pct}%)</span></div>))}
                 </div>
               </div>
             )}
@@ -228,30 +224,31 @@ export default function ClientReports({ client }: { client: Client & { companyNa
                 {porEstado.map((e) => (
                   <div key={e.key}>
                     <div className="mb-1 flex items-center justify-between text-sm"><span className="text-muted-foreground">{e.label}</span><span className="tabular-nums text-xs">{e.count} ({e.pct}%)</span></div>
-                    <div className="h-2 w-full rounded-full bg-muted"><div className={`h-2 rounded-full ${e.key === 'resuelto' ? 'bg-emerald-500' : e.key === 'investigacion' ? 'bg-blue-500' : 'bg-red-500'}`} style={{ width: `${Math.max(2, e.pct)}%` }} /></div>
+                    <MeterBar height={8} pct={e.pct} ariaLabel={e.label}
+                      tone={e.key === 'resuelto' ? 'ok' : e.key === 'investigacion' ? 'info' : 'bad'} />
                   </div>
                 ))}
               </div>
             )}
           </Section>
 
-          <Section title="Actividades por día" icon={<TrendingUp className="h-4 w-4" />}><AreaChart data={actividades} /></Section>
+          <Section title="Actividades por día" icon={<TrendingUp className="h-4 w-4" />}><ActividadChart data={actividades} /></Section>
         </div>
 
         {/* Right column */}
         <div className="space-y-4">
           <Section title="Filtros aplicados" icon={<Search className="h-4 w-4" />}>
             <div className="flex flex-wrap gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-xs">Período: {fmtD(from)} – {fmtD(to)}</span>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-xs">Cliente: {clientDisplayName(client, 'Cliente')}</span>
+              <StatusBadge tone="neutral" dot={false}>Período: {fmtD(from)} – {fmtD(to)}</StatusBadge>
+              <StatusBadge tone="neutral" dot={false}>Cliente: {clientDisplayName(client, 'Cliente')}</StatusBadge>
             </div>
           </Section>
 
           <Section title="Reportes rápidos" icon={<FileBarChart className="h-4 w-4" />}>
             <div className="space-y-1">
               {quickReports.map((r) => { const Icon = QUICK_ICON[r.key] || FileText; return (
-                <button key={r.key} onClick={() => doExport(r.key)} disabled={!!exporting} className="flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left text-sm hover:bg-muted/60 disabled:opacity-50">
-                  <span className="grid h-8 w-8 place-items-center rounded-lg bg-primary/10 text-primary [&_svg]:size-4"><Icon /></span>
+                <button key={r.key} onClick={() => doExport(r.key)} disabled={!!exporting} className="cg-focus flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left text-sm transition-opacity hover:opacity-80 disabled:opacity-50">
+                  <IconTile size="sm"><Icon /></IconTile>
                   <span className="flex-1">{r.label}</span>
                   {exporting === r.key ? <RefreshCw className="h-3.5 w-3.5 animate-spin text-muted-foreground" /> : <Download className="h-3.5 w-3.5 text-muted-foreground" />}
                 </button>
@@ -260,13 +257,13 @@ export default function ClientReports({ client }: { client: Client & { companyNa
           </Section>
 
           <Section title="Reportes programados" icon={<CalendarClock className="h-4 w-4" />}
-            action={<button onClick={() => setSchedOpen(true)} className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"><Plus className="h-3.5 w-3.5" /> Programar</button>}>
+            action={<button onClick={() => setSchedOpen(true)} className="cg-focus inline-flex items-center gap-1 rounded-md text-xs font-semibold hover:underline" style={{ color: 'var(--brand-text)' }}><Plus className="h-3.5 w-3.5" /> Programar</button>}>
             {programados.length === 0 ? <EmptyState icon={<CalendarClock className="h-5 w-5" />} title="Sin reportes programados" description="Programa un reporte recurrente por correo." /> : (
               <div className="divide-y">
                 {programados.map((s) => (
                   <div key={s.id} className="flex items-start justify-between gap-2 py-2.5">
                     <div className="min-w-0"><div className="text-sm font-medium truncate">{s.name}</div><div className="text-xs text-muted-foreground">{s.frequency || s.cron}</div></div>
-                    <div className="flex shrink-0 items-center gap-1.5"><StatusBadge tone={s.active ? 'green' : 'slate'} dot={false}>{s.active ? 'Activo' : 'Pausado'}</StatusBadge><button onClick={() => delSchedule(s)} className="rounded-md p-1 text-muted-foreground hover:bg-red-500/10 hover:text-red-600"><Trash2 className="h-3.5 w-3.5" /></button></div>
+                    <div className="flex shrink-0 items-center gap-1.5"><StatusBadge tone={s.active ? 'ok' : 'neutral'} dot={false}>{s.active ? 'Activo' : 'Pausado'}</StatusBadge><RowAction title="Eliminar programación" tone="bad" onClick={() => delSchedule(s)}><Trash2 className="h-3.5 w-3.5" /></RowAction></div>
                   </div>
                 ))}
               </div>
@@ -279,62 +276,54 @@ export default function ClientReports({ client }: { client: Client & { companyNa
       <Section title="Todos los reportes" icon={<FileText className="h-4 w-4" />}>
         <div className="mb-3 relative max-w-sm">
           <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <input className={`${inputCls} pl-8`} placeholder="Buscar reporte por nombre…" value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} />
+          <input className={`${FIELD_CLS} pl-8`} placeholder="Buscar reporte por nombre…" value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} />
         </div>
         {reportsList.length === 0 ? (
           <EmptyState icon={<FileText className="h-5 w-5" />} title="Sin reportes" description="Aún no hay reportes operativos generados para este cliente en el período." />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[720px] text-sm">
-              <thead><tr className="border-b text-left text-xs uppercase tracking-wide text-muted-foreground">
-                <th className="px-2 py-2 font-medium">Nombre del reporte</th><th className="px-2 py-2 font-medium">Tipo</th><th className="px-2 py-2 font-medium">Sede / Estación</th><th className="px-2 py-2 font-medium">Generado por</th><th className="px-2 py-2 font-medium">Generado el</th><th className="px-2 py-2 font-medium">Formato</th>
-              </tr></thead>
+          <TabTable>
+              <THead>
+                <Th>Nombre del reporte</Th><Th>Tipo</Th><Th>Sede / Estación</Th><Th>Generado por</Th><Th>Generado el</Th><Th>Formato</Th>
+              </THead>
               <tbody>
                 {reportsList.map((r) => (
-                  <tr key={r.id} className="border-b last:border-0 hover:bg-muted/40">
-                    <td className="px-2 py-2.5"><div className="flex items-center gap-2"><span className="grid h-7 w-7 place-items-center rounded-lg bg-primary/10 text-primary"><FileText className="h-4 w-4" /></span><div><div className="font-medium truncate max-w-[220px]">{r.name}</div><div className="text-xs text-muted-foreground">{r.code}</div></div></div></td>
-                    <td className="px-2 py-2.5"><StatusBadge tone="slate" dot={false}>{r.tipo}</StatusBadge></td>
+                  <Tr key={r.id}>
+                    <td className="px-2 py-2.5"><div className="flex items-center gap-2"><IconTile size="sm"><FileText /></IconTile><div><div className="max-w-[220px] truncate font-medium">{r.name}</div><div className="text-xs" style={{ color: 'var(--ink-faint)' }}>{r.code}</div></div></div></td>
+                    <td className="px-2 py-2.5"><StatusBadge tone="neutral" dot={false}>{r.tipo}</StatusBadge></td>
                     <td className="px-2 py-2.5"><div className="truncate max-w-[150px]">{r.sede}</div>{r.puesto && r.puesto !== r.sede && <div className="text-xs text-muted-foreground truncate max-w-[150px]">{r.puesto}</div>}</td>
                     <td className="px-2 py-2.5 truncate max-w-[130px]">{r.generadoPor}</td>
                     <td className="px-2 py-2.5 tabular-nums text-xs">{r.fecha ? fmtDT(r.fecha) : '—'}</td>
                     <td className="px-2 py-2.5">{r.formato}</td>
-                  </tr>
+                  </Tr>
                 ))}
               </tbody>
-            </table>
-          </div>
+          </TabTable>
         )}
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground">
-          <span>Mostrando {reportsTotal === 0 ? 0 : (page - 1) * perPage + 1} a {Math.min(page * perPage, reportsTotal)} de {reportsTotal} reportes</span>
-          <div className="flex items-center gap-1">
-            <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)} className="rounded-md border px-2 py-1 disabled:opacity-40">‹</button>
-            {Array.from({ length: Math.min(5, pageCount) }).map((_, k) => { const n = k + 1; return <button key={n} onClick={() => setPage(n)} className={`grid h-7 min-w-[28px] place-items-center rounded-md px-2 text-xs font-semibold ${n === page ? 'bg-primary text-primary-foreground' : 'border'}`}>{n}</button>; })}
-            <button disabled={page >= pageCount} onClick={() => setPage((p) => p + 1)} className="rounded-md border px-2 py-1 disabled:opacity-40">›</button>
-          </div>
-        </div>
+        <Pager page={page} pageCount={pageCount} total={reportsTotal} perPage={perPage} noun="reportes" onPage={setPage} />
       </Section>
 
-      {/* Footer */}
-      <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border bg-muted/30 px-4 py-2.5 text-xs text-muted-foreground">
-        <span className="inline-flex items-center gap-1.5"><FileBarChart className="h-3.5 w-3.5" /> Las métricas se calculan sobre la operación real del cliente en el período seleccionado.</span>
-        <span className="inline-flex items-center gap-2">{fmtUpdated && <>Última actualización: {fmtUpdated}</>}<button onClick={() => load()} className="inline-flex items-center gap-1 font-medium text-primary hover:underline"><RefreshCw className="h-3.5 w-3.5" /> Actualizar</button></span>
-      </div>
+      <TabFooter
+        icon={<FileBarChart />}
+        note="Las métricas se calculan sobre la operación real del cliente en el período seleccionado."
+        updatedAt={fmtUpdated}
+        onRefresh={() => load()}
+      />
 
       {/* Schedule modal */}
       <Modal open={schedOpen} onOpenChange={(o) => { if (!saving) setSchedOpen(o); }} title="Programar reporte" icon={<CalendarClock className="h-5 w-5" />}
         footer={<><Button variant="outline" onClick={() => setSchedOpen(false)} disabled={saving}>Cancelar</Button><Button onClick={saveSchedule} disabled={saving || !schedForm.name.trim()}>{saving ? 'Guardando…' : 'Programar'}</Button></>}>
         <div className="space-y-3">
-          <div><label className="mb-1 block text-xs font-medium text-muted-foreground">Nombre</label><input className={inputCls} placeholder="Informe semanal de operaciones" value={schedForm.name} onChange={(e) => setSchedForm({ ...schedForm, name: e.target.value })} /></div>
-          <div><label className="mb-1 block text-xs font-medium text-muted-foreground">Reporte</label>
-            <select className={inputCls} value={schedForm.type} onChange={(e) => setSchedForm({ ...schedForm, type: e.target.value })}>
+          <LabeledField label="Nombre"><input className={FIELD_CLS} placeholder="Informe semanal de operaciones" value={schedForm.name} onChange={(e) => setSchedForm({ ...schedForm, name: e.target.value })} /></LabeledField>
+          <LabeledField label="Reporte">
+            <select className={FIELD_CLS} value={schedForm.type} onChange={(e) => setSchedForm({ ...schedForm, type: e.target.value })}>
               <option value="incidents">Reporte de incidentes</option><option value="rounds">Reporte de rondas</option><option value="visitors">Reporte de visitas</option><option value="attendance">Reporte de asistencia</option><option value="coverage">Cumplimiento de estaciones</option><option value="guard-activity">Actividad por guardia</option>
             </select>
-          </div>
-          <div><label className="mb-1 block text-xs font-medium text-muted-foreground">Frecuencia</label>
-            <select className={inputCls} value={schedForm.frequency} onChange={(e) => setSchedForm({ ...schedForm, frequency: e.target.value })}>
+          </LabeledField>
+          <LabeledField label="Frecuencia">
+            <select className={FIELD_CLS} value={schedForm.frequency} onChange={(e) => setSchedForm({ ...schedForm, frequency: e.target.value })}>
               <option value="daily">Diario (07:00)</option><option value="weekly">Semanal (lunes 08:00)</option><option value="monthly">Mensual (día 1, 09:00)</option>
             </select>
-          </div>
+          </LabeledField>
         </div>
       </Modal>
     </div>

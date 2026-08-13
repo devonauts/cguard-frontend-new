@@ -46,10 +46,12 @@ import {
   RotateCw,
   Trash,
   UserCog,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import AdminUserCardsGrid, { type AdminUserCardAction, type AdminUserRow } from "./AdminUserCardsGrid";
 import type { RoleRef, ClientOption } from "./adminUserTypes";
-import { PageContainer, PageHeader, Section, StatusBadge, EmptyState } from "@/components/kit";
+import { PageContainer, PageHeader, Section, StatusBadge, EmptyState, Segmented, Toolbar, GlassPanel } from "@/components/kit";
 import { toast } from "sonner";
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from "react-router-dom";
@@ -90,6 +92,10 @@ export default function AdminOfficeUsersPage() {
 
   // filas desde API
   const [rows, setRows] = useState<AdminUserRow[]>([]);
+  /* La lista NUNCA mostraba esqueleto: `loading` estaba clavado a `false` en
+     los dos renderizadores, así que mientras cargaba se veía el estado VACÍO
+     («No se encontraron resultados») y parecía que no había usuarios. */
+  const [loadingUsers, setLoadingUsers] = useState(true);
   const [isAdminUser, setIsAdminUser] = useState(false);
   const { hasPermission, hasAny } = usePermissions();
   const canManageUsers = hasAny(['userEdit', 'userDestroy', 'userImport', 'userCreate', 'userExport']);
@@ -129,6 +135,7 @@ export default function AdminOfficeUsersPage() {
   };
 
   const loadUsers = async () => {
+    setLoadingUsers(true);
     try {
       const usersResp = await userService.listUsers();
       let users: AdminUserRow[] = usersResp || [];
@@ -164,6 +171,8 @@ export default function AdminOfficeUsersPage() {
       setRows(filtered);
     } catch (err) {
       console.error("Error cargando usuarios:", err);
+    } finally {
+      setLoadingUsers(false);
     }
   };
 
@@ -531,7 +540,7 @@ export default function AdminOfficeUsersPage() {
           )}
         />
 
-        <Section>
+        <GlassPanel className="p-5">
         {/* Acciones superiores */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
@@ -573,24 +582,21 @@ export default function AdminOfficeUsersPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="relative">
-              <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Toolbar className="p-1">
+              <Search className="ml-1.5 h-4 w-4 shrink-0" style={{ color: 'var(--ink-faint)' }} />
               <Input
                 placeholder={t('adminOfficeUsers.searchPlaceholder', { defaultValue: 'Buscar usuario' })}
-                className="w-64 pl-9"
+                className="h-8 w-56 border-0 bg-transparent px-1 shadow-none"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 aria-label={t('adminOfficeUsers.searchPlaceholder', { defaultValue: 'Buscar usuario' })}
               />
-            </div>
+            </Toolbar>
 
             {/* Filtros */}
             <Sheet open={openFilter} onOpenChange={setOpenFilter}>
               <SheetTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="border-primary/30 text-primary"
-                >
+                <Button variant="outline">
                   <Filter className="mr-2 h-4 w-4" />
                   {t('adminOfficeUsers.filters.title', { defaultValue: 'Filtros' })}
                 </Button>
@@ -644,7 +650,8 @@ export default function AdminOfficeUsersPage() {
                   </div>
 
                   <Button
-                    className="w-full bg-primary text-white hover:bg-primary/90"
+                    variant="brand"
+                    className="w-full"
                     onClick={() => {
                       // aplica filtros y cierra
                       setOpenFilter(false);
@@ -657,14 +664,15 @@ export default function AdminOfficeUsersPage() {
             </Sheet>
 
             {/* Toggle vista Tarjetas / Lista (desktop) */}
-            <div className="hidden md:inline-flex items-center rounded-xl border bg-card p-0.5">
-              <Button variant={viewMode === "cards" ? "brand" : "ghost"} size="sm" className="h-8 px-2.5" aria-label="Vista de tarjetas" onClick={() => setViewMode("cards")}>
-                <LayoutGrid className="h-4 w-4" />
-              </Button>
-              <Button variant={viewMode === "list" ? "brand" : "ghost"} size="sm" className="h-8 px-2.5" aria-label="Vista de lista" onClick={() => setViewMode("list")}>
-                <ListIcon className="h-4 w-4" />
-              </Button>
-            </div>
+            <Segmented
+              className="hidden md:inline-flex"
+              value={viewMode}
+              onChange={setViewMode}
+              options={[
+                { value: "cards", label: <span className="flex items-center gap-1.5"><LayoutGrid className="h-3.5 w-3.5" /> Tarjetas</span> },
+                { value: "list", label: <span className="flex items-center gap-1.5"><ListIcon className="h-3.5 w-3.5" /> Lista</span> },
+              ]}
+            />
 
             {/* Menú superior (export/import) */}
             <DropdownMenu>
@@ -690,12 +698,12 @@ export default function AdminOfficeUsersPage() {
         </div>
 
         {/* Tabla */}
-        <div className="mt-4 overflow-hidden rounded-xl border">
+        <GlassPanel flat className="mt-4 overflow-hidden p-0">
           <div className="md:block hidden">
             {viewMode === "cards" ? (
               <AdminUserCardsGrid
                 users={pagedRows}
-                loading={false}
+                loading={loadingUsers}
                 selectedIds={selectedUsers}
                 canSelect={(u) => canManageUsers && !isUserAdmin(u)}
                 onSelect={handleSelectUser}
@@ -704,8 +712,8 @@ export default function AdminOfficeUsersPage() {
               />
             ) : (
             <table className="min-w-full border-collapse text-left text-sm">
-              <thead className="bg-muted/30">
-                <tr className="border-b">
+              <thead style={{ background: 'var(--glass-sunken)' }}>
+                <tr className="border-b" style={{ borderColor: 'var(--hairline)' }}>
                   <th className="px-4 py-3">
                     <Checkbox disabled={!canManageUsers} checked={allOnPageSelected} onCheckedChange={(v) => handleSelectAllUsers(Boolean(v))} aria-label="Seleccionar todos" />
                   </th>
@@ -734,7 +742,8 @@ export default function AdminOfficeUsersPage() {
                   pagedRows.map((u, i) => (
                     <tr
                       key={u.id || u._id || u.raw?.id || `${currentPage}-${i}`}
-                      className={`border-b ${normalizeRolesForUser(u.roles || u.role || u.rolesList || u._rolesDisplay).includes('securitysupervisor') ? 'cursor-pointer hover:bg-muted/40' : ''}`}
+                      className={`border-b transition-colors ${normalizeRolesForUser(u.roles || u.role || u.rolesList || u._rolesDisplay).includes('securitysupervisor') ? 'cursor-pointer' : ''}`}
+                      style={{ borderColor: 'var(--hairline)' }}
                       onClick={() => {
                         if (normalizeRolesForUser(u.roles || u.role || u.rolesList || u._rolesDisplay).includes('securitysupervisor')) {
                           navigate(`/supervisors/${u.id || u._id || u.raw?.id}`);
@@ -766,7 +775,7 @@ export default function AdminOfficeUsersPage() {
                           // archived (backend) or archivado (spanish) => show red Archivado
                           if (status === "archived" || status === "archivado") {
                             return (
-                              <StatusBadge tone="red">
+                              <StatusBadge tone="bad">
                                 {t('adminOfficeUsers.statuses.archived', { defaultValue: 'Archivado' })}
                               </StatusBadge>
                             );
@@ -774,7 +783,7 @@ export default function AdminOfficeUsersPage() {
 
                           if (status === "invited" || status === "pending") {
                             return (
-                              <StatusBadge tone="orange">
+                              <StatusBadge tone="warn">
                                 {t('adminOfficeUsers.statuses.pending', { defaultValue: 'Pendiente' })}
                               </StatusBadge>
                             );
@@ -782,14 +791,14 @@ export default function AdminOfficeUsersPage() {
 
                           if (u.active === false) {
                             return (
-                              <StatusBadge tone="slate">
+                              <StatusBadge tone="neutral">
                                 {t('adminOfficeUsers.statuses.inactive', { defaultValue: 'Inactivo' })}
                               </StatusBadge>
                             );
                           }
 
                           return (
-                            <StatusBadge tone="green">
+                            <StatusBadge tone="ok">
                               {t('adminOfficeUsers.statuses.active', { defaultValue: 'Activo' })}
                             </StatusBadge>
                           );
@@ -890,34 +899,34 @@ export default function AdminOfficeUsersPage() {
           <div className="md:hidden">
             <MobileCardList
               items={pagedRows || []}
-              loading={false}
+              loading={loadingUsers}
               emptyMessage={t('adminOfficeUsers.noData.title', { defaultValue: 'No se encontraron resultados' }) as string}
               renderCard={(u: AdminUserRow) => (
-                <div className="p-4 bg-card border rounded-lg">
+                <GlassPanel flat className="p-4">
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex-1">
                       <div className="text-sm font-semibold">{[u.firstName, u.lastName].filter(Boolean).join(' ') || u.name || u.email || '-'}</div>
-                      <div className="text-xs text-muted-foreground">{u.email || '-'}</div>
-                      <div className="text-xs text-muted-foreground mt-1">{(u._rolesDisplay) || (Array.isArray(u.roles) ? u.roles.map((r) => typeof r === 'string' ? r : (r?.name || r?.role || '')).join(', ') : (typeof u.roles === 'string' ? u.roles : typeof u.role === 'string' ? u.role : '-'))}</div>
+                      <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{u.email || '-'}</div>
+                      <div className="mt-1 text-xs" style={{ color: 'var(--ink-soft)' }}>{(u._rolesDisplay) || (Array.isArray(u.roles) ? u.roles.map((r) => typeof r === 'string' ? r : (r?.name || r?.role || '')).join(', ') : (typeof u.roles === 'string' ? u.roles : typeof u.role === 'string' ? u.role : '-'))}</div>
                     </div>
-                    <div className="text-xs text-muted-foreground text-right">
+                    <div className="flex shrink-0 flex-col items-end gap-1 text-right">
                       {(() => {
                         const status = (u.status || '').toString().toLowerCase();
-                        if (status === 'archived' || status === 'archivado') return t('adminOfficeUsers.statuses.archived', { defaultValue: 'Archivado' });
-                        if (status === 'invited' || status === 'pending') return t('adminOfficeUsers.statuses.pending', { defaultValue: 'Pendiente' });
-                        if (u.active === false) return t('adminOfficeUsers.statuses.inactive', { defaultValue: 'Inactivo' });
-                        return t('adminOfficeUsers.statuses.active', { defaultValue: 'Activo' });
+                        if (status === 'archived' || status === 'archivado') return <StatusBadge tone="neutral">{t('adminOfficeUsers.statuses.archived', { defaultValue: 'Archivado' })}</StatusBadge>;
+                        if (status === 'invited' || status === 'pending') return <StatusBadge tone="warn">{t('adminOfficeUsers.statuses.pending', { defaultValue: 'Pendiente' })}</StatusBadge>;
+                        if (u.active === false) return <StatusBadge tone="bad">{t('adminOfficeUsers.statuses.inactive', { defaultValue: 'Inactivo' })}</StatusBadge>;
+                        return <StatusBadge tone="ok">{t('adminOfficeUsers.statuses.active', { defaultValue: 'Activo' })}</StatusBadge>;
                       })()}
-                      <div className="text-xs text-muted-foreground">{u.lastLoginAt ? new Date(u.lastLoginAt as string).toLocaleString() : '-'}</div>
+                      <div className="text-xs tabular-nums" style={{ color: 'var(--ink-soft)' }}>{u.lastLoginAt ? new Date(u.lastLoginAt as string).toLocaleString('es-EC') : '—'}</div>
                     </div>
                   </div>
-                </div>
+                </GlassPanel>
               )}
             />
           </div>
-        </div>
+        </GlassPanel>
         {/* Footer de tabla */}
-        <div className="mt-2 flex items-center justify-between rounded-xl bg-muted/30 px-4 py-3 text-sm text-foreground/70">
+        <div className="glass-sunken mt-2 flex items-center justify-between px-4 py-3 text-sm" style={{ color: 'var(--ink-soft)' }}>
           <div className="flex items-center gap-2">
             <span>{t('adminOfficeUsers.footer.itemsPerPage', { defaultValue: 'Elementos por página' })}</span>
             <Select
@@ -935,7 +944,7 @@ export default function AdminOfficeUsersPage() {
             </Select>
           </div>
           <div className="flex items-center gap-4">
-            <div>
+            <div className="tabular-nums">
               {filteredRows.length === 0 ? t('adminOfficeUsers.pagination.zero', { defaultValue: '0 – 0 de 0' }) : t('adminOfficeUsers.pagination.range', { defaultValue: '{{start}} – {{end}} de {{total}}', start: rangeStart, end: rangeEnd, total: filteredRows.length })}
             </div>
             <div className="flex items-center gap-2">
@@ -944,22 +953,24 @@ export default function AdminOfficeUsersPage() {
                 size="sm"
                 disabled={currentPage <= 1}
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                aria-label={t('clients.pagination.prev', { defaultValue: 'Anterior' }) as string}
               >
-                ◀
+                <ChevronLeft className="h-4 w-4" />
               </Button>
-              <span className="text-xs">{currentPage} / {pageCount}</span>
+              <span className="text-xs tabular-nums">{currentPage} / {pageCount}</span>
               <Button
                 variant="outline"
                 size="sm"
                 disabled={currentPage >= pageCount}
                 onClick={() => setCurrentPage((p) => Math.min(pageCount, p + 1))}
+                aria-label={t('clients.pagination.next', { defaultValue: 'Siguiente' }) as string}
               >
-                ▶
+                <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
           </div>
         </div>
-        </Section>
+        </GlassPanel>
 
         {/* Confirm dialogs for resend and suspend */ }
   <AlertDialog open={resendDialogOpen} onOpenChange={setResendDialogOpen}>
@@ -973,7 +984,7 @@ export default function AdminOfficeUsersPage() {
       <AlertDialogFooter>
         <AlertDialogCancel onClick={() => setSelectedUserToAct(null)}>{t('adminOfficeUsers.dialogs.common.cancel', { defaultValue: 'Cancelar' })}</AlertDialogCancel>
         <AlertDialogAction
-          className="bg-primary text-white hover:bg-primary/90"
+          className="cg-btn-brand"
           onClick={async () => {
             if (!selectedUserToAct?.id) return;
             try {
@@ -1008,7 +1019,7 @@ export default function AdminOfficeUsersPage() {
             <AlertDialogFooter>
               <AlertDialogCancel onClick={() => setSelectedUserToAct(null)}>{t('adminOfficeUsers.dialogs.common.cancel', { defaultValue: 'Cancelar' })}</AlertDialogCancel>
               <AlertDialogAction
-                className="bg-primary text-white hover:bg-primary/90"
+                className="cg-btn-brand"
                 onClick={async () => {
                   if (!selectedUserToAct?.id) return;
                     try {
@@ -1050,7 +1061,7 @@ export default function AdminOfficeUsersPage() {
             <AlertDialogFooter>
               <AlertDialogCancel onClick={() => setSelectedUserToAct(null)}>{t('adminOfficeUsers.dialogs.common.cancel', { defaultValue: 'Cancelar' })}</AlertDialogCancel>
               <AlertDialogAction
-                className="bg-red-600 hover:bg-red-700"
+                className="cg-btn-bad"
                 onClick={async () => {
                   if (!selectedUserToAct?.id) return;
                   await handleDeleteUser(selectedUserToAct.id);

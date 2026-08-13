@@ -58,7 +58,11 @@ export default function TrialBanner() {
 
   const go = () => navigate("/setting/billing");
 
-  let cls = "bg-sky-500/10 text-sky-800 border-sky-200";
+  // La gravedad SUBE con el estado: informativo → aviso → grave. Los tres son
+  // semánticos y fijos en tokens.css, así que un pago fallido se lee rojo con
+  // cualquier acento configurado. Antes eran seis colores de Tailwind sueltos,
+  // con tintas `-800` que sobre un fondo oscuro quedaban ilegibles.
+  let tono: "info" | "warn" | "bad" = "info";
   let icon = <Clock size={15} className="shrink-0" />;
   let text = "";
 
@@ -68,11 +72,11 @@ export default function TrialBanner() {
         ? t("billing.bannerTrialLeft", { defaultValue: "Prueba gratuita: te quedan {{n}} día(s).", n: summary.trial.daysLeft })
         : t("billing.bannerTrialToday", { defaultValue: "Tu prueba gratuita termina hoy." });
   } else if (summary.status === "trial_expired") {
-    cls = "bg-amber-500/10 text-amber-800 border-amber-200";
+    tono = "warn";
     icon = <AlertTriangle size={15} className="shrink-0" />;
     text = t("billing.bannerExpired", { defaultValue: "Tu prueba gratuita terminó. Activa tu suscripción para seguir usando la plataforma." });
   } else if (summary.status === "past_due") {
-    cls = "bg-red-500/10 text-red-800 border-red-200";
+    tono = "bad";
     icon = <AlertTriangle size={15} className="shrink-0" />;
     text = t("billing.bannerPastDue", { defaultValue: "Tu último pago falló. Actualiza tu suscripción para mantener el servicio." });
   } else {
@@ -80,14 +84,23 @@ export default function TrialBanner() {
   }
 
   return (
-    <div className={`flex items-center justify-between gap-3 border-b px-4 py-2 text-sm ${cls}`}>
+    <div
+      className="flex items-center justify-between gap-3 border-b px-4 py-2 text-sm"
+      style={{
+        background: `color-mix(in oklab, var(--${tono}) 12%, transparent)`,
+        borderColor: `color-mix(in oklab, var(--${tono}) 30%, transparent)`,
+        color: `var(--${tono}-text)`,
+      }}
+    >
       <span className="flex items-center gap-2">
         {icon}
         {text}
       </span>
+      {/* Activar es la acción principal del producto: relleno de marca con tinta
+          `--brand-ink`. El coral `#f36a6d` de antes no salía de ningún token. */}
       <button
         onClick={go}
-        className="shrink-0 rounded-md bg-[#f36a6d] px-3 py-1 text-xs font-semibold text-white hover:bg-[#e85b5f]"
+        className="cg-btn-brand cg-focus shrink-0 rounded-full px-3 py-1 text-xs font-semibold transition-[filter] hover:brightness-105"
       >
         {t("billing.activate", { defaultValue: "Activar suscripción" })}
       </button>

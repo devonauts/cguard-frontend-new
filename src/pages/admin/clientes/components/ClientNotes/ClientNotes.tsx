@@ -13,6 +13,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 import { Section, EmptyState, Modal } from '@/components/kit';
+import { FIELD_CLS, LabeledField, TabTable, THead, Th, Tr } from '../_shared/tab-kit';
 import type { Client } from '@/types/client';
 
 type Props = {
@@ -206,27 +207,27 @@ export default function ClientNotes({ client }: Props) {
                     <div className="relative" ref={actionRef}>
                         <button
                             onClick={() => setActionOpen(!actionOpen)}
-                            className="px-3 py-2 border rounded-md bg-card text-foreground text-sm font-medium flex items-center gap-2 hover:bg-muted/30 min-w-[100px]"
+                            className="cg-btn-glass cg-focus flex min-w-[100px] items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium"
                         >
                             {t('actions.action', '-')}
                             <ChevronDown size={16} />
                         </button>
                         {actionOpen && (
-                            <div className="absolute left-0 mt-1 bg-card border rounded-md shadow-lg z-10 w-full">
-                                <button onClick={() => { if (selectedNoteIds.length > 0) setConfirmDeleteIds(selectedNoteIds); setActionOpen(false); }} className={`block w-full text-left px-4 py-2 text-sm hover:bg-muted ${selectedNoteIds.length === 0 ? 'text-muted-foreground cursor-not-allowed' : ''}`}>{t('actions.delete')}</button>
+                            <div className="glass-raised absolute left-0 z-10 mt-1 w-full p-1">
+                                <button onClick={() => { if (selectedNoteIds.length > 0) setConfirmDeleteIds(selectedNoteIds); setActionOpen(false); }} className={`cg-focus block w-full rounded-md px-3 py-2 text-left text-sm transition-opacity hover:opacity-70 ${selectedNoteIds.length === 0 ? 'cursor-not-allowed text-muted-foreground' : ''}`}>{t('actions.delete')}</button>
                             </div>
                         )}
                     </div>
 
                     <div className="flex-1 max-w-xs">
                         <div className="relative">
-                            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                            <Search size={16} className="absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
                             <input
                                 type="text"
                                 placeholder={t('clients.notes.notesearchPlaceholder', 'Search notes')}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full pl-9 pr-3 py-2 border rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                className={`${FIELD_CLS} pl-8`}
                             />
                         </div>
                     </div>
@@ -238,11 +239,10 @@ export default function ClientNotes({ client }: Props) {
                 </div>
 
                                 <div className="flex-1 min-h-0">
-                                        <div className="md:block hidden overflow-x-auto rounded-xl border">
-                                            <table className="w-full">
-                        <thead className="bg-muted/40">
-                            <tr className="border-b">
-                                <th className="px-4 py-3 text-left">
+                                        <div className="hidden md:block">
+                                            <TabTable minWidth={520}>
+                        <THead>
+                                <Th>
                                     <input
                                         type="checkbox"
                                         className="rounded"
@@ -250,17 +250,16 @@ export default function ClientNotes({ client }: Props) {
                                         checked={selectedNoteIds.length === filtered.length && filtered.length > 0}
                                         aria-label="Select all notes"
                                     />
-                                </th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t('clients.notes.Title', 'Title')}</th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t('clients.notes.Date', 'Date')}</th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t('clients.notes.Added By', 'Added By')}</th>
-                                <th className="px-4 py-3 text-left"></th>
-                            </tr>
-                        </thead>
+                                </Th>
+                                <Th>{t('clients.notes.Title', 'Title')}</Th>
+                                <Th>{t('clients.notes.Date', 'Date')}</Th>
+                                <Th>{t('clients.notes.Added By', 'Added By')}</Th>
+                                <Th aria-label="Acciones" />
+                        </THead>
                         <tbody>
                             {filtered.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="px-4 py-8">
+                                    <td colSpan={5} className="px-2 py-8">
                                         <EmptyState
                                             icon={<FileText />}
                                             title={t('clients.empty.title', 'No results found')}
@@ -270,8 +269,8 @@ export default function ClientNotes({ client }: Props) {
                                 </tr>
                             ) : (
                                 filtered.map((note) => (
-                                    <tr key={note.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
-                                        <td className="px-4 py-3 text-sm text-foreground">
+                                    <Tr key={note.id}>
+                                        <td className="px-2 py-2.5">
                                             <input
                                                 type="checkbox"
                                                 className="rounded"
@@ -280,20 +279,20 @@ export default function ClientNotes({ client }: Props) {
                                                 aria-label={`Select note ${note.id}`}
                                             />
                                         </td>
-                                        <td className="px-4 py-3 text-sm text-foreground">{note.title}</td>
-                                        <td className="px-4 py-3 text-sm text-foreground">{note.noteDate || note.noteDate === null ? note.noteDate : note.createdAt?.split('T')?.[0]}</td>
-                                        <td className="px-4 py-3 text-sm text-foreground">
+                                        <td className="px-2 py-2.5 font-medium">{note.title}</td>
+                                        <td className="px-2 py-2.5 tabular-nums">{note.noteDate || note.noteDate === null ? note.noteDate : note.createdAt?.split('T')?.[0]}</td>
+                                        <td className="px-2 py-2.5">
                                             {(() => {
                                                 const cb = note.createdBy;
                                                 const name = cb ? ((cb.fullName || cb.name || cb.firstName || '') + (cb.lastName ? ' ' + cb.lastName : '')) : '';
                                                 return (name && name.trim()) ? name : (note.createdById || '-');
                                             })()}
                                         </td>
-                                        <td className="px-4 py-3 text-sm text-foreground relative">
+                                        <td className="relative px-2 py-2.5 text-right">
                                             <Popover open={openPopoverId === note.id} onOpenChange={(open) => setOpenPopoverId(open ? note.id : null)}>
                                                 <PopoverTrigger asChild>
-                                                    <button aria-label={t('header.openMenu') || 'Open menu'} className="p-2 rounded-full hover:bg-muted">
-                                                        <EllipsisVertical className="h-5 w-5 text-muted-foreground" />
+                                                    <button aria-label={t('header.openMenu') || 'Open menu'} className="cg-focus rounded-md p-1.5 transition-opacity hover:opacity-70" style={{ color: 'var(--ink-soft)' }}>
+                                                        <EllipsisVertical className="h-4 w-4" />
                                                     </button>
                                                 </PopoverTrigger>
                                                 <PopoverContent className="w-44 p-1 rounded-md shadow-lg">
@@ -302,15 +301,15 @@ export default function ClientNotes({ client }: Props) {
                                                         {t('actions.viewDetails', 'Details')}
                                                     </button>
                                                     <button onClick={() => { setFormData({ title: note.title, description: note.description, date: note.noteDate || note.createdAt?.split('T')?.[0] || '', attachments: [] }); setIsEditing(true); setEditingNoteId(note.id); setShowModal(true); setOpenPopoverId(null); }} className="flex items-center gap-2 px-3 py-2 text-sm w-full hover:bg-muted/30"><Pencil className="h-4 w-4" />{t('actions.edit') || 'Edit'}</button>
-                                                    <button onClick={() => { setConfirmDeleteIds([note.id]); setOpenPopoverId(null); }} className="flex items-center gap-2 px-3 py-2 text-sm w-full hover:bg-muted/30 text-red-600"><Trash className="h-4 w-4" />{t('actions.delete') || 'Delete'}</button>
+                                                    <button onClick={() => { setConfirmDeleteIds([note.id]); setOpenPopoverId(null); }} className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-muted/30" style={{ color: 'var(--bad-text)' }}><Trash className="h-4 w-4" />{t('actions.delete') || 'Delete'}</button>
                                                 </PopoverContent>
                                             </Popover>
                                         </td>
-                                    </tr>
+                                    </Tr>
                                 ))
                             )}
                         </tbody>
-                                            </table>
+                                            </TabTable>
                                         </div>
 
                                         <div className="md:hidden">
@@ -338,27 +337,27 @@ export default function ClientNotes({ client }: Props) {
                                 </div>
             </Section>
 
-            {showModal && (
-                <div className="fixed inset-0 z-50 flex items-end sm:items-center" onClick={handleCloseModal}>
-                    <div className="absolute inset-0 bg-black opacity-30" onClick={handleCloseModal} />
-                    <div className="w-full sm:w-96 max-h-[90vh] bg-card rounded-t-lg sm:rounded-md shadow-2xl overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-center justify-between p-6 border-b sticky top-0 bg-card">
-                            <h2 className="text-lg font-semibold text-foreground">{t('clients.notes.form.Title', 'Add New Note')}</h2>
-                        </div>
+            <Modal
+                open={showModal}
+                onOpenChange={(o) => { if (!o) handleCloseModal(); }}
+                title={t('clients.notes.form.Title', 'Add New Note')}
+                icon={<FileText className="h-5 w-5" />}
+                footer={
+                    <Button variant="brand" onClick={handleSubmitNote} disabled={!isFormValid}>
+                        {isEditing ? t('clients.notes.SaveChanges', 'Save changes') : t('clients.notes.Save', 'Save')}
+                    </Button>
+                }
+            >
+                        <div className="space-y-3">
+                            <LabeledField label={t('clients.notes.form.Titlenote', 'Title')}>
+                                <input type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} placeholder={t('clients.notes.form.Titleinput', 'Enter note title')} className={FIELD_CLS} />
+                            </LabeledField>
 
-                        <div className="p-6 space-y-6">
-                            <div>
-                                <label className="block text-sm font-medium text-foreground mb-2">{t('clients.notes.form.Titlenote', 'Title')} </label>
-                                <input type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} placeholder={t('clients.notes.form.Titleinput', 'Enter note title')} className="w-full px-3 py-2 border rounded-md text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
-                            </div>
+                            <LabeledField label={t('clients.notes.form.Description', 'Description')}>
+                                <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} placeholder={t('clients.notes.form.Descriptioninput', 'Enter note description')} className={`${FIELD_CLS} h-auto resize-none py-2`} rows={6} />
+                            </LabeledField>
 
-                            <div>
-                                <label className="block text-sm font-medium text-foreground mb-2">{t('clients.notes.form.Description', 'Description')} </label>
-                                <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} placeholder={t('clients.notes.form.Descriptioninput', 'Enter note description')} className="w-full px-3 py-2 border rounded-md text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none" rows={6} />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-foreground mb-2">{t('clients.notes.form.Date', 'Date')} </label>
+                            <LabeledField label={t('clients.notes.form.Date', 'Date')}>
                                 <Popover>
                                     <PopoverTrigger asChild>
                                         <Button variant="outline" className="w-full justify-between text-left font-normal">
@@ -376,11 +375,10 @@ export default function ClientNotes({ client }: Props) {
                                         />
                                     </PopoverContent>
                                 </Popover>
-                            </div>
+                            </LabeledField>
 
-                            <div>
-                                <label className="block text-sm font-medium text-foreground mb-2">{t('clients.notes.form.AttachFile', 'Attachments')}</label>
-                                <label className="w-full border border-border rounded-md p-3 flex items-center justify-between gap-3 cursor-pointer hover:border-gray-400">
+                            <LabeledField label={t('clients.notes.form.AttachFile', 'Attachments')}>
+                                <label className="glass-sunken flex w-full cursor-pointer items-center justify-between gap-3 p-3 transition-colors">
                                     <div className="flex-1">
                                         <div className="text-sm text-foreground/70">
                                             {formData.attachments && formData.attachments.length > 0 ? (
@@ -390,7 +388,7 @@ export default function ClientNotes({ client }: Props) {
                                                             <div className="flex items-center gap-3 truncate">
                                                                 <span className="text-sm text-foreground font-medium truncate" style={{ maxWidth: 200 }} title={f.name}>{shortName(f.name, 28)}</span>
                                                             </div>
-                                                            <button onClick={(e) => { e.stopPropagation(); removeAttachment(i); }} className="text-muted-foreground hover:text-red-500 p-1 rounded" aria-label={`Remove ${f.name}`}>
+                                                            <button onClick={(e) => { e.stopPropagation(); removeAttachment(i); }} className="cg-focus rounded p-1" style={{ color: 'var(--bad-text)' }} aria-label={`Quitar ${f.name}`}>
                                                                 <X size={14} />
                                                             </button>
                                                         </div>
@@ -403,21 +401,9 @@ export default function ClientNotes({ client }: Props) {
                                     </div>
                                     <input type="file" multiple onChange={(e) => { const files = e.target.files ? Array.from(e.target.files) : []; setFormData({ ...formData, attachments: files }); }} className="sr-only" />
                                 </label>
-                            </div>
+                            </LabeledField>
                         </div>
-
-                        <div className="flex items-center justify-end gap-3 p-6 border-t sticky bottom-0 bg-card">
-                            <button
-                                onClick={handleSubmitNote}
-                                disabled={!isFormValid}
-                                className={`px-6 py-2 bg-primary text-primary-foreground rounded-md font-semibold hover:bg-primary/90 ${!isFormValid ? 'opacity-50 cursor-not-allowed' : ''}`}
-                            >
-                                {isEditing ? t('clients.notes.SaveChanges', 'Save changes') : t('clients.notes.Save', 'Save')}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            </Modal>
 
             <Modal
                 open={!!detailsNote}

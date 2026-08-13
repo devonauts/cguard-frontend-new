@@ -9,7 +9,7 @@ import { Search, ChevronDown, Plus, X, Paperclip, Filter, BellRing } from 'lucid
 import TimeInput from '@/components/TimeInput';
 import MultiCombobox from '@/components/app/multicombobox';
 import MobileCardList from '@/components/responsive/MobileCardList';
-import { PageContainer, PageHeader, Section, EmptyState } from '@/components/kit';
+import { PageContainer, PageHeader, Section, EmptyState, IconTile } from "@/components/kit";
 import { Button } from '@/components/ui/button';
 import type { GuardDetail } from '../../guardDetailTypes';
 
@@ -201,13 +201,13 @@ export default function GuardRemindersPage() {
                 <div className="relative" ref={actionRef}>
                   <button
                     onClick={() => setActionOpen(!actionOpen)}
-                    className="px-3 py-2 border rounded-xl bg-card text-foreground text-sm font-medium flex items-center gap-2 hover:bg-muted/30 min-w-[100px]"
+                    className="cg-btn-glass cg-focus flex items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold min-w-[100px]"
                   >
                     {actionSelection}
                     <ChevronDown size={16} />
                   </button>
                   {actionOpen && (
-                    <div className="absolute left-0 mt-1 bg-card border rounded-xl shadow-lg z-10 w-full overflow-hidden">
+                    <div className="glass-raised absolute left-0 z-10 mt-1 w-full overflow-hidden" style={{ position: 'absolute' }}>
                       <button
                         onClick={() => { setActionSelection(t('guards.reminders.actions.archive', { defaultValue: 'Archive' })); setActionOpen(false); }}
                         className="block w-full text-left px-4 py-2 text-sm hover:bg-muted"
@@ -224,7 +224,7 @@ export default function GuardRemindersPage() {
                     placeholder={t('guards.reminders.searchPlaceholder', { defaultValue: 'Search reminders' })}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-56 pl-8 pr-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="cg-input w-56 py-2 pl-8 pr-3 text-sm"
                   />
                 </div>
               </div>
@@ -298,7 +298,7 @@ export default function GuardRemindersPage() {
                   loading={false}
                   emptyMessage={t('guards.reminders.empty.title', { defaultValue: 'No Result Found' }) as string}
                   renderCard={(r: Reminder) => (
-                    <div className="p-4 bg-card border rounded-xl">
+                    <div className="glass-flat p-4">
                       <div className="text-sm font-semibold">{r.title}</div>
                       <div className="text-xs text-muted-foreground">{r.datetime} • {r.createdBy}</div>
                     </div>
@@ -310,11 +310,11 @@ export default function GuardRemindersPage() {
 
           {/* Modal */}
           {showModal && (
-            <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" onClick={handleCloseModal}>
-              <div className="fixed right-0 top-0 bottom-0 w-96 bg-card shadow-2xl overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-                <div className="flex items-center justify-between p-6 border-b sticky top-0 bg-card">
+            <div className="glass-scrim fixed inset-0 z-50" onClick={handleCloseModal}>
+              <div className="glass-raised fixed bottom-0 right-0 top-0 w-96 overflow-y-auto rounded-l-3xl rounded-r-none" style={{ position: 'fixed' }} onClick={(e) => e.stopPropagation()}>
+                <div className="sticky top-0 flex items-center justify-between border-b p-6" style={{ borderColor: 'var(--hairline)', background: 'var(--glass-solid)' }}>
                   <div className="flex items-center gap-2.5">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/12 text-primary [&_svg]:size-5"><BellRing /></div>
+                    <IconTile size="sm"><BellRing /></IconTile>
                     <h2 className="text-base font-semibold text-foreground">{t('guards.reminders.modal.title', { defaultValue: 'Add Reminder' })}</h2>
                   </div>
                   <button onClick={handleCloseModal} className="text-muted-foreground hover:text-foreground/70"><X /></button>
@@ -322,28 +322,28 @@ export default function GuardRemindersPage() {
 
                 <div className="p-6 space-y-6">
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">{t('guards.reminders.form.title', { defaultValue: 'Title' })} <span className="text-red-500">*</span></label>
-                    <input type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} placeholder={t('guards.reminders.form.titlePlaceholder', { defaultValue: 'Title*' })} className="w-full px-3 py-2 border rounded-md text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
+                    <label className="block text-sm font-medium text-foreground mb-2">{t('guards.reminders.form.title', { defaultValue: 'Title' })} <span style={{ color: 'var(--bad-text)' }}>*</span></label>
+                    <input type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} placeholder={t('guards.reminders.form.titlePlaceholder', { defaultValue: 'Title*' })} className="cg-input w-full px-3 py-2 text-sm" />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">{t('guards.reminders.form.description', { defaultValue: 'Description' })}</label>
-                    <textarea value={formData.description ?? ''} onChange={(e) => setFormData({ ...formData, description: e.target.value })} placeholder={t('guards.reminders.form.descriptionPlaceholder', { defaultValue: 'Description' })} className="w-full px-3 py-2 border rounded-md text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none" rows={4} />
+                    <textarea value={formData.description ?? ''} onChange={(e) => setFormData({ ...formData, description: e.target.value })} placeholder={t('guards.reminders.form.descriptionPlaceholder', { defaultValue: 'Description' })} className="cg-input w-full resize-none px-3 py-2 text-sm" rows={4} />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-foreground mb-2">{t('guards.reminders.form.selectedDate', { defaultValue: 'Selected Date' })}<span className="text-red-500">*</span></label>
-                      <input type="date" value={formData.datetime ? formData.datetime.split('T')[0] : ''} onChange={(e) => setFormData({ ...formData, datetime: `${e.target.value}T${(formData.datetime || '').split('T')[1] || '09:00'}` })} className="w-full px-3 py-2 border rounded-md text-sm text-foreground" />
+                      <label className="block text-sm font-medium text-foreground mb-2">{t('guards.reminders.form.selectedDate', { defaultValue: 'Selected Date' })}<span style={{ color: 'var(--bad-text)' }}>*</span></label>
+                      <input type="date" value={formData.datetime ? formData.datetime.split('T')[0] : ''} onChange={(e) => setFormData({ ...formData, datetime: `${e.target.value}T${(formData.datetime || '').split('T')[1] || '09:00'}` })} className="cg-input w-full px-3 py-2 text-sm" />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-foreground mb-2">{t('guards.reminders.form.at', { defaultValue: 'At' })}<span className="text-red-500">*</span></label>
+                      <label className="block text-sm font-medium text-foreground mb-2">{t('guards.reminders.form.at', { defaultValue: 'At' })}<span style={{ color: 'var(--bad-text)' }}>*</span></label>
                       <TimeInput value={formData.datetime ? (formData.datetime.split('T')[1] || '').slice(0,5) : '09:00'} onChange={(val) => setFormData({ ...formData, datetime: `${(formData.datetime || '').split('T')[0] || new Date().toISOString().slice(0,10)}T${val}` })} />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">{t('guards.reminders.form.createdFor', { defaultValue: 'Created For' })}<span className="text-red-500">*</span></label>
+                    <label className="block text-sm font-medium text-foreground mb-2">{t('guards.reminders.form.createdFor', { defaultValue: 'Created For' })}<span style={{ color: 'var(--bad-text)' }}>*</span></label>
                     <MultiCombobox
                       value={formData.createdFor}
                       onChange={(vals) => setFormData({ ...formData, createdFor: vals })}
@@ -356,8 +356,8 @@ export default function GuardRemindersPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">{t('guards.reminders.form.priority', { defaultValue: 'Priority' })}<span className="text-red-500">*</span></label>
-                    <select value={formData.priority} onChange={(e) => setFormData({ ...formData, priority: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm">
+                    <label className="block text-sm font-medium text-foreground mb-2">{t('guards.reminders.form.priority', { defaultValue: 'Priority' })}<span style={{ color: 'var(--bad-text)' }}>*</span></label>
+                    <select value={formData.priority} onChange={(e) => setFormData({ ...formData, priority: e.target.value })} className="cg-input w-full px-3 py-2 text-sm">
                       <option>{t('guards.reminders.priority.low', { defaultValue: 'Low' })}</option>
                       <option>{t('guards.reminders.priority.medium', { defaultValue: 'Medium' })}</option>
                       <option>{t('guards.reminders.priority.high', { defaultValue: 'High' })}</option>
@@ -376,7 +376,7 @@ export default function GuardRemindersPage() {
                     </button>
 
                     {remindOpen && (
-                      <div ref={remindOptionsRef} className="absolute left-0 right-0 z-20 mt-2 bg-card border rounded-md shadow-lg max-h-56 overflow-y-auto">
+                      <div ref={remindOptionsRef} className="glass-raised absolute left-0 right-0 z-20 mt-2 max-h-56 overflow-y-auto" style={{ position: 'absolute' }}>
                         {[
                           '30 Minutes Before',
                           '1 Hour Before',
@@ -405,7 +405,7 @@ export default function GuardRemindersPage() {
 
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">{t('guards.reminders.form.repeat', { defaultValue: 'Repeat' })}</label>
-                    <select value={formData.repeat ?? 'Never'} onChange={(e) => setFormData({ ...formData, repeat: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm">
+                    <select value={formData.repeat ?? 'Never'} onChange={(e) => setFormData({ ...formData, repeat: e.target.value })} className="cg-input w-full px-3 py-2 text-sm">
                       <option>{t('guards.reminders.repeat.never', { defaultValue: 'Never' })}</option>
                       <option>{t('guards.reminders.repeat.1_week', { defaultValue: '1 Week' })}</option>
                       <option>{t('guards.reminders.repeat.2_weeks', { defaultValue: '2 Weeks' })}</option>
@@ -425,7 +425,7 @@ export default function GuardRemindersPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-end gap-3 p-6 border-t sticky bottom-0 bg-card">
+                <div className="flex items-center justify-end gap-3 p-6 border-t sticky bottom-0 [background:var(--glass-solid)]">
                   <Button variant="brand" onClick={handleSubmitReminder}>{t('guards.reminders.modal.save', { defaultValue: 'Save' })}</Button>
                 </div>
               </div>
@@ -434,11 +434,11 @@ export default function GuardRemindersPage() {
 
           {/* Filters Modal */}
           {showFilters && (
-            <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" onClick={() => setShowFilters(false)}>
-              <div className="fixed right-0 top-0 bottom-0 w-80 bg-card shadow-2xl overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-                <div className="flex items-center justify-between p-6 border-b sticky top-0 bg-card">
+            <div className="glass-scrim fixed inset-0 z-50" onClick={() => setShowFilters(false)}>
+              <div className="glass-raised fixed bottom-0 right-0 top-0 w-80 overflow-y-auto rounded-l-3xl rounded-r-none" style={{ position: 'fixed' }} onClick={(e) => e.stopPropagation()}>
+                <div className="sticky top-0 flex items-center justify-between border-b p-6" style={{ borderColor: 'var(--hairline)', background: 'var(--glass-solid)' }}>
                   <div className="flex items-center gap-2.5">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/12 text-primary [&_svg]:size-5"><Filter /></div>
+                    <IconTile size="sm"><Filter /></IconTile>
                     <h2 className="text-base font-semibold text-foreground">{t('guards.reminders.filters.title', { defaultValue: 'Filters' })}</h2>
                   </div>
                   <button onClick={() => setShowFilters(false)} className="text-muted-foreground hover:text-foreground/70"><X /></button>
@@ -446,8 +446,8 @@ export default function GuardRemindersPage() {
 
                 <div className="p-6 space-y-6">
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">{t('guards.reminders.filters.status', { defaultValue: 'Status' })}<span className="text-red-500">*</span></label>
-                    <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="w-full px-3 py-2 border rounded-md text-sm">
+                    <label className="block text-sm font-medium text-foreground mb-2">{t('guards.reminders.filters.status', { defaultValue: 'Status' })}<span style={{ color: 'var(--bad-text)' }}>*</span></label>
+                    <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="cg-input w-full px-3 py-2 text-sm">
                       <option>{t('guards.reminders.filters.options.all', { defaultValue: 'All' })}</option>
                       <option>{t('guards.reminders.filters.options.pending', { defaultValue: 'Pending' })}</option>
                       <option>{t('guards.reminders.filters.options.completed', { defaultValue: 'Completed' })}</option>
@@ -456,7 +456,7 @@ export default function GuardRemindersPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-end gap-3 p-6 border-t sticky bottom-0 bg-card">
+                <div className="flex items-center justify-end gap-3 p-6 border-t sticky bottom-0 [background:var(--glass-solid)]">
                   <Button variant="outline" onClick={() => setShowFilters(false)}>{t('guards.reminders.filters.cancel', { defaultValue: 'Cancel' })}</Button>
                   <Button variant="brand" onClick={() => { /* TODO: apply filters */ setShowFilters(false); }}>{t('guards.reminders.filters.apply', { defaultValue: 'Apply' })}</Button>
                 </div>

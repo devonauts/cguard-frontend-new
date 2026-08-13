@@ -7,6 +7,8 @@ import securityGuardService from '@/lib/api/securityGuardService';
 import guardRatingService from '@/lib/api/guardRatingService';
 import GuardRatingLevel from '@/pages/admin/security-guards/GuardRatingLevel';
 import { fileUrlFromFile, type FileLike } from '@/lib/fileUrl';
+import { AlertCircle } from 'lucide-react';
+import { StatCard, EmptyState, SkeletonBlock, SkeletonCards } from '@/components/kit';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import type { GuardDetail } from '../../guardDetailTypes';
@@ -18,36 +20,8 @@ type OverviewGuard = GuardDetail & {
   guard?: GuardDetail['guard'] & { isOnDuty?: boolean; status?: string; hasPassword?: boolean };
 };
 
-// ── Small presentational helpers ────────────────────────────────────────────
-const StatTile = ({
-  label,
-  value,
-  accent,
-  icon,
-}: {
-  label: string;
-  value: React.ReactNode;
-  accent?: 'gold' | 'green' | 'blue' | 'muted';
-  icon: React.ReactNode;
-}) => {
-  const ring =
-    accent === 'gold'
-      ? 'bg-primary/10 text-primary'
-      : accent === 'green'
-        ? 'bg-green-500/10 text-green-600'
-        : accent === 'blue'
-          ? 'bg-blue-500/10 text-blue-600'
-          : 'bg-muted text-muted-foreground';
-  return (
-    <div className="bg-card border rounded-2xl p-4 shadow-sm flex items-center gap-3 hover:shadow-md transition-shadow">
-      <div className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${ring}`}>{icon}</div>
-      <div className="min-w-0">
-        <div className="text-[11px] uppercase tracking-wide text-muted-foreground truncate">{label}</div>
-        <div className="font-semibold text-lg tracking-tight truncate">{value}</div>
-      </div>
-    </div>
-  );
-};
+// ── Tonos del sistema para los indicadores rápidos ──────────────────────────
+type TileAccent = 'brand' | 'ok' | 'info' | 'neutral';
 
 export default function GuardResumenPage() {
   const { id } = useParams();
@@ -109,17 +83,9 @@ export default function GuardResumenPage() {
   const hasPassword = guard?.hasPassword ?? guard?.guard?.hasPassword;
   const isActivated = hasPassword && gStatus === 'active';
 
-  const accessBadge = isActivated
-    ? {
-        txt: t('guards.profile.access.statusActive') || 'App activa',
-        cls: 'bg-green-500/15 text-green-700',
-        dot: 'bg-green-500',
-      }
-    : {
-        txt: t('guards.profile.access.statusPending') || 'Acceso pendiente',
-        cls: 'bg-orange-500/15 text-orange-700',
-        dot: 'bg-orange-500',
-      };
+  // Tono del acceso a la app: verde cuando ya entró, ámbar mientras esté pendiente.
+  const accessTone: TileAccent = isActivated ? 'ok' : 'neutral';
+  const dutyTone: TileAccent = onDuty ? 'ok' : 'neutral';
 
   return (
     <AppLayout>
@@ -127,13 +93,9 @@ export default function GuardResumenPage() {
         <div className="mx-auto max-w-5xl space-y-6">
           {loading ? (
             <div className="space-y-6">
-              <div className="h-44 rounded-2xl border bg-gradient-to-br from-card to-muted/40 animate-pulse" />
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {[0, 1, 2, 3].map((i) => (
-                  <div key={i} className="h-[72px] rounded-2xl border bg-card animate-pulse" />
-                ))}
-              </div>
-              <div className="text-center text-sm text-muted-foreground">{t('guards.overview.loading')}</div>
+              <SkeletonBlock className="h-44 rounded-3xl" />
+              <SkeletonCards count={4} className="grid-cols-2 sm:grid-cols-4" />
+              <div className="text-center text-sm" style={{ color: 'var(--ink-soft)' }}>{t('guards.overview.loading')}</div>
             </div>
           ) : guard ? (
             <>
@@ -142,22 +104,22 @@ export default function GuardResumenPage() {
                   signals derived from the loaded guard; the rest of the resumen
                   (station, performance, schedule, activity) lives in GuardSummary. */}
               <div className="grid grid-cols-2 gap-4">
-                <StatTile
+                <StatCard
                   label={t('guards.profile.cards.appAccess') || 'Acceso a la app'}
                   value={isActivated ? (t('guards.profile.access.statusActive') || 'Activa') : (t('guards.profile.access.statusPending') || 'Pendiente')}
-                  accent={isActivated ? 'green' : 'muted'}
+                  accent={accessTone}
                   icon={
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c0-1.105.895-2 2-2s2 .895 2 2v2M5 13h14a2 2 0 012 2v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4a2 2 0 012-2z" />
                     </svg>
                   }
                 />
-                <StatTile
+                <StatCard
                   label={onDuty ? t('guards.summary.onDuty', 'En servicio') : t('guards.summary.offDuty', 'Fuera de servicio')}
                   value={onDuty ? t('guards.summary.onDutyYes', 'Sí') : t('guards.summary.onDutyNo', 'No')}
-                  accent={onDuty ? 'green' : 'muted'}
+                  accent={dutyTone}
                   icon={
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   }
@@ -168,17 +130,11 @@ export default function GuardResumenPage() {
               <GuardSummary guard={guard} />
             </>
           ) : (
-            <div className="flex flex-col items-center justify-center text-center py-16 rounded-2xl border bg-card shadow-sm">
-              <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3">
-                <svg className="w-6 h-6 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div className="text-sm font-medium text-foreground">{t('guards.overview.loadError')}</div>
-              <div className="text-xs text-muted-foreground mt-1">
-                {t('guards.overview.empty') || 'Sin información del vigilante todavía.'}
-              </div>
-            </div>
+            <EmptyState
+              icon={<AlertCircle />}
+              title={t('guards.overview.loadError')}
+              description={t('guards.overview.empty') || 'Sin información del vigilante todavía.'}
+            />
           )}
         </div>
       </GuardsLayout>

@@ -21,23 +21,30 @@ export default function SubscriptionLockedScreen({
 
   const suspended = variant === "suspended";
 
+  // Suspendido es GRAVE (`--bad`) y cancelado es un aviso (`--warn`): los dos
+  // semánticos, fijos, para que no cambien con el acento de la empresa.
+  const tono = suspended ? "bad" : "warn";
+
   return (
-    <div className="flex h-screen flex-col items-center justify-center gap-6 bg-[#F8F7F4] px-6 text-center dark:bg-[#0A0A0A]">
+    <div className="app-shell flex h-screen flex-col items-center justify-center gap-6 px-6 text-center">
       <div
-        className={`flex h-16 w-16 items-center justify-center rounded-full ${
-          suspended ? "bg-red-500/10 text-red-600" : "bg-amber-500/10 text-amber-600"
-        }`}
+        className="flex h-16 w-16 items-center justify-center rounded-full border"
+        style={{
+          background: `color-mix(in oklab, var(--${tono}) 14%, transparent)`,
+          borderColor: `color-mix(in oklab, var(--${tono}) 32%, transparent)`,
+          color: `var(--${tono}-text)`,
+        }}
       >
         {suspended ? <Ban size={30} /> : <Lock size={30} />}
       </div>
 
       <div className="max-w-md space-y-2">
-        <h1 className="text-xl font-semibold text-foreground">
+        <h1 className="font-display text-xl font-semibold" style={{ color: "var(--ink)" }}>
           {suspended
             ? t("billing.lockedSuspendedTitle", { defaultValue: "Cuenta suspendida" })
             : t("billing.lockedCanceledTitle", { defaultValue: "Suscripción cancelada" })}
         </h1>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
           {suspended
             ? t("billing.lockedSuspendedMsg", { defaultValue: "El acceso a esta cuenta fue suspendido por el administrador de la plataforma. Contacta a soporte para reactivarla." })
             : t("billing.lockedCanceledMsg", { defaultValue: "Tu suscripción fue cancelada. Reactívala para volver a usar la plataforma." })}
@@ -46,9 +53,11 @@ export default function SubscriptionLockedScreen({
 
       <div className="flex gap-3">
         {!suspended && (
+          // Reactivar es la acción principal: relleno de marca y tinta
+          // `--brand-ink`. El coral `#f36a6d` de antes no salía de ningún sitio.
           <button
             onClick={() => navigate("/setting/billing")}
-            className="rounded-md bg-[#f36a6d] px-4 py-2 text-sm font-semibold text-white hover:bg-[#e85b5f]"
+            className="cg-btn-brand cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-[filter] hover:brightness-105"
           >
             {t("billing.lockedReactivate", { defaultValue: "Reactivar suscripción" })}
           </button>
@@ -61,7 +70,7 @@ export default function SubscriptionLockedScreen({
               /* ignore */
             }
           }}
-          className="rounded-md border border-default-300 px-4 py-2 text-sm font-medium text-foreground hover:bg-default-100"
+          className="cg-btn-glass cg-focus rounded-full px-4 py-2 text-sm font-medium"
         >
           {t("billing.lockedSignOut", { defaultValue: "Cerrar sesión" })}
         </button>

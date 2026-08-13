@@ -1,8 +1,8 @@
 /**
- * Vista de tarjetas de estaciones (toggle Cards ⇄ Lista en la subpágina de
- * Estaciones), al mismo estilo que Clientes/Vigilantes. Cada tarjeta: ícono con
- * color estable, nombre → detalle de la estación, horario, vigilantes requeridos
- * y geocerca. Menú Ver/Eliminar inyectado desde la página.
+ * Vista de tarjetas de estaciones (toggle Tarjetas ⇄ Lista en la subpágina de
+ * Estaciones), al mismo estilo que Clientes/Vigilantes. Cada tarjeta: ícono de
+ * cristal, nombre → detalle de la estación, horario, vigilantes requeridos y
+ * geocerca. Menú Ver/Eliminar inyectado desde la página.
  */
 import { EllipsisVertical, Building2, Users, Clock, MapPin, Eye, Trash } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,14 +12,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { StatusBadge, EmptyState } from '@/components/kit';
-
-const HUES = [28, 205, 150, 265, 340, 95, 180, 12];
-function hueFor(name: string): number {
-    let h = 0;
-    for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
-    return HUES[h % HUES.length];
-}
+import { StatusBadge, EmptyState, IconTile } from '@/components/kit';
 
 const SCHEDULE_LABEL: Record<string, string> = {
     '24h': '24 horas',
@@ -60,7 +53,6 @@ export default function StationCardsGrid({
             {stations.map((st, i) => {
                 const id = st.id || st.stationId || '';
                 const name = st.name || 'Estación';
-                const hue = hueFor(name);
                 const guards = st.numberOfGuardsInStation ?? (Array.isArray(st.assignedGuards) ? st.assignedGuards.length : null);
                 const sched = st.scheduleType ? (SCHEDULE_LABEL[st.scheduleType] || st.scheduleType) : (Array.isArray(st.jornadas) && st.jornadas.length ? `${st.jornadas.length} jornada(s)` : null);
                 const geo = st.hasPolygon ? 'Polígono' : (st.geofenceRadius ? `${st.geofenceRadius} m` : null);
@@ -71,17 +63,15 @@ export default function StationCardsGrid({
                         tabIndex={0}
                         onClick={() => onOpen(id)}
                         onKeyDown={(e) => { if (e.key === 'Enter') onOpen(id); }}
-                        className="group flex cursor-pointer flex-col rounded-2xl border bg-card p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md animate-in fade-in slide-in-from-bottom-2"
+                        className="glass-flat glass-hover cg-focus group flex cursor-pointer flex-col p-4 animate-in fade-in slide-in-from-bottom-2"
                         style={{ animationDelay: `${Math.min(i, 12) * 30}ms`, animationFillMode: 'backwards' }}
                     >
                         <div className="flex items-start gap-3">
-                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl [&_svg]:size-6" style={{ backgroundColor: `hsl(${hue} 70% 92%)`, color: `hsl(${hue} 60% 32%)` }}>
-                                <Building2 />
-                            </div>
+                            <IconTile size="lg"><Building2 /></IconTile>
                             <div className="min-w-0 flex-1">
-                                <p className="truncate font-semibold leading-tight group-hover:text-primary">{name}</p>
-                                {st.nickname ? <p className="truncate text-xs text-muted-foreground">{st.nickname}</p> : null}
-                                {sched && <div className="mt-1"><StatusBadge tone="blue" dot={false}>{sched}</StatusBadge></div>}
+                                <p className="truncate font-semibold leading-tight">{name}</p>
+                                {st.nickname ? <p className="truncate text-xs" style={{ color: 'var(--ink-soft)' }}>{st.nickname}</p> : null}
+                                {sched && <div className="mt-1"><StatusBadge tone="info" dot={false}>{sched}</StatusBadge></div>}
                             </div>
                             <div onClick={(e) => e.stopPropagation()}>
                                 <DropdownMenu>
@@ -96,13 +86,13 @@ export default function StationCardsGrid({
                             </div>
                         </div>
 
-                        <div className="mt-3 flex items-center gap-4 border-t pt-3 text-sm text-muted-foreground">
+                        <div className="mt-3 flex items-center gap-4 border-t pt-3 text-sm" style={{ borderColor: 'var(--hairline)', color: 'var(--ink-soft)' }}>
                             <span className="flex items-center gap-1.5">
-                                <Users className="h-4 w-4 text-primary" />
-                                <span className="font-semibold text-foreground">{guards ?? '—'}</span> vigilante(s)
+                                <Users className="h-4 w-4" style={{ color: 'var(--brand-text)' }} />
+                                <span className="font-semibold" style={{ color: 'var(--ink)' }}>{guards ?? '—'}</span> vigilante(s)
                             </span>
-                            {sched && <span className="flex items-center gap-1.5"><Clock className="h-4 w-4 text-primary" /> {sched}</span>}
-                            {geo && <span className="flex items-center gap-1.5"><MapPin className="h-4 w-4 text-primary" /> {geo}</span>}
+                            {sched && <span className="flex items-center gap-1.5"><Clock className="h-4 w-4" style={{ color: 'var(--brand-text)' }} /> {sched}</span>}
+                            {geo && <span className="flex items-center gap-1.5"><MapPin className="h-4 w-4" style={{ color: 'var(--brand-text)' }} /> {geo}</span>}
                         </div>
                     </div>
                 );

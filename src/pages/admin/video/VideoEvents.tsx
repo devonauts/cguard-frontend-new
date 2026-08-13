@@ -21,12 +21,16 @@ import { Button } from "@/components/ui/button";
 import {
   PageContainer,
   PageHeader,
-  Section,
   EmptyState,
   SkeletonCards,
   FadeIn,
   Stagger,
+  GlassPanel,
+  StatusBadge,
+  Segmented,
+  Toolbar,
 } from "@/components/kit";
+import { FaultRail } from "./deviceStatus";
 import {
   CreateIncidentModal,
   DispatchModal,
@@ -51,54 +55,38 @@ const STATUS_FILTERS: { value: StatusFilter; label: string }[] = [
   { value: "resolved", label: "Resueltos" },
 ];
 
-const STATUS_META: Record<
-  string,
-  { label: string; className: string }
-> = {
-  new: { label: "Nuevo", className: "bg-blue-500/15 text-blue-600 border-blue-500/30" },
-  ack: { label: "Reconocido", className: "bg-amber-500/15 text-amber-600 border-amber-500/30" },
-  resolved: { label: "Resuelto", className: "bg-emerald-500/15 text-emerald-600 border-emerald-500/30" },
+/** Tonos SEMÁNTICOS fijos: el estado y la gravedad de un evento no cambian de
+ *  color porque la empresa cambie su color de marca. */
+const STATUS_META: Record<string, { label: string; tone: string }> = {
+  new: { label: "Nuevo", tone: "warn" },   // sin atender: pide acción, no informa
+  ack: { label: "Reconocido", tone: "warn" },
+  resolved: { label: "Resuelto", tone: "ok" },
 };
 
+/**
+ * El tipo de evento. `grave` marca los que SON una emergencia por sí mismos:
+ * una alarma o un sabotaje se pintan en rojo aunque el equipo no les haya
+ * puesto severidad, que por defecto cae en «media».
+ */
 const TYPE_META: Record<
   string,
-  { label: string; icon: React.ReactNode }
+  { label: string; icon: React.ReactNode; grave: boolean }
 > = {
-  motion: { label: "Movimiento", icon: <Activity className="size-3.5" /> },
-  alarm: { label: "Alarma", icon: <Bell className="size-3.5" /> },
-  manual: { label: "Manual", icon: <Hand className="size-3.5" /> },
-  offline: { label: "Sin conexión", icon: <WifiOff className="size-3.5" /> },
-  tamper: { label: "Sabotaje", icon: <ShieldAlert className="size-3.5" /> },
+  motion: { label: "Movimiento", icon: <Activity className="size-3.5" />, grave: false },
+  alarm: { label: "Alarma", icon: <Bell className="size-3.5" />, grave: true },
+  manual: { label: "Manual", icon: <Hand className="size-3.5" />, grave: false },
+  offline: { label: "Sin conexión", icon: <WifiOff className="size-3.5" />, grave: true },
+  tamper: { label: "Sabotaje", icon: <ShieldAlert className="size-3.5" />, grave: true },
 };
 
-const SEVERITY_META: Record<
-  string,
-  { label: string; className: string }
-> = {
-  low: { label: "Baja", className: "bg-slate-500/15 text-slate-600 border-slate-500/30" },
-  medium: { label: "Media", className: "bg-sky-500/15 text-sky-600 border-sky-500/30" },
-  high: { label: "Alta", className: "bg-orange-500/15 text-orange-600 border-orange-500/30" },
-  critical: { label: "Crítica", className: "bg-red-500/15 text-red-600 border-red-500/30" },
+const SEVERITY_META: Record<string, { label: string; tone: string }> = {
+  low: { label: "Baja", tone: "neutral" },
+  medium: { label: "Media", tone: "info" },
+  high: { label: "Alta", tone: "warn" },
+  critical: { label: "Crítica", tone: "bad" },
 };
 
-function Badge({
-  className,
-  children,
-}: {
-  className?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <span
-      className={[
-        "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium",
-        className || "",
-      ].join(" ")}
-    >
-      {children}
-    </span>
-  );
-}
+
 
 function formatWhen(iso?: string | null): string {
   if (!iso) return "—";
@@ -216,42 +204,29 @@ export default function VideoEvents() {
           }
         />
 
-        {/* Filters */}
-        <FadeIn className="flex flex-wrap items-center gap-2">
-          <span className="mr-1 flex items-center gap-1.5 text-sm text-muted-foreground">
-            <Filter className="size-4" />
-            Estado:
-          </span>
-          {STATUS_FILTERS.map((f) => {
-            const active = status === f.value;
-            const count =
-              f.value === "all"
-                ? events.length
-                : counts[f.value as keyof typeof counts];
-            return (
-              <button
-                key={f.value}
-                type="button"
-                onClick={() => setStatus(f.value)}
-                className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-medium transition-colors"
-                style={
-                  active
-                    ? { backgroundColor: "var(--primary)", borderColor: "var(--primary)", color: "var(--primary-foreground)" }
-                    : undefined
-                }
-              >
-                {f.label}
-                <span
-                  className={[
-                    "rounded-full px-1.5 text-xs",
-                    active ? "bg-white/20" : "bg-muted text-muted-foreground",
-                  ].join(" ")}
-                >
-                  {count}
-                </span>
-              </button>
-            );
-          })}
+        {/* Filtros */}
+        <FadeIn>
+          <Toolbar>
+            <span className="ml-1 mr-1 flex items-center gap-1.5 text-xs font-semibold" style={{ color: 'var(--ink-soft)' }}>
+              <Filter className="size-3.5" />
+              Estado
+            </span>
+            <Segmented
+              value={status}
+              onChange={setStatus}
+              options={STATUS_FILTERS.map((f) => ({
+                value: f.value,
+                label: (
+                  <span className="inline-flex items-center gap-1.5">
+                    {f.label}
+                    <span className="tabular-nums opacity-70">
+                      {f.value === "all" ? events.length : counts[f.value as keyof typeof counts]}
+                    </span>
+                  </span>
+                ),
+              }))}
+            />
+          </Toolbar>
         </FadeIn>
 
         {/* List */}
@@ -277,26 +252,37 @@ export default function VideoEvents() {
               const isResolved = ev.status === "resolved";
               const isAck = ev.status === "ack" || isResolved;
 
+              /* Una crítica sin resolver lleva el canto de peligro. NO es el
+                 acento: la severidad no se configura. */
+              const urgente = ev.severity === "critical" && !isResolved;
+
               return (
-                <div
+                <GlassPanel
                   key={ev.id}
-                  className="cg-card cg-card-hover p-4"
+                  flat
+                  hover
+                  className="relative overflow-hidden p-4"
                 >
+                  {urgente && <FaultRail />}
                   <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                     {/* Left: info */}
                     <div className="min-w-0 flex-1">
                       <div className="mb-1.5 flex flex-wrap items-center gap-2">
-                        <Badge className="border-transparent bg-muted text-foreground">
+                        {/* La píldora de tipo era siempre neutra: una «Alarma»
+                            y un «Movimiento» salían idénticos. Los tipos que
+                            SON la emergencia van en `--bad`. */}
+                        <StatusBadge tone={type.grave ? "bad" : "neutral"} dot={false}>
                           {type.icon}
                           {type.label}
-                        </Badge>
-                        <Badge className={sev.className}>{sev.label}</Badge>
-                        <Badge className={st.className}>{st.label}</Badge>
+                        </StatusBadge>
+                        <StatusBadge tone={sev.tone}>{sev.label}</StatusBadge>
+                        <StatusBadge tone={st.tone} dot={ev.status !== "resolved"}>{st.label}</StatusBadge>
                         {ev.incidentId ? (
-                          <Badge className="border-transparent bg-purple-500/15 text-purple-600">
+                          /* Escalado a incidente: agravación, no realce de marca. */
+                          <StatusBadge tone="bad" dot={false}>
                             <AlertTriangle className="size-3.5" />
                             Incidente
-                          </Badge>
+                          </StatusBadge>
                         ) : null}
                       </div>
 
@@ -304,12 +290,12 @@ export default function VideoEvents() {
                         {ev.title || type.label}
                       </p>
                       {ev.description ? (
-                        <p className="mt-0.5 line-clamp-2 text-sm text-muted-foreground">
+                        <p className="mt-0.5 line-clamp-2 text-sm" style={{ color: 'var(--ink-soft)' }}>
                           {ev.description}
                         </p>
                       ) : null}
 
-                      <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                      <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs" style={{ color: 'var(--ink-faint)' }}>
                         <span className="inline-flex items-center gap-1">
                           <Video className="size-3.5" />
                           {cameraName(ev)}
@@ -352,18 +338,17 @@ export default function VideoEvents() {
                         Crear incidente
                       </Button>
                       <Button
+                        variant="brand"
                         size="sm"
                         disabled={rowBusy}
                         onClick={() => setDispatchEvent(ev)}
-                        style={{ backgroundColor: "var(--primary)", color: "var(--primary-foreground)" }}
-                        className="hover:opacity-90"
                       >
                         <Radio className="size-4" />
                         Despachar
                       </Button>
                     </div>
                   </div>
-                </div>
+                </GlassPanel>
               );
             })}
           </Stagger>

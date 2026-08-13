@@ -67,36 +67,50 @@ export function ConfirmHost() {
   const danger = state.tone === 'danger';
 
   return (
+    // Mismo velo que <Dialog>: tinta del lienzo al 30% + desenfoque, para que el
+    // confirm imperativo y el diálogo declarativo no se vean como dos sistemas.
     <div
-      className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-150"
+      className="fixed inset-0 z-[200] flex items-center justify-center bg-foreground/30 p-4 backdrop-blur-[3px] animate-in fade-in duration-150 motion-reduce:animate-none!"
       onClick={() => close(false)}
     >
       <div
         role="alertdialog"
         aria-modal="true"
-        className="w-full max-w-sm rounded-2xl border border-border/40 bg-card p-5 shadow-2xl animate-in zoom-in-95 duration-150"
+        className="glass-raised w-full max-w-sm p-5 animate-in zoom-in-95 duration-150 motion-reduce:animate-none!"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex gap-3">
-          <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${danger ? 'bg-red-500/15 text-red-500' : 'bg-primary/15 text-primary'}`}>
+          <div
+            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-[var(--r-md)] ${
+              danger
+                ? 'bg-[color-mix(in_oklab,var(--bad)_16%,transparent)] text-[color:var(--bad-text)]'
+                : 'bg-[var(--brand-wash)] text-[color:var(--brand-text)]'
+            }`}
+          >
             {danger ? <AlertTriangle size={20} /> : <HelpCircle size={20} />}
           </div>
           <div className="min-w-0 flex-1 pt-0.5">
-            <h3 className="text-base font-semibold text-foreground">{state.title || (danger ? 'Confirmar acción' : '¿Estás seguro?')}</h3>
-            <p className="mt-1 whitespace-pre-line text-sm text-muted-foreground">{state.message}</p>
+            <h3 className="text-base font-semibold tracking-[-0.01em] text-[color:var(--ink)]">
+              {state.title || (danger ? 'Confirmar acción' : '¿Estás seguro?')}
+            </h3>
+            <p className="mt-1 whitespace-pre-line text-sm text-[color:var(--ink-soft)]">
+              {state.message}
+            </p>
           </div>
         </div>
         <div className="mt-5 flex justify-end gap-2">
           <button
             onClick={() => close(false)}
-            className="rounded-xl border border-border/40 bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted/40"
+            className="cg-btn-glass cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200 motion-reduce:transition-none"
           >
             {state.cancelText || 'Cancelar'}
           </button>
           <button
             autoFocus
             onClick={() => close(true)}
-            className={`rounded-xl px-4 py-2 text-sm font-semibold text-white transition-colors ${danger ? 'bg-red-500 hover:bg-red-600' : 'bg-primary hover:bg-primary/90'}`}
+            className={`cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200 active:scale-[0.97] motion-reduce:transition-none ${
+              danger ? 'cg-btn-bad' : 'cg-btn-brand'
+            }`}
           >
             {state.confirmText || 'Confirmar'}
           </button>

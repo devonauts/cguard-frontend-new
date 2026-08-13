@@ -3,14 +3,18 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
+/* No usa `.glass-flat`: esa clase va sin capa y fijaría fondo y borde para las
+   dos variantes, con lo que el aviso destructivo no podría teñirse. El cristal
+   se arma aquí con las mismas variables para que cada variante mande. */
 const alertVariants = cva(
-  "relative w-full rounded-lg border px-4 py-3 text-sm [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground [&>svg~*]:pl-7",
+  "relative w-full rounded-[var(--r-lg)] border px-4 py-3.5 text-sm shadow-[var(--lift-2)] [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:size-4 [&>svg~*]:pl-7",
   {
     variants: {
       variant: {
-        default: "bg-background text-foreground",
+        default:
+          "border-[color:var(--hairline)] bg-[var(--glass)] text-[color:var(--ink)] [&>svg]:text-[color:var(--brand-text)]",
         destructive:
-          "border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive",
+          "border-[color:color-mix(in_oklab,var(--bad)_38%,transparent)] bg-[color-mix(in_oklab,var(--bad)_12%,transparent)] text-[color:var(--bad-text)] [&>svg]:text-[color:var(--bad-text)]",
       },
     },
     defaultVariants: {
@@ -38,7 +42,10 @@ const AlertTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <h5
     ref={ref}
-    className={cn("mb-1 font-medium leading-none tracking-tight", className)}
+    className={cn(
+      "mb-1 font-semibold leading-none tracking-[-0.01em]",
+      className
+    )}
     {...props}
   />
 ))
@@ -50,7 +57,7 @@ const AlertDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("text-sm [&_p]:leading-relaxed", className)}
+    className={cn("text-sm opacity-90 [&_p]:leading-relaxed", className)}
     {...props}
   />
 ))

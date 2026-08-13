@@ -7,7 +7,7 @@ import { Search, ChevronDown, X, Paperclip, FolderOpen } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import securityGuardService from '@/lib/api/securityGuardService';
 import { toast } from 'sonner';
-import { PageContainer, PageHeader, Section, EmptyState, SkeletonCards } from '@/components/kit';
+import { PageContainer, PageHeader, Section, EmptyState, SkeletonCards, IconTile } from "@/components/kit";
 import { Button } from '@/components/ui/button';
 import type { GuardDetail } from '../../guardDetailTypes';
 
@@ -88,13 +88,13 @@ export default function GuardFilesPage() {
                   <div className="relative" ref={actionRef}>
                     <button
                       onClick={() => setActionOpen(!actionOpen)}
-                      className="px-3 py-2 border rounded-xl bg-card text-foreground text-sm font-medium flex items-center gap-2 hover:bg-muted/30 min-w-[100px]"
+                      className="cg-btn-glass cg-focus flex items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold min-w-[100px]"
                     >
                       {actionSelection}
                       <ChevronDown size={16} />
                     </button>
                     {actionOpen && (
-                      <div className="absolute left-0 mt-1 bg-card border rounded-xl shadow-lg z-10 w-full overflow-hidden">
+                      <div className="glass-raised absolute left-0 z-10 mt-1 w-full overflow-hidden" style={{ position: 'absolute' }}>
                         <button
                           onClick={() => { setActionSelection(t('guards.files.actions.delete', { defaultValue: 'Delete' })); setActionOpen(false); }}
                           className="block w-full text-left px-4 py-2 text-sm hover:bg-muted"
@@ -111,7 +111,7 @@ export default function GuardFilesPage() {
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder={t('guards.files.searchPlaceholder', { defaultValue: 'Search files...' })}
-                      className="w-56 pl-8 pr-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                      className="cg-input w-56 py-2 pl-8 pr-3 text-sm"
                     />
                   </div>
                 </div>
@@ -173,7 +173,7 @@ export default function GuardFilesPage() {
                     loading={false}
                     emptyMessage={t('guards.files.empty.title', { defaultValue: 'No Files Found' }) as string}
                     renderCard={(f: FileRow) => (
-                      <div className="p-4 bg-card border rounded-xl">
+                      <div className="glass-flat p-4">
                         <div className="flex items-center justify-between">
                           <div>
                             <div className="text-sm font-semibold">{f.name}</div>
@@ -196,11 +196,11 @@ export default function GuardFilesPage() {
         </PageContainer>
           {/* Upload Files Modal */}
           {showUploadModal && (
-            <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" onClick={() => setShowUploadModal(false)}>
-              <div className="fixed right-0 top-0 bottom-0 w-96 bg-card shadow-2xl flex flex-col" onClick={(e) => e.stopPropagation()}>
-                <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-card z-10">
+            <div className="glass-scrim fixed inset-0 z-50" onClick={() => setShowUploadModal(false)}>
+              <div className="glass-raised fixed bottom-0 right-0 top-0 flex w-96 flex-col rounded-l-3xl rounded-r-none" style={{ position: 'fixed' }} onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center justify-between p-4 border-b sticky top-0 z-10 [background:var(--glass-solid)]">
                   <div className="flex items-center gap-2.5">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/12 text-primary [&_svg]:size-5"><FolderOpen /></div>
+                    <IconTile size="sm"><FolderOpen /></IconTile>
                     <h3 className="text-base font-semibold">{t('guards.files.modal.title', { defaultValue: 'Upload Files' })}</h3>
                   </div>
                   <button onClick={() => setShowUploadModal(false)} className="text-muted-foreground hover:text-foreground/70"><X /></button>
@@ -249,7 +249,8 @@ export default function GuardFilesPage() {
                             <span className="truncate mr-4 block min-w-0">{f.name}</span>
                             <button
                               onClick={() => setUploadFiles((prev) => prev.filter((_, idx) => idx !== i))}
-                              className="text-red-500 p-1 rounded hover:bg-red-500/10"
+                              className="cg-focus rounded-full p-1 transition hover:opacity-80"
+                              style={{ color: 'var(--bad-text)' }}
                               aria-label={`Remove ${f.name}`}
                             >
                               <X size={14} />

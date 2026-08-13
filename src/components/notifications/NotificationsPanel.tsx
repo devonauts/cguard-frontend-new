@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useFileUrl } from '@/lib/fileUrl';
 import type { PlatformNotification } from '@/hooks/useNotificationStream';
@@ -50,30 +49,43 @@ export function NotificationsPanel({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="relative h-10 w-10"
+        {/* Botón circular de cristal, igual que el resto de la cabecera. El
+            contador cuelga del canto y late con `.cc-dot` mientras haya algo sin
+            leer — el mismo latido que usan los estados del sistema. */}
+        <button
+          type="button"
+          className="cg-focus cg-btn-glass relative grid h-9 w-9 shrink-0 place-items-center transition-all duration-200 active:scale-95"
+          style={{ borderRadius: 9999, color: 'var(--ink-soft)' }}
           aria-label={`Notificaciones${unreadCount > 0 ? ` (${unreadCount} sin leer)` : ''}`}
+          title={connected ? 'Notificaciones' : 'Notificaciones — reconectando'}
         >
           {connected ? (
-            <Bell className={cn('h-6 w-6', unreadCount > 0 && 'text-foreground')} />
+            <Bell className="h-[18px] w-[18px]" style={unreadCount > 0 ? { color: 'var(--ink)' } : undefined} />
           ) : (
-            <BellOff className="h-6 w-6 text-muted-foreground" />
+            <BellOff className="h-[18px] w-[18px]" style={{ color: 'var(--ink-faint)' }} />
           )}
           {unreadCount > 0 && (
-            <>
-              {/* pulsing ring to draw the eye when something is unread */}
-              <span className="absolute -top-0.5 -right-0.5 h-5 w-5 rounded-full bg-destructive/60 animate-ping" />
-              <Badge
-                variant="destructive"
-                className="absolute -top-0.5 -right-0.5 h-5 min-w-5 px-1 text-[11px] font-bold flex items-center justify-center rounded-full ring-2 ring-background"
+            <span className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center">
+              {/* El latido va DETRÁS del contador: llama la atención sin tapar
+                  el número. `.cc-dot` vive en una hoja sin capa y fija su propia
+                  posición, por eso se envuelve en vez de colocarse suelto. */}
+              <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                <span className="cc-dot" style={{ background: 'var(--bad)' }} />
+              </span>
+              <span
+                className="relative grid h-[18px] min-w-[18px] place-items-center px-1 text-[10px] font-bold"
+                style={{
+                  borderRadius: 9999,
+                  background: 'var(--bad)',
+                  color: 'oklch(1 0 0)',
+                  boxShadow: '0 0 0 2px var(--glass-solid)',
+                }}
               >
                 {unreadCount > 99 ? '99+' : unreadCount}
-              </Badge>
-            </>
+              </span>
+            </span>
           )}
-        </Button>
+        </button>
       </PopoverTrigger>
 
       <PopoverContent
@@ -82,14 +94,12 @@ export function NotificationsPanel({
         sideOffset={8}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+        <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: '1px solid var(--hairline)' }}>
           <div className="flex items-center gap-2">
             <span className="font-semibold text-sm">Notificaciones</span>
             <span
-              className={cn(
-                'flex items-center gap-1 text-xs',
-                connected ? 'text-green-600 dark:text-green-400' : 'text-muted-foreground',
-              )}
+              className="flex items-center gap-1 text-xs"
+              style={{ color: connected ? 'var(--ok-text)' : 'var(--ink-soft)' }}
             >
               {connected ? (
                 <Wifi className="h-3 w-3" />
@@ -115,12 +125,12 @@ export function NotificationsPanel({
         {/* Notification list */}
         <ScrollArea className="h-[420px]">
           {visible.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-32 text-muted-foreground text-sm gap-2">
-              <Bell className="h-8 w-8 opacity-30" />
+            <div className="flex h-32 flex-col items-center justify-center gap-2 text-sm" style={{ color: 'var(--ink-faint)' }}>
+              <Bell className="h-8 w-8 opacity-40" />
               <span>Sin notificaciones</span>
             </div>
           ) : (
-            <div className="divide-y divide-border">
+            <div className="divide-y" style={{ borderColor: 'var(--hairline)' }}>
               {visible.map((n) => (
                 <NotificationItem
                   key={n.id}
@@ -147,11 +157,15 @@ function NotificationItem({
   // payload carries only a raw privateUrl string, so useFileUrl fetches a token.
   const photoUrl = useFileUrl(n.payload?.photoUrl);
   return (
+    // Fila de lista: SIN desenfoque. Se dibuja una por notificación y el panel
+    // se desplaza; un `backdrop-filter` aquí se rasterizaría por fila.
     <div
       className={cn(
-        'px-4 py-3 cursor-pointer transition-colors hover:bg-muted/50',
-        !n.read && 'bg-primary/5',
+        'cursor-pointer px-4 py-3 transition-colors',
+        n.read && 'hover:bg-[var(--glass-sunken)]',
+        !n.read && 'brand-rail',
       )}
+      style={!n.read ? { background: 'var(--brand-wash)' } : undefined}
       onClick={() => onOpen(n)}
     >
       <div className="flex items-start justify-between gap-2">
@@ -160,31 +174,30 @@ function NotificationItem({
             src={photoUrl}
             alt=""
             loading="lazy"
-            className="h-11 w-11 shrink-0 rounded-md border border-border object-cover"
+            className="h-11 w-11 shrink-0 rounded-md object-cover"
+            style={{ border: '1px solid var(--hairline)' }}
             onError={(e) => ((e.currentTarget.style.display = 'none'))}
           />
         )}
         <div className="flex-1 min-w-0">
           <p
-            className={cn(
-              'text-sm leading-snug truncate',
-              !n.read ? 'font-semibold text-foreground' : 'font-normal text-foreground',
-            )}
+            className={cn('truncate text-sm leading-snug', !n.read ? 'font-semibold' : 'font-normal')}
+            style={{ color: 'var(--ink)' }}
           >
             {n.title}
           </p>
           {n.body && (
-            <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
+            <p className="mt-0.5 line-clamp-2 text-xs" style={{ color: 'var(--ink-soft)' }}>
               {n.body}
             </p>
           )}
         </div>
-        <div className="flex flex-col items-end gap-1 shrink-0">
-          <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+        <div className="flex shrink-0 flex-col items-end gap-1">
+          <span className="whitespace-nowrap text-[10px] tabular-nums" style={{ color: 'var(--ink-faint)' }}>
             {timeAgo(n.createdAt)}
           </span>
           {!n.read && (
-            <span className="h-2 w-2 rounded-full bg-primary" />
+            <span className="h-2 w-2 rounded-full" style={{ background: 'var(--brand)' }} />
           )}
         </div>
       </div>

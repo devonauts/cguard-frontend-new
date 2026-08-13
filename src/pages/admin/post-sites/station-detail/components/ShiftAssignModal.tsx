@@ -3,7 +3,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { Loader2, UserPlus, Repeat, CalendarRange, Moon } from 'lucide-react';
 import { toast } from 'sonner';
 import { ApiService } from '@/services/api/apiService';
-import { Modal } from '@/components/kit';
+import { Modal, Segmented } from '@/components/kit';
+import { FIELD_CLS_LG, LabeledField } from '@/pages/admin/clientes/components/_shared/tab-kit';
 import { Button } from '@/components/ui/button';
 import type { Station } from '@/types';
 
@@ -237,8 +238,6 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
     } finally { setSaving(false); }
   };
 
-  const inputCls = 'w-full rounded-xl border border-border/40 bg-background px-3 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20';
-
   return (
     <Modal
       open={open}
@@ -258,33 +257,36 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
       }
     >
       <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-1.5 rounded-xl bg-muted/20 p-1">
-            <button onClick={() => setAssignMode('rotation')} className={`flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all ${assignMode === 'rotation' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}><Repeat size={14} /> Rotación</button>
-            <button onClick={() => setAssignMode('single')} className={`flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all ${assignMode === 'single' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}><CalendarRange size={14} /> Turno único</button>
-          </div>
+          <Segmented
+            className="w-full [&>button]:flex-1"
+            value={assignMode}
+            onChange={setAssignMode}
+            options={[
+              { value: 'rotation', label: <span className="inline-flex items-center gap-1.5"><Repeat size={13} /> Rotación</span> },
+              { value: 'single', label: <span className="inline-flex items-center gap-1.5"><CalendarRange size={13} /> Turno único</span> },
+            ]}
+          />
 
-          <div>
-            <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Vigilante</label>
+          <LabeledField label="Vigilante">
             {loadingGuards ? (
               <div className="flex items-center gap-2 py-3 text-xs text-muted-foreground"><Loader2 size={12} className="animate-spin" /> Cargando…</div>
             ) : (
-              <select value={shiftGuard} onChange={(e) => setShiftGuard(e.target.value)} className={inputCls}>
+              <select value={shiftGuard} onChange={(e) => setShiftGuard(e.target.value)} className={FIELD_CLS_LG}>
                 <option value="">Seleccionar vigilante…</option>
                 {availableGuards.map((g) => <option key={g.id} value={g.id}>{g.label}</option>)}
               </select>
             )}
             {!loadingGuards && availableGuards.length === 0 && (
-              <p className="mt-1.5 text-[11px] text-amber-600">Todos los vigilantes ya tienen una asignación activa. Libera uno o crea un nuevo vigilante.</p>
+              <p className="mt-1.5 text-[11px]" style={{ color: 'var(--warn-text)' }}>Todos los vigilantes ya tienen una asignación activa. Libera uno o crea un nuevo vigilante.</p>
             )}
-          </div>
+          </LabeledField>
 
           {assignMode === 'rotation' ? (
             <>
               {/* Puesto (Vigilante): assign to a position — the engine staggers day/night. */}
-              <div>
-                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Puesto</label>
+              <LabeledField label="Puesto">
                 {positionOptions.length === 0 ? (
-                  <div className="rounded-xl bg-amber-500/10 px-3 py-2 text-xs text-amber-600">Configura primero el horario de la estación (Vista general › Horario del turno) para crear los puestos.</div>
+                  <div className="rounded-xl px-3 py-2 text-xs" style={{ background: 'color-mix(in oklab, var(--warn) 12%, transparent)', color: 'var(--warn-text)' }}>Configura primero el horario de la estación (Vista general › Horario del turno) para crear los puestos.</div>
                 ) : (
                   <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                     {positionOptions.map((p) => (
@@ -294,50 +296,51 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
                         disabled={p.occupied}
                         onClick={() => setSelectedPositionId(p.id)}
                         title={p.occupied ? 'Puesto ocupado' : undefined}
-                        className={`rounded-xl border px-3 py-2 text-sm font-medium transition-all ${p.occupied ? 'cursor-not-allowed border-border/30 text-muted-foreground/40 line-through' : selectedPositionId === p.id ? 'border-primary bg-primary/10 text-primary' : 'border-border/40 text-muted-foreground hover:border-primary/40'}`}
+                        className="cg-focus rounded-xl border px-3 py-2 text-sm font-medium transition-all disabled:cursor-not-allowed disabled:line-through"
+                        style={p.occupied
+                          ? { borderColor: 'var(--hairline)', color: 'var(--ink-faint)', opacity: 0.5 }
+                          : selectedPositionId === p.id
+                            ? { borderColor: 'var(--brand-line)', background: 'var(--brand-wash)', color: 'var(--brand-text)' }
+                            : { borderColor: 'var(--hairline)', color: 'var(--ink-soft)' }}
                       >{p.label}{p.occupied ? ' · ocupado' : ''}</button>
                     ))}
                   </div>
                 )}
                 <p className="mt-1.5 text-[11px] text-muted-foreground">Los vigilantes alternan día y noche según el horario de la estación. El ciclo arranca en su <b>fecha de inicio</b> — cámbiala para mover el día de descanso.</p>
-              </div>
+              </LabeledField>
 
               {/* Fecha de inicio = la fase de la rotación (día-0 del ciclo). */}
-              <div>
-                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Fecha de inicio del turno</label>
-                <input type="date" value={rotationStartDate} onChange={(e) => setRotationStartDate(e.target.value)} className={inputCls} />
+              <LabeledField label="Fecha de inicio del turno">
+                <input type="date" value={rotationStartDate} onChange={(e) => setRotationStartDate(e.target.value)} className={FIELD_CLS_LG} />
                 {restPreview && (
-                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border border-primary/25 bg-primary/[0.04] px-3 py-2">
+                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border px-3 py-2" style={{ borderColor: 'var(--brand-line)', background: 'var(--brand-wash)' }}>
                     <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                      <CalendarRange size={13} className="text-primary" /> Empieza <span className="font-medium capitalize text-foreground">{restPreview.startWeekday}</span>
+                      <CalendarRange size={13} className="brand-text" /> Empieza <span className="font-medium capitalize text-foreground">{restPreview.startWeekday}</span>
                     </span>
                     <span className="flex items-center gap-1.5 text-xs">
-                      <Moon size={13} className="text-primary" />
+                      <Moon size={13} className="brand-text" />
                       {restPreview.weekday
-                        ? <span className="text-muted-foreground">Descansa: <span className="font-semibold capitalize text-primary">{restPreview.weekday}</span></span>
+                        ? <span className="text-muted-foreground">Descansa: <span className="font-semibold capitalize brand-text">{restPreview.weekday}</span></span>
                         : <span className="capitalize text-muted-foreground">Descanso: {restPreview.dates.map(shortRestLabel).join(' · ')}</span>}
                     </span>
                   </div>
                 )}
                 <p className="mt-1 text-[10px] text-muted-foreground/70">Para escalonar dos vigilantes en un puesto 24h, dales fechas de inicio distintas.</p>
-              </div>
+              </LabeledField>
 
-              <div>
-                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Hasta (opcional)</label>
-                <input type="date" value={rotationEndDate} min={rotationStartDate} onChange={(e) => setRotationEndDate(e.target.value)} className={inputCls} />
+              <LabeledField label="Hasta (opcional)">
+                <input type="date" value={rotationEndDate} min={rotationStartDate} onChange={(e) => setRotationEndDate(e.target.value)} className={FIELD_CLS_LG} />
                 <p className="mt-1 text-[10px] text-muted-foreground/70">Déjalo vacío para una asignación indefinida; pon una fecha para una cobertura temporal.</p>
-              </div>
+              </LabeledField>
             </>
           ) : (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <div>
-                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Inicio</label>
-                <input type="datetime-local" value={shiftStart} onChange={(e) => setShiftStart(e.target.value)} className={inputCls} />
-              </div>
-              <div>
-                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Fin</label>
-                <input type="datetime-local" value={shiftEnd} onChange={(e) => setShiftEnd(e.target.value)} className={inputCls} />
-              </div>
+              <LabeledField label="Inicio">
+                <input type="datetime-local" value={shiftStart} onChange={(e) => setShiftStart(e.target.value)} className={FIELD_CLS_LG} />
+              </LabeledField>
+              <LabeledField label="Fin">
+                <input type="datetime-local" value={shiftEnd} onChange={(e) => setShiftEnd(e.target.value)} className={FIELD_CLS_LG} />
+              </LabeledField>
             </div>
           )}
       </div>

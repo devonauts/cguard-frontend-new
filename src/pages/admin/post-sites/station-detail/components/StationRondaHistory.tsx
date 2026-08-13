@@ -5,7 +5,7 @@ import {
   User, Clock, CheckCircle2, Flag, Building2, XCircle, X,
 } from 'lucide-react';
 import { ApiService } from '@/services/api/apiService';
-import { Section, EmptyState, SkeletonCards, StatusBadge, Modal } from '@/components/kit';
+import { Section, EmptyState, SkeletonCards, StatusBadge, Modal, IconTile } from '@/components/kit';
 import { fileUrlFromPrivate } from '@/lib/fileUrl';
 import type { Station } from '@/types';
 
@@ -109,30 +109,27 @@ function scanNote(scannedData: any): string | null {
 
 function statusBadge(status: string) {
   const s = (status || '').toLowerCase();
-  if (s === 'completed') return <StatusBadge tone="green" dot={false}><CheckCircle2 size={12} /> Completada</StatusBadge>;
-  if (s === 'assigned' || s === 'in_progress' || s === 'started') return <StatusBadge tone="orange" dot={false}>En progreso</StatusBadge>;
-  return <StatusBadge tone="slate" dot={false}>{status || '—'}</StatusBadge>;
+  if (s === 'completed') return <StatusBadge tone="ok" dot={false}><CheckCircle2 size={12} /> Completada</StatusBadge>;
+  if (s === 'assigned' || s === 'in_progress' || s === 'started') return <StatusBadge tone="warn" dot={false}>En progreso</StatusBadge>;
+  return <StatusBadge tone="neutral" dot={false}>{status || '—'}</StatusBadge>;
 }
 
 function locationBadge(s: Scan) {
-  if (s.validLocation === true) {
-    return <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-700"><MapPin size={11} /> En ubicación{s.distanceMeters != null ? ` · ${Math.round(s.distanceMeters)} m` : ''}</span>;
-  }
-  if (s.validLocation === false) {
-    return <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/10 px-2 py-0.5 text-[11px] font-medium text-rose-700"><MapPinOff size={11} /> Fuera de rango{s.distanceMeters != null ? ` · ${Math.round(s.distanceMeters)} m` : ''}</span>;
-  }
-  return <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground"><HelpCircle size={11} /> Sin verificar</span>;
+  return geoBadge(s.validLocation, s.distanceMeters, 'En ubicación');
 }
 
-// Geo verdict badge from raw validLocation/distance (detail view).
-function geoBadge(validLocation: boolean | null, distanceMeters: number | null) {
+// Veredicto de geocerca a partir de validLocation/distancia. Los tres estados
+// salen de los semánticos fijos: cumplida (ok), fuera de rango (bad), sin
+// verificar (neutro).
+function geoBadge(validLocation: boolean | null, distanceMeters: number | null, etiquetaValida = 'Ubicación válida') {
+  const sufijo = distanceMeters != null ? ` · ${Math.round(distanceMeters)} m` : '';
   if (validLocation === true) {
-    return <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-700"><MapPin size={11} /> Ubicación válida{distanceMeters != null ? ` · ${Math.round(distanceMeters)} m` : ''}</span>;
+    return <StatusBadge tone="ok" dot={false}><MapPin size={11} /> {etiquetaValida}{sufijo}</StatusBadge>;
   }
   if (validLocation === false) {
-    return <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/10 px-2 py-0.5 text-[11px] font-medium text-rose-700"><MapPinOff size={11} /> Fuera de rango{distanceMeters != null ? ` · ${Math.round(distanceMeters)} m` : ''}</span>;
+    return <StatusBadge tone="bad" dot={false}><MapPinOff size={11} /> Fuera de rango{sufijo}</StatusBadge>;
   }
-  return <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground"><HelpCircle size={11} /> Sin verificar</span>;
+  return <StatusBadge tone="neutral" dot={false}><HelpCircle size={11} /> Sin verificar</StatusBadge>;
 }
 
 // ── Detail modal ────────────────────────────────────────────────────────────
@@ -186,13 +183,13 @@ function RondaDetailModal({ open, onOpenChange, tenantId, assignmentId, fallback
         {loading ? (
           <SkeletonCards count={4} />
         ) : error ? (
-          <div className="text-sm text-red-600">{error}</div>
+          <div className="text-sm" style={{ color: 'var(--bad-text)' }}>{error}</div>
         ) : !detail ? (
           <EmptyState icon={<Route />} title="Sin datos de la ronda" />
         ) : (
           <div className="space-y-4">
             {/* Header meta */}
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs" style={{ color: 'var(--ink-soft)' }}>
               {statusBadge(detail.assignment.status)}
               <span className="inline-flex items-center gap-1"><User size={12} />{detail.guard?.name || '—'}</span>
               <span className="inline-flex items-center gap-1"><Building2 size={12} />{detail.station?.name || '—'}</span>
@@ -202,11 +199,11 @@ function RondaDetailModal({ open, onOpenChange, tenantId, assignmentId, fallback
             {/* Progress */}
             <div>
               <div className="mb-1 flex items-center justify-between text-xs">
-                <span className="font-medium text-foreground">Progreso</span>
-                <span className="text-muted-foreground">{scanCount}/{total || '—'} puntos ({pct}%)</span>
+                <span className="font-medium">Progreso</span>
+                <span className="tabular-nums" style={{ color: 'var(--ink-soft)' }}>{scanCount}/{total || '—'} puntos ({pct}%)</span>
               </div>
-              <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
+              <div className="h-1.5 w-full overflow-hidden rounded-full" style={{ background: 'var(--glass-sunken)' }}>
+                <div className="h-full rounded-full" style={{ width: `${pct}%`, background: 'var(--brand)' }} />
               </div>
             </div>
 
@@ -221,21 +218,25 @@ function RondaDetailModal({ open, onOpenChange, tenantId, assignmentId, fallback
                   return (
                     <li
                       key={c.id}
-                      className={`rounded-xl border p-3 ${c.scanned ? 'border-border bg-background' : 'border-rose-200/70 bg-rose-500/5'}`}
+                      className="glass-flat p-3"
+                      style={c.scanned ? undefined : {
+                        background: 'color-mix(in oklab, var(--bad) 7%, transparent)',
+                        borderColor: 'color-mix(in oklab, var(--bad) 26%, transparent)',
+                      }}
                     >
                       <div className="flex items-start gap-3">
                         {c.scanned
-                          ? <CheckCircle2 size={18} className="mt-0.5 shrink-0 text-emerald-600" />
-                          : <XCircle size={18} className="mt-0.5 shrink-0 text-rose-500" />}
+                          ? <CheckCircle2 size={18} className="mt-0.5 shrink-0" style={{ color: 'var(--ok-text)' }} />
+                          : <XCircle size={18} className="mt-0.5 shrink-0" style={{ color: 'var(--bad-text)' }} />}
                         <div className="min-w-0 flex-1">
                           <div className="flex flex-wrap items-center gap-2">
-                            <span className="font-medium text-foreground">{c.name}</span>
+                            <span className="font-medium">{c.name}</span>
                             {c.scanned
-                              ? <span className="text-xs text-muted-foreground">{fmt(c.scan?.scannedAt)}</span>
-                              : <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/10 px-2 py-0.5 text-[11px] font-medium text-rose-700">No escaneado</span>}
+                              ? <span className="text-xs" style={{ color: 'var(--ink-soft)' }}>{fmt(c.scan?.scannedAt)}</span>
+                              : <StatusBadge tone="bad" dot={false}>No escaneado</StatusBadge>}
                           </div>
                           {c.instructions && (
-                            <p className="mt-0.5 text-xs text-muted-foreground">{c.instructions}</p>
+                            <p className="mt-0.5 text-xs" style={{ color: 'var(--ink-soft)' }}>{c.instructions}</p>
                           )}
                           {c.scanned && c.scan && (
                             <div className="mt-2 space-y-2">
@@ -243,14 +244,15 @@ function RondaDetailModal({ open, onOpenChange, tenantId, assignmentId, fallback
                                 {geoBadge(c.scan.validLocation, c.scan.distanceMeters)}
                               </div>
                               {note && (
-                                <p className="rounded-lg bg-muted/40 px-3 py-2 text-sm text-foreground">{note}</p>
+                                <p className="glass-sunken px-3 py-2 text-sm">{note}</p>
                               )}
                               {url && (
                                 <button
                                   type="button"
                                   data-photo-block
                                   onClick={() => setPhoto(url)}
-                                  className="block overflow-hidden rounded-lg border bg-muted"
+                                  className="cg-focus block overflow-hidden rounded-lg border"
+                                  style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}
                                 >
                                   <img
                                     src={url}
@@ -276,7 +278,7 @@ function RondaDetailModal({ open, onOpenChange, tenantId, assignmentId, fallback
             {/* Orphan scans */}
             {detail.orphanScans.length > 0 && (
               <div>
-                <div className="mb-2 mt-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                <div className="cg-eyebrow mb-2 mt-4">
                   Escaneos sin punto de control ({detail.orphanScans.length})
                 </div>
                 <ul className="space-y-2">
@@ -284,22 +286,23 @@ function RondaDetailModal({ open, onOpenChange, tenantId, assignmentId, fallback
                     const url = scanPhotoUrl(o.scannedData);
                     const note = scanNote(o.scannedData);
                     return (
-                      <li key={o.id} className="rounded-xl border border-border bg-background p-3">
+                      <li key={o.id} className="glass-flat p-3">
                         <div className="flex items-start gap-3">
-                          <Flag size={16} className="mt-0.5 shrink-0 text-muted-foreground" />
+                          <Flag size={16} className="mt-0.5 shrink-0" style={{ color: 'var(--ink-faint)' }} />
                           <div className="min-w-0 flex-1">
                             <div className="flex flex-wrap items-center gap-2">
-                              <span className="text-sm font-medium text-foreground">Escaneo</span>
-                              <span className="text-xs text-muted-foreground">{fmt(o.scannedAt)}</span>
+                              <span className="text-sm font-medium">Escaneo</span>
+                              <span className="text-xs" style={{ color: 'var(--ink-soft)' }}>{fmt(o.scannedAt)}</span>
                               {geoBadge(o.validLocation, o.distanceMeters)}
                             </div>
-                            {note && <p className="mt-2 rounded-lg bg-muted/40 px-3 py-2 text-sm text-foreground">{note}</p>}
+                            {note && <p className="glass-sunken mt-2 px-3 py-2 text-sm">{note}</p>}
                             {url && (
                               <button
                                 type="button"
                                 data-photo-block
                                 onClick={() => setPhoto(url)}
-                                className="mt-2 block overflow-hidden rounded-lg border bg-muted"
+                                className="cg-focus mt-2 block overflow-hidden rounded-lg border"
+                                style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}
                               >
                                 <img
                                   src={url}
@@ -327,11 +330,12 @@ function RondaDetailModal({ open, onOpenChange, tenantId, assignmentId, fallback
       {/* Photo lightbox */}
       {photo && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" onClick={() => setPhoto(null)}>
-          <div className="absolute inset-0 bg-black/70" />
+          <div className="absolute inset-0" style={{ background: 'oklch(0 0 0 / 0.72)' }} />
           <button
             type="button"
             aria-label="Cerrar"
-            className="absolute right-4 top-4 z-10 rounded-full bg-white/10 p-2 text-white hover:bg-white/20"
+            className="cg-focus absolute right-4 top-4 z-10 rounded-full p-2"
+            style={{ background: 'oklch(1 0 0 / 0.14)', color: 'oklch(1 0 0)' }}
             onClick={() => setPhoto(null)}
           >
             <X size={20} />
@@ -378,19 +382,19 @@ export default function StationRondaHistory({ station, stationId }: Props) {
       title={
         <span>
           {t('station.rondaHistory.title', 'Historial de Rondas')}
-          {rows.length > 0 && <span className="ml-2 text-sm font-normal text-muted-foreground">({rows.length})</span>}
+          {rows.length > 0 && <span className="ml-2 text-sm font-normal" style={{ color: 'var(--ink-soft)' }}>({rows.length})</span>}
         </span>
       }
       contentClassName="-mx-5 -mb-5"
     >
-      <p className="px-6 -mt-2 mb-3 text-xs text-muted-foreground">
+      <p className="-mt-2 mb-3 px-6 text-xs" style={{ color: 'var(--ink-soft)' }}>
         {t('station.rondaHistory.hint', 'Todas las rondas realizadas en este puesto. Toca una ronda para ver cada punto de control, con foto, nota y ubicación.')}
       </p>
 
       {loading ? (
         <div className="px-5 pb-5"><SkeletonCards count={3} /></div>
       ) : error ? (
-        <div className="px-6 pb-6 text-sm text-red-600">{error}</div>
+        <div className="px-6 pb-6 text-sm" style={{ color: 'var(--bad-text)' }}>{error}</div>
       ) : rows.length === 0 ? (
         <div className="px-5 pb-5">
           <EmptyState
@@ -399,37 +403,37 @@ export default function StationRondaHistory({ station, stationId }: Props) {
           />
         </div>
       ) : (
-        <ul className="divide-y border-t">
+        <ul className="border-t" style={{ borderColor: 'var(--hairline)' }}>
           {rows.map((r) => {
             const pct = r.totalTags > 0 ? Math.round((r.scannedCount / r.totalTags) * 100) : 0;
             return (
-              <li key={r.id}>
-                <button onClick={() => setDetailFor(r)} className="flex w-full items-center gap-3 px-6 py-3 text-left hover:bg-muted/20">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/12 text-primary"><Route size={16} /></div>
+              <li key={r.id} className="border-b last:border-0" style={{ borderColor: 'var(--hairline)' }}>
+                <button onClick={() => setDetailFor(r)} className="cg-focus flex w-full items-center gap-3 px-6 py-3 text-left">
+                  <IconTile size="sm"><Route /></IconTile>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-medium text-foreground">{r.rondaName}</span>
+                      <span className="font-medium">{r.rondaName}</span>
                       {statusBadge(r.status)}
                     </div>
-                    <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
+                    <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs" style={{ color: 'var(--ink-soft)' }}>
                       <span className="inline-flex items-center gap-1"><User size={12} />{r.guardName}</span>
                       <span className="inline-flex items-center gap-1"><Clock size={12} />{fmt(r.startAt)}{r.endAt ? ` → ${fmtTime(r.endAt)}` : ''}</span>
                     </div>
                   </div>
                   <div className="hidden shrink-0 text-right sm:block">
-                    <div className="text-sm font-semibold text-foreground">{r.scannedCount}/{r.totalTags || '—'} <span className="font-normal text-muted-foreground">puntos</span></div>
+                    <div className="text-sm font-semibold tabular-nums">{r.scannedCount}/{r.totalTags || '—'} <span className="font-normal" style={{ color: 'var(--ink-soft)' }}>puntos</span></div>
                     <div className="mt-0.5 flex items-center justify-end gap-2 text-[11px]">
-                      {r.validCount > 0 && <span className="text-emerald-700">{r.validCount} en ubicación</span>}
-                      {r.outCount > 0 && <span className="text-rose-700">{r.outCount} fuera</span>}
+                      {r.validCount > 0 && <span style={{ color: 'var(--ok-text)' }}>{r.validCount} en ubicación</span>}
+                      {r.outCount > 0 && <span style={{ color: 'var(--bad-text)' }}>{r.outCount} fuera</span>}
                     </div>
                   </div>
-                  <ChevronRight size={18} className="shrink-0 text-muted-foreground" />
+                  <ChevronRight size={18} className="shrink-0" style={{ color: 'var(--ink-faint)' }} />
                 </button>
 
                 {/* progress bar */}
                 <div className="px-6 pb-3">
-                  <div className="h-1 w-full overflow-hidden rounded-full bg-muted">
-                    <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
+                  <div className="h-1 w-full overflow-hidden rounded-full" style={{ background: 'var(--glass-sunken)' }}>
+                    <div className="h-full rounded-full" style={{ width: `${pct}%`, background: 'var(--brand)' }} />
                   </div>
                 </div>
               </li>

@@ -1,42 +1,49 @@
 import { getTenantTimezone } from "@/utils/tenantLocation";
+import { StatusBadge as KitStatusBadge } from "@/components/kit";
 
-/** Status → label + tailwind classes (brand-consistent pills). */
-export const STATUS_META: Record<string, { label: string; cls: string }> = {
-  on_time: { label: "A tiempo", cls: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400" },
-  late: { label: "Tarde", cls: "bg-amber-500/15 text-amber-600 dark:text-amber-400" },
-  early_departure: { label: "Salida anticipada", cls: "bg-orange-500/15 text-orange-600 dark:text-orange-400" },
-  missed_clockin: { label: "Sin entrada", cls: "bg-red-500/15 text-red-600 dark:text-red-400" },
-  missed_clockout: { label: "Sin salida", cls: "bg-red-500/15 text-red-600 dark:text-red-400" },
-  no_call_no_show: { label: "Inasistencia", cls: "bg-red-600/20 text-red-700 dark:text-red-400" },
-  overtime: { label: "Tiempo extra", cls: "bg-sky-500/15 text-sky-600 dark:text-sky-400" },
-  no_schedule: { label: "Sin horario", cls: "bg-slate-400/15 text-slate-500 dark:text-slate-400" },
-  pending_review: { label: "En revisión", cls: "bg-violet-500/15 text-violet-600 dark:text-violet-400" },
-  approved: { label: "Aprobado", cls: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400" },
-  rejected: { label: "Rechazado", cls: "bg-red-500/15 text-red-600 dark:text-red-400" },
+/**
+ * Vocabulario de estados de asistencia.
+ *
+ * El tono NO es un color escrito a mano: es uno de los papeles del sistema
+ * (`ok` / `warn` / `bad` / `info` / `neutral` / `brand`). La píldora la pinta el
+ * kit a partir de los tokens, así que se lee igual en claro y en oscuro y sigue
+ * funcionando cuando el usuario cambia el acento.
+ */
+export type PillTone = "ok" | "warn" | "bad" | "info" | "neutral" | "brand";
+
+export const STATUS_META: Record<string, { label: string; tone: PillTone }> = {
+  on_time: { label: "A tiempo", tone: "ok" },
+  late: { label: "Tarde", tone: "warn" },
+  early_departure: { label: "Salida anticipada", tone: "warn" },
+  missed_clockin: { label: "Sin entrada", tone: "bad" },
+  missed_clockout: { label: "Sin salida", tone: "bad" },
+  no_call_no_show: { label: "Inasistencia", tone: "bad" },
+  overtime: { label: "Tiempo extra", tone: "info" },
+  no_schedule: { label: "Sin horario", tone: "neutral" },
+  pending_review: { label: "En revisión", tone: "brand" },
+  approved: { label: "Aprobado", tone: "ok" },
+  rejected: { label: "Rechazado", tone: "bad" },
 };
 
-/** guardShift.approvalStatus → label + pill classes. "none" (the DB default)
- *  means no approval was requested/needed — not a raw value to show the user. */
-export const APPROVAL_META: Record<string, { label: string; cls: string }> = {
-  none: { label: "Sin aprobación", cls: "bg-slate-400/15 text-slate-500" },
-  pending: { label: "Pendiente", cls: "bg-amber-500/15 text-amber-600 dark:text-amber-400" },
-  approved: { label: "Aprobada", cls: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400" },
-  rejected: { label: "Rechazada", cls: "bg-red-500/15 text-red-600 dark:text-red-400" },
+/** guardShift.approvalStatus → etiqueta + tono. "none" (el valor por defecto en
+ *  la base) significa que no hizo falta aprobación — no es un valor crudo que
+ *  deba salir en pantalla. */
+export const APPROVAL_META: Record<string, { label: string; tone: PillTone }> = {
+  none: { label: "Sin aprobación", tone: "neutral" },
+  pending: { label: "Pendiente", tone: "warn" },
+  approved: { label: "Aprobada", tone: "ok" },
+  rejected: { label: "Rechazada", tone: "bad" },
 };
 
-/** Human label for an approval status (for text / CSV). */
+/** Etiqueta legible de un estado de aprobación (para texto / CSV). */
 export function approvalLabel(v: string | null | undefined): string {
   return (APPROVAL_META[v || "none"] || APPROVAL_META.none).label;
 }
 
-/** Colored pill for an approval status. */
+/** Píldora de estado de aprobación. */
 export function ApprovalBadge({ status }: { status: string | null | undefined }) {
   const m = APPROVAL_META[status || "none"] || APPROVAL_META.none;
-  return (
-    <span className={`inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold ${m.cls}`}>
-      {m.label}
-    </span>
-  );
+  return <KitStatusBadge tone={m.tone}>{m.label}</KitStatusBadge>;
 }
 
 export const EXCEPTION_LABEL: Record<string, string> = {
@@ -50,29 +57,25 @@ export const EXCEPTION_LABEL: Record<string, string> = {
   correction_pending: "Corrección pendiente",
 };
 
-/** attendanceException.status → label + pill classes (open → resolved history). */
-export const EXC_STATUS_META: Record<string, { label: string; cls: string }> = {
-  open: { label: "Abierta", cls: "bg-amber-500/15 text-amber-600 dark:text-amber-400" },
-  acknowledged: { label: "Reconocida", cls: "bg-sky-500/15 text-sky-600 dark:text-sky-400" },
-  resolved: { label: "Resuelta", cls: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400" },
-  approved: { label: "Aprobada", cls: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400" },
-  rejected: { label: "Rechazada", cls: "bg-red-500/15 text-red-600 dark:text-red-400" },
+/** attendanceException.status → etiqueta + tono (de abierta a resuelta). */
+export const EXC_STATUS_META: Record<string, { label: string; tone: PillTone }> = {
+  open: { label: "Abierta", tone: "warn" },
+  acknowledged: { label: "Reconocida", tone: "info" },
+  resolved: { label: "Resuelta", tone: "ok" },
+  approved: { label: "Aprobada", tone: "ok" },
+  rejected: { label: "Rechazada", tone: "bad" },
 };
 
-export const SEVERITY_META: Record<string, string> = {
-  low: "bg-slate-400/15 text-slate-500",
-  medium: "bg-amber-500/15 text-amber-600 dark:text-amber-400",
-  high: "bg-orange-500/15 text-orange-600 dark:text-orange-400",
-  critical: "bg-red-600/20 text-red-700 dark:text-red-400",
+export const SEVERITY_META: Record<string, { label: string; tone: PillTone }> = {
+  low: { label: "Baja", tone: "neutral" },
+  medium: { label: "Media", tone: "warn" },
+  high: { label: "Alta", tone: "warn" },
+  critical: { label: "Crítica", tone: "bad" },
 };
 
 export function StatusBadge({ status }: { status: string }) {
-  const m = STATUS_META[status] || { label: status, cls: "bg-slate-400/15 text-slate-500" };
-  return (
-    <span className={`inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold ${m.cls}`}>
-      {m.label}
-    </span>
-  );
+  const m = STATUS_META[status] || { label: status, tone: "neutral" as PillTone };
+  return <KitStatusBadge tone={m.tone}>{m.label}</KitStatusBadge>;
 }
 
 export function fmtDateTime(v: string | null | undefined): string {

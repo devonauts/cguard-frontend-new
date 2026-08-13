@@ -1,11 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Building2, CheckCircle2, Clock, Smartphone } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Clock, Eye, EyeOff, MapPin, Radio, Smartphone } from "lucide-react";
 import { toast } from "sonner";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { FadeIn } from "@/components/kit";
+import { FadeIn, IconTile, InfoNote } from "@/components/kit";
+import AuthShell, { BOTON_PRINCIPAL, CAMPO, Etiqueta } from "@/pages/auth/AuthShell";
 import { ApiService } from "@/services/api/apiService";
 import { AuthService } from "@/services/auth/authService";
 
@@ -44,9 +43,12 @@ export default function SupervisorRegistration() {
   const [errors, setErrors] = useState<Record<string, string | undefined>>({});
   const shownToastRef = useRef<string | null>(null);
 
-  const errorClass = (field: string) => (errors[field] ? "border-red-600 ring-1 ring-red-600" : "");
-  const formControl = "h-9 w-full rounded-md border border-input bg-card px-3 py-1 text-sm text-foreground placeholder-slate-400";
-  const labelClass = "mb-2 block text-sm font-medium text-foreground min-h-[3rem] leading-5";
+  /** El campo en rojo cuando falla la validación — con el token, para que el
+   *  borde y el mensaje sean el MISMO rojo del sistema. */
+  const estiloError = (field: string) =>
+    errors[field]
+      ? ({ borderColor: 'var(--bad)', boxShadow: '0 0 0 3px color-mix(in oklab, var(--bad) 22%, transparent)' } as React.CSSProperties)
+      : undefined;
 
   useEffect(() => {
     const fetchInvite = async () => {
@@ -151,178 +153,172 @@ export default function SupervisorRegistration() {
     }
   };
 
+  const empresa: string | undefined = fetched?.tenant?.name || undefined;
+
+  /** El ojo de mostrar/ocultar. Va DENTRO del campo, así que hereda su hueco. */
+  const Ojo = ({ visible, onToggle }: { visible: boolean; onToggle: () => void }) => (
+    <button
+      type="button"
+      onClick={onToggle}
+      className="cg-focus absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1"
+      style={{ color: 'var(--ink-faint)' }}
+      aria-label={visible ? 'Ocultar contrase\u00f1a' : 'Mostrar contrase\u00f1a'}
+    >
+      {visible ? <EyeOff size={18} /> : <Eye size={18} />}
+    </button>
+  );
+
   return (
-    <div className="min-h-screen w-full flex bg-slate-50 dark:bg-[#0A0A0A]">
-      {/* Left panel — tenant branding */}
-      <div
-        className="hidden lg:flex lg:w-1/2 xl:w-3/5 flex-col justify-between p-12 xl:p-16 relative overflow-hidden"
-        style={{ background: "linear-gradient(145deg, #0A0A0A 0%, #171717 50%, #0A0A0A 100%)" }}
-      >
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage: "linear-gradient(#C8860A 1px, transparent 1px), linear-gradient(90deg, #C8860A 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-          }}
-        />
-        <div className="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-primary opacity-10 blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 -left-32 h-[32rem] w-[32rem] rounded-full bg-[#F5C300] opacity-5 blur-3xl pointer-events-none" />
-
-        <div className="relative z-10">
-          {fetched?.tenant?.logoUrl ? (
-            <img src={fetched.tenant.logoUrl} alt={fetched?.tenant?.name || "Logo"} className="h-16 object-contain" />
-          ) : fetched?.tenant?.name ? (
-            <div className="flex items-center gap-3">
-              <Building2 className="h-10 w-10 text-primary" />
-              <span className="text-2xl font-bold text-white">{fetched.tenant.name}</span>
-            </div>
-          ) : (
-            <div className="h-16" />
-          )}
-        </div>
-
-        <div className="relative z-10 flex-1 flex flex-col justify-center py-12">
-          <h1 className="text-4xl xl:text-5xl font-extrabold leading-[1.1] text-white mb-6">
-            {fetched?.tenant?.name ? (
-              <>
-                Bienvenido a{" "}
-                <span
-                  className="block"
-                  style={{ WebkitTextFillColor: "transparent", WebkitBackgroundClip: "text", backgroundClip: "text", backgroundImage: "linear-gradient(90deg, #C8860A, #F5C300)" }}
-                >
-                  {fetched.tenant.name}
-                </span>
-              </>
-            ) : (
-              "Completar registro"
-            )}
-          </h1>
-          <p className="text-base xl:text-lg text-slate-400 leading-relaxed max-w-md">
-            Estás completando tu registro como <strong className="text-slate-200">Supervisor</strong>. Crea una contraseña para tu cuenta; supervisarás tus recorridos y equipo desde la app de supervisor.
+    <AuthShell
+      title={done ? '\u00a1Cuenta activada!' : t('supervisor.registration_title', { defaultValue: 'Registro de supervisor' })}
+      subtitle={
+        done
+          ? 'Tu acceso qued\u00f3 listo.'
+          : 'Crea una contrase\u00f1a para tu cuenta. Supervisar\u00e1s tus recorridos y tu equipo desde la app de supervisor.'
+      }
+      brandName={empresa}
+      logoUrl={fetched?.tenant?.logoUrl || undefined}
+      eyebrow="Invitaci\u00f3n \u00b7 Supervisi\u00f3n"
+      width="lg"
+      /* Ya se ha ido a la red a por la invitaci\u00f3n: la cortina de 2,5 s s\u00f3lo
+         retrasar\u00eda un formulario que el usuario est\u00e1 esperando. */
+      splash={false}
+      features={[
+        { icon: MapPin, label: 'Recorridos y patrullaje' },
+        { icon: Radio, label: 'Novedades del turno' },
+        { icon: Clock, label: 'Tu equipo, en directo' },
+      ]}
+    >
+      {done ? (
+        /* Un supervisor NO entra al CRM: su casa es la app de supervisor. */
+        <FadeIn className="text-center">
+          <div className="mb-5 flex justify-center">
+            <IconTile tone="ok" size="lg"><CheckCircle2 /></IconTile>
+          </div>
+          <p className="text-sm leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
+            Tu cuenta con <strong style={{ color: 'var(--ink)' }}>{empresa || 'tu empresa de seguridad'}</strong> est\u00e1 lista.
+            Descarga la <strong style={{ color: 'var(--ink)' }}>app de supervisor</strong> para gestionar tus recorridos, tu equipo y las novedades desde tu tel\u00e9fono.
           </p>
-        </div>
 
-        <div className="relative z-10 flex items-center gap-3">
-          <div className="h-px flex-1 bg-white/10" />
-          <span className="text-xs text-slate-500">{fetched?.tenant?.name || ""}</span>
-          <div className="h-px flex-1 bg-white/10" />
-        </div>
-      </div>
-
-      {/* Right panel — form */}
-      <div className="flex flex-1 flex-col items-center justify-center p-6 lg:p-12 relative">
-        <div className="mb-8 lg:hidden text-center">
-          {fetched?.tenant?.logoUrl ? (
-            <img src={fetched.tenant.logoUrl} alt={fetched?.tenant?.name || "Logo"} className="h-12 object-contain mx-auto" />
-          ) : fetched?.tenant?.name ? (
-            <div className="flex items-center justify-center gap-2">
-              <Building2 className="h-8 w-8 text-primary" />
-              <span className="text-xl font-bold text-foreground">{fetched.tenant.name}</span>
-            </div>
-          ) : null}
-        </div>
-
-        <div className="w-full max-w-md">
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold text-foreground mb-1">
-              {done ? "¡Cuenta activada!" : t("supervisor.registration_title", { defaultValue: "Registro de Supervisor" })}
-            </h2>
-            {done && <p className="text-sm text-muted-foreground">Tu acceso quedó listo.</p>}
+          <div className="mt-6 space-y-3 text-left">
+            <PasoSiguiente
+              icon={<Smartphone />}
+              title="Descarga la app de supervisor"
+              description="Inicia sesi\u00f3n con el correo y la contrase\u00f1a que acabas de crear."
+            />
+            <PasoSiguiente
+              icon={<Clock />}
+              title="Espera la asignaci\u00f3n"
+              description="Tu empresa te asignar\u00e1 tu zona y tu equipo de vigilantes."
+            />
           </div>
 
-          {/* Finish: supervisor app + download links (supervisors don't use the web CRM) */}
-          {done ? (
-            <FadeIn className="rounded-2xl bg-white dark:bg-[#171717] p-8 shadow-xl shadow-slate-200/60 dark:shadow-slate-900/60 border border-slate-200 dark:border-white/5 text-center">
-              <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-primary/12">
-                <CheckCircle2 className="h-9 w-9 text-primary" />
-              </div>
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                Tu cuenta con <strong className="text-foreground">{fetched?.tenant?.name || "tu empresa de seguridad"}</strong> está lista.
-                Descarga la <strong className="text-foreground">app de supervisor</strong> para gestionar tus recorridos, tu equipo y las novedades desde tu teléfono.
-              </p>
+          <div className="mt-5 grid gap-2 sm:grid-cols-2">
+            <a href={SUPERVISOR_PLAY_URL} target="_blank" rel="noreferrer" className="cg-btn-glass cg-focus flex items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-semibold">
+              Google Play
+            </a>
+            <a href={SUPERVISOR_IOS_URL} target="_blank" rel="noreferrer" className="cg-btn-glass cg-focus flex items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-semibold">
+              App Store
+            </a>
+          </div>
 
-              <div className="mt-6 space-y-3 text-left">
-                <div className="flex items-start gap-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-3.5">
-                  <Smartphone className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">Descarga la app de supervisor</p>
-                    <p className="text-xs text-muted-foreground">Inicia sesión con el correo y la contraseña que acabas de crear.</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-3.5">
-                  <Clock className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">Espera la asignación</p>
-                    <p className="text-xs text-muted-foreground">Tu empresa te asignará tu zona y tu equipo de vigilantes.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                <a href={SUPERVISOR_PLAY_URL} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 rounded-lg bg-[#0A0E16] px-4 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90">
-                  <span style={{ fontSize: 18, lineHeight: 1 }}>▶</span> Google Play
-                </a>
-                <a href={SUPERVISOR_IOS_URL} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 rounded-lg bg-[#0A0E16] px-4 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90">
-                  <span style={{ fontSize: 18, lineHeight: 1 }}></span> App Store
-                </a>
-              </div>
-
-              <p className="mt-5 text-xs text-muted-foreground">Ya puedes cerrar esta ventana.</p>
-            </FadeIn>
-          ) : (
-            <FadeIn className="rounded-2xl bg-white dark:bg-[#171717] p-8 shadow-xl shadow-slate-200/60 dark:shadow-slate-900/60 border border-slate-200 dark:border-white/5">
-              <form className="space-y-3" onSubmit={handleSubmit}>
-                {inviteNotFound && (
-                  <div className="rounded-md border border-yellow-300 dark:border-yellow-600 bg-yellow-50 dark:bg-yellow-900/20 p-3 text-sm text-yellow-800 dark:text-yellow-300">
-                    {t("supervisor.invite_not_found", { defaultValue: "Invitación no encontrada o inválida." })}
-                  </div>
-                )}
-                {fetched && !inviteNotFound && (
-                  <div className="rounded-md border border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/20 p-3 text-sm text-blue-700 dark:text-blue-300 mb-4">
-                    Estás completando tu registro como Supervisor. Por favor, ingresa una contraseña para tu cuenta.
-                  </div>
-                )}
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                  <div>
-                    <label className={labelClass}>Nombre<span style={{ color: "#F75638" }}>*</span></label>
-                    <Input className={`${formControl} ${errorClass("name")}`} value={name} onChange={(e) => { setName(e.target.value); setErrors((p) => ({ ...p, name: undefined })); }} placeholder="Nombre" disabled={isLoading || lockedName} />
-                    {errors.name && <div className="text-red-600 text-sm mt-1">{errors.name}</div>}
-                  </div>
-                  <div>
-                    <label className={labelClass}>Email<span style={{ color: "#F75638" }}>*</span></label>
-                    <Input className={`${formControl} ${errorClass("email")}`} value={email} onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: undefined })); }} placeholder="Email" disabled={isLoading || lockedEmail} />
-                    {errors.email && <div className="text-red-600 text-sm mt-1">{errors.email}</div>}
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                  <div>
-                    <label className={labelClass}>Contraseña<span style={{ color: "#F75638" }}>*</span></label>
-                    <div className="relative">
-                      <Input className={`${formControl} ${errorClass("password")}`} type={showPwd ? "text" : "password"} value={password} onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: undefined })); }} placeholder="Contraseña" disabled={isLoading} />
-                      <button type="button" className="absolute right-2 top-2 text-slate-500 dark:text-slate-400" tabIndex={-1} onClick={() => setShowPwd((v) => !v)}>{showPwd ? <EyeOff size={18} /> : <Eye size={18} />}</button>
-                    </div>
-                    {errors.password && <div className="text-red-600 text-sm mt-1">{errors.password}</div>}
-                  </div>
-                  <div>
-                    <label className={labelClass}>Confirmar contraseña<span style={{ color: "#F75638" }}>*</span></label>
-                    <div className="relative">
-                      <Input className={`${formControl} ${errorClass("confirm")}`} type={showConfirm ? "text" : "password"} value={confirm} onChange={(e) => { setConfirm(e.target.value); setErrors((p) => ({ ...p, confirm: undefined })); }} placeholder="Confirmar contraseña" disabled={isLoading} />
-                      <button type="button" className="absolute right-2 top-2 text-slate-500 dark:text-slate-400" tabIndex={-1} onClick={() => setShowConfirm((v) => !v)}>{showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}</button>
-                    </div>
-                    {errors.confirm && <div className="text-red-600 text-sm mt-1">{errors.confirm}</div>}
-                  </div>
-                </div>
-                <div className="flex justify-end mt-4">
-                  <Button type="submit" variant="brand" size="lg" className="px-8" disabled={isLoading}>{isLoading ? t("client.registering", { defaultValue: "Registrando..." }) : t("client.register", { defaultValue: "Registrar" })}</Button>
-                </div>
-              </form>
-            </FadeIn>
+          <p className="mt-5 text-xs" style={{ color: 'var(--ink-faint)' }}>Ya puedes cerrar esta ventana.</p>
+        </FadeIn>
+      ) : (
+        <form className="space-y-5" onSubmit={handleSubmit}>
+          {inviteNotFound && (
+            <InfoNote tone="warn" icon={<AlertTriangle />}>
+              {t('supervisor.invite_not_found', { defaultValue: 'Invitaci\u00f3n no encontrada o inv\u00e1lida.' })}
+            </InfoNote>
           )}
 
-          <p className="mt-6 text-center text-xs text-muted-foreground">
-            {fetched?.tenant?.name ? `© ${new Date().getFullYear()} ${fetched.tenant.name}` : ""}
-          </p>
-        </div>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <div>
+              <Etiqueta htmlFor="sup-nombre">Nombre</Etiqueta>
+              <input
+                id="sup-nombre"
+                className={CAMPO}
+                style={estiloError('name')}
+                value={name}
+                onChange={(e) => { setName(e.target.value); setErrors((p) => ({ ...p, name: undefined })); }}
+                placeholder="Nombre"
+                disabled={isLoading || lockedName}
+                aria-invalid={!!errors.name}
+              />
+              {errors.name && <p className="mt-1.5 text-xs" style={{ color: 'var(--bad-text)' }}>{errors.name}</p>}
+            </div>
+            <div>
+              <Etiqueta htmlFor="sup-email">Correo electr\u00f3nico</Etiqueta>
+              <input
+                id="sup-email"
+                type="email"
+                className={CAMPO}
+                style={estiloError('email')}
+                value={email}
+                onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: undefined })); }}
+                placeholder="tu@correo.com"
+                disabled={isLoading || lockedEmail}
+                aria-invalid={!!errors.email}
+              />
+              {errors.email && <p className="mt-1.5 text-xs" style={{ color: 'var(--bad-text)' }}>{errors.email}</p>}
+            </div>
+            <div>
+              <Etiqueta htmlFor="sup-clave">Contrase\u00f1a</Etiqueta>
+              <div className="relative">
+                <input
+                  id="sup-clave"
+                  className={`${CAMPO} pr-12`}
+                  style={estiloError('password')}
+                  type={showPwd ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: undefined })); }}
+                  placeholder="M\u00ednimo 8 caracteres"
+                  disabled={isLoading}
+                  aria-invalid={!!errors.password}
+                />
+                <Ojo visible={showPwd} onToggle={() => setShowPwd((v) => !v)} />
+              </div>
+              {errors.password && <p className="mt-1.5 text-xs" style={{ color: 'var(--bad-text)' }}>{errors.password}</p>}
+            </div>
+            <div>
+              <Etiqueta htmlFor="sup-confirmar">Confirmar contrase\u00f1a</Etiqueta>
+              <div className="relative">
+                <input
+                  id="sup-confirmar"
+                  className={`${CAMPO} pr-12`}
+                  style={estiloError('confirm')}
+                  type={showConfirm ? 'text' : 'password'}
+                  value={confirm}
+                  onChange={(e) => { setConfirm(e.target.value); setErrors((p) => ({ ...p, confirm: undefined })); }}
+                  placeholder="Repite la contrase\u00f1a"
+                  disabled={isLoading}
+                  aria-invalid={!!errors.confirm}
+                />
+                <Ojo visible={showConfirm} onToggle={() => setShowConfirm((v) => !v)} />
+              </div>
+              {errors.confirm && <p className="mt-1.5 text-xs" style={{ color: 'var(--bad-text)' }}>{errors.confirm}</p>}
+            </div>
+          </div>
+
+          <button type="submit" className={BOTON_PRINCIPAL} disabled={isLoading}>
+            {isLoading
+              ? t('client.registering', { defaultValue: 'Registrando\u2026' })
+              : t('client.register', { defaultValue: 'Activar mi cuenta' })}
+          </button>
+        </form>
+      )}
+    </AuthShell>
+  );
+}
+
+/** Fila de «qu\u00e9 pasa ahora»: ficha de icono + t\u00edtulo + explicaci\u00f3n. */
+function PasoSiguiente({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
+  return (
+    <div className="glass-sunken flex items-start gap-3 p-3.5">
+      <IconTile tone="neutral" size="sm">{icon}</IconTile>
+      <div className="min-w-0">
+        <p className="text-sm font-semibold">{title}</p>
+        <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>{description}</p>
       </div>
     </div>
   );

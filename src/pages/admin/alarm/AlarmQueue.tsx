@@ -8,21 +8,17 @@ import {
   Filter,
   Clock,
   ShieldAlert,
-  Flame,
-  Hand,
-  Bell,
-  HeartPulse,
-  Wrench,
   AlertTriangle,
-  DoorOpen,
   Activity,
   ChevronRight,
 } from "lucide-react";
 
 import AppLayout from "@/layouts/app-layout";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PageContainer, PageHeader, Section, Stagger, StatCard, EmptyState } from "@/components/kit";
+import {
+  PageContainer, PageHeader, Section, Stagger, StatCard, EmptyState,
+  GlassPanel, StatusBadge, Segmented, Toolbar, SkeletonCards,
+} from "@/components/kit";
 import {
   alarmService,
   alarmSourceMeta,
@@ -30,6 +26,11 @@ import {
   type AlarmCaseStatus,
 } from "@/lib/api/alarmService";
 import { openEventStream } from "@/lib/api/eventStream";
+import {
+  CriticalRail, ClockPill, PriorityPill, STATUS_META, OPEN_STATUSES,
+  categoryMeta, categoryTone, criticalBorder, elapsedSince, formatWhen, slaTone,
+  sourceTone,
+} from "./shared";
 
 
 /* ------------------------------------------------------------------ */
@@ -48,100 +49,12 @@ const STATUS_FILTERS: { value: StatusFilter; label: string }[] = [
   { value: "closed", label: "Cerradas" },
 ];
 
-const STATUS_META: Record<string, { label: string; className: string }> = {
-  queued: { label: "En cola", className: "bg-red-500/15 text-red-600 border-red-500/30" },
-  acknowledged: { label: "Reconocida", className: "bg-amber-500/15 text-amber-600 border-amber-500/30" },
-  verifying: { label: "Verificando", className: "bg-sky-500/15 text-sky-600 border-sky-500/30" },
-  dispatched: { label: "Despachada", className: "bg-purple-500/15 text-purple-600 border-purple-500/30" },
-  resolved: { label: "Resuelta", className: "bg-emerald-500/15 text-emerald-600 border-emerald-500/30" },
-  closed: { label: "Cerrada", className: "bg-slate-500/15 text-slate-600 border-slate-500/30" },
-};
-
-const CATEGORY_META: Record<string, { label: string; icon: React.ReactNode }> = {
-  burglary: { label: "Intrusión", icon: <ShieldAlert className="size-3.5" /> },
-  fire: { label: "Incendio", icon: <Flame className="size-3.5" /> },
-  holdup: { label: "Atraco", icon: <Hand className="size-3.5" /> },
-  panic: { label: "Pánico", icon: <Bell className="size-3.5" /> },
-  medical: { label: "Médica", icon: <HeartPulse className="size-3.5" /> },
-  tamper: { label: "Sabotaje", icon: <Wrench className="size-3.5" /> },
-  trouble: { label: "Avería", icon: <AlertTriangle className="size-3.5" /> },
-  openclose: { label: "Apertura/Cierre", icon: <DoorOpen className="size-3.5" /> },
-  test: { label: "Prueba", icon: <Activity className="size-3.5" /> },
-  supervisory: { label: "Supervisión", icon: <Activity className="size-3.5" /> },
-  restore: { label: "Restauración", icon: <Activity className="size-3.5" /> },
-};
-
-function categoryMeta(cat?: string | null) {
-  return (cat && CATEGORY_META[cat]) || { label: cat || "Alarma", icon: <Siren className="size-3.5" /> };
-}
-
-const PRIORITY_META: Record<number, { label: string; className: string }> = {
-  1: { label: "P1 · Crítica", className: "bg-red-600 text-white border-red-600" },
-  2: { label: "P2 · Alta", className: "bg-orange-500 text-white border-orange-500" },
-  3: { label: "P3 · Media", className: "bg-amber-500 text-white border-amber-500" },
-  4: { label: "P4 · Baja", className: "bg-sky-500 text-white border-sky-500" },
-  5: { label: "P5 · Info", className: "bg-slate-500 text-white border-slate-500" },
-};
-
-function priorityMeta(p?: number) {
-  return PRIORITY_META[p || 3] || PRIORITY_META[3];
-}
-
-function Badge({ className, children }: { className?: string; children: React.ReactNode }) {
-  return (
-    <span
-      className={[
-        "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium",
-        className || "",
-      ].join(" ")}
-    >
-      {children}
-    </span>
-  );
-}
-
+/** Lo único propio de esta pantalla: qué marca de tiempo ordena la cola. Todo
+ *  el resto del vocabulario de alarmas —estado, categoría, prioridad, SLA— vive
+ *  en `./shared` y lo comparten el detalle del caso y el registro de señales. */
 function caseTime(c: AlarmCase): string {
   return c.createdAt || c.updatedAt || "";
 }
-
-function formatWhen(iso?: string | null): string {
-  if (!iso) return "—";
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "—";
-  return d.toLocaleString("es", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
-/* SLA "since" timer — compact elapsed string */
-function elapsedSince(iso?: string | null, now?: number): string {
-  if (!iso) return "—";
-  const start = new Date(iso).getTime();
-  if (Number.isNaN(start)) return "—";
-  let secs = Math.max(0, Math.floor(((now ?? Date.now()) - start) / 1000));
-  const h = Math.floor(secs / 3600);
-  secs -= h * 3600;
-  const m = Math.floor(secs / 60);
-  const s = secs - m * 60;
-  if (h > 0) return `${h}h ${m}m`;
-  if (m > 0) return `${m}m ${String(s).padStart(2, "0")}s`;
-  return `${s}s`;
-}
-
-/* color the SLA badge by age + how "live" the case is */
-function slaClass(iso: string | null | undefined, live: boolean, now: number): string {
-  if (!live) return "bg-muted text-muted-foreground border-transparent";
-  if (!iso) return "bg-muted text-muted-foreground border-transparent";
-  const ageMin = (now - new Date(iso).getTime()) / 60000;
-  if (ageMin >= 10) return "bg-red-500/15 text-red-600 border-red-500/30 animate-pulse";
-  if (ageMin >= 5) return "bg-orange-500/15 text-orange-600 border-orange-500/30";
-  return "bg-emerald-500/15 text-emerald-600 border-emerald-500/30";
-}
-
-const OPEN_STATUSES = new Set<string>(["queued", "acknowledged", "verifying", "dispatched"]);
 
 /* ------------------------------------------------------------------ */
 /* Page                                                                */
@@ -231,13 +144,40 @@ export default function AlarmQueue() {
     return c;
   }, [cases]);
 
+  /* Abiertas = las que siguen pidiendo atención. Es la cifra que decide si la
+     cabecera late o no. */
+  const abiertas = React.useMemo(
+    () => cases.filter((c) => OPEN_STATUSES.has(c.status || "queued")).length,
+    [cases]
+  );
+  const criticas = React.useMemo(
+    () => cases.filter((c) => (c.priority ?? 3) === 1 && OPEN_STATUSES.has(c.status || "queued")).length,
+    [cases]
+  );
+
   return (
     <AppLayout>
-      <PageContainer width="wide" className="px-4 py-6 sm:px-6 lg:px-8">
+      <PageContainer width="wide">
         <PageHeader
           icon={<Siren />}
           title="Cola de alarmas"
           subtitle="Casos de la central receptora ordenados por prioridad"
+          badges={loading ? null : (
+            <>
+              {criticas > 0 && (
+                <StatusBadge tone="bad">
+                  {criticas === 1 ? "1 crítica sin cerrar" : `${criticas} críticas sin cerrar`}
+                </StatusBadge>
+              )}
+              {abiertas > 0 ? (
+                <StatusBadge tone={criticas > 0 ? "warn" : "info"}>
+                  {abiertas === 1 ? "1 caso abierto" : `${abiertas} casos abiertos`}
+                </StatusBadge>
+              ) : (
+                <StatusBadge tone="ok">Sin casos abiertos</StatusBadge>
+              )}
+            </>
+          )}
           actions={(
             <Button
               variant="outline"
@@ -254,55 +194,41 @@ export default function AlarmQueue() {
           )}
         />
 
-        <Stagger className="grid gap-4 grid-cols-2 sm:grid-cols-4">
-          <StatCard label="Total" value={cases.length} icon={<Siren />} accent="primary" />
-          <StatCard label="En cola" value={counts['queued'] || 0} icon={<Clock />} accent="red" />
-          <StatCard label="Verificando" value={counts['verifying'] || 0} icon={<ShieldAlert />} accent="blue" />
-          <StatCard label="Resueltas" value={counts['resolved'] || 0} icon={<Activity />} accent="green" />
+        <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <StatCard label="Total" value={cases.length} icon={<Siren />} accent="neutral" />
+          <StatCard label="En cola" value={counts['queued'] || 0} icon={<Clock />} accent="bad" />
+          <StatCard label="Verificando" value={counts['verifying'] || 0} icon={<ShieldAlert />} accent="info" />
+          <StatCard label="Resueltas" value={counts['resolved'] || 0} icon={<Activity />} accent="ok" />
         </Stagger>
 
-        {/* Filters */}
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="mr-1 flex items-center gap-1.5 text-sm text-muted-foreground">
-            <Filter className="size-4" />
-            Estado:
+        {/* Filtros */}
+        <Toolbar>
+          <span className="ml-1 mr-1 flex items-center gap-1.5 text-xs font-semibold" style={{ color: 'var(--ink-soft)' }}>
+            <Filter className="size-3.5" />
+            Estado
           </span>
-          {STATUS_FILTERS.map((f) => {
-            const active = status === f.value;
-            const count = f.value === "all" ? cases.length : counts[f.value] || 0;
-            return (
-              <button
-                key={f.value}
-                type="button"
-                onClick={() => setStatus(f.value)}
-                className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-medium transition-colors"
-                style={
-                  active
-                    ? { backgroundColor: "var(--primary)", borderColor: "var(--primary)", color: "var(--primary-foreground)" }
-                    : undefined
-                }
-              >
-                {f.label}
-                <span
-                  className={[
-                    "rounded-full px-1.5 text-xs",
-                    active ? "bg-white/20" : "bg-muted text-muted-foreground",
-                  ].join(" ")}
-                >
-                  {count}
+          <Segmented
+            className="flex-wrap"
+            value={status}
+            onChange={setStatus}
+            options={STATUS_FILTERS.map((f) => ({
+              value: f.value,
+              label: (
+                <span className="inline-flex items-center gap-1.5">
+                  {f.label}
+                  <span className="tabular-nums opacity-70">
+                    {f.value === "all" ? cases.length : counts[f.value] || 0}
+                  </span>
                 </span>
-              </button>
-            );
-          })}
-        </div>
+              ),
+            }))}
+          />
+        </Toolbar>
 
         {/* List */}
         <Section title="Casos de alarma" icon={<Siren />}>
         {loading ? (
-          <div className="flex items-center justify-center py-20 text-muted-foreground">
-            <Loader2 className="mr-2 size-5 animate-spin" />
-            Cargando alarmas…
-          </div>
+          <SkeletonCards count={4} className="sm:grid-cols-1" />
         ) : sorted.length === 0 ? (
           <EmptyState
             icon={<Siren />}
@@ -315,15 +241,24 @@ export default function AlarmQueue() {
           <div className="space-y-3">
             {sorted.map((c) => {
               const cat = categoryMeta(c.category);
-              const prio = priorityMeta(c.priority);
               const st = STATUS_META[c.status || "queued"] || STATUS_META.queued;
               const live = OPEN_STATUSES.has(c.status || "queued");
               const panelName = c.panel?.name || "Panel desconocido";
               const accountNumber = c.panel?.accountNumber;
 
+              const sm = alarmSourceMeta(c.source);
+              const sla = slaTone(caseTime(c), live, now);
+              /* El canto rojo: sólo para lo que de verdad está ardiendo — una P1
+                 todavía abierta. Si se lo ponemos a todo, deja de significar nada. */
+              const urgente = live && (c.priority ?? 3) === 1;
+
               return (
-                <Card
+                /* `flat`: es una lista que puede tener cientos de casos y se
+                   refresca cada segundo con el cronómetro. */
+                <GlassPanel
                   key={c.id}
+                  flat
+                  hover
                   role="button"
                   tabIndex={0}
                   onClick={() => navigate(`/alarm/case/${c.id}`)}
@@ -333,29 +268,35 @@ export default function AlarmQueue() {
                       navigate(`/alarm/case/${c.id}`);
                     }
                   }}
-                  className="cursor-pointer p-4 transition-shadow hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="cg-focus relative cursor-pointer overflow-hidden p-4"
+                  style={criticalBorder(urgente)}
                 >
+                  {urgente && <CriticalRail />}
                   <div className="flex items-center gap-3">
-                    {/* Priority badge */}
-                    <Badge className={`shrink-0 ${prio.className}`}>{prio.label}</Badge>
+                    {/* Prioridad */}
+                    <PriorityPill p={c.priority} />
 
                     {/* Center info */}
                     <div className="min-w-0 flex-1">
                       <div className="mb-1 flex flex-wrap items-center gap-2">
-                        <Badge className="border-transparent bg-muted text-foreground">
-                          {cat.icon}
+                        {/* Incendio, atraco, pánico, intrusión y médica van en
+                            `--bad` vengan con la prioridad que vengan: un
+                            incendio no deja de serlo porque el panel lo
+                            etiquete P3. El resto son clasificación, no
+                            severidad, y van neutras. */}
+                        <StatusBadge tone={categoryTone(c.category)} dot={false}>
+                          <span className="[&_svg]:size-3.5">{cat.icon}</span>
                           {cat.label}
-                        </Badge>
-                        <Badge className={st.className}>{st.label}</Badge>
-                        {(() => {
-                          const sm = alarmSourceMeta(c.source);
-                          return <Badge className={sm.className}>{sm.short}</Badge>;
-                        })()}
+                        </StatusBadge>
+                        <StatusBadge tone={st.tone} dot={live}>{st.label}</StatusBadge>
+                        <StatusBadge tone={sourceTone(c.source)} dot={false}>{sm.short}</StatusBadge>
                         {c.incidentId ? (
-                          <Badge className="border-transparent bg-purple-500/15 text-purple-600">
+                          /* Escalado a incidente: es una agravación del caso, no
+                             un realce de marca. Iba en el acento configurable. */
+                          <StatusBadge tone="bad" dot={false}>
                             <AlertTriangle className="size-3.5" />
                             Incidente
-                          </Badge>
+                          </StatusBadge>
                         ) : null}
                       </div>
 
@@ -363,7 +304,7 @@ export default function AlarmQueue() {
                         {c.title || cat.label}
                       </p>
 
-                      <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                      <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs" style={{ color: 'var(--ink-faint)' }}>
                         <span className="inline-flex items-center gap-1">
                           <ShieldAlert className="size-3.5" />
                           {panelName}
@@ -378,32 +319,30 @@ export default function AlarmQueue() {
                         (frozen to closedAt/resolvedAt), never a ticking counter. */}
                     {live ? (
                       <div className="hidden shrink-0 flex-col items-end gap-1 sm:flex">
-                        <Badge className={slaClass(caseTime(c), live, now)}>
+                        <ClockPill token={sla.token} pulsa={sla.alarmante}>
                           <Clock className="size-3.5" />
                           {elapsedSince(caseTime(c), now)}
-                        </Badge>
-                        <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
-                          en cola
-                        </span>
+                        </ClockPill>
+                        <span className="cg-eyebrow">en cola</span>
                       </div>
                     ) : (
                       <div className="hidden shrink-0 flex-col items-end gap-1 sm:flex">
-                        <Badge className="border-transparent bg-muted text-muted-foreground">
+                        <ClockPill token="neutral">
                           <Clock className="size-3.5" />
                           {elapsedSince(
                             caseTime(c),
                             new Date(c.closedAt || c.resolvedAt || c.updatedAt || caseTime(c)).getTime(),
                           )}
-                        </Badge>
-                        <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                        </ClockPill>
+                        <span className="cg-eyebrow">
                           {(c.status || "") === "closed" ? "duración" : "resuelta en"}
                         </span>
                       </div>
                     )}
 
-                    <ChevronRight className="size-5 shrink-0 text-muted-foreground" />
+                    <ChevronRight className="size-5 shrink-0" style={{ color: 'var(--ink-faint)' }} />
                   </div>
-                </Card>
+                </GlassPanel>
               );
             })}
           </div>

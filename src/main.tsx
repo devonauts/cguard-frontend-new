@@ -4,15 +4,23 @@ import ReactDOM from "react-dom/client";
 
 import App from "./App.tsx";
 // import { Provider } from "./provider.tsx";
-// Self-hosted Poppins (bundled — no dependency on the Google Fonts CDN, which can be
-// blocked/slow and was leaving the UI on a fallback font). Loaded BEFORE the global
-// styles so the @font-face is registered first.
-import "@fontsource/poppins/300.css";
-import "@fontsource/poppins/400.css";
-import "@fontsource/poppins/500.css";
-import "@fontsource/poppins/600.css";
-import "@fontsource/poppins/700.css";
-import "@fontsource/poppins/800.css";
+// Tipografía AUTOALOJADA (empaquetada — sin depender del CDN de Google, que puede
+// caerse o estar bloqueado). Dos familias variables, una sola petición cada una:
+//
+//   Inter          — interfaz, tablas y texto. Es la que mejor aguanta 11-13 px,
+//                    que es donde vive un CRM denso, y trae numerales tabulares
+//                    de verdad (los de Poppins bailaban en las columnas).
+//   Saira          — titulares, cifras, botones y navegación. Semi-condensada y
+//                    con terminaciones CUADRADAS. La elección anterior (Sora)
+//                    falló por una razón medible: era geométrica-redonda igual
+//                    que Poppins y medía 275,42 px contra 274,86 — cambiar de
+//                    fuente dentro del mismo esqueleto no se nota. Aquí cambia
+//                    el esqueleto, y por eso sí se ve.
+import "@fontsource-variable/inter";
+import "@fontsource-variable/saira";
+// Orden IMPORTANTE: tokens (color) → globals (tipografía/animación) → glass
+// (superficies). glass.css va sin @layer para ganar el cascade a Tailwind.
+import "@/styles/tokens.css";
 import "@/styles/globals.css";
 import "@/styles/glass.css";
 import { Toaster } from "sonner";

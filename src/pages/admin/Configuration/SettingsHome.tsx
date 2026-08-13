@@ -6,7 +6,7 @@ import { Search, ChevronRight, Settings2 } from "lucide-react";
 import AppLayout from "@/layouts/app-layout";
 import NAVS from "@/data/settings-nav.json";
 import { settingsIcon } from "@/config/settingsIcons";
-import { PageContainer, PageHeader, FadeIn, Stagger, EmptyState } from "@/components/kit";
+import { PageContainer, PageHeader, FadeIn, Stagger, EmptyState, IconTile } from "@/components/kit";
 
 type SubItem = { id: string; label: string; path: string; icon?: string; desc?: string };
 type Section = { label?: string; items: SubItem[] };
@@ -43,12 +43,15 @@ export default function SettingsHome() {
           })}
           actions={
             <div className="relative w-full sm:w-72">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Search
+                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
+                style={{ color: "var(--ink-faint)" }}
+              />
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t("settings.home.searchPlaceholder", { defaultValue: "Buscar un ajuste..." })}
-                className="w-full rounded-xl border border-border bg-background py-2.5 pl-10 pr-3 text-sm text-foreground placeholder:text-muted-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/25"
+                className="cg-input w-full py-2.5 pl-10 pr-3 text-sm"
               />
             </div>
           }
@@ -75,7 +78,7 @@ export default function SettingsHome() {
                         <h2 className="cg-eyebrow">
                           {t(`settings.section.${slug}`, { defaultValue: sec.label })}
                         </h2>
-                        <div className="h-px flex-1 bg-border" />
+                        <div className="h-px flex-1" style={{ background: "var(--hairline)" }} />
                       </div>
                     ) : null}
 
@@ -86,20 +89,28 @@ export default function SettingsHome() {
                           <Link
                             key={item.id}
                             to={item.path}
-                            className="group relative flex items-start gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
+                            className="glass-flat glass-hover cg-focus group flex h-full items-start gap-3 p-4"
                           >
-                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/12 text-primary transition-colors group-hover:bg-primary/20">
-                              <Icon className="h-5 w-5" />
-                            </div>
+                            <IconTile size="sm">
+                              <Icon />
+                            </IconTile>
                             <div className="min-w-0 flex-1">
                               <div className="flex items-center justify-between gap-2">
-                                <h3 className="truncate text-sm font-semibold text-foreground">
+                                <h3 className="truncate text-sm font-semibold">
                                   {t(`settings.configuracion.${item.id}`, { defaultValue: item.label })}
                                 </h3>
-                                <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground/50 transition-all group-hover:translate-x-0.5 group-hover:text-primary" />
+                                <ChevronRight
+                                  className="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-0.5"
+                                  style={{ color: "var(--ink-faint)" }}
+                                />
                               </div>
                               {item.desc ? (
-                                <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">{item.desc}</p>
+                                <p
+                                  className="mt-0.5 line-clamp-2 text-xs"
+                                  style={{ color: "var(--ink-soft)" }}
+                                >
+                                  {item.desc}
+                                </p>
                               ) : null}
                             </div>
                           </Link>

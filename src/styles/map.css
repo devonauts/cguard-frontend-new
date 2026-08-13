@@ -1,0 +1,707 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   C-GUARD PRO — CAPA DE CRISTAL SOBRE EL MAPA
+
+   Los mapas la importan ellos mismos (`import "@/styles/map.css"`), así que
+   viaja en el trozo del mapa y no engorda el arranque de la aplicación.
+
+   Todo deriva de las variables de tokens.css: una sola hoja vale para claro y
+   para oscuro y para cualquier acento. Lo único que NO puede salir de aquí son
+   los colores que consume la API de Google (teselas, polilíneas, chinchetas);
+   ese puente vive en `utils/mapTheme.ts`.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* ── EL MARCO ──────────────────────────────────────────────────────────────── */
+/* El mapa es una lámina bajo el cristal, no un iframe pegado: se le recortan las
+   esquinas y se le mete una viñeta que funde los bordes con el panel. Sin la
+   viñeta, el corte recto del mapa delata que es un embed. */
+.cc-map-frame {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--canvas);
+}
+.cc-map-frame > .cc-map-canvas { position: absolute; inset: 0; }
+
+.cc-map-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: inherit;
+  /* Suave a propósito: los globos de información se dibujan DENTRO del mapa y
+     por debajo de esta capa, así que una viñeta agresiva los apagaría. */
+  box-shadow:
+    inset 0 0 70px 4px color-mix(in oklab, var(--canvas) 58%, transparent),
+    inset 0 1px 0 0 var(--hairline-lit);
+}
+
+/* Halo del acento en una esquina — lo mismo que hace `PageHeader`: es lo que
+   impide que un rectángulo oscuro se lea como un hueco muerto. */
+.cc-map-frame::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  top: -30%;
+  right: -18%;
+  width: 60%;
+  height: 90%;
+  pointer-events: none;
+  border-radius: 9999px;
+  background: radial-gradient(circle, var(--brand) 0%, transparent 68%);
+  opacity: 0.1;
+  filter: blur(40px);
+}
+.dark .cc-map-frame::before { opacity: 0.16; }
+
+/* ── PANELES FLOTANTES ─────────────────────────────────────────────────────── */
+/* Cristal encima del mapa. Aquí SÍ vale `backdrop-filter`: son dos o tres
+   superficies fijas, no cientos de marcadores. */
+.cc-map-hud {
+  position: absolute;
+  z-index: 4;
+  pointer-events: none;
+}
+.cc-map-hud > * { pointer-events: auto; }
+
+.cc-map-card {
+  background: var(--glass);
+  backdrop-filter: blur(var(--blur)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(180%);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  box-shadow: var(--lift-3), inset 0 1px 0 0 var(--hairline-lit);
+  color: var(--ink);
+}
+
+/* La cifra grande de la referencia, en pequeño. */
+.cc-map-metric {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+.cc-map-eyebrow {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+/* ── LEYENDA ───────────────────────────────────────────────────────────────── */
+.cc-map-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+.cc-map-key i {
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+  flex: none;
+  box-shadow: 0 0 8px -1px currentColor;
+  background: currentColor;
+}
+
+/* ── ANILLO DE PORCENTAJE ──────────────────────────────────────────────────── */
+/* El anillo de la referencia sin SVG ni librería: un cónico recortado por una
+   máscara. El relleno lo pone `--pct` desde el TSX. */
+.cc-map-ring {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border-radius: 9999px;
+  flex: none;
+  background: conic-gradient(var(--anillo, var(--brand)) calc(var(--pct, 0) * 1%), color-mix(in oklab, var(--ink) 12%, transparent) 0);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
+}
+.cc-map-ring-wrap { position: relative; display: grid; place-items: center; }
+.cc-map-ring-wrap > span {
+  position: absolute;
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+/* ── CHINCHETA DE DOM ──────────────────────────────────────────────────────── */
+/* Sólo para los mapas que YA usan `AdvancedMarkerElement` (los que llevan un Map
+   ID de Google Cloud y por tanto no pueden llevar teselas propias). Los mapas
+   con estilo acromático dibujan sus chinchetas en SVG — ver `utils/mapPins.ts`.
+
+   SIN `backdrop-filter` a propósito: esto se repite una vez por marcador y
+   desenfocar el mapa detrás de cada uno tira el desplazamiento. Es el mismo
+   criterio que separa `.glass` de `.glass-flat` en glass.css. */
+.cc-map-pin {
+  --pin: var(--brand);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px 4px 4px;
+  border-radius: 9999px;
+  background: var(--glass-solid);
+  border: 1px solid var(--hairline);
+  box-shadow: var(--lift-2), inset 0 1px 0 0 var(--hairline-lit), 0 0 0 1px color-mix(in oklab, var(--pin) 22%, transparent);
+  font-family: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--ink);
+  white-space: nowrap;
+  transform: translateY(-9px);
+  cursor: default;
+}
+.cc-map-pin > i {
+  width: 15px;
+  height: 15px;
+  border-radius: 5px;
+  flex: none;
+  background: color-mix(in oklab, var(--pin) 26%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--pin) 55%, transparent);
+  position: relative;
+}
+.cc-map-pin > i::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 9999px;
+  background: var(--pin);
+}
+/* El tallo que cae sobre la coordenada exacta. */
+.cc-map-pin::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  width: 1px;
+  height: 9px;
+  background: var(--pin);
+  opacity: 0.8;
+}
+.cc-map-pin.is-sin-texto { padding: 4px; }
+
+/* ── GLOBOS DE INFORMACIÓN ─────────────────────────────────────────────────── */
+/* Google pinta el globo con su propio chrome: caja blanca, sombra y pico. Aquí
+   se vacía ese chrome (fondo transparente, sin sombra, sin relleno) y el aspecto
+   lo pone nuestro `.cc-pop` dentro. Sin esto, un popup de cristal saldría dentro
+   de una tarjeta blanca de Google y se vería un marco doble. */
+.gm-style .gm-style-iw-c {
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: var(--r-md) !important;
+  max-width: 320px !important;
+  overflow: visible !important;
+}
+.gm-style .gm-style-iw-d {
+  padding: 0 !important;
+  background: transparent !important;
+  overflow: visible !important;
+  max-height: none !important;
+}
+/* El pico. `-tc::after` en las versiones nuevas, `-t::after` en las viejas. */
+.gm-style .gm-style-iw-tc::after,
+.gm-style .gm-style-iw-t::after {
+  background: var(--glass-solid) !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+/* …y la sombra del pico va en el CONTENEDOR, no en el `::after`: Google le
+   cuelga un `drop-shadow` GRIS CLARO fijo (`rgba(178,178,178,.4)`) que en tema
+   oscuro se ve como un halo blanco colgando del globo. Se sustituye por la
+   sombra negra del sistema — `--lift-*` en tokens.css son todas
+   `oklch(0 0 0 / α)`; no hay variable que reutilizar porque esto es un
+   `filter`, no un `box-shadow`. */
+.gm-style .gm-style-iw-tc { filter: drop-shadow(0 3px 2px oklch(0 0 0 / 0.14)) !important; }
+.dark .gm-style .gm-style-iw-tc { filter: drop-shadow(0 3px 3px oklch(0 0 0 / 0.5)) !important; }
+/* La fila de cabecera que Google añade sólo para el botón de cerrar: se saca de
+   flujo para que no deje una banda vacía encima del contenido. */
+.gm-style .gm-style-iw-chr {
+  position: absolute !important;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  height: 26px;
+  min-height: 0 !important;
+  padding: 0 !important;
+}
+.gm-style .gm-style-iw-ch { padding: 0 !important; }
+.gm-style .gm-ui-hover-effect {
+  opacity: 0.5 !important;
+  width: 26px !important;
+  height: 26px !important;
+}
+.gm-style .gm-ui-hover-effect:hover { opacity: 1 !important; }
+.gm-style .gm-ui-hover-effect > span { background-color: var(--ink) !important; }
+
+/* El contenido del globo. `.cc-pop` (glass.css) pone el cristal; esto le da el
+   sitio del botón de cerrar y la tipografía del CRM.
+
+   Se escribe `.cc-pop.cc-map-pop` a propósito: las dos clases van en el MISMO
+   elemento y `.cc-pop` ya declara `padding`. Con una sola clase ganaría la hoja
+   que el empaquetador colocara última —que no es estable entre desarrollo y
+   producción—; con dos gana siempre esta. */
+.cc-pop.cc-map-pop {
+  font-family: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+  padding: 0.7rem 1.6rem 0.7rem 0.8rem;
+  min-width: 172px;
+  max-width: 260px;
+  /* Sobre teselas con detalle NO vale la superficie de cristal normal: en oscuro
+     `--glass-raised` es blanco al 8,5 % y el texto se pierde entre las calles.
+     Un globo se dibuja de UNO en UNO, así que subir la opacidad no cuesta
+     desplazamiento (lo que sí lo costaría es hacerlo por chincheta). */
+  background: color-mix(in oklab, var(--glass-solid) 93%, transparent);
+}
+.cc-map-pop .t { font-size: 12.5px; font-weight: 700; line-height: 1.25; color: var(--ink); }
+.cc-map-pop .s { margin-top: 2px; font-size: 11px; color: var(--ink-soft); }
+.cc-map-pop .r {
+  margin-top: 7px;
+  padding-top: 7px;
+  border-top: 1px solid var(--hairline);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.cc-map-pop .r i { width: 7px; height: 7px; border-radius: 9999px; flex: none; background: currentColor; box-shadow: 0 0 8px 0 currentColor; }
+.cc-map-pop .n { margin-left: auto; font-variant-numeric: tabular-nums; font-size: 13px; font-weight: 700; }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   EL GLOBO ÚNICO — `.cc-mpop` (components/maps/MapPopup.tsx)
+
+   Un solo globo para todos los mapas: cabecera con baldosa tonal, cuerpo de
+   datos y fila de acciones. Se pinta DENTRO de un `InfoWindow`, que es DOM del
+   documento, así que aquí sí valen las variables del sistema y los botones de
+   verdad — al contrario que las chinchetas, que son SVG servido como imagen y
+   no ve ni las fuentes ni esta hoja (ver `utils/mapPins.ts`).
+
+   Todo el color entra por DOS variables locales, `--tono` y `--tono-text`, que
+   fija el atributo `data-tone`. `--tono` es el color pleno (rellenos, filetes,
+   puntos) y `--tono-text` la versión legible sobre superficie clara: los
+   semánticos del sistema traen ya ese par (`--ok`/`--ok-text`), y usarlo es lo
+   que mantiene el contraste del texto en los dos temas.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+.cc-mpop[data-tone="brand"],   .cc-mpop [data-tone="brand"]   { --tono: var(--brand);     --tono-text: var(--brand-text); }
+.cc-mpop[data-tone="ok"],      .cc-mpop [data-tone="ok"]      { --tono: var(--ok);        --tono-text: var(--ok-text); }
+.cc-mpop[data-tone="warn"],    .cc-mpop [data-tone="warn"]    { --tono: var(--warn);      --tono-text: var(--warn-text); }
+.cc-mpop[data-tone="bad"],     .cc-mpop [data-tone="bad"]     { --tono: var(--bad);       --tono-text: var(--bad-text); }
+.cc-mpop[data-tone="info"],    .cc-mpop [data-tone="info"]    { --tono: var(--info);      --tono-text: var(--info-text); }
+.cc-mpop[data-tone="neutral"], .cc-mpop [data-tone="neutral"] { --tono: var(--ink-faint); --tono-text: var(--ink-soft); }
+
+/* ── LA SUPERFICIE ─────────────────────────────────────────────────────────── */
+.cc-mpop {
+  --tono: var(--brand);
+  --tono-text: var(--brand-text);
+
+  position: relative;
+  isolation: isolate;
+  width: max-content;
+  min-width: 236px;
+  max-width: min(336px, calc(100vw - 40px));
+  overflow: hidden;
+  text-align: left;
+  font-family: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+  color: var(--ink);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  /* Casi opaca A PROPÓSITO: el cristal del CRM al 5-8 % no se lee sobre teselas
+     con calles y topónimos. El velo tonal de arriba es lo que lo mantiene vivo
+     sin robarle contraste al texto. */
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--tono) 10%, transparent) 0%, transparent 96px),
+    color-mix(in oklab, var(--glass-solid) 94%, transparent);
+  backdrop-filter: blur(14px) saturate(150%);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  box-shadow:
+    var(--lift-4),
+    inset 0 1px 0 0 var(--hairline-lit),
+    0 0 0 1px color-mix(in oklab, var(--tono) 16%, transparent);
+  animation: cc-mpop-in 0.22s var(--ease) both;
+}
+
+/* El filete superior del tono: la marca de «esto es un panel de mando». */
+.cc-mpop::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--tono) 22%, var(--tono) 78%, transparent);
+  opacity: 0.85;
+}
+
+@keyframes cc-mpop-in {
+  from { opacity: 0; transform: translateY(6px) scale(0.985); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── CABECERA ──────────────────────────────────────────────────────────────── */
+.cc-mpop-head {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 46px 10px 12px;
+}
+/* Halo del tono detrás de la baldosa — el mismo recurso que `.cc-map-frame`. */
+.cc-mpop-head::before {
+  content: "";
+  position: absolute;
+  top: -46px;
+  left: -26px;
+  width: 150px;
+  height: 118px;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 9999px;
+  background: radial-gradient(circle, var(--tono) 0%, transparent 66%);
+  opacity: 0.14;
+  filter: blur(22px);
+}
+
+/* La baldosa tonal: el `IconTile` del kit, y la misma receta que la baldosa de
+   las chinchetas SVG, para que la ficha y el globo se lean como una pieza. */
+.cc-mpop-tile {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  color: var(--tono);
+  background: color-mix(in oklab, var(--tono) 18%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--tono) 42%, transparent);
+}
+.cc-mpop-tile svg { width: 17px; height: 17px; stroke-width: 2.1; }
+
+.cc-mpop-htext { min-width: 0; flex: 1 1 auto; }
+.cc-mpop-t {
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.cc-mpop-s {
+  margin-top: 2px;
+  font-size: 11.5px;
+  line-height: 1.35;
+  color: var(--ink-soft);
+  overflow-wrap: anywhere;
+}
+
+/* Píldora de estado. Lleva su propio `data-tone`: el estado puede ser rojo
+   dentro de un globo de acento (un vigilante con pánico en su ficha). */
+.cc-mpop-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 7px;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: 9999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--tono-text);
+  background: color-mix(in oklab, var(--tono) 15%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--tono) 34%, transparent);
+}
+.cc-mpop-live {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 9999px;
+  background: var(--tono);
+  box-shadow: 0 0 0 0 color-mix(in oklab, var(--tono) 60%, transparent);
+  animation: cc-mpop-latido 1.9s var(--ease) infinite;
+}
+@keyframes cc-mpop-latido {
+  0%   { box-shadow: 0 0 0 0 color-mix(in oklab, var(--tono) 55%, transparent); }
+  70%  { box-shadow: 0 0 0 7px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+/* ── CERRAR ────────────────────────────────────────────────────────────────── */
+/* 44 px de objetivo real: el globo tiene que cerrarse con el pulgar. El aspa
+   ocupa 16 px; lo demás es zona de pulsación, que no se ve pero se toca. */
+.cc-mpop-x {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: var(--r-lg);
+  background: transparent;
+  color: var(--ink-faint);
+  cursor: pointer;
+  transition: color 0.18s var(--ease), background 0.18s var(--ease);
+}
+.cc-mpop-x svg { width: 16px; height: 16px; stroke-width: 2.3; }
+.cc-mpop-x:hover { color: var(--ink); background: color-mix(in oklab, var(--ink) 8%, transparent); }
+.cc-mpop-x:focus-visible { outline: 2px solid var(--tono); outline-offset: -4px; }
+
+/* ── MÉTRICAS ──────────────────────────────────────────────────────────────── */
+.cc-mpop-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  padding: 9px 12px;
+  border-top: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+  background: color-mix(in oklab, var(--ink) 3%, transparent);
+}
+.cc-mpop-ml {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.cc-mpop-mv {
+  margin-top: 1px;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+/* ── CUERPO ────────────────────────────────────────────────────────────────── */
+/* Con mucho dato el globo NO crece sin fin: el cuerpo se desplaza por dentro y
+   la cabecera y las acciones quedan siempre a la vista. */
+.cc-mpop-body {
+  padding: 10px 12px 11px;
+  max-height: min(44vh, 292px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--ink) 22%, transparent) transparent;
+}
+.cc-mpop-metrics + .cc-mpop-body { padding-top: 9px; }
+
+.cc-mpop-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px 12px;
+}
+.cc-mpop-f { min-width: 0; }
+.cc-mpop-f--wide { grid-column: 1 / -1; }
+.cc-mpop-fl {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.cc-mpop-fv {
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.cc-mpop-fv--num { font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+
+.cc-mpop-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 10px;
+}
+.cc-mpop-tag {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: 9999px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  background: color-mix(in oklab, var(--ink) 6%, transparent);
+  box-shadow: inset 0 0 0 1px var(--hairline);
+}
+
+.cc-mpop-note {
+  margin-top: 10px;
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+.cc-mpop-err {
+  margin-top: 10px;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--bad-text);
+}
+
+/* ── CARGA ─────────────────────────────────────────────────────────────────── */
+/* El detalle se pide al pulsar: el globo abre con lo que ya sabe la chincheta y
+   el esqueleto ocupa el sitio de lo que falta, para que no dé un salto al
+   llegar. Barrido en `transform`, que no repinta. */
+.cc-mpop-load { display: grid; gap: 7px; }
+.cc-mpop-load--sep {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--hairline);
+}
+.cc-mpop-sk {
+  position: relative;
+  display: block;
+  height: 9px;
+  border-radius: 5px;
+  overflow: hidden;
+  background: color-mix(in oklab, var(--ink) 9%, transparent);
+}
+.cc-mpop-sk::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--tono) 30%, transparent), transparent);
+  animation: cc-mpop-barrido 1.25s var(--ease) infinite;
+}
+@keyframes cc-mpop-barrido { to { transform: translateX(100%); } }
+
+/* ── ACCIONES ──────────────────────────────────────────────────────────────── */
+.cc-mpop-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px;
+  border-top: 1px solid var(--hairline);
+  background: color-mix(in oklab, var(--ink) 4%, transparent);
+}
+.cc-mpop-a {
+  flex: 1 1 auto;
+  min-width: 92px;
+  min-height: 44px; /* táctil: se pulsa con el pulgar */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 10px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-sm);
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  color: var(--ink);
+  background: color-mix(in oklab, var(--ink) 5%, transparent);
+  transition: background 0.18s var(--ease), transform 0.18s var(--ease), box-shadow 0.18s var(--ease);
+}
+.cc-mpop-a svg { width: 14px; height: 14px; stroke-width: 2.2; }
+.cc-mpop-ai { display: inline-flex; flex: none; }
+.cc-mpop-al { overflow: hidden; text-overflow: ellipsis; }
+.cc-mpop-ax { opacity: 0.55; }
+
+.cc-mpop-a:hover { background: color-mix(in oklab, var(--ink) 10%, transparent); }
+.cc-mpop-a:active { transform: translateY(1px); }
+.cc-mpop-a:focus-visible { outline: 2px solid var(--tono); outline-offset: 2px; }
+
+/* La acción va en el ACENTO, no en el tono del globo: el color semántico
+   informa (el puesto está en riesgo), no manda. Un «Ver ficha» rojo dentro de
+   un incidente se leería como «borrar», que es justo lo que el rojo significa
+   en el resto del CRM. Quien necesite una acción semántica —«Cerrar
+   incidente»— la pide con `tone` y entonces sí la tiñe. */
+.cc-mpop-a--primary {
+  color: var(--brand-ink);
+  border-color: transparent;
+  background: var(--brand);
+  box-shadow: 0 6px 18px -8px var(--brand);
+}
+.cc-mpop-a--primary:hover { background: color-mix(in oklab, var(--brand) 88%, var(--ink)); }
+.cc-mpop-a--primary[data-tone] {
+  background: var(--tono);
+  box-shadow: 0 6px 18px -8px var(--tono);
+}
+.cc-mpop-a--primary[data-tone]:hover { background: color-mix(in oklab, var(--tono) 88%, var(--ink)); }
+
+.cc-mpop-a--ghost { color: var(--ink); }
+.cc-mpop-a--ghost .cc-mpop-ai { color: var(--ink-soft); }
+.cc-mpop-a--ghost[data-tone],
+.cc-mpop-a--ghost[data-tone] .cc-mpop-ai { color: var(--tono-text); }
+
+.cc-mpop-a[disabled],
+.cc-mpop-a[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; }
+
+.cc-mpop-spin {
+  width: 13px;
+  height: 13px;
+  flex: none;
+  border-radius: 9999px;
+  border: 2px solid color-mix(in oklab, currentColor 30%, transparent);
+  border-top-color: currentColor;
+  animation: cc-mpop-giro 0.7s linear infinite;
+}
+@keyframes cc-mpop-giro { to { transform: rotate(360deg); } }
+
+/* ── EL CHROME DE GOOGLE, PARA ESTE GLOBO ──────────────────────────────────── */
+/* `:has()` acota estas reglas al globo nuevo: los mapas que siguen con el globo
+   antiguo (`.cc-map-pop`, HTML en cadena) conservan el botón de cerrar de
+   Google, que es el único que tienen. */
+.gm-style .gm-style-iw-c:has(.cc-mpop) {
+  max-width: min(360px, calc(100vw - 28px)) !important;
+  border-radius: var(--r-lg) !important;
+}
+.gm-style .gm-style-iw-c:has(.cc-mpop) .gm-style-iw-chr { display: none !important; }
+.gm-style .gm-style-iw-a:has(.cc-mpop) .gm-style-iw-tc::after,
+.gm-style .gm-style-iw-a:has(.cc-mpop) .gm-style-iw-t::after {
+  background: color-mix(in oklab, var(--glass-solid) 94%, transparent) !important;
+}
+
+/* En pantallas estrechas el globo ocupa casi todo el ancho útil: leerlo importa
+   más que ver el mapa que hay debajo. */
+@media (max-width: 480px) {
+  .cc-mpop { min-width: 0; width: min(320px, calc(100vw - 40px)); }
+  .cc-mpop-a { min-width: 0; }
+  .cc-mpop-al { max-width: 12ch; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cc-mpop { animation: none; }
+  .cc-mpop-live,
+  .cc-mpop-sk::after,
+  .cc-mpop-spin { animation: none; }
+  .cc-mpop-a,
+  .cc-mpop-x { transition: none; }
+  .cc-mpop-a:active { transform: none; }
+}
+
+/* ── LOGO DE GOOGLE ────────────────────────────────────────────────────────── */
+/* No se puede quitar (condiciones de uso), pero sí bajarle el peso visual para
+   que no compita con los paneles de cristal. */
+.cc-map-frame .gmnoprint,
+.cc-map-frame .gm-style-cc { opacity: 0.55; transition: opacity 0.2s var(--ease); }
+.cc-map-frame:hover .gmnoprint,
+.cc-map-frame:hover .gm-style-cc { opacity: 0.9; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cc-map-frame .gmnoprint,
+  .cc-map-frame .gm-style-cc { transition: none; }
+}

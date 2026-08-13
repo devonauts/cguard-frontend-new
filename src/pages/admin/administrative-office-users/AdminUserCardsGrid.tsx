@@ -13,7 +13,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { StatusBadge, SkeletonCards, EmptyState } from "@/components/kit";
+import { StatusBadge, SkeletonCards, EmptyState, GlassPanel } from "@/components/kit";
 
 export type AdminUserCardAction = {
     label: string;
@@ -48,13 +48,6 @@ export interface AdminUserRow {
     [key: string]: unknown;
 }
 
-const HUES = [28, 205, 150, 265, 340, 95, 180, 12];
-function hueFor(name: string): number {
-    let h = 0;
-    for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
-    return HUES[h % HUES.length];
-}
-
 function nameOf(u: AdminUserRow): string {
     return u.fullName || [u.firstName, u.lastName].filter(Boolean).join(" ") || u.name || u.email || "—";
 }
@@ -72,12 +65,12 @@ function rolesOf(u: AdminUserRow): string {
     if (roles && typeof roles === "object") return roles.name || roles.role || "";
     return "";
 }
-function statusOf(u: AdminUserRow): { label: string; tone: "green" | "orange" | "red" | "slate" } {
+function statusOf(u: AdminUserRow): { label: string; tone: "ok" | "warn" | "bad" | "neutral" } {
     const s = (u.status || "").toString().toLowerCase();
-    if (s === "archived" || s === "archivado") return { label: "Archivado", tone: "red" };
-    if (s === "invited" || s === "pending") return { label: "Pendiente", tone: "orange" };
-    if (u.active === false) return { label: "Inactivo", tone: "slate" };
-    return { label: "Activo", tone: "green" };
+    if (s === "archived" || s === "archivado") return { label: "Archivado", tone: "bad" };
+    if (s === "invited" || s === "pending") return { label: "Pendiente", tone: "warn" };
+    if (u.active === false) return { label: "Inactivo", tone: "neutral" };
+    return { label: "Activo", tone: "ok" };
 }
 
 export default function AdminUserCardsGrid({
@@ -99,7 +92,7 @@ export default function AdminUserCardsGrid({
 }) {
     if (loading) return <SkeletonCards count={8} className="sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" />;
     if (!users.length) {
-        return <EmptyState icon={<UserCog />} title="Sin usuarios" description="Crea tu primer usuario administrativo con “Nuevo Usuario”." />;
+        return <EmptyState icon={<UserCog />} title="Sin usuarios" description="Da de alta al primer usuario de oficina con «Nuevo usuario»." />;
     }
 
     return (
@@ -107,19 +100,20 @@ export default function AdminUserCardsGrid({
             {users.map((u, i) => {
                 const id = String(u.id || u._id || u.raw?.id || "");
                 const name = nameOf(u);
-                const hue = hueFor(name);
                 const st = statusOf(u);
                 const roles = rolesOf(u);
                 const photo = photoOf(u);
                 const acts = actions(u).filter((a) => !a.disabled);
                 return (
-                    <div
+                    <GlassPanel
                         key={id || i}
+                        flat
+                        hover
                         role="button"
                         tabIndex={0}
                         onClick={() => onOpen(u)}
                         onKeyDown={(e) => { if (e.key === "Enter") onOpen(u); }}
-                        className="group relative flex cursor-pointer flex-col rounded-2xl border bg-card p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md animate-in fade-in slide-in-from-bottom-2"
+                        className="cg-focus group relative flex cursor-pointer flex-col p-4 animate-in fade-in slide-in-from-bottom-2"
                         style={{ animationDelay: `${Math.min(i, 12) * 30}ms`, animationFillMode: "backwards" }}
                     >
                         <div className="flex items-start gap-3">
@@ -127,14 +121,23 @@ export default function AdminUserCardsGrid({
                                 <Checkbox disabled={!canSelect(u)} checked={selectedIds.includes(id)} onCheckedChange={(v) => onSelect(id, Boolean(v))} aria-label={`Seleccionar ${name}`} />
                             </div>
                             {photo ? (
-                                <img src={photo} alt={name} loading="lazy" className="h-12 w-12 shrink-0 rounded-full border object-cover bg-muted" />
+                                <img
+                                    src={photo}
+                                    alt={name}
+                                    loading="lazy"
+                                    className="h-12 w-12 shrink-0 rounded-full border object-cover"
+                                    style={{ background: "var(--glass-sunken)", borderColor: "var(--hairline)" }}
+                                />
                             ) : (
-                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-lg font-bold" style={{ backgroundColor: `hsl(${hue} 70% 92%)`, color: `hsl(${hue} 60% 32%)` }}>
+                                <div
+                                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border text-lg font-bold"
+                                    style={{ background: "var(--brand-wash)", borderColor: "var(--brand-line)", color: "var(--brand-text)" }}
+                                >
                                     {name.charAt(0).toUpperCase()}
                                 </div>
                             )}
                             <div className="min-w-0 flex-1">
-                                <p className="truncate font-semibold leading-tight group-hover:text-primary">{name}</p>
+                                <p className="truncate font-semibold leading-tight">{name}</p>
                                 <div className="mt-1"><StatusBadge tone={st.tone}>{st.label}</StatusBadge></div>
                             </div>
                             {acts.length > 0 && (
@@ -145,7 +148,7 @@ export default function AdminUserCardsGrid({
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end" className="w-52">
                                             {acts.map((a) => (
-                                                <DropdownMenuItem key={a.label} className={a.destructive ? "text-destructive focus:text-destructive" : undefined} onClick={a.onClick}>
+                                                <DropdownMenuItem key={a.label} style={a.destructive ? { color: "var(--bad-text)" } : undefined} onClick={a.onClick}>
                                                     {a.icon}<span className={a.icon ? "ml-2" : undefined}>{a.label}</span>
                                                 </DropdownMenuItem>
                                             ))}
@@ -155,15 +158,18 @@ export default function AdminUserCardsGrid({
                             )}
                         </div>
 
-                        <div className="mt-3 space-y-1 text-sm text-muted-foreground">
+                        <div className="mt-3 space-y-1 text-sm" style={{ color: "var(--ink-soft)" }}>
                             {u.email && <p className="flex items-center gap-1.5 truncate"><Mail className="h-3.5 w-3.5 shrink-0" /><span className="truncate">{u.email}</span></p>}
                         </div>
 
-                        <div className="mt-3 flex items-center gap-1.5 border-t pt-3 text-sm text-muted-foreground">
-                            <ShieldCheck className="h-4 w-4 shrink-0 text-primary" />
+                        <div
+                            className="mt-3 flex items-center gap-1.5 border-t pt-3 text-sm"
+                            style={{ borderColor: "var(--hairline)", color: "var(--ink-soft)" }}
+                        >
+                            <ShieldCheck className="h-4 w-4 shrink-0" style={{ color: "var(--brand-text)" }} />
                             {roles ? <span className="truncate capitalize text-foreground">{roles}</span> : <span>Sin rol</span>}
                         </div>
-                    </div>
+                    </GlassPanel>
                 );
             })}
         </div>

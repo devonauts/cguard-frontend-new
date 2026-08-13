@@ -12,6 +12,9 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
+  PageContainer, PageHeader, Field, StatusBadge, EmptyState, SkeletonCards, IconTile,
+} from '@/components/kit';
+import {
   Select,
   SelectTrigger,
   SelectContent,
@@ -54,31 +57,24 @@ type Props = {
 };
 
 
-// ── Expiry status helper ─────────────────────────────────────────────────────
-// Returns a three-state badge config based on the expiry date.
-function expiryStatus(expiryDate: string | Date | null | undefined, t: (k: string, o?: Record<string, unknown>) => string) {
+// ── Estado de vencimiento ────────────────────────────────────────────────────
+// Vigente / Por vencer / Vencida son estados semánticos: verde, ámbar y rojo
+// fijos, que no siguen al acento elegido (una licencia vencida sigue siendo roja).
+function expiryStatus(expiryDate: string | Date | null | undefined, t: (k: string, o?: Record<string, unknown>) => string): { txt: string; tone: 'ok' | 'warn' | 'bad' | 'neutral' } {
   if (!expiryDate) {
-    return { txt: t('guards.licenses.status.noExpiry', { defaultValue: 'Sin vencimiento' }), cls: 'bg-muted text-foreground/60', dot: 'bg-gray-400' };
+    return { txt: t('guards.licenses.status.noExpiry', { defaultValue: 'Sin vencimiento' }), tone: 'neutral' };
   }
   const exp = new Date(expiryDate);
   const now = new Date();
   const days = Math.ceil((exp.getTime() - now.getTime()) / 86400000);
   if (days < 0) {
-    return { txt: t('guards.licenses.status.expired', { defaultValue: 'Vencida' }), cls: 'bg-red-500/15 text-red-700', dot: 'bg-red-500' };
+    return { txt: t('guards.licenses.status.expired', { defaultValue: 'Vencida' }), tone: 'bad' };
   }
   if (days <= 30) {
-    return { txt: t('guards.licenses.status.soon', { defaultValue: 'Por vencer' }), cls: 'bg-orange-500/15 text-orange-700', dot: 'bg-orange-500' };
+    return { txt: t('guards.licenses.status.soon', { defaultValue: 'Por vencer' }), tone: 'warn' };
   }
-  return { txt: t('guards.licenses.status.valid', { defaultValue: 'Vigente' }), cls: 'bg-green-500/15 text-green-700', dot: 'bg-green-500' };
+  return { txt: t('guards.licenses.status.valid', { defaultValue: 'Vigente' }), tone: 'ok' };
 }
-
-// ── Small presentational helpers ─────────────────────────────────────────────
-const Field = ({ label, value }: { label: string; value: React.ReactNode }) => (
-  <div className="min-w-0">
-    <div className="text-[11px] uppercase tracking-wide text-muted-foreground mb-0.5">{label}</div>
-    <div className="font-medium text-sm text-foreground truncate">{value || '—'}</div>
-  </div>
-);
 
 export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'guards.nav.licencias', licensesApi }: Props) {
   const { id } = useParams();
@@ -367,79 +363,64 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
   return (
     <AppLayout>
       <GuardsLayout navKey={navKey} title={title}>
-        <div className="mx-auto max-w-5xl space-y-6">
+        <PageContainer>
           {/* ── HEADER / TOOLBAR ──────────────────────────────────────────────── */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h1 className="text-xl font-bold tracking-tight">{t('guards.nav.licencias') || 'Licencias'}</h1>
-              <p className="text-sm text-muted-foreground">
-                {t('guards.licenses.subtitle', { defaultValue: 'Documentos y credenciales del vigilante' })}
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder={t('guards.licenses.searchPlaceholder', { defaultValue: 'Search license' })}
-                  className="pl-9 h-9 text-sm w-full sm:w-56"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-              <button
-                onClick={handleAddLicense}
-                className="inline-flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg bg-primary text-primary-foreground shadow-sm hover:opacity-90 transition whitespace-nowrap"
-              >
-                <Plus size={16} />
-                {t('guards.licenses.newLicense', { defaultValue: 'New License' })}
-              </button>
-            </div>
-          </div>
+          <PageHeader
+            icon={<IdCard />}
+            title={t('guards.nav.licencias') || 'Licencias'}
+            subtitle={t('guards.licenses.subtitle', { defaultValue: 'Documentos y credenciales del vigilante' })}
+            actions={
+              <>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
+                  <Input
+                    placeholder={t('guards.licenses.searchPlaceholder', { defaultValue: 'Search license' })}
+                    className="h-9 w-full pl-9 text-sm sm:w-56"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+                <Button variant="brand" onClick={handleAddLicense} className="whitespace-nowrap">
+                  <Plus size={16} />
+                  {t('guards.licenses.newLicense', { defaultValue: 'New License' })}
+                </Button>
+              </>
+            }
+          />
 
           {/* ── BULK ACTION BAR (shown only with a selection) ─────────────────── */}
           {selectedIds.length > 0 && (
-            <div className="flex items-center justify-between gap-3 rounded-xl border bg-muted/40 px-4 py-2.5">
+            <div className="glass-sunken flex items-center justify-between gap-3 px-4 py-2.5">
               <span className="text-sm font-medium">
                 {selectedIds.length} {t('guards.licenses.selected', { defaultValue: 'seleccionadas' })}
               </span>
               <div className="flex items-center gap-2">
-                <button onClick={() => setSelectedIds([])} className="text-sm px-3 py-1.5 rounded-lg border hover:bg-muted transition">
+                <Button variant="outline" size="sm" onClick={() => setSelectedIds([])}>
                   {t('actions.cancel', { defaultValue: 'Cancelar' })}
-                </button>
-                <button onClick={handleBulkDelete} className="inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-lg bg-red-500/15 text-red-700 hover:bg-red-500/25 transition">
+                </Button>
+                <Button variant="destructive" size="sm" onClick={handleBulkDelete}>
                   <Trash className="h-4 w-4" />
                   {t('actions.delete', { defaultValue: 'Eliminar' })}
-                </button>
+                </Button>
               </div>
             </div>
           )}
 
           {/* ── LICENSE CARDS ─────────────────────────────────────────────────── */}
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {[0, 1, 2, 3].map((i) => (
-                <div key={i} className="bg-card border rounded-2xl p-5 shadow-sm animate-pulse">
-                  <div className="h-4 w-1/3 bg-muted rounded mb-3" />
-                  <div className="h-3 w-2/3 bg-muted rounded mb-2" />
-                  <div className="h-3 w-1/2 bg-muted rounded" />
-                </div>
-              ))}
-            </div>
+            <SkeletonCards count={4} />
           ) : visibleLicenses.length === 0 ? (
-            <div className="bg-card border rounded-2xl p-12 shadow-sm flex flex-col items-center justify-center text-center">
-              <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-4">
-                <IdCard className="w-8 h-8 text-muted-foreground" />
-              </div>
-              <h3 className="text-base font-semibold">{t('guards.licenses.empty.title')}</h3>
-              <p className="mt-1 text-sm text-muted-foreground max-w-xs" dangerouslySetInnerHTML={{ __html: t('guards.licenses.empty.description') }} />
-              <button
-                onClick={handleAddLicense}
-                className="mt-5 inline-flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg bg-primary text-primary-foreground shadow-sm hover:opacity-90 transition"
-              >
-                <Plus size={16} />
-                {t('guards.licenses.newLicense', { defaultValue: 'New License' })}
-              </button>
-            </div>
+            <EmptyState
+              icon={<IdCard />}
+              title={t('guards.licenses.empty.title')}
+              description={<span dangerouslySetInnerHTML={{ __html: t('guards.licenses.empty.description') }} />}
+              action={
+                <Button variant="brand" onClick={handleAddLicense}>
+                  <Plus size={16} />
+                  {t('guards.licenses.newLicense', { defaultValue: 'New License' })}
+                </Button>
+              }
+            />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {visibleLicenses.map((lic: GuardLicense) => {
@@ -447,27 +428,27 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
                 const selected = selectedIds.includes(lic.id);
                 const typeName = lic.licenseType?.name || lic.customName || t('guards.licenses.untitled', { defaultValue: 'Licencia' });
                 return (
+                  /* Se repite por licencia → cristal plano, sin desenfoque. */
                   <div
                     key={lic.id}
-                    className={`group relative bg-card border rounded-2xl p-5 shadow-sm transition hover:shadow-md cursor-pointer ${selected ? 'ring-2 ring-primary' : ''}`}
+                    className={`glass-flat glass-hover cg-focus group relative cursor-pointer p-5 ${selected ? 'glass-brand' : ''}`}
                     onClick={() => openDetails(lic.id)}
                   >
-                    {/* selection checkbox */}
+                    {/* casilla de selección */}
                     <input
                       type="checkbox"
                       checked={selected}
                       onClick={(e) => e.stopPropagation()}
                       onChange={(e) => onSelectOne(lic.id, e.target.checked)}
-                      className="absolute top-4 right-4 h-4 w-4 rounded border-input accent-primary cursor-pointer opacity-0 group-hover:opacity-100 checked:opacity-100 transition"
+                      className="absolute right-4 top-4 h-4 w-4 cursor-pointer rounded opacity-0 transition checked:opacity-100 group-hover:opacity-100"
+                      style={{ accentColor: 'var(--brand)' }}
                     />
 
                     <div className="flex items-start gap-3 pr-6">
-                      <div className="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center bg-primary/10">
-                        <IdCard className="w-5 h-5 text-primary" />
-                      </div>
+                      <IconTile tone="brand"><IdCard /></IconTile>
                       <div className="min-w-0 flex-1">
-                        <div className="font-semibold text-sm tracking-tight truncate">{typeName}</div>
-                        <div className="text-xs text-muted-foreground truncate">
+                        <div className="truncate text-sm font-semibold tracking-tight">{typeName}</div>
+                        <div className="truncate text-xs" style={{ color: 'var(--ink-soft)' }}>
                           {lic.number || t('guards.licenses.noNumber', { defaultValue: 'Sin número' })}
                         </div>
                       </div>
@@ -485,24 +466,27 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
                     </div>
 
                     <div className="mt-4 flex items-center justify-between gap-2">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${status.cls}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${status.dot}`} />
-                        {status.txt}
-                      </span>
+                      <StatusBadge tone={status.tone}>{status.txt}</StatusBadge>
 
-                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition" onClick={(e) => e.stopPropagation()}>
-                        <button title={t('actions.viewDetails', { defaultValue: 'View' })} onClick={() => openDetails(lic.id)} className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition">
+                      <div className="flex items-center gap-1 opacity-0 transition group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
+                        <Button variant="ghost" size="icon-sm" title={t('actions.viewDetails', { defaultValue: 'View' })} onClick={() => openDetails(lic.id)}>
                           <Eye className="h-4 w-4" />
-                        </button>
-                        <button title={t('actions.edit', { defaultValue: 'Editar' })} onClick={() => startEdit(lic)} className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition">
+                        </Button>
+                        <Button variant="ghost" size="icon-sm" title={t('actions.edit', { defaultValue: 'Editar' })} onClick={() => startEdit(lic)}>
                           <Pencil className="h-4 w-4" />
-                        </button>
-                        <button title={t('actions.download', { defaultValue: 'Download' })} onClick={() => downloadRow(lic)} className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition">
+                        </Button>
+                        <Button variant="ghost" size="icon-sm" title={t('actions.download', { defaultValue: 'Download' })} onClick={() => downloadRow(lic)}>
                           <FileDown className="h-4 w-4" />
-                        </button>
-                        <button title={t('actions.delete', { defaultValue: 'Delete' })} onClick={() => deleteRow(lic)} className="p-1.5 rounded-lg hover:bg-red-500/10 text-muted-foreground hover:text-red-600 transition">
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          title={t('actions.delete', { defaultValue: 'Delete' })}
+                          onClick={() => deleteRow(lic)}
+                          className="hover:[color:var(--bad-text)]"
+                        >
                           <Trash className="h-4 w-4" />
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -513,7 +497,7 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
 
           {/* ── PAGINATION ────────────────────────────────────────────────────── */}
           {!loading && visibleLicenses.length > 0 && (
-            <div className="flex items-center justify-between px-4 py-3 text-sm text-foreground/70 bg-card border rounded-2xl shadow-sm">
+            <div className="glass flex items-center justify-between px-4 py-3 text-sm" style={{ color: 'var(--ink-soft)' }}>
               <div className="flex items-center gap-2">
                 <span>{t('clients.pagination.itemsPerPage')}</span>
                 <Select value={String(limit)} onValueChange={(v) => { setLimit(Number(v)); setPage(1); }}>
@@ -538,36 +522,37 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
           {/* Modal (add / edit) */}
           {showModal && (
             <div
-              className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
+              className="glass-scrim fixed inset-0 z-50"
               onClick={handleCloseModal}
             >
               <div
-                className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-card shadow-2xl overflow-y-auto rounded-l-2xl"
+                className="glass-raised fixed bottom-0 right-0 top-0 w-full max-w-md overflow-y-auto rounded-l-3xl rounded-r-none" style={{ position: 'fixed' }}
                 onClick={(e) => e.stopPropagation()}
               >
-                {/* Header */}
-                <div className="flex items-center justify-between px-6 py-5 border-b sticky top-0 bg-card z-10">
+                {/* Cabecera */}
+                <div
+                  className="sticky top-0 z-10 flex items-center justify-between border-b px-6 py-5"
+                  style={{ borderColor: 'var(--hairline)', background: 'var(--glass-solid)' }}
+                >
                   <div className="flex items-center gap-2.5">
-                    <span className="w-9 h-9 rounded-xl flex items-center justify-center bg-primary/10">
-                      <ShieldCheck className="w-5 h-5 text-primary" />
-                    </span>
-                    <h2 className="text-base font-semibold tracking-tight text-foreground">
+                    <IconTile tone="brand" size="sm"><ShieldCheck /></IconTile>
+                    <h2 className="text-base font-semibold tracking-tight">
                       {isEditing
                         ? t('guards.licenses.modal.editTitle', { defaultValue: 'Editar licencia' })
                         : t('guards.licenses.modal.title', { defaultValue: 'Add New License' })}
                     </h2>
                   </div>
-                  <button onClick={handleCloseModal} className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition">
+                  <Button variant="ghost" size="icon-sm" onClick={handleCloseModal} aria-label="Cerrar">
                     <X className="h-5 w-5" />
-                  </button>
+                  </Button>
                 </div>
 
                 {/* Body */}
                 <div className="p-6">
                   <form className="space-y-5">
                     <div>
-                      <label className="block text-[11px] uppercase tracking-wide text-muted-foreground mb-1.5">
-                        {t('guards.licenses.form.licenseType', { defaultValue: 'Tipo de licencia' })} <span className="text-red-500">*</span>
+                      <label className="cg-eyebrow mb-1.5 block">
+                        {t('guards.licenses.form.licenseType', { defaultValue: 'Tipo de licencia' })} <span style={{ color: 'var(--bad-text)' }}>*</span>
                       </label>
                       <Select
                         value={formData.licenseType}
@@ -605,7 +590,7 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
                     </div>
 
                     <div>
-                      <label className="block text-[11px] uppercase tracking-wide text-muted-foreground mb-1.5">{t('guards.licenses.form.licenseNumber', { defaultValue: 'Número de licencia' })} <span className="text-red-500">*</span></label>
+                      <label className="cg-eyebrow mb-1.5 block">{t('guards.licenses.form.licenseNumber', { defaultValue: 'Número de licencia' })} <span style={{ color: 'var(--bad-text)' }}>*</span></label>
                       <Input
                         type="text"
                         value={formData.licenseNumber}
@@ -616,7 +601,7 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
                     </div>
 
                     <div>
-                      <label className="block text-[11px] uppercase tracking-wide text-muted-foreground mb-1.5">{t('guards.licenses.form.expiryDate', { defaultValue: 'Vence el' })}</label>
+                      <label className="cg-eyebrow mb-1.5 block">{t('guards.licenses.form.expiryDate', { defaultValue: 'Vence el' })}</label>
                       <Input
                         type="date"
                         value={formData.expiryDate}
@@ -627,7 +612,7 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
 
                     {(formData.licenseType === 'other' || !formData.licenseType) && (
                       <div>
-                        <label className="block text-[11px] uppercase tracking-wide text-muted-foreground mb-1.5">{t('guards.licenses.form.customLicenseName', { defaultValue: 'Nombre personalizado' })}</label>
+                        <label className="cg-eyebrow mb-1.5 block">{t('guards.licenses.form.customLicenseName', { defaultValue: 'Nombre personalizado' })}</label>
                         <Input
                           type="text"
                           value={formData.customLicenseName}
@@ -640,35 +625,38 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
 
                     <div className="grid grid-cols-1 gap-4">
                       <div>
-                        <label className="block text-[11px] uppercase tracking-wide text-muted-foreground mb-1.5">{t('guards.licenses.form.frontImageLabel', { defaultValue: 'Imagen frontal' })}</label>
+                        <label className="cg-eyebrow mb-1.5 block">{t('guards.licenses.form.frontImageLabel', { defaultValue: 'Imagen frontal' })}</label>
                         <input type="file" accept="image/*" id="frontImage" className="hidden" onChange={(e) => setFormData({ ...formData, frontImage: e.target.files?.[0] || null })} />
-                        <label htmlFor="frontImage" className="flex items-center gap-2 px-3 h-9 rounded-md border border-input bg-background text-sm cursor-pointer hover:bg-muted/50 transition">
-                          <Paperclip className="h-4 w-4 text-muted-foreground shrink-0" />
-                          <span className="text-sm text-foreground/70 truncate">{formData.frontImage ? (formData.frontImage.name || t('guards.licenses.form.fileSelected', { defaultValue: 'Archivo seleccionado' })) : t('guards.licenses.form.chooseFile', { defaultValue: 'Seleccionar archivo' })}</span>
+                        <label htmlFor="frontImage" className="cg-input flex h-9 cursor-pointer items-center gap-2 px-3 text-sm transition">
+                          <Paperclip className="h-4 w-4 shrink-0" style={{ color: 'var(--ink-faint)' }} />
+                          <span className="truncate text-sm" style={{ color: 'var(--ink-soft)' }}>{formData.frontImage ? (formData.frontImage.name || t('guards.licenses.form.fileSelected', { defaultValue: 'Archivo seleccionado' })) : t('guards.licenses.form.chooseFile', { defaultValue: 'Seleccionar archivo' })}</span>
                         </label>
                       </div>
 
                       <div>
-                        <label className="block text-[11px] uppercase tracking-wide text-muted-foreground mb-1.5">{t('guards.licenses.form.backImageLabel', { defaultValue: 'Imagen trasera' })}</label>
+                        <label className="cg-eyebrow mb-1.5 block">{t('guards.licenses.form.backImageLabel', { defaultValue: 'Imagen trasera' })}</label>
                         <input type="file" accept="image/*" id="backImage" className="hidden" onChange={(e) => setFormData({ ...formData, backImage: e.target.files?.[0] || null })} />
-                        <label htmlFor="backImage" className="flex items-center gap-2 px-3 h-9 rounded-md border border-input bg-background text-sm cursor-pointer hover:bg-muted/50 transition">
-                          <Paperclip className="h-4 w-4 text-muted-foreground shrink-0" />
-                          <span className="text-sm text-foreground/70 truncate">{formData.backImage ? (formData.backImage.name || t('guards.licenses.form.fileSelected', { defaultValue: 'Archivo seleccionado' })) : t('guards.licenses.form.chooseFile', { defaultValue: 'Seleccionar archivo' })}</span>
+                        <label htmlFor="backImage" className="cg-input flex h-9 cursor-pointer items-center gap-2 px-3 text-sm transition">
+                          <Paperclip className="h-4 w-4 shrink-0" style={{ color: 'var(--ink-faint)' }} />
+                          <span className="truncate text-sm" style={{ color: 'var(--ink-soft)' }}>{formData.backImage ? (formData.backImage.name || t('guards.licenses.form.fileSelected', { defaultValue: 'Archivo seleccionado' })) : t('guards.licenses.form.chooseFile', { defaultValue: 'Seleccionar archivo' })}</span>
                         </label>
                       </div>
                     </div>
                   </form>
                 </div>
 
-                {/* Footer */}
-                <div className="flex items-center justify-end gap-3 px-6 py-4 border-t sticky bottom-0 bg-card">
-                  <button onClick={handleCloseModal} className="text-sm px-4 py-2 rounded-lg border hover:bg-muted transition">{t('guards.licenses.modal.cancel', { defaultValue: 'Cancelar' })}</button>
-                  <button onClick={handleSubmitLicense} className="text-sm font-medium px-4 py-2 rounded-lg bg-primary text-primary-foreground shadow-sm hover:opacity-90 transition">{t('guards.licenses.modal.save', { defaultValue: 'Guardar' })}</button>
+                {/* Pie */}
+                <div
+                  className="sticky bottom-0 flex items-center justify-end gap-3 border-t px-6 py-4"
+                  style={{ borderColor: 'var(--hairline)', background: 'var(--glass-solid)' }}
+                >
+                  <Button variant="outline" onClick={handleCloseModal}>{t('guards.licenses.modal.cancel', { defaultValue: 'Cancelar' })}</Button>
+                  <Button variant="brand" onClick={handleSubmitLicense}>{t('guards.licenses.modal.save', { defaultValue: 'Guardar' })}</Button>
                 </div>
               </div>
             </div>
           )}
-        </div>
+        </PageContainer>
         {/* Dialog to create a new license type (tenant-scoped). */}
         <LicenseTypeDialog
           open={showCreateLicenseType}
@@ -692,14 +680,12 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
 
         {/* Details modal */}
         {detailsOpen && (
-          <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" onClick={closeDetails}>
-            <div className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-card shadow-2xl overflow-y-auto rounded-l-2xl" onClick={(e) => e.stopPropagation()}>
-              <div className="flex items-center justify-between px-6 py-5 border-b sticky top-0 bg-card z-10">
+          <div className="glass-scrim fixed inset-0 z-50" onClick={closeDetails}>
+            <div className="glass-raised fixed bottom-0 right-0 top-0 w-full max-w-md overflow-y-auto rounded-l-3xl rounded-r-none" style={{ position: 'fixed' }} onClick={(e) => e.stopPropagation()}>
+              <div className="sticky top-0 z-10 flex items-center justify-between border-b px-6 py-5" style={{ borderColor: 'var(--hairline)', background: 'var(--glass-solid)' }}>
                 <div className="flex items-center gap-2.5">
-                  <span className="w-9 h-9 rounded-xl flex items-center justify-center bg-primary/10">
-                    <IdCard className="w-5 h-5 text-primary" />
-                  </span>
-                  <h2 className="text-base font-semibold tracking-tight text-foreground">{t('guards.licenses.details.title', { defaultValue: 'License details' })}</h2>
+                  <IconTile tone="brand" size="sm"><IdCard /></IconTile>
+                  <h2 className="text-base font-semibold tracking-tight">{t('guards.licenses.details.title', { defaultValue: 'License details' })}</h2>
                 </div>
                 <div className="flex items-center gap-1">
                   <button onClick={() => {
@@ -716,30 +702,25 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
                     });
                     setDetailsOpen(false);
                     setShowModal(true);
-                  }} className="inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition">
+                  }} className="cg-btn-ghost cg-focus inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition">
                     <Pencil className="h-4 w-4" />
                     {t('guards.licenses.details.edit', { defaultValue: 'Editar' })}
                   </button>
-                  <button onClick={closeDetails} className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition"><X className="h-5 w-5" /></button>
+                  <Button variant="ghost" size="icon-sm" onClick={closeDetails} aria-label="Cerrar"><X className="h-5 w-5" /></Button>
                 </div>
               </div>
 
               <div className="p-6">
-                {detailsLoading && <div className="text-sm text-muted-foreground">{t('loading', { defaultValue: 'Loading...' })}</div>}
+                {detailsLoading && <div className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t('loading', { defaultValue: 'Loading...' })}</div>}
                 {!detailsLoading && !detailsData && (
-                  <div className="text-sm text-muted-foreground">{t('guards.licenses.details.notFound', { defaultValue: 'Details not available' })}</div>
+                  <div className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t('guards.licenses.details.notFound', { defaultValue: 'Details not available' })}</div>
                 )}
 
                 {!detailsLoading && detailsData && (
                   <div className="space-y-5">
                     {(() => {
                       const status = expiryStatus(detailsData.expiryDate, t);
-                      return (
-                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${status.cls}`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${status.dot}`} />
-                          {status.txt}
-                        </span>
-                      );
+                      return <StatusBadge tone={status.tone}>{status.txt}</StatusBadge>;
                     })()}
 
                     <div className="grid grid-cols-2 gap-4">
@@ -750,30 +731,30 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
                       <Field label={t('guards.licenses.table.addedBy', { defaultValue: 'Added By' })} value={detailsData.createdBy?.fullName || detailsData.createdBy?.email} />
                     </div>
 
-                    <div className="border-t pt-4 grid grid-cols-1 gap-4">
+                    <div className="grid grid-cols-1 gap-4 border-t pt-4" style={{ borderColor: 'var(--hairline)' }}>
                       <div>
-                        <div className="text-[11px] uppercase tracking-wide text-muted-foreground mb-1.5">{t('guards.licenses.form.frontImageLabel', { defaultValue: 'Imagen frontal' })}</div>
+                        <div className="cg-eyebrow mb-1.5">{t('guards.licenses.form.frontImageLabel', { defaultValue: 'Imagen frontal' })}</div>
                         <div className="flex flex-wrap gap-2">
                           {detailsData.frontImage?.map((f: FileDescriptor, idx: number) => (
-                            <a key={idx} href={f.privateUrl ?? f.publicUrl ?? undefined} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted text-xs font-medium hover:bg-muted/70 transition">
+                            <a key={idx} href={f.privateUrl ?? f.publicUrl ?? undefined} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition hover:[border-color:var(--brand-line)]" style={{ background: 'var(--glass-sunken)', borderColor: 'var(--hairline)' }}>
                               <Paperclip className="h-3.5 w-3.5" />
                               {f.name || (f.publicUrl ? t('actions.view', { defaultValue: 'Ver' }) : t('actions.download', { defaultValue: 'Descargar' }))}
                             </a>
                           ))}
-                          {!detailsData.frontImage?.length && <div className="text-sm text-muted-foreground">—</div>}
+                          {!detailsData.frontImage?.length && <div className="text-sm" style={{ color: 'var(--ink-faint)' }}>—</div>}
                         </div>
                       </div>
 
                       <div>
-                        <div className="text-[11px] uppercase tracking-wide text-muted-foreground mb-1.5">{t('guards.licenses.form.backImageLabel', { defaultValue: 'Imagen trasera' })}</div>
+                        <div className="cg-eyebrow mb-1.5">{t('guards.licenses.form.backImageLabel', { defaultValue: 'Imagen trasera' })}</div>
                         <div className="flex flex-wrap gap-2">
                           {detailsData.backImage?.map((f: FileDescriptor, idx: number) => (
-                            <a key={idx} href={f.privateUrl ?? f.publicUrl ?? undefined} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted text-xs font-medium hover:bg-muted/70 transition">
+                            <a key={idx} href={f.privateUrl ?? f.publicUrl ?? undefined} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition hover:[border-color:var(--brand-line)]" style={{ background: 'var(--glass-sunken)', borderColor: 'var(--hairline)' }}>
                               <Paperclip className="h-3.5 w-3.5" />
                               {f.name || (f.publicUrl ? t('actions.view', { defaultValue: 'Ver' }) : t('actions.download', { defaultValue: 'Descargar' }))}
                             </a>
                           ))}
-                          {!detailsData.backImage?.length && <div className="text-sm text-muted-foreground">—</div>}
+                          {!detailsData.backImage?.length && <div className="text-sm" style={{ color: 'var(--ink-faint)' }}>—</div>}
                         </div>
                       </div>
                     </div>
@@ -781,7 +762,7 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
                 )}
               </div>
 
-              <div className="flex items-center justify-end gap-3 px-6 py-4 border-t sticky bottom-0 bg-card">
+              <div className="sticky bottom-0 flex items-center justify-end gap-3 border-t px-6 py-4" style={{ borderColor: 'var(--hairline)', background: 'var(--glass-solid)' }}>
                 <button onClick={async () => {
                   if (!detailsData) return;
                   try {
@@ -798,11 +779,11 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
                     console.error('Error downloading report', err);
                     toast.error(t('guards.licenses.toasts.downloadError', { defaultValue: 'Could not download report' }));
                   }
-                }} className="inline-flex items-center gap-1.5 text-sm px-4 py-2 rounded-lg border hover:bg-muted transition">
+                }} className="cg-btn-glass cg-focus inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition">
                   <FileDown className="h-4 w-4" />
                   {t('guards.licenses.details.download', { defaultValue: 'Descargar' })}
                 </button>
-                <button onClick={closeDetails} className="text-sm px-4 py-2 rounded-lg border hover:bg-muted transition">{t('guards.licenses.modal.close', { defaultValue: 'Cerrar' })}</button>
+                <Button variant="outline" onClick={closeDetails}>{t('guards.licenses.modal.close', { defaultValue: 'Cerrar' })}</Button>
               </div>
             </div>
           </div>

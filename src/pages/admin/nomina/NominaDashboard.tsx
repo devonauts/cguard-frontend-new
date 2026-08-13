@@ -71,7 +71,14 @@ export default function NominaDashboard() {
           }
         />
 
-        {error && <div className="rounded-2xl bg-red-500/10 px-4 py-3 text-sm text-red-500">{error}</div>}
+        {error && (
+          <div
+            className="rounded-2xl px-4 py-3 text-sm font-medium"
+            style={{ background: "color-mix(in oklab, var(--bad) 12%, transparent)", color: "var(--bad-text)" }}
+          >
+            {error}
+          </div>
+        )}
 
         <Stagger className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {CARDS.map((c) => {
@@ -91,7 +98,7 @@ export default function NominaDashboard() {
           })}
         </Stagger>
 
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
           Las excepciones (tarde, inasistencia, sin marcar salida) se detectan automáticamente cada
           pocos minutos y aparecen en <strong>Excepciones</strong> y <strong>Aprobaciones</strong>.
         </p>

@@ -28,7 +28,7 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { Command, CommandInput, CommandList, CommandGroup, CommandItem } from "@/components/ui/command";
 import { usePermissions } from "@/hooks/usePermissions";
 import UserPermissionOverrides, { Overrides } from "./UserPermissionOverrides";
-import { PageContainer, PageHeader, Section } from "@/components/kit";
+import { PageContainer, PageHeader, Section, GlassPanel, IconTile } from "@/components/kit";
 import { UserCog, ShieldCheck, ChevronDown, ChevronRight, MapPin } from "lucide-react";
 
 function ClientMultiSelect({
@@ -628,22 +628,22 @@ export default function EditAdminUserPage() {
             </div>
 
             {canEditPerms && id && (
-              <div className="rounded-2xl border bg-card dark:bg-[#202020] p-4 shadow-sm">
+              <GlassPanel flat className="p-4">
                 <button
                   type="button"
                   onClick={() => setPermsOpen((v) => !v)}
                   className="flex w-full items-center justify-between text-left"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/12 text-primary [&_svg]:size-5"><ShieldCheck /></span>
+                    <IconTile size="sm"><ShieldCheck /></IconTile>
                     <div className="min-w-0">
                       <div className="text-sm font-semibold">Permisos individuales</div>
-                      <div className="text-xs text-muted-foreground">
+                      <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>
                         Concede o revoca permisos específicos para este usuario, además de su rol.
                       </div>
                     </div>
                   </div>
-                  <span className="text-muted-foreground [&_svg]:size-4">{permsOpen ? <ChevronDown /> : <ChevronRight />}</span>
+                  <span className="[&_svg]:size-4" style={{ color: 'var(--ink-faint)' }}>{permsOpen ? <ChevronDown /> : <ChevronRight />}</span>
                 </button>
                 {permsOpen && (
                   <div className="mt-4 space-y-3">
@@ -653,7 +653,14 @@ export default function EditAdminUserPage() {
                       onChange={(e) => setPermQuery(e.target.value)}
                     />
                     {selectedRoleSlug === 'admin' && (
-                      <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+                      <div
+                        className="rounded-xl border p-3 text-sm"
+                        style={{
+                          background: 'color-mix(in oklab, var(--warn) 12%, transparent)',
+                          borderColor: 'color-mix(in oklab, var(--warn) 28%, transparent)',
+                          color: 'var(--warn-text)',
+                        }}
+                      >
                         Este usuario es administrador. Los permisos esenciales de administración no se pueden denegar.
                       </div>
                     )}
@@ -667,44 +674,44 @@ export default function EditAdminUserPage() {
                     />
                   </div>
                 )}
-              </div>
+              </GlassPanel>
             )}
 
             {id && (
-              <div className="rounded-2xl border bg-card dark:bg-[#202020] p-4 shadow-sm">
+              <GlassPanel flat className="p-4">
                 <button
                   type="button"
                   onClick={() => setOfficeOpen((v) => !v)}
                   className="flex w-full items-center justify-between text-left"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/12 text-primary [&_svg]:size-5"><MapPin /></span>
+                    <IconTile size="sm"><MapPin /></IconTile>
                     <div className="min-w-0">
                       <div className="text-sm font-semibold">Ubicación de oficina (asistencia)</div>
-                      <div className="text-xs text-muted-foreground">
+                      <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>
                         Opcional. Si la defines, el reloj de asistencia valida que el usuario marque desde su oficina.
                       </div>
                     </div>
                   </div>
-                  <span className="text-muted-foreground [&_svg]:size-4">{officeOpen ? <ChevronDown /> : <ChevronRight />}</span>
+                  <span className="[&_svg]:size-4" style={{ color: 'var(--ink-faint)' }}>{officeOpen ? <ChevronDown /> : <ChevronRight />}</span>
                 </button>
                 {officeOpen && (
                   <div className="mt-4 space-y-3">
                     <div>
-                      <label className="text-xs font-medium text-muted-foreground">Dirección (referencia)</label>
+                      <label className="cg-eyebrow">Dirección (referencia)</label>
                       <Input value={office.address} onChange={(e) => setOffice((o) => ({ ...o, address: e.target.value }))} placeholder="Ej. Oficina central, Av. Amazonas 123" />
                     </div>
                     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                       <div>
-                        <label className="text-xs font-medium text-muted-foreground">Latitud</label>
+                        <label className="cg-eyebrow">Latitud</label>
                         <Input value={office.lat} onChange={(e) => setOffice((o) => ({ ...o, lat: e.target.value }))} placeholder="-0.1807" />
                       </div>
                       <div>
-                        <label className="text-xs font-medium text-muted-foreground">Longitud</label>
+                        <label className="cg-eyebrow">Longitud</label>
                         <Input value={office.lng} onChange={(e) => setOffice((o) => ({ ...o, lng: e.target.value }))} placeholder="-78.4678" />
                       </div>
                       <div>
-                        <label className="text-xs font-medium text-muted-foreground">Radio (m)</label>
+                        <label className="cg-eyebrow">Radio (m)</label>
                         <Input value={office.radius} onChange={(e) => setOffice((o) => ({ ...o, radius: e.target.value }))} placeholder="150" />
                       </div>
                     </div>
@@ -715,12 +722,12 @@ export default function EditAdminUserPage() {
                       </Button>
                       <Button type="button" variant="ghost" size="sm" disabled={officeSaving} onClick={() => saveOfficeLocation(true)}>Quitar</Button>
                     </div>
-                    <p className="text-[11px] text-muted-foreground">
+                    <p className="text-[11px]" style={{ color: 'var(--ink-faint)' }}>
                       Déjala vacía para permitir el marcaje sin geocerca. Puedes copiar las coordenadas desde Google Maps.
                     </p>
                   </div>
                 )}
-              </div>
+              </GlassPanel>
             )}
 
             <div className="flex justify-end">

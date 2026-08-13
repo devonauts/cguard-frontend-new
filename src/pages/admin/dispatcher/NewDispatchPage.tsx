@@ -1659,7 +1659,7 @@ export default function NewDispatchPage() {
                                       return next;
                                     });
                                   }}
-                                  className="text-muted-foreground hover:text-red-500"
+                                  className="text-muted-foreground hover:text-[color:var(--bad-text)]"
                                   aria-label={`Eliminar ${f.name}`}
                                 >
                                   <X className="h-4 w-4" />

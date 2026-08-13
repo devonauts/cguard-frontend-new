@@ -1,22 +1,30 @@
+import type React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { clientService } from '@/lib/api/clientService';
 import { usePermissions } from '@/hooks/usePermissions';
-import { Section, EmptyState, Modal } from '@/components/kit';
+import { Section, EmptyState, Modal, SkeletonBlock } from '@/components/kit';
+import { FIELD_CLS } from '../_shared/tab-kit';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { CalendarDays, ChevronLeft, ChevronRight, RefreshCw, UserPlus, UserMinus, Loader2 } from 'lucide-react';
 
-const CELL: Record<string, { label: string; cls: string; title: string }> = {
-  day: { label: 'D', cls: 'bg-sky-500/15 text-sky-700 dark:text-sky-300', title: 'Turno de día' },
-  night: { label: 'N', cls: 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-300', title: 'Turno de noche' },
-  rest: { label: 'L', cls: 'bg-muted text-muted-foreground', title: 'Libre' },
+/** Tinte de celda desde los tokens: el día usa el informativo, la noche el
+ *  acento configurable, el hueco el semántico de peligro. Ningún color a mano. */
+const tint = (token: string, pct = 16): React.CSSProperties => ({
+  background: `color-mix(in oklab, var(--${token}) ${pct}%, transparent)`,
+  color: `var(--${token}-text)`,
+});
+
+const CELL: Record<string, { label: string; style: React.CSSProperties; title: string }> = {
+  day: { label: 'D', style: tint('info'), title: 'Turno de día' },
+  night: { label: 'N', style: { background: 'var(--brand-wash)', color: 'var(--brand-text)' }, title: 'Turno de noche' },
+  rest: { label: 'L', style: { background: 'var(--glass-sunken)', color: 'var(--ink-soft)' }, title: 'Libre' },
   // The rotation expected a work day but no turno was generated — a real hole in
   // the schedule, not a rest day. Painting it as 'L' hid missing coverage.
-  gap: { label: '!', cls: 'bg-red-500/15 text-red-700 dark:text-red-300', title: 'Sin turno generado (hueco de cobertura)' },
-  none: { label: '·', cls: 'text-muted-foreground/40', title: 'Sin rotación configurada' },
+  gap: { label: '!', style: tint('bad'), title: 'Sin turno generado (hueco de cobertura)' },
+  none: { label: '·', style: { color: 'var(--ink-faint)' }, title: 'Sin rotación configurada' },
 };
 
-const inputCls = 'flex h-9 w-full rounded-lg border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-all placeholder:text-muted-foreground hover:border-ring/40 focus-visible:outline-none focus-visible:border-ring focus-visible:ring-ring/40 focus-visible:ring-[3px]';
 const ymd = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
 // ── Shape of GET /client-account/:id/schedule (clientAccountSchedule.ts) ──
@@ -130,30 +138,39 @@ export default function ScheduleCard({ clientId, sedeId }: { clientId: string; s
   return (
     <Section
       title="Horarios"
-      icon={<CalendarDays className="h-4 w-4" />}
+      icon={<CalendarDays />}
       action={
         <div className="flex items-center gap-1.5">
-          <span className="hidden text-xs text-muted-foreground sm:inline">{rangeLabel}</span>
-          <button onClick={() => shiftWindow(-14)} className="rounded-md border p-1 text-muted-foreground hover:bg-muted" title="Quincena anterior"><ChevronLeft className="h-4 w-4" /></button>
-          <button onClick={() => setStart(undefined)} className="rounded-md border px-2 py-1 text-xs text-muted-foreground hover:bg-muted">Hoy</button>
-          <button onClick={() => shiftWindow(14)} className="rounded-md border p-1 text-muted-foreground hover:bg-muted" title="Quincena siguiente"><ChevronRight className="h-4 w-4" /></button>
-          <button onClick={() => load()} className="rounded-md border p-1 text-muted-foreground hover:bg-muted" title="Actualizar"><RefreshCw className="h-4 w-4" /></button>
+          <span className="hidden text-xs sm:inline" style={{ color: 'var(--ink-soft)' }}>{rangeLabel}</span>
+          <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => shiftWindow(-14)} title="Quincena anterior"><ChevronLeft className="h-4 w-4" /></Button>
+          <Button variant="outline" size="sm" className="h-7 px-2 text-xs" onClick={() => setStart(undefined)}>Hoy</Button>
+          <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => shiftWindow(14)} title="Quincena siguiente"><ChevronRight className="h-4 w-4" /></Button>
+          <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => load()} title="Actualizar"><RefreshCw className="h-4 w-4" /></Button>
         </div>
       }
     >
       {loading && !data ? (
-        <div className="py-8 text-center text-sm text-muted-foreground">Cargando horario…</div>
+        <div className="space-y-2 py-2"><SkeletonBlock className="h-6" /><SkeletonBlock className="h-6" /><SkeletonBlock className="h-6" /></div>
       ) : rows.length === 0 ? (
-        <EmptyState icon={<CalendarDays className="h-5 w-5" />} title="Sin horario" description="Esta sede no tiene puestos con rotación configurada. Configura las estaciones en el Programador." />
+        <EmptyState icon={<CalendarDays />} title="Sin horario" description="Esta sede no tiene puestos con rotación configurada. Configúralos en el Programador." />
       ) : (
         <>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-sm">
               <thead>
                 <tr>
-                  <th className="sticky left-0 z-10 min-w-[200px] border-b bg-card px-2 py-2 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">Estación · Puesto · Vigilante</th>
+                  <th
+                    className="cg-eyebrow sticky left-0 z-10 min-w-[200px] border-b px-2 py-2 text-left"
+                    style={{ borderColor: 'var(--hairline)', background: 'var(--glass-solid)' }}
+                  >
+                    Puesto · Posición · Vigilante
+                  </th>
                   {days.map((d) => (
-                    <th key={d.date} className={`border-b px-1 py-1 text-center text-[11px] font-medium ${d.isToday ? 'text-primary' : d.weekend ? 'text-muted-foreground/70' : 'text-muted-foreground'}`}>
+                    <th
+                      key={d.date}
+                      className="border-b px-1 py-1 text-center text-[11px] font-semibold"
+                      style={{ borderColor: 'var(--hairline)', color: d.isToday ? 'var(--brand-text)' : d.weekend ? 'var(--ink-faint)' : 'var(--ink-soft)' }}
+                    >
                       <div>{d.dow}</div><div className={`tabular-nums ${d.isToday ? 'font-bold' : ''}`}>{d.day}</div>
                     </th>
                   ))}
@@ -161,21 +178,24 @@ export default function ScheduleCard({ clientId, sedeId }: { clientId: string; s
               </thead>
               <tbody>
                 {grouped.map((g) => g.rows.map((r, ri) => (
-                  <tr key={r.positionId} className="hover:bg-muted/30">
-                    <td className="sticky left-0 z-10 min-w-[200px] border-b bg-card px-2 py-1.5">
+                  <tr key={r.positionId}>
+                    <td
+                      className="sticky left-0 z-10 min-w-[200px] border-b px-2 py-1.5"
+                      style={{ borderColor: 'var(--hairline)', background: 'var(--glass-solid)' }}
+                    >
                       {ri === 0 && <div className="text-xs font-semibold text-foreground">{g.stationName}</div>}
                       <div className="flex items-center justify-between gap-2">
                         <div className="min-w-0">
-                          <span className="text-xs text-muted-foreground">{r.positionName}{r.positionType === 'sacafranco' ? ' · SF' : ''}</span>
+                          <span className="text-xs" style={{ color: 'var(--ink-faint)' }}>{r.positionName}{r.positionType === 'sacafranco' ? ' · SF' : ''}</span>
                           {canEdit ? (
-                            <button onClick={() => openEdit(r)} className="block truncate text-left text-sm font-medium hover:text-primary" title="Cambiar vigilante">
-                              {r.guardName || <span className="text-orange-600">Sin asignar</span>}
+                            <button onClick={() => openEdit(r)} className="cg-focus block truncate rounded-md text-left text-sm font-medium hover:underline" title="Cambiar vigilante">
+                              {r.guardName || <span style={{ color: 'var(--warn-text)' }}>Sin asignar</span>}
                             </button>
                           ) : (
-                            <div className="truncate text-sm font-medium">{r.guardName || <span className="text-orange-600">Sin asignar</span>}</div>
+                            <div className="truncate text-sm font-medium">{r.guardName || <span style={{ color: 'var(--warn-text)' }}>Sin asignar</span>}</div>
                           )}
                         </div>
-                        {canEdit && <button onClick={() => openEdit(r)} className="shrink-0 rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-primary" title="Cambiar vigilante"><UserPlus className="h-3.5 w-3.5" /></button>}
+                        {canEdit && <button onClick={() => openEdit(r)} className="cg-focus shrink-0 rounded-md p-1 transition-opacity hover:opacity-70" style={{ color: 'var(--ink-faint)' }} title="Cambiar vigilante"><UserPlus className="h-3.5 w-3.5" /></button>}
                       </div>
                     </td>
                     {r.cells.map((c) => {
@@ -185,11 +205,11 @@ export default function ScheduleCard({ clientId, sedeId }: { clientId: string; s
                       const tip = [m.title, c.hours, c.covering && c.guardName ? `Cubre: ${c.guardName}` : null]
                         .filter(Boolean).join(' · ');
                       return (
-                        <td key={c.date} className="border-b p-0.5 text-center">
-                          <span title={tip} className={`relative grid h-7 w-full min-w-[26px] place-items-center rounded text-[11px] font-bold ${m.cls}`}>
+                        <td key={c.date} className="border-b p-0.5 text-center" style={{ borderColor: 'var(--hairline)' }}>
+                          <span title={tip} className="relative grid h-7 w-full min-w-[26px] place-items-center rounded text-[11px] font-bold" style={m.style}>
                             {m.label}
-                            {/* Dot = a different vigilante (sacafranco) covers this day */}
-                            {c.covering && <span className="absolute right-0.5 top-0.5 h-1.5 w-1.5 rounded-full bg-amber-500" />}
+                            {/* El punto marca que ese día lo cubre otro vigilante (sacafranco) */}
+                            {c.covering && <span className="absolute right-0.5 top-0.5 h-1.5 w-1.5 rounded-full" style={{ background: 'var(--warn)' }} />}
                           </span>
                         </td>
                       );
@@ -199,12 +219,14 @@ export default function ScheduleCard({ clientId, sedeId }: { clientId: string; s
               </tbody>
             </table>
           </div>
-          <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-            <span className="inline-flex items-center gap-1.5"><span className="grid h-4 w-4 place-items-center rounded bg-sky-500/15 text-[10px] font-bold text-sky-700">D</span> Día</span>
-            <span className="inline-flex items-center gap-1.5"><span className="grid h-4 w-4 place-items-center rounded bg-indigo-500/15 text-[10px] font-bold text-indigo-700">N</span> Noche</span>
-            <span className="inline-flex items-center gap-1.5"><span className="grid h-4 w-4 place-items-center rounded bg-muted text-[10px] font-bold text-muted-foreground">L</span> Libre</span>
-            <span className="inline-flex items-center gap-1.5"><span className="grid h-4 w-4 place-items-center rounded bg-red-500/15 text-[10px] font-bold text-red-700">!</span> Sin turno generado</span>
-            <span className="inline-flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-amber-500" /> Cubre otro vigilante</span>
+          <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs" style={{ color: 'var(--ink-soft)' }}>
+            {(['day', 'night', 'rest', 'gap'] as const).map((k) => (
+              <span key={k} className="inline-flex items-center gap-1.5">
+                <span className="grid h-4 w-4 place-items-center rounded text-[10px] font-bold" style={CELL[k].style}>{CELL[k].label}</span>
+                {k === 'day' ? 'Día' : k === 'night' ? 'Noche' : k === 'rest' ? 'Libre' : 'Sin turno generado'}
+              </span>
+            ))}
+            <span className="inline-flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full" style={{ background: 'var(--warn)' }} /> Cubre otro vigilante</span>
             {canEdit && <span className="ml-auto">Toca un vigilante para cambiarlo.</span>}
           </div>
         </>
@@ -212,18 +234,18 @@ export default function ScheduleCard({ clientId, sedeId }: { clientId: string; s
 
       {/* Change-guard modal */}
       <Modal open={!!editRow} onOpenChange={(o) => { if (!o && !saving) setEditRow(null); }} title="Cambiar vigilante" icon={<UserPlus className="h-5 w-5" />} size="sm"
-        footer={<><Button variant="outline" onClick={() => setEditRow(null)} disabled={saving}>Cancelar</Button>{editRow?.assignmentId && <Button variant="outline" onClick={removeGuard} disabled={saving} className="text-red-600"><UserMinus className="mr-1.5 h-4 w-4" /> Quitar</Button>}<Button onClick={saveGuard} disabled={saving || pickGuard === (editRow?.guardId || '')}>{saving ? <><Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> Guardando…</> : 'Guardar'}</Button></>}>
+        footer={<><Button variant="outline" onClick={() => setEditRow(null)} disabled={saving}>Cancelar</Button>{editRow?.assignmentId && <Button variant="outline" onClick={removeGuard} disabled={saving} style={{ color: 'var(--bad-text)' }}><UserMinus className="mr-1.5 h-4 w-4" /> Quitar</Button>}<Button onClick={saveGuard} disabled={saving || pickGuard === (editRow?.guardId || '')}>{saving ? <><Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> Guardando…</> : 'Guardar'}</Button></>}>
         {editRow && (
           <div className="space-y-3">
-            <div className="rounded-lg bg-muted/40 px-3 py-2 text-sm"><span className="text-muted-foreground">{editRow.stationName} · {editRow.positionName}</span>{editRow.rotationStyleName && <span className="text-muted-foreground"> · {editRow.rotationStyleName}</span>}</div>
+            <div className="glass-sunken px-3 py-2 text-sm" style={{ color: 'var(--ink-soft)' }}><span>{editRow.stationName} · {editRow.positionName}</span>{editRow.rotationStyleName && <span> · {editRow.rotationStyleName}</span>}</div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-muted-foreground">Vigilante</label>
-              <select className={inputCls} value={pickGuard} onChange={(e) => setPickGuard(e.target.value)}>
+              <label className="cg-eyebrow mb-1 block">Vigilante</label>
+              <select className={FIELD_CLS} value={pickGuard} onChange={(e) => setPickGuard(e.target.value)}>
                 <option value="">— Sin asignar —</option>
                 {guardOptions.map((g) => <option key={g.id} value={g.id}>{g.label}</option>)}
               </select>
             </div>
-            <p className="text-xs text-muted-foreground">El vigilante seguirá la rotación de la estación. Cambiar reemplaza la asignación actual del puesto.</p>
+            <p className="text-xs" style={{ color: 'var(--ink-faint)' }}>El vigilante seguirá la rotación del puesto. Cambiar reemplaza la asignación actual del puesto.</p>
           </div>
         )}
       </Modal>

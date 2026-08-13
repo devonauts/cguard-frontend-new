@@ -1,17 +1,17 @@
-import AppLayout from '@/layouts/app-layout'
-import SettingsLayout from '@/layouts/SettingsLayout'
+import { UserRound } from 'lucide-react'
+import SettingsPageShell from './components/SettingsPageShell'
 import ProfileUserForm from './components/ProfileUserForm';
 
 const ProfileUser = () => {
   return (
-    <AppLayout>
-      <SettingsLayout navKey="configuracion" title="Perfil del Usuario">
-          <ProfileUserForm />
-      </SettingsLayout>
-
-    </AppLayout>
+    <SettingsPageShell
+      icon={<UserRound />}
+      title="Perfil del usuario"
+      subtitle="Tu foto, tus datos de contacto y el idioma con el que ves la plataforma."
+    >
+      <ProfileUserForm />
+    </SettingsPageShell>
   )
 }
 
 export default ProfileUser
-

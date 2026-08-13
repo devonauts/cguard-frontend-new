@@ -1,22 +1,50 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { loadGoogleMaps } from "@/utils/loadGoogleMaps";
 import { getTenantLocation } from "@/utils/tenantLocation";
-import { Undo2, Trash2, MapPin, Search, Building2 } from "lucide-react";
+import { useMapPalette } from "@/utils/mapTheme";
+import { useMapPopup, mapPopupActions, mapPopupItems, type MapPopupTone } from "@/components/maps/MapPopup";
+import { useMotorMapa } from "@/utils/mapMotion";
+import {
+  areaPoligono,
+  centroide,
+  formatearArea,
+  formatearCoord,
+  formatearDistancia,
+  perimetroPoligono,
+  radioEquivalente,
+  radioMaximo,
+} from "@/utils/geoMedidas";
+import { Undo2, Trash2, MapPin, Search, Building2, Maximize2 } from "lucide-react";
+import "@/styles/map.css";
 
 export type PolyPoint = { lat: number; lng: number };
 
 const FALLBACK = { lat: -0.2295, lng: -78.5236 }; // Quito
 
 /**
- * Polygon geofence editor on Google Maps. Click the map to drop vertices; a
- * numbered marker is dropped at each point and the polygon (or in-progress line)
- * renders live. The polygon is editable — drag a vertex or the midpoint handles
- * to adjust. "Deshacer" removes the last point, "Limpiar" resets.
+ * Editor de geocerca poligonal sobre Google Maps. Se toca el mapa para soltar
+ * vértices; cada uno cae numerado y el polígono (o la línea en curso) se dibuja
+ * en vivo. El contorno es editable: se arrastra un vértice o un tirador
+ * intermedio. «Deshacer» quita el último punto, «Limpiar» reinicia.
  *
- * Implementation note: uses CLASSIC google.maps.Marker / Polyline / Polygon on a
- * map created WITHOUT a mapId. AdvancedMarkerElement + a cloud mapId silently
- * render nothing when the mapId isn't valid for the key — that was the original
- * "I can't see what I'm drawing" bug. Classic overlays always render.
+ * ── POR QUÉ MARCADORES CLÁSICOS Y NO `AdvancedMarkerElement` ────────────────
+ * El mapa se crea SIN `mapId` a propósito. `AdvancedMarkerElement` exige uno, y
+ * un `mapId` que no sea válido para la clave hace que los marcadores no pinten
+ * NADA en silencio — ese fue el error original de «no veo lo que estoy
+ * dibujando». Los overlays clásicos siempre se ven.
+ *
+ * ── POR QUÉ LOS VÉRTICES SON MARCADORES ARRASTRABLES ───────────────────────
+ * Los tiradores que dibuja `editable: true` miden unos 10 px: con el ratón pasan,
+ * con el dedo son inalcanzables (el mínimo cómodo son 24). Encima de cada uno se
+ * pone un círculo numerado de 26 px que ES el tirador de verdad; los tiradores
+ * intermedios de Google siguen debajo para INSERTAR puntos nuevos, que es lo que
+ * saben hacer y nosotros no.
+ *
+ * ── POR QUÉ EL ARRASTRE NO AVISA HASTA SOLTAR ──────────────────────────────
+ * Avisar a cada fotograma volvería a entrar por `value`, y el efecto de dibujo
+ * BORRA y recrea los marcadores: se destruiría el marcador que el dedo tiene
+ * cogido a mitad de arrastre. Durante el gesto sólo se mueven el contorno y las
+ * cifras; el aviso sale una vez, al soltar.
  */
 export default function StationGeofencePolygon({
   value,
@@ -49,12 +77,33 @@ export default function StationGeofencePolygon({
   const onCenterChangeRef = useRef(onCenterChange);
   onCenterChangeRef.current = onCenterChange;
   const [ready, setReady] = useState(false);
+  const [alto, setAlto] = useState(340);
+
+  // Lo que se mide MIENTRAS se arrastra. Es una ruta aparte de `value` porque el
+  // aviso al formulario sólo sale al soltar (ver la nota de la cabecera).
+  const [rutaViva, setRutaViva] = useState<PolyPoint[] | null>(null);
 
   // The map-click listener is registered once; read the latest props via refs.
   const ptsRef = useRef(pts);
   ptsRef.current = pts;
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
+
+  // Puente de color: la geocerca se dibuja con el acento configurable del CRM,
+  // leído de las variables en tiempo de ejecución — la API de Google no acepta
+  // `var(--brand)` en `strokeColor`/`fillColor`. Ver `utils/mapTheme.ts`.
+  const pal = useMapPalette();
+
+  // El globo compartido: aquí sirve para lo que en escritorio hace el botón
+  // derecho — quitar un vértice — y que con el dedo no existe.
+  const pop = useMapPopup(() => mapRef.current);
+  const popRef = useRef(pop);
+  popRef.current = pop;
+
+  // Cámara compartida: encuadrar el recinto y viajar a un vértice con transición.
+  const motor = useMotorMapa(mapRef.current, ready);
+  const motorRef = useRef(motor);
+  motorRef.current = motor;
 
   const hasCenter =
     typeof centerLat === "number" &&
@@ -111,7 +160,14 @@ export default function StationGeofencePolygon({
             title: "Ubicación del puesto (arrastra para ajustar)",
             zIndex: 5000,
           });
+          // Retorno visual del agarre: el marcador salta al cogerlo y vuelve a
+          // posarse al soltar, que es la señal de «lo tengo» en una pantalla táctil.
+          centerMarkerRef.current.addListener("dragstart", () => {
+            try { centerMarkerRef.current.setAnimation(g.maps.Animation.BOUNCE); } catch { /* sin animación */ }
+            popRef.current.close();
+          });
           centerMarkerRef.current.addListener("dragend", (e: any) => {
+            try { centerMarkerRef.current.setAnimation(null); } catch { /* sin animación */ }
             if (!e?.latLng) return;
             onCenterChangeRef.current?.(e.latLng.lat(), e.latLng.lng());
           });
@@ -125,8 +181,7 @@ export default function StationGeofencePolygon({
               if (!loc) return;
               const lat = loc.lat();
               const lng = loc.lng();
-              map.setCenter({ lat, lng });
-              map.setZoom(18);
+              motorRef.current?.camara.volarA({ lat, lng }, { zoom: 18 });
               onCenterChangeRef.current?.(lat, lng);
             });
           }
@@ -157,11 +212,22 @@ export default function StationGeofencePolygon({
   useEffect(() => {
     if (mapRef.current && hasCenter) {
       const c = { lat: centerLat as number, lng: centerLng as number };
-      mapRef.current.setCenter(c);
+      motorRef.current?.camara.volarA(c);
       if (centerMarkerRef.current) centerMarkerRef.current.setPosition(c);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [centerLat, centerLng]);
+
+  // El mapa cambia de alto sin que Google se entere: hay que avisarle o las
+  // teselas se quedan cortadas en la mitad de abajo.
+  useEffect(() => {
+    const g = (window as any).google;
+    if (!ready || !g?.maps || !mapRef.current) return;
+    const id = window.setTimeout(() => {
+      try { g.maps.event.trigger(mapRef.current, "resize"); } catch { /* desmontado */ }
+    }, 220);
+    return () => window.clearTimeout(id);
+  }, [alto, ready]);
 
   const hasSite =
     siteLocation && Number.isFinite(siteLocation.lat) && Number.isFinite(siteLocation.lng);
@@ -183,23 +249,26 @@ export default function StationGeofencePolygon({
 
     const path = pts.map((p) => ({ lat: p.lat, lng: p.lng }));
 
+    // Mientras un vértice va cogido, el contorno se mueve pero NO se avisa: el
+    // aviso reconstruiría los marcadores y se llevaría por delante el que el
+    // dedo tiene agarrado.
+    let arrastrando = false;
+
     if (path.length >= 3) {
       polyRef.current = new g.maps.Polygon({
         paths: path,
         map,
         editable: true,
-        strokeColor: "#C8860A",
+        strokeColor: pal.brand,
         strokeOpacity: 0.95,
         strokeWeight: 2,
-        fillColor: "#C8860A",
+        fillColor: pal.brand,
         fillOpacity: 0.18,
       });
       // Sync back when the user drags a vertex or inserts/removes one.
       const p = polyRef.current.getPath();
-      const sync = () => {
-        const arr = p.getArray().map((ll: any) => ({ lat: ll.lat(), lng: ll.lng() }));
-        onChangeRef.current(arr);
-      };
+      const leer = () => p.getArray().map((ll: any) => ({ lat: ll.lat(), lng: ll.lng() }));
+      const sync = () => { if (!arrastrando) onChangeRef.current(leer()); };
       g.maps.event.addListener(p, "set_at", sync);
       g.maps.event.addListener(p, "insert_at", sync);
       g.maps.event.addListener(p, "remove_at", sync);
@@ -207,35 +276,164 @@ export default function StationGeofencePolygon({
       lineRef.current = new g.maps.Polyline({
         path,
         map,
-        strokeColor: "#C8860A",
+        strokeColor: pal.brand,
         strokeOpacity: 0.95,
         strokeWeight: 2,
       });
     }
+
+    /**
+     * Mueve el contorno mientras se arrastra, sin avisar al formulario.
+     *
+     * Se escribe con `setAt` sobre la ruta que ya existe y NO con `setPath`:
+     * `setPath` cambia la MVCArray por otra, y las escuchas de sincronía quedan
+     * colgadas de la vieja — los tiradores intermedios de Google dejarían de
+     * guardar lo que insertan.
+     */
+    let pendiente = 0;
+    const moverEnVivo = (i: number, lat: number, lng: number) => {
+      const ruta = (ptsRef.current || []).map((p, j) => (j === i ? { lat, lng } : p));
+      try {
+        const destino = polyRef.current?.getPath?.() ?? lineRef.current?.getPath?.();
+        if (destino && i < destino.getLength()) destino.setAt(i, new g.maps.LatLng(lat, lng));
+      } catch { /* overlay ya retirado */ }
+      cancelAnimationFrame(pendiente);
+      pendiente = requestAnimationFrame(() => setRutaViva(ruta));
+    };
 
     // Numbered vertex markers (classic Marker = always visible, no mapId needed).
     pts.forEach((pt, i) => {
       const marker = new g.maps.Marker({
         position: { lat: pt.lat, lng: pt.lng },
         map,
-        label: { text: String(i + 1), color: "#ffffff", fontSize: "11px", fontWeight: "700" },
+        draggable: true,
+        // Tinta CASI NEGRA sobre el relleno del acento: el acento es claro por
+        // diseño (ver tokens.css) y una cifra blanca encima sería ilegible.
+        label: { text: String(i + 1), color: pal.brandInk, fontSize: "11px", fontWeight: "700" },
         icon: {
           path: g.maps.SymbolPath.CIRCLE,
-          scale: 10,
-          fillColor: "#C8860A",
+          // 13 de radio = 26 px de diámetro: el mínimo cómodo para un dedo.
+          scale: 13,
+          fillColor: pal.brand,
           fillOpacity: 1,
-          strokeColor: "#ffffff",
+          strokeColor: pal.glassSolid,
           strokeWeight: 2,
         },
+        title: `Vértice ${i + 1} · arrástralo para ajustar`,
         zIndex: 1000 + i,
+        cursor: "grab",
       });
+
+      marker.addListener("dragstart", () => { arrastrando = true; popRef.current.close(); });
+      marker.addListener("drag", (e: any) => {
+        if (!e?.latLng) return;
+        moverEnVivo(i, e.latLng.lat(), e.latLng.lng());
+      });
+      marker.addListener("dragend", (e: any) => {
+        arrastrando = false;
+        cancelAnimationFrame(pendiente);
+        setRutaViva(null);
+        if (!e?.latLng) return;
+        const lat = e.latLng.lat();
+        const lng = e.latLng.lng();
+        onChangeRef.current((ptsRef.current || []).map((p, j) => (j === i ? { lat, lng } : p)));
+      });
+
+      // Con el dedo no hay botón derecho, que es como Google deja quitar un
+      // vértice. El globo lo suple con un botón de verdad.
+      marker.addListener("click", () => {
+        popRef.current.open(marker, {
+          id: `v${i}`,
+          kind: "zone",
+          title: `Vértice ${i + 1} de ${ptsRef.current.length}`,
+          subtitle: "Arrástralo para ajustar el contorno",
+          tone: "brand",
+          fields: [{ label: "Coordenadas", value: formatearCoord(pt.lat, pt.lng), mono: true, wide: true }],
+          actions: [
+            {
+              id: "quitar",
+              label: "Quitar punto",
+              icon: <Trash2 />,
+              tone: "bad",
+              variant: "primary",
+              closeOnClick: true,
+              onClick: () => onChangeRef.current((ptsRef.current || []).filter((_, j) => j !== i)),
+            },
+            mapPopupActions.center(() =>
+              motorRef.current?.camara.volarA(pt, { zoom: Math.max(mapRef.current?.getZoom?.() ?? 0, 19) }),
+            ),
+          ],
+        });
+      });
+
       markersRef.current.push(marker);
     });
+
+    return () => cancelAnimationFrame(pendiente);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, JSON.stringify(pts)]);
+  }, [ready, pal, JSON.stringify(pts)]);
+
+  // ── Las cifras: lo que hay que ver MIENTRAS se dibuja ──────────────────────
+  const medidas = useMemo(() => {
+    const ruta = rutaViva ?? pts;
+    if (ruta.length < 3) return null;
+    const area = areaPoligono(ruta);
+    return {
+      area,
+      perimetro: perimetroPoligono(ruta),
+      radio: radioEquivalente(area),
+      alcance: radioMaximo(ruta),
+      centro: centroide(ruta),
+    };
+  }, [rutaViva, pts]);
+
+  /**
+   * ¿Sirve esta geocerca para lo que existe?
+   *
+   * El listón no es estético: por debajo de unos 15 m de radio equivalente la
+   * geocerca cabe DENTRO del error del GPS de un teléfono (5-20 m a cielo
+   * abierto, peor entre edificios), así que marcaría fuera a un vigilante que
+   * está dentro. Por arriba, pasados los 500 m deja de distinguir el puesto de
+   * la manzana entera y da por válida una entrada desde la esquina.
+   */
+  const aviso = useMemo((): { tono: MapPopupTone; texto: string } | null => {
+    const ruta = rutaViva ?? pts;
+    if (!ruta.length) return null;
+    if (ruta.length < 3) {
+      return { tono: "warn", texto: "Agrega al menos 3 puntos para cerrar la geocerca." };
+    }
+    if (!medidas) return null;
+    const r = medidas.radio;
+    if (r < 15) {
+      return {
+        tono: "bad",
+        texto: "Demasiado pequeña: cabe dentro del error normal del GPS de un teléfono y marcaría fuera a quien está dentro.",
+      };
+    }
+    if (r < 25) {
+      return { tono: "warn", texto: "Muy justa: con GPS flojo puede dar falsas salidas. Amplíala un poco si puedes." };
+    }
+    if (r > 500) {
+      return {
+        tono: "bad",
+        texto: "Demasiado grande: daría por válida una entrada desde una manzana de distancia.",
+      };
+    }
+    if (r > 250) {
+      return { tono: "warn", texto: "Bastante amplia: revisa que no se salga de la propiedad del cliente." };
+    }
+    return { tono: "ok", texto: "Tamaño adecuado para marcar entrada y salida." };
+  }, [medidas, pts, rutaViva]);
 
   const undo = () => onChange(pts.slice(0, -1));
   const clear = () => onChange([]);
+  const cuadrar = () => {
+    if (pts.length) motorRef.current?.camara.encuadrar(pts, { zoomMax: 20, padding: 48 });
+    else if (medidas?.centro) motorRef.current?.camara.volarA(medidas.centro, { zoom: 18 });
+  };
+
+  const colorTono = (t: MapPopupTone) =>
+    t === "brand" ? "var(--brand-text)" : t === "neutral" ? "var(--ink-faint)" : `var(--${t}-text)`;
 
   return (
     <div className="space-y-2">
@@ -266,11 +464,19 @@ export default function StationGeofencePolygon({
           Busca la dirección o arrastra el pin para fijar dónde marca entrada el vigilante; luego toca el mapa para dibujar la geocerca.
         </p>
       )}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <span className="flex items-center gap-1 text-xs text-muted-foreground">
-          <MapPin size={12} /> {pts.length} punto(s) · toca el mapa para agregar vértices
+          <MapPin size={12} /> {pts.length} punto(s) · toca el mapa para agregar vértices, arrastra los círculos para ajustar
         </span>
         <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={cuadrar}
+            disabled={pts.length < 2}
+            className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-xs disabled:opacity-40"
+          >
+            <Maximize2 size={12} /> Encuadrar
+          </button>
           <button
             type="button"
             onClick={undo}
@@ -283,20 +489,56 @@ export default function StationGeofencePolygon({
             type="button"
             onClick={clear}
             disabled={!pts.length}
-            className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-xs text-red-600 disabled:opacity-40"
+            className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-xs disabled:opacity-40"
+            style={{ color: "var(--bad-text)" }}
           >
             <Trash2 size={12} /> Limpiar
           </button>
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-border" style={{ height: 320 }}>
-        <div ref={mapDivRef} className="h-full w-full" />
+      <div className="cc-map-frame rounded-xl border border-border" style={{ height: alto }}>
+        <div ref={mapDivRef} className="cc-map-canvas" />
+
+        {/* Las cifras, encima del dibujo: sin ellas «dibuja una geocerca» es
+            dibujar a ciegas y sólo se descubre el tamaño real en la calle. */}
+        {medidas && (
+          <div className="cc-map-hud" style={{ left: 10, top: 10 }}>
+            <div className="cc-map-card flex items-stretch gap-4 px-3 py-2">
+              <div>
+                <div className="cc-map-eyebrow">Área</div>
+                <div className="cc-map-metric">{formatearArea(medidas.area)}</div>
+              </div>
+              <div style={{ width: 1, background: "var(--hairline)" }} />
+              <div>
+                <div className="cc-map-eyebrow">Radio equiv.</div>
+                <div className="cc-map-metric">{formatearDistancia(medidas.radio)}</div>
+              </div>
+              <div style={{ width: 1, background: "var(--hairline)" }} />
+              <div>
+                <div className="cc-map-eyebrow">Perímetro</div>
+                <div className="cc-map-metric">{formatearDistancia(medidas.perimetro)}</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="cc-map-hud" style={{ right: 10, bottom: 10 }}>
+          <button
+            type="button"
+            onClick={() => setAlto((a) => (a > 420 ? 340 : 560))}
+            className="cc-map-card px-2.5 py-1.5 text-[11px] font-semibold"
+          >
+            {alto > 420 ? "Reducir mapa" : "Ampliar mapa"}
+          </button>
+        </div>
+
+        {pop.portal}
       </div>
 
-      {pts.length > 0 && pts.length < 3 && (
-        <p className="text-[11px] text-amber-600">
-          Agrega al menos 3 puntos para formar una geocerca.
+      {aviso && (
+        <p className="text-[11px] leading-snug" style={{ color: colorTono(aviso.tono) }}>
+          {aviso.texto}
         </p>
       )}
     </div>

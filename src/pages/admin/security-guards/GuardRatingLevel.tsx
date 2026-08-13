@@ -4,13 +4,20 @@
  * so a bad service pattern is visible at a glance. Clickable → the guard's
  * Perfil › Reseñas. Renders nothing when the guard has no reviews (count 0),
  * unless `showEmpty` is set (then a muted "Sin reseñas").
+ *
+ * ── POR QUÉ VA SOBRE `StatusBadge` ─────────────────────────────────────────
+ * Esta píldora se pinta SIEMPRE al lado de otra: en `GuardCardsGrid` y en la
+ * lista de vigilantes comparte fila con la píldora de estado. Cuando tenía sus
+ * propias medidas (`px-2 py-0.5` frente a `px-2.5 py-1` del kit) las dos salían
+ * a alturas distintas en la misma línea. El tono sigue siendo semántico fijo
+ * —bueno/regular/malo— porque una nota baja tiene que leerse roja aunque el
+ * usuario elija rojo como acento.
  */
 import { Star } from 'lucide-react';
+import { StatusBadge } from '@/components/kit';
 
-const toneFor = (avg: number) =>
-  avg >= 4 ? 'text-emerald-600 bg-emerald-500/10'
-    : avg >= 3 ? 'text-yellow-700 bg-yellow-500/10'
-    : 'text-red-600 bg-red-500/10';
+/** Nota → papel del sistema: bueno / regular / malo. */
+const toneFor = (avg: number) => (avg >= 4 ? 'ok' : avg >= 3 ? 'warn' : 'bad');
 
 export default function GuardRatingLevel({
   average,
@@ -29,9 +36,9 @@ export default function GuardRatingLevel({
   if (!has) {
     if (!showEmpty) return null;
     return (
-      <span className={`inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground ${className}`}>
+      <StatusBadge tone="neutral" dot={false} className={className}>
         <Star className="h-3 w-3" /> Sin reseñas
-      </span>
+      </StatusBadge>
     );
   }
   const avg = average as number;
@@ -39,21 +46,26 @@ export default function GuardRatingLevel({
     <>
       <Star className="h-3 w-3 fill-current" />
       <span className="font-semibold tabular-nums">{avg.toFixed(1)}</span>
-      <span className="opacity-70">({count})</span>
+      <span className="tabular-nums opacity-70">({count})</span>
     </>
   );
-  const cls = `inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs ${toneFor(avg)} ${className}`;
+  const tone = toneFor(avg);
+
   if (onClick) {
     return (
       <button
         type="button"
         onClick={(e) => { e.stopPropagation(); onClick(); }}
-        className={`${cls} transition hover:brightness-95`}
+        className="cg-focus rounded-full transition hover:brightness-95"
         title="Ver reseñas del vigilante"
       >
-        {inner}
+        <StatusBadge tone={tone} dot={false} className={className}>{inner}</StatusBadge>
       </button>
     );
   }
-  return <span className={cls} title={`${avg.toFixed(2)} de 5 · ${count} reseña(s)`}>{inner}</span>;
+  return (
+    <StatusBadge tone={tone} dot={false} className={className}>
+      <span title={`${avg.toFixed(2)} de 5 · ${count} reseña(s)`} className="inline-flex items-center gap-1">{inner}</span>
+    </StatusBadge>
+  );
 }

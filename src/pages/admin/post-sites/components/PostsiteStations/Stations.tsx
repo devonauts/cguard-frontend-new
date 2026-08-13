@@ -3,11 +3,11 @@ import { invalidateEntity } from "@/lib/queryClient";
 import { useNavigate } from 'react-router-dom';
 import { ApiService } from '@/services/api/apiService';
 import { toast } from 'sonner';
-import { Plus, Trash, Eye, MoreVertical, X, Shield, LayoutGrid, List as ListIcon } from 'lucide-react';
+import { Plus, Trash, Eye, MoreVertical, X, Shield, LayoutGrid, List as ListIcon, Search } from 'lucide-react';
 import StationCardsGrid from './StationCardsGrid';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useTranslation } from 'react-i18next';
-import { EmptyState, SkeletonCards } from '@/components/kit';
+import { EmptyState, SkeletonCards, Segmented, Field } from '@/components/kit';
 import useScrollToTopOnMount from '@/hooks/useScrollToTopOnMount';
 import StationGeofencePolygon, { type PolyPoint } from '@/components/GoogleMap/StationGeofencePolygon';
 import type { PostSite } from '@/types';
@@ -40,6 +40,28 @@ function jornadaType(start?: string, end?: string): 'diurno' | 'nocturno' | null
 // Fijo positions required for a single jornada — always 1 (a 24h post would be 2).
 function requiredFijos(_schedule?: string): number {
   return 1;
+}
+
+// El tinte de la jornada sale de los semánticos del sistema: matutina = día,
+// nocturna = noche, sacafranco = relevo. Se calcula en línea (nada de clases de
+// color escritas a mano) para que respete claro/oscuro y el acento elegido.
+const JORNADA_TONE: Record<string, 'warn' | 'info' | 'ok' | 'neutral'> = {
+  matutina: 'warn',
+  diurno: 'warn',
+  nocturna: 'info',
+  nocturno: 'info',
+  sacafranco: 'ok',
+  personalizada: 'neutral',
+};
+
+function jornadaChip(tipo?: string): React.CSSProperties {
+  const t = JORNADA_TONE[String(tipo || '').toLowerCase()] ?? 'neutral';
+  const fill = t === 'neutral' ? 'var(--ink-faint)' : `var(--${t})`;
+  return {
+    background: `color-mix(in oklab, ${fill} 14%, transparent)`,
+    borderColor: `color-mix(in oklab, ${fill} 32%, transparent)`,
+    color: t === 'neutral' ? 'var(--ink-soft)' : `var(--${t}-text)`,
+  };
 }
 
 export default function Stations({ site }: { site?: SiteProp }) {
@@ -630,7 +652,7 @@ export default function Stations({ site }: { site?: SiteProp }) {
 
   return (
     <div className="space-y-4 flex-1 min-h-0 flex flex-col animate-fade-up">
-      <div className="cg-card p-4 flex-1 flex flex-col">
+      <div className="glass flex flex-1 flex-col p-4">
         <div className="flex items-center justify-between mb-4 gap-3">
           
 
@@ -675,7 +697,7 @@ export default function Stations({ site }: { site?: SiteProp }) {
                   })();
                   setActionSelectValue('');
                 }
-              }} className="border border-border bg-card rounded-lg px-4 py-2 text-sm text-foreground shadow-sm">
+              }} className="cg-input cg-focus rounded-lg px-4 py-2 text-sm">
                 <option value="">{t('postSites.stations.action', 'Action')}</option>
                 <option value="delete_selected">{t('postSites.stations.deleteSelected', 'Delete selected')}</option>
               </select>
@@ -683,19 +705,25 @@ export default function Stations({ site }: { site?: SiteProp }) {
 
             <div className="flex-1">
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-muted-foreground" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M12.9 14.32a8 8 0 111.41-1.41l4.3 4.3a1 1 0 01-1.42 1.42l-4.3-4.3zM8 14a6 6 0 100-12 6 6 0 000 12z" clipRule="evenodd" /></svg>
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none" style={{ color: 'var(--ink-faint)' }}>
+                  <Search className="h-4 w-4" />
                 </div>
-                <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t('postSites.stations.searchPlaceholder', 'Buscar estación…')} className="w-full border border-border rounded-lg px-4 py-3 text-sm pl-10 shadow-sm focus:ring-2 focus:ring-primary/30" />
+                <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t('postSites.stations.searchPlaceholder', 'Buscar estación…')} className="cg-input cg-focus w-full py-2.5 pl-10 pr-4 text-sm" />
               </div>
             </div>
 
             <div className="flex flex-shrink-0 items-center gap-2">
-              <div className="hidden md:inline-flex items-center rounded-xl border bg-card p-0.5">
-                <button onClick={() => setViewMode('cards')} className={`flex h-8 items-center rounded-md px-2.5 ${viewMode === 'cards' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'}`} aria-label="Vista de tarjetas"><LayoutGrid className="h-4 w-4" /></button>
-                <button onClick={() => setViewMode('list')} className={`flex h-8 items-center rounded-md px-2.5 ${viewMode === 'list' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'}`} aria-label="Vista de lista"><ListIcon className="h-4 w-4" /></button>
+              <div className="hidden md:block">
+                <Segmented
+                  value={viewMode}
+                  onChange={(v) => setViewMode(v)}
+                  options={[
+                    { value: 'cards', label: <span className="flex items-center gap-1.5"><LayoutGrid className="h-3.5 w-3.5" /> Tarjetas</span> },
+                    { value: 'list', label: <span className="flex items-center gap-1.5"><ListIcon className="h-3.5 w-3.5" /> Lista</span> },
+                  ]}
+                />
               </div>
-              <button onClick={() => navigate(`/post-sites/${site?.id || ''}/stations/new`)} className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-primary/90 transition-colors shadow">
+              <button onClick={() => navigate(`/post-sites/${site?.id || ''}/stations/new`)} className="cg-btn-brand cg-focus flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors">
                 <Plus size={16} /> {t('postSites.stations.add', 'Crear estación')}
               </button>
             </div>
@@ -721,16 +749,16 @@ export default function Stations({ site }: { site?: SiteProp }) {
                   <div className="overflow-y-auto h-[48vh]">
                     <table className="min-w-full table-fixed">
                       <thead>
-                        <tr className="border-b bg-muted/30">
-                          <th className="px-6 py-4 text-left text-sm font-semibold text-foreground w-12 sticky top-0 bg-card z-20">
-                            <input type="checkbox" className="form-checkbox h-4 w-4" checked={selectedIds.length === stations.length && stations.length > 0} onChange={() => {
+                        <tr style={{ borderBottom: '1px solid var(--hairline)' }}>
+                          <th className="cg-eyebrow px-2 py-2 sticky top-0 z-20 w-12" style={{ background: 'var(--glass-solid)' }}>
+                            <input type="checkbox" className="h-4 w-4" style={{ accentColor: 'var(--brand)' }} aria-label="Seleccionar todas las estaciones" checked={selectedIds.length === stations.length && stations.length > 0} onChange={() => {
                               if (selectedIds.length === stations.length) setSelectedIds([]);
                               else setSelectedIds(stations.map(s => s.id || s.stationId || ''));
                             }} />
                           </th>
-                          <th className="px-6 py-4 text-left text-base font-semibold text-foreground sticky top-0 bg-card z-20">{t('postSites.stations.table.name', 'Name')}</th>
-                          <th className="px-6 py-4 text-left text-sm font-semibold text-foreground sticky top-0 bg-card z-20">{t('postSites.stations.table.guards', 'Guards')}</th>
-                          <th className="px-6 py-4 text-left text-sm font-semibold text-foreground sticky top-0 bg-card z-20"></th>
+                          <th className="cg-eyebrow px-2 py-2 sticky top-0 z-20" style={{ background: 'var(--glass-solid)' }}>{t('postSites.stations.table.name', 'Name')}</th>
+                          <th className="cg-eyebrow px-2 py-2 sticky top-0 z-20" style={{ background: 'var(--glass-solid)' }}>{t('postSites.stations.table.guards', 'Guards')}</th>
+                          <th className="cg-eyebrow px-2 py-2 sticky top-0 z-20" style={{ background: 'var(--glass-solid)' }}></th>
                         </tr>
                       </thead>
                       <tbody className="min-h-0">
@@ -741,30 +769,24 @@ export default function Stations({ site }: { site?: SiteProp }) {
                           const guardsCount = Array.isArray(st.assignedGuards) && st.assignedGuards.length > 0
                             ? String(st.assignedGuards.length)
                             : (st.numberOfGuardsInStation || '-');
-                          const JORNADA_COLORS: Record<string, string> = {
-                            matutina:      'bg-amber-500/15 text-amber-700 border-amber-300',
-                            nocturna:      'bg-indigo-500/15 text-indigo-700 border-indigo-300',
-                            sacafranco:    'bg-emerald-500/15 text-emerald-600 border-emerald-300',
-                            personalizada: 'bg-muted text-foreground border-border',
-                          };
                           return (
-                            <tr key={id} className="border-b hover:bg-muted/30 h-14 cursor-pointer" onClick={() => navigate(`/post-sites/${site?.id}/stations/${id}`)}>
-                              <td className="px-6 py-3 text-sm text-foreground w-12 align-middle" onClick={e => e.stopPropagation()}>
-                                <input type="checkbox" className="form-checkbox h-5 w-5" checked={selectedIds.includes(id)} onChange={() => {
+                            <tr key={id} className="h-14 cursor-pointer" style={{ borderBottom: '1px solid var(--hairline)' }} onClick={() => navigate(`/post-sites/${site?.id}/stations/${id}`)}>
+                              <td className="w-12 px-2 py-2.5 align-middle text-sm" onClick={e => e.stopPropagation()}>
+                                <input type="checkbox" className="h-5 w-5" style={{ accentColor: 'var(--brand)' }} aria-label={`Seleccionar ${name}`} checked={selectedIds.includes(id)} onChange={() => {
                                   setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
                                 }} />
                               </td>
-                              <td className="px-6 py-3 text-sm text-foreground align-middle">
+                              <td className="px-2 py-2.5 align-middle text-sm">
                                 <div className="font-medium">{name}</div>
                                 {st.nickname && (
-                                  <div className="text-xs text-muted-foreground">
-                                    {t('postSites.stations.form.nickname', 'Nominativo')}: <span className="font-medium text-foreground/70">{st.nickname}</span>
+                                  <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>
+                                    {t('postSites.stations.form.nickname', 'Nominativo')}: <span className="font-medium">{st.nickname}</span>
                                   </div>
                                 )}
                                 {jornadas.length > 0 && (
                                   <div className="flex flex-wrap gap-1 mt-1">
                                     {jornadas.map((j: any, i: number) => (
-                                      <span key={`${j.tipo ?? ''}-${j.startTime ?? ''}-${j.endTime ?? ''}-${i}`} className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium ${JORNADA_COLORS[j.tipo] || JORNADA_COLORS.personalizada}`}>
+                                      <span key={`${j.tipo ?? ''}-${j.startTime ?? ''}-${j.endTime ?? ''}-${i}`} className="inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium" style={jornadaChip(j.tipo)}>
                                         {j.nombre || j.tipo}
                                         {j.startTime && j.endTime && (
                                           <span className="font-mono opacity-60 ml-1">{j.startTime}–{j.endTime}</span>
@@ -777,17 +799,17 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                   </div>
                                 )}
                               </td>
-                              <td className="px-6 py-3 text-sm text-foreground align-middle">{guardsCount}</td>
-                              <td className="px-6 py-3 text-sm text-right relative w-24 align-middle">
+                              <td className="px-2 py-2.5 align-middle text-sm">{guardsCount}</td>
+                              <td className="relative w-24 px-2 py-2.5 text-right align-middle text-sm">
                                 <div className="inline-flex items-center gap-2">
                                   <div className="relative">
-                                    <button onClick={(e) => { e.stopPropagation(); setOpenMenuId(openMenuId === id ? null : id); }} className="p-1 rounded hover:bg-muted">
-                                      <MoreVertical size={18} className="text-foreground/70" />
+                                    <button onClick={(e) => { e.stopPropagation(); setOpenMenuId(openMenuId === id ? null : id); }} aria-label="Más acciones" className="cg-btn-ghost cg-focus rounded p-1">
+                                      <MoreVertical size={18} />
                                     </button>
                                     {openMenuId === id && (
-                                      <div data-menu-id={id} className="absolute right-0 mt-2 w-44 bg-card border rounded-md shadow-lg py-1 z-50">
-                                        <button onClick={(e) => { e.stopPropagation(); navigate(`/post-sites/${site?.id}/stations/${id}`); setOpenMenuId(null); }} className="w-full text-left px-3 py-2 text-sm hover:bg-muted flex items-center gap-2"><Eye size={14} className="text-foreground/70" />{t('postSites.stations.view', 'View details')}</button>
-                                        <button onClick={(e) => { e.stopPropagation(); handleDelete(id); setOpenMenuId(null); }} className="w-full text-left px-3 py-2 text-sm hover:bg-muted text-red-600 flex items-center gap-2"><Trash size={14} className="text-red-600" />{t('postSites.stations.remove', 'Remove')}</button>
+                                      <div data-menu-id={id} className="glass-raised absolute right-0 z-50 mt-2 w-44 py-1">
+                                        <button onClick={(e) => { e.stopPropagation(); navigate(`/post-sites/${site?.id}/stations/${id}`); setOpenMenuId(null); }} className="cg-btn-ghost flex w-full items-center gap-2 px-3 py-2 text-left text-sm"><Eye size={14} />{t('postSites.stations.view', 'View details')}</button>
+                                        <button onClick={(e) => { e.stopPropagation(); handleDelete(id); setOpenMenuId(null); }} className="cg-btn-ghost flex w-full items-center gap-2 px-3 py-2 text-left text-sm" style={{ color: 'var(--bad-text)' }}><Trash size={14} />{t('postSites.stations.remove', 'Remove')}</button>
                                       </div>
                                     )}
                                   </div>
@@ -810,39 +832,33 @@ export default function Stations({ site }: { site?: SiteProp }) {
                     const name = st.name || st.stationName || st.station_name || '—';
                     const guardsCount = st.numberOfGuardsInStation || (Array.isArray(st.assignedGuards) ? String(st.assignedGuards.length) : '-');
                     const jornadas: any[] = st.jornadas || [];
-                    const JORNADA_COLORS: Record<string, string> = {
-                      matutina:      'bg-amber-500/15 text-amber-700 border-amber-300',
-                      nocturna:      'bg-indigo-500/15 text-indigo-700 border-indigo-300',
-                      sacafranco:    'bg-emerald-500/15 text-emerald-600 border-emerald-300',
-                      personalizada: 'bg-muted text-foreground border-border',
-                    };
                     return (
-                      <div key={id} className="border rounded-md p-5 bg-card shadow-sm relative cursor-pointer" onClick={() => navigate(`/post-sites/${site?.id}/stations/${id}`)  }>
+                      <div key={id} className="glass-flat relative cursor-pointer p-5" onClick={() => navigate(`/post-sites/${site?.id}/stations/${id}`)  }>
                         <div className="flex items-start justify-between gap-3">
                           <div>
-                            <div className="flex items-center gap-3"><input type="checkbox" className="form-checkbox h-5 w-5" checked={selectedIds.includes(id)} onClick={e => e.stopPropagation()} onChange={() => setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])} />
-                              <div className="font-medium text-foreground">{name}</div></div>
+                            <div className="flex items-center gap-3"><input type="checkbox" className="h-5 w-5" style={{ accentColor: 'var(--brand)' }} aria-label={`Seleccionar ${name}`} checked={selectedIds.includes(id)} onClick={e => e.stopPropagation()} onChange={() => setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])} />
+                              <div className="font-medium">{name}</div></div>
                             {jornadas.length > 0 && (
                               <div className="flex flex-wrap gap-1 mt-2 ml-8">
                                 {jornadas.map((j: any, i: number) => (
-                                  <span key={`${j.tipo ?? ''}-${j.startTime ?? ''}-${j.endTime ?? ''}-${i}`} className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium ${JORNADA_COLORS[j.tipo] || JORNADA_COLORS.personalizada}`}>
+                                  <span key={`${j.tipo ?? ''}-${j.startTime ?? ''}-${j.endTime ?? ''}-${i}`} className="inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium" style={jornadaChip(j.tipo)}>
                                     {j.nombre || j.tipo}
                                     {j.startTime && j.endTime && <span className="font-mono opacity-60 ml-1">{j.startTime}–{j.endTime}</span>}
                                   </span>
                                 ))}
                               </div>
                             )}
-                            <div className="text-sm text-muted-foreground mt-2"><strong className="text-foreground/70">{t('postSites.stations.table.guards', 'Guards')}:</strong> {guardsCount}</div>
+                            <div className="mt-2 text-sm" style={{ color: 'var(--ink-soft)' }}><strong>{t('postSites.stations.table.guards', 'Guards')}:</strong> {guardsCount}</div>
                           </div>
                           <div className="flex items-center">
                             <div className="relative">
-                              <button onClick={(e) => { e.stopPropagation(); setOpenMenuId(openMenuId === id ? null : id); }} className="p-1 rounded hover:bg-muted">
-                                <MoreVertical size={18} className="text-foreground/70" />
+                              <button onClick={(e) => { e.stopPropagation(); setOpenMenuId(openMenuId === id ? null : id); }} aria-label="Más acciones" className="cg-btn-ghost cg-focus rounded p-1">
+                                <MoreVertical size={18} />
                               </button>
                               {openMenuId === id && (
-                                <div data-menu-id={id} className="absolute right-0 mt-2 w-44 bg-card border rounded-md shadow-lg py-1 z-50">
-                                  <button onClick={(e) => { e.stopPropagation(); navigate(`/post-sites/${site?.id}/stations/${id}`); setOpenMenuId(null); }} className="w-full text-left px-3 py-2 text-sm hover:bg-muted flex items-center gap-2"><Eye size={14} className="text-foreground/70" />{t('postSites.stations.view', 'View details')}</button>
-                                  <button onClick={(e) => { e.stopPropagation(); handleDelete(id); setOpenMenuId(null); }} className="w-full text-left px-3 py-2 text-sm hover:bg-muted text-red-600 flex items-center gap-2"><Trash size={14} className="text-red-600" />{t('postSites.stations.remove', 'Remove')}</button>
+                                <div data-menu-id={id} className="glass-raised absolute right-0 z-50 mt-2 w-44 py-1">
+                                  <button onClick={(e) => { e.stopPropagation(); navigate(`/post-sites/${site?.id}/stations/${id}`); setOpenMenuId(null); }} className="cg-btn-ghost flex w-full items-center gap-2 px-3 py-2 text-left text-sm"><Eye size={14} />{t('postSites.stations.view', 'View details')}</button>
+                                  <button onClick={(e) => { e.stopPropagation(); handleDelete(id); setOpenMenuId(null); }} className="cg-btn-ghost flex w-full items-center gap-2 px-3 py-2 text-left text-sm" style={{ color: 'var(--bad-text)' }}><Trash size={14} />{t('postSites.stations.remove', 'Remove')}</button>
                                 </div>
                               )}
                             </div>
@@ -863,69 +879,69 @@ export default function Stations({ site }: { site?: SiteProp }) {
       {/* Details modal */}
       {showDetailModal && (
         <div className="fixed inset-0 z-60 flex items-center justify-center" onClick={() => setShowDetailModal(false)}>
-          <div className="absolute inset-0 bg-black/20 z-50" onClick={() => setShowDetailModal(false)} />
+          <div className="absolute inset-0 z-50" style={{ background: 'oklch(0 0 0 / 0.35)' }} onClick={() => setShowDetailModal(false)} />
 
-          <div className="relative z-70 w-full sm:w-96 bg-card shadow-2xl overflow-y-auto rounded-md pointer-events-auto" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between p-6 border-b bg-card rounded-t-md">
-              <h2 className="text-lg font-semibold text-foreground">{t('postSites.stations.detailsTitle', 'Station details')}</h2>
-              <button onClick={() => setShowDetailModal(false)} className="p-2 rounded-full hover:bg-muted"><X className="h-4 w-4" /></button>
+          <div className="glass-raised pointer-events-auto relative z-70 w-full overflow-y-auto sm:w-96" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between border-b p-6" style={{ borderColor: 'var(--hairline)' }}>
+              <h2 className="font-display text-lg font-semibold">{t('postSites.stations.detailsTitle', 'Station details')}</h2>
+              <button onClick={() => setShowDetailModal(false)} aria-label="Cerrar" className="cg-btn-ghost cg-focus rounded-full p-2"><X className="h-4 w-4" /></button>
             </div>
 
             <div className="p-6">
               {loadingDetail ? (
                 <div>{t('postSites.stations.loading', 'Loading...')}</div>
               ) : !selectedStationDetail ? (
-                <div className="text-sm text-muted-foreground">{t('postSites.stations.noDetails', 'No details available')}</div>
+                <div className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t('postSites.stations.noDetails', 'No details available')}</div>
               ) : (
                 <div>
-                  <h3 className="text-xl font-semibold text-foreground">{selectedStationDetail.name || selectedStationDetail.stationName || selectedStationDetail.station_name}</h3>
+                  <h3 className="font-display text-xl font-semibold">{selectedStationDetail.name || selectedStationDetail.stationName || selectedStationDetail.station_name}</h3>
                   {selectedStationDetail.nickname ? (
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {t('postSites.stations.form.nickname', 'Nominativo')}: <span className="font-medium text-foreground/80">{selectedStationDetail.nickname}</span>
-                      <span className="ml-2 rounded bg-muted px-1.5 py-0.5 text-[10px] uppercase tracking-wide">{t('common.private', 'Privado')}</span>
+                    <p className="mt-1 text-sm" style={{ color: 'var(--ink-soft)' }}>
+                      {t('postSites.stations.form.nickname', 'Nominativo')}: <span className="font-medium">{selectedStationDetail.nickname}</span>
+                      <span className="ml-2 rounded px-1.5 py-0.5 text-[10px] uppercase tracking-wide" style={{ background: 'var(--glass-sunken)' }}>{t('common.private', 'Privado')}</span>
                     </p>
                   ) : null}
-                  {selectedStationDetail.description ? <p className="text-sm text-muted-foreground mt-2">{selectedStationDetail.description || selectedStationDetail.notes}</p> : null}
+                  {selectedStationDetail.description ? <p className="mt-2 text-sm" style={{ color: 'var(--ink-soft)' }}>{selectedStationDetail.description || selectedStationDetail.notes}</p> : null}
 
-                  <div className="mt-4 grid grid-cols-2 gap-4 text-sm text-foreground">
+                  <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
 
-                    <div>
-                        <dt className="text-xs font-medium text-foreground/70">{t('postSites.stations.schedule', 'Schedule')}</dt>
-                        <dd className="text-base text-foreground mt-1">{(formatScheduleFromTimes(
-                          selectedStationDetail?.startingTimeInDay || selectedStationDetail?.startTime || selectedStationDetail?.start || selectedStationDetail?.starting_time,
-                          selectedStationDetail?.finishTimeInDay || selectedStationDetail?.finishTime || selectedStationDetail?.endTime || selectedStationDetail?.finish || selectedStationDetail?.end_time
-                        ) || selectedStationDetail.stationSchedule || '-')}</dd>
-                    </div>
+                    <Field
+                      label={t('postSites.stations.schedule', 'Schedule')}
+                      value={formatScheduleFromTimes(
+                        selectedStationDetail?.startingTimeInDay || selectedStationDetail?.startTime || selectedStationDetail?.start || selectedStationDetail?.starting_time,
+                        selectedStationDetail?.finishTimeInDay || selectedStationDetail?.finishTime || selectedStationDetail?.endTime || selectedStationDetail?.finish || selectedStationDetail?.end_time
+                      ) || selectedStationDetail.stationSchedule || '-'}
+                    />
 
-                    <div>
-                      <dt className="text-xs font-medium text-foreground/70">{t('postSites.stations.guardsCount', 'Guards')}</dt>
-                      <dd className="text-base text-foreground mt-1">{selectedStationDetail.numberOfGuardsInStation || (assignedGuardsArr && assignedGuardsArr.length ? assignedGuardsArr.length : '-')}</dd>
-                    </div>
+                    <Field
+                      label={t('postSites.stations.guardsCount', 'Guards')}
+                      value={selectedStationDetail.numberOfGuardsInStation || (assignedGuardsArr && assignedGuardsArr.length ? assignedGuardsArr.length : '-')}
+                    />
 
-                    <div>
-                      <dt className="text-xs font-medium text-foreground/70">{t('postSites.stations.startTime', 'Start')}</dt>
-                      <dd className="text-base text-foreground mt-1">{formatTimeLocalized(selectedStationDetail?.startingTimeInDay || selectedStationDetail?.startTime || selectedStationDetail?.start || selectedStationDetail?.starting_time)}</dd>
-                    </div>
+                    <Field
+                      label={t('postSites.stations.startTime', 'Start')}
+                      value={formatTimeLocalized(selectedStationDetail?.startingTimeInDay || selectedStationDetail?.startTime || selectedStationDetail?.start || selectedStationDetail?.starting_time)}
+                    />
 
-                    <div>
-                      <dt className="text-xs font-medium text-foreground/70">{t('postSites.stations.endTime', 'End')}</dt>
-                      <dd className="text-base text-foreground mt-1">{formatTimeLocalized(selectedStationDetail?.finishTimeInDay || selectedStationDetail?.finishTime || selectedStationDetail?.endTime || selectedStationDetail?.finish || selectedStationDetail?.end_time)}</dd>
-                    </div>
+                    <Field
+                      label={t('postSites.stations.endTime', 'End')}
+                      value={formatTimeLocalized(selectedStationDetail?.finishTimeInDay || selectedStationDetail?.finishTime || selectedStationDetail?.endTime || selectedStationDetail?.finish || selectedStationDetail?.end_time)}
+                    />
                   </div>
 
                   <div className="mt-4">
                     <div className="flex items-center justify-between">
-                      <h4 className="text-sm font-medium text-foreground">{t('postSites.stations.assignedGuardsTitle', 'Assigned guards')}</h4>
+                      <h4 className="text-sm font-medium">{t('postSites.stations.assignedGuardsTitle', 'Assigned guards')}</h4>
                       <div>
-                        <button onClick={() => navigate(`/post-sites/${site?.id}/assign-guards`)} className="px-2 py-1 text-sm border border-primary/10 text-primary rounded">{t('postSites.stations.manageAssignments', 'Manage assignments')}</button>
+                        <button onClick={() => navigate(`/post-sites/${site?.id}/assign-guards`)} className="cg-btn-glass cg-focus rounded px-2 py-1 text-sm">{t('postSites.stations.manageAssignments', 'Manage assignments')}</button>
                       </div>
                     </div>
 
                     <div className="mt-2">
                       {(!assignedGuardsArr || assignedGuardsArr.length === 0) ? (
-                          <div className="text-muted-foreground">{t('postSites.stations.noAssignedGuards', 'No guards assigned')}</div>
+                          <div style={{ color: 'var(--ink-soft)' }}>{t('postSites.stations.noAssignedGuards', 'No guards assigned')}</div>
                         ) : (
-                          <ul className="list-disc pl-5 text-sm text-foreground">
+                          <ul className="list-disc pl-5 text-sm">
                             {assignedGuardsArr.map((g: any) => (
                               <li key={g.id || g.value || JSON.stringify(g)} className="mb-1">
                                 <div className="flex items-center justify-between">
@@ -997,15 +1013,15 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                         }
                                       })();
                                     }}
-                                    className="text-sm text-foreground hover:text-primary underline"
+                                    className="cg-focus rounded text-sm underline"
                                   >
                                     {g.fullName || g.label || g.name || g.email || g.id}
                                     </button>
                                   ) : (
-                                    <span className="text-sm text-foreground">{g.fullName || g.label || g.name || g.email || g.id}</span>
+                                    <span className="text-sm">{g.fullName || g.label || g.name || g.email || g.id}</span>
                                   )}
                                 </div>
-                                <div className="text-sm text-muted-foreground ml-3">{(() => {
+                                <div className="ml-3 text-sm" style={{ color: 'var(--ink-soft)' }}>{(() => {
                                   const st = g.station;
                                   const ps = g.postSite;
                                   const stLabel = st == null ? '' : (typeof st === 'string' ? st : (st.stationName || st.name || st.station_name || st.nickname || ''));
@@ -1023,8 +1039,8 @@ export default function Stations({ site }: { site?: SiteProp }) {
               )}
             </div>
 
-            <div className="flex items-center justify-end gap-3 p-6 border-t bg-card rounded-b-md">
-              <button onClick={() => setShowDetailModal(false)} className="px-4 py-2 rounded-md border text-sm">{t('actions.close') || 'Close'}</button>
+            <div className="flex items-center justify-end gap-3 border-t p-6" style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}>
+              <button onClick={() => setShowDetailModal(false)} className="cg-btn-glass cg-focus rounded-md px-4 py-2 text-sm">{t('actions.close') || 'Close'}</button>
             </div>
           </div>
         </div>
@@ -1033,26 +1049,26 @@ export default function Stations({ site }: { site?: SiteProp }) {
       {/* Shift create/edit modal */}
       {showShiftModal && (
         <div className="fixed inset-0 z-60 flex items-center justify-center" onClick={() => setShowShiftModal(false)}>
-          <div className="absolute inset-0 bg-black/20 z-50" onClick={() => setShowShiftModal(false)} />
+          <div className="absolute inset-0 z-50" style={{ background: 'oklch(0 0 0 / 0.35)' }} onClick={() => setShowShiftModal(false)} />
 
-          <div className="relative z-70 w-full sm:w-96 bg-card shadow-2xl overflow-y-auto rounded-md pointer-events-auto" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between p-6 border-b bg-card rounded-t-md">
-              <h2 className="text-lg font-semibold text-foreground">{editingShiftId ? t('postSites.stations.editShift', 'Edit shift') : t('postSites.stations.createShift', 'Create shift')}</h2>
-              <button onClick={() => setShowShiftModal(false)} className="p-2 rounded-full hover:bg-muted"><X className="h-4 w-4" /></button>
+          <div className="glass-raised pointer-events-auto relative z-70 w-full overflow-y-auto sm:w-96" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between border-b p-6" style={{ borderColor: 'var(--hairline)' }}>
+              <h2 className="font-display text-lg font-semibold">{editingShiftId ? t('postSites.stations.editShift', 'Edit shift') : t('postSites.stations.createShift', 'Create shift')}</h2>
+              <button onClick={() => setShowShiftModal(false)} aria-label="Cerrar" className="cg-btn-ghost cg-focus rounded-full p-2"><X className="h-4 w-4" /></button>
             </div>
 
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">{t('postSites.stations.form.shiftStart', 'Start')}</label>
-                <input type="datetime-local" value={shiftStart} onChange={e => setShiftStart(e.target.value)} className="w-full px-3 py-2 border rounded-md text-sm text-foreground" />
+                <label className="mb-2 block text-sm font-medium">{t('postSites.stations.form.shiftStart', 'Start')}</label>
+                <input type="datetime-local" value={shiftStart} onChange={e => setShiftStart(e.target.value)} className="cg-input cg-focus w-full px-3 py-2 text-sm" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">{t('postSites.stations.form.shiftEnd', 'End')}</label>
-                <input type="datetime-local" value={shiftEnd} onChange={e => setShiftEnd(e.target.value)} className="w-full px-3 py-2 border rounded-md text-sm text-foreground" />
+                <label className="mb-2 block text-sm font-medium">{t('postSites.stations.form.shiftEnd', 'End')}</label>
+                <input type="datetime-local" value={shiftEnd} onChange={e => setShiftEnd(e.target.value)} className="cg-input cg-focus w-full px-3 py-2 text-sm" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">{t('postSites.stations.form.guard', 'Guard')}</label>
-                <select value={shiftGuard} onChange={e => setShiftGuard(e.target.value)} className="w-full px-3 py-2 border rounded-md text-sm text-foreground">
+                <label className="mb-2 block text-sm font-medium">{t('postSites.stations.form.guard', 'Guard')}</label>
+                <select value={shiftGuard} onChange={e => setShiftGuard(e.target.value)} className="cg-input cg-focus w-full px-3 py-2 text-sm">
                   <option value="">{t('postSites.stations.form.selectGuard', 'Select guard')}</option>
                   {guardsOptions.map(g => {
                     const id = g.id || g.value;
@@ -1063,9 +1079,9 @@ export default function Stations({ site }: { site?: SiteProp }) {
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3 p-6 border-t bg-card rounded-b-md">
-              <button onClick={() => setShowShiftModal(false)} className="px-4 py-2 rounded-md border text-sm">{t('actions.cancel') || 'Cancel'}</button>
-              <button onClick={saveShift} disabled={!shiftStart || !shiftEnd} className={`px-6 py-2 bg-primary text-primary-foreground rounded-md font-semibold hover:bg-primary/90 text-sm ${(!shiftStart || !shiftEnd) ? 'opacity-50 cursor-not-allowed' : ''}`}>{t('actions.save', 'Save')}</button>
+            <div className="flex items-center justify-end gap-3 border-t p-6" style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}>
+              <button onClick={() => setShowShiftModal(false)} className="cg-btn-glass cg-focus rounded-md px-4 py-2 text-sm">{t('actions.cancel') || 'Cancel'}</button>
+              <button onClick={saveShift} disabled={!shiftStart || !shiftEnd} className={`cg-btn-brand cg-focus rounded-md px-6 py-2 text-sm font-semibold ${(!shiftStart || !shiftEnd) ? 'opacity-50 cursor-not-allowed' : ''}`}>{t('actions.save', 'Save')}</button>
             </div>
           </div>
         </div>
@@ -1084,7 +1100,7 @@ export default function Stations({ site }: { site?: SiteProp }) {
                 <div className="space-y-2">
                   <div>{t('postSites.stations.confirmRemovalBlockedDesc', 'One or more selected stations have related records and cannot be removed.')}</div>
                   {dependencyDetails && Array.isArray(dependencyDetails) && (
-                    <ul className="mt-2 list-disc pl-5 text-sm text-foreground">
+                    <ul className="mt-2 list-disc pl-5 text-sm">
                       {dependencyDetails.map((d: any) => (
                         <li key={d.id}>{d.name}: {d.guards ? `${d.guards} ${t('postSites.stations.guards', 'guards')}` : ''}{d.siteTours ? ` ${d.siteTours} ${t('postSites.stations.siteTours', 'site tours')}` : ''}{d.tags ? ` ${d.tags} ${t('postSites.stations.tags', 'tags')}` : ''}</li>
                       ))}
@@ -1099,7 +1115,7 @@ export default function Stations({ site }: { site?: SiteProp }) {
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => { setPendingDeleteStation(null); setOpenDeleteDialog(false); setDeleteBlocked(false); setDependencyDetails(null); }}>{t('actions.cancel','Cancel')}</AlertDialogCancel>
             {!deleteBlocked && (
-              <AlertDialogAction className="bg-red-500 text-white" onClick={confirmDeleteStation}>{t('postSites.stations.remove','Remove')}</AlertDialogAction>
+              <AlertDialogAction className="cg-btn-bad" onClick={confirmDeleteStation}>{t('postSites.stations.remove','Remove')}</AlertDialogAction>
             )}
           </AlertDialogFooter>
         </AlertDialogContent>

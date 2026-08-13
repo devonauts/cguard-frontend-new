@@ -81,7 +81,7 @@ export default function StationDetailPage() {
       <div className="p-4">
         {loading ? (
           <div className="flex items-center justify-center py-16">
-            <Loader2 className="animate-spin text-primary" />
+            <Loader2 className="animate-spin brand-text" />
           </div>
         ) : error ? (
           <EmptyState

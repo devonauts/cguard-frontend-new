@@ -97,7 +97,7 @@ export default function StationParking({ stationId }: Props) {
       {loading ? (
         <div className="px-5 pb-5"><SkeletonCards count={4} /></div>
       ) : error ? (
-        <div className="px-5 pb-5 text-sm text-red-600">{error}</div>
+        <div className="px-5 pb-5 text-sm" style={{ color: 'var(--bad-text)' }}>{error}</div>
       ) : rows.length === 0 ? (
         <div className="px-5 pb-5">
           <EmptyState
@@ -110,19 +110,19 @@ export default function StationParking({ stationId }: Props) {
           <table className="min-w-full text-sm">
             <thead className="bg-muted/30 border-b">
               <tr>
-                <th className="px-6 py-3 text-left font-semibold text-foreground/70">
+                <th className="cg-eyebrow px-2 py-2">
                   {t('station.parking.col.visitor', 'Visitante / Vehículo')}
                 </th>
-                <th className="px-6 py-3 text-left font-semibold text-foreground/70">
+                <th className="cg-eyebrow px-2 py-2">
                   {t('station.parking.col.placeType', 'Tipo')}
                 </th>
-                <th className="px-6 py-3 text-left font-semibold text-foreground/70">
+                <th className="cg-eyebrow px-2 py-2">
                   {t('station.parking.col.entry', 'Entrada')}
                 </th>
-                <th className="px-6 py-3 text-left font-semibold text-foreground/70">
+                <th className="cg-eyebrow px-2 py-2">
                   {t('station.parking.col.exit', 'Salida')}
                 </th>
-                <th className="px-6 py-3 text-left font-semibold text-foreground/70">
+                <th className="cg-eyebrow px-2 py-2">
                   {t('station.parking.col.guard', 'Vigilante')}
                 </th>
               </tr>
@@ -139,12 +139,12 @@ export default function StationParking({ stationId }: Props) {
                 const guardName = [guard.firstName || guard.first_name, guard.lastName || guard.last_name]
                   .filter(Boolean).join(' ') || guard.name || guard.fullName || r.guardName || '-';
                 return (
-                  <tr key={r.id || i} className="hover:bg-muted/30">
-                    <td className="px-6 py-3 text-foreground font-medium">{visitorName}</td>
-                    <td className="px-6 py-3 text-muted-foreground">{placeType}</td>
-                    <td className="px-6 py-3 text-foreground">{entry}</td>
-                    <td className="px-6 py-3 text-muted-foreground">{exit}</td>
-                    <td className="px-6 py-3 text-foreground">{guardName}</td>
+                  <tr key={r.id || i} className="hover:bg-muted/40">
+                    <td className="px-2 py-2.5 text-foreground font-medium">{visitorName}</td>
+                    <td className="px-2 py-2.5 text-muted-foreground">{placeType}</td>
+                    <td className="px-2 py-2.5 text-foreground">{entry}</td>
+                    <td className="px-2 py-2.5 text-muted-foreground">{exit}</td>
+                    <td className="px-2 py-2.5 text-foreground">{guardName}</td>
                   </tr>
                 );
               })}

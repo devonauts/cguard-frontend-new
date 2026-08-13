@@ -8,11 +8,16 @@ import {
 import AppLayout from '@/layouts/app-layout';
 import Breadcrumb from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
-import { PageContainer, PageHeader, Section, Stagger, StatCard, StatusBadge, EmptyState, SkeletonCards } from '@/components/kit';
+import {
+  PageContainer, PageHeader, Section, Segmented, Stagger, StatCard, StatusBadge,
+  EmptyState, GlassPanel, SkeletonCards,
+} from '@/components/kit';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { confirmDialog } from '@/components/ui/confirmDialog';
 import routeService from '@/lib/api/routeService';
 import RouteDetailModal from '../routes/RouteDetailModal';
-import { loadGoogleMaps } from '@/utils/loadGoogleMaps';
+import { InsigniaOptimizada, LineaAhorro } from '../routes/OptimizacionPanel';
+import { leerAhorro, km as fmtKm, minutos as fmtMin } from '../routes/routeOptimizacion';
 
 const DOW_NUM: Record<string, number> = {
   sun: 0, sunday: 0, dom: 0, domingo: 0,
@@ -35,56 +40,6 @@ function scheduledOn(route: any, weekday: number): boolean {
   });
 }
 
-const hasCoord = (p: any) => p.lat != null && p.lng != null && !isNaN(parseFloat(p.lat)) && !isNaN(parseFloat(p.lng));
-
-/**
- * Real road-distance optimization via the Google Directions API (waypoint
- * optimization). Treats the first stop as the base (round trip) and lets Google
- * reorder the rest to minimise driving. Returns null if it can't run; the caller
- * falls back to the straight-line greedy method.
- */
-async function optimizeWithGoogle(points: any[]): Promise<any[] | null> {
-  const coordPts = points.filter(hasCoord).map((p) => ({ ...p, _ll: { lat: parseFloat(p.lat), lng: parseFloat(p.lng) } }));
-  if (coordPts.length < 3) return null;
-  await loadGoogleMaps();
-  const g = (window as any).google;
-  if (!g?.maps?.DirectionsService) return null;
-  const svc = new g.maps.DirectionsService();
-  const origin = coordPts[0]._ll;
-  const waypoints = coordPts.slice(1).map((p) => ({ location: p._ll, stopover: true }));
-  const res: any = await new Promise((resolve, reject) =>
-    svc.route(
-      { origin, destination: origin, waypoints, optimizeWaypoints: true, travelMode: g.maps.TravelMode.DRIVING },
-      (r: any, status: string) => (status === 'OK' ? resolve(r) : reject(new Error(status))),
-    ),
-  );
-  const order: number[] = res?.routes?.[0]?.waypoint_order || [];
-  if (!order.length) return null;
-  const reordered = [coordPts[0], ...order.map((i) => coordPts[i + 1])];
-  const noC = points.filter((p) => !hasCoord(p));
-  return [...reordered.map(({ _ll, ...rest }) => rest), ...noC].map((p, i) => ({ ...p, order: i + 1 }));
-}
-
-/** Greedy nearest-neighbour ordering of the route's stops by lat/lng. */
-function optimizePoints(points: any[]): any[] | null {
-  const has = (p: any) => p.lat != null && p.lng != null && !isNaN(parseFloat(p.lat)) && !isNaN(parseFloat(p.lng));
-  const withC = points.filter(has).map((p) => ({ ...p, _la: parseFloat(p.lat), _lo: parseFloat(p.lng) }));
-  if (withC.length < 3) return null;
-  const used = new Set<number>([0]);
-  const order = [withC[0]];
-  let cur = withC[0];
-  while (order.length < withC.length) {
-    let best = -1, bd = Infinity;
-    withC.forEach((p, i) => {
-      if (used.has(i)) return;
-      const d = (p._la - cur._la) ** 2 + (p._lo - cur._lo) ** 2;
-      if (d < bd) { bd = d; best = i; }
-    });
-    used.add(best); order.push(withC[best]); cur = withC[best];
-  }
-  const noC = points.filter((p) => !has(p));
-  return [...order.map(({ _la, _lo, ...rest }) => rest), ...noC].map((p, i) => ({ ...p, order: i + 1 }));
-}
 
 export default function PatrullaBoardPage() {
   usePageTitle('Patrulla vehicular');
@@ -130,19 +85,62 @@ export default function PatrullaBoardPage() {
     finally { setBusyId(null); }
   };
 
+  /**
+   * Reordenar las paradas para gastar menos.
+   *
+   * El cálculo lo hace el servidor y devuelve el AHORRO: es la cifra que
+   * justifica el botón, así que se enseña entera («-8,4 km · -22 min») en vez de
+   * un «listo» que no dice si mereció la pena. Antes esto se resolvía aquí
+   * llamando a la API de rutas de Google desde el navegador —una consulta
+   * facturada por pulsación, sin avisar a nadie— y encima el resultado no se
+   * guardaba en ningún sitio del que se pudiera volver a leer.
+   */
   const optimize = async (route: any) => {
+    if (
+      !(await confirmDialog({
+        title: `Optimizar «${route.name}»`,
+        message:
+          'Se reordenarán las paradas para recortar kilómetros y minutos. El orden manual actual se reemplaza; puedes volver a cambiarlo a mano cuando quieras.',
+        confirmText: 'Optimizar',
+      }))
+    ) {
+      return;
+    }
+
     setBusyId(route.id);
     try {
-      let opt: any[] | null = null;
-      let byRoad = false;
-      try { opt = await optimizeWithGoogle(route.points || []); byRoad = !!opt; }
-      catch { /* Directions API unavailable / not enabled — fall back */ }
-      if (!opt) opt = optimizePoints(route.points || []);
-      if (!opt) { toast.info('Se necesitan al menos 3 paradas con ubicación para optimizar.'); return; }
-      await routeService.update(route.id, { name: route.name, points: opt });
-      toast.success(byRoad ? 'Ruta optimizada por distancia de manejo' : 'Ruta optimizada por cercanía (en línea recta)');
+      const resp: any = await routeService.optimize(route.id);
+      const r = resp?.data ?? resp ?? {};
+      const ahorro = leerAhorro(r.meta ?? r.optimizedMeta ?? r);
+
+      // `changed: false` es un buen resultado, no un fallo: el orden manual ya
+      // era el mejor. «Has ahorrado 0 km» ahí suena a que el botón no funcionó.
+      if (r.changed === false) {
+        toast.success('La ruta ya estaba en el mejor orden posible. No hizo falta mover ninguna parada.');
+      } else if (ahorro?.hayAhorro) {
+        const trozos: string[] = [];
+        if (ahorro.km != null && ahorro.km >= 0.05) trozos.push(`-${fmtKm(ahorro.km)}`);
+        if (ahorro.min != null && ahorro.min >= 0.5) trozos.push(`-${fmtMin(ahorro.min)}`);
+        toast.success(`Ruta optimizada: ${trozos.join(' · ')} frente al orden manual.`);
+      } else {
+        toast.success('Ruta optimizada.');
+      }
+
+      const sinCoords = ahorro?.sinCoordenadas ?? 0;
+      if (sinCoords > 0) {
+        toast.info(
+          sinCoords === 1
+            ? 'Una parada no tiene ubicación: se quedó en su sitio y las demás se repartieron alrededor.'
+            : `${sinCoords} paradas no tienen ubicación: se quedaron en su sitio y las demás se repartieron alrededor.`,
+        );
+      }
       await load();
-    } catch (e: any) { toast.error(e?.message || 'No se pudo optimizar'); }
+    } catch (e) {
+      // Los 400 del servidor (`runInProgress`, `notEnoughStops`, `noCoordinates`)
+      // llegan YA TRADUCIDOS y el interceptor de `api` los enseña tal cual.
+      // Escribir aquí otro texto sólo taparía el que explica el motivo.
+      console.error('Error optimizando ruta', e);
+    }
     finally { setBusyId(null); }
   };
 
@@ -154,41 +152,51 @@ export default function PatrullaBoardPage() {
   return (
     <AppLayout>
       <Breadcrumb items={[{ label: 'Patrulla vehicular' }]} />
-      <PageContainer width="wide" className="cc-root px-4 py-6 sm:px-6">
+      <PageContainer width="wide">
         <PageHeader
           icon={<Car />}
           title="Patrulla vehicular"
           subtitle="Rutas que el supervisor debe recorrer y su estado del día."
           actions={(
             <>
-              <input type="date" value={date} onChange={(e) => setDate(e.target.value)}
-                className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground" />
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                aria-label="Fecha"
+                className="cg-input cg-focus h-9 px-3 text-sm"
+              />
               <Button variant="outline" onClick={() => navigate('/vehicle-patrol/routes')}>
-                <RouteIcon size={15} className="mr-1.5" /> Gestionar rutas
+                <RouteIcon className="size-4" /> Gestionar rutas
               </Button>
               <Button variant="brand" onClick={goCreate}>
-                <Plus size={16} className="mr-1.5" /> Crear patrulla vehicular
+                <Plus className="size-4" /> Crear patrulla vehicular
               </Button>
             </>
           )}
         />
 
         <Stagger className="grid gap-4 sm:grid-cols-2">
-          <StatCard label="Programadas hoy" value={todays.length} icon={<ListChecks />} accent="primary" />
-          <StatCard label="Completadas" value={doneCount} icon={<CheckCircle2 />} accent="green" />
+          <StatCard label="Programadas hoy" value={todays.length} icon={<ListChecks />} accent="brand" />
+          <StatCard label="Completadas" value={doneCount} icon={<CheckCircle2 />} accent="ok" />
         </Stagger>
 
         <Section
           title="Rutas del día"
           icon={<RouteIcon />}
           action={(
-            <button onClick={() => setShowAll((s) => !s)} className="text-sm text-muted-foreground hover:text-foreground">
-              {showAll ? 'Ver solo del día' : 'Ver todas las rutas'}
-            </button>
+            <Segmented
+              value={showAll ? 'todas' : 'dia'}
+              onChange={(v) => setShowAll(v === 'todas')}
+              options={[
+                { value: 'dia', label: 'Del día' },
+                { value: 'todas', label: 'Todas' },
+              ]}
+            />
           )}
         >
         {loading ? (
-          <SkeletonCards count={4} />
+          <SkeletonCards count={4} className="lg:grid-cols-2" />
         ) : shown.length === 0 ? (
           <EmptyState
             icon={<RouteIcon />}
@@ -200,41 +208,56 @@ export default function PatrullaBoardPage() {
             {shown.map((route) => {
               const done = isDone(route.id);
               const stops = (route.points || []).length;
+              const ahorro = leerAhorro(route.optimizedMeta);
               return (
-                <div key={route.id} className={`glass cc-glass-hover p-4 ${done ? 'opacity-80' : ''}`}>
+                /* `flat` obligatorio: son tarjetas que se repiten en una rejilla,
+                   y el desenfoque de `.glass` por fila hunde el desplazamiento
+                   (ver la nota de coste en glass.css). */
+                <GlassPanel key={route.id} flat hover className={`p-4 ${done ? 'opacity-80' : ''}`}>
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <h3 className="truncate text-sm font-semibold text-foreground">{route.name}</h3>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="truncate text-sm font-semibold text-foreground">{route.name}</p>
                         {done
-                          ? <StatusBadge tone="green">Completada</StatusBadge>
-                          : <StatusBadge tone="orange">Pendiente</StatusBadge>}
+                          ? <StatusBadge tone="ok">Completada</StatusBadge>
+                          : <StatusBadge tone="warn">Pendiente</StatusBadge>}
+                        {/* Compacta: en una tarjeta de rejilla no cabe la fecha,
+                            y en la ficha de la ruta sí se enseña entera. */}
+                        <InsigniaOptimizada optimizada={route.optimized} compacta />
                       </div>
-                      <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                        <span className="flex items-center gap-1"><MapPin size={12} className="text-[color:var(--primary)]" />{stops} paradas</span>
-                        {route.vehicleName || route.vehicle?.name ? <span className="flex items-center gap-1"><Car size={12} />{route.vehicleName || route.vehicle?.name}</span> : null}
-                        {route.assignedGuardName || route.guardName ? <span className="flex items-center gap-1"><User size={12} />{route.assignedGuardName || route.guardName}</span> : null}
-                        {route.windowStart && <span className="flex items-center gap-1"><Clock size={12} />{new Date(route.windowStart).toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit' })}</span>}
+                      <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs" style={{ color: 'var(--ink-soft)' }}>
+                        <span className="flex items-center gap-1"><MapPin className="size-3.5" style={{ color: 'var(--brand-text)' }} />{stops} paradas</span>
+                        {route.vehicleName || route.vehicle?.name ? <span className="flex items-center gap-1"><Car className="size-3.5" />{route.vehicleName || route.vehicle?.name}</span> : null}
+                        {route.assignedGuardName || route.guardName ? <span className="flex items-center gap-1"><User className="size-3.5" />{route.assignedGuardName || route.guardName}</span> : null}
+                        {route.windowStart && <span className="flex items-center gap-1"><Clock className="size-3.5" />{new Date(route.windowStart).toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit' })}</span>}
                       </div>
+                      {/* El ahorro no se esconde: es lo que convierte «optimizar»
+                          en una decisión y no en un botón de adorno. */}
+                      {route.optimized && ahorro ? <LineaAhorro ahorro={ahorro} className="mt-2" /> : null}
                     </div>
                   </div>
                   <div className="mt-3 flex flex-wrap items-center gap-2">
-                    <button onClick={() => toggleDone(route)} disabled={busyId === route.id}
-                      className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold disabled:opacity-50 ${done ? 'border border-border text-muted-foreground' : 'text-foreground'}`}
-                      style={done ? undefined : { background: 'var(--primary)' }}>
-                      {busyId === route.id ? <Loader2 size={13} className="animate-spin" /> : <CheckCircle2 size={13} />}
+                    {/* La tinta del botón lleno la pone `cg-btn-brand`
+                        (`--brand-ink`), calculada para contrastar con cualquier
+                        acento. Antes era `text-foreground` sobre el relleno de
+                        marca: ilegible en cuanto el acento se aclaraba. */}
+                    <Button
+                      size="sm"
+                      variant={done ? 'outline' : 'brand'}
+                      onClick={() => toggleDone(route)}
+                      disabled={busyId === route.id}
+                    >
+                      {busyId === route.id ? <Loader2 className="size-3.5 animate-spin" /> : <CheckCircle2 className="size-3.5" />}
                       {done ? 'Deshacer' : 'Marcar completada'}
-                    </button>
-                    <button onClick={() => optimize(route)} disabled={busyId === route.id}
-                      className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs text-foreground hover:text-[color:var(--primary)] disabled:opacity-50">
-                      <Wand2 size={13} /> Optimizar
-                    </button>
-                    <button onClick={() => setDetailId(route.id)}
-                      className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs text-foreground hover:text-[color:var(--primary)]">
-                      <Eye size={13} /> Ver ruta
-                    </button>
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => optimize(route)} disabled={busyId === route.id}>
+                      <Wand2 className="size-3.5" /> Optimizar
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => setDetailId(route.id)}>
+                      <Eye className="size-3.5" /> Ver ruta
+                    </Button>
                   </div>
-                </div>
+                </GlassPanel>
               );
             })}
           </div>

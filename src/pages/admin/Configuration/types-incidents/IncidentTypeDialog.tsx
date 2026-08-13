@@ -39,13 +39,13 @@ export default function IncidentTypeDialog({ open, onOpenChange, title = "Nuevo 
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nombre del Incidente</FormLabel>
-                <FormControl><Input placeholder="p. ej. Theft, Injury, Fire Alarm…" {...field} /></FormControl>
+                <FormLabel>Nombre del incidente</FormLabel>
+                <FormControl><Input placeholder="p. ej. Robo, Lesión, Alarma de incendio…" {...field} /></FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <div className="flex items-center justify-end gap-2 border-t pt-4">
+          <div className="flex items-center justify-end gap-2 border-t pt-4" style={{ borderColor: 'var(--hairline)' }}>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
             <Button type="submit" variant="brand" disabled={submitting} className="px-8 min-w-28">{submitting ? "Guardando…" : "Guardar"}</Button>
           </div>

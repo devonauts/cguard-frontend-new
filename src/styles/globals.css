@@ -8,16 +8,16 @@
 
 @theme inline {
 
-  /* Brand typeface — Poppins everywhere (loaded in index.html). */
-  --font-sans: "Poppins", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-display: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  /* Tipografía de marca — Inter para interfaz densa, Saira para titulares y mando. */
+  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Saira Variable", "Saira", ui-sans-serif, system-ui, sans-serif;
 
   /* Elevation scale — soft, layered shadows (the "expensive" look). */
-  --shadow-xs: 0 1px 2px 0 oklch(0.2 0.02 264 / 0.04);
-  --shadow-sm: 0 1px 3px 0 oklch(0.2 0.02 264 / 0.06), 0 1px 2px -1px oklch(0.2 0.02 264 / 0.05);
-  --shadow-md: 0 4px 12px -2px oklch(0.2 0.02 264 / 0.08), 0 2px 6px -2px oklch(0.2 0.02 264 / 0.05);
-  --shadow-lg: 0 12px 28px -6px oklch(0.2 0.02 264 / 0.12), 0 6px 12px -6px oklch(0.2 0.02 264 / 0.07);
-  --shadow-xl: 0 24px 48px -12px oklch(0.2 0.02 264 / 0.18);
+  --shadow-xs: 0 1px 2px 0 oklch(0 0 0 / 0.04);
+  --shadow-sm: 0 1px 3px 0 oklch(0 0 0 / 0.06), 0 1px 2px -1px oklch(0 0 0 / 0.05);
+  --shadow-md: 0 4px 12px -2px oklch(0 0 0 / 0.08), 0 2px 6px -2px oklch(0 0 0 / 0.05);
+  --shadow-lg: 0 12px 28px -6px oklch(0 0 0 / 0.12), 0 6px 12px -6px oklch(0 0 0 / 0.07);
+  --shadow-xl: 0 24px 48px -12px oklch(0 0 0 / 0.18);
 
   --radius-sm: calc(var(--radius) - 4px);
 
@@ -90,144 +90,10 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-:root {
+/* Los tokens de color viven en tokens.css — sistema acromático + acento
+   configurable. Se cargan ANTES que este archivo (ver main.tsx). Aquí queda
+   sólo lo que no es color: tipografía, animaciones y utilidades. */
 
-  --radius: 0.75rem;
-
-  /* Cool gray canvas — clearly distinct from white cards so they lift off it.
-     This page-vs-card separation is the hallmark of a serious CRM. */
-  --background: oklch(0.962 0.005 264);
-
-  /* Slate ink rather than warm near-black: reads enterprise, not cozy. */
-  --foreground: oklch(0.21 0.015 264);
-
-  --card: oklch(1 0 0);
-
-  --card-foreground: oklch(0.21 0.015 264);
-
-  --popover: oklch(1 0 0);
-
-  --popover-foreground: oklch(0.21 0.015 264);
-
-  /* Deeper, calmer bronze-amber — keeps the brand but loses the neon-candy feel. */
-  --primary: oklch(0.58 0.125 67);
-
-  --primary-foreground: oklch(0.99 0.01 90);
-
-  --secondary: oklch(0.967 0.004 264);
-
-  --secondary-foreground: oklch(0.27 0.02 264);
-
-  --muted: oklch(0.967 0.004 264);
-
-  /* Cool slate muted text — the single biggest "serious vs juvenile" lever. */
-  --muted-foreground: oklch(0.505 0.018 260);
-
-  --accent: oklch(0.953 0.006 264);
-
-  --accent-foreground: oklch(0.27 0.02 264);
-
-  --destructive: oklch(0.55 0.2 27);
-
-  --border: oklch(0.912 0.005 264);
-
-  --input: oklch(0.912 0.005 264);
-
-  --ring: oklch(0.58 0.125 67);
-
-  /* Cohesive professional data palette: amber lead + steel/teal/gold/slate. */
-  --chart-1: oklch(0.63 0.135 67);
-
-  --chart-2: oklch(0.55 0.085 235);
-
-  --chart-3: oklch(0.6 0.09 190);
-
-  --chart-4: oklch(0.72 0.115 82);
-
-  --chart-5: oklch(0.48 0.04 264);
-
-  --sidebar: oklch(0.974 0.004 264);
-
-  --sidebar-foreground: oklch(0.21 0.015 264);
-
-  --sidebar-primary: oklch(0.58 0.125 67);
-
-  --sidebar-primary-foreground: oklch(0.99 0.01 90);
-
-  --sidebar-accent: oklch(0.94 0.006 264);
-
-  --sidebar-accent-foreground: oklch(0.27 0.02 264);
-
-  --sidebar-border: oklch(0.9 0.005 264);
-
-  --sidebar-ring: oklch(0.58 0.125 67);
-}
-
-.dark {
-
-  --background: oklch(0.045 0 0);
-
-  --foreground: oklch(0.97 0 0);
-
-  --card: oklch(0.14 0 0);
-
-  --card-foreground: oklch(0.97 0 0);
-
-  --popover: oklch(0.14 0 0);
-
-  --popover-foreground: oklch(0.97 0 0);
-
-  /* Keep brand amber as primary in dark mode too */
-  --primary: oklch(0.71 0.15 68);
-
-  --primary-foreground: oklch(0.12 0 0);
-
-  --secondary: oklch(0.2 0 0);
-
-  --secondary-foreground: oklch(0.97 0 0);
-
-  --muted: oklch(0.19 0 0);
-
-  --muted-foreground: oklch(0.67 0 0);
-
-  --accent: oklch(0.2 0 0);
-
-  --accent-foreground: oklch(0.97 0 0);
-
-  --destructive: oklch(0.65 0.22 25);
-
-  --border: oklch(1 0 0 / 11%);
-
-  --input: oklch(0.19 0 0);
-
-  --ring: oklch(0.71 0.15 68);
-
-  --chart-1: oklch(0.71 0.15 68);
-
-  --chart-2: oklch(0.696 0.17 162.48);
-
-  --chart-3: oklch(0.769 0.188 70.08);
-
-  --chart-4: oklch(0.627 0.265 303.9);
-
-  --chart-5: oklch(0.645 0.246 16.439);
-
-  --sidebar: oklch(0.08 0 0);
-
-  --sidebar-foreground: oklch(0.97 0 0);
-
-  --sidebar-primary: oklch(0.71 0.15 68);
-
-  --sidebar-primary-foreground: oklch(0.12 0 0);
-
-  --sidebar-accent: oklch(0.2 0 0);
-
-  --sidebar-accent-foreground: oklch(0.97 0 0);
-
-  --sidebar-border: oklch(1 0 0 / 11%);
-
-  --sidebar-ring: oklch(0.71 0.15 68);
-}
 
 @layer base {
   * {
@@ -264,17 +130,28 @@
    ════════════════════════════════════════════════════════════════════════════ */
 
 @layer base {
-  /* Poppins EVERYWHERE — literal stack (not a var, which @theme inline may not emit)
+  /* La pila LITERAL (no una var, que @theme inline puede no emitir), e incluyendo
      and INCLUDING form controls, which browsers otherwise render in the system font.
-     This is why buttons/inputs/dropdowns weren't Poppins. */
-  :root { --font-sans: "Poppins", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-          --font-display: "Poppins", ui-sans-serif, system-ui, sans-serif; }
+     los controles de formulario, que el navegador rendería con la fuente del
+     sistema. Es la razón por la que botones y campos no cogían la tipografía. */
+  :root { --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+          --font-display: "Saira Variable", "Saira", ui-sans-serif, system-ui, sans-serif; }
   html, body, button, input, select, textarea, optgroup, [class*="font-sans"] {
-    font-family: "Poppins", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-family: "Inter Variable", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   }
   html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
-  body { letter-spacing: -0.011em; }
-  h1, h2, h3, h4, h5, .font-display { font-family: "Poppins", ui-sans-serif, system-ui, sans-serif; letter-spacing: -0.02em; }
+  /* El interletraje anterior (-0.011em) estaba calibrado para Poppins, que es
+     ancha y redonda. Inter ya viene compensada: apretarla tanto le come el
+     contrapunzón a 12 px, justo donde más falta hace. */
+  body { letter-spacing: -0.005em; }
+
+  /* CERO BARRADO en todo lo que sea un dato. En una consola de operaciones se
+     leen matrículas, identificadores y coordenadas, y ahí distinguir 0 de O no
+     es un capricho tipográfico: es evitar que alguien teclee mal una placa. */
+  .tabular-nums, [class*="tabular-nums"], td, th, time, code, kbd, samp {
+    font-variant-numeric: tabular-nums slashed-zero;
+  }
+  h1, h2, h3, h4, h5, .font-display { font-family: "Saira Variable", "Saira", ui-sans-serif, system-ui, sans-serif; letter-spacing: -0.028em; }
 
   /* Refined scrollbars — thin, neutral, on-brand. */
   * { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }

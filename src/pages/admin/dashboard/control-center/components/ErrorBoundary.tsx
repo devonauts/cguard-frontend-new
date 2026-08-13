@@ -1,6 +1,10 @@
 import { Component, type ReactNode } from "react";
+import { AlertTriangle, RotateCcw } from "lucide-react";
+import { IconTile } from "@/components/kit";
 
-/** Keeps a render error from blanking the whole page — shows the message instead. */
+/** Evita que un error de render deje la página en blanco: muestra el motivo y
+ *  una salida. El cristal es el mismo del sistema, así que el fallo no parece
+ *  una pantalla de otra aplicación. */
 export class DashboardErrorBoundary extends Component<
   { children: ReactNode },
   { error: Error | null }
@@ -12,13 +16,15 @@ export class DashboardErrorBoundary extends Component<
   render() {
     if (this.state.error) {
       return (
-        <div className="cc-glass m-6 p-8 text-center">
-          <p className="font-display text-base font-semibold text-foreground">No se pudo cargar el panel de control</p>
-          <p className="mt-1 text-sm text-muted-foreground">{this.state.error.message}</p>
-          <button onClick={() => location.reload()}
-            className="mt-4 rounded-lg px-4 py-2 text-sm font-semibold text-foreground"
-            style={{ background: "var(--cc-accent)" }}>
-            Reintentar
+        <div className="glass m-6 flex flex-col items-center p-8 text-center">
+          <IconTile tone="bad" size="lg" className="mb-4"><AlertTriangle /></IconTile>
+          <p className="font-display text-base font-semibold">No se pudo cargar el centro de mando</p>
+          <p className="mt-1 text-sm" style={{ color: "var(--ink-soft)" }}>{this.state.error.message}</p>
+          <button
+            onClick={() => location.reload()}
+            className="cg-btn-brand cg-focus mt-5 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
+          >
+            <RotateCcw className="size-4" /> Reintentar
           </button>
         </div>
       );

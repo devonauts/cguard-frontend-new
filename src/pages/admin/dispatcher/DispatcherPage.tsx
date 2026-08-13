@@ -67,8 +67,9 @@ import {
   X,
   Trash,
   Siren,
+  FileText,
 } from "lucide-react";
-import { PageContainer, PageHeader } from "@/components/kit";
+import { PageContainer, PageHeader, EmptyState, StatusBadge, Toolbar, SkeletonCards } from "@/components/kit";
 import { toast } from "sonner";
 
 // Validaciones (zod) y tipos
@@ -1156,7 +1157,8 @@ export default function DispatcherPage() {
               </Button>
             ) : (
               <Button
-                className="bg-primary/30 text-white cursor-not-allowed"
+                variant="brand"
+                className="cursor-not-allowed"
                 disabled
                 onClick={() => toast.error(t('dispatcher.no_permission_create'))}
                 title={t('dispatcher.no_permission_create')}
@@ -1168,7 +1170,7 @@ export default function DispatcherPage() {
             {/* Filtros */}
             <Sheet open={openFilter} onOpenChange={setOpenFilter}>
               <SheetTrigger asChild>
-                <Button variant="outline" className="border-primary/30 text-primary">
+                <Button variant="outline" style={{ borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }}>
                   <FilterIcon className="mr-2 h-4 w-4" />
                   {t('dispatcher.filters')}
                 </Button>
@@ -1341,16 +1343,14 @@ export default function DispatcherPage() {
                   </div>
 
                   {/* Botón aplicar */}
-                  <Button
-                    className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-                    onClick={() => void aplicarFiltros()}
-                  >
+                  {/* Las variantes del botón sacan relleno y tinta de `--brand`
+                      / `--brand-ink`, que se recalculan solos al cambiar el
+                      acento. Pintarlos con utilidades sueltas se salta esa
+                      derivación y deja el borde y la sombra de cristal fuera. */}
+                  <Button variant="brand" className="w-full" onClick={() => void aplicarFiltros()}>
                     {t('dispatcher.apply_filters')}
                   </Button>
-                  <Button
-                    className="w-full bg-card text-foreground border hover:bg-muted"
-                    onClick={clearFilters}
-                  >
+                  <Button variant="outline" className="w-full" onClick={clearFilters}>
                     {t('dispatcher.clear_filters')}
                   </Button>
                 </div>
@@ -1439,7 +1439,14 @@ export default function DispatcherPage() {
 
         {/* Tabla */}
         {forbiddenRead && (
-          <div className="mb-4 rounded border border-red-200 bg-red-500/10 p-3 text-red-700">
+          <div
+            className="mb-4 rounded-xl border p-3 text-sm"
+            style={{
+              background: 'color-mix(in oklab, var(--bad) 12%, transparent)',
+              borderColor: 'color-mix(in oklab, var(--bad) 30%, transparent)',
+              color: 'var(--bad-text)',
+            }}
+          >
             {forbiddenMessage ? resolveServerMessage(forbiddenMessage) : t('dispatcher.noPermissionViewBanner')}
           </div>
         )}
@@ -1478,20 +1485,21 @@ export default function DispatcherPage() {
               </tr>
             </thead>
             <tbody>
-              {rows.length === 0 ? (
+              {loading ? (
+                <tr><td colSpan={9} className="p-4"><SkeletonCards count={4} /></td></tr>
+              ) : rows.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="py-20">
-                    <div className="flex flex-col items-center justify-center text-center">
-                      <img
-                        src="https://app.guardspro.com/assets/icons/custom/no-data-found.png"
-                        alt="Sin datos"
-                        className="mb-4 h-36"
-                      />
-                      <h3 className="text-lg font-semibold">{t('dispatcher.no_results_title')}</h3>
-                      <p className="mt-1 max-w-xs text-sm text-muted-foreground">
-                        {t('dispatcher.no_results_subtitle')}
-                      </p>
-                    </div>
+                  {/* Antes había aquí una imagen «sin datos» servida desde un
+                      dominio externo: si ese servidor no responde, la tabla
+                      vacía se queda con un icono roto. El vacío lo dibuja el
+                      sistema. */}
+                  <td colSpan={9} className="py-10">
+                    <EmptyState
+                      icon={<FileText />}
+                      title={t('dispatcher.no_results_title')}
+                      description={t('dispatcher.no_results_subtitle')}
+                      className="border-0"
+                    />
                   </td>
                 </tr>
               ) : (
@@ -1532,27 +1540,19 @@ export default function DispatcherPage() {
                         (() => {
                           const s = (r.status || '').toString().toLowerCase();
                           if (s === 'cerrado' || s === 'closed') {
-                            return (
-                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                                Cerrado
-                              </span>
-                            );
+                            return <StatusBadge tone="ok">Cerrado</StatusBadge>;
                           }
 
                           if (s === 'abierto' || s === 'open') {
-                            return (
-                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-sm font-medium bg-red-500/15 text-red-700">
-                                Abierto
-                              </span>
-                            );
+                            // Un despacho abierto es trabajo PENDIENTE, no un
+                            // fallo. Iba en `--bad`, el mismo rojo que un
+                            // pánico: si todo lo normal es rojo, el rojo deja
+                            // de avisar de nada.
+                            return <StatusBadge tone="warn">Abierto</StatusBadge>;
                           }
 
-                          // fallback: neutral badge with raw value or dash
-                          return (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-sm font-medium bg-muted text-foreground">
-                              {r.status || '-'}
-                            </span>
-                          );
+                          // Estado desconocido: píldora neutra con el valor tal cual.
+                          return <StatusBadge tone="neutral" dot={false}>{r.status || '-'}</StatusBadge>;
                         })()
                       }
                     </td>
@@ -1706,29 +1706,29 @@ export default function DispatcherPage() {
               </div>
 
               <div>
-                <Label>From</Label>
-                <Input value={emailFrom} onChange={(e) => setEmailFrom(e.target.value)} placeholder="from@example.com" />
+                <Label>Remitente</Label>
+                <Input value={emailFrom} onChange={(e) => setEmailFrom(e.target.value)} placeholder="remitente@empresa.com" />
               </div>
 
               <div>
-                <Label>To</Label>
-                <Input value={emailTo} onChange={(e) => setEmailTo(e.target.value)} placeholder="to@example.com (comma separated)" />
+                <Label>Para</Label>
+                <Input value={emailTo} onChange={(e) => setEmailTo(e.target.value)} placeholder="correo@empresa.com (separa varios con comas)" />
               </div>
 
               <div>
-                <Label>Subject</Label>
+                <Label>Asunto</Label>
                 <Input value={emailSubject} onChange={(e) => setEmailSubject(e.target.value)} />
               </div>
 
               <div>
-                <Label>Message</Label>
+                <Label>Mensaje</Label>
                 <Textarea value={emailMessage} onChange={(e) => setEmailMessage(e.target.value)} />
               </div>
             </div>
 
             <DialogFooter className="mt-4 flex justify-end gap-2">
               <Button variant="outline" onClick={() => setSendDialogOpen(false)}>{t('cancel')}</Button>
-              <Button className="bg-primary hover:bg-primary/90 text-white" onClick={performSend} disabled={sendingEmail}>{sendingEmail ? t('dispatcher.sending') : t('send')}</Button>
+              <Button variant="brand" onClick={performSend} disabled={sendingEmail}>{sendingEmail ? t('dispatcher.sending') : t('send')}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -1765,7 +1765,7 @@ export default function DispatcherPage() {
 
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                <AlertDialogAction className="bg-primary text-primary-foreground hover:bg-primary/90" onClick={handleCreateShare} disabled={shareLoading}>
+                <AlertDialogAction className="cg-btn-brand" onClick={handleCreateShare} disabled={shareLoading}>
                   {shareLoading ? 'Creando...' : 'Generar y copiar'}
                 </AlertDialogAction>
               </AlertDialogFooter>
@@ -1783,7 +1783,7 @@ export default function DispatcherPage() {
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancelar</AlertDialogCancel>
-              <AlertDialogAction className="bg-red-600 text-white hover:bg-red-700" onClick={handleConfirmDelete}>Eliminar</AlertDialogAction>
+              <AlertDialogAction className="cg-btn-bad" onClick={handleConfirmDelete}>Eliminar</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

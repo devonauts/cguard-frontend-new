@@ -16,7 +16,8 @@ import inventoryItemService, {
 } from '@/lib/api/inventoryItemService';
 import inventoryAssignmentService, { InventoryAssignment } from '@/lib/api/inventoryAssignmentService';
 import { securityGuardService } from '@/lib/api/securityGuardService';
-import { EmptyState, Modal } from '@/components/kit';
+import { EmptyState, Modal, SkeletonCards } from '@/components/kit';
+import { FIELD_CLS_LG } from '@/pages/admin/clientes/components/_shared/tab-kit';
 import type { PostSite } from '@/types';
 
 type ConditionKey = 'bueno' | 'regular' | 'danado';
@@ -33,11 +34,19 @@ const CONDITION_DISPLAY: Record<string, string> = {
   regular: 'Regular',
   danado: 'Da\u00f1ado',
 };
-const CONDITION_CSS: Record<string, string> = {
-  bueno: 'bg-emerald-500/15 text-emerald-600',
-  regular: 'bg-amber-500/15 text-amber-700',
-  danado: 'bg-red-500/15 text-red-700',
+// El estado del artículo sale de los semánticos fijos del sistema.
+const CONDITION_TONE: Record<string, 'ok' | 'warn' | 'bad'> = {
+  bueno: 'ok',
+  regular: 'warn',
+  danado: 'bad',
 };
+function conditionStyle(key: string): React.CSSProperties {
+  const t = CONDITION_TONE[key] ?? 'ok';
+  return {
+    background: `color-mix(in oklab, var(--${t}) 15%, transparent)`,
+    color: `var(--${t}-text)`,
+  };
+}
 
 function normCond(v: string | undefined): ConditionKey {
   if (!v) return 'bueno';
@@ -128,9 +137,9 @@ function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
       <div className="space-y-5">
           {/* Item */}
           <div className="space-y-2">
-            <Label>Artículo del inventario <span className="text-red-500">*</span></Label>
+            <Label>Artículo del inventario <span style={{ color: 'var(--bad-text)' }}>*</span></Label>
             {selectedItem ? (
-              <div className="flex items-center justify-between bg-blue-500/10 border border-blue-200 rounded-lg px-3 py-2">
+              <div className="flex items-center justify-between rounded-lg border px-3 py-2" style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)' }}>
                 <div>
                   <div className="font-medium text-foreground text-sm">{selectedItem.name}</div>
                   <div className="text-xs text-muted-foreground">{ITEM_TYPE_LABELS[selectedItem.type]}{selectedItem.serialNumber && ' · #' + selectedItem.serialNumber}</div>
@@ -201,7 +210,7 @@ function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
           {/* Notes */}
           <div className="space-y-1">
             <Label>Notas (opcional)</Label>
-            <textarea className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none" rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Observaciones..." />
+            <textarea className={`${FIELD_CLS_LG} resize-none`} rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Observaciones..." />
           </div>
       </div>
     </Modal>
@@ -259,7 +268,7 @@ function ReturnModal({ assignment, onClose, onDone }: ReturnModalProps) {
         </div>
         <div className="space-y-1">
           <Label>Notas (opcional)</Label>
-          <textarea className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none" rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Observaciones..." />
+          <textarea className={`${FIELD_CLS_LG} resize-none`} rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Observaciones..." />
         </div>
       </div>
     </Modal>
@@ -325,7 +334,7 @@ export default function Inventory({ site }: { site?: PostSite }) {
       || getGuardName((a as any).assignedTo).toLowerCase().includes(q);
   });
 
-  const countMsg = loading ? 'Cargando...'
+  const countMsg = loading ? 'Cargando…'
     : assignments.length + ' artículo' + (assignments.length !== 1 ? 's' : '') + ' asignado' + (assignments.length !== 1 ? 's' : '');
 
   return (
@@ -347,9 +356,9 @@ export default function Inventory({ site }: { site?: PostSite }) {
         </div>
       )}
 
-      <div className="bg-card border border-border rounded-lg overflow-hidden">
+      <div className="glass overflow-hidden">
         {loading ? (
-          <div className="text-center py-10 text-muted-foreground text-sm">Cargando asignaciones...</div>
+          <div className="p-4"><SkeletonCards count={3} /></div>
         ) : filtered.length === 0 ? (
           <EmptyState
             icon={<Package />}
@@ -364,14 +373,14 @@ export default function Inventory({ site }: { site?: PostSite }) {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-muted/30 border-b border-border">
+              <thead className="border-b border-border">
                 <tr>
-                  <th className="px-4 py-3 text-left font-semibold text-foreground/70">Artículo</th>
-                  <th className="px-4 py-3 text-left font-semibold text-foreground/70 hidden sm:table-cell">Tipo</th>
-                  <th className="px-4 py-3 text-left font-semibold text-foreground/70 hidden md:table-cell">Condición</th>
-                  <th className="px-4 py-3 text-left font-semibold text-foreground/70">Responsable</th>
-                  <th className="px-4 py-3 text-left font-semibold text-foreground/70 hidden lg:table-cell">Asignado</th>
-                  <th className="px-4 py-3 text-right font-semibold text-foreground/70">Acción</th>
+                  <th className="cg-eyebrow px-2 py-2">Artículo</th>
+                  <th className="cg-eyebrow px-2 py-2 hidden sm:table-cell">Tipo</th>
+                  <th className="cg-eyebrow px-2 py-2 hidden md:table-cell">Condición</th>
+                  <th className="cg-eyebrow px-2 py-2">Responsable</th>
+                  <th className="cg-eyebrow px-2 py-2 hidden lg:table-cell">Asignado</th>
+                  <th className="cg-eyebrow px-2 py-2 text-right">Acción</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -379,30 +388,30 @@ export default function Inventory({ site }: { site?: PostSite }) {
                   const item = (a as any).inventoryItem;
                   const ck = normCond(a.conditionAtCheckout);
                   return (
-                    <tr key={a.id} className="hover:bg-muted/30 transition-colors">
-                      <td className="px-4 py-3">
+                    <tr key={a.id} className="hover:bg-muted/40 transition-colors">
+                      <td className="px-2 py-2.5">
                         <div className="font-medium text-foreground">{item?.name || '—'}</div>
                         {item?.serialNumber && <div className="text-xs text-muted-foreground font-mono">#{item.serialNumber}</div>}
                       </td>
-                      <td className="px-4 py-3 text-foreground/70 hidden sm:table-cell">{item ? ((ITEM_TYPE_LABELS as any)[item.type] || item.type) : '—'}</td>
-                      <td className="px-4 py-3 hidden md:table-cell">
-                        <span className={'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ' + (CONDITION_CSS[ck] || '')}>
+                      <td className="px-2 py-2.5 text-foreground/70 hidden sm:table-cell">{item ? ((ITEM_TYPE_LABELS as any)[item.type] || item.type) : '—'}</td>
+                      <td className="px-2 py-2.5 hidden md:table-cell">
+                        <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium" style={conditionStyle(ck)}>
                           {CONDITION_DISPLAY[ck] || ck}
                         </span>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-2 py-2.5">
                         {(a as any).assignedTo ? (
                           <span className="flex items-center gap-1.5 text-foreground">
                             <User className="w-3.5 h-3.5 text-muted-foreground" />{getGuardName((a as any).assignedTo)}
                           </span>
                         ) : <span className="text-muted-foreground text-xs">Sin asignar</span>}
                       </td>
-                      <td className="px-4 py-3 text-muted-foreground text-xs hidden lg:table-cell">
+                      <td className="px-2 py-2.5 text-muted-foreground text-xs hidden lg:table-cell">
                         {a.assignedAt ? new Date(a.assignedAt).toLocaleDateString() : '—'}
                       </td>
-                      <td className="px-4 py-3 text-right">
+                      <td className="px-2 py-2.5 text-right">
                         <button
-                          className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-md border border-border hover:bg-amber-500/10 hover:border-amber-300 hover:text-amber-700 text-foreground/70 transition-colors"
+                          className="cg-btn-glass cg-focus inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs transition-colors"
                           onClick={() => setReturnTarget(a)}
                         ><RotateCcw className="w-3.5 h-3.5" />Devolver</button>
                       </td>

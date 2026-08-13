@@ -3,14 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import AppLayout from '@/layouts/app-layout';
 import Breadcrumb from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Award, GraduationCap, Lock, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import { usePermissions } from '@/hooks/usePermissions';
 import { trainingCourseService, type TrainingCourse } from '@/lib/api/trainingCourseService';
 import { categoryLabel, levelLabel } from './trainingConstants';
-import { PageContainer, PageHeader, EmptyState, SkeletonCards } from '@/components/kit';
+import {
+  PageContainer, PageHeader, EmptyState, SkeletonCards, GlassPanel, StatusBadge,
+} from '@/components/kit';
 
 export default function TrainingCatalogPage() {
   const navigate = useNavigate();
@@ -43,7 +43,13 @@ export default function TrainingCatalogPage() {
     return (
       <AppLayout>
         <Breadcrumb items={[{ label: 'Panel de control', path: '/dashboard' }, { label: 'Entrenamiento' }]} />
-        <div className="p-8 text-center text-muted-foreground">No tienes permiso para ver el catálogo.</div>
+        <PageContainer width="wide" className="p-4 sm:p-6">
+          <EmptyState
+            icon={<Lock />}
+            title="Sin acceso al catálogo"
+            description="No tienes permiso para ver el catálogo."
+          />
+        </PageContainer>
       </AppLayout>
     );
   }
@@ -58,7 +64,7 @@ export default function TrainingCatalogPage() {
         ]}
       />
 
-      <PageContainer width="wide" className="p-4">
+      <PageContainer width="wide" className="p-4 sm:p-6">
         <PageHeader
           icon={<GraduationCap />}
           title="Cursos de la plataforma"
@@ -74,27 +80,30 @@ export default function TrainingCatalogPage() {
           />
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* El catálogo pide hasta 200 cursos: la tarjeta se repite, así que va
+            en cristal PLANO. Con `.glass` serían 200 desenfoques y el
+            desplazamiento se cae. */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {!loading && courses.map((c) => (
-            <Card key={c.id} className="flex flex-col cg-card-hover rounded-2xl">
+            <GlassPanel key={c.id} flat hover className="flex flex-col overflow-hidden">
               {c.coverUrl && (
-                <div className="h-32 w-full bg-muted overflow-hidden rounded-t-lg">
+                <div className="h-32 w-full overflow-hidden" style={{ background: 'var(--glass-sunken)' }}>
                   <img src={c.coverUrl} alt={c.title} className="h-full w-full object-cover" />
                 </div>
               )}
-              <CardHeader className="pb-2">
+              <div className="flex flex-1 flex-col p-5">
                 <div className="flex items-start justify-between gap-2">
-                  <CardTitle className="text-base">{c.title}</CardTitle>
-                  <Badge variant="outline" className="shrink-0 gap-1"><Lock className="h-3 w-3" /> Addon</Badge>
+                  <h3 className="truncate text-sm font-semibold tracking-tight">{c.title}</h3>
+                  <StatusBadge tone="neutral" dot={false} className="shrink-0"><Lock className="h-3 w-3" /> Addon</StatusBadge>
                 </div>
-              </CardHeader>
-              <CardContent className="flex-1 flex flex-col">
-                {c.description && <p className="text-sm text-muted-foreground line-clamp-3">{c.description}</p>}
-                <div className="flex flex-wrap items-center gap-2 mt-3 text-xs">
-                  <Badge variant="secondary">{categoryLabel(c.category)}</Badge>
-                  <Badge variant="secondary">{levelLabel(c.level)}</Badge>
-                  <span className="inline-flex items-center gap-1 text-muted-foreground">
-                    <Award className="h-3.5 w-3.5 text-primary" /> {c.pointsValue ?? 0} pts
+                {c.description && (
+                  <p className="mt-2 line-clamp-3 text-sm" style={{ color: 'var(--ink-soft)' }}>{c.description}</p>
+                )}
+                <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
+                  <StatusBadge tone="neutral" dot={false}>{categoryLabel(c.category)}</StatusBadge>
+                  <StatusBadge tone="neutral" dot={false}>{levelLabel(c.level)}</StatusBadge>
+                  <span className="inline-flex items-center gap-1 tabular-nums" style={{ color: 'var(--ink-soft)' }}>
+                    <Award className="h-3.5 w-3.5" style={{ color: 'var(--brand-text)' }} /> {c.pointsValue ?? 0} pts
                   </span>
                 </div>
                 <div className="mt-4 flex gap-2">
@@ -108,12 +117,12 @@ export default function TrainingCatalogPage() {
                       className="flex-1"
                       onClick={() => navigate(`/training/courses/${c.id}`)}
                     >
-                      <Users className="h-4 w-4 mr-1" /> Asignar
+                      <Users /> Asignar
                     </Button>
                   )}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </GlassPanel>
           ))}
         </div>
       </PageContainer>

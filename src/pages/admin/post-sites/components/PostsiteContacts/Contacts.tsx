@@ -1,7 +1,6 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import useScrollToTopOnMount from '@/hooks/useScrollToTopOnMount';
 import { useParams } from 'react-router-dom';
-import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import { clientService } from '@/lib/api/clientService';
@@ -311,7 +310,7 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
               <div className="relative">
                 <button
                   onClick={() => setHeaderMenuOpen(v => !v)}
-                  className="px-3 py-2 border rounded-md inline-flex items-center gap-2 bg-card"
+                  className="cg-btn-glass cg-focus inline-flex items-center gap-2 rounded-md px-3 py-2"
                 >
                   <span>{t('actions.action')}</span>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
@@ -319,7 +318,7 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
                   </svg>
                 </button>
                 {headerMenuOpen && (
-                  <div className="absolute mt-2 bg-card shadow-lg rounded-md z-20">
+                  <div className="glass-raised absolute z-20 mt-2">
                     <button onClick={deleteSelected} className="block px-4 py-2 text-sm hover:bg-muted/30">{t('actions.delete')}</button>
                   </div>
                 )}
@@ -355,12 +354,12 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
             <table className="min-w-full table-auto">
             <thead>
               <tr className="border-b bg-muted/30">
-                <th className="px-4 py-3 text-left">
+                <th className="cg-eyebrow px-2 py-2">
                   <input type="checkbox" onChange={(e) => { const checked = e.target.checked; if (checked) setSelectedIds(contacts.map(c => c.id)); else setSelectedIds([]); }} checked={selectedIds.length === contacts.length && contacts.length > 0} /></th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-foreground">{t('clients.contacts.contactName') || 'Name'}</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-foreground">{t('clients.contacts.contactEmail') || 'Email'}</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-foreground">{t('clients.contacts.contactPhone') || 'Mobile Number'}</th>
-                <th className="px-4 py-3 text-left"></th>
+                <th className="cg-eyebrow px-2 py-2">{t('clients.contacts.contactName') || 'Name'}</th>
+                <th className="cg-eyebrow px-2 py-2">{t('clients.contacts.contactEmail') || 'Email'}</th>
+                <th className="cg-eyebrow px-2 py-2">{t('clients.contacts.contactPhone') || 'Mobile Number'}</th>
+                <th className="cg-eyebrow px-2 py-2"></th>
               </tr>
             </thead>
             <tbody>
@@ -376,13 +375,13 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
                 </tr>
               ) : filtered.map(c => (
                 <tr key={c.id} className="border-t">
-                  <td className="px-4 py-3"><input type="checkbox" checked={selectedIds.includes(c.id)} onChange={() => toggleSelect(c.id)} /></td>
-                  <td className="px-4 py-3">
+                  <td className="px-2 py-2.5"><input type="checkbox" checked={selectedIds.includes(c.id)} onChange={() => toggleSelect(c.id)} /></td>
+                  <td className="px-2 py-2.5">
                     <div className="text-sm font-medium text-foreground">{c.name}</div>
                   </td>
-                  <td className="px-4 py-3">{c.email || '-'}</td>
-                  <td className="px-4 py-3">{c.mobile || '-'}</td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="px-2 py-2.5">{c.email || '-'}</td>
+                  <td className="px-2 py-2.5">{c.mobile || '-'}</td>
+                  <td className="px-2 py-2.5 text-right">
                     <div className="relative inline-block">
                       <button
                         onClick={() => setOpenMenuId(prev => (prev === c.id ? null : c.id))}
@@ -395,7 +394,7 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
                       </button>
 
                       {openMenuId === c.id && (
-                        <div id={`actions-${c.id}-menu`} className="absolute right-0 mt-2 w-36 bg-card border rounded-md shadow-lg z-50">
+                        <div id={`actions-${c.id}-menu`} className="glass-raised absolute right-0 z-50 mt-2 w-36">
                           <button
                             onClick={() => { setForm(c); setShowAdd(true); setOpenMenuId(null); }}
                             className="w-full flex items-center gap-2 px-3 py-2 hover:bg-muted/30 focus:outline-none"
@@ -407,7 +406,7 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
                           </button>
                           <button
                             onClick={() => { setConfirmDeleteIds([c.id]); setOpenMenuId(null); }}
-                            className="w-full flex items-center gap-2 px-3 py-2 text-red-600 hover:bg-muted/30 focus:outline-none"
+                            className="cg-btn-ghost cg-focus flex w-full items-center gap-2 px-3 py-2" style={{ color: 'var(--bad-text)' }}
                             aria-label="Delete"
                             title={t('actions.delete') || 'Delete'}
                           >
@@ -429,7 +428,7 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
               items={filtered}
               loading={loading}
               renderCard={(c: Contact) => (
-                <div className="p-4 bg-card border rounded-lg">
+                <div className="glass-flat p-4">
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <div className="text-sm font-semibold">{c.name}</div>
@@ -462,12 +461,12 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
           <div>
             <label className="block text-sm text-foreground/70 mb-1">{t('clients.contacts.form.Name')}</label>
             <input className="w-full border rounded-md h-10 px-3" value={form.name || ''} onChange={e => handleChange('name', e.target.value)} />
-            {errors.name && <p className="text-xs text-red-600 mt-1">{errors.name}</p>}
+            {errors.name && <p className="mt-1 text-xs" style={{ color: 'var(--bad-text)' }}>{errors.name}</p>}
           </div>
           <div>
             <label className="block text-sm text-foreground/70 mb-1">{t('clients.contacts.form.Email')}</label>
             <input className="w-full border rounded-md h-10 px-3" value={form.email || ''} onChange={e => handleChange('email', e.target.value)} />
-            {errors.email && <p className="text-xs text-red-600 mt-1">{errors.email}</p>}
+            {errors.email && <p className="mt-1 text-xs" style={{ color: 'var(--bad-text)' }}>{errors.email}</p>}
           </div>
           <div>
             <label className="block text-sm text-foreground/70 mb-1">{t('clients.contacts.form.Mobile Number')}</label>
@@ -478,7 +477,7 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
                 placeholder={t('clients.contacts.form.mobilePlaceholder', 'ej. +593987654321')}
               />
             </div>
-            {errors.mobile && <p className="text-xs text-red-600 mt-1">{errors.mobile}</p>}
+            {errors.mobile && <p className="mt-1 text-xs" style={{ color: 'var(--bad-text)' }}>{errors.mobile}</p>}
           </div>
           <div>
             <label className="block text-sm text-foreground/70 mb-1">{t('clients.contacts.form.Description')}</label>

@@ -6,7 +6,8 @@
         "label": "MI CUENTA",
         "items": [
           { "id": "perfil-usuario", "label": "Perfil del Usuario", "path": "/setting/user-profile", "icon": "User", "desc": "Tus datos personales y foto." },
-          { "id": "cambiar-contrasena", "label": "Cambiar Contraseña", "path": "/setting/change-password", "icon": "KeyRound", "desc": "Actualiza tu contraseña de acceso." }
+          { "id": "cambiar-contrasena", "label": "Cambiar Contraseña", "path": "/setting/change-password", "icon": "KeyRound", "desc": "Actualiza tu contraseña de acceso." },
+          { "id": "apariencia", "label": "Apariencia", "path": "/setting/apariencia", "icon": "Palette", "desc": "Color de la plataforma y modo claro u oscuro." }
         ]
       },
       {
@@ -16,7 +17,7 @@
           { "id": "billing", "label": "Suscripción", "path": "/setting/billing", "icon": "CreditCard", "desc": "Plan, facturación y pagos." },
           { "id": "departamentos", "label": "Departamentos", "path": "/setting/Departamentos", "icon": "Network", "desc": "Estructura organizacional interna." },
           { "id": "roles", "label": "Roles de Usuario", "path": "/setting/roles", "icon": "ShieldHalf", "desc": "Define roles y permisos por tenant." },
-          { "id": "campos-perfil", "label": "Campos de Perfil", "path": "/setting/campos-perfil", "icon": "ListChecks", "desc": "Personaliza los campos de los perfiles." }
+          { "id": "campos-perfil", "label": "Campos de Perfil", "path": "/setting/campos-perfil", "icon": "ListChecks", "desc": "Campos propios en las fichas (aún no disponible)." }
         ]
       },
       {
@@ -26,8 +27,7 @@
           { "id": "keep-safe", "label": "Guardias", "path": "/setting/keep-safe", "icon": "Shield", "desc": "Configuración del personal de seguridad." },
           { "id": "rondas-config", "label": "Configuración de Rondas", "path": "/setting/rondas", "icon": "Route", "desc": "Parámetros de rondas y patrullaje." },
           { "id": "tipos-incidentes", "label": "Tipos de Incidentes", "path": "/setting/tipos-incidentes", "icon": "AlertTriangle", "desc": "Categorías para reportar incidentes." },
-          { "id": "tipos-licencias", "label": "Tipos de Licencias", "path": "/setting/tipos-licencias", "icon": "BadgeCheck", "desc": "Licencias y certificaciones válidas." },
-          { "id": "conjunto-habilidades", "label": "Conjuntos de Habilidades", "path": "/setting/conjunto-habilidades", "icon": "Wrench", "desc": "Habilidades asignables a guardias." }
+          { "id": "tipos-licencias", "label": "Tipos de Licencias", "path": "/setting/tipos-licencias", "icon": "BadgeCheck", "desc": "Licencias y certificaciones válidas." }
         ]
       },
       {
@@ -51,7 +51,7 @@
       {
         "label": "INFORMES",
         "items": [
-          { "id": "report-configuration", "label": "Configuración de Informes", "path": "/setting/report-configuration", "icon": "FileCog", "desc": "Plantillas y opciones de informes." }
+          { "id": "report-configuration", "label": "Configuración de Informes", "path": "/setting/report-configuration", "icon": "FileCog", "desc": "Privacidad, encabezado y pie de los informes." }
         ]
       },
       {
@@ -66,7 +66,7 @@
         "label": "OTROS",
         "items": [
           { "id": "politicas", "label": "Políticas y Documentos", "path": "/setting/politicas", "icon": "FileText", "desc": "Políticas internas y documentos legales." },
-          { "id": "other-settings", "label": "Otras Configuraciones", "path": "/setting/other-settings", "icon": "Settings2", "desc": "Ajustes adicionales del sistema." }
+          { "id": "other-settings", "label": "Otras Configuraciones", "path": "/setting/other-settings", "icon": "Settings2", "desc": "Dónde se configura cada preferencia general." }
         ]
       }
     ]

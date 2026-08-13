@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Plus, Pencil, Trash2, Smartphone, Image as ImageIcon, Tag, BadgeCheck } from 'lucide-react';
+import { Plus, Pencil, Trash2, Smartphone, Image as ImageIcon, Tag, BadgeCheck, Upload } from 'lucide-react';
 import CustomerAppPreview, { serviceIcon, SERVICE_ICONS } from './CustomerAppPreview';
 
 /** Pre-made security-service templates: pick one to pre-fill title/description + a
@@ -48,7 +48,7 @@ const SERVICE_TEMPLATES: { title: string; description: string; iconName: string 
   { title: 'Asesoría en seguridad', description: 'Consultoría y diseño de esquemas de seguridad a la medida.', iconName: 'advisory' },
 ];
 import { toast } from 'sonner';
-import { PageContainer, PageHeader, Section } from '@/components/kit';
+import { PageContainer, PageHeader, Section, EmptyState, StatusBadge, SkeletonBlock } from '@/components/kit';
 import {
   createBanner,
   createCertification,
@@ -493,6 +493,7 @@ export default function MobilPage() {
     newImageFiles: [] as File[], // newly selected images to upload on save
   };
   const [serviceForm, setServiceForm] = useState(defaultServiceForm);
+  const publishedServices = services.filter((s) => s.publishedOnMobile).length;
 
   return (
     <AppLayout>
@@ -502,67 +503,22 @@ export default function MobilPage() {
             icon={<Smartphone />}
             title="App móvil del cliente (Mi Seguridad)"
             subtitle="Configura los banners, servicios y certificaciones. La vista previa muestra cómo se verá en el teléfono mientras editas."
+            badges={
+              <>
+                <StatusBadge tone={bannerItems.length ? 'ok' : 'neutral'}>
+                  {bannerItems.length} banner{bannerItems.length === 1 ? '' : 's'}
+                </StatusBadge>
+                <StatusBadge tone={publishedServices ? 'ok' : 'neutral'}>
+                  {publishedServices} servicio{publishedServices === 1 ? '' : 's'} publicado{publishedServices === 1 ? '' : 's'}
+                </StatusBadge>
+                <StatusBadge tone={certItems.length ? 'ok' : 'neutral'}>
+                  {certItems.length} certificación{certItems.length === 1 ? '' : 'es'}
+                </StatusBadge>
+              </>
+            }
           />
           <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
             <div className="min-w-0 space-y-6">
-          <div className="flex items-center justify-end gap-2">
-              <Dialog>
- 
-                <DialogContent className="w-[800px] max-w-full">
-                  <DialogHeader>
-                    <DialogTitle>Pricebook (Servicios)</DialogTitle>
-                    <DialogDescription>Lista de servicios publicados por este tenant. La app móvil puede consumir estos servicios.</DialogDescription>
-                  </DialogHeader>
-                  <div className="mt-4">
-                    <Table className="table-fixed">
-                      <colgroup>
-                        <col style={{ width: '35%' }} />
-                        <col style={{ width: '45%' }} />
-                        <col style={{ width: '20%' }} />
-                      </colgroup>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Título</TableHead>
-                          <TableHead>Descripción</TableHead>
-                          <TableHead>Precio</TableHead>
-                          <TableHead>Publicado</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {services.map((s) => (
-                          <TableRow key={s.id}>
-                            <TableCell>{s.title}</TableCell>
-                            <TableCell className="truncate">{s.description}</TableCell>
-                            <TableCell>{s.price ?? '-'}</TableCell>
-                            <TableCell>
-                              <Switch
-                                checked={Boolean(s.publishedOnMobile)}
-                                onCheckedChange={async (checked) => {
-                                  try {
-                                    setServices((prev) => prev.map((it) => (it.id === s.id ? { ...it, publishedOnMobile: checked } : it)));
-                                    await updateService(s.id, { publishedOnMobile: checked });
-                                    // refresh full list to reflect server-side transforms
-                                    const latest = await listServices();
-                                    setServices(latest);
-                                  } catch (err) {
-                                    console.error(err);
-                                    toast.error('No se pudo actualizar el estado de publicación.');
-                                    setServices((prev) => prev.map((it) => (it.id === s.id ? { ...it, publishedOnMobile: s.publishedOnMobile } : it)));
-                                  }
-                                }}
-                              />
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                  <DialogFooter>
-                    <Button variant="ghost">Cerrar</Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </div>
 
           <Section
             title="Banner Superior"
@@ -574,7 +530,9 @@ export default function MobilPage() {
               </Button>
             }
           >
-            <p className="text-sm text-muted-foreground">Crea, edita o elimina banners superiores.</p>
+            <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
+              Las imágenes que giran en la portada de la app del cliente.
+            </p>
 
             <Table className="table-fixed">
               <colgroup>
@@ -594,8 +552,25 @@ export default function MobilPage() {
               <TableBody>
                 {bannerItems.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center py-8 text-sm text-muted-foreground">
-                      {loading ? 'Cargando...' : 'No hay banners registrados.'}
+                    <TableCell colSpan={4} className="py-6 text-center">
+                      {loading ? (
+                        <div className="space-y-2">
+                          <SkeletonBlock className="h-10" />
+                          <SkeletonBlock className="h-10" />
+                        </div>
+                      ) : (
+                        <EmptyState
+                          className="border-0 py-4"
+                          icon={<ImageIcon />}
+                          title="Todavía no hay banners"
+                          description="Añade uno para destacar tus servicios en la portada de la app."
+                          action={
+                            <Button onClick={openCreateBanner} variant="brand" size="sm" className="gap-2">
+                              <Plus className="h-4 w-4" /> Nuevo banner
+                            </Button>
+                          }
+                        />
+                      )}
                     </TableCell>
                   </TableRow>
                 )}
@@ -608,7 +583,7 @@ export default function MobilPage() {
                           <button
                             type="button"
                             onClick={() => openBannerPreview(resolveBannerImageUrl(item))}
-                            className="group inline-flex items-center justify-center overflow-hidden rounded-md border border-border bg-card p-0 shadow-sm hover:border-primary/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                            className="glass-flat glass-hover cg-focus group inline-flex items-center justify-center overflow-hidden p-0"
                           >
                             <img
                               src={resolveBannerImageUrl(item)}
@@ -619,14 +594,14 @@ export default function MobilPage() {
                             />
                           </button>
                         ) : (
-                          <span className="text-sm text-muted-foreground">{item.imageUrl?.length ?? 0} archivo(s)</span>
+                          <StatusBadge tone="neutral" dot={false}>Sin imagen</StatusBadge>
                         )}
                       </TableCell>
                       <TableCell className="text-right space-x-2">
-                        <Button size="sm" variant="outline" className="text-primary border-primary hover:bg-primary/10" onClick={() => openEditBanner(item)}>
+                        <Button size="icon-sm" variant="outline" aria-label="Editar" onClick={() => openEditBanner(item)}>
                           <Pencil className="h-4 w-4" />
                         </Button>
-                        <Button size="sm" variant="destructive" onClick={() => openDeleteConfirmation(item.id, item.title || 'este banner', 'banner')}>
+                        <Button size="icon-sm" variant="destructive" aria-label="Eliminar" onClick={() => openDeleteConfirmation(item.id, item.title || 'este banner', 'banner')}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </TableCell>
@@ -660,14 +635,20 @@ export default function MobilPage() {
                         <div className="mt-1.5 flex max-h-24 flex-wrap gap-1.5 overflow-y-auto">
                           {SERVICE_TEMPLATES.map((tpl) => {
                             const Ic = serviceIcon(tpl.iconName);
+                            const activa = serviceForm.title === tpl.title;
                             return (
                               <button
                                 key={tpl.title}
                                 type="button"
                                 onClick={() => setServiceForm((p) => ({ ...p, title: tpl.title, description: tpl.description, iconName: tpl.iconName, publishedOnMobile: true }))}
-                                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-muted/40 px-2.5 py-1 text-xs transition hover:border-primary/50 hover:bg-primary/10"
+                                className="cg-focus inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition"
+                                style={{
+                                  background: activa ? 'var(--brand-wash)' : 'var(--glass-sunken)',
+                                  borderColor: activa ? 'var(--brand-line)' : 'var(--hairline)',
+                                  color: activa ? 'var(--brand-text)' : 'var(--ink-soft)',
+                                }}
                               >
-                                <Ic className="size-3.5 text-primary" /> {tpl.title}
+                                <Ic className="size-3.5" /> {tpl.title}
                               </button>
                             );
                           })}
@@ -690,7 +671,12 @@ export default function MobilPage() {
                               type="button"
                               title={key}
                               onClick={() => setServiceForm({ ...serviceForm, iconName: key })}
-                              className={`grid size-9 place-items-center rounded-lg border transition ${serviceForm.iconName === key ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground hover:border-primary/40'}`}
+                              className="cg-focus grid size-9 place-items-center rounded-xl border transition"
+                              style={
+                                serviceForm.iconName === key
+                                  ? { background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }
+                                  : { background: 'var(--glass-sunken)', borderColor: 'var(--hairline)', color: 'var(--ink-soft)' }
+                              }
                             >
                               <Ic className="size-4" />
                             </button>
@@ -699,25 +685,38 @@ export default function MobilPage() {
                       </div>
                       <div>
                         <Label>Imágenes del servicio</Label>
-                        <p className="mb-1.5 text-xs text-muted-foreground">Se muestran en la pantalla de detalle del servicio en la app. Puedes agregar varias.</p>
+                        <p className="mb-1.5 text-xs" style={{ color: 'var(--ink-soft)' }}>Se muestran en la pantalla de detalle del servicio en la app. Puedes agregar varias.</p>
                         <div className="flex flex-wrap gap-2">
                           {serviceForm.images.map((img: UploadedFile, i: number) => (
-                            <div key={`ex-${i}`} className="relative size-16 overflow-hidden rounded-lg border border-border">
+                            <div key={`ex-${i}`} className="glass-flat relative size-16 overflow-hidden">
                               <img src={resolveFileUrl(img)} alt="" className="size-full object-cover" />
-                              <button type="button" onClick={() => setServiceForm((p) => ({ ...p, images: p.images.filter((_: UploadedFile, j: number) => j !== i) }))} className="absolute right-0.5 top-0.5 grid size-4 place-items-center rounded-full bg-black/60 text-white">
+                              <button
+                                type="button"
+                                aria-label="Quitar imagen"
+                                onClick={() => setServiceForm((p) => ({ ...p, images: p.images.filter((_: UploadedFile, j: number) => j !== i) }))}
+                                className="cg-btn-bad cg-focus absolute right-0.5 top-0.5 grid size-4 place-items-center rounded-full"
+                              >
                                 <Trash2 className="size-2.5" />
                               </button>
                             </div>
                           ))}
                           {serviceForm.newImageFiles.map((file: File, i: number) => (
-                            <div key={`new-${i}`} className="relative size-16 overflow-hidden rounded-lg border border-primary/60">
+                            <div key={`new-${i}`} className="glass-flat glass-brand relative size-16 overflow-hidden">
                               <img src={URL.createObjectURL(file)} alt="" className="size-full object-cover" />
-                              <button type="button" onClick={() => setServiceForm((p) => ({ ...p, newImageFiles: p.newImageFiles.filter((_: File, j: number) => j !== i) }))} className="absolute right-0.5 top-0.5 grid size-4 place-items-center rounded-full bg-black/60 text-white">
+                              <button
+                                type="button"
+                                aria-label="Quitar imagen"
+                                onClick={() => setServiceForm((p) => ({ ...p, newImageFiles: p.newImageFiles.filter((_: File, j: number) => j !== i) }))}
+                                className="cg-btn-bad cg-focus absolute right-0.5 top-0.5 grid size-4 place-items-center rounded-full"
+                              >
                                 <Trash2 className="size-2.5" />
                               </button>
                             </div>
                           ))}
-                          <label className="grid size-16 cursor-pointer place-items-center rounded-lg border border-dashed border-border text-muted-foreground transition hover:border-primary/50 hover:text-foreground">
+                          <label
+                            className="cg-focus grid size-16 cursor-pointer place-items-center rounded-xl border border-dashed transition hover:opacity-80"
+                            style={{ borderColor: 'var(--hairline)', color: 'var(--ink-faint)', background: 'var(--glass-sunken)' }}
+                          >
                             <Plus className="size-5" />
                             <input
                               type="file"
@@ -780,35 +779,61 @@ export default function MobilPage() {
               </div>
             }
           >
-            <p className="text-sm text-muted-foreground">Lista de servicios de tu empresa. Se muestran en la app móvil.</p>
+            <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>Lista de servicios de tu empresa. Sólo los publicados se ven en la app.</p>
 
             <div>
               <Table className="table-fixed">
                 <colgroup>
-                  <col style={{ width: '30%' }} />
-                  <col style={{ width: '40%' }} />
-                  <col style={{ width: '15%' }} />
-                  <col style={{ width: '15%' }} />
+                  <col style={{ width: '28%' }} />
+                  <col style={{ width: '34%' }} />
+                  <col style={{ width: '12%' }} />
+                  <col style={{ width: '14%' }} />
+                  <col style={{ width: '12%' }} />
                 </colgroup>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Título</TableHead>
                     <TableHead>Descripción</TableHead>
                     <TableHead>Precio</TableHead>
+                    <TableHead className="text-center">En la app</TableHead>
                     <TableHead className="text-right">Acciones</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
+                  {services.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={5} className="py-6 text-center">
+                        {loading ? (
+                          <div className="space-y-2">
+                            <SkeletonBlock className="h-10" />
+                            <SkeletonBlock className="h-10" />
+                          </div>
+                        ) : (
+                          <EmptyState
+                            className="border-0 py-4"
+                            icon={<Tag />}
+                            title="Todavía no hay servicios"
+                            description="Crea uno desde una plantilla y publícalo para que aparezca en la app del cliente."
+                          />
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  )}
                   {services.map((s) => (
                     <TableRow key={s.id}>
                       <TableCell>{s.title}</TableCell>
                       <TableCell className="truncate">{s.description}</TableCell>
-                      <TableCell>{s.price ?? '-'}</TableCell>
+                      <TableCell className="tabular-nums">{s.price ?? '-'}</TableCell>
+                      <TableCell className="text-center">
+                        <StatusBadge tone={s.publishedOnMobile ? 'ok' : 'neutral'}>
+                          {s.publishedOnMobile ? 'Publicado' : 'Oculto'}
+                        </StatusBadge>
+                      </TableCell>
                       <TableCell className="text-right space-x-2">
-                        <Button size="sm" variant="outline" className="text-primary border-primary hover:bg-primary/10" onClick={() => { setEditingServiceId(s.id); setServiceForm({ title: s.title || '', description: s.description || '', price: s.price ?? '', publishedOnMobile: !!s.publishedOnMobile, iconName: s.iconName || '', images: s.serviceImages || [], newImageFiles: [] }); setServiceDialogOpen(true); }}>
+                        <Button size="icon-sm" variant="outline" aria-label="Editar" onClick={() => { setEditingServiceId(s.id); setServiceForm({ title: s.title || '', description: s.description || '', price: s.price ?? '', publishedOnMobile: !!s.publishedOnMobile, iconName: s.iconName || '', images: s.serviceImages || [], newImageFiles: [] }); setServiceDialogOpen(true); }}>
                           <Pencil className="h-4 w-4" />
                         </Button>
-                        <Button size="sm" variant="destructive" onClick={() => openDeleteConfirmation(s.id, s.title || 'este servicio', 'service')}>
+                        <Button size="icon-sm" variant="destructive" aria-label="Eliminar" onClick={() => openDeleteConfirmation(s.id, s.title || 'este servicio', 'service')}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </TableCell>
@@ -829,7 +854,7 @@ export default function MobilPage() {
               </Button>
             }
           >
-            <p className="text-sm text-muted-foreground">Administra certificaciones con fechas, archivos e íconos.</p>
+            <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>Los sellos y acreditaciones de tu empresa, con sus fechas y archivos.</p>
 
             <Table className="table-fixed">
               <colgroup>
@@ -855,8 +880,25 @@ export default function MobilPage() {
               <TableBody>
                 {certItems.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8 text-sm text-muted-foreground">
-                      {loading ? 'Cargando...' : 'No hay certificaciones registradas.'}
+                    <TableCell colSpan={7} className="py-6 text-center">
+                      {loading ? (
+                        <div className="space-y-2">
+                          <SkeletonBlock className="h-10" />
+                          <SkeletonBlock className="h-10" />
+                        </div>
+                      ) : (
+                        <EmptyState
+                          className="border-0 py-4"
+                          icon={<BadgeCheck />}
+                          title="Todavía no hay certificaciones"
+                          description="Añade tus acreditaciones para que el cliente las vea en la app."
+                          action={
+                            <Button onClick={openCreateCertification} variant="brand" size="sm" className="gap-2">
+                              <Plus className="h-4 w-4" /> Nueva certificación
+                            </Button>
+                          }
+                        />
+                      )}
                     </TableCell>
                   </TableRow>
                 )}
@@ -869,7 +911,7 @@ export default function MobilPage() {
                         <button
                           type="button"
                           onClick={() => openBannerPreview(resolveCertificationImageUrl(item))}
-                          className="group inline-flex items-center justify-center overflow-hidden rounded-md border border-border bg-card p-0 shadow-sm hover:border-primary/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                          className="glass-flat glass-hover cg-focus group inline-flex items-center justify-center overflow-hidden p-0"
                         >
                           <img
                             src={resolveCertificationImageUrl(item)}
@@ -880,7 +922,7 @@ export default function MobilPage() {
                           />
                         </button>
                       ) : (
-                        <span className="text-sm text-muted-foreground">Sin imagen</span>
+                        <StatusBadge tone="neutral" dot={false}>Sin imagen</StatusBadge>
                       )}
                     </TableCell>
                     <TableCell className="text-center">
@@ -888,7 +930,7 @@ export default function MobilPage() {
                         <button
                           type="button"
                           onClick={() => openBannerPreview(resolveCertificationIconUrl(item))}
-                          className="group inline-flex items-center justify-center overflow-hidden rounded-md border border-border bg-card p-0 shadow-sm hover:border-primary/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                          className="glass-flat glass-hover cg-focus group inline-flex items-center justify-center overflow-hidden p-0"
                         >
                           <img
                             src={resolveCertificationIconUrl(item)}
@@ -899,16 +941,16 @@ export default function MobilPage() {
                           />
                         </button>
                       ) : (
-                        <span className="text-sm text-muted-foreground">Sin icono</span>
+                        <StatusBadge tone="neutral" dot={false}>Sin icono</StatusBadge>
                       )}
                     </TableCell>
                     <TableCell>{item.acquisitionDate || '-'}</TableCell>
                     <TableCell>{item.expirationDate || '-'}</TableCell>
                     <TableCell className="text-right space-x-2">
-                      <Button size="sm" variant="outline" className="text-primary border-primary hover:bg-primary/10" onClick={() => openEditCertification(item)}>
+                      <Button size="icon-sm" variant="outline" aria-label="Editar" onClick={() => openEditCertification(item)}>
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button size="sm" variant="destructive" onClick={() => openDeleteConfirmation(item.id, item.title || 'esta certificación', 'certification')}>
+                      <Button size="icon-sm" variant="destructive" aria-label="Eliminar" onClick={() => openDeleteConfirmation(item.id, item.title || 'esta certificación', 'certification')}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </TableCell>
@@ -978,9 +1020,9 @@ export default function MobilPage() {
                         <TooltipTrigger asChild>
                           <label
                             htmlFor="bannerImage"
-                            className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 cursor-pointer"
+                            className="cg-btn-brand cg-focus inline-flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
                           >
-                            Seleccionar archivo
+                            <Upload className="h-4 w-4" /> Seleccionar archivo
                           </label>
                         </TooltipTrigger>
                         <TooltipContent>Límite de archivo: {IMAGE_MAX_SIZE_MB} MB.</TooltipContent>
@@ -994,15 +1036,15 @@ export default function MobilPage() {
                       onChange={(e) => setBannerImageFile(e.target.files?.[0] || null)}
                     />
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1 text-center">Límite de tamaño por imagen: {IMAGE_MAX_SIZE_MB} MB.</p>
-                  <div className="min-h-[54px] rounded-md border border-dashed border-border bg-slate-50 px-4 py-3 text-sm text-muted-foreground flex items-center justify-center text-center">
+                  <p className="mt-1 text-center text-xs" style={{ color: 'var(--ink-faint)' }}>Límite de tamaño por imagen: {IMAGE_MAX_SIZE_MB} MB.</p>
+                  <div className="glass-sunken flex min-h-[54px] items-center justify-center px-4 py-3 text-center text-sm" style={{ color: 'var(--ink-soft)' }}>
                     {bannerForm.imageFile ? bannerForm.imageFile.name : bannerForm.imageUrl?.[0]?.name || 'No se ha seleccionado archivo'}
                   </div>
                 </div>
               </div>
             </div>
             <DialogFooter className="mt-6 flex justify-end gap-2">
-              <Button variant="outline" className="text-foreground border-black hover:bg-slate-100" onClick={() => setBannerDialogOpen(false)}>Cancelar</Button>
+              <Button variant="outline" onClick={() => setBannerDialogOpen(false)}>Cancelar</Button>
               <Button variant="brand" onClick={handleSaveBanner} disabled={loading}>
                 Guardar
               </Button>
@@ -1072,9 +1114,9 @@ export default function MobilPage() {
                         <TooltipTrigger asChild>
                           <label
                             htmlFor="certImage"
-                            className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 cursor-pointer"
+                            className="cg-btn-brand cg-focus inline-flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
                           >
-                            Seleccionar archivo
+                            <Upload className="h-4 w-4" /> Seleccionar archivo
                           </label>
                         </TooltipTrigger>
                         <TooltipContent>Límite de archivo: {IMAGE_MAX_SIZE_MB} MB.</TooltipContent>
@@ -1088,8 +1130,8 @@ export default function MobilPage() {
                       onChange={(e) => setCertImageFile(e.target.files?.[0] || null)}
                     />
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1 text-center">Límite de tamaño por imagen: {IMAGE_MAX_SIZE_MB} MB.</p>
-                  <div className="min-h-[54px] rounded-md border border-dashed border-border bg-slate-50 px-4 py-3 text-sm text-muted-foreground flex items-center justify-center text-center">
+                  <p className="mt-1 text-center text-xs" style={{ color: 'var(--ink-faint)' }}>Límite de tamaño por imagen: {IMAGE_MAX_SIZE_MB} MB.</p>
+                  <div className="glass-sunken flex min-h-[54px] items-center justify-center px-4 py-3 text-center text-sm" style={{ color: 'var(--ink-soft)' }}>
                     {certForm.imageFile ? certForm.imageFile.name : certForm.image?.[0]?.name || 'No se ha seleccionado archivo'}
                   </div>
                 </div>
@@ -1103,9 +1145,9 @@ export default function MobilPage() {
                         <TooltipTrigger asChild>
                           <label
                             htmlFor="certIcon"
-                            className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 cursor-pointer"
+                            className="cg-btn-brand cg-focus inline-flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
                           >
-                            Seleccionar archivo
+                            <Upload className="h-4 w-4" /> Seleccionar archivo
                           </label>
                         </TooltipTrigger>
                         <TooltipContent>Límite de icono: {ICON_MAX_SIZE_MB} MB.</TooltipContent>
@@ -1119,15 +1161,15 @@ export default function MobilPage() {
                       onChange={(e) => setCertIconFile(e.target.files?.[0] || null)}
                     />
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1 text-center">Límite de tamaño del icono: {ICON_MAX_SIZE_MB} MB.</p>
-                  <div className="min-h-[54px] rounded-md border border-dashed border-border bg-slate-50 px-4 py-3 text-sm text-muted-foreground flex items-center justify-center text-center">
+                  <p className="mt-1 text-center text-xs" style={{ color: 'var(--ink-faint)' }}>Límite de tamaño del icono: {ICON_MAX_SIZE_MB} MB.</p>
+                  <div className="glass-sunken flex min-h-[54px] items-center justify-center px-4 py-3 text-center text-sm" style={{ color: 'var(--ink-soft)' }}>
                     {certForm.iconFile ? certForm.iconFile.name : certForm.icon?.[0]?.name || 'No se ha seleccionado archivo'}
                   </div>
                 </div>
               </div>
             </div>
             <DialogFooter className="mt-6 flex justify-end gap-2">
-              <Button variant="outline" className="text-foreground border-black hover:bg-slate-100" onClick={() => setCertDialogOpen(false)}>Cancelar</Button>
+              <Button variant="outline" onClick={() => setCertDialogOpen(false)}>Cancelar</Button>
               <Button variant="brand" onClick={handleSaveCertification} disabled={loading}>
                 Guardar
               </Button>
@@ -1138,22 +1180,29 @@ export default function MobilPage() {
         <Dialog open={imagePreviewOpen} onOpenChange={setImagePreviewOpen}>
           <DialogContent
             showCloseButton={false}
-            className="w-full max-w-[920px] max-h-[90vh] overflow-hidden rounded-3xl bg-card border border-slate-200 p-0 shadow-2xl"
+            className="max-h-[90vh] w-full max-w-[920px] overflow-hidden rounded-3xl border p-0"
           >
-            <DialogHeader className="flex items-center justify-center gap-4 border-b border-slate-200 px-4 py-4 bg-card">
-              <DialogTitle className="text-lg font-semibold text-foreground">Vista previa</DialogTitle>
+            <DialogHeader
+              className="flex items-center justify-center gap-4 border-b px-4 py-4"
+              style={{ borderColor: 'var(--hairline)' }}
+            >
+              <DialogTitle className="text-lg font-semibold">Vista previa</DialogTitle>
             </DialogHeader>
-            <div className="flex min-h-[60vh] items-center justify-center overflow-hidden bg-slate-100 p-4">
+            <div
+              className="flex min-h-[60vh] items-center justify-center overflow-hidden p-4"
+              style={{ background: 'var(--glass-sunken)' }}
+            >
               {imagePreviewUrl ? (
                 <img
                   src={imagePreviewUrl}
-                  alt="Banner preview"
-                  className="max-h-[82vh] max-w-full rounded-3xl border border-slate-200 bg-card object-contain"
+                  alt="Vista previa de la imagen"
+                  className="max-h-[82vh] max-w-full rounded-3xl border object-contain"
+                  style={{ borderColor: 'var(--hairline)', background: 'var(--glass-raised)' }}
                   decoding="async"
                   crossOrigin="anonymous"
                 />
               ) : (
-                <div className="text-sm text-muted-foreground">No hay imagen para previsualizar.</div>
+                <div className="text-sm" style={{ color: 'var(--ink-soft)' }}>No hay imagen para previsualizar.</div>
               )}
             </div>
           </DialogContent>
@@ -1171,10 +1220,10 @@ export default function MobilPage() {
               Esta acción no se puede deshacer.
             </div>
             <DialogFooter className="mt-6 flex justify-end gap-2">
-              <Button variant="outline" className="text-foreground border-slate-300 hover:bg-slate-100" onClick={closeDeleteConfirmation}>
+              <Button variant="outline" onClick={closeDeleteConfirmation}>
                 Cancelar
               </Button>
-              <Button className="bg-red-600 text-white hover:bg-red-700" onClick={handleDeleteConfirmed}>
+              <Button variant="destructive" onClick={handleDeleteConfirmed}>
                 Eliminar
               </Button>
             </DialogFooter>

@@ -204,7 +204,7 @@ export function CategoryManagerDialog({ open, onOpenChange, module, onChanged }:
               </div>
 
               {hasPermission('categoryCreate') && (
-                <Button onClick={startCreate} className="bg-primary hover:bg-primary/90 text-white">
+                <Button onClick={startCreate}>
                   <Plus className="mr-2 h-4 w-4" /> {t('categories.addcategory', 'Add Category')}
                 </Button>
               )}
@@ -289,7 +289,7 @@ export function CategoryManagerDialog({ open, onOpenChange, module, onChanged }:
                   <Button variant="outline" onClick={() => { setModalMode(undefined); setEditing(null); }}>{t('categories.cancel', 'Cancel')}</Button>
                   <Button
                     onClick={submitCreate}
-                    className="bg-primary hover:bg-primary/90 text-white disabled:opacity-50 disabled:pointer-events-none">
+                    className="disabled:pointer-events-none disabled:opacity-50">
                     {t('categories.save', 'Save')}
                   </Button>
                 </div>
@@ -324,7 +324,7 @@ export function CategoryManagerDialog({ open, onOpenChange, module, onChanged }:
                   <Button variant="outline" onClick={() => { setModalMode(undefined); setEditing(null); }}>Cancelar</Button>
                   <Button
                     onClick={submitEdit}
-                    className="bg-primary hover:bg-primary/90 text-white disabled:opacity-50 disabled:pointer-events-none">
+                    className="disabled:pointer-events-none disabled:opacity-50">
                     {t('categories.save', 'Save')}
                   </Button>
                 </div>
@@ -341,7 +341,7 @@ export function CategoryManagerDialog({ open, onOpenChange, module, onChanged }:
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t('categories.cancel', 'Cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={removeConfirmed} className="bg-red-600 hover:bg-red-700">{t('categories.delete', 'Delete')}</AlertDialogAction>
+            <AlertDialogAction onClick={removeConfirmed} className="cg-btn-bad">{t('categories.delete', 'Delete')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

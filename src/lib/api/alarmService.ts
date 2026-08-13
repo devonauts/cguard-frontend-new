@@ -175,17 +175,35 @@ export interface AlarmCase {
  * whether a case came from a monitored alarm panel, a customer's SOS, or a guard's
  * panic button. Legacy/null cases are treated as alarm-panel (all pre-dated panels).
  */
-export function alarmSourceMeta(source?: string | null): { label: string; short: string; className: string } {
+/**
+ * De dónde vino la alarma. Devuelve un TONO del sistema, no clases de color.
+ *
+ * Antes devolvía `bg-red-500/15 text-red-600 …` escrito a mano, y eso deja el
+ * origen fuera del sistema: no cambia con el tema ni con el acento que elija el
+ * usuario. Ahora devuelve el tono y quien pinta usa `StatusBadge`, que lo
+ * resuelve contra las variables.
+ *
+ * El tono NO se deriva del acento a propósito: un SOS de cliente tiene que
+ * seguir siendo rojo aunque alguien ponga el acento en rojo, y no volverse
+ * verde porque lo ponga en verde.
+ */
+export function alarmSourceMeta(source?: string | null): {
+  label: string; short: string; tone: 'bad' | 'warn' | 'neutral' | 'info';
+} {
   switch (source) {
     case 'client_app':
-      return { label: 'App Cliente · SOS', short: 'SOS Cliente', className: 'bg-red-500/15 text-red-600 border-red-500/30 dark:text-red-400' };
+      return { label: 'App Cliente · SOS', short: 'SOS Cliente', tone: 'bad' };
     case 'worker_app':
-      return { label: 'App Vigilante · Pánico', short: 'Pánico', className: 'bg-orange-500/15 text-orange-600 border-orange-500/30 dark:text-orange-400' };
+      // `bad`, NO `warn`. Antes era naranja —se conservó al migrar de clases a
+      // tonos— y quedaba el absurdo de que el SOS de un cliente salía rojo y el
+      // botón de pánico de un vigilante ámbar. El backend dispara la MISMA ruta
+      // de pánico completa para los dos: pintar uno menos grave es mentir.
+      return { label: 'App Vigilante · Pánico', short: 'Pánico', tone: 'bad' };
     case 'manual':
-      return { label: 'Creada manualmente', short: 'Manual', className: 'bg-slate-500/15 text-slate-600 border-slate-500/30 dark:text-slate-300' };
+      return { label: 'Creada manualmente', short: 'Manual', tone: 'neutral' };
     case 'alarm_panel':
     default:
-      return { label: 'Sistema de alarma', short: 'Panel', className: 'bg-sky-500/15 text-sky-600 border-sky-500/30 dark:text-sky-400' };
+      return { label: 'Sistema de alarma', short: 'Panel', tone: 'info' };
   }
 }
 
@@ -348,7 +366,19 @@ export const alarmService = {
   },
 
   // --- Cases ---
-  cases(params?: { status?: AlarmCaseStatus | string }): Promise<AlarmCase[]> {
+  /**
+   * `from`/`to` (ISO) acotan `createdAt` EN EL SERVIDOR, y `category` la
+   * categoría de alarma. El informe del botón de pánico depende de ambos: sin
+   * ellos pedía las N más recientes y recortaba en el navegador, así que un
+   * rango antiguo se exportaba vacío.
+   */
+  cases(params?: {
+    status?: AlarmCaseStatus | string;
+    category?: AlarmEventCategory | string;
+    from?: string;
+    to?: string;
+    limit?: number;
+  }): Promise<AlarmCase[]> {
     return ApiService.get(`/tenant/${tid()}/alarm/cases${qstr(params)}`);
   },
   case(id: string): Promise<AlarmCase> {

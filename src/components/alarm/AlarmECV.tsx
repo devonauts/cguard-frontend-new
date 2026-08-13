@@ -3,6 +3,7 @@ import { PhoneCall, ShieldCheck, ShieldAlert, Siren, Check, X, Loader2 } from "l
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { StatusBadge } from "@/components/kit";
 import { alarmService } from "@/lib/api/alarmService";
 
 const ECV_EXEMPT = ["holdup", "panic", "fire", "medical"];
@@ -70,18 +71,21 @@ export default function AlarmECV({
         <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
           <PhoneCall className="size-4 text-primary" /> Verificación (ECV)
         </div>
+        {/* Los tres estados son SEMÁNTICOS (grave / correcto / pendiente) y salen
+            de `--bad`/`--ok`/`--warn`, fijos en tokens.css. Un despacho policial
+            inmediato tiene que leerse rojo con cualquier acento configurado. */}
         {exempt ? (
-          <span className="inline-flex items-center gap-1 rounded-full bg-red-500/15 px-2 py-0.5 text-[11px] font-medium text-red-600">
+          <StatusBadge tone="bad" dot={false}>
             <Siren className="size-3" /> Despacho inmediato (exento de ECV)
-          </span>
+          </StatusBadge>
         ) : ecvSatisfied ? (
-          <span className="inline-flex items-center gap-1 rounded-full bg-green-500/15 px-2 py-0.5 text-[11px] font-medium text-green-600">
+          <StatusBadge tone="ok" dot={false}>
             <ShieldCheck className="size-3" /> ECV satisfecho
-          </span>
+          </StatusBadge>
         ) : (
-          <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-[11px] font-medium text-amber-600">
+          <StatusBadge tone="warn" dot={false}>
             <ShieldAlert className="size-3" /> ECV pendiente ({calls.length}/2 llamadas)
-          </span>
+          </StatusBadge>
         )}
       </div>
 
@@ -95,10 +99,10 @@ export default function AlarmECV({
         <div className="space-y-1.5">
           {contacts.length === 0 && <p className="text-xs text-muted-foreground">Sin contactos configurados para este panel.</p>}
           {contacts.map((ct) => (
-            <div key={ct.id} className="rounded-lg border border-border/50 bg-background px-3 py-2">
+            <div key={ct.id} className="glass-flat px-3 py-2">
               <div className="mb-1 flex items-center justify-between gap-2">
-                <span className="truncate text-sm font-medium text-foreground">{ct.name}{ct.phone ? ` · ${ct.phone}` : ""}</span>
-                <span className="text-[11px] text-muted-foreground">{ct.authority || ""}</span>
+                <span className="truncate text-sm font-medium" style={{ color: "var(--ink)" }}>{ct.name}{ct.phone ? ` · ${ct.phone}` : ""}</span>
+                <span className="text-[11px]" style={{ color: "var(--ink-faint)" }}>{ct.authority || ""}</span>
               </div>
               <div className="flex flex-wrap gap-1">
                 {OUTCOMES.map((o) => (
@@ -106,7 +110,8 @@ export default function AlarmECV({
                     key={o.key}
                     onClick={() => log(ct, o.key)}
                     disabled={busyKey === `${ct.id}:${o.key}`}
-                    className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-0.5 text-[11px] text-muted-foreground hover:border-primary hover:text-foreground disabled:opacity-50"
+                    className="cg-focus inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] transition-colors hover:border-[var(--brand-line)] disabled:opacity-50"
+                    style={{ borderColor: "var(--hairline)", color: "var(--ink-soft)" }}
                   >
                     {busyKey === `${ct.id}:${o.key}` ? <Loader2 className="size-3 animate-spin" /> : null}
                     {o.label}
@@ -122,11 +127,11 @@ export default function AlarmECV({
         <div className="mt-3 space-y-1">
           <div className="text-[11px] font-semibold uppercase text-muted-foreground">Registro de llamadas</div>
           {calls.map((c) => (
-            <div key={c.id} className="flex items-center gap-2 text-xs text-muted-foreground">
-              {c.outcome === "verified_real" ? <Siren className="size-3 text-red-500" /> :
-               c.outcome === "verified_false" || c.outcome === "cancel_passcode" ? <X className="size-3 text-green-600" /> :
+            <div key={c.id} className="flex items-center gap-2 text-xs" style={{ color: "var(--ink-soft)" }}>
+              {c.outcome === "verified_real" ? <Siren className="size-3" style={{ color: "var(--bad-text)" }} /> :
+               c.outcome === "verified_false" || c.outcome === "cancel_passcode" ? <X className="size-3" style={{ color: "var(--ok-text)" }} /> :
                <Check className="size-3" />}
-              <span className="text-foreground">{c.contactName || "Contacto"}</span>
+              <span style={{ color: "var(--ink)" }}>{c.contactName || "Contacto"}</span>
               <span>· {OUTCOME_LABEL[c.outcome] || c.outcome}</span>
             </div>
           ))}
@@ -135,17 +140,20 @@ export default function AlarmECV({
 
       {!closed && (
         <div className="mt-3 flex items-center gap-2">
+          {/* `destructive` = `.cg-btn-bad` del sistema: relleno `--bad` con tinta
+              blanca. Despachar a la policía es una acción grave, no de marca. */}
           <Button
             size="sm"
+            variant="destructive"
             onClick={dispatchPolice}
             disabled={!canDispatch || dispatching}
-            className="gap-1 bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
+            className="gap-1"
             title={canDispatch ? "Despachar a la policía" : "Complete la ECV (2 llamadas) primero"}
           >
             {dispatching ? <Loader2 className="size-3.5 animate-spin" /> : <Siren className="size-3.5" />}
             Despachar policía
           </Button>
-          {!canDispatch && <span className="text-[11px] text-amber-600">Requiere ECV</span>}
+          {!canDispatch && <span className="text-[11px]" style={{ color: "var(--warn-text)" }}>Requiere ECV</span>}
         </div>
       )}
     </Card>

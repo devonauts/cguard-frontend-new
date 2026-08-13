@@ -1,20 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { ReactNode } from 'react';
 import type { Client } from '@/types/client';
 import useScrollToTopOnMount from '@/hooks/useScrollToTopOnMount';
 import { clientService } from '@/lib/api/clientService';
 import GoogleMapEmbed from '@/components/GoogleMap/GoogleMapEmbed';
-import { Section, EmptyState, StatusBadge } from '@/components/kit';
+import { Section, EmptyState, StatusBadge, GlassPanel } from '@/components/kit';
+import { FIELD_CLS, TabTable, THead, Th, Tr, Pager, TabFooter, TabLoading, KpiTile } from '../_shared/tab-kit';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import {
-  Search, AlertTriangle, ShieldCheck, Clock, Timer, CheckCircle2, Gauge,
-  MapPin, Paperclip, ListChecks, FileText, RefreshCw, Play, ShieldAlert,
-} from 'lucide-react';
+import { Search, AlertTriangle, ShieldCheck, Clock, Timer, CheckCircle2, Gauge, MapPin, Paperclip, ListChecks, FileText, Play, ShieldAlert } from 'lucide-react';
 
-const inputCls = 'flex h-9 w-full rounded-lg border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-all placeholder:text-muted-foreground hover:border-ring/40 focus-visible:outline-none focus-visible:border-ring focus-visible:ring-ring/40 focus-visible:ring-[3px]';
-
-type BadgeTone = 'red' | 'orange' | 'blue' | 'green';
+type BadgeTone = 'bad' | 'warn' | 'info' | 'ok';
 
 // ── Shape of GET /client-account/:id/incidents-board (clientAccountIncidentsBoard.ts) ──
 type IncidentBucket = 'abierto' | 'investigacion' | 'resuelto';
@@ -67,12 +62,13 @@ interface IncidentBoardData {
 }
 
 const PRIO: Record<string, { label: string; tone: BadgeTone }> = {
-  alta: { label: 'Alta', tone: 'red' }, media: { label: 'Media', tone: 'orange' }, baja: { label: 'Baja', tone: 'blue' },
+  alta: { label: 'Alta', tone: 'bad' }, media: { label: 'Media', tone: 'warn' }, baja: { label: 'Baja', tone: 'info' },
 };
+/** El punto sale del semántico: nunca de un color escrito a mano. */
 const ESTADO: Record<string, { label: string; tone: BadgeTone; dot: string }> = {
-  abierto: { label: 'Abierto', tone: 'red', dot: 'bg-red-500' },
-  investigacion: { label: 'En investigación', tone: 'orange', dot: 'bg-orange-500' },
-  resuelto: { label: 'Resuelto', tone: 'green', dot: 'bg-emerald-500' },
+  abierto: { label: 'Abierto', tone: 'bad', dot: 'var(--bad)' },
+  investigacion: { label: 'En investigación', tone: 'warn', dot: 'var(--warn)' },
+  resuelto: { label: 'Resuelto', tone: 'ok', dot: 'var(--ok)' },
 };
 const WS_OPTIONS = [{ v: 'open', l: 'Abierto' }, { v: 'inProgress', l: 'En investigación' }, { v: 'resolved', l: 'Resuelto' }];
 
@@ -87,24 +83,6 @@ const resLabel = (ms: number | null) => {
   return `${Math.round(h / 24 * 10) / 10} días`;
 };
 const ymd = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-
-function Kpi({ icon, value, label, sub, accent = 'primary', bar }: {
-  icon: ReactNode; value: ReactNode; label: string; sub?: ReactNode;
-  accent?: string; bar?: number | null;
-}) {
-  const ACC: Record<string, string> = {
-    primary: 'bg-primary/12 text-primary', green: 'bg-emerald-500/12 text-emerald-600',
-    orange: 'bg-orange-500/12 text-orange-600', red: 'bg-red-500/12 text-red-600', blue: 'bg-blue-500/12 text-blue-600', slate: 'bg-muted text-muted-foreground',
-  };
-  return (
-    <div className="cg-card p-4">
-      <div className={`mb-2 grid h-9 w-9 place-items-center rounded-xl ${ACC[accent]} [&_svg]:size-4`}>{icon}</div>
-      <div className="flex items-baseline gap-1.5"><span className="font-display text-2xl font-bold leading-tight">{value}</span>{sub}</div>
-      <div className="text-xs text-muted-foreground truncate">{label}</div>
-      {bar != null && <div className="mt-2 h-1.5 w-full rounded-full bg-muted"><div className={`h-1.5 rounded-full ${bar >= 90 ? 'bg-emerald-500' : bar >= 60 ? 'bg-orange-500' : 'bg-red-500'}`} style={{ width: `${Math.max(3, Math.min(100, bar))}%` }} /></div>}
-    </div>
-  );
-}
 
 export default function ClientIncidents({ client }: { client: Client }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -166,7 +144,7 @@ export default function ClientIncidents({ client }: { client: Client }) {
 
   const resetPage = (fn: (v: string) => void) => (v: string) => { fn(v); setPage(1); };
 
-  if (loading && !data) return <div className="p-8 text-sm text-muted-foreground">Cargando incidentes…</div>;
+  if (loading && !data) return <TabLoading />;
 
   return (
     <div ref={containerRef} className="space-y-4">
@@ -174,113 +152,102 @@ export default function ClientIncidents({ client }: { client: Client }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2 text-sm">
           <span className="text-xs font-medium text-muted-foreground">Rango</span>
-          <input type="date" className={`${inputCls} w-auto`} value={from} onChange={(e) => resetPage(setFrom)(e.target.value)} />
-          <span className="text-muted-foreground">–</span>
-          <input type="date" className={`${inputCls} w-auto`} value={to} onChange={(e) => resetPage(setTo)(e.target.value)} />
+          <input type="date" className={`${FIELD_CLS} w-auto`} value={from} onChange={(e) => resetPage(setFrom)(e.target.value)} />
+          <span style={{ color: 'var(--ink-faint)' }}>–</span>
+          <input type="date" className={`${FIELD_CLS} w-auto`} value={to} onChange={(e) => resetPage(setTo)(e.target.value)} />
         </div>
         <Button size="sm" variant="brand" onClick={() => window.location.assign('/dispatch-tickets/new')}><AlertTriangle className="mr-1.5 h-4 w-4" /> Nuevo incidente</Button>
       </div>
 
       {/* KPI row */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-7">
-        <Kpi icon={<AlertTriangle />} value={kpis.total ?? 0} label="Total de incidentes" accent="primary" />
-        <Kpi icon={<ShieldAlert />} value={kpis.abiertos ?? 0} label="Incidentes abiertos" accent={(kpis.abiertos ?? 0) > 0 ? 'red' : 'slate'} sub={<span className={`rounded-full px-1.5 py-0.5 text-xs ${(kpis.abiertos ?? 0) > 0 ? 'bg-red-500/12 text-red-600' : 'bg-muted text-muted-foreground'}`}>{kpis.abiertosPct ?? 0}%</span>} />
-        <Kpi icon={<Search />} value={kpis.investigacion ?? 0} label="En investigación" accent="orange" sub={<span className="rounded-full bg-orange-500/12 px-1.5 py-0.5 text-xs text-orange-600">{kpis.investigacionPct ?? 0}%</span>} />
-        <Kpi icon={<CheckCircle2 />} value={kpis.resueltos ?? 0} label="Resueltos" accent="green" sub={<span className="rounded-full bg-emerald-500/12 px-1.5 py-0.5 text-xs text-emerald-600">{kpis.resueltosPct ?? 0}%</span>} />
-        <Kpi icon={<Clock />} value={kpis.avgResponseMin != null ? `${kpis.avgResponseMin} min` : '—'} label={`Resp. prom. (Meta ${kpis.metaResponseMin ?? 15} min)`} accent="blue" bar={kpis.avgResponseMin != null ? Math.min(100, Math.round(((kpis.metaResponseMin ?? 15) / Math.max(1, kpis.avgResponseMin)) * 100)) : null} />
-        <Kpi icon={<Timer />} value={kpis.avgResolutionDays != null ? `${kpis.avgResolutionDays} días` : '—'} label={`Resol. prom. (Meta ${kpis.metaResolutionDays ?? 3} días)`} accent="blue" bar={kpis.avgResolutionDays != null ? Math.min(100, Math.round(((kpis.metaResolutionDays ?? 3) / Math.max(0.1, kpis.avgResolutionDays)) * 100)) : null} />
-        <Kpi icon={<Gauge />} value={`${kpis.slaPct ?? 0}%`} label={`Cumplimiento SLA (Meta ${kpis.metaSlaPct ?? 95}%)`} accent={(kpis.slaPct ?? 0) >= (kpis.metaSlaPct ?? 95) ? 'green' : 'orange'} bar={kpis.slaPct ?? 0} />
+        <KpiTile icon={<AlertTriangle />} value={kpis.total ?? 0} label="Total de incidentes" accent="primary" />
+        <KpiTile icon={<ShieldAlert />} value={kpis.abiertos ?? 0} label="Incidentes abiertos" accent={(kpis.abiertos ?? 0) > 0 ? 'red' : 'slate'} sub={<StatusBadge tone={(kpis.abiertos ?? 0) > 0 ? 'bad' : 'neutral'} dot={false}>{kpis.abiertosPct ?? 0}%</StatusBadge>} />
+        <KpiTile icon={<Search />} value={kpis.investigacion ?? 0} label="En investigación" accent="orange" sub={<StatusBadge tone="warn" dot={false}>{kpis.investigacionPct ?? 0}%</StatusBadge>} />
+        <KpiTile icon={<CheckCircle2 />} value={kpis.resueltos ?? 0} label="Resueltos" accent="green" sub={<StatusBadge tone="ok" dot={false}>{kpis.resueltosPct ?? 0}%</StatusBadge>} />
+        <KpiTile icon={<Clock />} value={kpis.avgResponseMin != null ? `${kpis.avgResponseMin} min` : '—'} label={`Resp. prom. (Meta ${kpis.metaResponseMin ?? 15} min)`} accent="blue" bar={kpis.avgResponseMin != null ? Math.min(100, Math.round(((kpis.metaResponseMin ?? 15) / Math.max(1, kpis.avgResponseMin)) * 100)) : null} />
+        <KpiTile icon={<Timer />} value={kpis.avgResolutionDays != null ? `${kpis.avgResolutionDays} días` : '—'} label={`Resol. prom. (Meta ${kpis.metaResolutionDays ?? 3} días)`} accent="blue" bar={kpis.avgResolutionDays != null ? Math.min(100, Math.round(((kpis.metaResolutionDays ?? 3) / Math.max(0.1, kpis.avgResolutionDays)) * 100)) : null} />
+        <KpiTile icon={<Gauge />} value={`${kpis.slaPct ?? 0}%`} label={`Cumplimiento SLA (Meta ${kpis.metaSlaPct ?? 95}%)`} accent={(kpis.slaPct ?? 0) >= (kpis.metaSlaPct ?? 95) ? 'green' : 'orange'} bar={kpis.slaPct ?? 0} />
       </div>
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.55fr_1fr]">
         {/* LEFT — filters + table */}
-        <Section title="Incidentes" icon={<AlertTriangle className="h-4 w-4" />}>
+        <Section title="Incidentes" icon={<AlertTriangle />}>
           <div className="mb-3 grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-6">
             <div className="relative col-span-2 md:col-span-3 xl:col-span-1">
-              <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <input className={`${inputCls} pl-8`} placeholder="Buscar por ID, título o ubicación" value={q} onChange={(e) => resetPage(setQ)(e.target.value)} />
+              <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
+              <input className={`${FIELD_CLS} pl-8`} placeholder="Buscar por ID, título o ubicación" value={q} onChange={(e) => resetPage(setQ)(e.target.value)} />
             </div>
-            <select className={inputCls} value={sedeId} onChange={(e) => resetPage(setSedeId)(e.target.value)}><option value="">Sede: Todas</option>{sedes.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select>
-            <select className={inputCls} value={puestoId} onChange={(e) => resetPage(setPuestoId)(e.target.value)}><option value="">Estación: Todas</option>{puestos.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select>
-            <select className={inputCls} value={tipo} onChange={(e) => resetPage(setTipo)(e.target.value)}><option value="">Tipo: Todos</option>{tipos.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select>
-            <select className={inputCls} value={estado} onChange={(e) => resetPage(setEstado)(e.target.value)}><option value="">Estado: Todos</option><option value="abierto">Abierto</option><option value="investigacion">En investigación</option><option value="resuelto">Resuelto</option></select>
-            <select className={inputCls} value={prioridad} onChange={(e) => resetPage(setPrioridad)(e.target.value)}><option value="">Prioridad: Todas</option><option value="alta">Alta</option><option value="media">Media</option><option value="baja">Baja</option></select>
+            <select className={FIELD_CLS} value={sedeId} onChange={(e) => resetPage(setSedeId)(e.target.value)}><option value="">Sede: Todas</option>{sedes.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select>
+            <select className={FIELD_CLS} value={puestoId} onChange={(e) => resetPage(setPuestoId)(e.target.value)}><option value="">Estación: Todas</option>{puestos.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select>
+            <select className={FIELD_CLS} value={tipo} onChange={(e) => resetPage(setTipo)(e.target.value)}><option value="">Tipo: Todos</option>{tipos.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select>
+            <select className={FIELD_CLS} value={estado} onChange={(e) => resetPage(setEstado)(e.target.value)}><option value="">Estado: Todos</option><option value="abierto">Abierto</option><option value="investigacion">En investigación</option><option value="resuelto">Resuelto</option></select>
+            <select className={FIELD_CLS} value={prioridad} onChange={(e) => resetPage(setPrioridad)(e.target.value)}><option value="">Prioridad: Todas</option><option value="alta">Alta</option><option value="media">Media</option><option value="baja">Baja</option></select>
           </div>
 
           {incidents.length === 0 ? (
-            <EmptyState icon={<AlertTriangle className="h-5 w-5" />} title="Sin incidentes" description="No hay incidentes para este cliente en el rango y filtros seleccionados." />
+            <EmptyState icon={<AlertTriangle />} title="Sin incidentes" description="No hay incidentes para este cliente en el rango y filtros seleccionados." />
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[720px] text-sm">
-                <thead>
-                  <tr className="border-b text-left text-xs uppercase tracking-wide text-muted-foreground">
-                    <th className="px-2 py-2 font-medium">ID</th>
-                    <th className="px-2 py-2 font-medium">Fecha / Hora</th>
-                    <th className="px-2 py-2 font-medium">Incidente</th>
-                    <th className="px-2 py-2 font-medium">Sede / Estación</th>
-                    <th className="px-2 py-2 font-medium">Reportado por</th>
-                    <th className="px-2 py-2 font-medium">Prioridad</th>
-                    <th className="px-2 py-2 font-medium">Estado</th>
-                    <th className="px-2 py-2 font-medium">Respuesta</th>
-                    <th className="px-2 py-2 font-medium">Resolución</th>
-                  </tr>
-                </thead>
+            <TabTable>
+                <THead>
+                  <Th>ID</Th>
+                  <Th>Fecha / Hora</Th>
+                  <Th>Incidente</Th>
+                  <Th>Sede / Estación</Th>
+                  <Th>Reportado por</Th>
+                  <Th>Prioridad</Th>
+                  <Th>Estado</Th>
+                  <Th>Respuesta</Th>
+                  <Th>Resolución</Th>
+                </THead>
                 <tbody>
                   {incidents.map((i) => {
                     const em = ESTADO[i.estado] || ESTADO.abierto;
                     const pm = i.priority ? PRIO[i.priority] : null;
                     const sel = i.id === selectedId;
                     return (
-                      <tr key={i.id} onClick={() => setSelectedId(i.id)} className={`cursor-pointer border-b last:border-0 ${sel ? 'bg-primary/5' : 'hover:bg-muted/40'}`}>
+                      <Tr key={i.id} selected={sel} onClick={() => setSelectedId(i.id)}>
                         <td className="px-2 py-2.5">
-                          <div className="flex items-center gap-2"><span className={`h-2 w-2 shrink-0 rounded-full ${em.dot}`} /><span className="font-medium">{i.code}</span></div>
+                          <div className="flex items-center gap-2"><span className="h-2 w-2 shrink-0 rounded-full" style={{ background: em.dot }} /><span className="font-medium">{i.code}</span></div>
                         </td>
-                        <td className="px-2 py-2.5"><div className="tabular-nums">{fmtDate(i.date)}</div><div className="text-xs text-muted-foreground tabular-nums">{fmtTime(i.date)}</div></td>
-                        <td className="px-2 py-2.5"><div className="font-medium truncate max-w-[200px]">{i.title}</div><div className="text-xs text-muted-foreground truncate max-w-[200px]">{i.description}</div></td>
-                        <td className="px-2 py-2.5"><div className="truncate max-w-[150px]">{i.sedeName || '—'}</div><div className="text-xs text-muted-foreground truncate max-w-[150px]">{i.puestoName || ''}</div></td>
-                        <td className="px-2 py-2.5"><div className="truncate max-w-[130px]">{i.reportedBy?.name || '—'}</div>{i.reportedBy?.role && <div className="text-xs text-muted-foreground">{i.reportedBy.role}</div>}</td>
-                        <td className="px-2 py-2.5">{pm ? <StatusBadge tone={pm.tone} dot={false}>{pm.label}</StatusBadge> : <span className="text-muted-foreground">—</span>}</td>
+                        <td className="px-2 py-2.5"><div className="tabular-nums">{fmtDate(i.date)}</div><div className="text-xs tabular-nums" style={{ color: 'var(--ink-faint)' }}>{fmtTime(i.date)}</div></td>
+                        <td className="px-2 py-2.5"><div className="max-w-[200px] truncate font-medium">{i.title}</div><div className="max-w-[200px] truncate text-xs" style={{ color: 'var(--ink-faint)' }}>{i.description}</div></td>
+                        <td className="px-2 py-2.5"><div className="max-w-[150px] truncate">{i.sedeName || '—'}</div><div className="max-w-[150px] truncate text-xs" style={{ color: 'var(--ink-faint)' }}>{i.puestoName || ''}</div></td>
+                        <td className="px-2 py-2.5"><div className="max-w-[130px] truncate">{i.reportedBy?.name || '—'}</div>{i.reportedBy?.role && <div className="text-xs" style={{ color: 'var(--ink-faint)' }}>{i.reportedBy.role}</div>}</td>
+                        <td className="px-2 py-2.5">{pm ? <StatusBadge tone={pm.tone} dot={false}>{pm.label}</StatusBadge> : <span style={{ color: 'var(--ink-faint)' }}>—</span>}</td>
                         <td className="px-2 py-2.5"><StatusBadge tone={em.tone}>{em.label}</StatusBadge></td>
                         <td className="px-2 py-2.5 tabular-nums">{i.responseMin != null ? `${i.responseMin} min` : '—'}</td>
                         <td className="px-2 py-2.5 tabular-nums">{resLabel(i.resolutionMs)}</td>
-                      </tr>
+                      </Tr>
                     );
                   })}
                 </tbody>
-              </table>
-            </div>
+            </TabTable>
           )}
 
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground">
-            <span>Mostrando {total === 0 ? 0 : (page - 1) * perPage + 1} a {Math.min(page * perPage, total)} de {total} incidentes</span>
-            <div className="flex items-center gap-1">
-              <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)} className="rounded-md border px-2 py-1 disabled:opacity-40">‹</button>
-              {Array.from({ length: Math.min(5, pageCount) }).map((_, k) => { const n = k + 1; return <button key={n} onClick={() => setPage(n)} className={`grid h-7 min-w-[28px] place-items-center rounded-md px-2 text-xs font-semibold ${n === page ? 'bg-primary text-primary-foreground' : 'border'}`}>{n}</button>; })}
-              <button disabled={page >= pageCount} onClick={() => setPage((p) => p + 1)} className="rounded-md border px-2 py-1 disabled:opacity-40">›</button>
-            </div>
-          </div>
+          <Pager page={page} pageCount={pageCount} total={total} perPage={perPage} noun="incidentes" onPage={setPage} />
         </Section>
 
         {/* RIGHT — incident detail */}
         <div>
           {!selected ? (
-            <Section title="Detalle del incidente" icon={<FileText className="h-4 w-4" />}><EmptyState icon={<FileText className="h-5 w-5" />} title="Selecciona un incidente" description="Elige un incidente de la lista para ver su detalle." /></Section>
+            <Section title="Detalle del incidente" icon={<FileText />}><EmptyState icon={<FileText />} title="Selecciona un incidente" description="Elige un incidente de la lista para ver su detalle." /></Section>
           ) : (
-            <div className="cg-card p-5 space-y-4">
+            <GlassPanel className="space-y-4 p-5">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <div className="flex items-center gap-2"><span className="font-mono text-sm font-semibold">{selected.code}</span><StatusBadge tone={(ESTADO[selected.estado] || ESTADO.abierto).tone}>{(ESTADO[selected.estado] || ESTADO.abierto).label}</StatusBadge></div>
                   <h3 className="mt-1 font-display text-lg font-bold leading-tight">{selected.title}</h3>
-                  {selected.description && <p className="text-sm text-muted-foreground">{selected.description}</p>}
+                  {selected.description && <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>{selected.description}</p>}
                 </div>
-                <select className={`${inputCls} w-auto`} value={selected.estado === 'investigacion' ? 'inProgress' : selected.estado === 'resuelto' ? 'resolved' : 'open'} onChange={(e) => changeStatus(e.target.value)}>
+                <select className={`${FIELD_CLS} w-auto`} value={selected.estado === 'investigacion' ? 'inProgress' : selected.estado === 'resuelto' ? 'resolved' : 'open'} onChange={(e) => changeStatus(e.target.value)}>
                   {WS_OPTIONS.map((o) => <option key={o.v} value={o.v}>{o.l}</option>)}
                 </select>
               </div>
 
-              <div className="grid grid-cols-2 gap-3 rounded-xl bg-muted/40 p-3 text-sm">
-                <div><div className="cg-eyebrow mb-0.5">Sede / Estación</div><div className="font-medium">{selected.sedeName || '—'}</div><div className="text-xs text-muted-foreground">{selected.puestoName || ''}</div></div>
-                <div><div className="cg-eyebrow mb-0.5">Prioridad</div>{selected.priority ? <StatusBadge tone={(PRIO[selected.priority] || PRIO.media).tone} dot={false}>{(PRIO[selected.priority] || PRIO.media).label}</StatusBadge> : <span className="text-muted-foreground">—</span>}</div>
+              <div className="glass-sunken grid grid-cols-2 gap-3 p-3 text-sm">
+                <div><div className="cg-eyebrow mb-0.5">Sede / Puesto</div><div className="font-medium">{selected.sedeName || '—'}</div><div className="text-xs" style={{ color: 'var(--ink-faint)' }}>{selected.puestoName || ''}</div></div>
+                <div><div className="cg-eyebrow mb-0.5">Prioridad</div>{selected.priority ? <StatusBadge tone={(PRIO[selected.priority] || PRIO.media).tone} dot={false}>{(PRIO[selected.priority] || PRIO.media).label}</StatusBadge> : <span style={{ color: 'var(--ink-faint)' }}>—</span>}</div>
                 <div><div className="cg-eyebrow mb-0.5">Fecha / Hora</div><div className="font-medium tabular-nums">{fmtDT(selected.date)}</div></div>
                 <div><div className="cg-eyebrow mb-0.5">Respuesta</div><div className="font-medium tabular-nums">{selected.responseMin != null ? `${selected.responseMin} min` : '—'}</div></div>
                 <div><div className="cg-eyebrow mb-0.5">Reportado por</div><div className="font-medium">{selected.reportedBy?.name || '—'}{selected.reportedBy?.role ? ` (${selected.reportedBy.role})` : ''}</div></div>
@@ -288,42 +255,59 @@ export default function ClientIncidents({ client }: { client: Client }) {
               </div>
 
               {/* Tabs */}
-              <div className="flex items-center gap-1 border-b">
+              <div className="flex items-center gap-1 border-b" style={{ borderColor: 'var(--hairline)' }}>
                 {([['detalles', 'Detalles'], ['evidencia', `Evidencia (${selected.evidenceCount || 0})`], ['bitacora', `Bitácora (${(selected.comments || []).length})`]] as const).map(([k, l]) => (
-                  <button key={k} onClick={() => setTab(k)} className={`relative px-3 py-2 text-sm font-medium ${tab === k ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>{l}{tab === k && <span className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-primary" />}</button>
+                  <button
+                    key={k}
+                    onClick={() => setTab(k)}
+                    className="cg-focus relative px-3 py-2 text-sm font-semibold transition-colors"
+                    style={{ color: tab === k ? 'var(--brand-text)' : 'var(--ink-soft)' }}
+                  >
+                    {l}
+                    {tab === k && <span className="absolute inset-x-2 -bottom-px h-0.5 rounded-full" style={{ background: 'var(--brand)', boxShadow: '0 0 12px 0 var(--brand-glow)' }} />}
+                  </button>
                 ))}
               </div>
 
               {tab === 'detalles' && (
                 <div className="space-y-4">
-                  {selected.description && <div><div className="cg-eyebrow mb-1">Descripción</div><p className="text-sm text-muted-foreground whitespace-pre-line">{selected.description}</p></div>}
-                  {selected.causaProbable && <div><div className="cg-eyebrow mb-1">Causa probable</div><p className="text-sm text-muted-foreground">{selected.causaProbable}</p></div>}
+                  {selected.description && <div><div className="cg-eyebrow mb-1">Descripción</div><p className="whitespace-pre-line text-sm" style={{ color: 'var(--ink-soft)' }}>{selected.description}</p></div>}
+                  {selected.causaProbable && <div><div className="cg-eyebrow mb-1">Causa probable</div><p className="text-sm" style={{ color: 'var(--ink-soft)' }}>{selected.causaProbable}</p></div>}
                   {selected.actionsTaken?.length > 0 && (
-                    <div><div className="cg-eyebrow mb-1">Acciones tomadas</div><ul className="list-disc space-y-0.5 pl-5 text-sm text-muted-foreground">{selected.actionsTaken.map((a: string, i: number) => <li key={i}>{a}</li>)}</ul></div>
+                    <div><div className="cg-eyebrow mb-1">Acciones tomadas</div><ul className="list-disc space-y-0.5 pl-5 text-sm" style={{ color: 'var(--ink-soft)' }}>{selected.actionsTaken.map((a: string, i: number) => <li key={i}>{a}</li>)}</ul></div>
                   )}
                   {Number.isFinite(selected.lat) && Number.isFinite(selected.lng) ? (
                     <div>
-                      <div className="overflow-hidden rounded-xl border" style={{ height: 180 }}>
+                      <div className="overflow-hidden rounded-xl border" style={{ height: 180, borderColor: 'var(--hairline)' }}>
                         <GoogleMapEmbed lat={selected.lat!} lng={selected.lng!} zoom={16} markers={[{ id: selected.id, lat: selected.lat!, lng: selected.lng!, label: selected.title, role: 'crit' }]} />
                       </div>
-                      <div className="mt-1.5 flex items-center justify-between text-xs text-muted-foreground">
+                      <div className="mt-1.5 flex items-center justify-between text-xs" style={{ color: 'var(--ink-soft)' }}>
                         <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {selected.location || 'Ubicación'}</span>
                         <span className="tabular-nums">{selected.lat!.toFixed(4)}, {selected.lng!.toFixed(4)}</span>
                       </div>
                     </div>
-                  ) : selected.location ? <div className="text-sm text-muted-foreground"><MapPin className="mr-1 inline h-3.5 w-3.5" />{selected.location}</div> : null}
+                  ) : selected.location ? <div className="text-sm" style={{ color: 'var(--ink-soft)' }}><MapPin className="mr-1 inline h-3.5 w-3.5" />{selected.location}</div> : null}
                 </div>
               )}
 
               {tab === 'evidencia' && (
                 <div>
                   {evidence.length === 0 ? (
-                    <EmptyState icon={<Paperclip className="h-5 w-5" />} title="Sin evidencia" description={selected.evidenceCount ? 'Cargando…' : 'Este incidente no tiene evidencia adjunta.'} />
+                    <EmptyState icon={<Paperclip />} title="Sin evidencia" description={selected.evidenceCount ? 'Cargando…' : 'Este incidente no tiene evidencia adjunta.'} />
                   ) : (
                     <div className="grid grid-cols-3 gap-2">
                       {evidence.map((e) => (
-                        <a key={e.id || e.url} href={e.url} target="_blank" rel="noreferrer" className="group relative aspect-video overflow-hidden rounded-lg border bg-muted">
-                          {e.isVideo ? <div className="flex h-full w-full items-center justify-center bg-slate-800"><Play className="h-6 w-6 text-white" /></div> : <img src={e.url} alt={e.name} className="h-full w-full object-cover" />}
+                        <a
+                          key={e.id || e.url}
+                          href={e.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="cg-focus group relative aspect-video overflow-hidden rounded-lg border"
+                          style={{ background: 'var(--glass-sunken)', borderColor: 'var(--hairline)' }}
+                        >
+                          {e.isVideo
+                            ? <div className="flex h-full w-full items-center justify-center" style={{ background: 'var(--glass-sunken)', color: 'var(--ink)' }}><Play className="h-6 w-6" /></div>
+                            : <img src={e.url} alt={e.name} className="h-full w-full object-cover" />}
                         </a>
                       ))}
                     </div>
@@ -334,16 +318,16 @@ export default function ClientIncidents({ client }: { client: Client }) {
               {tab === 'bitacora' && (
                 <div>
                   {(selected.comments || []).length === 0 ? (
-                    <EmptyState icon={<ListChecks className="h-5 w-5" />} title="Sin bitácora" description="No hay registros en la bitácora de este incidente." />
+                    <EmptyState icon={<ListChecks />} title="Sin bitácora" description="No hay registros en la bitácora de este incidente." />
                   ) : (
                     <div className="space-y-2">
                       {(selected.comments || []).map((c: any, i: number) => {
                         const text = typeof c === 'string' ? c : (c?.text || c?.message || c?.note || c?.comment || JSON.stringify(c));
                         const at = typeof c === 'object' ? (c?.createdAt || c?.at || c?.date) : null;
                         return (
-                          <div key={i} className="rounded-lg border p-2.5 text-sm">
+                          <div key={i} className="rounded-lg border p-2.5 text-sm" style={{ borderColor: 'var(--hairline)' }}>
                             <p className="text-foreground">{text}</p>
-                            {at && <p className="mt-0.5 text-xs text-muted-foreground">{fmtDT(at)}</p>}
+                            {at && <p className="mt-0.5 text-xs" style={{ color: 'var(--ink-faint)' }}>{fmtDT(at)}</p>}
                           </div>
                         );
                       })}
@@ -351,16 +335,17 @@ export default function ClientIncidents({ client }: { client: Client }) {
                   )}
                 </div>
               )}
-            </div>
+            </GlassPanel>
           )}
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border bg-muted/30 px-4 py-2.5 text-xs text-muted-foreground">
-        <span className="inline-flex items-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5" /> Los tiempos de respuesta se calculan desde el reporte hasta el despacho al supervisor.</span>
-        <span className="inline-flex items-center gap-2">{fmtUpdated && <>Última actualización: {fmtUpdated}</>}<button onClick={() => load()} className="inline-flex items-center gap-1 font-medium text-primary hover:underline"><RefreshCw className="h-3.5 w-3.5" /> Actualizar</button></span>
-      </div>
+      <TabFooter
+        icon={<ShieldCheck />}
+        note="Los tiempos de respuesta se calculan desde el reporte hasta el despacho al supervisor."
+        updatedAt={fmtUpdated}
+        onRefresh={() => load()}
+      />
     </div>
   );
 }

@@ -80,16 +80,25 @@ export default function VerifyEmailGate() {
   };
 
   return (
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-[#0A0A0A] p-4 backdrop-blur-sm">
+    // Mismo patrón que `NoWorkspaceAccess`: lienzo del sistema + cristal elevado.
+    // `position` en línea porque `.app-shell` fija `relative` y glass.css gana a
+    // la utilidad `fixed` de Tailwind (va sin `@layer` — ver su cabecera).
+    <div
+      className="app-shell fixed inset-0 z-[1000] flex items-center justify-center p-4"
+      style={{ position: "fixed" }}
+    >
       <div
         role="alertdialog"
         aria-modal="true"
         aria-labelledby="verify-email-title"
-        className="w-full max-w-md rounded-2xl bg-white p-7 shadow-2xl dark:bg-[#171717]"
+        className="glass-raised w-full max-w-md p-7"
       >
-        <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+        <div
+          className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full border"
+          style={{ background: "var(--brand-wash)", borderColor: "var(--brand-line)", color: "var(--brand-text)" }}
+        >
           <svg
-            className="h-7 w-7 text-primary"
+            className="h-7 w-7"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -104,21 +113,22 @@ export default function VerifyEmailGate() {
 
         <h2
           id="verify-email-title"
-          className="text-center text-lg font-semibold text-slate-900 dark:text-slate-50"
+          className="font-display text-center text-lg font-semibold"
+          style={{ color: "var(--ink)" }}
         >
           Verifica tu correo electrónico
         </h2>
 
-        <p className="mt-3 text-center text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+        <p className="mt-3 text-center text-sm leading-relaxed" style={{ color: "var(--ink-soft)" }}>
           Para empezar a usar la plataforma debes confirmar tu correo. Te enviamos
           un enlace de verificación{email ? " a:" : "."}
         </p>
         {email && (
-          <p className="mt-1 text-center text-sm font-semibold text-slate-900 dark:text-slate-100">
+          <p className="mt-1 text-center text-sm font-semibold" style={{ color: "var(--ink)" }}>
             {email}
           </p>
         )}
-        <p className="mt-3 text-center text-xs text-slate-400 dark:text-slate-500">
+        <p className="mt-3 text-center text-xs" style={{ color: "var(--ink-faint)" }}>
           Abre el enlace del correo y luego vuelve aquí. Esta pantalla se cerrará
           automáticamente cuando lo confirmes.
         </p>
@@ -128,7 +138,7 @@ export default function VerifyEmailGate() {
             type="button"
             onClick={checkNow}
             disabled={checking}
-            className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#a96f08] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:opacity-70"
+            className="cg-btn-brand cg-focus w-full rounded-full px-4 py-2.5 text-sm font-semibold transition-[filter] hover:brightness-110 disabled:opacity-60"
           >
             {checking ? "Comprobando…" : "Ya verifiqué mi correo"}
           </button>
@@ -136,7 +146,7 @@ export default function VerifyEmailGate() {
             type="button"
             onClick={resend}
             disabled={resending || cooldown > 0}
-            className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 disabled:opacity-60 disabled:cursor-not-allowed dark:border-white/10 dark:text-slate-300 dark:hover:bg-[#202020]"
+            className="cg-btn-glass cg-focus w-full rounded-full px-4 py-2.5 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-60"
           >
             {cooldown > 0
               ? `Reenviar correo (${cooldown}s)`
@@ -149,7 +159,8 @@ export default function VerifyEmailGate() {
         <button
           type="button"
           onClick={() => signOut()}
-          className="mt-4 w-full text-center text-xs text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
+          className="cg-focus mt-4 w-full rounded-full text-center text-xs transition-colors"
+          style={{ color: "var(--ink-faint)" }}
         >
           Cerrar sesión
         </button>

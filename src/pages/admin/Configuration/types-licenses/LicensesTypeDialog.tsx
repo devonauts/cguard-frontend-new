@@ -62,7 +62,10 @@ export default function LicenseTypeDialog({ open, onOpenChange, title = "Nuevo T
               </FormItem>
             )}
           />
-          <div className="flex items-center justify-end border-t pt-4">
+          <div className="flex items-center justify-end gap-2 border-t pt-4" style={{ borderColor: 'var(--hairline)' }}>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              {t('licenseTypes.dialog.cancel', { defaultValue: 'Cancelar' })}
+            </Button>
             <Button type="submit" variant="brand" className="px-8">{t('licenseTypes.dialog.save', { defaultValue: 'Guardar' })}</Button>
           </div>
         </form>

@@ -77,18 +77,25 @@ export default function StationRoster({ stationId, tenantId, events, guardColorM
   return (
     <div className="mb-3">
       <div className="mb-2 flex items-center justify-between px-1">
-        <h4 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">Equipo del puesto</h4>
-        <div className="flex items-center gap-2.5 text-[9px] text-muted-foreground">
-          <span className="inline-flex items-center gap-0.5"><Sun size={9} className="text-amber-400" /> Día</span>
-          <span className="inline-flex items-center gap-0.5"><Moon size={9} className="text-indigo-400" /> Noche</span>
-          <span className="inline-flex items-center gap-0.5"><span className="inline-block h-2 w-2 rounded-sm bg-muted/40" /> Descanso</span>
+        <h4 className="cg-eyebrow">Equipo del puesto</h4>
+        <div className="flex items-center gap-2.5 text-[9px]" style={{ color: 'var(--ink-soft)' }}>
+          <span className="inline-flex items-center gap-0.5"><Sun size={9} style={{ color: 'var(--warn-text)' }} /> Día</span>
+          <span className="inline-flex items-center gap-0.5"><Moon size={9} style={{ color: 'var(--info-text)' }} /> Noche</span>
+          <span className="inline-flex items-center gap-0.5"><span className="inline-block h-2 w-2 rounded-sm" style={{ background: 'var(--glass-sunken)' }} /> Descanso</span>
         </div>
       </div>
       <div className="flex gap-3 overflow-x-auto pb-1">
         {roster.map((g) => {
-          const color = guardColorMap[g.id] || { accent: 'var(--primary)', bg: 'rgba(200,134,10,0.08)', text: 'inherit' };
+          const color = guardColorMap[g.id] || {
+            accent: 'var(--brand)',
+            bg: 'color-mix(in oklab, var(--brand) 12%, transparent)',
+            text: 'var(--brand-text)',
+          };
           const isSf = g.role?.isRelief;
-          const accent = isSf ? '#10b981' : color.accent;
+          // El sacafranco (relevo) se distingue siempre en verde: es un papel
+          // operativo, no una serie de datos, y no debe moverse con el acento.
+          const accent = isSf ? 'var(--ok)' : color.accent;
+          const accentInk = isSf ? 'var(--ok-text)' : color.text;
           // Rest weekday(s) straight from the REAL generated schedule: days in the
           // window with no shift = descanso. Makes the libre day visible at a glance
           // (a fijo's rest should be a consistent weekday when the cycle is weekly).
@@ -97,21 +104,21 @@ export default function StationRoster({ stationId, tenantId, events, guardColorM
           ));
           const restLabel = restWeekdays.length === 1 ? restWeekdays[0] : restWeekdays.slice(0, 2).join(', ');
           return (
-            <div key={g.id} className="w-[228px] shrink-0 rounded-xl border border-border/30 bg-card p-3">
+            <div key={g.id} className="glass-flat w-[228px] shrink-0 p-3">
               <div className="flex items-center gap-2">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold"
-                  style={{ background: isSf ? 'rgba(16,185,129,0.15)' : color.bg, color: accent }}>
+                  style={{ background: isSf ? 'color-mix(in oklab, var(--ok) 15%, transparent)' : color.bg, color: accentInk }}>
                   {g.name.split(' ').map((w) => w[0]).slice(0, 2).join('')}
                 </div>
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-foreground">{g.name}</p>
-                  <p className="flex items-center gap-1 text-[10px] font-medium" style={{ color: accent }}>
+                  <p className="truncate text-sm font-semibold">{g.name}</p>
+                  <p className="flex items-center gap-1 text-[10px] font-medium" style={{ color: accentInk }}>
                     {isSf ? <Shield size={10} /> : <User size={10} />}
                     {g.role?.label || (isSf ? 'Sacafranco' : 'Fijo')}
                   </p>
                   {!isSf && restLabel && (
-                    <p className="mt-0.5 flex items-center gap-1 truncate text-[10px] capitalize text-muted-foreground" title={`Descansa: ${restLabel}`}>
-                      <Moon size={9} className="shrink-0 text-indigo-400" /> Descansa: {restLabel}
+                    <p className="mt-0.5 flex items-center gap-1 truncate text-[10px] capitalize" style={{ color: 'var(--ink-soft)' }} title={`Descansa: ${restLabel}`}>
+                      <Moon size={9} className="shrink-0" style={{ color: 'var(--info-text)' }} /> Descansa: {restLabel}
                     </p>
                   )}
                 </div>
@@ -120,11 +127,12 @@ export default function StationRoster({ stationId, tenantId, events, guardColorM
               <div className="mt-2.5 flex gap-0.5">
                 {days.map((d) => {
                   const k = g.pattern[d];
-                  const cls = k === 'day' ? 'bg-amber-400/80' : k === 'night' ? 'bg-indigo-400/80' : 'bg-muted/30';
+                  const fondo = k === 'day' ? 'var(--warn)' : k === 'night' ? 'var(--info)' : 'var(--glass-sunken)';
                   const lab = k === 'day' ? 'D' : k === 'night' ? 'N' : 'L';
                   return (
                     <div key={d} title={`${d}: ${k === 'day' ? 'Día' : k === 'night' ? 'Noche' : 'Descanso'}`}
-                      className={`flex h-5 flex-1 items-center justify-center rounded-sm text-[8px] font-bold ${k ? 'text-white/95' : 'text-muted-foreground/50'} ${cls}`}>
+                      className="flex h-5 flex-1 items-center justify-center rounded-sm text-[8px] font-bold"
+                      style={{ background: fondo, color: k ? 'var(--brand-ink)' : 'var(--ink-faint)' }}>
                       {lab}
                     </div>
                   );

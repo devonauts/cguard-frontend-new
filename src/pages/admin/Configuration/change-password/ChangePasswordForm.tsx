@@ -12,7 +12,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff, Check, Circle } from "lucide-react"
 import { useState } from "react"
 import { useTranslation } from "react-i18next";
 
@@ -68,9 +68,22 @@ export default function ChangePasswordForm({ defaultValues, onSubmit, showOldFie
     form.reset({ oldPassword: "", newPassword: "", confirmPassword: "" });
   });
 
+  // Espejo visual de las mismas reglas del esquema de validación de arriba.
+  // Los estados van en semánticos: cumplido en `--ok`, pendiente apagado. El
+  // acento no se usa aquí — «correcto» no cambia con las preferencias de color.
+  const nueva = form.watch("newPassword") ?? "";
+  const confirma = form.watch("confirmPassword") ?? "";
+  const requisitos = [
+    { ok: nueva.length >= 8, texto: t('auth.validation_min8') },
+    { ok: /[A-Z]/.test(nueva), texto: t('auth.validation_uppercase') },
+    { ok: /[a-z]/.test(nueva), texto: t('auth.validation_lowercase') },
+    { ok: /\d/.test(nueva), texto: t('auth.validation_number') },
+  ];
+  const coinciden = nueva.length > 0 && nueva === confirma;
+
   return (
     <Form {...form}>
-      <form onSubmit={submit} className="space-y-8">
+      <form onSubmit={submit} className="space-y-6">
         {showOldField && (
           <FormField
             control={form.control}
@@ -139,6 +152,23 @@ export default function ChangePasswordForm({ defaultValues, onSubmit, showOldFie
           )}
         />
 
+        <ul className="glass-sunken grid gap-2 p-4 sm:grid-cols-2">
+          {requisitos.map((r) => (
+            <li key={r.texto} className="flex items-center gap-2 text-xs">
+              <span
+                className="grid h-4 w-4 shrink-0 place-items-center rounded-full [&_svg]:size-3"
+                style={{
+                  background: r.ok ? 'color-mix(in oklab, var(--ok) 18%, transparent)' : 'transparent',
+                  color: r.ok ? 'var(--ok-text)' : 'var(--ink-faint)',
+                }}
+              >
+                {r.ok ? <Check strokeWidth={3} /> : <Circle strokeWidth={3} />}
+              </span>
+              <span style={{ color: r.ok ? 'var(--ok-text)' : 'var(--ink-faint)' }}>{r.texto}</span>
+            </li>
+          ))}
+        </ul>
+
         <FormField
           control={form.control}
           name="confirmPassword"
@@ -168,10 +198,18 @@ export default function ChangePasswordForm({ defaultValues, onSubmit, showOldFie
                 </div>
               </FormControl>
               <FormMessage />
+              {confirma.length > 0 && (
+                <p
+                  className="flex items-center gap-1.5 text-xs"
+                  style={{ color: coinciden ? 'var(--ok-text)' : 'var(--bad-text)' }}
+                >
+                  {coinciden ? <Check className="h-3.5 w-3.5" strokeWidth={3} /> : null}
+                  {coinciden ? 'Las contraseñas coinciden' : t('auth.validation_passwords_not_match')}
+                </p>
+              )}
             </FormItem>
           )}
         />
-
 
         <div className="flex justify-end">
           <Button type="submit" variant="brand" className="px-6">{t('auth.save_changes')}</Button>

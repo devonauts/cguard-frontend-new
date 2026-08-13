@@ -127,22 +127,22 @@ export default function NominaApprovals() {
   };
 
   const ciColumns: Column<ClockInReqRow>[] = [
-    { key: "guard", header: "Vigilante", render: (_v, r) => <span className="font-medium text-foreground">{r.guard?.fullName || "—"}</span> },
-    { key: "station", header: "Puesto", render: (_v, r) => <span className="text-xs text-muted-foreground">{r.station?.stationName || "—"}</span> },
+    { key: "guard", header: "Vigilante", render: (_v, r) => <span className="font-semibold">{r.guard?.fullName || "—"}</span> },
+    { key: "station", header: "Puesto", render: (_v, r) => <span className="text-xs" style={{ color: "var(--ink-soft)" }}>{r.station?.stationName || "—"}</span> },
     { key: "scheduledStart", header: "Inicio de turno", render: (_v, r) => (
       r.scheduledStart
-        ? <span className="text-xs text-muted-foreground">{fmtDateTime(r.scheduledStart)}</span>
-        : <span className="text-xs text-muted-foreground">{fmtDateTime(r.createdAt)} <span className="opacity-60">(sin turno programado)</span></span>
+        ? <span className="text-xs tabular-nums" style={{ color: "var(--ink-soft)" }}>{fmtDateTime(r.scheduledStart)}</span>
+        : <span className="text-xs tabular-nums" style={{ color: "var(--ink-soft)" }}>{fmtDateTime(r.createdAt)} <span className="opacity-60">(sin turno programado)</span></span>
     ) },
-    { key: "lateBy", header: "Retraso", render: (_v, r) => <span className="text-xs font-medium text-amber-600">{lateBy(r.scheduledStart, r.createdAt)}</span> },
-    { key: "reason", header: "Motivo", render: (_v, r) => <span className="text-xs text-muted-foreground">{r.reason || "—"}</span> },
+    { key: "lateBy", header: "Retraso", render: (_v, r) => <span className="text-xs font-semibold tabular-nums" style={{ color: "var(--warn-text)" }}>{lateBy(r.scheduledStart, r.createdAt)}</span> },
+    { key: "reason", header: "Motivo", render: (_v, r) => <span className="text-xs" style={{ color: "var(--ink-soft)" }}>{r.reason || "—"}</span> },
     { key: "createdAt", header: "Solicitado", render: (_v, r) => fmtDateTime(r.createdAt) },
     {
       key: "actions",
       header: "",
       render: (_v, r) => (
         <div className="flex gap-2">
-          <Button size="sm" disabled={busy} className="bg-emerald-600 hover:bg-emerald-700 text-white" onClick={() => decideClockIn(r.id, "approved")}>
+          <Button size="sm" disabled={busy} onClick={() => decideClockIn(r.id, "approved")}>
             Aprobar
           </Button>
           <Button size="sm" variant="outline" disabled={busy} onClick={() => decideClockIn(r.id, "rejected")}>
@@ -154,17 +154,17 @@ export default function NominaApprovals() {
   ];
 
   const coColumns: Column<ClockOutReqRow>[] = [
-    { key: "guard", header: "Vigilante", render: (_v, r) => <span className="font-medium text-foreground">{r.guard?.fullName || "—"}</span> },
-    { key: "station", header: "Puesto", render: (_v, r) => <span className="text-xs text-muted-foreground">{r.station?.stationName || "—"}</span> },
-    { key: "scheduledEnd", header: "Fin de turno", render: (_v, r) => <span className="text-xs text-muted-foreground">{r.scheduledEnd ? fmtDateTime(r.scheduledEnd) : "—"}</span> },
-    { key: "reason", header: "Motivo", render: (_v, r) => <span className="text-xs text-muted-foreground">{r.reason || "—"}</span> },
+    { key: "guard", header: "Vigilante", render: (_v, r) => <span className="font-semibold">{r.guard?.fullName || "—"}</span> },
+    { key: "station", header: "Puesto", render: (_v, r) => <span className="text-xs" style={{ color: "var(--ink-soft)" }}>{r.station?.stationName || "—"}</span> },
+    { key: "scheduledEnd", header: "Fin de turno", render: (_v, r) => <span className="text-xs tabular-nums" style={{ color: "var(--ink-soft)" }}>{r.scheduledEnd ? fmtDateTime(r.scheduledEnd) : "—"}</span> },
+    { key: "reason", header: "Motivo", render: (_v, r) => <span className="text-xs" style={{ color: "var(--ink-soft)" }}>{r.reason || "—"}</span> },
     { key: "createdAt", header: "Solicitado", render: (_v, r) => fmtDateTime(r.createdAt) },
     {
       key: "actions",
       header: "",
       render: (_v, r) => (
         <div className="flex gap-2">
-          <Button size="sm" disabled={busy} className="bg-emerald-600 hover:bg-emerald-700 text-white" onClick={() => decideClockOut(r.id, "approved")}>
+          <Button size="sm" disabled={busy} onClick={() => decideClockOut(r.id, "approved")}>
             Aprobar
           </Button>
           <Button size="sm" variant="outline" disabled={busy} onClick={() => decideClockOut(r.id, "rejected")}>
@@ -177,16 +177,16 @@ export default function NominaApprovals() {
 
   const columns: Column<CorrectionRow>[] = [
     { key: "field", header: "Campo" },
-    { key: "originalValue", header: "Original", render: (_v, r) => <span className="text-xs text-muted-foreground">{r.originalValue || "—"}</span> },
-    { key: "correctedValue", header: "Corregido", render: (_v, r) => <span className="text-xs font-medium text-foreground">{r.correctedValue || "—"}</span> },
-    { key: "reason", header: "Motivo", render: (_v, r) => <span className="text-xs text-muted-foreground">{r.reason}</span> },
+    { key: "originalValue", header: "Original", render: (_v, r) => <span className="text-xs" style={{ color: "var(--ink-soft)" }}>{r.originalValue || "—"}</span> },
+    { key: "correctedValue", header: "Corregido", render: (_v, r) => <span className="text-xs font-semibold tabular-nums">{r.correctedValue || "—"}</span> },
+    { key: "reason", header: "Motivo", render: (_v, r) => <span className="text-xs" style={{ color: "var(--ink-soft)" }}>{r.reason}</span> },
     { key: "createdAt", header: "Solicitado", render: (_v, r) => fmtDateTime(r.createdAt) },
     {
       key: "actions",
       header: "",
       render: (_v, r) => (
         <div className="flex gap-2">
-          <Button size="sm" disabled={busy} className="bg-emerald-600 hover:bg-emerald-700 text-white" onClick={() => decide(r.id, "approved")}>
+          <Button size="sm" disabled={busy} onClick={() => decide(r.id, "approved")}>
             Aprobar
           </Button>
           <Button size="sm" variant="outline" disabled={busy} onClick={() => decide(r.id, "rejected")}>
@@ -204,6 +204,15 @@ export default function NominaApprovals() {
           icon={<CheckCircle2 />}
           title="Aprobaciones"
           subtitle="Entradas tardías, salidas anticipadas y correcciones pendientes"
+          badges={
+            !loading && (
+              <StatusBadge tone={ciRows.length + coRows.length + rows.length > 0 ? "warn" : "ok"}>
+                {ciRows.length + coRows.length + rows.length > 0
+                  ? `${ciRows.length + coRows.length + rows.length} en espera`
+                  : "Todo al día"}
+              </StatusBadge>
+            )
+          }
         />
 
         {loading ? (
@@ -214,7 +223,7 @@ export default function NominaApprovals() {
             <Section
               title="Entradas tardías"
               icon={<LogIn />}
-              action={ciRows.length > 0 && <StatusBadge tone="orange" dot={false}>{ciRows.length}</StatusBadge>}
+              action={ciRows.length > 0 && <StatusBadge tone="warn" dot={false}>{ciRows.length} pendiente(s)</StatusBadge>}
             >
               <DataTable
                 columns={ciColumns}
@@ -233,7 +242,7 @@ export default function NominaApprovals() {
             <Section
               title="Salidas anticipadas"
               icon={<LogOut />}
-              action={coRows.length > 0 && <StatusBadge tone="orange" dot={false}>{coRows.length}</StatusBadge>}
+              action={coRows.length > 0 && <StatusBadge tone="warn" dot={false}>{coRows.length} pendiente(s)</StatusBadge>}
             >
               <DataTable
                 columns={coColumns}
@@ -252,7 +261,7 @@ export default function NominaApprovals() {
             <Section
               title="Correcciones manuales"
               icon={<PencilLine />}
-              action={rows.length > 0 && <StatusBadge tone="primary" dot={false}>{rows.length}</StatusBadge>}
+              action={rows.length > 0 && <StatusBadge tone="brand" dot={false}>{rows.length} pendiente(s)</StatusBadge>}
             >
               <DataTable
                 columns={columns}

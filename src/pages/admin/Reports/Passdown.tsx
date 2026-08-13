@@ -1,11 +1,8 @@
 import { Package } from "lucide-react";
 import DataReport, { type ReportColumn } from "./DataReport";
+import { formatDateTime, rangeBounds, REPORT_ROW_LIMIT, warnIfCapped } from "./reportFormat";
 import passdownService, { type Passdown } from "@/lib/api/passdownService";
 
-const fmt = (iso?: string | null) =>
-  iso
-    ? new Date(iso).toLocaleString("es-EC", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })
-    : "—";
 
 const STATUS: Record<string, string> = {
   pending: "Pendiente",
@@ -14,7 +11,7 @@ const STATUS: Record<string, string> = {
 };
 
 const columns: ReportColumn<Passdown>[] = [
-  { key: "created", label: "Fecha", value: (r) => fmt(r.createdAt) },
+  { key: "created", label: "Fecha", value: (r) => formatDateTime(r.createdAt) },
   { key: "station", label: "Puesto", value: (r) => r.stationName || "—" },
   { key: "outgoing", label: "Vigilante saliente", value: (r) => r.outgoingGuardName || "—" },
   { key: "shift", label: "Turno", value: (r) => r.shiftLabel || "—" },
@@ -30,17 +27,13 @@ export default function Passdown() {
       title="Registros de Entrega"
       description="Pases de turno (relevos): novedades, instrucciones y recepción por el vigilante entrante."
       icon={Package}
-      accent="#14b8a6"
       columns={columns}
       load={async ({ from, to }) => {
-        const res = await passdownService.list({ limit: 2000 });
-        const rows = res?.rows || [];
-        const start = new Date(`${from}T00:00:00.000Z`).getTime();
-        const end = new Date(`${to}T23:59:59.999Z`).getTime();
-        return rows.filter((r) => {
-          const ts = r.createdAt ? new Date(r.createdAt).getTime() : NaN;
-          return !Number.isNaN(ts) && ts >= start && ts <= end;
-        });
+        // El rango va EN LA CONSULTA. Antes se pedían los 2000 relevos más
+        // recientes y se recortaba aquí: un rango antiguo se exportaba vacío.
+        const { start, end } = rangeBounds(from, to);
+        const res = await passdownService.list({ from: start, to: end, limit: REPORT_ROW_LIMIT });
+        return warnIfCapped(res?.rows || []);
       }}
     />
   );

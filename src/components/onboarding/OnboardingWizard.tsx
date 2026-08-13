@@ -78,8 +78,6 @@ interface WizardForm {
   website: string;
 }
 
-const GOLD = "#C8860A";
-
 const STEPS = [
   { label: "Bienvenida", icon: Sparkles },
   { label: "Tu empresa", icon: Building2 },
@@ -289,11 +287,18 @@ export default function OnboardingWizard({
         className="max-w-[640px] gap-0 overflow-hidden p-0 max-h-[92vh] sm:max-w-[680px]"
       >
         {/* Header */}
-        <DialogHeader className="space-y-0 border-b border-border bg-gradient-to-r from-amber-50/70 to-transparent px-6 py-4 text-left dark:from-amber-950/20">
+        {/* El degradado oro fijo (#C8860A → #F5C300) se sustituye por el acento:
+            un relleno de `--brand` con tinta `--brand-ink`. El blanco encima del
+            oro daba ~2,2:1 (ver la medición en tokens.css) y además el degradado
+            se quedaba dorado aunque el CRM entero pasara a otro tono. */}
+        <DialogHeader
+          className="space-y-0 border-b px-6 py-4 text-left"
+          style={{ borderColor: "var(--hairline)", background: "linear-gradient(90deg, var(--brand-wash) 0%, transparent 100%)" }}
+        >
           <div className="flex items-center gap-3">
             <div
-              className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-white shadow-sm"
-              style={{ background: "linear-gradient(135deg, #C8860A, #F5C300)" }}
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-xl"
+              style={{ background: "var(--brand)", color: "var(--brand-ink)", boxShadow: "0 6px 20px -8px var(--brand-glow)" }}
             >
               <StepCurrentIcon className="h-5 w-5" />
             </div>
@@ -332,7 +337,7 @@ export default function OnboardingWizard({
           {step === 1 && (
             <div className="space-y-4 animate-in fade-in-50 duration-300">
               <div className="space-y-1.5">
-                <Label>Nombre de la empresa <span className="text-red-500">*</span></Label>
+                <Label>Nombre de la empresa <span style={{ color: "var(--bad-text)" }}>*</span></Label>
                 <Input
                   value={form.name}
                   onChange={(e) => set({ name: e.target.value })}
@@ -340,7 +345,7 @@ export default function OnboardingWizard({
                 />
               </div>
               <div className="space-y-1.5">
-                <Label>Razón social <span className="text-red-500">*</span></Label>
+                <Label>Razón social <span style={{ color: "var(--bad-text)" }}>*</span></Label>
                 <Input
                   value={form.businessTitle}
                   onChange={(e) => set({ businessTitle: e.target.value })}
@@ -348,7 +353,7 @@ export default function OnboardingWizard({
                 />
               </div>
               <div className="space-y-1.5">
-                <Label>RUC / Cédula <span className="text-red-500">*</span></Label>
+                <Label>RUC / Cédula <span style={{ color: "var(--bad-text)" }}>*</span></Label>
                 <Input
                   value={form.taxNumber}
                   onChange={(e) => set({ taxNumber: digitsOnly(e.target.value).slice(0, 13) })}
@@ -357,7 +362,7 @@ export default function OnboardingWizard({
                   maxLength={13}
                 />
                 {form.taxNumber && !taxValid && (
-                  <p className="text-xs text-red-600">
+                  <p className="text-xs" style={{ color: "var(--bad-text)" }}>
                     Ingresa un RUC válido (13 dígitos, termina en 001) o una cédula válida (10 dígitos).
                   </p>
                 )}
@@ -365,7 +370,7 @@ export default function OnboardingWizard({
 
               {/* Logo */}
               <div className="space-y-1.5">
-                <Label>Logo de la empresa <span className="text-red-500">*</span></Label>
+                <Label>Logo de la empresa <span style={{ color: "var(--bad-text)" }}>*</span></Label>
                 <div className="flex items-center gap-4">
                   <div className="relative">
                     <div className="grid h-20 w-20 place-items-center overflow-hidden rounded-2xl border-2 border-dashed border-border bg-muted">
@@ -398,7 +403,7 @@ export default function OnboardingWizard({
                     onChange={(e) => handleLogo(e.target.files?.[0] || null)}
                   />
                 </div>
-                {logoError && <p className="text-xs text-red-600">{logoError}</p>}
+                {logoError && <p className="text-xs" style={{ color: "var(--bad-text)" }}>{logoError}</p>}
               </div>
             </div>
           )}
@@ -407,7 +412,7 @@ export default function OnboardingWizard({
             <div className="space-y-4 animate-in fade-in-50 duration-300">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
-                  <Label>Teléfono <span className="text-red-500">*</span></Label>
+                  <Label>Teléfono <span style={{ color: "var(--bad-text)" }}>*</span></Label>
                   <PhoneInput
                     value={form.phone}
                     onChange={(v) => set({ phone: v })}
@@ -415,11 +420,11 @@ export default function OnboardingWizard({
                     placeholder="Número de teléfono"
                   />
                   {form.phone && !phoneValid && (
-                    <p className="text-xs text-red-600">Número de teléfono inválido.</p>
+                    <p className="text-xs" style={{ color: "var(--bad-text)" }}>Número de teléfono inválido.</p>
                   )}
                 </div>
                 <div className="space-y-1.5">
-                  <Label>Correo electrónico <span className="text-red-500">*</span></Label>
+                  <Label>Correo electrónico <span style={{ color: "var(--bad-text)" }}>*</span></Label>
                   <Input
                     type="email"
                     value={form.email}
@@ -427,14 +432,14 @@ export default function OnboardingWizard({
                     placeholder="correo@empresa.com"
                   />
                   {form.email && !emailValid && (
-                    <p className="text-xs text-red-600">Correo electrónico inválido.</p>
+                    <p className="text-xs" style={{ color: "var(--bad-text)" }}>Correo electrónico inválido.</p>
                   )}
                 </div>
               </div>
 
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <Label>Dirección <span className="text-red-500">*</span></Label>
+                  <Label>Dirección <span style={{ color: "var(--bad-text)" }}>*</span></Label>
                   <button
                     type="button"
                     onClick={() => setShowManualAddress((v) => !v)}
@@ -494,7 +499,7 @@ export default function OnboardingWizard({
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
-                  <Label>Zona horaria <span className="text-red-500">*</span></Label>
+                  <Label>Zona horaria <span style={{ color: "var(--bad-text)" }}>*</span></Label>
                   <Select value={form.timezone} onValueChange={(v) => set({ timezone: v })}>
                     <SelectTrigger>
                       <SelectValue placeholder="Seleccionar zona horaria" />
@@ -562,7 +567,7 @@ export default function OnboardingWizard({
               <Button
                 type="button"
                 onClick={next}
-                className="bg-primary px-6 text-white hover:bg-primary/90"
+                className="px-6"
               >
                 Comenzar <ArrowRight className="ml-1.5 h-4 w-4" />
               </Button>
@@ -572,7 +577,7 @@ export default function OnboardingWizard({
                 type="button"
                 onClick={next}
                 disabled={!canAdvance(step)}
-                className="bg-primary px-6 text-white hover:bg-primary/90 disabled:opacity-50"
+                className="px-6"
               >
                 Continuar <ArrowRight className="ml-1.5 h-4 w-4" />
               </Button>
@@ -582,7 +587,7 @@ export default function OnboardingWizard({
                 type="button"
                 onClick={handleFinish}
                 disabled={submitting || !step2Valid || !step3Valid}
-                className="bg-primary px-6 text-white hover:bg-primary/90 disabled:opacity-50"
+                className="px-6"
               >
                 {submitting ? (
                   <><Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> Guardando...</>
@@ -608,8 +613,8 @@ function WelcomeStep({ days, trialEnd }: { days: number | null; trialEnd: string
   return (
     <div className="space-y-5 text-center animate-in fade-in-50 duration-300">
       <div
-        className="mx-auto grid h-16 w-16 place-items-center rounded-2xl text-white shadow-md"
-        style={{ background: "linear-gradient(135deg, #C8860A, #F5C300)" }}
+        className="mx-auto grid h-16 w-16 place-items-center rounded-2xl"
+        style={{ background: "var(--brand)", color: "var(--brand-ink)", boxShadow: "0 10px 30px -10px var(--brand-glow)" }}
       >
         <Sparkles className="h-8 w-8" />
       </div>
@@ -622,8 +627,8 @@ function WelcomeStep({ days, trialEnd }: { days: number | null; trialEnd: string
 
       <div className="mx-auto flex max-w-sm flex-col items-center gap-1.5">
         <Badge
-          className="gap-1.5 border-0 px-3 py-1 text-sm text-white"
-          style={{ background: "linear-gradient(135deg, #C8860A, #F5C300)" }}
+          className="gap-1.5 border-0 px-3 py-1 text-sm"
+          style={{ background: "var(--brand)", color: "var(--brand-ink)" }}
         >
           <Gift className="h-3.5 w-3.5" /> 14 días de prueba gratis
         </Badge>

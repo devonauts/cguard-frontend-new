@@ -5,14 +5,18 @@ import { cn } from "@/lib/utils"
 
 const Tabs = TabsPrimitive.Root
 
+/* Riel hundido + píldora de acento, el mismo conmutador que `Segmented` del kit.
+   El radio va en `style` porque `.glass-sunken` se declara sin capa en glass.css
+   y su `border-radius` gana a cualquier utilidad de Tailwind. */
 const TabsList = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.List>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
->(({ className, ...props }, ref) => (
+>(({ className, style, ...props }, ref) => (
   <TabsPrimitive.List
     ref={ref}
+    style={{ borderRadius: "9999px", ...style }}
     className={cn(
-      "inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground",
+      "glass-sunken inline-flex h-9 items-center justify-center gap-1 p-1 text-[color:var(--ink-soft)]",
       className
     )}
     {...props}
@@ -27,7 +31,10 @@ const TabsTrigger = React.forwardRef<
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
-      "inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow",
+      "cg-focus inline-flex h-7 items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-3.5 text-[13px] font-semibold transition-all duration-200",
+      "text-[color:var(--ink-soft)] hover:text-[color:var(--ink)]",
+      "data-[state=active]:bg-[var(--brand)] data-[state=active]:text-[color:var(--brand-ink)] data-[state=active]:shadow-[0_0_18px_-6px_var(--brand-glow)]",
+      "disabled:pointer-events-none disabled:opacity-50 motion-reduce:transition-none",
       className
     )}
     {...props}
@@ -41,10 +48,7 @@ const TabsContent = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <TabsPrimitive.Content
     ref={ref}
-    className={cn(
-      "mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-      className
-    )}
+    className={cn("cg-focus mt-3 outline-none", className)}
     {...props}
   />
 ))

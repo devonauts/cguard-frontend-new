@@ -1,9 +1,9 @@
-import { Camera, Car } from "lucide-react";
+import { Camera, Car, FileText, Gauge, Info, Trash2 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import AppLayout from "@/layouts/app-layout";
 import Breadcrumb from "@/components/ui/breadcrumb";
-import { PageContainer, PageHeader, Section } from "@/components/kit";
+import { PageContainer, PageHeader, Section, GlassPanel } from "@/components/kit";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -32,6 +32,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+/** Asterisco de campo obligatorio — severidad, nunca el acento. */
+const Obligatorio = () => <span style={{ color: 'var(--bad-text)' }}>*</span>;
 
 export default function NewVehiclePage() {
   const [preview, setPreview] = useState<string | null>(null);
@@ -173,6 +176,14 @@ export default function NewVehiclePage() {
     }
   };
 
+  const quitarFoto = () => {
+    setPreview((prev) => {
+      if (prev?.startsWith("blob:")) URL.revokeObjectURL(prev);
+      return null;
+    });
+    form.setValue("image", undefined);
+  };
+
   return (
     <AppLayout>
       <Breadcrumb
@@ -191,52 +202,82 @@ export default function NewVehiclePage() {
         />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-           <Section title="Datos del vehículo" icon={<Car />} contentClassName="space-y-6">
-            <div className="flex items-center justify-center">
-              <label
-                htmlFor="vehicle-image"
-                className="group relative inline-flex h-28 w-28 cursor-pointer items-center justify-center overflow-hidden rounded-2xl border"
-              >
-                {preview ? (
-                  <img src={preview} alt="vehículo" className="h-full w-full object-cover" />
-                ) : (
-                  <div className="flex h-full w-full flex-col items-center justify-center text-muted-foreground">
-                    <svg width="42" height="42" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M5 11l1-3a3 3 0 012.83-2h6.34A3 3 0 0118 8l1 3h1a2 2 0 012 2v3a2 2 0 01-2 2v1a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1H7v1a1 1 0 01-1 1H5a1 1 0 01-1-1v-1a2 2 0 01-2-2v-3a2 2 0 012-2h1zm3.83-4a1 1 0 00-.95.68L7.3 11h9.4l-.58-3.32a1 1 0 00-.95-.68zM5 16h14v-3H5zm5-2.5a1.5 1.5 0 10-1.5 1.5A1.5 1.5 0 0010 13.5zm7 1.5a1.5 1.5 0 10-1.5-1.5A1.5 1.5 0 0017 15z" />
-                    </svg>
-                  </div>
-                )}
-                <span className="absolute bottom-1 right-1 rounded bg-white/90 px-1.5 py-0.5 text-xs">
-                  <Camera className="h-6 w-6 text-muted-foreground" />
-                </span>
-              </label>
-              <input
-                id="vehicle-image"
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => {
-                  const f = e.target.files?.[0];
-                  setPreview((prev) => {
-                    if (prev?.startsWith("blob:")) URL.revokeObjectURL(prev);
-                    if (f) {
-                      form.setValue("image", f);
-                      return URL.createObjectURL(f);
-                    }
-                    form.setValue("image", undefined);
-                    return null;
-                  });
-                }}
-              />
-            </div>
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+           {isEditing && (
+             <GlassPanel flat className="flex items-start gap-3 p-4">
+               <span className="mt-0.5 shrink-0 [&_svg]:size-4" style={{ color: 'var(--info-text)' }}>
+                 <Info />
+               </span>
+               <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
+                 Al editar un vehículo sólo se pueden cambiar la fotografía, la propiedad y las
+                 notas. Los datos de identificación quedan fijos desde el alta.
+               </p>
+             </GlassPanel>
+           )}
+
+           {/* ── Fotografía ─────────────────────────────────────────────── */}
+           <Section title="Fotografía" icon={<Camera />} contentClassName="flex flex-col items-center gap-3">
+            <label
+              htmlFor="vehicle-image"
+              className="group relative inline-flex h-32 w-32 cursor-pointer items-center justify-center overflow-hidden rounded-2xl border transition-colors"
+              style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--brand)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--hairline)'; }}
+            >
+              {preview ? (
+                <img src={preview} alt="vehículo" className="h-full w-full object-cover" />
+              ) : (
+                // El icono `Car` de lucide —ya importado en este mismo
+                // archivo— en vez de un `<path>` de 30 comandos dibujado a
+                // mano. Es el mismo coche que usa la lista de vehículos, con
+                // el grosor de trazo del resto de la iconografía.
+                <div className="flex h-full w-full flex-col items-center justify-center" style={{ color: 'var(--ink-faint)' }}>
+                  <Car className="h-10 w-10" strokeWidth={1.5} />
+                </div>
+              )}
+              <span
+                className="absolute bottom-1 right-1 flex items-center justify-center rounded-full p-1.5"
+                style={{ background: 'var(--brand)', color: 'var(--brand-ink)' }}
+              >
+                <Camera className="h-4 w-4" />
+              </span>
+            </label>
+            <input
+              id="vehicle-image"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                setPreview((prev) => {
+                  if (prev?.startsWith("blob:")) URL.revokeObjectURL(prev);
+                  if (f) {
+                    form.setValue("image", f);
+                    return URL.createObjectURL(f);
+                  }
+                  form.setValue("image", undefined);
+                  return null;
+                });
+              }}
+            />
+            <p className="text-center text-xs" style={{ color: 'var(--ink-faint)' }}>
+              Toca la imagen para elegir una fotografía del vehículo.
+            </p>
+            {preview && (
+              <Button type="button" variant="ghost" size="sm" onClick={quitarFoto}>
+                <Trash2 className="mr-1 h-3.5 w-3.5" /> Quitar fotografía
+              </Button>
+            )}
+           </Section>
+
+           {/* ── Identificación ─────────────────────────────────────────── */}
+           <Section title="Identificación" icon={<Car />} contentClassName="grid grid-cols-1 gap-4 md:grid-cols-2">
               <FormField
                 control={form.control}
                 name="year"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Año*</FormLabel>
+                    <FormLabel>Año <Obligatorio /></FormLabel>
                     <FormControl>
                       <Input inputMode="numeric" placeholder="2022" {...field} disabled={isEditing} />
                     </FormControl>
@@ -250,7 +291,7 @@ export default function NewVehiclePage() {
                 name="make"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Marca*</FormLabel>
+                    <FormLabel>Marca <Obligatorio /></FormLabel>
                     <FormControl>
                       <Input placeholder="Toyota" {...field} disabled={isEditing} />
                     </FormControl>
@@ -264,7 +305,7 @@ export default function NewVehiclePage() {
                 name="model"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Modelo*</FormLabel>
+                    <FormLabel>Modelo <Obligatorio /></FormLabel>
                     <FormControl>
                       <Input placeholder="Hilux" {...field} disabled={isEditing} />
                     </FormControl>
@@ -278,7 +319,7 @@ export default function NewVehiclePage() {
                 name="color"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Color*</FormLabel>
+                    <FormLabel>Color <Obligatorio /></FormLabel>
                     <FormControl>
                       <Input placeholder="Blanco" {...field} disabled={isEditing} />
                     </FormControl>
@@ -292,9 +333,9 @@ export default function NewVehiclePage() {
                 name="plate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Placa*</FormLabel>
+                    <FormLabel>Placa <Obligatorio /></FormLabel>
                     <FormControl>
-                      <Input placeholder="ABC-1234" {...field} disabled={isEditing} />
+                      <Input className="font-mono" placeholder="ABC-1234" {...field} disabled={isEditing} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -303,10 +344,27 @@ export default function NewVehiclePage() {
 
               <FormField
                 control={form.control}
+                name="vin"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Número VIN (Número de Identificación del Vehículo) <Obligatorio /></FormLabel>
+                    <FormControl>
+                      <Input className="font-mono" placeholder="1HGCM82633A004352" {...field} disabled={isEditing} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+           </Section>
+
+           {/* ── Datos operativos ───────────────────────────────────────── */}
+           <Section title="Datos operativos" icon={<Gauge />} contentClassName="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <FormField
+                control={form.control}
                 name="initialMileage"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Kilometraje Inicial*</FormLabel>
+                    <FormLabel>Kilometraje inicial <Obligatorio /></FormLabel>
                     <FormControl>
                       <Input inputMode="numeric" placeholder="0" {...field} disabled={isEditing} />
                     </FormControl>
@@ -320,7 +378,7 @@ export default function NewVehiclePage() {
                 name="ownership"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Propiedad*</FormLabel>
+                    <FormLabel>Propiedad <Obligatorio /></FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger>
                         <SelectValue placeholder="Seleccionar" />
@@ -335,49 +393,39 @@ export default function NewVehiclePage() {
                   </FormItem>
                 )}
               />
+           </Section>
 
+           {/* ── Notas ──────────────────────────────────────────────────── */}
+           <Section title="Notas" icon={<FileText />}>
               <FormField
                 control={form.control}
-                name="vin"
+                name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Número VIN (Número de Identificación del Vehículo)*</FormLabel>
+                    <FormLabel>Descripción</FormLabel>
                     <FormControl>
-                      <Input placeholder="1HGCM82633A004352" {...field} disabled={isEditing} />
+                      <Textarea rows={4} placeholder="Notas del vehículo" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Descripción</FormLabel>
-                  <FormControl>
-                    <Textarea rows={4} placeholder="Notas del vehículo" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="flex items-center justify-end gap-2">
-              <Button variant="outline" asChild>
-                <Link to="/vehicle-patrol/vehicles">Cancelar</Link>
-              </Button>
-              <Button
-                type="submit"
-                variant="brand"
-                disabled={form.formState.isSubmitting}
-              >
-                Enviar
-              </Button>
-            </div>
            </Section>
+
+           <div className="flex items-center justify-end gap-2">
+             <Button variant="outline" asChild>
+               <Link to="/vehicle-patrol/vehicles">Cancelar</Link>
+             </Button>
+             <Button
+               type="submit"
+               variant="brand"
+               disabled={form.formState.isSubmitting}
+             >
+               {form.formState.isSubmitting
+                 ? 'Guardando...'
+                 : isEditing ? 'Guardar cambios' : 'Crear vehículo'}
+             </Button>
+           </div>
           </form>
         </Form>
        </PageContainer>

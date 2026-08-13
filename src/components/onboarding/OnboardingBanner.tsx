@@ -62,31 +62,39 @@ export default function OnboardingBanner({
   const days = isTrialing(tenant.billingStatus) ? trialDaysLeft(tenant.trialEndsAt) : null;
 
   return (
-    <div className="flex flex-col gap-2 border-b border-primary/30 bg-gradient-to-r from-amber-50 to-amber-50/40 px-4 py-2.5 text-sm dark:from-amber-950/30 dark:to-amber-950/10 sm:flex-row sm:items-center sm:justify-between">
+    // El degradado ámbar fijo se sustituye por un lavado del ACENTO: este banner
+    // no avisa de un peligro, invita a terminar la configuración, así que su
+    // color es el de la marca y se recalcula con el tono que elija el usuario.
+    <div
+      className="flex flex-col gap-2 border-b px-4 py-2.5 text-sm sm:flex-row sm:items-center sm:justify-between"
+      style={{
+        borderColor: "var(--brand-line)",
+        background: "linear-gradient(90deg, var(--brand-wash) 0%, transparent 100%)",
+      }}
+    >
       <div className="flex items-start gap-2.5 sm:items-center">
-        <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-primary/15 text-primary">
+        <span
+          className="grid h-7 w-7 shrink-0 place-items-center rounded-lg border"
+          style={{ background: "var(--brand-wash)", borderColor: "var(--brand-line)", color: "var(--brand-text)" }}
+        >
           <Sparkles className="h-4 w-4" />
         </span>
         <div className="min-w-0">
-          <span className="font-semibold text-foreground">Completa la configuración de tu empresa</span>
+          <span className="font-semibold" style={{ color: "var(--ink)" }}>Completa la configuración de tu empresa</span>
           {missing.length > 0 && (
-            <span className="text-muted-foreground">
+            <span style={{ color: "var(--ink-soft)" }}>
               {" "}— falta: {missing.join(", ")}
               {getMissingFields(tenant).length > 3 ? "…" : ""}
             </span>
           )}
           {days != null && (
-            <span className="ml-1 font-medium text-primary">
+            <span className="ml-1 font-medium" style={{ color: "var(--brand-text)" }}>
               · {days > 0 ? `Te quedan ${days} día${days === 1 ? "" : "s"} de prueba` : "Tu prueba termina hoy"}
             </span>
           )}
         </div>
       </div>
-      <Button
-        size="sm"
-        onClick={onOpenWizard}
-        className="shrink-0 self-start bg-primary text-white hover:bg-primary/90 sm:self-auto"
-      >
+      <Button size="sm" onClick={onOpenWizard} className="shrink-0 self-start sm:self-auto">
         Continuar configuración <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
       </Button>
     </div>

@@ -6,6 +6,7 @@ import {
   Landmark, Factory, HardHat, Users, Ticket, Navigation, DoorOpen, HeartPulse, ScanLine,
   Briefcase, Gauge, ClipboardCheck, Car, Crosshair, Plane, Warehouse, Wrench, type LucideIcon,
 } from "lucide-react";
+import { Segmented } from "@/components/kit";
 
 /** Named icons templated services can pass to the app (no upload needed). */
 export const SERVICE_ICONS: Record<string, LucideIcon> = {
@@ -42,6 +43,11 @@ export default function CustomerAppPreview({
   services: PreviewService[];
   certifications: PreviewCertification[];
 }) {
+  /* OJO: los colores de DENTRO de la pantalla (el objeto `t` de abajo) son los de
+     la app Mi Seguridad, NO los del CRM. La app tiene su propio tema oscuro/claro
+     y su propio acento; si aquí usáramos los tokens del panel, la vista previa
+     mentiría sobre lo que verá el cliente. El chasis del teléfono y los controles
+     de alrededor sí van con el sistema de cristal. */
   const [dark, setDark] = useState(true);
   const [slide, setSlide] = useState(0);
   const bannerItems = banners.length ? banners : [{ title: "Tu banner aquí", description: "Agrega un banner para promocionar tus servicios.", image: null }];
@@ -53,13 +59,27 @@ export default function CustomerAppPreview({
 
   return (
     <div className="flex flex-col items-center gap-3">
-      <div className="inline-flex rounded-full border border-border bg-card p-0.5 text-xs">
-        <button onClick={() => setDark(true)} className={`flex items-center gap-1 rounded-full px-3 py-1 transition ${dark ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}><Moon className="size-3.5" /> Oscuro</button>
-        <button onClick={() => setDark(false)} className={`flex items-center gap-1 rounded-full px-3 py-1 transition ${!dark ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}><Sun className="size-3.5" /> Claro</button>
-      </div>
+      <Segmented
+        value={dark ? "dark" : "light"}
+        onChange={(v) => setDark(v === "dark")}
+        options={[
+          { value: "dark", label: <span className="inline-flex items-center gap-1"><Moon className="size-3.5" /> Oscuro</span> },
+          { value: "light", label: <span className="inline-flex items-center gap-1"><Sun className="size-3.5" /> Claro</span> },
+        ]}
+      />
 
-      <div className="relative w-[300px] rounded-[2.6rem] border-[11px] border-neutral-900 bg-neutral-900 shadow-2xl">
-        <div className="absolute left-1/2 top-0 z-20 h-6 w-32 -translate-x-1/2 rounded-b-2xl bg-neutral-900" />
+      <div
+        className="relative w-[300px] rounded-[2.6rem] border-[11px]"
+        style={{
+          background: "oklch(0.18 0 0)",
+          borderColor: "oklch(0.18 0 0)",
+          boxShadow: "var(--lift-4)",
+        }}
+      >
+        <div
+          className="absolute left-1/2 top-0 z-20 h-6 w-32 -translate-x-1/2 rounded-b-2xl"
+          style={{ background: "oklch(0.18 0 0)" }}
+        />
         {/* flex column: scrollable content + sticky bottom nav */}
         <div className={`flex h-[600px] flex-col rounded-[1.7rem] ${t.screen}`}>
           <div className="min-h-0 flex-1 overflow-y-auto">
@@ -193,7 +213,9 @@ export default function CustomerAppPreview({
           </div>
         </div>
       </div>
-      <p className="text-center text-xs text-muted-foreground">Vista previa · app Mi Seguridad (cliente)</p>
+      <p className="text-center text-xs" style={{ color: "var(--ink-faint)" }}>
+        Vista previa · app Mi Seguridad (cliente)
+      </p>
     </div>
   );
 }

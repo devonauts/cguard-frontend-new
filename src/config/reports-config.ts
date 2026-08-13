@@ -210,13 +210,6 @@ export const REPORT_SECTIONS: ReportSection[] = [
         href: "/reports/payroll/by-post",
       },
       {
-        id: "payroll-skillset",
-        title: "Horas Trabajadas por Conjunto de Habilidades",
-        description:
-          "Ver horas trabajadas por conjunto de habilidades",
-        href: "/reports/payroll/by-skillset",
-      },
-      {
         id: "payroll-department",
         title: "Horas Trabajadas por Departamento",
         description:

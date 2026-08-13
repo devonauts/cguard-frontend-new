@@ -60,8 +60,12 @@ export interface TaskRow {
 }
 
 const taskService = {
-  /** Tasks by status (use status='all' for the tracking view). */
-  async byStatus(params?: { status?: TaskStatus | "all"; limit?: number }) {
+  /**
+   * Tasks by status (use status='all' for the tracking view).
+   * `from`/`to` (ISO) acotan `createdAt` EN EL SERVIDOR — el informe de tareas
+   * los manda para no depender de "las N más recientes".
+   */
+  async byStatus(params?: { status?: TaskStatus | "all"; from?: string; to?: string; limit?: number }) {
     const t = getTenantId();
     return unwrap(await api.get(`/tenant/${t}/task/approvals${buildQuery(params)}`));
   },

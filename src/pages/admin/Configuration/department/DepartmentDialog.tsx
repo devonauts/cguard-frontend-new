@@ -120,14 +120,17 @@ export default function DepartmentDialog({
                       ))}
                     </SelectContent>
                   </Select>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
                     Persona a cargo del departamento; recibirá escalamientos y aprobaciones en futuras versiones.
                   </p>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <div className="flex justify-end gap-2 border-t pt-4">
+            <div className="flex justify-end gap-2 border-t pt-4" style={{ borderColor: "var(--hairline)" }}>
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                Cancelar
+              </Button>
               <Button type="submit" variant="brand" disabled={saving}>
                 {saving ? "Guardando…" : "Guardar"}
               </Button>

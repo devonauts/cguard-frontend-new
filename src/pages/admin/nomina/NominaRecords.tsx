@@ -8,9 +8,10 @@ import { toast } from "sonner";
 import attendanceService, { type AttendanceRecord } from "@/lib/api/attendanceService";
 import departmentService, { type Department } from "@/lib/api/departmentService";
 import GoogleMapEmbed from "@/components/GoogleMap/GoogleMapEmbed";
+import StaticMapImage from "@/components/maps/StaticMapImage";
 import { useFileUrl } from "@/lib/fileUrl";
 import { StatusBadge, ApprovalBadge, STATUS_META, approvalLabel, fmtDateTime, fmtTime, fmtHours } from "./shared";
-import { PageContainer, PageHeader, Section, EmptyState, SkeletonCards } from "@/components/kit";
+import { PageContainer, PageHeader, Section, EmptyState, SkeletonCards, Segmented, Toolbar, StatusBadge as ToneBadge, Field } from "@/components/kit";
 import { MapPin, ImageOff, ClipboardCheck, ClipboardList, Filter, Download, ChevronLeft, ChevronRight, LogIn, LogOut } from "lucide-react";
 
 const STATUS_OPTIONS = [
@@ -174,16 +175,8 @@ export default function NominaRecords() {
       render: (_v, r) => (
         <span className="flex items-center gap-1.5">
           {r.guardName?.fullName || "—"}
-          {r.role === "supervisor" && (
-            <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:bg-amber-500/15 dark:text-amber-400">
-              Supervisor
-            </span>
-          )}
-          {r.role === "administrative" && (
-            <span className="rounded-full bg-sky-100 px-1.5 py-0.5 text-[10px] font-semibold text-sky-700 dark:bg-sky-500/15 dark:text-sky-400">
-              Administrativo
-            </span>
-          )}
+          {r.role === "supervisor" && <ToneBadge tone="warn" dot={false}>Supervisor</ToneBadge>}
+          {r.role === "administrative" && <ToneBadge tone="info" dot={false}>Administrativo</ToneBadge>}
         </span>
       ),
     },
@@ -196,32 +189,37 @@ export default function NominaRecords() {
         <span>
           {fmtTime(r.punchInTime)}
           {Array.isArray(r.sessions) && r.sessions.length > 1 && (
-            <span className="ml-1 text-[10px] font-medium text-muted-foreground">
+            <span className="ml-1 text-[10px] font-medium tabular-nums" style={{ color: "var(--ink-faint)" }}>
               ·{r.sessions.length} sesiones
             </span>
           )}
         </span>
       ),
     },
-    { key: "punchOutTime", header: "Salida", render: (_v, r) => fmtTime(r.punchOutTime) },
-    { key: "hoursWorked", header: "Horas", render: (_v, r) => fmtHours(r.hoursWorked) },
+    { key: "punchOutTime", header: "Salida", numeric: true, render: (_v, r) => fmtTime(r.punchOutTime) },
+    /* `numeric` no es decoración: alinea la columna Y su cabecera a la derecha
+       con `tabular-nums`, que es lo que deja las horas unas debajo de otras.
+       Con `render` propio, DataTable ya no lo deduce solo. */
+    { key: "hoursWorked", header: "Horas", numeric: true, render: (_v, r) => fmtHours(r.hoursWorked) },
     {
       key: "patrols",
       header: "Rondas",
+      numeric: true,
       render: (_v, r) => (
-        <span className="font-medium text-primary">{r.numberOfPatrolsDuringShift ?? 0}</span>
+        <span className="font-semibold tabular-nums" style={{ color: "var(--brand-text)" }}>{r.numberOfPatrolsDuringShift ?? 0}</span>
       ),
     },
     {
       key: "incidents",
       header: "Incidentes",
+      numeric: true,
       render: (_v, r) =>
         (r.numberOfIncidentsDurindShift ?? 0) > 0 ? (
-          <span className="font-bold text-red-600 dark:text-red-400">
+          <span className="font-bold tabular-nums" style={{ color: "var(--bad-text)" }}>
             {r.numberOfIncidentsDurindShift}
           </span>
         ) : (
-          <span className="text-muted-foreground">0</span>
+          <span className="tabular-nums" style={{ color: "var(--ink-faint)" }}>0</span>
         ),
     },
     {
@@ -229,11 +227,11 @@ export default function NominaRecords() {
       header: "Ubicación",
       render: (_v, r) =>
         r.punchInOutsideGeofence ? (
-          <span className="inline-flex items-center gap-1 text-xs text-red-500">
-            <MapPin size={12} /> Fuera ({r.punchInDistanceM ?? "?"} m)
-          </span>
+          <ToneBadge tone="bad" dot={false}>
+            <MapPin size={12} /> <span className="tabular-nums">Fuera ({r.punchInDistanceM ?? "?"} m)</span>
+          </ToneBadge>
         ) : (
-          <span className="text-xs text-emerald-600">OK</span>
+          <ToneBadge tone="ok" dot={false}>Dentro</ToneBadge>
         ),
     },
     { key: "status", header: "Estado", render: (_v, r) => <StatusBadge status={r.status} /> },
@@ -247,73 +245,88 @@ export default function NominaRecords() {
           title="Registros de Asistencia"
           subtitle="Marcaciones de entrada / salida"
           actions={
-            <div className="flex flex-wrap items-center gap-2">
-              {/* Período: Día / Semana / Mes */}
-              <div className="inline-flex rounded-xl border border-border bg-background p-0.5">
-                {(["day", "week", "month"] as Period[]).map((p) => (
-                  <button
-                    key={p}
-                    onClick={() => setPeriod(p)}
-                    className={`px-3 py-1 text-sm rounded-lg transition-colors ${period === p ? "bg-primary text-primary-foreground font-medium" : "text-muted-foreground hover:text-foreground"}`}
-                  >
-                    {p === "day" ? "Día" : p === "week" ? "Semana" : "Mes"}
-                  </button>
-                ))}
-              </div>
-              {/* Navegación de fecha */}
-              <div className="inline-flex items-center gap-1 rounded-xl border border-border bg-background px-1.5 py-1">
-                <button onClick={() => setAnchor((a) => shiftAnchor(period, a, -1))} className="p-1 rounded hover:bg-muted" aria-label="Anterior">
-                  <ChevronLeft className="size-4" />
-                </button>
-                <button onClick={() => setAnchor(new Date())} title="Ir a hoy" className="px-2 text-sm min-w-[9rem] text-center capitalize">
-                  {rangeLabel(period, anchor)}
-                </button>
-                <button onClick={() => setAnchor((a) => shiftAnchor(period, a, +1))} className="p-1 rounded hover:bg-muted" aria-label="Siguiente">
-                  <ChevronRight className="size-4" />
-                </button>
-              </div>
-              {/* Filtro de estado */}
-              <div className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-1.5">
-                <Filter className="size-4 text-muted-foreground" />
-                <select
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value)}
-                  className="bg-transparent text-sm outline-none"
-                >
-                  {STATUS_OPTIONS.map((s) => (
-                    <option key={s} value={s}>{s === "" ? "Todos los estados" : (STATUS_META[s]?.label ?? s)}</option>
-                  ))}
-                </select>
-              </div>
-              {/* Filtro de departamento (solo si el tenant creó departamentos) */}
-              {departments.length > 0 && (
-                <div className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-1.5">
-                  <Filter className="size-4 text-muted-foreground" />
-                  <select
-                    value={departmentId}
-                    onChange={(e) => setDepartmentId(e.target.value)}
-                    className="bg-transparent text-sm outline-none"
-                  >
-                    <option value="">Todos los departamentos</option>
-                    {departments.map((d) => (
-                      <option key={d.id} value={d.id}>{d.name}</option>
-                    ))}
-                  </select>
-                </div>
-              )}
-              {/* Exportar */}
-              <Button variant="outline" onClick={exportCsv} className="gap-2">
-                <Download className="size-4" /> Exportar
-              </Button>
-            </div>
+            <Button variant="outline" onClick={exportCsv} className="gap-2">
+              <Download className="size-4" /> Exportar
+            </Button>
           }
         />
 
+        <Toolbar>
+          {/* Período: Día / Semana / Mes */}
+          <Segmented<Period>
+            value={period}
+            onChange={setPeriod}
+            options={[
+              { value: "day", label: "Día" },
+              { value: "week", label: "Semana" },
+              { value: "month", label: "Mes" },
+            ]}
+          />
+
+          {/* Navegación de fecha */}
+          <div className="glass-sunken inline-flex items-center gap-1 px-1.5 py-1">
+            <button
+              onClick={() => setAnchor((a) => shiftAnchor(period, a, -1))}
+              className="cg-focus cg-btn-ghost rounded-full p-1"
+              aria-label="Anterior"
+            >
+              <ChevronLeft className="size-4" />
+            </button>
+            <button
+              onClick={() => setAnchor(new Date())}
+              title="Ir a hoy"
+              className="cg-focus min-w-[9rem] rounded-full px-2 text-center text-sm font-medium capitalize"
+            >
+              {rangeLabel(period, anchor)}
+            </button>
+            <button
+              onClick={() => setAnchor((a) => shiftAnchor(period, a, +1))}
+              className="cg-focus cg-btn-ghost rounded-full p-1"
+              aria-label="Siguiente"
+            >
+              <ChevronRight className="size-4" />
+            </button>
+          </div>
+
+          {/* Filtro de estado */}
+          <label className="glass-sunken flex items-center gap-2 px-3 py-1.5">
+            <Filter className="size-4" style={{ color: "var(--ink-faint)" }} />
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              className="cg-focus bg-transparent text-sm outline-none"
+              style={{ color: "var(--ink)" }}
+            >
+              {STATUS_OPTIONS.map((s) => (
+                <option key={s} value={s}>{s === "" ? "Todos los estados" : (STATUS_META[s]?.label ?? s)}</option>
+              ))}
+            </select>
+          </label>
+
+          {/* Filtro de departamento (solo si el tenant creó departamentos) */}
+          {departments.length > 0 && (
+            <label className="glass-sunken flex items-center gap-2 px-3 py-1.5">
+              <Filter className="size-4" style={{ color: "var(--ink-faint)" }} />
+              <select
+                value={departmentId}
+                onChange={(e) => setDepartmentId(e.target.value)}
+                className="cg-focus bg-transparent text-sm outline-none"
+                style={{ color: "var(--ink)" }}
+              >
+                <option value="">Todos los departamentos</option>
+                {departments.map((d) => (
+                  <option key={d.id} value={d.id}>{d.name}</option>
+                ))}
+              </select>
+            </label>
+          )}
+        </Toolbar>
+
         <Section title="Marcaciones" icon={<ClipboardList />}>
           {!loading && (
-            <div className="mb-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-sm text-muted-foreground">
-              <span><span className="font-semibold text-foreground">{rows.length}</span> registro(s)</span>
-              <span>Horas totales: <span className="font-semibold text-foreground">{fmtHours(rows.reduce((sum, r) => sum + (Number(r.hoursWorked) || 0), 0))}</span></span>
+            <div className="mb-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-sm" style={{ color: "var(--ink-soft)" }}>
+              <span><span className="font-semibold tabular-nums" style={{ color: "var(--ink)" }}>{rows.length}</span> registro(s)</span>
+              <span>Horas totales: <span className="font-semibold tabular-nums" style={{ color: "var(--ink)" }}>{fmtHours(rows.reduce((sum, r) => sum + (Number(r.hoursWorked) || 0), 0))}</span></span>
               <span className="capitalize">{rangeLabel(period, anchor)}</span>
             </div>
           )}
@@ -353,10 +366,7 @@ export default function NominaRecords() {
                 {(() => {
                   if (!selfieUrl) {
                     return (
-                      <div className="flex flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-border bg-muted/40 py-8 text-muted-foreground">
-                        <ImageOff size={20} />
-                        <span className="text-xs">Sin selfie de entrada</span>
-                      </div>
+                      <EmptyState icon={<ImageOff />} title="Sin selfie de entrada" className="py-8" />
                     );
                   }
                   return (
@@ -369,9 +379,9 @@ export default function NominaRecords() {
                       <img
                         src={selfieUrl}
                         alt="Selfie de entrada"
-                        className="w-full rounded-xl border border-border object-contain bg-muted"
+                        className="glass-flat w-full object-contain"
                       />
-                      <p className="mt-1.5 text-center text-xs text-muted-foreground">
+                      <p className="mt-1.5 text-center text-xs" style={{ color: "var(--ink-soft)" }}>
                         Entrada · {fmtDateTime(selected.punchInTime)}
                         {selected.punchInAddress ? ` · ${selected.punchInAddress}` : ""}
                       </p>
@@ -381,32 +391,30 @@ export default function NominaRecords() {
 
                 <div className="flex items-center justify-between">
                   <StatusBadge status={selected.status} />
-                  <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1.5 text-xs" style={{ color: "var(--ink-soft)" }}>
                     Aprobación: <ApprovalBadge status={selected.approvalStatus} />
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <Field label="Puesto" value={selected.stationName?.stationName || "—"} />
-                  <Field label="Horas" value={fmtHours(selected.hoursWorked)} />
-                  <Field label="Programado" value={`${fmtDateTime(selected.scheduledStart)}`} />
-                  <Field label="Fin programado" value={`${fmtDateTime(selected.scheduledEnd)}`} />
-                  <Field label="Entrada" value={fmtDateTime(selected.punchInTime)} />
-                  <Field label="Salida" value={fmtDateTime(selected.punchOutTime)} />
-                  <Field label="Tarde (min)" value={String(selected.lateMinutes || 0)} />
-                  <Field label="Extra (min)" value={String(selected.overtimeMinutes || 0)} />
+                  <Field label="Horas" value={<span className="tabular-nums">{fmtHours(selected.hoursWorked)}</span>} />
+                  <Field label="Programado" value={<span className="tabular-nums">{fmtDateTime(selected.scheduledStart)}</span>} />
+                  <Field label="Fin programado" value={<span className="tabular-nums">{fmtDateTime(selected.scheduledEnd)}</span>} />
+                  <Field label="Entrada" value={<span className="tabular-nums">{fmtDateTime(selected.punchInTime)}</span>} />
+                  <Field label="Salida" value={<span className="tabular-nums">{fmtDateTime(selected.punchOutTime)}</span>} />
+                  <Field label="Tarde (min)" value={<span className="tabular-nums">{selected.lateMinutes || 0}</span>} />
+                  <Field label="Extra (min)" value={<span className="tabular-nums">{selected.overtimeMinutes || 0}</span>} />
                   {selected.shiftSchedule && (
                     <Field label="Turno" value={selected.shiftSchedule} />
                   )}
-                  <Field label="Rondas" value={String(selected.numberOfPatrolsDuringShift ?? 0)} />
-                  <Field label="Incidentes" value={String(selected.numberOfIncidentsDurindShift ?? 0)} />
+                  <Field label="Rondas" value={<span className="tabular-nums">{selected.numberOfPatrolsDuringShift ?? 0}</span>} />
+                  <Field label="Incidentes" value={<span className="tabular-nums">{selected.numberOfIncidentsDurindShift ?? 0}</span>} />
                 </div>
 
                 {selected.observations && (
                   <div>
-                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                      Observaciones
-                    </p>
-                    <p className="mt-0.5 whitespace-pre-wrap rounded-lg bg-muted/50 p-3 text-foreground">
+                    <p className="cg-eyebrow">Observaciones</p>
+                    <p className="glass-sunken mt-1 whitespace-pre-wrap p-3" style={{ color: "var(--ink)" }}>
                       {selected.observations}
                     </p>
                   </div>
@@ -415,17 +423,18 @@ export default function NominaRecords() {
                 {/* Sessions — every clock in/out pair accumulated in this record */}
                 {Array.isArray(selected.sessions) && selected.sessions.length > 0 && (
                   <div className="space-y-1.5">
-                    <p className="text-xs font-semibold text-foreground">
+                    <p className="text-xs font-semibold">
                       Sesiones ({selected.sessions.length})
                     </p>
-                    <div className="divide-y divide-border rounded-xl border border-border">
+                    <div className="glass-flat divide-y overflow-hidden" style={{ borderColor: "var(--hairline)" }}>
                       {selected.sessions.map((s, i) => (
                         <div
                           key={i}
                           className="flex items-center justify-between px-3 py-2 text-xs"
+                          style={{ borderColor: "var(--hairline)" }}
                         >
-                          <span className="text-muted-foreground">#{i + 1}</span>
-                          <span className="text-foreground">
+                          <span className="tabular-nums" style={{ color: "var(--ink-faint)" }}>#{i + 1}</span>
+                          <span className="font-medium tabular-nums">
                             {fmtTime(s.in)} → {s.out ? fmtTime(s.out) : "—"}
                           </span>
                         </div>
@@ -439,33 +448,56 @@ export default function NominaRecords() {
                 {((selected.punchInLatitude != null && selected.punchInLongitude != null) ||
                   (selected.punchOutLatitude != null && selected.punchOutLongitude != null)) && (
                   <div className="space-y-2">
-                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                      Ubicación
-                    </p>
+                    <p className="cg-eyebrow">Ubicación</p>
 
                     {/* Clock-in location */}
                     {selected.punchInLatitude != null && selected.punchInLongitude != null && (
-                      <div className="overflow-hidden rounded-xl border border-border">
-                        <div className="flex items-center justify-between bg-muted/40 px-3 py-1.5 text-xs font-semibold text-foreground">
+                      <div className="glass-flat overflow-hidden">
+                        <div className="flex items-center justify-between px-3 py-1.5 text-xs font-semibold" style={{ background: "var(--glass-sunken)" }}>
                           <span className="flex items-center gap-1.5">
-                            <LogIn size={13} className="text-emerald-600" /> Entrada
+                            <LogIn size={13} style={{ color: "var(--ok-text)" }} /> Entrada
                           </span>
-                          <span className="font-normal text-muted-foreground">{fmtDateTime(selected.punchInTime)}</span>
+                          <span className="font-normal tabular-nums" style={{ color: "var(--ink-soft)" }}>{fmtDateTime(selected.punchInTime)}</span>
                         </div>
-                        <GoogleMapEmbed
+                        {/* AHORRO · Revisar nómina es abrir registros en cadena, y
+                            cada registro montaba DOS mapas dinámicos ($7/1.000 cada
+                            carga): repasar 50 turnos eran 100 cargas facturadas para
+                            comprobar de un vistazo si la marcación cayó dentro de la
+                            geocerca. La imagen estática ($2/1.000) contesta esa misma
+                            pregunta —el pin y el contorno de la geocerca se dibujan
+                            igual— y el mapa de verdad sigue a un clic para el caso
+                            raro en que haga falta mirar el entorno. */}
+                        <StaticMapImage
                           lat={Number(selected.punchInLatitude)}
                           lng={Number(selected.punchInLongitude)}
                           zoom={16}
                           height="200px"
-                          showGeofence={!selected.stationName?.geofencePolygon && !!selected.stationName?.geofenceRadius}
-                          geofenceRadius={selected.stationName?.geofenceRadius || 100}
+                          alt="Ubicación de la marcación de entrada"
                           polygon={selected.stationName?.geofencePolygon || undefined}
-                          markers={[
-                            { id: "in", lat: Number(selected.punchInLatitude), lng: Number(selected.punchInLongitude), label: "Entrada" },
-                          ]}
-                        />
+                          radiusMeters={
+                            !selected.stationName?.geofencePolygon && selected.stationName?.geofenceRadius
+                              ? Number(selected.stationName.geofenceRadius)
+                              : null
+                          }
+                        >
+                          <GoogleMapEmbed
+                            lat={Number(selected.punchInLatitude)}
+                            lng={Number(selected.punchInLongitude)}
+                            zoom={16}
+                            height="200px"
+                            showGeofence={!selected.stationName?.geofencePolygon && !!selected.stationName?.geofenceRadius}
+                            geofenceRadius={selected.stationName?.geofenceRadius || 100}
+                            polygon={selected.stationName?.geofencePolygon || undefined}
+                            markers={[
+                              { id: "in", lat: Number(selected.punchInLatitude), lng: Number(selected.punchInLongitude), label: "Entrada" },
+                            ]}
+                          />
+                        </StaticMapImage>
                         {selected.punchInOutsideGeofence && (
-                          <p className="bg-red-500/10 px-3 py-2 text-xs text-red-500">
+                          <p
+                            className="px-3 py-2 text-xs font-medium"
+                            style={{ background: "color-mix(in oklab, var(--bad) 12%, transparent)", color: "var(--bad-text)" }}
+                          >
                             Marcación fuera de geocerca · {selected.punchInDistanceM ?? "?"} m del puesto
                           </p>
                         )}
@@ -474,37 +506,49 @@ export default function NominaRecords() {
 
                     {/* Clock-out location */}
                     {selected.punchOutLatitude != null && selected.punchOutLongitude != null ? (
-                      <div className="overflow-hidden rounded-xl border border-border">
-                        <div className="flex items-center justify-between bg-muted/40 px-3 py-1.5 text-xs font-semibold text-foreground">
+                      <div className="glass-flat overflow-hidden">
+                        <div className="flex items-center justify-between px-3 py-1.5 text-xs font-semibold" style={{ background: "var(--glass-sunken)" }}>
                           <span className="flex items-center gap-1.5">
-                            <LogOut size={13} className="text-orange-600" /> Salida
+                            <LogOut size={13} style={{ color: "var(--warn-text)" }} /> Salida
                           </span>
-                          <span className="font-normal text-muted-foreground">{fmtDateTime(selected.punchOutTime)}</span>
+                          <span className="font-normal tabular-nums" style={{ color: "var(--ink-soft)" }}>{fmtDateTime(selected.punchOutTime)}</span>
                         </div>
-                        <GoogleMapEmbed
+                        <StaticMapImage
                           lat={Number(selected.punchOutLatitude)}
                           lng={Number(selected.punchOutLongitude)}
                           zoom={16}
                           height="200px"
-                          showGeofence={!selected.stationName?.geofencePolygon && !!selected.stationName?.geofenceRadius}
-                          geofenceRadius={selected.stationName?.geofenceRadius || 100}
+                          alt="Ubicación de la marcación de salida"
                           polygon={selected.stationName?.geofencePolygon || undefined}
-                          markers={[
-                            { id: "out", lat: Number(selected.punchOutLatitude), lng: Number(selected.punchOutLongitude), label: "Salida" },
-                          ]}
-                        />
+                          radiusMeters={
+                            !selected.stationName?.geofencePolygon && selected.stationName?.geofenceRadius
+                              ? Number(selected.stationName.geofenceRadius)
+                              : null
+                          }
+                        >
+                          <GoogleMapEmbed
+                            lat={Number(selected.punchOutLatitude)}
+                            lng={Number(selected.punchOutLongitude)}
+                            zoom={16}
+                            height="200px"
+                            showGeofence={!selected.stationName?.geofencePolygon && !!selected.stationName?.geofenceRadius}
+                            geofenceRadius={selected.stationName?.geofenceRadius || 100}
+                            polygon={selected.stationName?.geofencePolygon || undefined}
+                            markers={[
+                              { id: "out", lat: Number(selected.punchOutLatitude), lng: Number(selected.punchOutLongitude), label: "Salida" },
+                            ]}
+                          />
+                        </StaticMapImage>
                       </div>
                     ) : selected.punchOutTime ? (
-                      <p className="rounded-xl border border-dashed border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
-                        Salida sin ubicación (marcación automática o GPS no disponible).
-                      </p>
+                      <EmptyState title="Salida sin ubicación" description="Marcación automática o GPS no disponible." className="py-6" />
                     ) : null}
                   </div>
                 )}
 
                 <div className="flex flex-wrap items-center gap-2 pt-2">
                   {selected.role === "supervisor" || selected.role === "administrative" ? (
-                    <p className="w-full text-xs text-muted-foreground">
+                    <p className="w-full text-xs" style={{ color: "var(--ink-soft)" }}>
                       {selected.role === "administrative"
                         ? "Registro administrativo — sin flujo de aprobación."
                         : "Registro de supervisor — sin flujo de aprobación."}
@@ -523,7 +567,7 @@ export default function NominaRecords() {
                           selected.approvalStatus === "approved" || selected.approvalStatus === "rejected";
                         if (!needsReview && !wasDecided) {
                           return (
-                            <p className="w-full text-xs text-muted-foreground">
+                            <p className="w-full text-xs" style={{ color: "var(--ink-soft)" }}>
                               Sin aprobación requerida — marcación válida.
                             </p>
                           );
@@ -531,13 +575,13 @@ export default function NominaRecords() {
                         return (
                           <>
                             {wasDecided ? (
-                              <p className="w-full text-xs text-muted-foreground">
+                              <p className="w-full text-xs" style={{ color: "var(--ink-soft)" }}>
                                 {selected.approvalStatus === "approved" ? "Aprobado" : "Rechazado"}
                                 {(selected as AttendanceRecord & { approvedAt?: string }).approvedAt ? ` · ${fmtDateTime((selected as AttendanceRecord & { approvedAt?: string }).approvedAt)}` : ""}
                                 {" — puedes cambiar la decisión."}
                               </p>
                             ) : (
-                              <p className="w-full text-xs text-amber-600">
+                              <p className="w-full text-xs font-medium" style={{ color: "var(--warn-text)" }}>
                                 {selected.punchInOutsideGeofence
                                   ? "Marcación fuera de la geocerca — requiere aprobación."
                                   : "Marcación pendiente de revisión."}
@@ -547,7 +591,6 @@ export default function NominaRecords() {
                               <Button
                                 disabled={busy}
                                 onClick={() => act(() => attendanceService.approve(selected.id), "Aprobado")}
-                                className="bg-emerald-600 hover:bg-emerald-700 text-white"
                               >
                                 Aprobar
                               </Button>
@@ -589,14 +632,5 @@ export default function NominaRecords() {
         </SheetContent>
       </Sheet>
     </AppLayout>
-  );
-}
-
-function Field({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</div>
-      <div className="text-foreground">{value}</div>
-    </div>
   );
 }

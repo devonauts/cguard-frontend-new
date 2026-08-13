@@ -20,18 +20,19 @@ import AppLayout from "@/layouts/app-layout";
 import {
   PageContainer,
   PageHeader,
-  Section,
   StatCard,
   Stagger,
-  StatusBadge as KitStatusBadge,
   EmptyState,
   SkeletonCards,
+  GlassPanel,
+  IconTile,
+  StatusBadge,
 } from "@/components/kit";
+import { DeviceStatusBadge, healthTone, type DeviceHealth } from "./deviceStatus";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -134,41 +135,21 @@ const deviceToForm = (d: Device): DeviceForm => ({
   relaySiteId: d.relaySiteId ?? "",
 });
 
-function StatusBadge({ status }: { status?: DeviceStatus }) {
-  const s = status ?? "unknown";
-  if (s === "online") {
-    return (
-      <KitStatusBadge tone="green" dot={false}>
-        <Wifi className="h-3 w-3" /> En línea
-      </KitStatusBadge>
-    );
-  }
-  if (s === "offline") {
-    return (
-      <KitStatusBadge tone="red" dot={false}>
-        <WifiOff className="h-3 w-3" /> Sin conexión
-      </KitStatusBadge>
-    );
-  }
-  if (s === "auth_failed") {
-    return (
-      <KitStatusBadge tone="orange" dot={false}>
-        <WifiOff className="h-3 w-3" /> Credenciales
-      </KitStatusBadge>
-    );
-  }
-  if (s === "unreachable") {
-    return (
-      <KitStatusBadge tone="orange" dot={false}>
-        <WifiOff className="h-3 w-3" /> Sin stream
-      </KitStatusBadge>
-    );
-  }
-  return (
-    <KitStatusBadge tone="slate" dot={false}>
-      <WifiOff className="h-3 w-3" /> Desconocido
-    </KitStatusBadge>
-  );
+/**
+ * Estado del equipo. La escala vive en `./deviceStatus` y la comparten los
+ * enlaces de radio y los sitios de retransmisión: antes cada pantalla decidía
+ * por su cuenta de qué color era «sin conexión» y salían cuatro respuestas.
+ */
+const DEVICE_HEALTH: Record<DeviceStatus | "unknown", { health: DeviceHealth; label: string }> = {
+  online: { health: "up", label: "En línea" },
+  offline: { health: "down", label: "Sin conexión" },
+  auth_failed: { health: "auth", label: "Credenciales" },
+  unreachable: { health: "unreachable", label: "Sin stream" },
+  unknown: { health: "unknown", label: "Desconocido" },
+};
+
+function deviceHealth(status?: DeviceStatus): { health: DeviceHealth; label: string } {
+  return DEVICE_HEALTH[status ?? "unknown"] ?? DEVICE_HEALTH.unknown;
 }
 
 function TypeIcon({ type }: { type?: DeviceType }) {
@@ -369,9 +350,9 @@ export default function VideoDevices() {
         {/* Summary */}
         <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <StatCard label="Total" value={devices.length} icon={<Video />} accent="primary" />
-          <StatCard label="En línea" value={counts.online} icon={<Wifi />} accent="green" />
-          <StatCard label="Sin conexión" value={counts.offline} icon={<WifiOff />} accent="red" />
-          <StatCard label="Desconocido" value={counts.unknown} icon={<Server />} accent="slate" />
+          <StatCard label="En línea" value={counts.online} icon={<Wifi />} accent="ok" />
+          <StatCard label="Sin conexión" value={counts.offline} icon={<WifiOff />} accent="bad" />
+          <StatCard label="Desconocido" value={counts.unknown} icon={<Server />} accent="neutral" />
         </Stagger>
 
         {/* List */}
@@ -394,18 +375,25 @@ export default function VideoDevices() {
             {devices.map((d) => {
               const b = busy[d.id];
               return (
-                <Section key={d.id}>
+                /* `flat`: estas fichas se repiten en rejilla y el desenfoque de
+                   `.glass` por ficha se paga en cada fotograma al desplazar. */
+                <GlassPanel key={d.id} flat hover className="p-5">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex min-w-0 items-start gap-3">
-                      <div className="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/12 text-primary [&_svg]:size-5">
+                      {/* El tono del equipo y el de su píldora salen de la MISMA función: iban
+                          por separado y un equipo con las credenciales caídas mostraba
+                          la píldora en ámbar y el icono en el acento de marca. */}
+                      <IconTile tone={healthTone(deviceHealth(d.status as DeviceStatus).health)}>
                         <TypeIcon type={d.type as DeviceType} />
-                      </div>
+                      </IconTile>
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="truncate font-semibold">{d.name}</span>
-                          <Badge variant="outline" className="text-[10px] uppercase">
+                          {/* Chip de clasificación, no de estado: neutro y con la
+                              misma pieza que usan las pantallas hermanas. */}
+                          <StatusBadge tone="neutral" dot={false}>
                             {TYPE_LABELS[(d.type as DeviceType) ?? "dvr"]}
-                          </Badge>
+                          </StatusBadge>
                         </div>
                         <div className="mt-0.5 truncate text-sm text-muted-foreground">
                           {[d.brand, d.model].filter(Boolean).join(" · ") || "Sin marca/modelo"}
@@ -418,7 +406,7 @@ export default function VideoDevices() {
                         </div>
                       </div>
                     </div>
-                    <StatusBadge status={d.status as DeviceStatus} />
+                    <DeviceStatusBadge {...deviceHealth(d.status as DeviceStatus)} />
                   </div>
 
                   <div className="mt-4 flex flex-wrap items-center gap-2">
@@ -465,14 +453,14 @@ export default function VideoDevices() {
                         size="icon"
                         variant="ghost"
                         title="Eliminar"
-                        className="text-red-600 hover:text-red-700"
+                        style={{ color: 'var(--bad-text)' }}
                         onClick={() => setDeleteTarget(d)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>
-                </Section>
+                </GlassPanel>
               );
             })}
           </Stagger>
@@ -731,7 +719,7 @@ export default function VideoDevices() {
                 onDelete();
               }}
               disabled={deleting}
-              className="bg-red-600 text-white hover:bg-red-700"
+              className="cg-btn-bad"
             >
               {deleting && <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />}
               Eliminar

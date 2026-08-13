@@ -29,7 +29,15 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Search, MoreVertical, Upload, FileDown, FileSpreadsheet, Printer, Mail, Car, Plus } from "lucide-react";
-import { PageContainer, PageHeader, Section, EmptyState } from "@/components/kit";
+import {
+    PageContainer,
+    PageHeader,
+    Section,
+    EmptyState,
+    Toolbar,
+    StatusBadge,
+    SkeletonCards,
+} from "@/components/kit";
 import { toast } from "sonner";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import vehicleService from "@/lib/api/vehicleService";
@@ -199,6 +207,16 @@ export default function Vehicles() {
                     icon={<Car />}
                     title="Vehículos"
                     subtitle="Registro de vehículos de visitantes y de la empresa"
+                    badges={
+                        <>
+                            <StatusBadge tone="neutral">
+                                {count} {count === 1 ? "vehículo registrado" : "vehículos registrados"}
+                            </StatusBadge>
+                            {selectedIds.length > 0 && (
+                                <StatusBadge tone="brand">{selectedIds.length} seleccionados</StatusBadge>
+                            )}
+                        </>
+                    }
                     actions={
                         <>
                             <Select value="" onValueChange={handleBulkAction}>
@@ -217,15 +235,14 @@ export default function Vehicles() {
                     }
                 />
 
-                <Section
-                    title="Listado de vehículos"
-                    icon={<Car />}
-                    action={
-                        <div className="flex items-center gap-2">
-                            <div className="relative">
-                                <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Toolbar>
+                            <div className="relative min-w-0 flex-1 sm:max-w-xs">
+                                <Search
+                                    className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
+                                    style={{ color: 'var(--ink-faint)' }}
+                                />
                                 <Input
-                                    className="w-64 pl-9"
+                                    className="w-full pl-9"
                                     placeholder="Buscar vehículo"
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
@@ -257,16 +274,17 @@ export default function Vehicles() {
                                         </div>
                                         <div className="space-y-1.5">
                                             <Label>
-                                                Marca<span className="text-red-500">*</span>
+                                                Marca<span style={{ color: 'var(--bad-text)' }}>*</span>
                                             </Label>
                                             <Input
                                                 placeholder="e.g. Toyota"
                                                 value={form.make}
                                                 onChange={(e) => setField("make", e.target.value)}
-                                                className={errors.make ? "border-red-500 focus-visible:ring-red-500" : ""}
+                                                aria-invalid={errors.make || undefined}
+                                                style={errors.make ? { borderColor: 'var(--bad)' } : undefined}
                                             />
                                             {errors.make && (
-                                                <p className="text-xs text-red-500">Marca requerida</p>
+                                                <p className="text-xs" style={{ color: 'var(--bad-text)' }}>Marca requerida</p>
                                             )}
                                         </div>
                                     </div>
@@ -282,31 +300,33 @@ export default function Vehicles() {
 
                                     <div className="space-y-1.5">
                                         <Label>
-                                            Color<span className="text-red-500">*</span>
+                                            Color<span style={{ color: 'var(--bad-text)' }}>*</span>
                                         </Label>
                                         <Input
                                             placeholder="e.g. Blanco"
                                             value={form.color}
                                             onChange={(e) => setField("color", e.target.value)}
-                                            className={errors.color ? "border-red-500 focus-visible:ring-red-500" : ""}
+                                            aria-invalid={errors.color || undefined}
+                                            style={errors.color ? { borderColor: 'var(--bad)' } : undefined}
                                         />
                                         {errors.color && (
-                                            <p className="text-xs text-red-500">Color requerido</p>
+                                            <p className="text-xs" style={{ color: 'var(--bad-text)' }}>Color requerido</p>
                                         )}
                                     </div>
 
                                     <div className="space-y-1.5">
                                         <Label>
-                                            Placa<span className="text-red-500">*</span>
+                                            Placa<span style={{ color: 'var(--bad-text)' }}>*</span>
                                         </Label>
                                         <Input
                                             placeholder="Número de placa"
                                             value={form.licensePlate}
                                             onChange={(e) => setField("licensePlate", e.target.value)}
-                                            className={errors.licensePlate ? "border-red-500 focus-visible:ring-red-500" : ""}
+                                            aria-invalid={errors.licensePlate || undefined}
+                                            style={errors.licensePlate ? { borderColor: 'var(--bad)' } : undefined}
                                         />
                                         {errors.licensePlate && (
-                                            <p className="text-xs text-red-500">Placa requerida</p>
+                                            <p className="text-xs" style={{ color: 'var(--bad-text)' }}>Placa requerida</p>
                                         )}
                                     </div>
 
@@ -399,36 +419,34 @@ export default function Vehicles() {
                                 </div>
                             </DropdownMenuContent>
                         </DropdownMenu>
-                        </div>
-                    }
-                >
+                </Toolbar>
+
+                <Section title="Listado de vehículos" icon={<Car />}>
                 <div className="overflow-hidden rounded-xl border">
+                    {loading ? (
+                        <div className="p-4">
+                            <SkeletonCards count={4} />
+                        </div>
+                    ) : (
                     <table className="min-w-full border-collapse text-left text-sm">
-                        <thead className="bg-muted/30">
+                        <thead>
                             <tr className="border-b">
-                                <th className="px-4 py-3">
+                                <th className="cg-eyebrow px-2 py-2">
                                     <Checkbox
                                         checked={allSelected}
                                         onCheckedChange={(c) => toggleSelectAll(Boolean(c))}
                                     />
                                 </th>
-                                <th className="px-4 py-3 font-semibold">Color</th>
-                                <th className="px-4 py-3 font-semibold">Modelo</th>
-                                <th className="px-4 py-3 font-semibold">Marca</th>
-                                <th className="px-4 py-3 font-semibold">Año</th>
-                                <th className="px-4 py-3 font-semibold">Licencia</th>
+                                <th className="cg-eyebrow px-2 py-2">Color</th>
+                                <th className="cg-eyebrow px-2 py-2">Modelo</th>
+                                <th className="cg-eyebrow px-2 py-2">Marca</th>
+                                <th className="cg-eyebrow px-2 py-2">Año</th>
+                                <th className="cg-eyebrow px-2 py-2">Licencia</th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            {loading && (
-                                <tr>
-                                    <td colSpan={6} className="px-4 py-8 text-center text-sm text-muted-foreground">
-                                        Cargando…
-                                    </td>
-                                </tr>
-                            )}
-                            {!loading && visibleRows.length === 0 && (
+                            {visibleRows.length === 0 && (
                                 <tr>
                                     <td colSpan={6} className="py-8">
                                         <EmptyState
@@ -440,26 +458,34 @@ export default function Vehicles() {
                                     </td>
                                 </tr>
                             )}
-                            {!loading &&
-                                visibleRows.map((r) => (
-                                    <tr key={r.id} className="border-b last:border-0 hover:bg-muted/20">
-                                        <td className="px-4 py-3">
+                            {visibleRows.map((r) => (
+                                    <tr key={r.id} className="border-b last:border-0 hover:bg-muted/40">
+                                        <td className="px-2 py-2.5">
                                             <Checkbox
                                                 checked={selectedIds.includes(r.id)}
                                                 onCheckedChange={(c) => toggleSelect(r.id, Boolean(c))}
                                             />
                                         </td>
-                                        <td className="px-4 py-3">{r.color || "—"}</td>
-                                        <td className="px-4 py-3">{r.model || "—"}</td>
-                                        <td className="px-4 py-3">{r.make || "—"}</td>
-                                        <td className="px-4 py-3">{r.year ?? "—"}</td>
-                                        <td className="px-4 py-3">{r.licensePlate || "—"}</td>
+                                        <td className="px-2 py-2.5">{r.color || "—"}</td>
+                                        <td className="px-2 py-2.5">{r.model || "—"}</td>
+                                        <td className="px-2 py-2.5">{r.make || "—"}</td>
+                                        <td className="px-2 py-2.5 tabular-nums">{r.year ?? "—"}</td>
+                                        <td className="px-2 py-2.5">
+                                            {r.licensePlate ? (
+                                                <span className="glass-sunken inline-block px-2 py-0.5 font-mono text-xs tracking-wide">
+                                                    {r.licensePlate}
+                                                </span>
+                                            ) : (
+                                                "—"
+                                            )}
+                                        </td>
                                     </tr>
                                 ))}
                         </tbody>
                     </table>
+                    )}
 
-                    <div className="flex items-center justify-between bg-muted/30 px-4 py-3 text-sm text-foreground/70">
+                    <div className="flex items-center justify-between bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
                         <div className="flex items-center gap-2">
                             <span>Elementos por página</span>
                             <Select value={perPage} onValueChange={setPerPage}>

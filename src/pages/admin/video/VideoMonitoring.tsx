@@ -2,7 +2,6 @@ import * as React from "react";
 import { toast } from "sonner";
 import {
   Video,
-  Loader2,
   Camera as CameraIcon,
   Scissors,
   AlertTriangle,
@@ -13,11 +12,15 @@ import {
 } from "lucide-react";
 
 import AppLayout from "@/layouts/app-layout";
-import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
   PageContainer,
   PageHeader,
   EmptyState,
+  GlassPanel,
+  SkeletonCards,
+  StatusBadge,
+  Toolbar,
 } from "@/components/kit";
 import { cn } from "@/lib/utils";
 import {
@@ -40,26 +43,22 @@ type ModalKind = "trim" | "incident" | "dispatch" | null;
 /* Status dot                                                          */
 /* ------------------------------------------------------------------ */
 
+/**
+ * El punto de conexión. «En línea» LATE (`.cc-dot`): es lo que distingue de un
+ * vistazo una cámara que está transmitiendo ahora de una que sólo está dada de
+ * alta. El color es semántico fijo — una cámara caída sigue en rojo aunque la
+ * empresa haya elegido rojo como color de marca.
+ */
 function StatusDot({ status }: { status?: string }) {
-  const color =
-    status === "online"
-      ? "bg-emerald-500"
-      : status === "offline"
-      ? "bg-red-500"
-      : "bg-zinc-400";
-  const label =
-    status === "online"
-      ? "En línea"
-      : status === "offline"
-      ? "Fuera de línea"
-      : "Desconocido";
+  const enLinea = status === "online";
+  const tono = enLinea ? "var(--ok)" : status === "offline" ? "var(--bad)" : "var(--ink-faint)";
+  const label = enLinea ? "En línea" : status === "offline" ? "Fuera de línea" : "Estado desconocido";
   return (
-    <span className="inline-flex items-center gap-1.5" title={label}>
-      <span className={cn("size-2 rounded-full", color)}>
-        {status === "online" ? (
-          <span className="absolute size-2 animate-ping rounded-full bg-emerald-500/70" />
-        ) : null}
-      </span>
+    <span className="inline-flex items-center" title={label} aria-label={label}>
+      <span
+        className={cn("h-2 w-2 rounded-full", enLinea && "cc-dot")}
+        style={{ background: tono }}
+      />
     </span>
   );
 }
@@ -68,6 +67,11 @@ function StatusDot({ status }: { status?: string }) {
 /* Camera tile                                                         */
 /* ------------------------------------------------------------------ */
 
+/**
+ * Control flotante sobre el reproductor. Va arriba a la derecha a propósito: el
+ * reproductor ya ocupa la esquina inferior derecha con el mando de giro y el
+ * borde inferior con los controles nativos de reproducción.
+ */
 function TileButton({
   icon,
   label,
@@ -83,11 +87,15 @@ function TileButton({
       onClick={onClick}
       title={label}
       aria-label={label}
-      className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border bg-background px-2 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-[--gold] hover:text-foreground"
-      style={{ ["--gold" as any]: "var(--primary)" }}
+      /* SIN `cg-btn-glass`: lleva `backdrop-filter`, y aquí se instancian
+         CUATRO por cámara ENCIMA de un <video> decodificando. Cada capa obliga
+         al navegador a rasterizar el fotograma de vídeo que tiene detrás. El
+         cluster ya se apoya en una superficie `--glass-sunken`, que es la que
+         da el aspecto esmerilado; los botones sólo necesitan su propio filo. */
+      className="cg-focus grid size-8 place-items-center rounded-full border transition-all duration-200 hover:-translate-y-0.5"
+      style={{ background: 'var(--glass-raised)', borderColor: 'var(--hairline)', color: 'var(--ink)' }}
     >
       {icon}
-      <span className="hidden sm:inline">{label}</span>
     </button>
   );
 }
@@ -135,42 +143,32 @@ function CameraTile({
   };
 
   return (
-    <Card className="flex flex-col overflow-hidden">
-      <VideoPlayer
-        camera={camera}
-        videoRef={videoElRef}
-        onStream={(info) => {
-          streamRef.current = info;
-        }}
-      />
+    /* `flat` obligatorio: son marcos que se repiten en una rejilla, y el
+       desenfoque de `.glass` por tarjeta hunde el desplazamiento. */
+    <GlassPanel flat className="group/tile flex flex-col overflow-hidden p-1.5">
+      <div className="relative overflow-hidden rounded-[calc(var(--r-lg)-4px)]">
+        <VideoPlayer
+          camera={camera}
+          videoRef={videoElRef}
+          onStream={(info) => {
+            streamRef.current = info;
+          }}
+        />
 
-      <div className="flex flex-col gap-3 p-3">
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <StatusDot status={camera.status} />
-              <h3 className="truncate text-sm font-semibold">
-                {camera.name || `Cámara ${camera.channel ?? ""}`}
-              </h3>
-            </div>
-            {deviceName ? (
-              <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                {deviceName}
-                {camera.channel ? ` · Canal ${camera.channel}` : ""}
-              </p>
-            ) : null}
-          </div>
-        </div>
-
-        <div className="flex items-center gap-1.5">
+        {/* Controles flotantes de cristal. Visibles siempre en táctil (donde no
+            hay puntero) y al acercarse o tabular en escritorio. */}
+        <div
+          className="absolute right-2 top-2 z-30 flex items-center gap-1.5 rounded-full p-1 opacity-100 transition-opacity duration-200 sm:opacity-0 sm:group-hover/tile:opacity-100 sm:group-focus-within/tile:opacity-100"
+          style={{ background: 'var(--glass-sunken)' }}
+        >
           <TileButton
             icon={<Scissors className="size-3.5" />}
-            label="Recortar"
+            label="Recortar y compartir"
             onClick={() => onAction("trim", camera)}
           />
           <TileButton
             icon={<AlertTriangle className="size-3.5" />}
-            label="Incidente"
+            label="Crear incidente"
             onClick={() => onAction("incident", camera)}
           />
           <TileButton
@@ -180,12 +178,27 @@ function CameraTile({
           />
           <TileButton
             icon={<ImageDown className="size-3.5" />}
-            label="Captura"
+            label="Capturar imagen"
             onClick={handleSnapshot}
           />
         </div>
       </div>
-    </Card>
+
+      <div className="flex items-center gap-2 px-2.5 py-2.5">
+        <StatusDot status={camera.status} />
+        <div className="min-w-0 flex-1">
+          <h3 className="truncate text-sm font-semibold leading-tight">
+            {camera.name || `Cámara ${camera.channel ?? ""}`}
+          </h3>
+          {deviceName ? (
+            <p className="mt-0.5 truncate text-xs" style={{ color: 'var(--ink-faint)' }}>
+              {deviceName}
+              {camera.channel ? ` · Canal ${camera.channel}` : ""}
+            </p>
+          ) : null}
+        </div>
+      </div>
+    </GlassPanel>
   );
 }
 
@@ -211,8 +224,7 @@ function downloadDataUrl(dataUrl: string, filename: string) {
   document.body.removeChild(a);
 }
 
-const selectClass =
-  "flex h-9 w-full sm:w-56 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50";
+const selectClass = "cg-input cg-focus h-9 w-full px-3 text-sm sm:w-56";
 
 /* ------------------------------------------------------------------ */
 /* Page                                                                */
@@ -277,6 +289,11 @@ export default function VideoMonitoring() {
       .filter((c) => (siteFilter ? c.postSiteId === siteFilter : true));
   }, [cameras, deviceFilter, siteFilter]);
 
+  const enLinea = React.useMemo(
+    () => visible.filter((c) => c.status === "online").length,
+    [visible]
+  );
+
   const openAction = (kind: Exclude<ModalKind, null>, camera: Camera) => {
     setActiveCamera(camera);
     setModal(kind);
@@ -291,76 +308,78 @@ export default function VideoMonitoring() {
           icon={<MonitorPlay />}
           title="Monitoreo de video"
           subtitle="Vigilancia en vivo de todas las cámaras conectadas."
+          badges={
+            loading ? null : enLinea > 0 ? (
+              /* Misma píldora que el kit ya calcula; estaba pintada a mano sólo
+                 en esta rama y con `StatusBadge` en la contraria. */
+              <StatusBadge tone="ok">
+                {enLinea === 1 ? "1 cámara transmitiendo" : `${enLinea} cámaras transmitiendo`}
+              </StatusBadge>
+            ) : (
+              <StatusBadge tone="neutral">Ninguna cámara transmitiendo</StatusBadge>
+            )
+          }
           actions={
-          /* Filters */
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <select
-              className={selectClass}
-              value={deviceFilter}
-              onChange={(e) => setDeviceFilter(e.target.value)}
-              aria-label="Filtrar por dispositivo"
-            >
-              <option value="">Todos los dispositivos</option>
-              {devices.map((d) => (
-                <option key={d.id} value={d.id}>
-                  {d.name}
-                </option>
-              ))}
-            </select>
-
-            {siteOptions.length > 0 ? (
-              <select
-                className={selectClass}
-                value={siteFilter}
-                onChange={(e) => setSiteFilter(e.target.value)}
-                aria-label="Filtrar por sitio"
-              >
-                <option value="">Todos los sitios</option>
-                {siteOptions.map((s) => (
-                  <option key={s} value={s}>
-                    Sitio {s.slice(0, 8)}
-                  </option>
-                ))}
-              </select>
-            ) : null}
-
-            <button
-              type="button"
-              onClick={load}
-              disabled={loading}
-              className="inline-flex h-9 items-center justify-center gap-1.5 rounded-md border bg-background px-3 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50"
-              aria-label="Actualizar"
-            >
-              <RefreshCw
-                className={cn("size-4", loading && "animate-spin")}
-              />
+            <Button variant="outline" onClick={load} disabled={loading}>
+              <RefreshCw className={cn("size-4", loading && "animate-spin")} />
               <span className="hidden sm:inline">Actualizar</span>
-            </button>
-          </div>
+            </Button>
           }
         />
 
+        {/* Filtros */}
+        <Toolbar>
+          <select
+            className={selectClass}
+            value={deviceFilter}
+            onChange={(e) => setDeviceFilter(e.target.value)}
+            aria-label="Filtrar por equipo grabador"
+          >
+            <option value="">Todos los equipos</option>
+            {devices.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.name}
+              </option>
+            ))}
+          </select>
+
+          {siteOptions.length > 0 ? (
+            <select
+              className={selectClass}
+              value={siteFilter}
+              onChange={(e) => setSiteFilter(e.target.value)}
+              aria-label="Filtrar por puesto"
+            >
+              <option value="">Todos los puestos</option>
+              {siteOptions.map((s) => (
+                <option key={s} value={s}>
+                  Puesto {s.slice(0, 8)}
+                </option>
+              ))}
+            </select>
+          ) : null}
+
+          {!loading && !error && visible.length > 0 ? (
+            <span className="ml-auto flex items-center gap-1.5 pr-2 text-xs" style={{ color: 'var(--ink-faint)' }}>
+              <Video className="size-3.5" />
+              {visible.length} cámara{visible.length === 1 ? "" : "s"} en vista
+            </span>
+          ) : null}
+        </Toolbar>
+
         {/* Body */}
         {loading ? (
-          <div className="flex flex-col items-center justify-center gap-3 py-24 text-muted-foreground">
-            <Loader2 className="size-7 animate-spin text-primary" />
-            <p className="text-sm">Cargando cámaras…</p>
-          </div>
+          <SkeletonCards count={6} className="md:grid-cols-2 xl:grid-cols-3" />
         ) : error ? (
           <EmptyState
             icon={<AlertTriangle />}
             title="No se pudieron cargar las cámaras"
             description={error}
             action={
-              <button
-                type="button"
-                onClick={load}
-                className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium text-primary-foreground"
-                style={{ backgroundColor: "var(--primary)" }}
-              >
+              <Button variant="brand" onClick={load}>
                 <RefreshCw className="size-4" />
                 Reintentar
-              </button>
+              </Button>
             }
           />
         ) : visible.length === 0 ? (
@@ -389,14 +408,6 @@ export default function VideoMonitoring() {
             ))}
           </div>
         )}
-
-        {/* Footer count */}
-        {!loading && !error && visible.length > 0 ? (
-          <p className="mt-4 flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Video className="size-3.5" />
-            {visible.length} cámara{visible.length === 1 ? "" : "s"} en vista
-          </p>
-        ) : null}
       </PageContainer>
 
       {/* Action modals */}

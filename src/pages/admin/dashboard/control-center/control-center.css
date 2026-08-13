@@ -1,49 +1,216 @@
-/* Control Center — page-specific backdrop only.
-   The reusable glass utilities (.cc-glass, .cc-dot, .cc-scan, .cc-pop, animations,
-   accent vars) now live globally in src/styles/glass.css. */
+/* ════════════════════════════════════════════════════════════════════════════
+   CENTRO DE MANDO — CAPA LOCAL
+   Sólo lo que el sistema de cristal no cubre y que es exclusivo de esta pantalla:
+   la retícula de fondo, las barras de progreso, el arco del medidor y los
+   contenedores con desplazamiento. Todo deriva de las variables de tokens.css,
+   así que un cambio de acento o de tema repinta esto sin tocar una línea.
 
-.cc-root { --cc-accent: var(--primary); position: relative; }
+   NADA de colores escritos: cada valor sale de `var(--brand)`, `var(--ink)`,
+   `var(--hairline)` o un `color-mix` sobre ellos.
+   ════════════════════════════════════════════════════════════════════════════ */
 
-.cc-backdrop { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-.cc-backdrop::before {
-  content: ""; position: absolute; inset: -10%;
+/* Compatibilidad: `--cc-accent` sigue existiendo porque la vista de mapa a
+   pantalla completa la lee. Ahora apunta al acento del sistema. */
+.cc-root { --cc-accent: var(--brand); position: relative; }
+
+/* ── RETÍCULA DE MANDO ──────────────────────────────────────────────────────
+   La cuadrícula tenue detrás del contenido. Es lo que diferencia un «centro de
+   mando» de una página de tarjetas: da una superficie técnica que el cristal
+   puede desenfocar. Se desvanece hacia abajo con una máscara para que no
+   compita con el contenido. */
+.cmd-shell { position: relative; isolation: isolate; }
+.cmd-shell::before {
+  content: "";
+  position: absolute;
+  inset: -2rem -2rem auto -2rem;
+  height: 620px;
+  z-index: -1;
+  pointer-events: none;
   background-image:
-    linear-gradient(color-mix(in oklab, var(--cc-accent) 7%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in oklab, var(--cc-accent) 7%, transparent) 1px, transparent 1px);
-  background-size: 46px 46px;
-  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 75%);
-  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 75%);
-  opacity: .5;
+    linear-gradient(color-mix(in oklab, var(--brand) 12%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklab, var(--brand) 12%, transparent) 1px, transparent 1px);
+  background-size: 52px 52px;
+  /* En una máscara sólo cuenta el canal alfa: `#000` aquí significa «opaco», no
+     «negro». No es un color escrito a mano. */
+  -webkit-mask-image: radial-gradient(ellipse 78% 70% at 50% 0%, #000 8%, transparent 72%);
+  mask-image: radial-gradient(ellipse 78% 70% at 50% 0%, #000 8%, transparent 72%);
+  opacity: 0.55;
 }
-.cc-blob { position: absolute; border-radius: 9999px; filter: blur(80px); opacity: .16; }
+.dark .cmd-shell::before { opacity: 0.7; }
 
-/* ── Borderless command-center surfaces (dashboard-scoped only) ───────────────
-   The user wants NO borders on the panel: replace the global .cc-glass hairline
-   with pure elevation + a soft accent lift on hover. Scoped to .cc-root so the
-   rest of the app keeps its bordered cards. */
-.cc-root .cc-glass {
-  border: none;
-  background: color-mix(in oklab, var(--card) 97%, var(--cc-accent) 3%);
-  box-shadow:
-    0 1px 2px -1px color-mix(in oklab, #000 10%, transparent),
-    0 12px 32px -20px color-mix(in oklab, #000 22%, transparent);
+/* ── ARCO DEL MEDIDOR ──────────────────────────────────────────────────────── */
+.cmd-ring-glow { filter: drop-shadow(0 0 10px var(--brand-glow)); }
+
+/* ── FILAS ──────────────────────────────────────────────────────────────────
+   Se repiten muchas veces: sin `backdrop-filter` (ver la nota de coste en
+   glass.css). El realce en hover es una superficie hundida, no una sombra. */
+.cmd-row {
+  position: relative;
+  border-radius: var(--r-md);
+  transition: background-color 0.2s var(--ease), transform 0.2s var(--ease);
 }
-.dark .cc-root .cc-glass {
-  border: none;
-  background: linear-gradient(180deg,
-    color-mix(in oklab, var(--card) 66%, transparent),
-    color-mix(in oklab, var(--card) 54%, transparent));
-  box-shadow:
-    inset 0 1px 0 0 color-mix(in oklab, #fff 6%, transparent),
-    0 22px 48px -28px color-mix(in oklab, #000 72%, transparent);
+.cmd-row:hover { background: var(--glass-sunken); transform: translateX(2px); }
+.cmd-row::after {
+  content: "";
+  position: absolute;
+  left: 0; top: 50%;
+  height: 0; width: 2px;
+  border-radius: 9999px;
+  transform: translateY(-50%);
+  background: var(--cmd-tone, var(--brand));
+  box-shadow: 0 0 10px 0 var(--brand-glow);
+  transition: height 0.24s var(--ease);
 }
-.cc-root .cc-glass-hover:hover {
-  border: none;
-  transform: translateY(-3px);
-  box-shadow:
-    0 0 0 1px color-mix(in oklab, var(--cc-accent) 30%, transparent),
-    0 28px 64px -30px color-mix(in oklab, var(--cc-accent) 34%, #000);
+.cmd-row:hover::after { height: 56%; }
+
+/* ── DESPLAZAMIENTO ────────────────────────────────────────────────────────── */
+.cmd-scroll { overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--hairline) transparent; }
+.cmd-scroll::-webkit-scrollbar { width: 6px; }
+.cmd-scroll::-webkit-scrollbar-thumb { background: var(--hairline); border-radius: 9999px; }
+.cmd-scroll::-webkit-scrollbar-track { background: transparent; }
+/* El contenido se disuelve en el canto inferior en vez de cortarse en seco. */
+.cmd-fade-b {
+  -webkit-mask-image: linear-gradient(to bottom, #000 88%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 88%, transparent 100%);
 }
 
-/* KPI cards: consistent height so the 4-up grid reads as one clean band. */
-.cc-kpi { min-height: 134px; }
+/* ── HILO SEPARADOR ────────────────────────────────────────────────────────── */
+.cmd-hair { height: 1px; background: linear-gradient(90deg, transparent, var(--hairline) 12%, var(--hairline) 88%, transparent); }
+
+/* ── CELDAS DE UNA BANDA ────────────────────────────────────────────────────
+   Cuatro celdas dentro de UN panel, separadas por un filo en vez de por aire:
+   cuatro tarjetas sueltas se leerían como cuatro cosas distintas, y esto es una
+   sola lectura del estado. El filo cambia de eje al cambiar el número de
+   columnas, que es justo lo que no se puede expresar con clases utilitarias. */
+.cmd-cells > * + * { border-top: 1px solid var(--hairline); }
+@media (min-width: 640px) {
+  .cmd-cells > * { border-top: none; }
+  .cmd-cells > *:nth-child(2n) { border-left: 1px solid var(--hairline); }
+  .cmd-cells > *:nth-child(n + 3) { border-top: 1px solid var(--hairline); }
+}
+@media (min-width: 1280px) {
+  .cmd-cells > * { border-top: none; }
+  .cmd-cells > * + * { border-left: 1px solid var(--hairline); }
+}
+
+/* ── BARRIDO DEL PUESTO DE MANDO ───────────────────────────────────────────
+   Un reflejo lento cruzando la cabecera. Es el único movimiento perpetuo de la
+   pantalla y va muy tenue: señala «esto está vivo» sin pedir atención. */
+.cmd-sweep { position: relative; overflow: hidden; }
+.cmd-sweep::after {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0; width: 28%;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--brand-glow), transparent);
+  opacity: 0.5;
+  /* Sólo `transform` y en su propia capa: así el barrido no obliga a recalcular
+     el desenfoque del cristal en cada fotograma. */
+  will-change: transform;
+  animation: cmd-sweep 9s ease-in-out infinite;
+}
+@keyframes cmd-sweep {
+  0% { transform: translateX(-140%); }
+  100% { transform: translateX(460%); }
+}
+
+/* ── MOVIMIENTO REDUCIDO ───────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .cmd-sweep::after { animation: none; opacity: 0; }
+  .cmd-row, .cmd-row::after { transition: none; }
+  .cmd-row:hover { transform: none; }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   TELÉFONO — EL MAPA ES LA PANTALLA
+   Las piezas genéricas del patrón (carrusel con anclaje, capa sobre el mapa,
+   tarjeta legible sobre teselas, hoja arrastrable) viven en glass.css y se
+   consumen tal cual. Aquí sólo está lo que es de ESTA pantalla: dónde se
+   coloca cada capa y cómo se enganchan entre sí.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* El lienzo. Alto en CSS para el primer pintado y en píxeles medidos después
+   (ver el comentario de la medición en MobileCommandCenter): dentro del armazón
+   del CRM puede haber un aviso de prueba o de puesta en marcha por encima, y
+   ninguna fórmula con `vh` sabe cuánto ocupan. `100dvh` es la referencia buena
+   en iOS, donde `100vh` cuenta la franja del navegador que tapa el contenido. */
+.cc-movil {
+  position: relative;
+  height: 100%;
+  min-height: 24rem;
+  overflow: hidden;
+  /* Que el rebote del final de la hoja no arrastre la página de detrás. */
+  overscroll-behavior: contain;
+  /* Valor de arranque de la altura de la hoja: la escribe la propia hoja en
+     cuanto se monta, pero el carrusel se coloca en el primer fotograma. */
+  --cc-hoja: 96px;
+}
+@supports (height: 100dvh) {
+  /* 3.5rem = la barra superior del CRM, que ya va descontada en `100%`. */
+  .cc-movil { height: min(100%, calc(100dvh - 3.5rem)); }
+}
+
+/* El mapa, a sangre. El marco trae su alto en línea desde el componente; aquí
+   se le manda ocupar la capa entera y perder el redondeo: a sangre no hay
+   esquina que redondear. */
+.cc-movil-mapa { position: absolute; inset: 0; z-index: 0; }
+.cc-movil-mapa > .cc-map-frame { height: 100% !important; border-radius: 0; }
+
+/* La barra superior FLOTA: no ocupa banda propia. */
+.cc-barra-mapa {
+  top: 0;
+  padding: 10px 12px 0;
+}
+
+/* El carrusel viaja pegado al canto de la hoja — `--cc-hoja` la escribe la
+   propia hoja, también mientras el dedo la arrastra. */
+.cc-carrusel-capa {
+  bottom: calc(var(--cc-hoja, 96px) + 6px);
+  transition: bottom 0.28s var(--ease), opacity 0.18s var(--ease);
+}
+/* Pasada la mitad de la pantalla la hoja ya es el contenido: el carrusel se
+   aparta. `visibility` con retardo para que primero se funda y luego deje de
+   existir para el dedo y para el lector de pantalla. */
+.cc-carrusel-capa[data-oculto="1"] {
+  opacity: 0;
+  visibility: hidden;
+  transition: bottom 0.28s var(--ease), opacity 0.18s var(--ease), visibility 0s linear 0.18s;
+}
+/* Mientras se arrastra, nada de transiciones: el retardo se siente como que la
+   hoja va con un fotograma de retraso respecto del dedo. */
+.cc-arrastrando .cc-carrusel-capa { transition: none; }
+
+/* Una tarjeta de cifra: etiqueta diminuta, cifra grande, variación. */
+.cc-cifra {
+  padding: 9px 12px 10px;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── LA HOJA ──────────────────────────────────────────────────────────────── */
+.cc-hoja { display: flex; flex-direction: column; will-change: transform; }
+
+/* La zona de arrastre. `touch-action: none` es lo que evita que el navegador se
+   quede el gesto para desplazar la página en cuanto el dedo sube. */
+.cc-hoja-cabecera {
+  flex: 0 0 auto;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  padding-bottom: 8px;
+}
+.cc-hoja-resumen { padding: 0 16px; }
+
+/* El cuerpo recibe el alto VISIBLE, no el de la hoja: si midiera de más, sus
+   últimas filas quedarían por debajo del borde de la pantalla y no habría
+   desplazamiento que las alcanzara. */
+.cc-hoja-cuerpo {
+  /* NO crece: su alto se lo pone la hoja en píxeles. Con `flex-grow: 1` se
+     estiraría hasta el alto MÁXIMO de la hoja —769 px aunque sólo se vean
+     435— y el último tercio del contenido quedaría por debajo del borde de la
+     pantalla, sin desplazamiento que lo alcanzara. */
+  flex: 0 0 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}

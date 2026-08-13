@@ -169,7 +169,7 @@ export default function GuardConfiguracionPage() {
                         <button
                           key={tab.key}
                           onClick={() => setActiveTab(tab.key)}
-                          className={`flex items-center justify-center gap-2 py-3 font-medium transition-colors ${activeTab === tab.key ? 'border-b-2 border-primary text-primary' : 'text-foreground/60 hover:text-foreground'}`}
+                          className={`flex items-center justify-center gap-2 py-3 font-medium transition-colors ${activeTab === tab.key ? 'border-b-2 brand-text [border-color:var(--brand)]' : '[color:var(--ink-soft)] hover:[color:var(--ink)]'}`}
                         >
                           {tab.icon}
                           {tab.label}
@@ -219,8 +219,8 @@ export default function GuardConfiguracionPage() {
 
                       <div className="flex items-center gap-4">
                         <div className="max-w-xs">
-                          <label className="block text-sm text-foreground/70 mb-2">Update location every</label>
-                          <select className="w-full border rounded px-3 py-2" value={settings.locationUpdateInterval ?? '00:05:00'} onChange={e => setSettings({...settings, locationUpdateInterval: e.target.value})}>
+                          <label className="cg-eyebrow mb-1.5 block">Update location every</label>
+                          <select className="cg-input cg-focus h-9 w-full px-3 text-sm" value={settings.locationUpdateInterval ?? '00:05:00'} onChange={e => setSettings({...settings, locationUpdateInterval: e.target.value})}>
                             <option>00:05:00</option>
                             <option>00:10:00</option>
                             <option>00:15:00</option>
@@ -228,8 +228,8 @@ export default function GuardConfiguracionPage() {
                         </div>
 
                         <div className="max-w-xs">
-                          <label className="block text-sm text-foreground/70 mb-2">Select Accuracy</label>
-                          <select className="w-full border rounded px-3 py-2" value={settings.locationAccuracy ?? 'Medium'} onChange={e => setSettings({...settings, locationAccuracy: e.target.value})}>
+                          <label className="cg-eyebrow mb-1.5 block">Select Accuracy</label>
+                          <select className="cg-input cg-focus h-9 w-full px-3 text-sm" value={settings.locationAccuracy ?? 'Medium'} onChange={e => setSettings({...settings, locationAccuracy: e.target.value})}>
                             <option>Low</option>
                             <option>Medium</option>
                             <option>High</option>
@@ -244,7 +244,7 @@ export default function GuardConfiguracionPage() {
                         </label>
 
                         <div className="max-w-xs">
-                          <select className="w-full border rounded px-3 py-2" value={settings.idleAlertAfter ?? '00:20'} onChange={e => setSettings({...settings, idleAlertAfter: e.target.value})}>
+                          <select className="cg-input cg-focus h-9 w-full px-3 text-sm" value={settings.idleAlertAfter ?? '00:20'} onChange={e => setSettings({...settings, idleAlertAfter: e.target.value})}>
                             <option>00:05</option>
                             <option>00:10</option>
                             <option>00:20</option>
@@ -338,8 +338,8 @@ export default function GuardConfiguracionPage() {
 
                   {settings.enableWeeklyLimitFlag && (
                     <div className="max-w-xs">
-                      <label className="block text-sm text-foreground/70 mb-2">Weekly Limit</label>
-                      <input type="number" min={1} className="w-full border rounded px-3 py-2" value={settings.weeklyLimit ?? 40} onChange={e => setSettings({...settings, weeklyLimit: Number(e.target.value)})} />
+                      <label className="cg-eyebrow mb-1.5 block">Weekly Limit</label>
+                      <input type="number" min={1} className="cg-input cg-focus h-9 w-full px-3 text-sm" value={settings.weeklyLimit ?? 40} onChange={e => setSettings({...settings, weeklyLimit: Number(e.target.value)})} />
                       <div className="text-sm text-muted-foreground mt-1">hrs/week</div>
                     </div>
                   )}
@@ -379,7 +379,7 @@ export default function GuardConfiguracionPage() {
                       <span>Ask for a reason for remaining Clocked-In when the shift is over after</span>
                     </label>
                     <div className="max-w-xs">
-                      <select className="w-full border rounded px-3 py-2" value={settings.askReasonAfter ?? '00:05'} onChange={e => setSettings({...settings, askReasonAfter: e.target.value})}>
+                      <select className="cg-input cg-focus h-9 w-full px-3 text-sm" value={settings.askReasonAfter ?? '00:05'} onChange={e => setSettings({...settings, askReasonAfter: e.target.value})}>
                         <option>00:05</option>
                         <option>00:10</option>
                         <option>00:15</option>
@@ -413,7 +413,7 @@ export default function GuardConfiguracionPage() {
                       <span>Allow guard to call-off shift before</span>
                     </label>
                     <div className="max-w-xs">
-                      <select className="w-full border rounded px-3 py-2" value={settings.callOffBefore ?? '00:30'} onChange={e => setSettings({...settings, callOffBefore: e.target.value})}>
+                      <select className="cg-input cg-focus h-9 w-full px-3 text-sm" value={settings.callOffBefore ?? '00:30'} onChange={e => setSettings({...settings, callOffBefore: e.target.value})}>
                         <option>00:05</option>
                         <option>00:10</option>
                         <option>00:15</option>
@@ -432,7 +432,7 @@ export default function GuardConfiguracionPage() {
                       <input type="checkbox" className="w-4 h-4" checked={!!settings.sendLicenseExpiryNotification} onChange={e => setSettings({...settings, sendLicenseExpiryNotification: e.target.checked})} />
                       <span className="flex items-center gap-2">Send license expiry notification before</span>
                       <div className="w-20">
-                        <input type="number" min={0} className="w-full border rounded px-3 py-2" value={settings.licenseExpiryDays ?? 60} onChange={e => setSettings({...settings, licenseExpiryDays: Number(e.target.value)})} />
+                        <input type="number" min={0} className="cg-input cg-focus h-9 w-full px-3 text-sm" value={settings.licenseExpiryDays ?? 60} onChange={e => setSettings({...settings, licenseExpiryDays: Number(e.target.value)})} />
                       </div>
                       <span>Day</span>
                     </div>
@@ -443,7 +443,7 @@ export default function GuardConfiguracionPage() {
                       <input type="checkbox" className="w-4 h-4" checked={!!settings.sendVehiclePatrolStartNotification} onChange={e => setSettings({...settings, sendVehiclePatrolStartNotification: e.target.checked})} />
                       <span>Send vehicle patrol route start notification before</span>
                       <div className="max-w-xs">
-                        <select className="w-full border rounded px-3 py-2" value={settings.vehiclePatrolStartBefore ?? '01:00'} onChange={e => setSettings({...settings, vehiclePatrolStartBefore: e.target.value})}>
+                        <select className="cg-input cg-focus h-9 w-full px-3 text-sm" value={settings.vehiclePatrolStartBefore ?? '01:00'} onChange={e => setSettings({...settings, vehiclePatrolStartBefore: e.target.value})}>
                           <option>00:15</option>
                           <option>00:30</option>
                           <option>01:00</option>
@@ -459,7 +459,7 @@ export default function GuardConfiguracionPage() {
                       <div className="ml-10">
                         <div className="text-sm text-muted-foreground mb-2">Delay Time</div>
                         <div className="max-w-xs">
-                          <select className="w-full border rounded px-3 py-2" value={settings.vehiclePatrolDelayTime ?? '00:15'} onChange={e => setSettings({...settings, vehiclePatrolDelayTime: e.target.value})}>
+                          <select className="cg-input cg-focus h-9 w-full px-3 text-sm" value={settings.vehiclePatrolDelayTime ?? '00:15'} onChange={e => setSettings({...settings, vehiclePatrolDelayTime: e.target.value})}>
                             <option>00:05</option>
                             <option>00:10</option>
                             <option>00:15</option>
@@ -474,7 +474,7 @@ export default function GuardConfiguracionPage() {
                       <input type="checkbox" className="w-4 h-4" checked={!!settings.sendTaskStartNotification} onChange={e => setSettings({...settings, sendTaskStartNotification: e.target.checked})} />
                       <span>Task/Tour start notification before</span>
                       <div className="max-w-xs">
-                        <select className="w-full border rounded px-3 py-2" value={settings.taskStartBefore ?? '00:15'} onChange={e => setSettings({...settings, taskStartBefore: e.target.value})}>
+                        <select className="cg-input cg-focus h-9 w-full px-3 text-sm" value={settings.taskStartBefore ?? '00:15'} onChange={e => setSettings({...settings, taskStartBefore: e.target.value})}>
                           <option>00:05</option>
                           <option>00:10</option>
                           <option>00:15</option>
@@ -487,7 +487,7 @@ export default function GuardConfiguracionPage() {
                       <input type="checkbox" className="w-4 h-4" checked={!!settings.sendTaskDelayNotification} onChange={e => setSettings({...settings, sendTaskDelayNotification: e.target.checked})} />
                       <span>Send Task/Tour delay notification after</span>
                       <div className="max-w-xs">
-                        <select className="w-full border rounded px-3 py-2" value={settings.taskDelayAfter ?? '00:05'} onChange={e => setSettings({...settings, taskDelayAfter: e.target.value})}>
+                        <select className="cg-input cg-focus h-9 w-full px-3 text-sm" value={settings.taskDelayAfter ?? '00:05'} onChange={e => setSettings({...settings, taskDelayAfter: e.target.value})}>
                           <option>00:05</option>
                           <option>00:10</option>
                           <option>00:15</option>
@@ -501,7 +501,7 @@ export default function GuardConfiguracionPage() {
                       <input type="checkbox" className="w-4 h-4" checked={!!settings.sendShiftStartNotification} onChange={e => setSettings({...settings, sendShiftStartNotification: e.target.checked})} />
                       <span>Send shift start notification before</span>
                       <div className="max-w-xs">
-                        <select className="w-full border rounded px-3 py-2" value={settings.shiftStartBefore ?? '01:00'} onChange={e => setSettings({...settings, shiftStartBefore: e.target.value})}>
+                        <select className="cg-input cg-focus h-9 w-full px-3 text-sm" value={settings.shiftStartBefore ?? '01:00'} onChange={e => setSettings({...settings, shiftStartBefore: e.target.value})}>
                           <option>00:15</option>
                           <option>00:30</option>
                           <option>01:00</option>
@@ -517,7 +517,7 @@ export default function GuardConfiguracionPage() {
                       <div className="ml-10">
                         <div className="text-sm text-muted-foreground mb-2">Delay Time</div>
                         <div className="max-w-xs">
-                          <select className="w-full border rounded px-3 py-2" value={settings.shiftDelayTime ?? '00:15'} onChange={e => setSettings({...settings, shiftDelayTime: e.target.value})}>
+                          <select className="cg-input cg-focus h-9 w-full px-3 text-sm" value={settings.shiftDelayTime ?? '00:15'} onChange={e => setSettings({...settings, shiftDelayTime: e.target.value})}>
                             <option>00:05</option>
                             <option>00:10</option>
                             <option>00:15</option>

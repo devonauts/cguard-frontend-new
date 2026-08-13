@@ -4,7 +4,9 @@ import { toast } from 'sonner';
 import { CalendarClock, Sun, Moon, MapPin, Settings2 } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import GuardsLayout from '@/layouts/GuardsLayout';
-import { Section, EmptyState, StatusBadge, SkeletonCards } from '@/components/kit';
+import { Button } from '@/components/ui/button';
+import { PageContainer, EmptyState, StatusBadge, SkeletonCards, GlassPanel } from '@/components/kit';
+import { ListSection } from './ListSection';
 import { supervisorService } from '@/lib/api/supervisorService';
 
 interface ScheduleRow {
@@ -47,12 +49,9 @@ export default function SupervisorSchedulePage() {
   useEffect(load, [load]);
 
   const manageBtn = (
-    <button
-      onClick={() => navigate('/supervisor-positions')}
-      className="inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium hover:bg-muted transition"
-    >
-      <Settings2 className="h-4 w-4" /> Configurar rotación
-    </button>
+    <Button variant="outline" size="sm" onClick={() => navigate('/supervisor-positions')}>
+      <Settings2 className="mr-2 h-4 w-4" /> Configurar rotación
+    </Button>
   );
 
   // Group upcoming shifts by date, preserving chronological order.
@@ -70,7 +69,7 @@ export default function SupervisorSchedulePage() {
   return (
     <AppLayout>
       <GuardsLayout navKey="supervisors" title="Horario">
-        <div className="mx-auto max-w-5xl space-y-6 pb-24">
+        <PageContainer>
           {loading ? (
             <SkeletonCards count={3} />
           ) : !rows || rows.length === 0 ? (
@@ -83,24 +82,25 @@ export default function SupervisorSchedulePage() {
           ) : (
             <>
               <div className="flex items-center justify-between gap-2">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
                   Próximos turnos generados a partir del puesto asignado y su rotación.
                 </p>
                 {manageBtn}
               </div>
 
               {groups.map((g) => (
-                <Section key={g.date} title={g.date === '—' ? 'Sin fecha' : fmtDateHeading(g.date)} icon={<CalendarClock className="h-4 w-4" />}>
+                <ListSection key={g.date} title={g.date === "—" ? "Sin fecha" : fmtDateHeading(g.date)} icon={<CalendarClock />}>
                   <div className="space-y-2">
                     {g.rows.map((r, i) => {
                       const night = r.kind === 'night';
                       return (
-                        <div
+                        <GlassPanel
                           key={i}
-                          className="flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-card/50 px-4 py-3"
+                          flat
+                          className="flex flex-wrap items-center justify-between gap-3 px-4 py-3"
                         >
                           <div className="flex items-center gap-3 min-w-0">
-                            <StatusBadge tone={night ? 'blue' : 'orange'} dot={false}>
+                            <StatusBadge tone={night ? 'info' : 'warn'} dot={false}>
                               {night ? <Moon className="h-3 w-3" /> : <Sun className="h-3 w-3" />}
                               {night ? 'Noche' : 'Día'}
                             </StatusBadge>
@@ -109,7 +109,7 @@ export default function SupervisorSchedulePage() {
                             </span>
                           </div>
                           {r.position && (
-                            <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground min-w-0">
+                            <span className="inline-flex min-w-0 items-center gap-1.5 text-xs" style={{ color: 'var(--ink-soft)' }}>
                               <MapPin className="h-3.5 w-3.5 shrink-0" />
                               <span className="truncate">
                                 {r.position.name}
@@ -117,15 +117,15 @@ export default function SupervisorSchedulePage() {
                               </span>
                             </span>
                           )}
-                        </div>
+                        </GlassPanel>
                       );
                     })}
                   </div>
-                </Section>
+                </ListSection>
               ))}
             </>
           )}
-        </div>
+        </PageContainer>
       </GuardsLayout>
     </AppLayout>
   );

@@ -1,12 +1,4 @@
-import { useMemo, useState } from "react";
-import { ChevronDown, EllipsisVertical, Loader2, Plus, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { EmptyState, StatusBadge } from "@/components/kit";
+import { CatalogTable, ActiveBadge, type CatalogColumn } from "../components/CatalogTable";
 
 export type IncidentTypeRow = { id: string; name: string; status: "active" | "inactive" };
 
@@ -20,179 +12,49 @@ type Props = {
   onQueryChange?: (q: string) => void;
   onPageChange?: (page: number) => void;
   onPageSizeChange?: (size: number) => void;
-  onCreate?: () => void;
   onEdit?: (row: IncidentTypeRow) => void;
   onToggleStatus?: (id: string) => void;
   onBulkDelete?: (ids: string[]) => void;
 };
 
-const PAGE_SIZES = [10, 25, 50, 100];
+const columns: CatalogColumn<IncidentTypeRow>[] = [
+  { key: "name", header: "Tipo de incidente", className: "w-[60%]" },
+  {
+    key: "status",
+    header: "Estado",
+    // Activo/Inactivo es disponibilidad del catálogo, no gravedad: va en
+    // «ok»/neutro, nunca en el rojo de alarma.
+    render: (v) => <ActiveBadge active={v === "active"} />,
+  },
+];
 
 export default function IncidentTypesTable({
-  rows,
-  total,
-  page,
-  pageSize,
-  loading,
-  query = "",
-  onQueryChange,
-  onPageChange,
-  onPageSizeChange,
-  onCreate,
-  onEdit,
-  onToggleStatus,
-  onBulkDelete,
+  rows, total, page, pageSize, loading, query = "",
+  onQueryChange, onPageChange, onPageSizeChange,
+  onEdit, onToggleStatus, onBulkDelete,
 }: Props) {
-  const [checked, setChecked] = useState<Record<string, boolean>>({});
-  const selectionCount = useMemo(() => Object.values(checked).filter(Boolean).length, [checked]);
-  const allVisibleChecked = rows.length > 0 && rows.every((r) => checked[r.id]);
-  const start = total === 0 ? 0 : (page - 1) * pageSize + 1;
-  const end = Math.min(page * pageSize, total);
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
-
-  const toggleAll = () => {
-    if (allVisibleChecked) {
-      const next = { ...checked };
-      rows.forEach((r) => delete next[r.id]);
-      setChecked(next);
-    } else {
-      const next = { ...checked };
-      rows.forEach((r) => (next[r.id] = true));
-      setChecked(next);
-    }
-  };
-
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="min-w-[140px] justify-between">
-              Acción <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            <DropdownMenuItem disabled={!selectionCount} onClick={() => onBulkDelete?.(Object.keys(checked).filter((k) => checked[k]))}>
-              Eliminar
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <div className="relative flex-1 max-w-xl">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input className="pl-9" placeholder="Buscar tipo de incidente" value={query} onChange={(e) => onQueryChange?.(e.target.value)} />
-        </div>
-
-        <Button variant="brand" className="px-6" onClick={onCreate}>
-          <Plus className="mr-2 h-4 w-4" />
-          Nuevo Tipo de Incidente
-        </Button>
-      </div>
-
-      <div className="cg-card overflow-hidden p-0">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[44px]">
-                <Checkbox checked={allVisibleChecked} onCheckedChange={toggleAll} />
-              </TableHead>
-              <TableHead className="w-[60%]">Tipo de Incidente</TableHead>
-              <TableHead>Estado</TableHead>
-              <TableHead className="w-[60px]" />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell colSpan={4} className="h-40 text-center">
-                  <div className="inline-flex items-center gap-2 text-muted-foreground">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Cargando…
-                  </div>
-                </TableCell>
-              </TableRow>
-            ) : rows.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={4} className="p-0">
-                  <EmptyState
-                    icon={<Search />}
-                    title="No se encontraron resultados"
-                    description="No hay tipos de incidente que coincidan con tu búsqueda."
-                    className="border-0"
-                  />
-                </TableCell>
-              </TableRow>
-            ) : (
-              rows.map((row) => (
-                <TableRow key={row.id} className="hover:bg-accent/40">
-                  <TableCell>
-                    <Checkbox checked={!!checked[row.id]} onCheckedChange={(v) => setChecked((s) => ({ ...s, [row.id]: Boolean(v) }))} />
-                  </TableCell>
-                  <TableCell className="font-medium">{row.name}</TableCell>
-                  <TableCell>
-                    <StatusBadge tone={row.status === "active" ? "green" : "red"}>
-                      {row.status === "active" ? "Activo" : "Inactivo"}
-                    </StatusBadge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <EllipsisVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="min-w-[160px]">
-                        <DropdownMenuItem onClick={() => onToggleStatus?.(row.id)}>
-                          {row.status === "active" ? "Desactivar" : "Activar"}
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
-
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <div className="text-sm text-muted-foreground">Elementos por página</div>
-          <Select value={String(pageSize)} onValueChange={(v) => onPageSizeChange?.(Number(v))}>
-            <SelectTrigger className="w-[90px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {PAGE_SIZES.map((s) => (
-                <SelectItem key={s} value={String(s)}>{s}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="min-w-[110px] text-center text-sm text-muted-foreground">
-          {start} – {end} de {total}
-        </div>
-
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={page <= 1 || !!loading}
-            onClick={() => onPageChange?.(Math.max(1, page - 1))}
-          >
-            Anterior
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={page * pageSize >= total || !!loading}
-            onClick={() => onPageChange?.(Math.min(totalPages, page + 1))}
-          >
-            Siguiente
-          </Button>
-        </div>
-      </div>
-    </div>
+    <CatalogTable<IncidentTypeRow>
+      rows={rows}
+      columns={columns}
+      loading={loading}
+      query={query}
+      onQueryChange={onQueryChange}
+      searchPlaceholder="Buscar tipo de incidente"
+      page={page}
+      pageSize={pageSize}
+      total={total}
+      onPageChange={(p) => onPageChange?.(p)}
+      onPageSizeChange={(n) => onPageSizeChange?.(n)}
+      rowActions={(r) => [
+        { label: "Editar", onClick: () => onEdit?.(r) },
+        { label: r.status === "active" ? "Desactivar" : "Activar", onClick: () => onToggleStatus?.(r.id) },
+      ]}
+      bulkActions={[{ label: "Eliminar", destructive: true, onRun: (ids) => onBulkDelete?.(ids) }]}
+      empty={{
+        title: "No se encontraron resultados",
+        description: "No hay tipos de incidente que coincidan con tu búsqueda.",
+      }}
+    />
   );
 }

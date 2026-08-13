@@ -47,7 +47,7 @@ import {
   Users,
   Plus,
 } from "lucide-react";
-import { PageContainer, PageHeader, StatusBadge } from "@/components/kit";
+import { PageContainer, PageHeader, StatusBadge, Toolbar, Segmented, EmptyState, GlassPanel, IconTile } from "@/components/kit";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -559,10 +559,10 @@ export default function ClientesPage() {
               <DropdownMenuContent align="end" className="w-56">
                 <div className="px-3 py-2 text-sm">
                   <div className="font-medium truncate">{row.commercialName || (cleanLastName(row.lastName) ? `${row.name} ${cleanLastName(row.lastName)}` : row.name)}</div>
-                  <div className="text-xs text-muted-foreground truncate">{row.email || '-'}</div>
-                  <div className="text-xs text-muted-foreground truncate">{row.phoneNumber || '-'}</div>
+                  <div className="truncate text-xs" style={{ color: 'var(--ink-soft)' }}>{row.email || '-'}</div>
+                  <div className="truncate text-xs" style={{ color: 'var(--ink-soft)' }}>{row.phoneNumber || '-'}</div>
                   <div className="mt-2">
-                    <Link to={`/clients/${row.id}/overview`} className="text-sm text-primary">{t('actions.viewDetails', 'Ver')}</Link>
+                    <Link to={`/clients/${row.id}/overview`} className="text-sm font-semibold" style={{ color: 'var(--brand-text)' }}>{t('actions.viewDetails', 'Ver')}</Link>
                   </div>
                 </div>
               </DropdownMenuContent>
@@ -577,7 +577,7 @@ export default function ClientesPage() {
           // El backend puede enviar booleano o entero (0/1)
           const isActive = row.active === true;
           return (
-            <StatusBadge tone={isActive ? 'green' : 'red'}>
+            <StatusBadge tone={isActive ? 'ok' : 'bad'}>
               {isActive ? t('clients.status.active') : t('clients.status.archived')}
             </StatusBadge>
           );
@@ -588,11 +588,11 @@ export default function ClientesPage() {
         header: t('clients.columns.appAccess', 'App'),
         render: (_value: unknown, row: Client) => {
           const status = row.onboardingStatus || 'not_invited';
-          const map: Record<string, { label: string; tone: 'slate' | 'orange' | 'green' | 'red' }> = {
-            not_invited: { label: t('clients.onboarding.not_invited', 'Sin acceso'), tone: 'slate' },
-            invited:     { label: t('clients.onboarding.invited',     'Invitado'),   tone: 'orange' },
-            active:      { label: t('clients.onboarding.active',      'En app'),     tone: 'green' },
-            suspended:   { label: t('clients.onboarding.suspended',   'Suspendido'), tone: 'red' },
+          const map: Record<string, { label: string; tone: 'neutral' | 'warn' | 'ok' | 'bad' }> = {
+            not_invited: { label: t('clients.onboarding.not_invited', 'Sin acceso'), tone: 'neutral' },
+            invited:     { label: t('clients.onboarding.invited',     'Invitado'),   tone: 'warn' },
+            active:      { label: t('clients.onboarding.active',      'En app'),     tone: 'ok' },
+            suspended:   { label: t('clients.onboarding.suspended',   'Suspendido'), tone: 'bad' },
           };
           const badge = map[status] || map.not_invited;
           return (
@@ -647,7 +647,7 @@ export default function ClientesPage() {
       if (hasPermission('clientAccountDestroy')) {
         actions.push({
           label: t('actions.delete', 'Eliminar'),
-          icon: <Trash className="h-4 w-4 text-red-500" />,
+          icon: <Trash className="h-4 w-4" style={{ color: 'var(--bad-text)' }} />,
           onClick: () => {
             setDeleteClient(client);
             setOpenDeleteDialog(true);
@@ -658,7 +658,7 @@ export default function ClientesPage() {
       if (hasPermission('clientAccountDestroy')) {
         actions.push({
           label: t('actions.delete', 'Eliminar'),
-          icon: <Trash className="h-4 w-4 text-red-500" />,
+          icon: <Trash className="h-4 w-4" style={{ color: 'var(--bad-text)' }} />,
           onClick: () => {
             setDeleteClient(client);
             setOpenDeleteDialog(true);
@@ -752,17 +752,17 @@ export default function ClientesPage() {
               ) : undefined
             }
           />
-          <div className="grid grid-cols-1 md:grid-cols-[auto_1fr_320px] items-center gap-3">
+          <Toolbar className="grid grid-cols-1 items-center gap-3 p-3 md:grid-cols-[auto_1fr_auto]">
             <div className="flex items-center gap-2">
               <BulkActionsSelect key={bulkKey} actions={bulkActions} onChange={handleBulkAction} />
             </div>
 
             <div className="flex justify-center">
-              <div className="relative w-full">
-                <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+              <div className="glass-sunken flex w-full items-center gap-2 px-2.5">
+                <Search className="h-4 w-4 shrink-0" style={{ color: 'var(--ink-faint)' }} />
                 <Input
                   placeholder={t('clients.searchPlaceholder')}
-                  className="pl-9 w-full"
+                  className="h-9 w-full border-0 bg-transparent px-0 shadow-none"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -775,7 +775,8 @@ export default function ClientesPage() {
                   <SheetTrigger asChild>
                     <Button
                       variant="outline"
-                      className="text-primary border-primary/30 flex-1 md:flex-none justify-center"
+                      className="flex-1 justify-center md:flex-none"
+                      style={{ borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }}
                     >
                       <Filter className="mr-2 h-4 w-4" />
                       {t('clients.filters.title')}
@@ -836,37 +837,26 @@ export default function ClientesPage() {
                         </Select>
                       </div>
 
-                      <Button className="w-full bg-primary hover:bg-primary/90 text-white" onClick={() => setOpenFilter(false)}>{t('clients.applyFilters')}</Button>
+                      <Button variant="brand" className="w-full" onClick={() => setOpenFilter(false)}>{t('clients.applyFilters')}</Button>
                       <Button variant="outline" className="w-full" onClick={() => { setFilters({ active: true }); setOpenFilter(false); }}>{t('clients.clearFilters')}</Button>
                     </div>
                   </SheetContent>
                 </Sheet>
 
-                {/* Toggle vista Cards / Lista */}
-                <div className="hidden md:inline-flex items-center rounded-xl border bg-card p-0.5">
-                  <Button
-                    variant={viewMode === "cards" ? "brand" : "ghost"}
-                    size="sm"
-                    className="h-8 px-2.5"
-                    aria-label="Vista de tarjetas"
-                    onClick={() => setViewMode("cards")}
-                  >
-                    <LayoutGrid className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant={viewMode === "list" ? "brand" : "ghost"}
-                    size="sm"
-                    className="h-8 px-2.5"
-                    aria-label="Vista de lista"
-                    onClick={() => setViewMode("list")}
-                  >
-                    <ListIcon className="h-4 w-4" />
-                  </Button>
-                </div>
+                {/* Vista de tarjetas ⇄ lista */}
+                <Segmented
+                  className="hidden md:inline-flex"
+                  value={viewMode}
+                  onChange={setViewMode}
+                  options={[
+                    { value: "cards", label: <span className="flex items-center gap-1.5"><LayoutGrid className="h-3.5 w-3.5" /> Tarjetas</span> },
+                    { value: "list", label: <span className="flex items-center gap-1.5"><ListIcon className="h-3.5 w-3.5" /> Lista</span> },
+                  ]}
+                />
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="border w-12 md:w-auto flex items-center justify-center">
+                    <Button variant="outline" className="flex w-12 items-center justify-center md:w-auto">
                       <EllipsisVertical className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
@@ -878,7 +868,7 @@ export default function ClientesPage() {
                 </DropdownMenu>
               </div>
             </div>
-        </div>
+        </Toolbar>
 
         <div className="mt-4 md:block hidden">
           {viewMode === "cards" ? (
@@ -907,26 +897,22 @@ export default function ClientesPage() {
               setPage(1);
             }}
             emptyState={
-              <div className="flex flex-col items-center justify-center text-center">
-                <img
-                  src="https://app.guardspro.com/assets/icons/custom/no-data-found.png"
-                  alt={t('clients.empty.alt')}
-                  className="h-36 mb-4"
-                />
-                <h3 className="text-lg font-semibold">
-                  {t('clients.empty.title')}
-                </h3>
-                <p className="mt-1 text-sm text-muted-foreground max-w-xs">
-                  {t('clients.empty.description')}
-                </p>
-              </div>
+              <EmptyState
+                icon={<Users />}
+                title={t('clients.empty.title')}
+                description={t('clients.empty.description')}
+                className="border-0"
+              />
             }
           />
           )}
 
-          <div className={viewMode === "cards"
-            ? "mt-4 flex items-center justify-between rounded-lg border bg-muted/30 px-4 py-3 text-sm text-foreground/70"
-            : "flex items-center justify-between px-4 py-3 text-sm text-foreground/70 bg-muted/30 border-x border-b rounded-b-lg"}>
+          <div
+            className={viewMode === "cards"
+              ? "glass-sunken mt-4 flex items-center justify-between px-4 py-3 text-sm"
+              : "glass-sunken flex items-center justify-between rounded-t-none px-4 py-3 text-sm"}
+            style={{ color: 'var(--ink-soft)' }}
+          >
             <div className="flex items-center gap-2">
               <span>{t('clients.pagination.itemsPerPage')}</span>
                 <Select
@@ -979,26 +965,26 @@ export default function ClientesPage() {
             loading={loading}
             emptyMessage={t('clients.empty.title') as string}
             renderCard={(client: Client) => (
-              <div className="p-4 bg-card border rounded-lg">
+              <GlassPanel flat className="p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     {/* Mobile cards must match the desktop table, which already
                         shows commercialName. */}
-                    <div className="font-medium text-sm truncate">{clientDisplayName(client, client.name)}</div>
-                    <div className="text-xs text-muted-foreground truncate">{client.email || '-'}</div>
+                    <div className="truncate text-sm font-semibold">{clientDisplayName(client, client.name)}</div>
+                    <div className="truncate text-xs" style={{ color: 'var(--ink-soft)' }}>{client.email || '-'}</div>
                   </div>
 
                   <div className="flex-shrink-0 flex flex-col items-end gap-1 ml-2">
-                    <StatusBadge tone={client.active ? 'green' : 'red'}>
+                    <StatusBadge tone={client.active ? 'ok' : 'bad'}>
                       {client.active ? t('clients.status.active') : t('clients.status.archived')}
                     </StatusBadge>
                     {(() => {
                       const s = client.onboardingStatus || 'not_invited';
-                      const mobileMap: Record<string, { label: string; tone: 'slate' | 'orange' | 'green' | 'red' }> = {
-                        not_invited: { label: t('clients.onboarding.not_invited', 'Sin acceso'), tone: 'slate' },
-                        invited:     { label: t('clients.onboarding.invited', 'Invitado'),      tone: 'orange' },
-                        active:      { label: t('clients.onboarding.active', 'En app'),         tone: 'green' },
-                        suspended:   { label: t('clients.onboarding.suspended', 'Suspendido'),  tone: 'red' },
+                      const mobileMap: Record<string, { label: string; tone: 'neutral' | 'warn' | 'ok' | 'bad' }> = {
+                        not_invited: { label: t('clients.onboarding.not_invited', 'Sin acceso'), tone: 'neutral' },
+                        invited:     { label: t('clients.onboarding.invited', 'Invitado'),      tone: 'warn' },
+                        active:      { label: t('clients.onboarding.active', 'En app'),         tone: 'ok' },
+                        suspended:   { label: t('clients.onboarding.suspended', 'Suspendido'),  tone: 'bad' },
                       };
                       const b = mobileMap[s] || mobileMap.not_invited;
                       return (
@@ -1010,11 +996,11 @@ export default function ClientesPage() {
                     </div>
                   </div>
                 </div>
-                <div className="mt-3 text-xs text-muted-foreground space-y-1">
+                <div className="mt-3 space-y-1 text-xs" style={{ color: 'var(--ink-soft)' }}>
                   <div className="truncate">{client.phoneNumber || '-'}</div>
                   <div className="truncate">{client.address || '-'}</div>
                 </div>
-              </div>
+              </GlassPanel>
             )}
           />
         </div>
@@ -1083,7 +1069,7 @@ export default function ClientesPage() {
               {t('clients.cancel')}
             </Button>
             <Button
-              className="bg-primary-500 hover:bg-primary-600"
+              variant="brand"
               onClick={handleCategorizeSubmit} disabled={categorizeSaving || categorizeLoading}
               >
               {categorizeSaving ? t('clients.saving') : t('clients.save')}
@@ -1145,7 +1131,7 @@ export default function ClientesPage() {
           <AlertDialogFooter>
             <AlertDialogCancel>{t('clients.cancel')}</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-primary hover:bg-primary/90 text-white"
+              className="cg-btn-brand"
               onClick={async () => {
                 try {
                   const results = await Promise.allSettled(
@@ -1186,7 +1172,7 @@ export default function ClientesPage() {
           <AlertDialogFooter>
             <AlertDialogCancel>{t('clients.cancel')}</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-red-500 hover:bg-red-600 text-white"
+              className="cg-btn-bad"
               onClick={async () => {
                 try {
                   await clientService.deleteClients(selectedIds);
@@ -1217,7 +1203,7 @@ export default function ClientesPage() {
           <AlertDialogFooter>
             <AlertDialogCancel>{t('clients.cancel')}</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-red-500 hover:bg-red-600 text-white"
+              className="cg-btn-bad"
               onClick={async () => {
                 if (!deleteClient) return;
                 try {
@@ -1246,7 +1232,7 @@ export default function ClientesPage() {
           <AlertDialogFooter>
             <AlertDialogCancel>{t('clients.cancel')}</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-primary hover:bg-primary/90 text-white"
+              className="cg-btn-brand"
               onClick={async () => {
                 if (!restoreClient) return;
                 try {
@@ -1269,9 +1255,7 @@ export default function ClientesPage() {
         <AlertDialogContent className="max-w-md">
           <AlertDialogHeader>
             <div className="flex items-center gap-3 mb-1">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                <Smartphone className="h-5 w-5 text-primary" />
-              </div>
+              <IconTile size="sm"><Smartphone /></IconTile>
               <AlertDialogTitle className="text-base">
                 {sendAccessClient?.onboardingStatus === 'invited' || sendAccessClient?.onboardingStatus === 'active'
                   ? t('clients.resendAppAccess', 'Reenviar invitación')
@@ -1279,7 +1263,7 @@ export default function ClientesPage() {
               </AlertDialogTitle>
             </div>
             <AlertDialogDescription asChild>
-              <div className="space-y-3 text-sm text-foreground/70">
+              <div className="space-y-3 text-sm" style={{ color: 'var(--ink-soft)' }}>
                 {sendAccessClient?.email ? (
                   <>
                     <p>
@@ -1287,7 +1271,14 @@ export default function ClientesPage() {
                       <span className="font-semibold text-foreground">{sendAccessClient?.email}</span>{' '}
                       para que <span className="font-semibold text-foreground">{sendAccessClient?.name}</span> pueda acceder a la app móvil.
                     </p>
-                    <div className="rounded-lg bg-amber-500/10 border border-amber-200 p-3 text-amber-700 text-xs space-y-1">
+                    <div
+                      className="space-y-1 rounded-xl border p-3 text-xs"
+                      style={{
+                        background: 'color-mix(in oklab, var(--warn) 12%, transparent)',
+                        borderColor: 'color-mix(in oklab, var(--warn) 28%, transparent)',
+                        color: 'var(--warn-text)',
+                      }}
+                    >
                       <p className="font-medium">¿Cómo funciona?</p>
                       <ul className="list-disc list-inside space-y-0.5">
                         <li>El cliente recibe un correo con un enlace de acceso</li>
@@ -1297,7 +1288,14 @@ export default function ClientesPage() {
                     </div>
                   </>
                 ) : (
-                  <div className="rounded-lg bg-red-500/10 border border-red-200 p-3 text-red-700 text-xs">
+                  <div
+                    className="rounded-xl border p-3 text-xs"
+                    style={{
+                      background: 'color-mix(in oklab, var(--bad) 12%, transparent)',
+                      borderColor: 'color-mix(in oklab, var(--bad) 28%, transparent)',
+                      color: 'var(--bad-text)',
+                    }}
+                  >
                     <p className="font-medium">Este cliente no tiene correo electrónico configurado.</p>
                     <p className="mt-1">Edita el cliente, agrega un correo electrónico y vuelve a intentarlo.</p>
                   </div>
@@ -1309,7 +1307,7 @@ export default function ClientesPage() {
             <AlertDialogCancel disabled={sendingAccess}>{t('clients.cancel', 'Cancelar')}</AlertDialogCancel>
             {sendAccessClient?.email && (
               <AlertDialogAction
-                className="bg-primary hover:bg-primary/90 text-white"
+                className="cg-btn-brand"
                 disabled={sendingAccess}
                 onClick={async (e) => {
                   e.preventDefault();
@@ -1345,15 +1343,13 @@ export default function ClientesPage() {
         <AlertDialogContent className="max-w-md">
           <AlertDialogHeader>
             <div className="flex items-center gap-3 mb-1">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sky-500/10">
-                <Download className="h-5 w-5 text-sky-500" />
-              </div>
+              <IconTile size="sm" tone="info"><Download /></IconTile>
               <AlertDialogTitle className="text-base">
                 {t('clients.inviteToApp', 'Invitar a la app')}
               </AlertDialogTitle>
             </div>
             <AlertDialogDescription asChild>
-              <div className="space-y-3 text-sm text-foreground/70">
+              <div className="space-y-3 text-sm" style={{ color: 'var(--ink-soft)' }}>
                 {appInviteClient?.email ? (
                   <>
                     <p>
@@ -1361,7 +1357,14 @@ export default function ClientesPage() {
                       <span className="font-semibold text-foreground">Mi Seguridad</span> a{' '}
                       <span className="font-semibold text-foreground">{appInviteClient?.email}</span>.
                     </p>
-                    <div className="rounded-lg bg-sky-500/10 border border-sky-200 p-3 text-sky-700 text-xs space-y-1">
+                    <div
+                      className="space-y-1 rounded-xl border p-3 text-xs"
+                      style={{
+                        background: 'color-mix(in oklab, var(--info) 12%, transparent)',
+                        borderColor: 'color-mix(in oklab, var(--info) 28%, transparent)',
+                        color: 'var(--info-text)',
+                      }}
+                    >
                       <p className="font-medium">¿Qué incluye?</p>
                       <ul className="list-disc list-inside space-y-0.5">
                         <li>Presentación de la app Mi Seguridad</li>
@@ -1371,7 +1374,14 @@ export default function ClientesPage() {
                     </div>
                   </>
                 ) : (
-                  <div className="rounded-lg bg-red-500/10 border border-red-200 p-3 text-red-700 text-xs">
+                  <div
+                    className="rounded-xl border p-3 text-xs"
+                    style={{
+                      background: 'color-mix(in oklab, var(--bad) 12%, transparent)',
+                      borderColor: 'color-mix(in oklab, var(--bad) 28%, transparent)',
+                      color: 'var(--bad-text)',
+                    }}
+                  >
                     <p className="font-medium">Este cliente no tiene correo electrónico configurado.</p>
                     <p className="mt-1">Edita el cliente, agrega un correo electrónico y vuelve a intentarlo.</p>
                   </div>
@@ -1383,7 +1393,7 @@ export default function ClientesPage() {
             <AlertDialogCancel disabled={sendingAppInvite}>{t('clients.cancel', 'Cancelar')}</AlertDialogCancel>
             {appInviteClient?.email && (
               <AlertDialogAction
-                className="bg-sky-500 hover:bg-sky-600 text-white"
+                className="cg-btn-brand"
                 disabled={sendingAppInvite}
                 onClick={async (e) => {
                   e.preventDefault();

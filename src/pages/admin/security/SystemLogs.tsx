@@ -1,8 +1,16 @@
 import { Fragment, useCallback, useEffect, useState } from "react";
-import { ScrollText, RefreshCw, Search, ChevronDown, ChevronRight, PlusCircle, PencilLine, Trash2, Activity, Loader2 } from "lucide-react";
+import { ScrollText, RefreshCw, ChevronDown, ChevronRight, PlusCircle, PencilLine, Trash2, Activity, Inbox } from "lucide-react";
+import type { ReactNode } from "react";
 import AppLayout from "@/layouts/app-layout";
-import { PageContainer, PageHeader, Section } from "@/components/kit";
+import { Button } from "@/components/ui/button";
+import {
+  PageContainer, PageHeader, Section, Toolbar, Segmented, StatusBadge, EmptyState,
+} from "@/components/kit";
 import { useInfiniteAuditList } from "./useInfiniteAuditList";
+import {
+  AuditRow, AuditSearch, AuditSkeleton, AuditTable, InfiniteFooter, SeverityRail,
+  fmtStamp, type SeverityTone,
+} from "./shared";
 
 type LogRow = {
   id: string;
@@ -17,22 +25,17 @@ type LogRow = {
 
 const PAGE_SIZE = 50;
 
-const fmt = (d?: string) => {
-  try {
-    return new Date(d as string).toLocaleString(undefined, {
-      day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit",
-    });
-  } catch {
-    return "";
-  }
-};
-
-function actionMeta(action: string) {
+/**
+ * Tono de cada acción. Un borrado es lo único irreversible de esta pantalla, así
+ * que va en `bad`; un cambio, en `warn`; un alta, en `ok`. Son tonos del sistema
+ * y no colores propios: la severidad no cambia con el acento de la empresa.
+ */
+function actionMeta(action: string): { label: string; tone: SeverityTone; icon: ReactNode } {
   const a = String(action || "").toLowerCase();
-  if (a.includes("create")) return { label: "Creación", cls: "bg-green-100 text-green-700", icon: <PlusCircle className="size-3.5" /> };
-  if (a.includes("update")) return { label: "Actualización", cls: "bg-amber-100 text-amber-700", icon: <PencilLine className="size-3.5" /> };
-  if (a.includes("delete") || a.includes("destroy")) return { label: "Eliminación", cls: "bg-red-100 text-red-700", icon: <Trash2 className="size-3.5" /> };
-  return { label: action || "—", cls: "bg-slate-100 text-slate-600", icon: <Activity className="size-3.5" /> };
+  if (a.includes("create")) return { label: "Creación", tone: "ok", icon: <PlusCircle className="size-3.5" /> };
+  if (a.includes("update")) return { label: "Actualización", tone: "warn", icon: <PencilLine className="size-3.5" /> };
+  if (a.includes("delete") || a.includes("destroy")) return { label: "Eliminación", tone: "bad", icon: <Trash2 className="size-3.5" /> };
+  return { label: action || "—", tone: "neutral", icon: <Activity className="size-3.5" /> };
 }
 
 const FILTERS = [
@@ -77,6 +80,8 @@ export default function SystemLogs() {
     onReset: () => setExpanded(null),
   });
 
+  const primeraCarga = loading && items.length === 0;
+
   return (
     <AppLayout>
       <PageContainer width="wide">
@@ -84,111 +89,100 @@ export default function SystemLogs() {
           icon={<ScrollText />}
           title="Registros del Sistema"
           subtitle="Todas las acciones (creaciones, cambios y eliminaciones) de esta empresa — quién, qué y cuándo."
-          actions={
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                <input
-                  value={q}
-                  onChange={(e) => setQ(e.target.value)}
-                  placeholder="Buscar por entidad, usuario o ID…"
-                  className="h-9 w-64 rounded-lg border border-input bg-background pl-8 pr-3 text-sm focus:border-primary focus:outline-none"
-                />
-              </div>
-              <button onClick={() => load(true)} className="grid h-9 w-9 place-items-center rounded-lg border border-input text-muted-foreground hover:text-foreground" title="Recargar">
-                <RefreshCw className={`size-4 ${loading && items.length === 0 ? "animate-spin" : ""}`} />
-              </button>
-            </div>
+          badges={
+            !primeraCarga ? (
+              <StatusBadge tone="neutral" dot={false}>
+                {items.length}{total ? ` de ${total}` : ""} registro{items.length === 1 ? "" : "s"}
+              </StatusBadge>
+            ) : undefined
           }
         />
 
-        {/* Action filter */}
-        <div className="mb-3 flex flex-wrap gap-1.5">
-          {FILTERS.map((f) => (
-            <button
-              key={f.key}
-              onClick={() => setAction(f.key)}
-              className={
-                "rounded-full px-3 py-1 text-xs font-medium transition-colors " +
-                (action === f.key ? "bg-primary text-white" : "bg-muted text-muted-foreground hover:bg-muted/70")
-              }
-            >
-              {f.label}
-            </button>
-          ))}
-          <span className="ml-auto self-center text-xs text-muted-foreground">
-            {items.length}{total ? ` / ${total}` : ""} registro(s)
-          </span>
-        </div>
+        <Toolbar>
+          <AuditSearch value={q} onChange={setQ} placeholder="Buscar por registro, usuario o código…" />
+
+          <Segmented
+            value={action}
+            onChange={setAction}
+            options={FILTERS.map((f) => ({ value: f.key, label: f.label }))}
+          />
+
+          <Button variant="outline" size="icon" className="ml-auto" onClick={() => load(true)} title="Recargar" aria-label="Recargar">
+            <RefreshCw className={`size-4 ${primeraCarga ? "animate-spin" : ""}`} />
+          </Button>
+        </Toolbar>
 
         <Section contentClassName="-mx-5 -mb-5">
-          <div className="overflow-x-auto rounded-t-2xl">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-left text-xs text-muted-foreground">
-                  <th className="px-4 py-2">Acción</th>
-                  <th className="px-3 py-2">Entidad</th>
-                  <th className="px-3 py-2">Usuario</th>
-                  <th className="px-3 py-2 text-right">Fecha</th>
-                  <th className="px-2 py-2"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading && items.length === 0 ? (
-                  <tr><td colSpan={5} className="px-4 py-10 text-center text-muted-foreground">Cargando…</td></tr>
-                ) : items.length === 0 ? (
-                  <tr><td colSpan={5} className="px-4 py-10 text-center text-muted-foreground">Sin registros.</td></tr>
-                ) : items.map((r) => {
-                  const m = actionMeta(r.action);
-                  const isOpen = expanded === r.id;
-                  return (
-                    <Fragment key={r.id}>
-                      <tr
-                        className="cursor-pointer border-b border-border/50 hover:bg-muted/40"
-                        onClick={() => setExpanded(isOpen ? null : r.id)}
-                      >
-                        <td className="px-4 py-2">
-                          <span className={"inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium " + m.cls}>
-                            {m.icon}{m.label}
-                          </span>
+          {primeraCarga ? (
+            <AuditSkeleton />
+          ) : items.length === 0 ? (
+            <div className="p-6">
+              <EmptyState
+                className="border-0"
+                icon={<Inbox />}
+                title="Sin registros"
+                description={
+                  q.trim() || action
+                    ? "Ninguna acción coincide con la búsqueda o el filtro elegido."
+                    : "Todavía no se ha registrado ninguna acción."
+                }
+              />
+            </div>
+          ) : (
+            <AuditTable
+              head={
+                <>
+                  <th className="px-4 py-3">Acción</th>
+                  <th className="px-3 py-3">Registro</th>
+                  <th className="px-3 py-3">Usuario</th>
+                  <th className="px-3 py-3 text-right">Fecha</th>
+                  <th className="px-2 py-3"></th>
+                </>
+              }
+            >
+              {items.map((r) => {
+                const m = actionMeta(r.action);
+                const isOpen = expanded === r.id;
+                return (
+                  <Fragment key={r.id}>
+                    <AuditRow tone={m.tone} onClick={() => setExpanded(isOpen ? null : r.id)}>
+                      <td className="relative px-4 py-2.5">
+                        <SeverityRail tone={m.tone} />
+                        <StatusBadge tone={m.tone} dot={false}>{m.icon}{m.label}</StatusBadge>
+                      </td>
+                      <td className="px-3 py-2.5">
+                        <span className="font-medium">{r.entityName}</span>
+                        <span className="ml-1 font-mono text-[10px]" style={{ color: "var(--ink-faint)" }}>{(r.entityId || "").slice(0, 8)}</span>
+                      </td>
+                      <td className="px-3 py-2.5" style={{ color: "var(--ink-soft)" }}>{r.createdByEmail || "—"}</td>
+                      <td className="px-3 py-2.5 text-right text-xs tabular-nums" style={{ color: "var(--ink-faint)" }}>{fmtStamp(r.timestamp)}</td>
+                      <td className="px-2 py-2.5" style={{ color: "var(--ink-faint)" }}>{isOpen ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}</td>
+                    </AuditRow>
+                    {isOpen && (
+                      <tr className="border-b" style={{ borderColor: "var(--hairline)", background: "var(--glass-sunken)" }}>
+                        <td colSpan={5} className="px-4 py-3">
+                          <div className="mb-1.5 text-xs" style={{ color: "var(--ink-soft)" }}>
+                            Código: <span className="font-mono">{r.entityId}</span>
+                          </div>
+                          <pre className="glass-sunken max-h-72 overflow-auto p-3 text-xs">
+                            {JSON.stringify(r.values ?? {}, null, 2)}
+                          </pre>
                         </td>
-                        <td className="px-3 py-2">
-                          <span className="font-medium text-foreground">{r.entityName}</span>
-                          <span className="ml-1 font-mono text-[10px] text-muted-foreground">{(r.entityId || "").slice(0, 8)}</span>
-                        </td>
-                        <td className="px-3 py-2 text-muted-foreground">{r.createdByEmail || "—"}</td>
-                        <td className="px-3 py-2 text-right text-xs text-muted-foreground">{fmt(r.timestamp)}</td>
-                        <td className="px-2 py-2 text-muted-foreground">{isOpen ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}</td>
                       </tr>
-                      {isOpen && (
-                        <tr className="border-b border-border/50 bg-muted/20">
-                          <td colSpan={5} className="px-4 py-3">
-                            <div className="mb-1 text-xs text-muted-foreground">
-                              ID: <span className="font-mono">{r.entityId}</span>
-                            </div>
-                            <pre className="max-h-72 overflow-auto rounded-lg bg-background p-3 text-xs text-foreground">
-                              {JSON.stringify(r.values ?? {}, null, 2)}
-                            </pre>
-                          </td>
-                        </tr>
-                      )}
-                    </Fragment>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                    )}
+                  </Fragment>
+                );
+              })}
+            </AuditTable>
+          )}
 
-          {/* Infinite-scroll sentinel + loader */}
-          <div ref={sentinelRef} className="flex items-center justify-center py-4 text-xs text-muted-foreground">
-            {loading && items.length > 0 ? (
-              <span className="flex items-center gap-2"><Loader2 className="size-4 animate-spin" /> Cargando más…</span>
-            ) : hasMore ? (
-              <span>Desplázate para ver más</span>
-            ) : items.length > 0 ? (
-              <span>— Fin de los registros —</span>
-            ) : null}
-          </div>
+          <InfiniteFooter
+            sentinelRef={sentinelRef}
+            loading={loading}
+            hasMore={hasMore}
+            count={items.length}
+            endLabel="Fin de los registros"
+          />
         </Section>
       </PageContainer>
     </AppLayout>

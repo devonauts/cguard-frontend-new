@@ -35,7 +35,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Search, Filter, EllipsisVertical, X, Edit, Trash2, Loader2, LayoutTemplate, Plus } from "lucide-react";
 import Breadcrumb from "@/components/ui/breadcrumb";
-import { PageContainer, PageHeader, Section, EmptyState } from "@/components/kit";
+import { PageContainer, PageHeader, Section, EmptyState, Toolbar } from "@/components/kit";
 import { toast } from "sonner";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import shiftTemplateService, {
@@ -223,17 +223,17 @@ export default function ShiftTemplates() {
       <PageContainer width="wide" className="px-4 lg:px-6">
         <PageHeader
           icon={<LayoutTemplate />}
-          title="Plantillas de Turno"
+          title="Plantillas de turno"
           subtitle="Define plantillas reutilizables para crear turnos rápidamente."
         />
 
-        {/* Toolbar */}
-        <div className="flex flex-col md:flex-row justify-between gap-4">
-          <div className="flex flex-col md:flex-row gap-4 w-full items-center">
+        {/* Barra de filtros */}
+        <Toolbar className="justify-between gap-4">
+          <div className="flex w-full flex-col items-center gap-4 md:flex-row">
             <div className="relative w-full md:w-80">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: "var(--ink-faint)" }} />
               <Input
-                placeholder="Buscar Plantilla de Turno"
+                placeholder="Buscar plantilla de turno"
                 className="pl-9"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -244,13 +244,13 @@ export default function ShiftTemplates() {
               <Sheet open={isFormOpen} onOpenChange={setIsFormOpen}>
                 <SheetTrigger asChild>
                   <Button variant="brand" onClick={openNew}>
-                    <Plus className="h-4 w-4 mr-1" /> Nueva Plantilla de Turno
+                    <Plus className="mr-1 h-4 w-4" /> Nueva plantilla
                   </Button>
                 </SheetTrigger>
                 <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto">
                   <SheetHeader className="relative">
                     <SheetTitle>
-                      {editingId ? "Editar Plantilla de Turno" : "Nueva Plantilla de Turno"}
+                      {editingId ? "Editar plantilla de turno" : "Nueva plantilla de turno"}
                     </SheetTitle>
                     <Button
                       variant="ghost"
@@ -263,7 +263,7 @@ export default function ShiftTemplates() {
                   </SheetHeader>
                   <div className="space-y-6 py-4">
                     <div className="grid gap-2">
-                      <Label>Título del Turno*</Label>
+                      <Label>Título del turno*</Label>
                       <Input
                         value={form.templateName}
                         onChange={(e) => setForm({ ...form, templateName: e.target.value })}
@@ -272,7 +272,7 @@ export default function ShiftTemplates() {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="grid gap-2">
-                        <Label>Hora de Inicio*</Label>
+                        <Label>Hora de inicio*</Label>
                         <Input
                           type="time"
                           value={form.startTime}
@@ -280,7 +280,7 @@ export default function ShiftTemplates() {
                         />
                       </div>
                       <div className="grid gap-2">
-                        <Label>Hora de Fin*</Label>
+                        <Label>Hora de fin*</Label>
                         <Input
                           type="time"
                           value={form.endTime}
@@ -291,7 +291,7 @@ export default function ShiftTemplates() {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="grid gap-2">
-                        <Label>Repetir Turno</Label>
+                        <Label>Repetir turno</Label>
                         <Select value={form.repeatShift} onValueChange={(v) => setForm({ ...form, repeatShift: v })}>
                           <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
                           <SelectContent>
@@ -302,7 +302,7 @@ export default function ShiftTemplates() {
                         </Select>
                       </div>
                       <div className="grid gap-2">
-                        <Label>Repetir Por</Label>
+                        <Label>Repetir por</Label>
                         <Select value={form.repeatBy} onValueChange={(v) => setForm({ ...form, repeatBy: v })}>
                           <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
                           <SelectContent>
@@ -331,7 +331,7 @@ export default function ShiftTemplates() {
                     </div>
 
                     <div className="grid gap-2">
-                      <Label>Conjunto de Habilidades</Label>
+                      <Label>Nivel requerido</Label>
                       <Select value={form.skillSet} onValueChange={(v) => setForm({ ...form, skillSet: v })}>
                         <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
                         <SelectContent>
@@ -436,8 +436,8 @@ export default function ShiftTemplates() {
 
               <Sheet open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="outline" className="text-primary border-primary/30 hover:bg-primary/10 hover:text-primary">
-                    <Filter className="h-4 w-4 mr-2" /> Filtros
+                  <Button variant="outline">
+                    <Filter className="mr-2 h-4 w-4" /> Filtros
                   </Button>
                 </SheetTrigger>
                 <SheetContent className="w-[400px] sm:w-[540px]">
@@ -472,19 +472,19 @@ export default function ShiftTemplates() {
               </Sheet>
             </div>
           </div>
-        </div>
+        </Toolbar>
 
-        {/* Table */}
+        {/* Tabla */}
         <Section title="Plantillas" icon={<LayoutTemplate />} contentClassName="overflow-x-auto -mx-1">
           <Table>
-            <TableHeader className="bg-muted/40">
+            <TableHeader style={{ background: "var(--glass-sunken)" }}>
               <TableRow>
                 <TableHead className="w-[50px]"><Checkbox /></TableHead>
-                <TableHead className="font-bold text-foreground">Nombre de la Plantilla</TableHead>
-                <TableHead className="font-bold text-foreground">Hora de Inicio</TableHead>
-                <TableHead className="font-bold text-foreground">Hora de Fin</TableHead>
-                <TableHead className="font-bold text-foreground">Puesto de seguridad</TableHead>
-                <TableHead className="font-bold text-foreground">Vigilante</TableHead>
+                <TableHead className="cg-eyebrow">Nombre de la plantilla</TableHead>
+                <TableHead className="cg-eyebrow">Hora de inicio</TableHead>
+                <TableHead className="cg-eyebrow">Hora de fin</TableHead>
+                <TableHead className="cg-eyebrow">Puesto de seguridad</TableHead>
+                <TableHead className="cg-eyebrow">Vigilante</TableHead>
                 <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
@@ -492,8 +492,8 @@ export default function ShiftTemplates() {
               {loading ? (
                 <TableRow>
                   <TableCell colSpan={7} className="h-[300px] text-center">
-                    <div className="flex flex-col items-center justify-center gap-3 text-muted-foreground">
-                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    <div className="flex flex-col items-center justify-center gap-3" style={{ color: "var(--ink-soft)" }}>
+                      <Loader2 className="h-8 w-8 animate-spin" style={{ color: "var(--brand-text)" }} />
                       <p className="text-sm">Cargando plantillas…</p>
                     </div>
                   </TableCell>
@@ -511,20 +511,20 @@ export default function ShiftTemplates() {
                 </TableRow>
               ) : (
                 filteredTemplates.map((template) => (
-                  <TableRow key={template.id} className="cursor-pointer hover:bg-muted/40" onClick={() => openEdit(template)}>
+                  <TableRow key={template.id} className="cursor-pointer" onClick={() => openEdit(template)}>
                     <TableCell onClick={(e) => e.stopPropagation()}>
                       <Checkbox />
                     </TableCell>
-                    <TableCell className="text-primary font-medium">{template.templateName}</TableCell>
-                    <TableCell>{template.startTime}</TableCell>
-                    <TableCell>{template.endTime}</TableCell>
+                    <TableCell className="font-semibold" style={{ color: "var(--brand-text)" }}>{template.templateName}</TableCell>
+                    <TableCell className="tabular-nums">{template.startTime}</TableCell>
+                    <TableCell className="tabular-nums">{template.endTime}</TableCell>
                     <TableCell>{postSiteName(template.postSiteId)}</TableCell>
                     <TableCell>{guardName(template.guardId)}</TableCell>
                     <TableCell onClick={(e) => e.stopPropagation()}>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon">
-                            <EllipsisVertical className="h-4 w-4 text-muted-foreground" />
+                            <EllipsisVertical className="h-4 w-4" style={{ color: "var(--ink-soft)" }} />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">

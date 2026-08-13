@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import AuthLayout from "@/layouts/auth-layout";
+import AuthShell from "./AuthShell";
 import { toast } from "sonner";
 import { useTranslation } from 'react-i18next';
 import { ApiService } from '@/services/api/apiService';
@@ -78,11 +78,21 @@ export default function VerifyEmail() {
   }, []);
 
   return (
-    <AuthLayout title={t('auth.verify_email_title') || 'Verificando correo'}>
-      <FadeIn className="flex flex-col items-center justify-center py-12">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-primary dark:border-white/10 dark:border-t-primary" />
-        <p className="mt-4 text-foreground/70">{t('auth.verify_email_processing') || 'Procesando verificación...'}</p>
+    <AuthShell
+      splash={false}
+      showFeatures={false}
+      title={t('auth.verify_email_title') || 'Verificando tu correo'}
+      subtitle={t('auth.verify_email_subtitle', { defaultValue: 'Estamos confirmando tu dirección. Esto tarda solo un momento.' })}
+    >
+      <FadeIn className="flex flex-col items-center justify-center py-10">
+        <div
+          className="h-12 w-12 animate-spin rounded-full"
+          style={{ border: '3px solid var(--hairline)', borderTopColor: 'var(--brand)' }}
+        />
+        <p className="mt-5 text-sm" style={{ color: 'var(--ink-soft)' }}>
+          {t('auth.verify_email_processing') || 'Procesando la verificación…'}
+        </p>
       </FadeIn>
-    </AuthLayout>
+    </AuthShell>
   );
 }

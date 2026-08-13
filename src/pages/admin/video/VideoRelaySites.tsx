@@ -3,18 +3,21 @@ import { toast } from "sonner";
 import { Loader2, Plus, Trash2, Download, RefreshCw, KeyRound, Server } from "lucide-react";
 
 import AppLayout from "@/layouts/app-layout";
-import { Card, CardContent } from "@/components/ui/card";
+import { DeviceStatusBadge, healthTone, type DeviceHealth } from "./deviceStatus";
 import { Button } from "@/components/ui/button";
 import {
   PageContainer,
   PageHeader,
   EmptyState,
   Stagger,
+  GlassPanel,
+  IconTile,
+  StatusBadge,
+  SkeletonCards,
 } from "@/components/kit";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
@@ -25,10 +28,15 @@ import {
 import { videoService, type RelaySite, type RelayBundle } from "@/lib/api/videoService";
 
 
-const STATUS: Record<string, { label: string; cls: string }> = {
-  publishing: { label: "Transmitiendo", cls: "bg-green-500/15 text-green-600 border-green-500/30" },
-  offline: { label: "Sin conexión", cls: "bg-zinc-500/15 text-zinc-500 border-zinc-500/30" },
-  unknown: { label: "Sin activar", cls: "bg-amber-500/15 text-amber-600 border-amber-500/30" },
+/**
+ * Semánticos fijos: transmitir o no transmitir no depende del color de marca.
+ * Escala común de equipos — un sitio caído deja sin vídeo a una sede entera y
+ * se pinta igual de rojo que un grabador caído, no en tono neutro como antes.
+ */
+const STATUS: Record<string, { health: DeviceHealth; label: string }> = {
+  publishing: { health: "up", label: "Transmitiendo" },
+  offline: { health: "down", label: "Sin conexión" },
+  unknown: { health: "unknown", label: "Sin activar" },
 };
 
 export default function VideoRelaySites() {
@@ -129,9 +137,7 @@ export default function VideoRelaySites() {
         />
 
         {loading ? (
-          <div className="flex items-center justify-center py-16 text-muted-foreground">
-            <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Cargando…
-          </div>
+          <SkeletonCards count={4} className="lg:grid-cols-2" />
         ) : error ? (
           <EmptyState
             icon={<RefreshCw />}
@@ -154,32 +160,30 @@ export default function VideoRelaySites() {
             {sites.map((s) => {
               const badge = STATUS[s.status || "unknown"] || STATUS.unknown;
               return (
-                <Card key={s.id} className="cg-card-hover"><CardContent className="flex items-start gap-3 p-4">
-                  <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-amber-500/10">
-                    <Server className="h-5 w-5 text-primary" />
-                  </div>
+                <GlassPanel key={s.id} flat hover className="flex items-start gap-3 p-4">
+                  <IconTile tone={healthTone(badge.health)}><Server /></IconTile>
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <p className="truncate font-semibold text-foreground">{s.name}</p>
-                      <Badge variant="outline" className={badge.cls}>{badge.label}</Badge>
+                      <DeviceStatusBadge health={badge.health} label={badge.label} />
                     </div>
-                    <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                      siteKey: <code>{s.siteKey}</code> · {String(s.ingestProtocol || "rtmps").toUpperCase()}
-                      {s.publishTokenConfigured ? " · token ✓" : " · sin token"}
+                    <p className="mt-0.5 truncate text-xs" style={{ color: 'var(--ink-soft)' }}>
+                      Clave del sitio: <code>{s.siteKey}</code> · {String(s.ingestProtocol || "rtmps").toUpperCase()}
+                      {s.publishTokenConfigured ? " · clave de envío lista" : " · sin clave de envío"}
                     </p>
                     <div className="mt-2.5 flex flex-wrap gap-2">
                       <Button size="sm" variant="outline" onClick={() => openBundle(s)}>
-                        <Download className="mr-1.5 h-3.5 w-3.5" />Descargar relay
+                        <Download className="mr-1.5 h-3.5 w-3.5" />Descargar enlace
                       </Button>
                       <Button size="sm" variant="outline" onClick={() => regenToken(s)}>
-                        <KeyRound className="mr-1.5 h-3.5 w-3.5" />Regenerar token
+                        <KeyRound className="mr-1.5 h-3.5 w-3.5" />Regenerar clave
                       </Button>
-                      <Button size="sm" variant="outline" className="text-red-600" onClick={() => setDeleteTarget(s)}>
+                      <Button size="sm" variant="ghost" style={{ color: 'var(--bad-text)' }} onClick={() => setDeleteTarget(s)}>
                         <Trash2 className="mr-1.5 h-3.5 w-3.5" />Eliminar
                       </Button>
                     </div>
                   </div>
-                </CardContent></Card>
+                </GlassPanel>
               );
             })}
           </Stagger>
@@ -223,21 +227,28 @@ export default function VideoRelaySites() {
             </DialogDescription>
           </DialogHeader>
           {!bundle ? (
-            <div className="flex items-center justify-center py-10 text-muted-foreground">
-              <Loader2 className="mr-2 h-5 w-5 animate-spin" />Generando…
+            <div className="flex items-center justify-center gap-2 py-10 text-sm" style={{ color: 'var(--ink-soft)' }}>
+              <Loader2 className="h-5 w-5 animate-spin" />Generando…
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                <div><span className="text-muted-foreground">Ingest:</span> <code>{bundle.ingest}</code></div>
-                <div><span className="text-muted-foreground">Canales:</span> {bundle.channelCount}</div>
+              <div className="glass-sunken grid grid-cols-2 gap-2 p-3 text-sm">
+                <div><span style={{ color: 'var(--ink-faint)' }}>Dirección de recepción:</span> <code>{bundle.ingest}</code></div>
+                <div><span style={{ color: 'var(--ink-faint)' }}>Canales:</span> {bundle.channelCount}</div>
               </div>
               {bundle.ingest.includes("INGEST_HOST") && (
-                <div className="rounded-md border border-amber-300 bg-amber-50 p-2 text-xs text-amber-800">
-                  El endpoint de ingest aún no está configurado (Fase 2). El relay funcionará cuando se publique el ingest.
+                <div
+                  className="rounded-xl border p-2.5 text-xs"
+                  style={{
+                    background: 'color-mix(in oklab, var(--warn) 12%, transparent)',
+                    borderColor: 'color-mix(in oklab, var(--warn) 30%, transparent)',
+                    color: 'var(--warn-text)',
+                  }}
+                >
+                  La dirección de recepción aún no está configurada. El enlace empezará a transmitir en cuanto lo esté.
                 </div>
               )}
-              <pre className="max-h-72 overflow-auto rounded-lg bg-muted p-3 text-xs">{bundle.compose}</pre>
+              <pre className="glass-sunken max-h-72 overflow-auto p-3 text-xs">{bundle.compose}</pre>
               <DialogFooter>
                 <Button variant="outline" onClick={() => { navigator.clipboard?.writeText(bundle.compose); toast.success("Copiado"); }}>
                   Copiar
@@ -262,7 +273,7 @@ export default function VideoRelaySites() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">Eliminar</AlertDialogAction>
+            <AlertDialogAction onClick={confirmDelete} className="cg-btn-bad">Eliminar</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

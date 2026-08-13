@@ -90,12 +90,12 @@ export default function NominaSettings() {
     const [a, b] = path.split(".");
     return (
       <label className="block">
-        <span className="text-xs font-medium text-muted-foreground">{label}</span>
+        <span className="cg-eyebrow">{label}</span>
         <input
           type="number"
           value={((s as unknown as SettingsRecord | null)?.[a]?.[b] as number | undefined) ?? 0}
           onChange={(e) => setS((prev) => set(prev as NominaSettings, path, Number(e.target.value)))}
-          className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none transition focus:border-primary/60 focus:ring-2 focus:ring-primary/20"
+          className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm tabular-nums"
         />
       </label>
     );
@@ -104,14 +104,15 @@ export default function NominaSettings() {
   const Toggle = ({ label, path }: { label: string; path: string }) => {
     const [a, b] = path.split(".");
     return (
-      <label className="flex items-center gap-2.5 rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5 transition hover:border-primary/40">
+      <label className="glass-flat glass-hover flex cursor-pointer items-center gap-2.5 px-3 py-2.5">
         <input
           type="checkbox"
           checked={!!(s as unknown as SettingsRecord | null)?.[a]?.[b]}
           onChange={(e) => setS((prev) => set(prev as NominaSettings, path, e.target.checked))}
-          className="size-4 accent-primary"
+          className="cg-focus size-4"
+          style={{ accentColor: "var(--brand)" }}
         />
-        <span className="text-sm text-foreground">{label}</span>
+        <span className="text-sm">{label}</span>
       </label>
     );
   };
@@ -169,11 +170,11 @@ export default function NominaSettings() {
 
             <SettingsSection title="Periodo y horas extra" icon={<CalendarRange />}>
               <label className="block">
-                <span className="text-xs font-medium text-muted-foreground">Periodo del timesheet</span>
+                <span className="cg-eyebrow">Periodo del timesheet</span>
                 <select
                   value={s.payroll?.periodType || "biweekly"}
                   onChange={(e) => setS((p) => set(p as NominaSettings, "payroll.periodType", e.target.value))}
-                  className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none transition focus:border-primary/60 focus:ring-2 focus:ring-primary/20"
+                  className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm"
                 >
                   <option value="weekly">Semanal</option>
                   <option value="biweekly">Quincenal</option>
@@ -185,7 +186,7 @@ export default function NominaSettings() {
             </SettingsSection>
 
             <div className="fixed bottom-6 right-6 z-10">
-              <Button variant="brand" onClick={save} disabled={saving} className="shadow-lg">
+              <Button variant="brand" size="lg" onClick={save} disabled={saving} className="brand-glow">
                 {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Guardar configuración
               </Button>

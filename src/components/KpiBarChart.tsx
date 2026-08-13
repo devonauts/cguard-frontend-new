@@ -1,4 +1,5 @@
-import React from 'react';
+import { useChartColors } from '@/lib/chartColors';
+import { topRoundedRect } from '@/components/charts/internals';
 
 type Point = {
   name: string;
@@ -12,7 +13,17 @@ type Props = {
   height?: number;
 };
 
+/**
+ * Objetivo contra real, por métrica.
+ *
+ * El REAL lleva el acento y el OBJETIVO va acromático: son dos papeles
+ * distintos, no dos categorías. El objetivo es la referencia contra la que se
+ * mide, y pintarlo con su propio color lo pone a competir con el dato que
+ * importa. Antes eran gris y verde fijos, que además se salían del sistema en
+ * cuanto el usuario cambiaba el acento.
+ */
 export default function KpiBarChart({ data, width = 720, height = 300 }: Props) {
+  const paleta = useChartColors();
   if (!data || !data.length) return null;
 
   const padding = { top: 20, right: 20, bottom: 40, left: 40 };
@@ -26,6 +37,7 @@ export default function KpiBarChart({ data, width = 720, height = 300 }: Props) 
 
   const barGroupWidth = innerW / data.length;
   const barWidth = Math.min(120, Math.max(24, (barGroupWidth * 0.6) / 2));
+  const radio = Math.min(4, barWidth / 2);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 24 }}>
@@ -41,7 +53,7 @@ export default function KpiBarChart({ data, width = 720, height = 300 }: Props) 
                 x2={innerW}
                 y1={y}
                 y2={y}
-                stroke="#e9e9e9"
+                stroke={paleta.grid}
               />
             );
           })}
@@ -54,27 +66,21 @@ export default function KpiBarChart({ data, width = 720, height = 300 }: Props) 
 
             return (
               <g key={d.name}>
-                {/* Target bar (left, gray) */}
-                <rect
-                  x={groupX}
-                  y={innerH - targetH}
-                  width={barWidth}
-                  height={targetH}
-                  fill="url(#gradGray)"
+                {/* Target bar (left, achromatic — the reference) */}
+                <path
+                  d={topRoundedRect(groupX, innerH - targetH, barWidth, Math.max(targetH, radio), radio)}
+                  fill="url(#kpiGradTarget)"
                 >
                   <title>{`${d.name} - Target\n${d.target}`}</title>
-                </rect>
+                </path>
 
-                {/* Actual bar (right, green) */}
-                <rect
-                  x={groupX + barWidth + 8}
-                  y={innerH - actualH}
-                  width={barWidth}
-                  height={actualH}
-                  fill="#10b981"
+                {/* Actual bar (right, accent — the measured value) */}
+                <path
+                  d={topRoundedRect(groupX + barWidth + 8, innerH - actualH, barWidth, Math.max(actualH, radio), radio)}
+                  fill="url(#kpiGradActual)"
                 >
                   <title>{`${d.name} - Actual\n${d.actual}`}</title>
-                </rect>
+                </path>
 
                 {/* label */}
                 <text
@@ -82,7 +88,7 @@ export default function KpiBarChart({ data, width = 720, height = 300 }: Props) 
                   y={innerH + 18}
                   textAnchor="middle"
                   fontSize={12}
-                  fill="#444"
+                  fill={paleta.axis}
                 >
                   {d.name}
                 </text>
@@ -93,7 +99,7 @@ export default function KpiBarChart({ data, width = 720, height = 300 }: Props) 
                   y={innerH - targetH - 6}
                   textAnchor="middle"
                   fontSize={12}
-                  fill="#333"
+                  fill={paleta.inkSoft}
                 >
                   {d.target}
                 </text>
@@ -104,7 +110,8 @@ export default function KpiBarChart({ data, width = 720, height = 300 }: Props) 
                   y={innerH - actualH - 6}
                   textAnchor="middle"
                   fontSize={12}
-                  fill="#064e3b"
+                  fontWeight={600}
+                  fill={paleta.ink}
                 >
                   {d.actual}
                 </text>
@@ -118,7 +125,7 @@ export default function KpiBarChart({ data, width = 720, height = 300 }: Props) 
             const y = (i / 4) * innerH;
             return (
               <g key={`y-${i}`}>
-                <text x={-8} y={y + 4} textAnchor="end" fontSize={10} fill="#666">
+                <text x={-8} y={y + 4} textAnchor="end" fontSize={10} fill={paleta.axis}>
                   {val.toFixed(1)}
                 </text>
               </g>
@@ -127,25 +134,29 @@ export default function KpiBarChart({ data, width = 720, height = 300 }: Props) 
 
           {/* defs */}
           <defs>
-            <linearGradient id="gradGray" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="#666" stopOpacity="1" />
-              <stop offset="100%" stopColor="#ddd" stopOpacity="1" />
+            <linearGradient id="kpiGradTarget" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stopColor={paleta.chart4} stopOpacity="0.85" />
+              <stop offset="100%" stopColor={paleta.chart5} stopOpacity="0.35" />
+            </linearGradient>
+            <linearGradient id="kpiGradActual" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stopColor={paleta.chart1} stopOpacity="1" />
+              <stop offset="100%" stopColor={paleta.chart1} stopOpacity="0.42" />
             </linearGradient>
           </defs>
         </g>
       </svg>
 
       {/* Legend (right side) */}
-      <div style={{ minWidth: 120, display: 'flex', alignItems: 'center', height }}> 
-        <div style={{ background: '#fff', padding: 12, borderRadius: 6, border: '1px solid #eee', display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start' }}>
+      <div style={{ minWidth: 120, display: 'flex', alignItems: 'center', height }}>
+        <div className="glass-flat" style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 14, height: 14, background: 'linear-gradient(#666,#ddd)', borderRadius: 3 }} />
-            <div style={{ fontSize: 13, color: '#444' }}>Target</div>
+            <div style={{ width: 14, height: 14, background: `linear-gradient(${paleta.chart4}, ${paleta.chart5})`, borderRadius: 3 }} />
+            <div style={{ fontSize: 13, color: 'var(--ink-soft)' }}>Target</div>
           </div>
           <div style={{ height: 8 }} />
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 14, height: 14, background: '#10b981', borderRadius: 3 }} />
-            <div style={{ fontSize: 13, color: '#444' }}>Actual</div>
+            <div style={{ width: 14, height: 14, background: 'var(--chart-1)', borderRadius: 3 }} />
+            <div style={{ fontSize: 13, color: 'var(--ink-soft)' }}>Actual</div>
           </div>
         </div>
       </div>

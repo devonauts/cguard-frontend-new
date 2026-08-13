@@ -12,6 +12,8 @@
  * Returns a uniform `{ remove() }` so callers manage overlays the same way
  * regardless of which marker type was used.
  */
+import { tokenHex } from "./mapTheme";
+
 export interface MapMarkerHandle {
   remove: () => void;
 }
@@ -38,12 +40,19 @@ export function createMapMarker(map: any, opts: MapMarkerOptions): MapMarkerHand
   // AdvancedMarkerElement requires the map to carry a mapId to render.
   const hasMapId = !!(map && (map.get?.("mapId") || (map as any).mapId));
 
+  // El color por defecto sale del acento configurable, no de un dorado escrito a
+  // mano: la API de Google exige una cadena, así que se lee de la variable en
+  // tiempo de ejecución. Ver `utils/mapTheme.ts`.
+  const relleno = opts.color || tokenHex("--brand");
+  const canto = tokenHex("--glass-solid");
+  const tinta = tokenHex("--brand-ink");
+
   if (AdvancedMarkerElement && PinElement && hasMapId) {
     try {
       const pin = new PinElement({
-        background: opts.color || "#C8860A",
-        borderColor: "#ffffff",
-        glyphColor: "#ffffff",
+        background: relleno,
+        borderColor: canto,
+        glyphColor: tinta,
         scale: 0.9,
       });
       const m = new AdvancedMarkerElement({
@@ -65,9 +74,9 @@ export function createMapMarker(map: any, opts: MapMarkerOptions): MapMarkerHand
     icon: {
       path: g.maps.SymbolPath.CIRCLE,
       scale: opts.scale ?? 7,
-      fillColor: opts.color || "#C8860A",
+      fillColor: relleno,
       fillOpacity: 1,
-      strokeColor: "#ffffff",
+      strokeColor: canto,
       strokeWeight: 2,
     },
   });

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { MapPin, Clock, Shield, CheckCircle, XCircle, Loader2, LogOut, LogIn } from 'lucide-react';
 import { toast } from 'sonner';
 import guardMeService from '@/lib/api/guardMeService';
-import { PageContainer, PageHeader, Section, StatusBadge, FadeIn } from '@/components/kit';
+import { PageContainer, PageHeader, Section, StatusBadge, FadeIn, IconTile } from '@/components/kit';
 
 export default function GuardDashboard() {
   const { t } = useTranslation();
@@ -129,20 +129,20 @@ export default function GuardDashboard() {
 
       {/* Clock Status */}
       <FadeIn>
-        <div className={`cg-card cg-card-hover p-6 text-center ${isClockedIn ? 'ring-2 ring-green-500/40 bg-green-500/5' : ''}`}>
+        <div className={`cg-card cg-card-hover p-6 text-center ${isClockedIn ? 'ring-2 ring-[color:color-mix(in_oklab,var(--ok)_40%,transparent)] bg-[color-mix(in_oklab,var(--ok)_6%,transparent)]' : ''}`}>
           {isClockedIn ? (
             <>
-              <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-green-500/12 text-green-600">
-                <CheckCircle size={30} />
+              <div className="mx-auto mb-3 flex justify-center">
+                <IconTile tone="ok" size="lg"><CheckCircle /></IconTile>
               </div>
-              <p className="text-sm font-semibold text-green-700">Entrada registrada</p>
+              <p className="text-sm font-semibold" style={{ color: 'var(--ok-text)' }}>Entrada registrada</p>
               <p className="text-xs text-muted-foreground mt-1">
                 Desde: {fmtTime(data?.activeClockIn?.punchInTime)}
               </p>
               <button
                 onClick={handleClockOut}
                 disabled={clockingOut}
-                className="mt-5 inline-flex w-full items-center justify-center gap-2 px-6 py-3 bg-red-600 text-white rounded-xl font-semibold text-base shadow-sm hover:bg-red-700 disabled:opacity-50 transition"
+                className="cg-btn-bad cg-focus mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3 text-base font-semibold transition disabled:opacity-50 motion-reduce:transition-none"
               >
                 {clockingOut ? <Loader2 size={18} className="animate-spin" /> : <><LogOut size={18} /> Marcar Salida</>}
               </button>
@@ -173,7 +173,7 @@ export default function GuardDashboard() {
             </>
           )}
           {gpsError && (
-            <p className="text-xs text-red-600 mt-3">{gpsError}</p>
+            <p className="mt-3 text-xs" style={{ color: 'var(--bad-text)' }}>{gpsError}</p>
           )}
         </div>
       </FadeIn>
@@ -181,13 +181,13 @@ export default function GuardDashboard() {
       {/* Current/Next Shift */}
       <Section title={t('guard.dashboard.shifts', 'Turnos')} icon={<Clock />}>
         {currentShift ? (
-          <div className="rounded-xl border border-green-300/60 bg-green-500/10 p-3.5">
+          <div className="rounded-xl border p-3.5" style={{ borderColor: 'color-mix(in oklab, var(--ok) 34%, transparent)', background: 'color-mix(in oklab, var(--ok) 10%, transparent)' }}>
             <StatusBadge tone="green">Turno actual</StatusBadge>
             <p className="mt-2 text-sm font-semibold text-foreground">{currentShift.station?.stationName || '-'}</p>
             <p className="text-xs text-muted-foreground">{fmtTime(currentShift.startTime)} — {fmtTime(currentShift.endTime)}</p>
           </div>
         ) : nextShift ? (
-          <div className="rounded-xl border border-blue-300/60 bg-blue-500/10 p-3.5">
+          <div className="rounded-xl border p-3.5" style={{ borderColor: 'color-mix(in oklab, var(--info) 34%, transparent)', background: 'color-mix(in oklab, var(--info) 10%, transparent)' }}>
             <StatusBadge tone="blue">Próximo turno</StatusBadge>
             <p className="mt-2 text-sm font-semibold text-foreground">{nextShift.station?.stationName || '-'}</p>
             <p className="text-xs text-muted-foreground">{fmtTime(nextShift.startTime)} — {fmtTime(nextShift.endTime)}</p>

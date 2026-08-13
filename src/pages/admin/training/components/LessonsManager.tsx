@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Plus, Pencil, Trash2, Video, FileText, Paperclip, GripVertical, BookOpen } from 'lucide-react';
 import { toast } from 'sonner';
-import { Modal, EmptyState, FadeIn, Stagger } from '@/components/kit';
+import { Modal, EmptyState, FadeIn, Stagger, GlassPanel } from '@/components/kit';
 import {
   trainingCourseService,
   type TrainingLesson,
@@ -146,7 +146,7 @@ export default function LessonsManager({ courseId, lessons, readOnly, onChange }
   return (
     <FadeIn className="space-y-3">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-sm text-muted-foreground">Lecciones ordenadas que verán los vigilantes.</p>
+        <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>Lecciones ordenadas que verán los vigilantes.</p>
         {!readOnly && (
           <Button variant="brand" onClick={openNew}>
             <Plus className="h-4 w-4 mr-1" /> Agregar lección
@@ -171,9 +171,8 @@ export default function LessonsManager({ courseId, lessons, readOnly, onChange }
 
       <Stagger className="space-y-3">
       {sorted.map((l, idx) => (
-        <div key={l.id} className="cg-card cg-card-hover">
-          <div className="py-4 px-5 flex items-start gap-3">
-            <div className="flex flex-col items-center pt-1 text-muted-foreground">
+        <GlassPanel key={l.id} flat hover className="flex items-start gap-3 p-4">
+            <div className="flex flex-col items-center pt-1" style={{ color: 'var(--ink-soft)' }}>
               {!readOnly ? (
                 <div className="flex flex-col">
                   <button className="hover:text-foreground disabled:opacity-30" disabled={idx === 0} onClick={() => move(l, -1)}>▲</button>
@@ -181,13 +180,13 @@ export default function LessonsManager({ courseId, lessons, readOnly, onChange }
                   <button className="hover:text-foreground disabled:opacity-30" disabled={idx === sorted.length - 1} onClick={() => move(l, 1)}>▼</button>
                 </div>
               ) : (
-                <span className="text-sm font-semibold">{idx + 1}</span>
+                <span className="text-sm font-semibold tabular-nums">{idx + 1}</span>
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="font-medium">{idx + 1}. {l.title}</div>
-              {l.description && <div className="text-sm text-muted-foreground mt-0.5">{l.description}</div>}
-              <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-muted-foreground">
+              <div className="font-medium"><span className="tabular-nums">{idx + 1}.</span> {l.title}</div>
+              {l.description && <div className="mt-0.5 text-sm" style={{ color: 'var(--ink-soft)' }}>{l.description}</div>}
+              <div className="mt-2 flex flex-wrap items-center gap-3 text-xs tabular-nums" style={{ color: 'var(--ink-soft)' }}>
                 {l.videoUrl && <span className="inline-flex items-center gap-1"><Video className="h-3.5 w-3.5" /> Video</span>}
                 {l.richContent && <span className="inline-flex items-center gap-1"><FileText className="h-3.5 w-3.5" /> Texto</span>}
                 {Array.isArray(l.resources) && l.resources.length > 0 && (
@@ -198,12 +197,11 @@ export default function LessonsManager({ courseId, lessons, readOnly, onChange }
             </div>
             {!readOnly && (
               <div className="flex items-center gap-1">
-                <button className="p-1.5 rounded-lg hover:bg-muted" onClick={() => openEdit(l)}><Pencil className="h-4 w-4" /></button>
-                <button className="p-1.5 rounded-lg hover:bg-muted text-red-600" onClick={() => setDeleteId(l.id)}><Trash2 className="h-4 w-4" /></button>
+                <Button variant="ghost" size="icon-sm" aria-label="Editar lección" onClick={() => openEdit(l)}><Pencil /></Button>
+                <Button variant="ghost" size="icon-sm" aria-label="Eliminar lección" style={{ color: 'var(--bad-text)' }} onClick={() => setDeleteId(l.id)}><Trash2 /></Button>
               </div>
             )}
-          </div>
-        </div>
+        </GlassPanel>
       ))}
       </Stagger>
 
@@ -252,7 +250,7 @@ export default function LessonsManager({ courseId, lessons, readOnly, onChange }
                 <div key={i} className="flex items-center gap-2">
                   <Input placeholder="Nombre" value={r.name} onChange={(e) => updateResource(i, { name: e.target.value })} />
                   <Input placeholder="URL" value={r.url} onChange={(e) => updateResource(i, { url: e.target.value })} />
-                  <button className="p-1.5 text-red-600" onClick={() => removeResource(i)}><Trash2 className="h-4 w-4" /></button>
+                  <button className="p-1.5" style={{ color: 'var(--bad-text)' }} onClick={() => removeResource(i)}><Trash2 className="h-4 w-4" /></button>
                 </div>
               ))}
             </div>
@@ -267,7 +265,7 @@ export default function LessonsManager({ courseId, lessons, readOnly, onChange }
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction className="bg-red-600 hover:bg-red-700" onClick={handleDelete}>Eliminar</AlertDialogAction>
+            <AlertDialogAction className="cg-btn-bad" onClick={handleDelete}>Eliminar</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

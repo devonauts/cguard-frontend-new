@@ -8,15 +8,16 @@ import AppLayout from "@/layouts/app-layout";
 import SettingsLayout from "@/layouts/SettingsLayout";
 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { ShieldCheck, Search } from "lucide-react";
+import { ShieldCheck, Search, Plus, Lock } from "lucide-react";
 
 import UserRolesTable, { UserRoleRow } from "./UserRolesTable";
 import UserRoleDialog, { UserRoleDialogValues } from "./UserRoleDialog";
 import PermissionsEditor from "./PermissionsEditor";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { PermissionedButton } from "@/components/permissions/Permissioned";
 import { ADMIN_FLOOR_PERMISSIONS } from "@/config/permissions";
-import { PageContainer, PageHeader, Section } from "@/components/kit";
+import { PageContainer, PageHeader, StatusBadge } from "@/components/kit";
 
 // Roles whose permissions are NEVER tenant-editable (global / external).
 const FULLY_LOCKED_ROLE_SLUGS = ['superadmin', 'customer'];
@@ -331,8 +332,18 @@ export default function UserRolesPage() {
             icon={<ShieldCheck />}
             title="Roles de Usuario"
             subtitle="Define roles y administra los permisos de acceso para cada uno."
+            badges={
+              rows.length > 0 ? (
+                <StatusBadge tone="neutral">{rows.length} {rows.length === 1 ? "rol" : "roles"}</StatusBadge>
+              ) : undefined
+            }
+            actions={
+              <PermissionedButton permission="settingsEdit" variant="brand" onClick={onNew}>
+                <Plus className="mr-2 h-4 w-4" />
+                Nuevo rol
+              </PermissionedButton>
+            }
           />
-          <Section>
         <UserRolesTable
           rows={paged}
           checked={checked}
@@ -340,7 +351,6 @@ export default function UserRolesPage() {
           onCheckRow={onCheckRow}
           query={query}
           onQueryChange={setQuery}
-          onNew={onNew}
           onToggleExpand={toggleExpand}
           onEdit={onEdit}
           onDelete={(r) => {
@@ -354,13 +364,21 @@ export default function UserRolesPage() {
             expandedRoleId ? (
               <div>
                 <div className="relative mb-3">
-                  <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input className="pl-9" placeholder="Buscar permisos..." value={permQuery} onChange={(e) => setPermQuery(e.target.value)} />
+                  <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: 'var(--ink-faint)' }} />
+                  <Input className="pl-9" placeholder="Buscar permisos…" value={permQuery} onChange={(e) => setPermQuery(e.target.value)} />
                 </div>
                 <PermissionsEditor value={expandedRolePerms} onChange={setExpandedRolePerms} query={permQuery} readOnly={expandedRoleIsLocked} lockedPermissions={expandedLockedPerms} />
                 {expandedRoleIsLocked ? (
-                  <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-700 dark:text-amber-400">
-                    Este rol está bloqueado. No se pueden modificar los permisos predeterminados.
+                  <div
+                    className="mt-3 flex items-start gap-2 rounded-xl border p-3 text-sm"
+                    style={{
+                      borderColor: 'color-mix(in oklab, var(--warn) 30%, transparent)',
+                      background: 'color-mix(in oklab, var(--warn) 12%, transparent)',
+                      color: 'var(--warn-text)',
+                    }}
+                  >
+                    <Lock className="mt-0.5 h-4 w-4 shrink-0" />
+                    <span>Este rol está bloqueado. No se pueden modificar los permisos predeterminados.</span>
                   </div>
                 ) : (
                   <div className="flex gap-2 justify-end mt-3">
@@ -380,7 +398,6 @@ export default function UserRolesPage() {
           onPageSize={setPageSize}
           pageLabel={pageLabel}
         />
-          </Section>
 
         <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
           <AlertDialogContent>
@@ -392,7 +409,7 @@ export default function UserRolesPage() {
             </AlertDialogDescription>
             <AlertDialogFooter>
               <AlertDialogCancel onClick={() => { setDeleteDialogOpen(false); setPendingDeleteIds([]); }}>Cancelar</AlertDialogCancel>
-              <AlertDialogAction className="bg-red-600 hover:bg-red-700" onClick={handleConfirmDelete}>
+              <AlertDialogAction className="cg-btn-bad" onClick={handleConfirmDelete}>
                 Eliminar
               </AlertDialogAction>
             </AlertDialogFooter>

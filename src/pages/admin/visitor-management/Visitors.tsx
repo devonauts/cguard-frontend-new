@@ -43,8 +43,21 @@ import {
     Users,
     Plus,
     Trash2,
+    LogIn,
+    LogOut,
 } from "lucide-react";
-import { PageContainer, PageHeader, Section, EmptyState, Modal } from "@/components/kit";
+import {
+    PageContainer,
+    PageHeader,
+    Section,
+    EmptyState,
+    Modal,
+    Toolbar,
+    StatCard,
+    StatusBadge,
+    SkeletonCards,
+    Field,
+} from "@/components/kit";
 import visitorLogService from "@/lib/api/visitorLogService";
 import api from '@/lib/api';
 import { useTranslation } from 'react-i18next';
@@ -148,6 +161,20 @@ type VisitorFilters = {
     placeType: string;
     tag: string;
     archived: boolean;
+};
+
+// Hora de salida: el registro la guarda en cualquiera de estos tres campos.
+const salidaDe = (rec: VisitLogRow | null | undefined) =>
+    rec?.exitTime || rec?.exitAt || rec?.leaveTime || null;
+
+// Sin hora de salida el visitante sigue dentro. Pasadas 24 h desde la entrada la
+// visita deja de leerse como «en curso» y pasa a ser una salida sin registrar.
+const VISITA_VENCIDA_MS = 24 * 60 * 60 * 1000;
+const visitaVencida = (rec: VisitLogRow) => {
+    if (!rec.visitDate) return false;
+    const d = new Date(rec.visitDate);
+    if (isNaN(d.getTime())) return false;
+    return Date.now() - d.getTime() > VISITA_VENCIDA_MS;
 };
 
 type NewVisitor = {
@@ -514,8 +541,8 @@ export default function Visitors() {
                 <title>${escapeHtml(opts.title)}</title>
                 <style>
                     table{border-collapse:collapse;width:100%}
-                    th,td{border:1px solid #ccc;padding:6px;text-align:left}
-                    th{background:#f5f5f5}
+                    th,td{border:1px solid rgba(0,0,0,0.22);padding:6px;text-align:left}
+                    th{background:rgba(0,0,0,0.05)}
                 </style>
             </head>
             <body>
@@ -630,6 +657,9 @@ export default function Visitors() {
     );
     const logs: VisitLogRow[] = logsData?.rows || [];
     const logsCount = logsData?.count || 0;
+    // Recuento sobre los registros mostrados: quién sigue dentro y quién ya salió.
+    const dentro = logs.filter((l) => !salidaDe(l)).length;
+    const conSalida = logs.length - dentro;
 
     // when filter client changes, load postSites for that client
     useEffect(() => {
@@ -917,15 +947,38 @@ export default function Visitors() {
                     }
                 />
 
-                <Section
-                    title={t('visitantes.bitacoras') || 'Bitácoras'}
-                    icon={<Users />}
-                    action={
-                    <div className="flex flex-wrap items-center gap-2">
-                        <div className="relative">
-                            <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                <div className="grid gap-4 sm:grid-cols-3">
+                    <StatCard
+                        label={t('visitantes.bitacoras') || 'Bitácoras'}
+                        value={logsCount}
+                        icon={<Users />}
+                        accent="brand"
+                        hint="Con los filtros aplicados"
+                    />
+                    <StatCard
+                        label="Dentro de las instalaciones"
+                        value={dentro}
+                        icon={<LogIn />}
+                        accent="ok"
+                        hint="De los registros mostrados"
+                    />
+                    <StatCard
+                        label="Con salida registrada"
+                        value={conSalida}
+                        icon={<LogOut />}
+                        accent="neutral"
+                        hint="De los registros mostrados"
+                    />
+                </div>
+
+                <Toolbar>
+                        <div className="relative min-w-0 flex-1 sm:max-w-xs">
+                            <Search
+                                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
+                                style={{ color: 'var(--ink-faint)' }}
+                            />
                             <Input
-                                className="w-64 pl-9"
+                                className="w-full pl-9"
                                 placeholder={t('visitantes.searchVisitor') || 'Buscar visitante'}
                                 onChange={(e) => { setLogsSearch(e.target.value); setLogsOffset(0); }}
                             />
@@ -936,7 +989,7 @@ export default function Visitors() {
                                 <Button
                                     type="button"
                                     variant="outline"
-                                    className="border-primary/30 text-primary"
+                                    style={{ color: 'var(--brand-text)', borderColor: 'var(--brand-line)' }}
                                 >
                                     <FilterIcon className="mr-2 h-4 w-4" />
                                     {t('visitantes.filters') || 'Filtros'}
@@ -1064,7 +1117,7 @@ export default function Visitors() {
                                 <Button
                                     variant="outline"
                                     size="icon"
-                                    className="h-9 w-9 rounded-full border-slate-200 text-foreground/70"
+                                    className="rounded-full"
                                     type="button"
                                 >
                                     <MoreVertical className="h-4 w-4" />
@@ -1090,57 +1143,81 @@ export default function Visitors() {
                                 </DropdownMenuItem>*/}
                             </DropdownMenuContent>
                         </DropdownMenu>
-                    </div>
-                    }
-                >
+                </Toolbar>
+
+                <Section title={t('visitantes.bitacoras') || 'Bitácoras'} icon={<Users />}>
                 <div className="overflow-hidden rounded-xl border">
                     {/* Desktop table (hidden on small screens) */}
-                    <div className="bg-card border rounded p-4 md:block hidden">
+                    <div className="md:block hidden">
                         <div className="overflow-x-auto">
                             <table className="min-w-full divide-y divide-border">
-                                <thead className="bg-muted/30 text-left text-sm text-foreground/70">
+                                <thead className="bg-muted/30 text-left text-sm" style={{ color: 'var(--ink-soft)' }}>
                                     <tr>
-                                        <th className="px-4 py-2">
-                                            <input type="checkbox" onChange={(e) => selectAllLogs(e.target.checked)} checked={logs.length > 0 && Object.keys(selectedLogs).length > 0 && logs.every(l => selectedLogs[l.id])} />
+                                        <th className="cg-eyebrow px-2 py-2">
+                                            <Checkbox
+                                                checked={logs.length > 0 && Object.keys(selectedLogs).length > 0 && logs.every(l => selectedLogs[l.id])}
+                                                onCheckedChange={(c) => selectAllLogs(Boolean(c))}
+                                            />
                                         </th>
-                                        <th className="px-4 py-2">{t('visitantes.logTable.firstName') || 'Nombre'}</th>
-                                        <th className="px-4 py-2">{t('visitantes.logTable.lastName') || 'Apellidos'}</th>
-                                        <th className="px-4 py-2">{t('visitantes.logTable.idNumber') || 'ID'}</th>
-                                        <th className="px-4 py-2">{t('visitantes.logTable.client') || 'Cliente'}</th>
-                                        <th className="px-4 py-2">{t('visitantes.logTable.postSite') || 'Post Site'}</th>
-                                        <th className="px-4 py-2">{t('visitantes.logTable.station') || 'Estación'}</th>
-                                        <th className="px-4 py-2">{t('visitantes.logTable.date') || 'Fecha'}</th>
-                                        <th className="px-4 py-2 text-right" />
+                                        <th className="cg-eyebrow px-2 py-2">{t('visitantes.logTable.firstName') || 'Nombre'}</th>
+                                        <th className="cg-eyebrow px-2 py-2">{t('visitantes.logTable.lastName') || 'Apellidos'}</th>
+                                        <th className="cg-eyebrow px-2 py-2">{t('visitantes.logTable.idNumber') || 'ID'}</th>
+                                        <th className="cg-eyebrow px-2 py-2">{t('visitantes.logTable.client') || 'Cliente'}</th>
+                                        <th className="cg-eyebrow px-2 py-2">{t('visitantes.logTable.postSite') || 'Puesto de seguridad'}</th>
+                                        <th className="cg-eyebrow px-2 py-2">{t('visitantes.logTable.station') || 'Estación'}</th>
+                                        <th className="cg-eyebrow px-2 py-2">{t('visitantes.logTable.date') || 'Fecha'}</th>
+                                        <th className="cg-eyebrow px-2 py-2">Estado</th>
+                                        <th className="cg-eyebrow px-2 py-2 text-right" />
                                     </tr>
                                 </thead>
-                                <tbody className="bg-card divide-y divide-border">
+                                <tbody className="divide-y divide-border">
                                     {logsLoading ? (
                                         <tr>
-                                            <td colSpan={12} className="p-6 text-center">{t('visitantes.loading') || 'Cargando...'}</td>
+                                            <td colSpan={10} className="p-4">
+                                                <SkeletonCards count={4} />
+                                            </td>
                                         </tr>
                                     ) : logs.length === 0 ? (
                                         <tr>
-                                            <td colSpan={12} className="p-4">
+                                            <td colSpan={10} className="p-4">
                                                 <EmptyState
                                                     icon={<Users />}
                                                     title={t('visitantes.noLogs') || 'No se encontraron registros de bitácoras'}
+                                                    description="Ajusta la búsqueda o registra un visitante nuevo."
                                                     className="border-0"
                                                 />
                                             </td>
                                         </tr>
                                     ) : (
                                         logs.map((r) => (
-                                            <tr key={r.id} className="text-sm cursor-pointer hover:bg-muted/50" onClick={() => viewLog(r.id)}>
-                                                <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                                                    <input type="checkbox" checked={!!selectedLogs[r.id]} onChange={() => toggleSelectLog(r.id)} />
+                                            <tr key={r.id} className="text-sm cursor-pointer hover:bg-muted/40" onClick={() => viewLog(r.id)}>
+                                                <td className="px-2 py-2.5" onClick={(e) => e.stopPropagation()}>
+                                                    <Checkbox
+                                                        checked={!!selectedLogs[r.id]}
+                                                        onCheckedChange={() => toggleSelectLog(r.id)}
+                                                    />
                                                 </td>
-                                                <td className="px-4 py-3">{r.firstName}</td>
-                                                <td className="px-4 py-3">{r.lastName}</td>
-                                                <td className="px-4 py-3">{r.idNumber}</td>
-                                                <td className="px-4 py-3">{getClientLabelFromRecord(r)}</td>
-                                                <td className="px-4 py-3">{r.postSite?.companyName || r.postSite?.name || r.postSiteName || '-'}</td>
-                                                <td className="px-4 py-3">{r.station?.stationName || r.station?.name || r.stationName || '-'}</td>
-                                                <td className="px-4 py-3">{formatDateTime(r.visitDate)}</td>
+                                                <td className="px-2 py-2.5 font-medium">{r.firstName}</td>
+                                                <td className="px-2 py-2.5">{r.lastName}</td>
+                                                <td className="px-2 py-2.5">{r.idNumber}</td>
+                                                <td className="px-2 py-2.5">{getClientLabelFromRecord(r)}</td>
+                                                <td className="px-2 py-2.5">{r.postSite?.companyName || r.postSite?.name || r.postSiteName || '-'}</td>
+                                                <td className="px-2 py-2.5">{r.station?.stationName || r.station?.name || r.stationName || '-'}</td>
+                                                <td className="px-2 py-2.5">{formatDateTime(r.visitDate)}</td>
+                                                <td className="px-2 py-2.5">
+                                                    {salidaDe(r) ? (
+                                                        <StatusBadge tone="neutral">
+                                                            {t('visitantes.logTable.exitTime') || 'Hora de salida'}: {formatDateTime(salidaDe(r))}
+                                                        </StatusBadge>
+                                                    ) : visitaVencida(r) ? (
+                                                        <StatusBadge tone="warn">Sin salida registrada</StatusBadge>
+                                                    ) : (
+                                                        <StatusBadge tone="ok" dot={false}>
+                                                            <span className="cc-dot" style={{ background: 'var(--ok)' }} />
+                                                            En curso
+                                                        </StatusBadge>
+                                                    )}
+                                                </td>
                                                 <td className="px-2 py-3 text-right" onClick={(e) => e.stopPropagation()}>
                                                     <DropdownMenu>
                                                         <DropdownMenuTrigger asChild>
@@ -1166,24 +1243,44 @@ export default function Visitors() {
                     {/* Mobile list (cards) visible on small screens */}
                     <div className="md:hidden p-2 space-y-3">
                         {logsLoading ? (
-                            <div className="p-4 bg-card rounded text-center">{t('visitantes.loading') || 'Cargando...'}</div>
+                            <SkeletonCards count={3} className="sm:grid-cols-1" />
                         ) : logs.length === 0 ? (
-                            <div className="p-4 bg-card rounded text-center text-muted-foreground">{t('visitantes.noLogs') || 'No se encontraron registros de bitácoras'}</div>
+                            <EmptyState
+                                icon={<Users />}
+                                title={t('visitantes.noLogs') || 'No se encontraron registros de bitácoras'}
+                                description="Ajusta la búsqueda o registra un visitante nuevo."
+                            />
                         ) : (
                             logs.map((r) => (
-                                <div key={r.id} className="bg-card rounded-lg border p-3 flex flex-col gap-2 cursor-pointer" onClick={() => viewLog(r.id)}>
-                                    <div className="flex items-center justify-between">
-                                        <div className="text-base font-medium">{r.firstName} {r.lastName}</div>
-                                        <div className="text-sm text-muted-foreground">{formatDateTime(r.visitDate)}</div>
+                                <div key={r.id} className="glass-flat flex cursor-pointer flex-col gap-2 p-3" onClick={() => viewLog(r.id)}>
+                                    <div className="flex items-center justify-between gap-2">
+                                        <div className="min-w-0 truncate text-base font-semibold">{r.firstName} {r.lastName}</div>
+                                        <div className="shrink-0 text-xs" style={{ color: 'var(--ink-faint)' }}>{formatDateTime(r.visitDate)}</div>
                                     </div>
-                                    <div className="text-sm text-foreground/70">{t('visitantes.logTable.idNumber') || 'ID'}: {r.idNumber || '-'}</div>
-                                    <div className="text-sm text-foreground/70">{t('visitantes.logTable.client') || 'Cliente'}: {getClientLabelFromRecord(r)}</div>
-                                    <div className="text-sm text-foreground/70">{t('visitantes.logTable.postSite') || 'Post Site'}: {r.postSite?.companyName || r.postSite?.name || r.postSiteName || '-'}</div>
-                                    <div className="text-sm text-foreground/70">{t('visitantes.logTable.station') || 'Estación'}: {r.station?.stationName || r.station?.name || r.stationName || '-'}</div>
-                                    <div className="flex items-center justify-end mt-2 space-x-2" onClick={(e) => e.stopPropagation()}>
+                                    <div>
+                                        {salidaDe(r) ? (
+                                            <StatusBadge tone="neutral">
+                                                {t('visitantes.logTable.exitTime') || 'Hora de salida'}: {formatDateTime(salidaDe(r))}
+                                            </StatusBadge>
+                                        ) : visitaVencida(r) ? (
+                                            <StatusBadge tone="warn">Sin salida registrada</StatusBadge>
+                                        ) : (
+                                            <StatusBadge tone="ok" dot={false}>
+                                                <span className="cc-dot" style={{ background: 'var(--ok)' }} />
+                                                En curso
+                                            </StatusBadge>
+                                        )}
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <Field label={t('visitantes.logTable.idNumber') || 'ID'} value={r.idNumber || '-'} />
+                                        <Field label={t('visitantes.logTable.client') || 'Cliente'} value={getClientLabelFromRecord(r)} />
+                                        <Field label={t('visitantes.logTable.postSite') || 'Puesto de seguridad'} value={r.postSite?.companyName || r.postSite?.name || r.postSiteName || '-'} />
+                                        <Field label={t('visitantes.logTable.station') || 'Estación'} value={r.station?.stationName || r.station?.name || r.stationName || '-'} />
+                                    </div>
+                                    <div className="mt-2 flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
                                         <Button size="sm" variant="ghost" onClick={() => viewLog(r.id)}>{t('actions.viewDetails') || 'Ver'}</Button>
                                         <Button size="sm" variant="ghost" onClick={() => markExit(r.id)} disabled={!!r.exitTime}>{t('visitantes.markExit') || 'Salida'}</Button>
-                                        <Button size="sm" className="bg-red-600 text-white" onClick={() => deleteLog(r.id)}>{t('actions.delete') || 'Eliminar'}</Button>
+                                        <Button size="sm" variant="destructive" onClick={() => deleteLog(r.id)}>{t('actions.delete') || 'Eliminar'}</Button>
                                     </div>
                                 </div>
                             ))
@@ -1192,11 +1289,11 @@ export default function Visitors() {
 
                 </div>
 
-                <div className="flex items-center justify-between mt-4">
+                <div className="flex flex-wrap items-center justify-between gap-3 mt-4">
                     <div className="flex items-center gap-3">
-                        <span className="text-sm text-foreground/70">{t('clients.pagination.itemsPerPage') || 'Elementos por página'}</span>
+                        <span className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t('clients.pagination.itemsPerPage') || 'Elementos por página'}</span>
                         <select
-                            className="rounded border px-2 py-1 text-sm"
+                            className="cg-input cg-focus px-2 py-1 text-sm"
                             value={logsLimit}
                             onChange={(e) => { setLogsLimit(Number(e.target.value)); setLogsOffset(0); }}
                         >
@@ -1208,7 +1305,7 @@ export default function Visitors() {
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <div className="text-sm text-foreground/70">
+                        <div className="text-sm text-muted-foreground">
                             {logsCount === 0
                                 ? `0 - 0 de 0`
                                 : `${Math.min(logsOffset + 1, logsCount)} - ${Math.min(logsOffset + logsLimit, logsCount)} de ${logsCount}`}
@@ -1224,7 +1321,7 @@ export default function Visitors() {
                                 ◀
                             </Button>
 
-                            <div className="text-sm text-foreground/70">
+                            <div className="text-sm text-muted-foreground">
                                 {Math.floor(logsOffset / logsLimit) + 1} / {Math.max(1, Math.ceil(logsCount / logsLimit))}
                             </div>
 
@@ -1256,7 +1353,7 @@ export default function Visitors() {
                     </>
                 }
             >
-                <p className="text-sm text-foreground/70">{t('visitantes.confirmDeleteMessage') || `¿Estás seguro de que deseas eliminar ${confirmDeleteIds.length} registro(s)? Esta acción no se puede deshacer.`}</p>
+                <p className="text-sm text-muted-foreground">{t('visitantes.confirmDeleteMessage') || `¿Estás seguro de que deseas eliminar ${confirmDeleteIds.length} registro(s)? Esta acción no se puede deshacer.`}</p>
             </Modal>
     <>
         <Sheet open={viewLogOpen} onOpenChange={setViewLogOpen}>
@@ -1266,54 +1363,42 @@ export default function Visitors() {
                 </SheetHeader>
                 <div className="mt-4 space-y-4">
                     {!selectedLog ? (
-                        <div className="text-muted-foreground">{t('visitantes.loading') || 'Cargando...'}</div>
+                        <SkeletonCards count={2} className="sm:grid-cols-1" />
                     ) : (
-                        <dl className="grid grid-cols-1 gap-3">
+                        <>
                             <div>
-                                <dt className="text-sm text-foreground/70">{t('visitantes.logTable.date') || 'Fecha'}</dt>
-                                <dd className="text-base text-foreground">{formatDateTime(selectedLog.visitDate)}</dd>
+                                {salidaDe(selectedLog) ? (
+                                    <StatusBadge tone="neutral">
+                                        {t('visitantes.logTable.exitTime') || 'Hora de salida'}: {formatDateTime(salidaDe(selectedLog))}
+                                    </StatusBadge>
+                                ) : visitaVencida(selectedLog) ? (
+                                    <StatusBadge tone="warn">Sin salida registrada</StatusBadge>
+                                ) : (
+                                    <StatusBadge tone="ok" dot={false}>
+                                        <span className="cc-dot" style={{ background: 'var(--ok)' }} />
+                                        Dentro de las instalaciones
+                                    </StatusBadge>
+                                )}
+                            </div>
+                            <div className="glass-sunken grid grid-cols-2 gap-4 p-4">
+                                <Field label={t('visitantes.logTable.date') || 'Fecha'} value={formatDateTime(selectedLog.visitDate)} />
+                                <Field label={t('visitantes.logTable.exitTime') || 'Hora de salida'} value={formatDateTime(salidaDe(selectedLog))} />
+                                <Field label={t('visitantes.logTable.firstName') || 'Nombre'} value={selectedLog.firstName || '-'} />
+                                <Field label={t('visitantes.logTable.lastName') || 'Apellidos'} value={selectedLog.lastName || '-'} />
+                                <Field label={t('visitantes.logTable.idNumber') || 'ID'} value={selectedLog.idNumber || '-'} />
+                                <Field label={t('visitantes.logTable.numPeople') || 'Número de personas'} value={selectedLog.numPeople || selectedLog.peopleCount || selectedLog.numberPeople || '-'} />
+                                <Field label={t('visitantes.logTable.client') || 'Cliente'} value={getClientLabelFromRecord(selectedLog)} />
+                                <Field label={t('visitantes.logTable.postSite') || 'Puesto de seguridad'} value={getPostSiteLabelFromRecord(selectedLog)} />
+                                <Field label={t('visitantes.logTable.station') || 'Estación'} value={selectedLog.station?.stationName || selectedLog.station?.name || selectedLog.stationName || '-'} />
+                                <Field label={t('visitantes.logTable.placeType') || 'Tipo de lugar'} value={selectedLog.placeType || '-'} />
                             </div>
                             <div>
-                                <dt className="text-sm text-foreground/70">{t('visitantes.logTable.lastName') || 'Apellidos'}</dt>
-                                <dd className="text-base text-foreground">{selectedLog.lastName || '-'}</dd>
+                                <div className="cg-eyebrow mb-1">{t('visitantes.logTable.reason') || 'Motivo'}</div>
+                                <p className="whitespace-pre-line text-sm" style={{ color: 'var(--ink)' }}>
+                                    {selectedLog.reason || selectedLog.visitReason || '-'}
+                                </p>
                             </div>
-                            <div>
-                                <dt className="text-sm text-foreground/70">{t('visitantes.logTable.firstName') || 'Nombre'}</dt>
-                                <dd className="text-base text-foreground">{selectedLog.firstName || '-'}</dd>
-                            </div>
-                            <div>
-                                <dt className="text-sm text-foreground/70">{t('visitantes.logTable.idNumber') || 'ID'}</dt>
-                                <dd className="text-base text-foreground">{selectedLog.idNumber || '-'}</dd>
-                            </div>
-                            <div>
-                                <dt className="text-sm text-foreground/70">{t('visitantes.logTable.reason') || 'Motivo'}</dt>
-                                <dd className="text-base text-foreground">{selectedLog.reason || selectedLog.visitReason || '-'}</dd>
-                            </div>
-                            <div>
-                                <dt className="text-sm text-foreground/70">{t('visitantes.logTable.exitTime') || 'Hora de salida'}</dt>
-                                <dd className="text-base text-foreground">{formatDateTime(selectedLog.exitTime || selectedLog.exitAt || selectedLog.leaveTime)}</dd>
-                            </div>
-                            <div>
-                                <dt className="text-sm text-foreground/70">{t('visitantes.logTable.numPeople') || 'Número de personas'}</dt>
-                                <dd className="text-base text-foreground">{selectedLog.numPeople || selectedLog.peopleCount || selectedLog.numberPeople || '-'}</dd>
-                            </div>
-                            <div>
-                                <dt className="text-sm text-foreground/70">{t('visitantes.logTable.client') || 'Cliente'}</dt>
-                                <dd className="text-base text-foreground">{getClientLabelFromRecord(selectedLog)}</dd>
-                            </div>
-                            <div>
-                                <dt className="text-sm text-foreground/70">{t('visitantes.logTable.postSite') || 'Post Site'}</dt>
-                                <dd className="text-base text-foreground">{getPostSiteLabelFromRecord(selectedLog)}</dd>
-                            </div>
-                            <div>
-                                <dt className="text-sm text-foreground/70">{t('visitantes.logTable.station') || 'Estación'}</dt>
-                                <dd className="text-base text-foreground">{selectedLog.station?.stationName || selectedLog.station?.name || selectedLog.stationName || '-'}</dd>
-                            </div>
-                            <div>
-                                <dt className="text-sm text-foreground/70">{t('visitantes.logTable.placeType') || 'Tipo de lugar'}</dt>
-                                <dd className="text-base text-foreground">{selectedLog.placeType || '-'}</dd>
-                            </div>
-                        </dl>
+                        </>
                     )}
                 </div>
             </SheetContent>
@@ -1330,7 +1415,7 @@ export default function Visitors() {
 
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div className="space-y-1.5">
-                            <Label>{t('visitantes.client') || 'Cliente'}<span className="text-red-600">*</span></Label>
+                            <Label>{t('visitantes.client') || 'Cliente'}<span style={{ color: 'var(--bad-text)' }}>*</span></Label>
                             <Select
                                 value={newVisitor.client}
                                 onValueChange={(v) =>
@@ -1350,7 +1435,7 @@ export default function Visitors() {
                         </div>
 
                         <div className="space-y-1.5">
-                            <Label>{t('visitantes.site') || 'Puesto de seguridad'}<span className="text-red-600">*</span></Label>
+                            <Label>{t('visitantes.site') || 'Puesto de seguridad'}<span style={{ color: 'var(--bad-text)' }}>*</span></Label>
                             <Select
                                 value={newVisitor.site}
                                 onValueChange={(v) =>
@@ -1389,7 +1474,7 @@ export default function Visitors() {
                         </div>
 
                         <div className="space-y-1.5">
-                            <Label>{t('visitantes.guard') || 'Vigilante'}<span className="text-red-600">*</span></Label>
+                            <Label>{t('visitantes.guard') || 'Vigilante'}<span style={{ color: 'var(--bad-text)' }}>*</span></Label>
                             <Select
                                 value={newVisitor.guard}
                                 onValueChange={(v) =>
@@ -1435,7 +1520,7 @@ export default function Visitors() {
                         </div>
 
                         <div className="space-y-1.5">
-                            <Label>{t('visitantes.form.name') || 'Nombre'}<span className="text-red-600">*</span></Label>
+                            <Label>{t('visitantes.form.name') || 'Nombre'}<span style={{ color: 'var(--bad-text)' }}>*</span></Label>
                             <Input
                                 value={newVisitor.firstName}
                                 onChange={(e) =>
@@ -1447,7 +1532,7 @@ export default function Visitors() {
                         </div>
 
                         <div className="space-y-1.5">
-                            <Label>{t('visitantes.form.lastName') || 'Apellidos'}<span className="text-red-600">*</span></Label>
+                            <Label>{t('visitantes.form.lastName') || 'Apellidos'}<span style={{ color: 'var(--bad-text)' }}>*</span></Label>
                             <Input
                                 value={newVisitor.lastName}
                                 onChange={(e) =>
@@ -1459,7 +1544,7 @@ export default function Visitors() {
                         </div>
 
                         <div className="space-y-1.5">
-                            <Label>{t('visitantes.form.idNumber') || 'Número de identificación'}<span className="text-red-600">*</span></Label>
+                            <Label>{t('visitantes.form.idNumber') || 'Número de identificación'}<span style={{ color: 'var(--bad-text)' }}>*</span></Label>
                             <Input
                                 value={newVisitor.idNumber}
                                 onChange={(e) =>
@@ -1476,7 +1561,7 @@ export default function Visitors() {
                         </div>
 
                         <div className="space-y-1.5">
-                            <Label>{t('visitantes.form.mobile') || 'Número de Móvil'}<span className="text-red-600">*</span></Label>
+                            <Label>{t('visitantes.form.mobile') || 'Número de Móvil'}<span style={{ color: 'var(--bad-text)' }}>*</span></Label>
                             <Input
                                 value={newVisitor.mobile}
                                 onChange={(e) =>
@@ -1488,7 +1573,7 @@ export default function Visitors() {
                         </div>
 
                         <div className="space-y-1.5">
-                            <Label>{t('visitantes.form.numPeople') || 'Número de personas'}<span className="text-red-600">*</span></Label>
+                            <Label>{t('visitantes.form.numPeople') || 'Número de personas'}<span style={{ color: 'var(--bad-text)' }}>*</span></Label>
                             <Input
                                 type="number"
                                 min={1}
@@ -1504,7 +1589,7 @@ export default function Visitors() {
                         <div className="space-y-1.5 md:col-span-2">
                             <Label>{t('visitantes.form.reason') || 'Motivo'}</Label>
                             <textarea
-                                className="w-full rounded border px-3 py-2"
+                                className="cg-input cg-focus w-full px-3 py-2 text-sm"
                                 value={newVisitor.reason ?? ''}
                                 onChange={(e) =>
                                     setNewVisitor((s) => ({ ...s, reason: e.target.value }))

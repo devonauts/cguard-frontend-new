@@ -9,6 +9,9 @@ import { DayButton, DayPicker, getDefaultClassNames } from "react-day-picker"
 import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
 
+/* El calendario NO trae fondo propio: vive dentro de un popover o una tarjeta de
+   cristal y tiene que dejar ver el desenfoque de debajo. El día elegido es el
+   único relleno del acento; el rango se marca con el lavado. */
 function Calendar({
   className,
   classNames,
@@ -27,7 +30,7 @@ function Calendar({
     <DayPicker
       showOutsideDays={showOutsideDays}
       className={cn(
-        "bg-background group/calendar p-2 [--cell-size:1.5rem] [[data-slot=card-content]_&]:bg-transparent [[data-slot=popover-content]_&]:bg-transparent",
+        "group/calendar bg-transparent p-2 [--cell-size:1.75rem]",
         String.raw`rtl:**:[.rdp-button\_next>svg]:rotate-180`,
         String.raw`rtl:**:[.rdp-button\_previous>svg]:rotate-180`,
         className
@@ -60,32 +63,32 @@ function Calendar({
           defaultClassNames.button_next
         ),
         month_caption: cn(
-          "flex h-[--cell-size] w-full items-center justify-center px-[--cell-size] mb-1",
+          "mb-1 flex h-[--cell-size] w-full items-center justify-center px-[--cell-size]",
           defaultClassNames.month_caption
         ),
         dropdowns: cn(
-          "flex h-[--cell-size] w-full items-center justify-center gap-1 text-sm font-medium",
+          "flex h-[--cell-size] w-full items-center justify-center gap-1 text-sm font-semibold",
           defaultClassNames.dropdowns
         ),
         dropdown_root: cn(
-          "has-focus:border-ring border-input shadow-xs has-focus:ring-ring/50 has-focus:ring-[3px] relative rounded-md border",
+          "cg-input relative px-1",
           defaultClassNames.dropdown_root
         ),
         dropdown: cn(
-          "bg-popover absolute inset-0 opacity-0",
+          "absolute inset-0 bg-transparent opacity-0",
           defaultClassNames.dropdown
         ),
         caption_label: cn(
-          "select-none font-medium",
+          "select-none font-semibold text-[color:var(--ink)]",
           captionLayout === "label"
             ? "text-sm"
-            : "[&>svg]:text-muted-foreground flex h-8 items-center gap-1 rounded-md pl-2 pr-1 text-sm [&>svg]:size-3.5",
+            : "flex h-8 items-center gap-1 rounded-[var(--r-sm)] pl-2 pr-1 text-sm [&>svg]:size-3.5 [&>svg]:text-[color:var(--ink-faint)]",
           defaultClassNames.caption_label
         ),
         table: "w-full",
         weekdays: cn("grid grid-cols-7 gap-1", defaultClassNames.weekdays),
         weekday: cn(
-          "text-muted-foreground select-none text-[0.78rem] font-medium text-center",
+          "select-none text-center text-[0.7rem] font-semibold uppercase tracking-[0.06em] text-[color:var(--ink-faint)]",
           defaultClassNames.weekday
         ),
         week: cn("mt-1 grid grid-cols-7 gap-1", defaultClassNames.week),
@@ -94,7 +97,7 @@ function Calendar({
           defaultClassNames.week_number_header
         ),
         week_number: cn(
-          "text-muted-foreground select-none text-[0.8rem]",
+          "select-none text-[0.75rem] text-[color:var(--ink-faint)]",
           defaultClassNames.week_number
         ),
         day: cn(
@@ -102,21 +105,24 @@ function Calendar({
           defaultClassNames.day
         ),
         range_start: cn(
-          "bg-accent rounded-l-md",
+          "rounded-l-full bg-[var(--brand-wash)]",
           defaultClassNames.range_start
         ),
-        range_middle: cn("", defaultClassNames.range_middle),
-        range_end: cn("bg-accent rounded-r-md", defaultClassNames.range_end),
+        range_middle: cn("bg-[var(--brand-wash)]", defaultClassNames.range_middle),
+        range_end: cn(
+          "rounded-r-full bg-[var(--brand-wash)]",
+          defaultClassNames.range_end
+        ),
         today: cn(
-          "bg-accent text-accent-foreground rounded-md data-[selected=true]:",
+          "font-semibold text-[color:var(--brand-text)]",
           defaultClassNames.today
         ),
         outside: cn(
-          "text-muted-foreground aria-selected:text-muted-foreground",
+          "text-[color:var(--ink-faint)] aria-selected:text-[color:var(--ink-faint)]",
           defaultClassNames.outside
         ),
         disabled: cn(
-          "text-muted-foreground opacity-50",
+          "text-[color:var(--ink-faint)] opacity-50",
           defaultClassNames.disabled
         ),
         hidden: cn("invisible", defaultClassNames.hidden),
@@ -199,7 +205,12 @@ function CalendarDayButton({
       data-range-end={modifiers.range_end}
       data-range-middle={modifiers.range_middle}
       className={cn(
-        "data-[selected-single=true]:bg-primary data-[selected-single=true]:text-primary-foreground data-[range-middle=true]:bg-accent data-[range-middle=true]:text-accent-foreground data-[range-start=true]:bg-primary data-[range-start=true]:text-primary-foreground data-[range-end=true]:bg-primary data-[range-end=true]:text-primary-foreground group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-ring/50 flex items-center justify-center min-h-[--cell-size] min-w-[--cell-size] rounded-md px-2 py-1 font-normal leading-none group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:ring-[3px]",
+        "flex min-h-[--cell-size] min-w-[--cell-size] items-center justify-center rounded-full px-2 py-1 font-normal leading-none",
+        "data-[selected-single=true]:bg-[var(--brand)] data-[selected-single=true]:text-[color:var(--brand-ink)] data-[selected-single=true]:shadow-[0_0_18px_-6px_var(--brand-glow)]",
+        "data-[range-start=true]:bg-[var(--brand)] data-[range-start=true]:text-[color:var(--brand-ink)]",
+        "data-[range-end=true]:bg-[var(--brand)] data-[range-end=true]:text-[color:var(--brand-ink)]",
+        "data-[range-middle=true]:bg-transparent data-[range-middle=true]:text-[color:var(--ink)]",
+        "group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:shadow-[0_0_0_3px_var(--brand-glow)]",
         defaultClassNames.day,
         className
       )}

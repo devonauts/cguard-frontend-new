@@ -9,6 +9,7 @@ import { ApiService } from '@/services/api/apiService';
 import { toast } from 'sonner';
 import { getTenantTimezone } from '@/utils/tenantLocation';
 import { Button } from '@/components/ui/button';
+import { Segmented, IconTile, EmptyState } from '@/components/kit';
 import type { Station } from '@/types';
 
 interface StationDetail extends Station { stationSchedule?: string | null }
@@ -32,16 +33,27 @@ function minutesInTenantTz(d: Date): number {
 
 type Props = { station: StationDetail; stationId: string; postSiteId: string };
 
-const GUARD_COLORS = [
-  { bg: 'rgba(200, 134, 10, 0.15)', accent: '#C8860A', text: '#C8860A' },
-  { bg: 'rgba(59, 130, 246, 0.12)', accent: '#3B82F6', text: '#60A5FA' },
-  { bg: 'rgba(168, 85, 247, 0.12)', accent: '#A855F7', text: '#C084FC' },
-  { bg: 'rgba(16, 185, 129, 0.12)', accent: '#10B981', text: '#34D399' },
-  { bg: 'rgba(239, 68, 68, 0.12)', accent: '#EF4444', text: '#F87171' },
-  { bg: 'rgba(236, 72, 153, 0.12)', accent: '#EC4899', text: '#F472B6' },
-  { bg: 'rgba(6, 182, 212, 0.12)', accent: '#06B6D4', text: '#22D3EE' },
-  { bg: 'rgba(245, 158, 11, 0.12)', accent: '#F59E0B', text: '#FBBF24' },
-];
+// ── Tintes de vigilante ──────────────────────────────────────────────────────
+// Ocho tintes distinguibles para separar a un vigilante de otro en la rejilla.
+// Ninguno está escrito a mano: todos son el acento del usuario ROTADO de tono,
+// heredando su luminosidad y su croma. Así el mapa de colores del puesto se
+// repinta entero cuando se cambia el acento y sigue siendo legible en claro y
+// en oscuro (`--brand` sube de 0.72 a 0.78 en oscuro y estos van detrás).
+const GUARD_HUE_STEPS = [0, 200, 45, 250, 100, 310, 155, 25];
+
+function guardColor(i: number): GuardColor {
+  const paso = GUARD_HUE_STEPS[((i % GUARD_HUE_STEPS.length) + GUARD_HUE_STEPS.length) % GUARD_HUE_STEPS.length];
+  const relleno = `oklch(from var(--brand) l c calc(h + ${paso}))`;
+  const tinta = `oklch(from var(--brand-text) l c calc(h + ${paso}))`;
+  return {
+    bg: `color-mix(in oklab, ${relleno} 14%, transparent)`,
+    accent: relleno,
+    text: tinta,
+  };
+}
+
+/** Tinte por defecto cuando un turno no tiene vigilante identificado. */
+const GUARD_FALLBACK: GuardColor = guardColor(0);
 
 const DAYS_ES = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 const MONTHS_ES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
@@ -255,7 +267,7 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
       const g = r.guard || r.securityGuard || r.user || {};
       const guardId = g.id || r.guardId || r.guard || 'unknown';
       if (!map[guardId]) {
-        map[guardId] = GUARD_COLORS[idx % GUARD_COLORS.length];
+        map[guardId] = guardColor(idx);
         idx++;
       }
     });
@@ -500,28 +512,33 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
     <div className="space-y-3">
       {/* Alert banner for uncovered shifts */}
       {futureUncovered > 0 && (
-        <div className="flex items-center gap-3 px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-xl animate-in fade-in slide-in-from-top-2 duration-300">
-          <div className="w-8 h-8 rounded-lg bg-red-500/15 flex items-center justify-center flex-shrink-0">
-            <AlertTriangle size={16} className="text-red-500" />
-          </div>
+        <div
+          className="glass-flat flex items-center gap-3 px-4 py-3 animate-in fade-in slide-in-from-top-2 duration-300"
+          style={{
+            background: 'color-mix(in oklab, var(--bad) 10%, transparent)',
+            borderColor: 'color-mix(in oklab, var(--bad) 28%, transparent)',
+          }}
+        >
+          <IconTile tone="bad" size="sm"><AlertTriangle /></IconTile>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-red-400">
+            <p className="text-sm font-semibold" style={{ color: 'var(--bad-text)' }}>
               {futureUncovered} turno{futureUncovered > 1 ? 's' : ''} por cubrir (próximos 14 días)
             </p>
-            <p className="text-xs text-red-400/70 mt-0.5">
+            <p className="mt-0.5 text-xs" style={{ color: 'var(--ink-soft)' }}>
               Completa los fijos del puesto y asigna un <strong>sacafranco</strong> (relevo) para cubrir sus días de descanso — 2 fijos no alcanzan a cubrir 24/7.
             </p>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <button
               onClick={() => setShowSacafranco(true)}
-              className="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-semibold hover:bg-emerald-700 transition-all"
+              className="cg-focus rounded-lg px-3 py-1.5 text-xs font-semibold transition-all"
+              style={{ background: 'var(--ok)', color: 'var(--brand-ink)' }}
             >
               Asignar sacafranco
             </button>
             <button
               onClick={() => openForm()}
-              className="px-3 py-1.5 bg-red-500 text-white rounded-lg text-xs font-semibold hover:bg-red-600 transition-all"
+              className="cg-btn-bad cg-focus rounded-lg px-3 py-1.5 text-xs font-semibold transition-all"
             >
               Asignar fijo
             </button>
@@ -529,41 +546,33 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
         </div>
       )}
 
-      <div className="bg-card border border-border/40 rounded-2xl overflow-hidden shadow-lg backdrop-blur-sm">
+      {/* `glass-flat` = cristal SIN desenfoque. El desenfoque que había aquí no
+          se veía (el fondo es opaco) pero sí se rasterizaba en cada fotograma,
+          justo debajo de una rejilla que se desplaza. */}
+      <div className="glass-flat overflow-hidden" style={{ borderRadius: 'var(--r-xl)' }}>
         {/* Top Bar */}
-        <div className="px-5 py-3 flex items-center justify-between border-b border-border/20">
+        <div className="flex items-center justify-between border-b px-5 py-3" style={{ borderColor: 'var(--hairline)' }}>
           <div className="flex items-center gap-2">
-            <div className="flex items-center bg-muted/20 rounded-lg p-[3px]">
-              <button
-                onClick={() => setViewMode('day')}
-                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${viewMode === 'day' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-              >
-                Día
-              </button>
-              <button
-                onClick={() => setViewMode('week')}
-                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${viewMode === 'week' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-              >
-                Semana
-              </button>
-              <button
-                onClick={() => setViewMode('month')}
-                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${viewMode === 'month' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-              >
-                Mes
-              </button>
-            </div>
-            <button onClick={goToday} className="px-2.5 py-1.5 text-xs font-medium border border-border/40 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/20 transition-all">
+            <Segmented
+              value={viewMode}
+              onChange={(v) => setViewMode(v)}
+              options={[
+                { value: 'day', label: 'Día' },
+                { value: 'week', label: 'Semana' },
+                { value: 'month', label: 'Mes' },
+              ]}
+            />
+            <button onClick={goToday} className="cg-btn-glass cg-focus rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all">
               Hoy
             </button>
           </div>
 
           <div className="flex items-center gap-1">
-            <button onClick={() => navigate(-1)} className="p-1.5 rounded-lg hover:bg-muted/30 text-muted-foreground hover:text-foreground transition-colors">
+            <button onClick={() => navigate(-1)} aria-label="Periodo anterior" className="cg-btn-ghost cg-focus rounded-lg p-1.5 transition-colors">
               <ChevronLeft size={16} />
             </button>
-            <h3 className="text-sm font-semibold text-foreground min-w-[200px] text-center select-none">{title}</h3>
-            <button onClick={() => navigate(1)} className="p-1.5 rounded-lg hover:bg-muted/30 text-muted-foreground hover:text-foreground transition-colors">
+            <h3 className="min-w-[200px] select-none text-center text-sm font-semibold">{title}</h3>
+            <button onClick={() => navigate(1)} aria-label="Periodo siguiente" className="cg-btn-ghost cg-focus rounded-lg p-1.5 transition-colors">
               <ChevronRight size={16} />
             </button>
           </div>
@@ -581,10 +590,10 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
         {/* Calendar Body */}
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="animate-spin text-primary" size={24} />
+            <Loader2 className="animate-spin" size={24} style={{ color: 'var(--brand-text)' }} />
           </div>
         ) : error ? (
-          <div className="p-6 text-sm text-red-500">{error}</div>
+          <div className="p-6 text-sm" style={{ color: 'var(--bad-text)' }}>{error}</div>
         ) : (
           <div className="flex flex-col">
           <div className="px-3 pt-3">
@@ -628,77 +637,83 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
 
             {/* Side detail panel — hidden in Día view (DayView is self-contained) */}
             {viewMode !== 'day' && (
-            <div className="lg:w-[300px] border-t lg:border-t-0 lg:border-l border-border/20 bg-muted/[0.02]">
+            <div className="border-t lg:w-[300px] lg:border-l lg:border-t-0" style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}>
               {selectedDate ? (
                 <div className="p-4 space-y-3">
-                  <h4 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">
+                  <h4 className="cg-eyebrow">
                     {fmtDate(new Date(selectedDate + 'T12:00:00'))}
                   </h4>
 
                   {/* Schedule slots coverage */}
                   {selectedDayCoverage && selectedDayCoverage.slots.length > 0 && (
                     <div className="space-y-2">
-                      {selectedDayCoverage.slots.map((slot, i) => (
+                      {selectedDayCoverage.slots.map((slot, i) => {
+                        const tono = slot.isCovered ? 'var(--ok)' : 'var(--bad)';
+                        const tinta = slot.isCovered ? 'var(--ok-text)' : 'var(--bad-text)';
+                        return (
                         <div
                           key={i}
-                          className={`rounded-xl p-3 border transition-all ${
-                            slot.isCovered
-                              ? 'bg-emerald-500/8 border-emerald-500/20'
-                              : 'bg-red-500/8 border-red-500/20'
-                          }`}
+                          className="rounded-xl border p-3 transition-all"
+                          style={{
+                            background: `color-mix(in oklab, ${tono} 9%, transparent)`,
+                            borderColor: `color-mix(in oklab, ${tono} 26%, transparent)`,
+                          }}
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               {slot.isCovered ? (
-                                <CheckCircle2 size={14} className="text-emerald-500" />
+                                <CheckCircle2 size={14} style={{ color: tinta }} />
                               ) : (
-                                <AlertTriangle size={14} className="text-red-500" />
+                                <AlertTriangle size={14} style={{ color: tinta }} />
                               )}
-                              <span className="text-xs font-semibold text-foreground">{slot.jornada.tipo}</span>
+                              <span className="text-xs font-semibold">{slot.jornada.tipo}</span>
                             </div>
-                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                              slot.isCovered ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'
-                            }`}>
+                            <span
+                              className="rounded-full px-2 py-0.5 text-[10px] font-bold tabular-nums"
+                              style={{ background: `color-mix(in oklab, ${tono} 16%, transparent)`, color: tinta }}
+                            >
                               {slot.guardsAssigned}/{slot.guardsNeeded}
                             </span>
                           </div>
-                          <div className="text-[11px] text-muted-foreground mt-1 font-mono">
+                          <div className="mt-1 font-mono text-[11px]" style={{ color: 'var(--ink-soft)' }}>
                             {slot.startTime} – {slot.endTime}
                           </div>
                           {!slot.isCovered && (
                             <button
                               onClick={() => openForm(selectedDate)}
-                              className="mt-2 text-[10px] text-red-400 font-semibold hover:text-red-300 flex items-center gap-1"
+                              className="cg-focus mt-2 flex items-center gap-1 rounded text-[10px] font-semibold"
+                              style={{ color: 'var(--bad-text)' }}
                             >
                               <Plus size={10} /> Asignar vigilante
                             </button>
                           )}
                         </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
 
                   {/* Assigned shifts */}
                   {selectedDayEvents.length > 0 && (
                     <div className="space-y-1.5 pt-1">
-                      <h5 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/50">Vigilantes asignados</h5>
+                      <h5 className="cg-eyebrow">Vigilantes asignados</h5>
                       {selectedDayEvents.map((ev, i) => {
-                        const color = guardColorMap[ev.guardId] || GUARD_COLORS[0];
+                        const color = guardColorMap[ev.guardId] || GUARD_FALLBACK;
                         const isSelected = selectedShift?.id === ev.id;
+                        const estadoTono = ev.status === 'active' ? 'var(--ok)' : ev.status === 'upcoming' ? 'var(--info)' : 'var(--ink-faint)';
+                        const estadoTinta = ev.status === 'active' ? 'var(--ok-text)' : ev.status === 'upcoming' ? 'var(--info-text)' : 'var(--ink-soft)';
                         return (
                           <button
                             key={ev.id || i}
                             onClick={() => setSelectedShift(isSelected ? null : ev)}
-                            className={`w-full text-left rounded-xl p-2.5 transition-all duration-200 border ${
-                              isSelected ? 'border-primary/30 shadow-lg' : 'border-transparent hover:border-border/30'
-                            }`}
-                            style={{ backgroundColor: color.bg }}
+                            className="cg-focus w-full rounded-xl border p-2.5 text-left transition-all duration-200"
+                            style={{ backgroundColor: color.bg, borderColor: isSelected ? 'var(--brand-line)' : 'transparent' }}
                           >
                             <div className="flex items-center gap-2">
-                              <div className="w-[3px] h-8 rounded-full flex-shrink-0" style={{ backgroundColor: color.accent }} />
+                              <div className="h-8 w-[3px] flex-shrink-0 rounded-full" style={{ backgroundColor: color.accent }} />
                               <div className="min-w-0 flex-1">
-                                <p className="text-[12px] font-medium text-foreground truncate">{ev.guardName}</p>
-                                <p className="text-[10px] text-muted-foreground">
+                                <p className="truncate text-[12px] font-medium">{ev.guardName}</p>
+                                <p className="text-[10px]" style={{ color: 'var(--ink-soft)' }}>
                                   {toDateKey(ev.start) === toDateKey(ev.end)
                                     ? `${fmtTime(ev.start)} – ${fmtTime(ev.end)}`
                                     : `${ev.start.toLocaleDateString('es', { day: 'numeric', month: 'short' })} ${fmtTime(ev.start)} – ${ev.end.toLocaleDateString('es', { day: 'numeric', month: 'short' })} ${fmtTime(ev.end)}`
@@ -706,26 +721,30 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
                                 </p>
                               </div>
                               {ev.status === 'active' && (
-                                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse flex-shrink-0" />
+                                <span className="cc-dot flex-shrink-0" style={{ background: 'var(--ok)' }} />
                               )}
                             </div>
                             {isSelected && (
-                              <div className="mt-2 pt-2 border-t border-border/15 flex items-center gap-2">
-                                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-semibold ${
-                                  ev.status === 'active' ? 'bg-green-500/15 text-green-400' :
-                                  ev.status === 'upcoming' ? 'bg-blue-500/15 text-blue-400' :
-                                  'bg-muted/40 text-muted-foreground'
-                                }`}>
+                              <div className="mt-2 flex items-center gap-2 border-t pt-2" style={{ borderColor: 'var(--hairline)' }}>
+                                <span
+                                  className="inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-semibold"
+                                  style={{ background: `color-mix(in oklab, ${estadoTono} 16%, transparent)`, color: estadoTinta }}
+                                >
                                   {ev.status === 'active' ? 'En servicio' : ev.status === 'upcoming' ? 'Programado' : 'Completado'}
                                 </span>
-                                <span className="text-[9px] text-muted-foreground">
+                                <span className="text-[9px]" style={{ color: 'var(--ink-soft)' }}>
                                   {Math.round((ev.end.getTime() - ev.start.getTime()) / (1000 * 60 * 60))}h
                                 </span>
                                 <div
                                   role="button"
                                   tabIndex={0}
                                   onClick={(e) => { e.stopPropagation(); removeGuard(ev); }}
-                                  className="ml-auto inline-flex items-center gap-1 rounded-md border border-red-500/25 bg-red-500/10 px-2 py-0.5 text-[9px] font-semibold text-red-400 hover:bg-red-500/20 cursor-pointer transition-colors"
+                                  className="ml-auto inline-flex cursor-pointer items-center gap-1 rounded-md border px-2 py-0.5 text-[9px] font-semibold transition-colors"
+                                  style={{
+                                    background: 'color-mix(in oklab, var(--bad) 12%, transparent)',
+                                    borderColor: 'color-mix(in oklab, var(--bad) 28%, transparent)',
+                                    color: 'var(--bad-text)',
+                                  }}
                                 >
                                   <Trash2 size={10} /> Quitar del puesto
                                 </div>
@@ -739,17 +758,15 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
 
                   {/* Empty state */}
                   {selectedDayEvents.length === 0 && (!selectedDayCoverage || selectedDayCoverage.slots.length === 0) && (
-                    <div className="text-center py-8">
-                      <p className="text-xs text-muted-foreground/60">Día libre – sin horario programado</p>
+                    <div className="py-8 text-center">
+                      <p className="text-xs" style={{ color: 'var(--ink-faint)' }}>Día libre – sin horario programado</p>
                     </div>
                   )}
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center h-full py-16 px-4 text-center">
-                  <div className="w-12 h-12 rounded-full bg-muted/15 flex items-center justify-center mb-3">
-                    <Calendar size={20} className="text-muted-foreground/30" />
-                  </div>
-                  <p className="text-[11px] text-muted-foreground/60">Selecciona un día</p>
+                <div className="flex h-full flex-col items-center justify-center px-4 py-16 text-center">
+                  <div className="mb-3"><IconTile tone="neutral"><Calendar /></IconTile></div>
+                  <p className="text-[11px]" style={{ color: 'var(--ink-faint)' }}>Selecciona un día</p>
                 </div>
               )}
             </div>
@@ -816,7 +833,14 @@ function WeekView({ days, eventsByDate, coverageByDate, guardColorMap, selectedD
     <div className="overflow-x-auto overflow-y-auto max-h-[500px]">
       <div className="min-w-[640px]">
         {/* Day headers */}
-        <div className="grid grid-cols-[48px_repeat(7,1fr)] sticky top-0 z-10 bg-card/95 backdrop-blur-md border-b border-border/15">
+        {/* Cabecera pegajosa sobre una rejilla que se desplaza: fondo OPACO y
+            sin `backdrop-filter`. El desenfoque aquí se recalcula en cada
+            fotograma del desplazamiento y es lo que hace que la semana se
+            arrastre. */}
+        <div
+          className="grid grid-cols-[48px_repeat(7,1fr)] sticky top-0 z-10"
+          style={{ background: 'var(--glass-solid)', borderBottom: '1px solid var(--hairline)' }}
+        >
           <div />
           {days.map((d, i) => {
             const key = toDateKey(d);
@@ -828,28 +852,33 @@ function WeekView({ days, eventsByDate, coverageByDate, guardColorMap, selectedD
               <button
                 key={i}
                 onClick={() => onSelectDate(key)}
-                className={`py-2.5 text-center transition-all relative group ${
-                  selectedDate === key ? 'bg-primary/[0.04]' : ''
-                }`}
+                className="group relative py-2.5 text-center transition-all"
+                style={selectedDate === key ? { background: 'var(--brand-wash)' } : undefined}
               >
-                <div className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/50 group-hover:text-muted-foreground transition-colors">
+                <div className="cg-eyebrow transition-colors">
                   {DAYS_ES[i]}
                 </div>
-                <div className={`mt-1 w-8 h-8 mx-auto flex items-center justify-center rounded-full text-sm font-semibold transition-all ${
-                  isToday(d) ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/30' :
-                  selectedDate === key ? 'bg-foreground/8 text-foreground' :
-                  'text-foreground group-hover:bg-muted/20'
-                }`}>
+                <div
+                  className="mx-auto mt-1 flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold tabular-nums transition-all"
+                  style={
+                    isToday(d)
+                      ? { background: 'var(--brand)', color: 'var(--brand-ink)', boxShadow: '0 0 18px -6px var(--brand-glow)' }
+                      : selectedDate === key
+                      ? { background: 'var(--glass-sunken)' }
+                      : undefined
+                  }
+                >
                   {d.getDate()}
                 </div>
                 {/* Coverage indicator dot */}
                 {isScheduledDay && (
-                  <div className={`mt-1 mx-auto w-4 h-1 rounded-full transition-all ${
-                    allCovered ? 'bg-emerald-500/60' : 'bg-red-500/70 animate-pulse'
-                  }`} />
+                  <div
+                    className={`mx-auto mt-1 h-1 w-4 rounded-full transition-all ${allCovered ? '' : 'animate-pulse'}`}
+                    style={{ background: allCovered ? 'var(--ok)' : 'var(--bad)' }}
+                  />
                 )}
                 {!isScheduledDay && hasEvents && (
-                  <div className="mt-1 mx-auto w-1.5 h-1.5 rounded-full bg-primary/50" />
+                  <div className="mx-auto mt-1 h-1.5 w-1.5 rounded-full" style={{ background: 'var(--brand)' }} />
                 )}
               </button>
             );
@@ -868,59 +897,67 @@ function WeekView({ days, eventsByDate, coverageByDate, guardColorMap, selectedD
             return (
               <div
                 key={dayIdx}
-                className={`flex flex-col gap-1.5 border-l border-border/8 p-1.5 min-h-[220px] transition-colors ${
-                  selectedDate === key ? 'bg-primary/[0.03]' : ''
-                }`}
+                className="flex min-h-[220px] flex-col gap-1.5 border-l p-1.5 transition-colors"
+                style={{
+                  borderColor: 'var(--hairline)',
+                  background: selectedDate === key ? 'var(--brand-wash)' : undefined,
+                }}
               >
                 {slots.length === 0 ? (
                   <button
                     onClick={() => onSelectDate(key)}
-                    className="flex-1 flex items-center justify-center text-[10px] text-muted-foreground/40"
+                    className="flex flex-1 items-center justify-center text-[10px]"
+                    style={{ color: 'var(--ink-faint)' }}
                   >
                     Sin turnos
                   </button>
                 ) : slots.map((slot, si) => {
                   const isNight = String(slot.jornada.tipo || '').toLowerCase().includes('noct');
                   const guards = coveringGuards(key, isNight);
+                  const tono = slot.isCovered ? 'var(--ok)' : 'var(--bad)';
+                  const tinta = slot.isCovered ? 'var(--ok-text)' : 'var(--bad-text)';
                   return (
                     <div
                       key={si}
                       onClick={() => onSelectDate(key)}
-                      className={`rounded-lg border p-2 cursor-pointer transition-all hover:brightness-110 ${
-                        slot.isCovered ? 'border-emerald-500/20 bg-emerald-500/[0.05]' : 'border-red-500/25 bg-red-500/[0.06]'
-                      }`}
+                      className="cursor-pointer rounded-lg border p-2 transition-all hover:brightness-110"
+                      style={{
+                        background: `color-mix(in oklab, ${tono} 6%, transparent)`,
+                        borderColor: `color-mix(in oklab, ${tono} 26%, transparent)`,
+                      }}
                     >
                       <div className="flex items-center justify-between gap-1">
-                        <span className="flex items-center gap-1 text-[11px] font-semibold text-foreground">
-                          {isNight ? <Moon size={11} className="text-indigo-400" /> : <Sun size={11} className="text-amber-400" />}
+                        <span className="flex items-center gap-1 text-[11px] font-semibold">
+                          {isNight ? <Moon size={11} style={{ color: 'var(--info-text)' }} /> : <Sun size={11} style={{ color: 'var(--warn-text)' }} />}
                           {slot.jornada.tipo}
                         </span>
-                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
-                          slot.isCovered ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'
-                        }`}>
+                        <span
+                          className="rounded-full px-1.5 py-0.5 text-[9px] font-bold tabular-nums"
+                          style={{ background: `color-mix(in oklab, ${tono} 16%, transparent)`, color: tinta }}
+                        >
                           {slot.guardsAssigned}/{slot.guardsNeeded}
                         </span>
                       </div>
-                      <div className="mt-0.5 font-mono text-[9px] text-muted-foreground/70">
+                      <div className="mt-0.5 font-mono text-[9px]" style={{ color: 'var(--ink-faint)' }}>
                         {slot.startTime} – {slot.endTime}
                       </div>
 
                       {guards.length > 0 && (
                         <div className="mt-1 space-y-0.5">
                           {guards.slice(0, 3).map((ev: ShiftEvent, gi: number) => {
-                            const color = guardColorMap[ev.guardId] || GUARD_COLORS[0];
+                            const color = guardColorMap[ev.guardId] || GUARD_FALLBACK;
                             return (
                               <div key={ev.id || gi} className="flex items-center gap-1 rounded px-1 py-0.5" style={{ backgroundColor: color.bg }}>
                                 <div className="h-3 w-[3px] flex-shrink-0 rounded-full" style={{ backgroundColor: color.accent }} />
                                 <span className="truncate text-[10px] font-medium" style={{ color: color.text }}>
                                   {ev.guardName.split(' ').slice(0, 2).join(' ')}
                                 </span>
-                                {ev.status === 'active' && <div className="ml-auto h-1.5 w-1.5 flex-shrink-0 rounded-full bg-green-500 animate-pulse" />}
+                                {ev.status === 'active' && <div className="ml-auto h-1.5 w-1.5 flex-shrink-0 animate-pulse rounded-full" style={{ background: 'var(--ok)' }} />}
                               </div>
                             );
                           })}
                           {guards.length > 3 && (
-                            <div className="text-[9px] text-muted-foreground/60">+{guards.length - 3} más</div>
+                            <div className="text-[9px]" style={{ color: 'var(--ink-faint)' }}>+{guards.length - 3} más</div>
                           )}
                         </div>
                       )}
@@ -928,7 +965,12 @@ function WeekView({ days, eventsByDate, coverageByDate, guardColorMap, selectedD
                       {!slot.isCovered && (
                         <button
                           onClick={(e) => { e.stopPropagation(); onAssign(key); }}
-                          className="mt-1 flex w-full items-center justify-center gap-1 rounded-md border border-red-500/20 bg-red-500/5 py-1 text-[10px] font-semibold text-red-400 transition-colors hover:bg-red-500/10"
+                          className="cg-focus mt-1 flex w-full items-center justify-center gap-1 rounded-md border py-1 text-[10px] font-semibold transition-colors"
+                          style={{
+                            background: 'color-mix(in oklab, var(--bad) 8%, transparent)',
+                            borderColor: 'color-mix(in oklab, var(--bad) 24%, transparent)',
+                            color: 'var(--bad-text)',
+                          }}
                         >
                           <Plus size={10} /> Asignar
                         </button>
@@ -982,49 +1024,52 @@ function DayView({ date, coverage, dayEvents, guardColorMap, onAssign }: {
       {/* Summary */}
       {slots.length > 0 && (
         <div className="mb-4 flex items-center gap-3">
-          <div className={`grid h-11 w-11 place-items-center rounded-2xl text-base font-bold ${covered === slots.length ? 'bg-emerald-500/15 text-emerald-500' : 'bg-red-500/15 text-red-500'}`}>
+          <div
+            className="grid h-11 w-11 place-items-center rounded-2xl text-base font-bold tabular-nums"
+            style={{
+              background: `color-mix(in oklab, ${covered === slots.length ? 'var(--ok)' : 'var(--bad)'} 16%, transparent)`,
+              color: covered === slots.length ? 'var(--ok-text)' : 'var(--bad-text)',
+            }}
+          >
             {covered}/{slots.length}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-foreground">{covered === slots.length ? 'Cobertura completa' : `${slots.length - covered} turno(s) sin cubrir`}</p>
-            <p className="text-[11px] text-muted-foreground">Línea de tiempo · 24 h</p>
+            <p className="text-sm font-semibold">{covered === slots.length ? 'Cobertura completa' : `${slots.length - covered} turno(s) sin cubrir`}</p>
+            <p className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>Línea de tiempo · 24 h</p>
           </div>
-          <div className="hidden items-center gap-3 text-[10px] text-muted-foreground sm:flex">
-            <span className="inline-flex items-center gap-1"><Sun size={11} className="text-amber-400" /> Día</span>
-            <span className="inline-flex items-center gap-1"><Moon size={11} className="text-indigo-400" /> Noche</span>
+          <div className="hidden items-center gap-3 text-[10px] sm:flex" style={{ color: 'var(--ink-soft)' }}>
+            <span className="inline-flex items-center gap-1"><Sun size={11} style={{ color: 'var(--warn-text)' }} /> Día</span>
+            <span className="inline-flex items-center gap-1"><Moon size={11} style={{ color: 'var(--info-text)' }} /> Noche</span>
           </div>
         </div>
       )}
 
       {slots.length === 0 && dayEvents.length === 0 ? (
-        <div className="py-20 text-center">
-          <Calendar size={28} className="mx-auto mb-3 text-muted-foreground/30" />
-          <p className="text-sm text-muted-foreground/60">Día libre — sin horario programado</p>
-        </div>
+        <EmptyState icon={<Calendar />} title="Día libre" description="Sin horario programado para esta fecha." />
       ) : (
         <div className="max-h-[600px] overflow-y-auto pr-1">
           <div className="relative flex" style={{ height: H }}>
             {/* Hour axis */}
             <div className="relative w-12 shrink-0">
               {hours.map((h) => (
-                <div key={h} className="absolute right-2 -translate-y-1/2 text-[10px] font-medium tabular-nums text-muted-foreground/50" style={{ top: (h / 24) * H }}>
+                <div key={h} className="absolute right-2 -translate-y-1/2 text-[10px] font-medium tabular-nums" style={{ top: (h / 24) * H, color: 'var(--ink-faint)' }}>
                   {String(h % 24).padStart(2, '0')}:00
                 </div>
               ))}
             </div>
 
             {/* Lane */}
-            <div className="relative flex-1 overflow-hidden rounded-xl border border-border/20 bg-muted/[0.015]">
+            <div className="glass-sunken relative flex-1 overflow-hidden" style={{ borderRadius: 'var(--r-lg)' }}>
               {/* gridlines */}
               {hours.map((h) => (
-                <div key={h} className="absolute inset-x-0 border-t border-border/10" style={{ top: (h / 24) * H }} />
+                <div key={h} className="absolute inset-x-0 border-t" style={{ top: (h / 24) * H, borderColor: 'var(--hairline)' }} />
               ))}
 
               {/* now indicator */}
               {isToday && nowH > 0 && nowH < 24 && (
                 <div className="absolute inset-x-0 z-30 flex items-center" style={{ top: (nowH / 24) * H }}>
-                  <div className="-ml-[3px] h-2 w-2 rounded-full bg-red-500 shadow-sm shadow-red-500/50" />
-                  <div className="h-px flex-1 bg-red-500/60" />
+                  <div className="-ml-[3px] h-2 w-2 rounded-full" style={{ background: 'var(--bad)' }} />
+                  <div className="h-px flex-1" style={{ background: 'color-mix(in oklab, var(--bad) 60%, transparent)' }} />
                 </div>
               )}
 
@@ -1042,13 +1087,18 @@ function DayView({ date, coverage, dayEvents, guardColorMap, onAssign }: {
                   <button
                     key={`u-${si}`}
                     onClick={() => onAssign(dayK)}
-                    className="absolute inset-x-1 z-10 flex flex-col justify-center gap-0.5 rounded-lg border border-dashed border-red-500/40 bg-red-500/[0.07] px-2 text-left transition-colors hover:bg-red-500/[0.12]"
-                    style={{ top, height }}
+                    className="cg-focus absolute inset-x-1 z-10 flex flex-col justify-center gap-0.5 rounded-lg border border-dashed px-2 text-left transition-colors"
+                    style={{
+                      top,
+                      height,
+                      background: 'color-mix(in oklab, var(--bad) 8%, transparent)',
+                      borderColor: 'color-mix(in oklab, var(--bad) 40%, transparent)',
+                    }}
                   >
-                    <span className="flex items-center gap-1 text-[11px] font-semibold text-red-400">
+                    <span className="flex items-center gap-1 text-[11px] font-semibold" style={{ color: 'var(--bad-text)' }}>
                       {isNight ? <Moon size={11} /> : <Sun size={11} />} {slot.jornada.tipo} · sin asignar
                     </span>
-                    {height > 36 && <span className="inline-flex items-center gap-1 text-[10px] font-medium text-red-400/80"><Plus size={10} /> Asignar vigilante</span>}
+                    {height > 36 && <span className="inline-flex items-center gap-1 text-[10px] font-medium" style={{ color: 'var(--bad-text)' }}><Plus size={10} /> Asignar vigilante</span>}
                   </button>
                 );
               })}
@@ -1058,7 +1108,7 @@ function DayView({ date, coverage, dayEvents, guardColorMap, onAssign }: {
                 const { startH, endH, startBefore, endAfter } = eventSeg(ev);
                 const top = (startH / 24) * H;
                 const height = Math.max(((endH - startH) / 24) * H, 24);
-                const color = guardColorMap[ev.guardId] || GUARD_COLORS[0];
+                const color = guardColorMap[ev.guardId] || GUARD_FALLBACK;
                 return (
                   <div
                     key={ev.id || i}
@@ -1066,14 +1116,14 @@ function DayView({ date, coverage, dayEvents, guardColorMap, onAssign }: {
                     style={{ top, height, backgroundColor: color.bg, borderLeft: `3px solid ${color.accent}` }}
                   >
                     <div className="flex items-center gap-1.5">
-                      <div className="grid h-5 w-5 shrink-0 place-items-center rounded-full text-[8px] font-bold text-white" style={{ background: color.accent }}>
+                      <div className="grid h-5 w-5 shrink-0 place-items-center rounded-full text-[8px] font-bold" style={{ background: color.accent, color: 'var(--brand-ink)' }}>
                         {ev.guardName.split(' ').map((w: string) => w[0]).slice(0, 2).join('')}
                       </div>
                       <span className="truncate text-[11px] font-semibold" style={{ color: color.text }}>{ev.guardName}</span>
-                      {ev.status === 'active' && <span className="ml-auto h-1.5 w-1.5 shrink-0 rounded-full bg-green-500 animate-pulse" />}
+                      {ev.status === 'active' && <span className="ml-auto h-1.5 w-1.5 shrink-0 animate-pulse rounded-full" style={{ background: 'var(--ok)' }} />}
                     </div>
                     {height > 36 && (
-                      <p className="mt-0.5 truncate text-[9px] text-muted-foreground/80">
+                      <p className="mt-0.5 truncate text-[9px]" style={{ color: 'var(--ink-soft)' }}>
                         {startBefore ? '↑ ' : ''}{fmtT(ev.start)} – {fmtT(ev.end)}{endAfter ? ' ↓' : ''}
                       </p>
                     )}
@@ -1106,7 +1156,7 @@ function MonthView({ days, eventsByDate, coverageByDate, guardColorMap, selected
     <div className="p-3">
       <div className="grid grid-cols-7 mb-2">
         {DAYS_ES.map(d => (
-          <div key={d} className="text-center text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40 py-2">{d}</div>
+          <div key={d} className="cg-eyebrow py-2 text-center">{d}</div>
         ))}
       </div>
       <div className="space-y-1">
@@ -1123,29 +1173,33 @@ function MonthView({ days, eventsByDate, coverageByDate, guardColorMap, selected
                 <button
                   key={di}
                   onClick={() => onSelectDate(key)}
-                  className={`relative min-h-[62px] rounded-xl p-1 flex flex-col items-center transition-all duration-150 group ${
-                    selectedDate === key ? 'bg-primary/10 ring-1 ring-primary/25 shadow-sm' : 'hover:bg-muted/15'
-                  } ${!isCurrentMonth ? 'opacity-25' : ''}`}
+                  className={`group relative flex min-h-[62px] flex-col items-center rounded-xl p-1 transition-all duration-150 ${!isCurrentMonth ? 'opacity-25' : ''}`}
+                  style={selectedDate === key ? { background: 'var(--brand-wash)', boxShadow: 'inset 0 0 0 1px var(--brand-line)' } : undefined}
                 >
-                  <span className={`text-xs font-medium w-6 h-6 flex items-center justify-center rounded-full transition-all ${
-                    isToday(day) ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/30' :
-                    selectedDate === key ? 'text-primary font-semibold' :
-                    'text-foreground group-hover:bg-muted/20'
-                  }`}>
+                  <span
+                    className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium tabular-nums transition-all"
+                    style={
+                      isToday(day)
+                        ? { background: 'var(--brand)', color: 'var(--brand-ink)', boxShadow: '0 0 18px -6px var(--brand-glow)' }
+                        : selectedDate === key
+                        ? { color: 'var(--brand-text)', fontWeight: 600 }
+                        : undefined
+                    }
+                  >
                     {day.getDate()}
                   </span>
-                  {/* Coverage per turno: día (amber) / noche (indigo); red = sin cubrir */}
+                  {/* Cobertura por turno: día (warn) / noche (info); rojo = sin cubrir */}
                   {isScheduledDay ? (
                     <div className="mt-auto w-full space-y-[2px] px-0.5 pb-0.5">
                       {coverage.slots.map((slot: ScheduleSlot, i: number) => {
                         const isNight = String(slot.jornada.tipo || '').toLowerCase().includes('noct');
+                        const tono = !slot.isCovered ? 'var(--bad)' : isNight ? 'var(--info)' : 'var(--warn)';
                         return (
                           <div
                             key={i}
                             title={`${slot.jornada.tipo}: ${slot.guardsAssigned}/${slot.guardsNeeded}`}
-                            className={`flex h-[8px] items-center justify-center rounded-full text-[6px] font-bold leading-none text-white/95 ${
-                              slot.isCovered ? (isNight ? 'bg-indigo-500/70' : 'bg-amber-500/75') : 'bg-red-500/70'
-                            }`}
+                            className="flex h-[8px] items-center justify-center rounded-full text-[6px] font-bold leading-none"
+                            style={{ background: tono, color: 'var(--brand-ink)' }}
                           >
                             {isNight ? 'N' : 'D'}
                           </div>
@@ -1155,7 +1209,7 @@ function MonthView({ days, eventsByDate, coverageByDate, guardColorMap, selected
                   ) : dayEvents.length > 0 ? (
                     <div className="flex items-center gap-[3px] mt-auto mb-0.5">
                       {dayEvents.slice(0, 3).map((ev, i) => {
-                        const color = guardColorMap[ev.guardId] || GUARD_COLORS[0];
+                        const color = guardColorMap[ev.guardId] || GUARD_FALLBACK;
                         return <div key={i} className="w-[5px] h-[5px] rounded-full" style={{ backgroundColor: color.accent }} />;
                       })}
                     </div>

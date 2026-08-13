@@ -3,18 +3,21 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
+/* Píldora, no rectángulo: misma familia de formas que el botón. Los semánticos
+   (`destructive`) reutilizan `.cg-btn-bad` de glass.css para que el rojo salga
+   de `--bad` y no de una clase de color escrita a mano. */
 const badgeVariants = cva(
-  "inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "cg-focus inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap transition-colors motion-reduce:transition-none [&>svg]:size-3 [&>svg]:shrink-0",
   {
     variants: {
       variant: {
         default:
-          "border-transparent bg-primary text-primary-foreground shadow hover:bg-primary/80",
+          "border-transparent bg-[var(--brand)] text-[color:var(--brand-ink)] shadow-[0_0_16px_-8px_var(--brand-glow)]",
         secondary:
-          "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        destructive:
-          "border-transparent bg-destructive text-destructive-foreground shadow hover:bg-destructive/80",
-        outline: "text-foreground",
+          "border-[color:var(--hairline)] bg-[var(--glass-sunken)] text-[color:var(--ink)]",
+        destructive: "cg-btn-bad border-transparent",
+        outline:
+          "border-[color:var(--hairline)] bg-transparent text-[color:var(--ink)]",
       },
     },
     defaultVariants: {

@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
+import { StatusBadge } from '@/components/kit';
 import AppLayout from '@/layouts/app-layout';
 import { Link, useLocation, useParams, useNavigate } from 'react-router-dom';
 import {
@@ -45,9 +46,7 @@ export default function PostSiteLayout({ title, children, site }: Props) {
     return (cand && (cand.downloadUrl || cand.publicUrl)) || (typeof cand === 'string' ? cand : null);
   })();
 
-  let h = 0; const nm = String(displayName || '?');
-  for (let i = 0; i < nm.length; i++) h = (h * 31 + nm.charCodeAt(i)) >>> 0;
-  const hue = [28, 205, 150, 265, 340, 95, 180, 12][h % 8];
+  const nm = String(displayName || '?');
 
   const isActive = String(site?.status || (site?.active ? 'active' : '')).toLowerCase() === 'active' || site?.active === true;
   const clientName = site?.client?.commercialName || site?.client?.name
@@ -64,7 +63,7 @@ export default function PostSiteLayout({ title, children, site }: Props) {
     <AppLayout>
       <div className="mx-auto w-full max-w-[1440px] space-y-4 px-4 py-4">
         {/* Breadcrumb: Clientes › {Cliente} › {Sede} › {Pestaña activa} */}
-        <div className="flex min-w-0 items-center gap-1.5 text-sm text-muted-foreground">
+        <div className="flex min-w-0 items-center gap-1.5 text-sm" style={{ color: 'var(--ink-soft)' }}>
           <Link to="/clients" className="shrink-0 hover:text-primary">{t('clients.nav.title', 'Clientes')}</Link>
           <ChevronRight className="h-3.5 w-3.5 shrink-0" />
           {clientId && clientName && (
@@ -77,37 +76,41 @@ export default function PostSiteLayout({ title, children, site }: Props) {
             <>
               <Link to={`${base}/overview`} className="max-w-[160px] truncate hover:text-primary sm:max-w-[220px]" title={displayName}>{displayName}</Link>
               <ChevronRight className="h-3.5 w-3.5 shrink-0" />
-              <span className="shrink-0 font-medium text-foreground">{activeTab.label}</span>
+              <span className="shrink-0 font-medium" style={{ color: 'var(--ink)' }}>{activeTab.label}</span>
             </>
           ) : (
-            <span className="max-w-[200px] truncate font-medium text-foreground sm:max-w-[280px]" title={displayName}>{displayName}</span>
+            <span className="max-w-[200px] truncate font-medium sm:max-w-[280px]" style={{ color: 'var(--ink)' }} title={displayName}>{displayName}</span>
           )}
         </div>
 
         {/* Header card */}
-        <div className="rounded-2xl border border-border bg-card p-5">
+        <div className="glass p-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="flex min-w-0 items-start gap-4">
               {logo ? (
-                <img src={logo} alt="" className="h-16 w-16 shrink-0 rounded-2xl border bg-white object-cover" />
+                // Fondo claro FIJO bajo el logo del cliente: imagen ajena, muchas
+                // con transparencia pensada para papel blanco. No es color de UI.
+                <img src={logo} alt="" className="h-16 w-16 shrink-0 rounded-2xl border object-cover" style={{ background: 'oklch(1 0 0)', borderColor: 'var(--hairline)' }} />
               ) : (
-                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl text-2xl font-bold" style={{ backgroundColor: `hsl(${hue} 70% 92%)`, color: `hsl(${hue} 60% 32%)` }}>
+                <div
+                  className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border text-2xl font-bold"
+                  style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }}
+                >
                   {nm.charAt(0).toUpperCase()}
                 </div>
               )}
               <div className="min-w-0">
-                <h1 className="truncate text-2xl font-bold tracking-tight text-foreground">{displayName}</h1>
+                <h1 className="font-display truncate text-2xl font-bold tracking-tight" style={{ color: 'var(--ink)' }}>{displayName}</h1>
                 <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
-                  <span className={`inline-flex items-center gap-1 font-medium ${isActive ? 'text-emerald-600' : 'text-red-500'}`}>
-                    <span className={`h-1.5 w-1.5 rounded-full ${isActive ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                  <StatusBadge tone={isActive ? 'ok' : 'bad'}>
                     {isActive ? t('common.active', 'Activa') : t('common.archived', 'Inactiva')}
-                  </span>
-                  {categoryName && <span className="rounded-full bg-muted px-2.5 py-0.5 font-medium text-muted-foreground">{categoryName}</span>}
+                  </StatusBadge>
+                  {categoryName && <StatusBadge tone="neutral" dot={false}>{categoryName}</StatusBadge>}
                   {clientName && (
-                    <span className="text-muted-foreground">{t('postSites.client', 'Cliente')}: {clientId ? <Link to={`/clients/${clientId}/overview`} className="font-medium text-primary hover:underline">{clientName}</Link> : <span className="font-medium text-foreground">{clientName}</span>}</span>
+                    <span style={{ color: 'var(--ink-soft)' }}>{t('postSites.client', 'Cliente')}: {clientId ? <Link to={`/clients/${clientId}/overview`} className="font-medium text-primary hover:underline">{clientName}</Link> : <span className="font-medium" style={{ color: 'var(--ink)' }}>{clientName}</span>}</span>
                   )}
                 </div>
-                <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs text-muted-foreground">
+                <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs" style={{ color: 'var(--ink-soft)' }}>
                   {address && <span className="inline-flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" /> {address}</span>}
                   {fmtCoords && <span className="inline-flex items-center gap-1.5 tabular-nums"><MapPinned className="h-3.5 w-3.5" /> {fmtCoords}</span>}
                 </div>
@@ -125,16 +128,26 @@ export default function PostSiteLayout({ title, children, site }: Props) {
 
         {/* Tabs (sección horizontal) */}
         <div className="overflow-x-auto">
-          <nav className="flex min-w-max items-center gap-1 border-b border-border">
+          <nav className="flex min-w-max items-center gap-1 border-b" style={{ borderColor: 'var(--hairline)' }}>
             {TAB_DEFS.map((it) => {
               const path = `${base}/${it.seg}`;
               const active = currentSeg === it.seg || (it.seg === 'overview' && (currentSeg === 'overview' || location.pathname === base));
               const Icon = it.icon;
               return (
-                <Link key={it.id} to={path} className={`relative flex items-center gap-1.5 whitespace-nowrap px-3.5 py-2.5 text-sm font-medium transition-colors ${active ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
+                <Link
+                  key={it.id}
+                  to={path}
+                  className="cg-focus relative flex items-center gap-1.5 whitespace-nowrap px-3.5 py-2.5 text-sm font-medium transition-colors"
+                  style={{ color: active ? 'var(--brand-text)' : 'var(--ink-soft)' }}
+                >
                   <Icon className="h-4 w-4" />
                   {it.label}
-                  {active && <span className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-primary" />}
+                  {active && (
+                    <span
+                      className="absolute inset-x-2 -bottom-px h-0.5 rounded-full"
+                      style={{ background: 'var(--brand)', boxShadow: '0 0 12px 0 var(--brand-glow)' }}
+                    />
+                  )}
                 </Link>
               );
             })}

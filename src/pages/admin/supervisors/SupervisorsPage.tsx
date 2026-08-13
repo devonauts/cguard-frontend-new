@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   PageContainer, PageHeader, Section, SkeletonCards, StatCard, StatusBadge, Modal, Stagger,
+  GlassPanel, EmptyState, Segmented, Toolbar,
 } from "@/components/kit";
 import { supervisorService, type Supervisor } from "@/lib/api/supervisorService";
 
@@ -166,7 +167,7 @@ export default function SupervisorsPage() {
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => removeSupervisor(s)}
-          className="text-red-600 focus:text-red-600"
+          style={{ color: "var(--bad-text)" }}
         >
           <Trash2 className="mr-2 h-4 w-4" /> Eliminar supervisor
         </DropdownMenuItem>
@@ -176,15 +177,15 @@ export default function SupervisorsPage() {
 
   const columns: Column<Supervisor & { id: string }>[] = [
     { key: "fullName", header: "Nombre", render: (_v, r) => <span className="font-medium text-foreground">{r.fullName}</span> },
-    { key: "zone", header: "Zona", render: (_v, r) => <span className="text-xs text-muted-foreground">{r.zone || "—"}</span> },
-    { key: "assignedVehicle", header: "Vehículo", render: (_v, r) => <span className="text-xs text-muted-foreground">{r.assignedVehicle || "—"}</span> },
+    { key: "zone", header: "Zona", render: (_v, r) => <span className="text-xs" style={{ color: "var(--ink-soft)" }}>{r.zone || "—"}</span> },
+    { key: "assignedVehicle", header: "Vehículo", render: (_v, r) => <span className="text-xs" style={{ color: "var(--ink-soft)" }}>{r.assignedVehicle || "—"}</span> },
     {
       key: "isOnDuty", header: "Estado", render: (_v, r) =>
         r.isOnDuty
-          ? <StatusBadge tone="green">En turno</StatusBadge>
-          : <StatusBadge tone="slate" dot={false}>Fuera</StatusBadge>,
+          ? <StatusBadge tone="ok">En turno</StatusBadge>
+          : <StatusBadge tone="neutral" dot={false}>Fuera</StatusBadge>,
     },
-    { key: "email", header: "Correo", render: (_v, r) => <span className="text-xs text-muted-foreground">{r.email || "—"}</span> },
+    { key: "email", header: "Correo", render: (_v, r) => <span className="text-xs" style={{ color: "var(--ink-soft)" }}>{r.email || "—"}</span> },
     { key: "actions", header: "", render: (_v, r) => <div className="text-right">{rowActions(r)}</div> },
   ];
 
@@ -211,16 +212,19 @@ export default function SupervisorsPage() {
           {/* Stats — clic en una tarjeta filtra la lista (clic de nuevo: todos) */}
           <Stagger className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
             {([
-              { f: "todos" as StatFilter, label: "Supervisores", value: rows.length, icon: <Users />, accent: "blue" as const },
-              { f: "enTurno" as StatFilter, label: "En turno", value: onDuty, icon: <Radar />, accent: "green" as const },
-              { f: "fuera" as StatFilter, label: "Fuera de turno", value: offDuty, icon: <Clock />, accent: "slate" as const },
-              { f: "conVehiculo" as StatFilter, label: "Con vehículo", value: withVehicle, icon: <Car />, accent: "orange" as const },
+              { f: "todos" as StatFilter, label: "Supervisores", value: rows.length, icon: <Users />, accent: "brand" as const },
+              { f: "enTurno" as StatFilter, label: "En turno", value: onDuty, icon: <Radar />, accent: "ok" as const },
+              { f: "fuera" as StatFilter, label: "Fuera de turno", value: offDuty, icon: <Clock />, accent: "neutral" as const },
+              { f: "conVehiculo" as StatFilter, label: "Con vehículo", value: withVehicle, icon: <Car />, accent: "warn" as const },
             ]).map((c) => (
               <button
                 key={c.f}
                 onClick={() => toggleStat(c.f)}
                 title={statFilter === c.f && c.f !== "todos" ? "Quitar filtro" : "Filtrar la lista"}
-                className={`rounded-2xl text-left transition-all ${statFilter === c.f ? "ring-2 ring-primary" : "hover:ring-1 hover:ring-border"}`}
+                className="cg-focus rounded-3xl text-left transition-all"
+                style={statFilter === c.f
+                  ? { boxShadow: "0 0 0 2px var(--brand), 0 0 28px -8px var(--brand-glow)" }
+                  : undefined}
               >
                 <StatCard label={c.label} value={c.value} icon={c.icon} accent={c.accent} />
               </button>
@@ -232,52 +236,64 @@ export default function SupervisorsPage() {
             icon={<ShieldCheck />}
             action={
               <div className="flex items-center gap-2">
-                <div className="relative hidden sm:block">
-                  <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Toolbar className="hidden p-1 sm:flex">
+                  <Search className="ml-1.5 h-4 w-4 shrink-0" style={{ color: "var(--ink-faint)" }} />
                   <Input
                     placeholder="Buscar por nombre, zona, vehículo…"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="h-9 w-[240px] pl-8"
+                    className="h-8 w-[240px] border-0 bg-transparent px-1 shadow-none"
                   />
-                </div>
-                <div className="inline-flex items-center rounded-xl border bg-card p-0.5">
-                  <Button variant={viewMode === "cards" ? "brand" : "ghost"} size="sm" className="h-8 px-2.5" aria-label="Vista de tarjetas" onClick={() => setViewMode("cards")}>
-                    <LayoutGrid className="h-4 w-4" />
-                  </Button>
-                  <Button variant={viewMode === "list" ? "brand" : "ghost"} size="sm" className="h-8 px-2.5" aria-label="Vista de lista" onClick={() => setViewMode("list")}>
-                    <ListIcon className="h-4 w-4" />
-                  </Button>
-                </div>
+                </Toolbar>
+                <Segmented
+                  value={viewMode}
+                  onChange={setViewMode}
+                  options={[
+                    { value: "cards", label: <span className="flex items-center gap-1.5"><LayoutGrid className="h-3.5 w-3.5" /> Tarjetas</span> },
+                    { value: "list", label: <span className="flex items-center gap-1.5"><ListIcon className="h-3.5 w-3.5" /> Lista</span> },
+                  ]}
+                />
               </div>
             }
           >
             {loading ? (
               <SkeletonCards count={4} />
             ) : filtered.length === 0 ? (
-              <div className="py-10 text-center text-sm text-muted-foreground">
-                {rows.length === 0 ? "Aún no hay supervisores" : "Ningún supervisor coincide con el filtro"}
-              </div>
+              <EmptyState
+                icon={<ShieldCheck />}
+                title={rows.length === 0 ? "Aún no hay supervisores" : "Ningún supervisor coincide con el filtro"}
+                description={rows.length === 0
+                  ? "Los supervisores que des de alta aparecerán aquí con su zona, vehículo y estado en turno."
+                  : "Prueba con otro texto de búsqueda o quita el filtro de las tarjetas de arriba."}
+                action={rows.length === 0
+                  ? <Button variant="brand" size="sm" onClick={() => setOpen(true)}><Plus className="mr-2 h-4 w-4" /> Nuevo supervisor</Button>
+                  : undefined}
+              />
             ) : viewMode === "list" ? (
               <DataTable
                 columns={columns}
                 data={filtered as (Supervisor & { id: string })[]}
                 onRowClick={(r) => navigate(`/supervisors/${r.id}`)}
-                emptyState={<div className="py-10 text-center text-sm text-muted-foreground">Aún no hay supervisores</div>}
+                emptyState={<EmptyState icon={<ShieldCheck />} title="Aún no hay supervisores" />}
               />
             ) : (
               <Stagger className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {filtered.map((s) => (
-                  <div
+                  <GlassPanel
                     key={s.id}
+                    flat
+                    hover
                     role="button"
                     tabIndex={0}
                     onClick={() => navigate(`/supervisors/${s.id}`)}
                     onKeyDown={(e) => { if (e.key === "Enter") navigate(`/supervisors/${s.id}`); }}
-                    className="cg-card cg-card-hover cursor-pointer p-4 text-left transition-shadow hover:shadow-md"
+                    className="cg-focus cursor-pointer p-4 text-left"
                   >
                     <div className="flex items-start gap-3">
-                      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary/12 text-sm font-bold text-primary">
+                      <span
+                        className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border text-sm font-bold"
+                        style={{ background: "var(--brand-wash)", borderColor: "var(--brand-line)", color: "var(--brand-text)" }}
+                      >
                         {initialsOf(s.fullName)}
                       </span>
                       <div className="min-w-0 flex-1">
@@ -285,18 +301,21 @@ export default function SupervisorsPage() {
                           <span className="truncate font-semibold text-foreground">{s.fullName || "—"}</span>
                           <div className="flex shrink-0 items-center gap-1">
                             {s.isOnDuty
-                              ? <StatusBadge tone="green">En turno</StatusBadge>
-                              : <StatusBadge tone="slate" dot={false}>Fuera</StatusBadge>}
+                              ? <StatusBadge tone="ok">En turno</StatusBadge>
+                              : <StatusBadge tone="neutral" dot={false}>Fuera</StatusBadge>}
                             {rowActions(s)}
                           </div>
                         </div>
-                        <div className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <div className="mt-0.5 flex items-center gap-1.5 text-xs" style={{ color: "var(--ink-soft)" }}>
                           <MapPin className="h-3.5 w-3.5 shrink-0" />
                           <span className="truncate">{s.zone || "Sin zona asignada"}</span>
                         </div>
                       </div>
                     </div>
-                    <div className="mt-3 space-y-1.5 border-t border-border/40 pt-3 text-xs text-muted-foreground">
+                    <div
+                      className="mt-3 space-y-1.5 border-t pt-3 text-xs"
+                      style={{ borderColor: "var(--hairline)", color: "var(--ink-soft)" }}
+                    >
                       <div className="flex items-center gap-1.5">
                         <Car className="h-3.5 w-3.5 shrink-0" />
                         <span className="truncate">{s.assignedVehicle || "Sin vehículo"}</span>
@@ -314,7 +333,7 @@ export default function SupervisorsPage() {
                         </div>
                       )}
                     </div>
-                  </div>
+                  </GlassPanel>
                 ))}
               </Stagger>
             )}
@@ -345,9 +364,9 @@ export default function SupervisorsPage() {
           <Input placeholder="Vehículo asignado" value={form.assignedVehicle} onChange={(e) => setForm((f) => ({ ...f, assignedVehicle: e.target.value }))} />
         </div>
 
-        <div className="mt-4 rounded-lg border border-border/60 bg-muted/30 p-3">
-          <p className="mb-2 text-sm font-medium text-foreground">Turno del supervisor</p>
-          <p className="mb-2 text-xs text-muted-foreground">Días y horario que el supervisor debe cumplir (opcional; también editable luego).</p>
+        <div className="glass-sunken mt-4 p-3">
+          <p className="mb-2 text-sm font-semibold text-foreground">Turno del supervisor</p>
+          <p className="mb-2 text-xs" style={{ color: "var(--ink-soft)" }}>Días y horario que el supervisor debe cumplir (opcional; también editable luego).</p>
           <div className="mb-3 flex flex-wrap gap-1.5">
             {WEEKDAYS.map((d) => {
               const on = turnoDays.includes(d.n);
@@ -356,7 +375,10 @@ export default function SupervisorsPage() {
                   key={d.n}
                   type="button"
                   onClick={() => setTurnoDays((prev) => (prev.includes(d.n) ? prev.filter((x) => x !== d.n) : [...prev, d.n]))}
-                  className={`rounded-md px-2.5 py-1.5 text-xs font-medium transition ${on ? "bg-primary text-primary-foreground" : "bg-background text-muted-foreground hover:bg-accent"}`}
+                  className="cg-focus rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition-all"
+                  style={on
+                    ? { background: "var(--brand)", color: "var(--brand-ink)", borderColor: "transparent", boxShadow: "0 0 18px -6px var(--brand-glow)" }
+                    : { background: "transparent", color: "var(--ink-soft)", borderColor: "var(--hairline)" }}
                 >
                   {d.label}
                 </button>
@@ -364,11 +386,11 @@ export default function SupervisorsPage() {
             })}
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <label className="text-xs text-muted-foreground">
+            <label className="cg-eyebrow">
               Entrada
               <Input type="time" value={form.turnoStart} onChange={(e) => setForm((f) => ({ ...f, turnoStart: e.target.value }))} className="mt-1" />
             </label>
-            <label className="text-xs text-muted-foreground">
+            <label className="cg-eyebrow">
               Salida
               <Input type="time" value={form.turnoEnd} onChange={(e) => setForm((f) => ({ ...f, turnoEnd: e.target.value }))} className="mt-1" />
             </label>

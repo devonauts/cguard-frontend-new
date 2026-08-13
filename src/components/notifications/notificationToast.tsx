@@ -3,19 +3,44 @@ import { LogIn, LogOut, AlertTriangle, Route, CalendarClock, UserCheck, Siren, B
 import { fileUrlFromPrivate } from '@/lib/fileUrl';
 import type { PlatformNotification } from '@/hooks/useNotificationStream';
 
-function iconFor(eventType: string): { Icon: typeof Bell; color: string } {
+/**
+ * Tono del aviso. Eran diez hexadecimales sueltos (verde, ámbar, morado, rosa…):
+ * diez colores que ignoraban el acento elegido y chocaban con la mitad de los
+ * tonos posibles. Ahora cada familia de evento cae en uno de los seis tonos del
+ * sistema. Se repiten a propósito —hay más familias que tonos— porque el tono
+ * dice QUÉ CLASE de aviso es (bueno / atención / grave / neutro), no cuál de las
+ * diez familias: para eso ya está el icono.
+ *
+ * `fill` es el color del lavado de fondo; `ink` la tinta del icono encima, que
+ * es una variable distinta porque el color de relleno usado como tinta no
+ * contrasta (ver la medición en la cabecera de tokens.css).
+ */
+type ToastTone = 'brand' | 'ok' | 'warn' | 'bad' | 'info' | 'neutral';
+
+const TONE_INK: Record<ToastTone, { fill: string; ink: string }> = {
+  brand:   { fill: 'var(--brand)',     ink: 'var(--brand-text)' },
+  ok:      { fill: 'var(--ok)',        ink: 'var(--ok-text)' },
+  warn:    { fill: 'var(--warn)',      ink: 'var(--warn-text)' },
+  bad:     { fill: 'var(--bad)',       ink: 'var(--bad-text)' },
+  info:    { fill: 'var(--info)',      ink: 'var(--info-text)' },
+  neutral: { fill: 'var(--ink-faint)', ink: 'var(--ink-soft)' },
+};
+
+function iconFor(eventType: string): { Icon: typeof Bell; tone: ToastTone } {
   const t = (eventType || '').toLowerCase();
-  if (t === 'guard.checkin') return { Icon: LogIn, color: '#22c55e' };
-  if (t === 'guard.checkout') return { Icon: LogOut, color: '#64748b' };
-  if (t === 'attendance.clockout_requested') return { Icon: LogOut, color: '#f59e0b' };
-  if (t.startsWith('incident')) return { Icon: AlertTriangle, color: '#ef4444' };
-  if (t.startsWith('patrol')) return { Icon: Route, color: '#a855f7' };
-  if (t.startsWith('shift') || t.startsWith('timeoff')) return { Icon: CalendarClock, color: '#0ea5e9' };
-  if (t.startsWith('visitor')) return { Icon: UserCheck, color: '#38bdf8' };
-  if (t.startsWith('dispatch')) return { Icon: Siren, color: '#e11d48' };
-  if (t.startsWith('message')) return { Icon: MessageSquare, color: '#C8860A' };
-  if (t.startsWith('task')) return { Icon: ClipboardList, color: '#f59e0b' };
-  return { Icon: Bell, color: '#0ea5e9' };
+  if (t === 'guard.checkin') return { Icon: LogIn, tone: 'ok' };
+  if (t === 'guard.checkout') return { Icon: LogOut, tone: 'neutral' };
+  if (t === 'attendance.clockout_requested') return { Icon: LogOut, tone: 'warn' };
+  // Incidentes y despachos son SIEMPRE rojos, pase lo que pase con el acento:
+  // `--bad` es fijo en tokens.css justamente por esto.
+  if (t.startsWith('incident')) return { Icon: AlertTriangle, tone: 'bad' };
+  if (t.startsWith('dispatch')) return { Icon: Siren, tone: 'bad' };
+  if (t.startsWith('patrol')) return { Icon: Route, tone: 'info' };
+  if (t.startsWith('shift') || t.startsWith('timeoff')) return { Icon: CalendarClock, tone: 'brand' };
+  if (t.startsWith('visitor')) return { Icon: UserCheck, tone: 'info' };
+  if (t.startsWith('message')) return { Icon: MessageSquare, tone: 'brand' };
+  if (t.startsWith('task')) return { Icon: ClipboardList, tone: 'warn' };
+  return { Icon: Bell, tone: 'info' };
 }
 
 function localDay(dateStr: string): string {
@@ -128,7 +153,8 @@ export function showNotificationToast(
   n: PlatformNotification,
   navigate?: (to: string) => void,
 ) {
-  const { Icon, color } = iconFor(n.eventType);
+  const { Icon, tone } = iconFor(n.eventType);
+  const { fill, ink } = TONE_INK[tone];
   // NOTE (token migration): this is a plain imperative function (not a React
   // component), so the `useFileUrl` hook can't be used here, and the live
   // notification payload carries only a raw `photoUrl` privateUrl string (no
@@ -148,29 +174,34 @@ export function showNotificationToast(
           if (target && navigate) navigate(target);
           toast.dismiss(id);
         }}
-        className="flex w-[360px] max-w-[88vw] cursor-pointer items-start gap-3 rounded-xl border border-border bg-background p-3 shadow-lg ring-1 ring-black/5 transition-colors hover:bg-muted/40"
+        className="glass-raised glass-hover flex w-[360px] max-w-[88vw] cursor-pointer items-start gap-3 p-3"
       >
         {photoUrl ? (
           <img
             src={photoUrl}
             alt=""
-            className="h-12 w-12 shrink-0 rounded-lg border border-border object-cover"
+            className="h-12 w-12 shrink-0 rounded-lg border object-cover"
+            style={{ borderColor: 'var(--hairline)' }}
             onError={(e) => ((e.currentTarget.style.display = 'none'))}
           />
         ) : (
           <span
-            className="grid h-12 w-12 shrink-0 place-items-center rounded-lg"
-            style={{ background: `color-mix(in oklab, ${color} 16%, transparent)`, color }}
+            className="grid h-12 w-12 shrink-0 place-items-center rounded-lg border"
+            style={{
+              background: `color-mix(in oklab, ${fill} 14%, transparent)`,
+              borderColor: `color-mix(in oklab, ${fill} 30%, transparent)`,
+              color: ink,
+            }}
           >
             <Icon size={20} />
           </span>
         )}
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold leading-snug text-foreground">{n.title}</p>
+          <p className="text-sm font-semibold leading-snug" style={{ color: 'var(--ink)' }}>{n.title}</p>
           {n.body && (
-            <p className="mt-0.5 line-clamp-3 text-xs text-muted-foreground">{n.body}</p>
+            <p className="mt-0.5 line-clamp-3 text-xs" style={{ color: 'var(--ink-soft)' }}>{n.body}</p>
           )}
-          <p className="mt-1 text-[10px] uppercase tracking-wide text-muted-foreground">Ahora</p>
+          <p className="cg-eyebrow mt-1.5">Ahora</p>
         </div>
         <button
           aria-label="Cerrar"
@@ -178,7 +209,8 @@ export function showNotificationToast(
             e.stopPropagation();
             toast.dismiss(id);
           }}
-          className="shrink-0 text-muted-foreground hover:text-foreground"
+          className="cg-focus shrink-0 rounded-full p-0.5 transition-colors"
+          style={{ color: 'var(--ink-faint)' }}
         >
           <X size={16} />
         </button>

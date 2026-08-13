@@ -1,23 +1,17 @@
 import { useEffect, useState } from 'react';
+import { FIELD_CLS } from '@/pages/admin/clientes/components/_shared/tab-kit';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { projectService } from '@/lib/api/projectService';
-import { PROJECT_TYPES, PROJECT_STATUS_LABELS } from '@/lib/projectTypes';
+import { PROJECT_STATUS_LABELS } from '@/lib/projectTypes';
 import type { ProjectTypeValue } from '@/lib/projectTypes';
 import { ProjectTypePicker } from '@/components/projects/ProjectBadge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { clientService } from '@/lib/api/clientService';
 import { Section } from '@/components/kit';
 import { Layers, FileText, CalendarRange, ClipboardList } from 'lucide-react';
@@ -181,7 +175,7 @@ export default function ProjectForm({
                     <FormLabel>Cliente *</FormLabel>
                     <FormControl>
                       <select
-                        className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
+                        className="cg-input flex h-10 w-full px-3 py-1 text-sm"
                         {...field}
                       >
                         <option value="">Selecciona un cliente</option>
@@ -288,7 +282,7 @@ export default function ProjectForm({
                   <FormLabel>Estado</FormLabel>
                   <FormControl>
                     <select
-                      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
+                      className={FIELD_CLS}
                       {...field}
                     >
                       {STATUSES.map(([val, label]) => (

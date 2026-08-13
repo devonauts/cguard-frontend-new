@@ -42,20 +42,21 @@ export default function ContextMenu({ menu, onClose }: { menu: CtxMenuState; onC
   return (
     <div
       role="menu"
-      className="fixed z-[90] min-w-[200px] max-w-[280px] rounded-xl border border-border/40 bg-card shadow-2xl py-1 animate-in fade-in zoom-in-95 duration-100"
+      className="glass-raised fixed z-[90] min-w-[200px] max-w-[280px] py-1 animate-in fade-in zoom-in-95 duration-100"
       style={{ left: x, top: y }}
       onMouseDown={e => e.stopPropagation()}
       onContextMenu={e => e.preventDefault()}
     >
       {menu.items.map((it, i) =>
         it.label === '—' ? (
-          <div key={i} className="my-1 h-px bg-border/30" />
+          <div key={i} className="my-1 h-px" style={{ background: "var(--hairline)" }} />
         ) : (
           <button
             key={i}
             disabled={it.disabled}
             onClick={() => { onClose(); it.onClick?.(); }}
-            className={`w-full text-left px-3 py-2 text-xs font-medium transition-colors disabled:opacity-40 disabled:cursor-default ${it.danger ? 'text-red-500 hover:bg-red-500/10' : 'text-foreground hover:bg-muted/40'}`}
+            className="cg-focus w-full px-3 py-2 text-left text-xs font-medium transition-colors hover:bg-[var(--glass-sunken)] disabled:cursor-default disabled:opacity-40"
+            style={{ color: it.danger ? 'var(--bad-text)' : 'var(--ink)' }}
           >
             {it.label}
           </button>

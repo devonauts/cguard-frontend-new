@@ -1,6 +1,5 @@
-import { useRef } from "react";
-import { Camera } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useRef, useState } from "react";
+import { Camera, UserRound } from "lucide-react";
 
 type Props = {
   src?: string | null;
@@ -8,43 +7,84 @@ type Props = {
   size?: number;
 };
 
+/**
+ * Zona de subida de la foto: hueco de cristal con filo discontinuo. Al arrastrar
+ * un archivo encima el filo y el fondo pasan al acento — es la única señal de
+ * «suelta aquí» que se lee sin texto.
+ */
 export default function AvatarUploader({ src, onChange, size = 128 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [dragging, setDragging] = useState(false);
+
+  const take = (file?: File | null) => {
+    if (file && file.type.startsWith("image/")) onChange(file);
+  };
 
   return (
-    <div className="relative" style={{ width: size, height: size }}>
-      <div className="w-full h-full rounded-md border border-border overflow-hidden bg-muted/30 grid place-items-center">
-        {src ? (
-          <img src={src} alt="avatar" className="w-full h-full object-cover" />
-        ) : (
-          <div className="w-20 h-20 opacity-70 text-muted-foreground flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-12 h-12" fill="currentColor">
-              <path d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5zm0 2c-3.866 0-7 3.134-7 7 0 .552.448 1 1 1h12c.552 0 1-.448 1-1 0-3.866-3.134-7-7-7z" />
-            </svg>
-          </div>
-        )}
+    <div className="flex flex-col items-center gap-2">
+      <div className="relative" style={{ width: size, height: size }}>
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragging(true);
+          }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setDragging(false);
+            take(e.dataTransfer.files?.[0]);
+          }}
+          aria-label="Cambiar foto de perfil"
+          className="glass-sunken cg-focus group grid h-full w-full place-items-center overflow-hidden transition-colors"
+          style={{
+            borderStyle: "dashed",
+            borderColor: dragging ? "var(--brand-line)" : "var(--hairline)",
+            background: dragging ? "var(--brand-wash)" : undefined,
+            borderRadius: "var(--r-lg)",
+          }}
+        >
+          {src ? (
+            <img src={src} alt="Foto de perfil" className="h-full w-full object-cover" />
+          ) : (
+            <span
+              className="flex flex-col items-center gap-1.5 px-2 text-center [&_svg]:size-9"
+              style={{ color: dragging ? "var(--brand-text)" : "var(--ink-faint)" }}
+            >
+              <UserRound />
+              <span className="text-[11px] font-medium leading-tight">Añadir foto</span>
+            </span>
+          )}
+        </button>
+
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -bottom-1 -right-1 grid h-9 w-9 place-items-center rounded-full border [&_svg]:size-4"
+          style={{
+            background: "var(--brand)",
+            borderColor: "var(--brand-line)",
+            color: "var(--brand-ink)",
+            boxShadow: "var(--lift-2)",
+          }}
+        >
+          <Camera />
+        </span>
+
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(e) => {
+            take(e.target.files?.[0]);
+            e.target.value = "";
+          }}
+        />
       </div>
-
-      <Button
-        type="button"
-        size="icon"
-        variant="secondary"
-        className="absolute -right-2 bottom-2 rounded-full"
-        onClick={() => inputRef.current?.click()}
-      >
-        <Camera className="w-4 h-4" />
-      </Button>
-
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={(e) => {
-          const f = e.target.files?.[0];
-          if (f) onChange(f);
-        }}
-      />
+      <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
+        Haz clic o arrastra una imagen
+      </p>
     </div>
   );
 }

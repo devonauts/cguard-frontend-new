@@ -160,7 +160,10 @@ export default function ProfilePhotoCapture({ value, onChange, previewUrl }: Pro
       <div className="flex flex-col items-center gap-4">
         {/* Avatar circle */}
         <div className="relative">
-          <div className="w-32 h-32 rounded-full border-4 border-slate-200 dark:border-white/10 overflow-hidden bg-slate-100 dark:bg-[#202020] flex items-center justify-center shadow-md">
+          <div
+            className="flex h-32 w-32 items-center justify-center overflow-hidden rounded-full border-4"
+            style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)', boxShadow: 'var(--lift-2)' }}
+          >
             {currentPreview ? (
               <img
                 src={currentPreview}
@@ -168,8 +171,8 @@ export default function ProfilePhotoCapture({ value, onChange, previewUrl }: Pro
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="flex flex-col items-center gap-1 text-muted-foreground">
-                <Shield className="w-10 h-10" />
+              <div className="flex flex-col items-center gap-1" style={{ color: 'var(--brand-text)' }}>
+                <Shield className="h-10 w-10" />
                 <span className="text-[10px] font-medium tracking-wide uppercase">Foto</span>
               </div>
             )}
@@ -178,7 +181,7 @@ export default function ProfilePhotoCapture({ value, onChange, previewUrl }: Pro
             <button
               type="button"
               onClick={handleRemove}
-              className="absolute -top-1 -right-1 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center shadow transition-colors"
+              className="cg-btn-bad cg-focus absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full transition-colors"
               title="Eliminar foto"
             >
               <X className="w-3.5 h-3.5" />
@@ -187,7 +190,7 @@ export default function ProfilePhotoCapture({ value, onChange, previewUrl }: Pro
         </div>
 
         {/* Instruction label */}
-        <p className="text-xs text-center text-muted-foreground max-w-[200px] leading-snug">
+        <p className="max-w-[200px] text-center text-xs leading-snug" style={{ color: 'var(--ink-soft)' }}>
           Foto del vigilante con uniforme completo en fondo neutro
         </p>
 
@@ -229,13 +232,20 @@ export default function ProfilePhotoCapture({ value, onChange, previewUrl }: Pro
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Camera className="w-5 h-5 text-blue-600" />
+              <Camera className="brand-text h-5 w-5" />
               Capturar Foto del Vigilante
             </DialogTitle>
           </DialogHeader>
 
           {/* Instructions banner */}
-          <div className="rounded-lg bg-blue-500/10 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 px-4 py-3 text-sm text-blue-600 dark:text-blue-300">
+          <div
+            className="rounded-xl border px-4 py-3 text-sm"
+            style={{
+              background: 'color-mix(in oklab, var(--info) 12%, transparent)',
+              borderColor: 'color-mix(in oklab, var(--info) 28%, transparent)',
+              color: 'var(--info-text)',
+            }}
+          >
             <p className="font-semibold mb-1 flex items-center gap-1.5"><ClipboardList className="h-4 w-4" /> Instrucciones para la foto:</p>
             <ul className="list-disc list-inside space-y-0.5 text-xs">
               <li>El vigilante debe vestir <strong>uniforme completo</strong> y presentable</li>
@@ -254,7 +264,8 @@ export default function ProfilePhotoCapture({ value, onChange, previewUrl }: Pro
           )}
 
           {/* Video / captured preview */}
-          <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
+          {/* Bandas del vídeo: pozo hundido del sistema, no un negro escrito a mano. */}
+          <div className="glass-sunken relative aspect-video overflow-hidden rounded-xl">
             {capturedUrl ? (
               <img src={capturedUrl} alt="Foto capturada" className="w-full h-full object-contain" />
             ) : (
@@ -266,7 +277,7 @@ export default function ProfilePhotoCapture({ value, onChange, previewUrl }: Pro
               />
             )}
             {!cameraReady && !capturedUrl && !cameraError && (
-              <div className="absolute inset-0 flex items-center justify-center text-white text-sm">
+              <div className="absolute inset-0 flex items-center justify-center text-sm" style={{ color: 'var(--ink-soft)' }}>
                 Iniciando cámara…
               </div>
             )}
@@ -281,7 +292,7 @@ export default function ProfilePhotoCapture({ value, onChange, previewUrl }: Pro
                   <RotateCcw className="w-4 h-4" />
                   Retomar
                 </Button>
-                <Button type="button" onClick={confirmPhoto} className="gap-1.5 bg-green-600 hover:bg-green-700 text-white">
+                <Button type="button" variant="brand" onClick={confirmPhoto} className="gap-1.5">
                   <Check className="w-4 h-4" />
                   Usar esta foto
                 </Button>

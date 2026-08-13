@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { StatusBadge, FadeIn } from "@/components/kit";
+import { StatusBadge, FadeIn, IconTile } from "@/components/kit";
 import { ApiService } from "@/services/api/apiService";
 import { invalidateEntity } from "@/lib/queryClient";
 import { usePermissions } from "@/hooks/usePermissions";
@@ -29,11 +29,14 @@ interface StationDetail extends Station {
     finishTimeInDay?: string | null;
 }
 
-const HUES = [205, 150, 265, 28, 340, 95, 180, 12];
-function hueFor(name: string): number {
+// Cada vigilante recibe un tinte estable derivado del acento del usuario: el
+// mismo tono rotado. Así dos iniciales se distinguen sin escribir un color, y
+// todo el corrillo se repinta si se cambia el acento.
+const HUE_STEPS = [0, 200, 45, 250, 100, 310, 155, 25];
+function hueStepFor(name: string): number {
     let h = 0;
     for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
-    return HUES[h % HUES.length];
+    return HUE_STEPS[h % HUE_STEPS.length];
 }
 
 const SCHEDULE_LABEL: Record<string, string> = {
@@ -124,12 +127,19 @@ export default function StationHero({
 
     return (
         <FadeIn>
-            <div className="mb-4 rounded-2xl border bg-gradient-to-r from-primary/10 via-card to-card p-4 md:p-5">
+            <div className="glass relative mb-4 overflow-hidden p-4 md:p-5">
+                {/* El halo del acento va DETRÁS del cristal: es lo que el desenfoque
+                    difumina para que la cabecera tenga profundidad. */}
+                <div
+                    aria-hidden
+                    className="pointer-events-none absolute -right-24 -top-28 h-64 w-64 rounded-full blur-3xl"
+                    style={{ background: 'radial-gradient(circle, var(--brand) 0%, transparent 70%)', opacity: 0.16 }}
+                />
                 {/* El contexto cliente → sede vive ahora en el breadcrumb del layout. */}
-                <div className="flex flex-wrap items-start gap-4">
-                    <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-primary/15 text-primary">
-                        {station?.isMobile ? <Smartphone className="h-8 w-8" /> : <Shield className="h-8 w-8" />}
-                    </div>
+                <div className="relative flex flex-wrap items-start gap-4">
+                    <IconTile size="lg">
+                        {station?.isMobile ? <Smartphone /> : <Shield />}
+                    </IconTile>
 
                     <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
@@ -154,11 +164,11 @@ export default function StationHero({
                                 </div>
                             ) : (
                                 <>
-                                    <h2 className="truncate text-xl font-bold leading-tight">{name}</h2>
+                                    <h2 className="font-display truncate text-xl font-bold leading-tight">{name}</h2>
                                     {canEdit && (
                                         <button
                                             aria-label="Renombrar puesto"
-                                            className="rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+                                            className="cg-btn-ghost cg-focus rounded-md p-1"
                                             onClick={() => {
                                                 setDraft(name);
                                                 setEditing(true);
@@ -169,11 +179,11 @@ export default function StationHero({
                                     )}
                                 </>
                             )}
-                            {station?.nickname && <StatusBadge tone="slate">{station.nickname}</StatusBadge>}
-                            {station?.isMobile && <StatusBadge tone="orange">Puesto móvil</StatusBadge>}
+                            {station?.nickname && <StatusBadge tone="neutral">{station.nickname}</StatusBadge>}
+                            {station?.isMobile && <StatusBadge tone="warn">Puesto móvil</StatusBadge>}
                         </div>
 
-                        <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
+                        <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm" style={{ color: 'var(--ink-soft)' }}>
                             <span className="flex items-center gap-1.5">
                                 <Clock className="h-3.5 w-3.5" />
                                 {station?.startingTimeInDay || station?.finishTimeInDay
@@ -194,36 +204,37 @@ export default function StationHero({
                         {/* De turno AHORA */}
                         <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm">
                             {onDuty === null ? null : onDuty.length ? (
-                                <span className="flex items-center gap-1.5 font-medium text-emerald-600 dark:text-emerald-400">
-                                    <span className="relative flex h-2.5 w-2.5">
-                                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-                                        <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                                    </span>
+                                <span className="flex items-center gap-1.5 font-medium" style={{ color: 'var(--ok-text)' }}>
+                                    <span className="cc-dot" style={{ background: 'var(--ok)' }} />
                                     De turno ahora: {onDuty.map((g) => g.name).join(", ")}
                                 </span>
                             ) : (
-                                <span className="flex items-center gap-1.5 text-muted-foreground">
-                                    <span className="inline-flex h-2.5 w-2.5 rounded-full bg-muted-foreground/40" />
+                                <span className="flex items-center gap-1.5" style={{ color: 'var(--ink-soft)' }}>
+                                    <span className="inline-flex h-2.5 w-2.5 rounded-full" style={{ background: 'var(--ink-faint)' }} />
                                     Nadie de turno en este momento
                                 </span>
                             )}
 
                             {guards.length > 0 && (
-                                <span className="flex items-center gap-2 text-muted-foreground">
+                                <span className="flex items-center gap-2" style={{ color: 'var(--ink-soft)' }}>
                                     <span className="flex -space-x-1.5">
-                                        {guards.slice(0, 6).map((g) => (
-                                            <span
-                                                key={g.id}
-                                                title={g.name}
-                                                className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-card text-[10px] font-bold"
-                                                style={{
-                                                    backgroundColor: `hsl(${hueFor(g.name)} 65% 88%)`,
-                                                    color: `hsl(${hueFor(g.name)} 55% 30%)`,
-                                                }}
-                                            >
-                                                {g.name.charAt(0).toUpperCase()}
-                                            </span>
-                                        ))}
+                                        {guards.slice(0, 6).map((g) => {
+                                            const paso = hueStepFor(g.name);
+                                            return (
+                                                <span
+                                                    key={g.id}
+                                                    title={g.name}
+                                                    className="flex h-6 w-6 items-center justify-center rounded-full border-2 text-[10px] font-bold"
+                                                    style={{
+                                                        borderColor: 'var(--glass-solid)',
+                                                        backgroundColor: `color-mix(in oklab, oklch(from var(--brand) l c calc(h + ${paso})) 22%, transparent)`,
+                                                        color: `oklch(from var(--brand-text) l c calc(h + ${paso}))`,
+                                                    }}
+                                                >
+                                                    {g.name.charAt(0).toUpperCase()}
+                                                </span>
+                                            );
+                                        })}
                                     </span>
                                     {guards.length} asignado(s)
                                 </span>

@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
   Select,
@@ -28,7 +27,7 @@ import { TRAINING_CATEGORIES, TRAINING_LEVELS } from './trainingConstants';
 import LessonsManager from './components/LessonsManager';
 import QuizManager from './components/QuizManager';
 import AssignGuardsPanel from './components/AssignGuardsPanel';
-import { PageContainer, PageHeader, StatusBadge, EmptyState } from '@/components/kit';
+import { PageContainer, PageHeader, StatusBadge, EmptyState, Section, SkeletonCards } from '@/components/kit';
 
 export default function TrainingCourseDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -118,7 +117,7 @@ export default function TrainingCourseDetailPage() {
   if (loading) {
     return (
       <AppLayout>
-        <div className="p-8 text-center text-muted-foreground">Cargando...</div>
+        <PageContainer width="wide" className="p-4 sm:p-6"><SkeletonCards count={4} /></PageContainer>
       </AppLayout>
     );
   }
@@ -148,7 +147,7 @@ export default function TrainingCourseDetailPage() {
         ]}
       />
 
-      <PageContainer width="wide" className="p-4">
+      <PageContainer width="wide" className="p-4 sm:p-6">
         <PageHeader
           icon={<GraduationCap />}
           title={course.title}
@@ -178,8 +177,7 @@ export default function TrainingCourseDetailPage() {
 
           {/* DETAILS */}
           <TabsContent value="details" className="mt-4">
-            <Card className="cg-card-hover rounded-2xl">
-              <CardContent className="pt-6 space-y-4 max-w-2xl">
+            <Section title="Detalles del curso" icon={<GraduationCap />} contentClassName="max-w-2xl space-y-4">
                 <div className="space-y-2">
                   <Label>Título *</Label>
                   <Input disabled={readOnly} value={meta.title} onChange={(e) => setMeta({ ...meta, title: e.target.value })} />
@@ -233,10 +231,10 @@ export default function TrainingCourseDetailPage() {
                     onChange={(e) => setMeta({ ...meta, certificateTemplate: e.target.value })}
                   />
                 </div>
-                <div className="flex items-center justify-between rounded-lg border p-3">
+                <div className="glass-sunken flex items-center justify-between p-3">
                   <div>
                     <Label className="cursor-pointer">Publicado</Label>
-                    <p className="text-xs text-muted-foreground">Los cursos publicados pueden asignarse a los vigilantes.</p>
+                    <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>Los cursos publicados pueden asignarse a los vigilantes.</p>
                   </div>
                   <Switch checked={meta.published} disabled={readOnly} onCheckedChange={(v) => setMeta({ ...meta, published: v })} />
                 </div>
@@ -247,8 +245,7 @@ export default function TrainingCourseDetailPage() {
                     </Button>
                   </div>
                 )}
-              </CardContent>
-            </Card>
+            </Section>
           </TabsContent>
 
           {/* LESSONS */}

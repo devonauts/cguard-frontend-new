@@ -176,8 +176,23 @@
     "icon": "Car",
     "expandable": true,
     "subItems": [
-      { "id": "patrulla-board", "name": "Patrulla vehicular", "path": "/vehicle-patrol" },
-      { "id": "patrulla-live", "name": "Seguimiento en vivo", "path": "/live-tracking" }
+      {
+        "id": "patrulla-board",
+        "name": "Patrulla vehicular",
+        "path": "/vehicle-patrol",
+        "children": [
+          {
+            "id": "patrulla-rutas",
+            "label": "Rutas de supervisión",
+            "path": "/vehicle-patrol/routes"
+          }
+        ]
+      },
+      {
+        "id": "patrulla-live",
+        "name": "Seguimiento en vivo",
+        "path": "/live-tracking"
+      }
     ]
   },
   {
@@ -186,8 +201,16 @@
     "icon": "MessageSquare",
     "expandable": true,
     "subItems": [
-      { "id": "msg-operativos", "name": "Mensajes Operativos", "path": "/messenger/operativos" },
-      { "id": "msg-clientes", "name": "Mensajes de Clientes", "path": "/messenger/clientes" }
+      {
+        "id": "msg-operativos",
+        "name": "Mensajes Operativos",
+        "path": "/messenger/operativos"
+      },
+      {
+        "id": "msg-clientes",
+        "name": "Mensajes de Clientes",
+        "path": "/messenger/clientes"
+      }
     ]
   },
   {

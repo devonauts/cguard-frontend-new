@@ -104,7 +104,7 @@ type Props = {
     <AppLayout>
       <GuardsLayout navKey="keep-safe" title="guards.nav.disponibilidad">
         <div>
-          <div className="bg-card border rounded-2xl p-6 shadow-sm">
+          <div className="glass p-6">
             <h3 className="font-display text-base font-semibold tracking-tight mb-4">{t('guards.availability.title', { defaultValue: 'Disponibilidad' })}</h3>
             <div>
               <div className="md:block hidden overflow-x-auto">
@@ -146,7 +146,7 @@ type Props = {
                   loading={false}
                   emptyMessage={t('guards.availability.empty', { defaultValue: 'No availability' }) as string}
                   renderCard={(a: Av) => (
-                    <div className="p-4 bg-card border rounded-lg">
+                    <div className="glass-flat p-4">
                       <div className="flex items-center justify-between">
                         <div className="text-sm font-semibold">{t(`guards.availability.days.${a.day}`, { defaultValue: a.day })}</div>
                         <div className="text-xs text-muted-foreground">{a.available ? `${a.start} — ${a.end}` : t('guards.availability.notAvailable', { defaultValue: 'Not available' })}</div>
@@ -157,7 +157,7 @@ type Props = {
               </div>
             </div>
               <div className="mt-4 flex justify-end">
-              <button onClick={handleSaveAvailability} className="px-4 py-2 bg-primary text-primary-foreground rounded">{t('guards.availability.save', { defaultValue: 'Save' })}</button>
+              <button onClick={handleSaveAvailability} className="cg-btn-brand cg-focus rounded-full px-4 py-2 text-sm font-semibold">{t('guards.availability.save', { defaultValue: 'Save' })}</button>
             </div>
           </div>
         </div>

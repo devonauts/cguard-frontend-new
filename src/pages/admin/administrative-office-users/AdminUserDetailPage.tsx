@@ -5,21 +5,18 @@
  * gestionar). La edición real (datos y overrides) vive en el formulario de
  * edición existente para no duplicar lógica sensible.
  */
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import AppLayout from '@/layouts/app-layout';
 import userService from '@/lib/api/userService';
 import { Button } from '@/components/ui/button';
-import { Section, EmptyState } from '@/components/kit';
+import { Section, EmptyState, Field, GlassPanel, StatusBadge, SkeletonCards } from '@/components/kit';
 import {
   ChevronRight, Pencil, Mail, Phone, MapPin, ShieldCheck, IdCard,
-  UserCog, KeyRound, CheckCircle2, XCircle, Loader2,
+  UserCog, KeyRound, CheckCircle2, XCircle,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { AdminUser, RoleRef, TenantUser } from './adminUserTypes';
-
-const HUES = [28, 205, 150, 265, 340, 95, 180, 12];
-const hueFor = (s: string) => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return HUES[h % HUES.length]; };
 
 const photoOf = (u: AdminUser | null): string | null => {
   const a = u?.avatars ?? u?.avatar ?? u?.profileImage;
@@ -27,23 +24,14 @@ const photoOf = (u: AdminUser | null): string | null => {
   return (f?.downloadUrl || f?.publicUrl || (typeof f === 'string' ? f : null)) || u?.photoUrl || null;
 };
 
-const STATUS_META: Record<string, { label: string; cls: string }> = {
-  active: { label: 'Activo', cls: 'bg-emerald-500/12 text-emerald-600' },
-  invited: { label: 'Invitación pendiente', cls: 'bg-orange-500/12 text-orange-600' },
-  pending: { label: 'Invitación pendiente', cls: 'bg-orange-500/12 text-orange-600' },
-  archived: { label: 'Archivado', cls: 'bg-muted text-muted-foreground' },
+const STATUS_META: Record<string, { label: string; tone: 'ok' | 'warn' | 'neutral' }> = {
+  active: { label: 'Activo', tone: 'ok' },
+  invited: { label: 'Invitación pendiente', tone: 'warn' },
+  pending: { label: 'Invitación pendiente', tone: 'warn' },
+  archived: { label: 'Archivado', tone: 'neutral' },
 };
 
 const fmtDate = (v: string | number | Date | null | undefined) => (v ? new Date(v).toLocaleDateString('es-EC', { day: '2-digit', month: 'short', year: 'numeric' }) : '—');
-
-function Field({ label, value }: { label: string; value: ReactNode }) {
-  return (
-    <div>
-      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</div>
-      <div className="mt-0.5 text-sm font-medium text-foreground">{value || <span className="text-muted-foreground">—</span>}</div>
-    </div>
-  );
-}
 
 export default function AdminUserDetailPage() {
   const { id } = useParams();
@@ -72,7 +60,6 @@ export default function AdminUserDetailPage() {
   const name = user?.fullName || [user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.name || user?.email || 'Usuario';
   const photo = photoOf(user);
   const nm = String(name || '?');
-  const hue = hueFor(nm);
   const statusKey = String(user?.status || 'active').toLowerCase();
   const status = STATUS_META[statusKey] || STATUS_META.active;
 
@@ -102,34 +89,42 @@ export default function AdminUserDetailPage() {
     <AppLayout>
       <div className="mx-auto w-full max-w-[1440px] space-y-4 px-4 py-4">
         {/* Breadcrumb */}
-        <div className="flex min-w-0 items-center gap-1.5 text-sm text-muted-foreground">
-          <Link to="/back-office" className="shrink-0 hover:text-primary">Usuarios administrativos</Link>
+        <div className="flex min-w-0 items-center gap-1.5 text-sm" style={{ color: 'var(--ink-soft)' }}>
+          <Link to="/back-office" className="shrink-0 hover:underline">Usuarios administrativos</Link>
           <ChevronRight className="h-3.5 w-3.5 shrink-0" />
-          <Link to={`/back-office/${id}`} className="max-w-[180px] truncate hover:text-primary sm:max-w-[240px]" title={name}>{name}</Link>
+          <Link to={`/back-office/${id}`} className="max-w-[180px] truncate hover:underline sm:max-w-[240px]" title={name}>{name}</Link>
           <ChevronRight className="h-3.5 w-3.5 shrink-0" />
           <span className="shrink-0 font-medium text-foreground">{tab === 'perfil' ? 'Perfil' : 'Permisos'}</span>
         </div>
 
         {/* Header card */}
-        <div className="rounded-2xl border border-border bg-card p-5">
+        <GlassPanel className="p-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="flex min-w-0 items-start gap-4">
               {photo ? (
-                <img src={photo} alt="" className="h-16 w-16 shrink-0 rounded-2xl border object-cover bg-muted" />
+                <img
+                  src={photo}
+                  alt=""
+                  className="h-16 w-16 shrink-0 rounded-2xl border object-cover"
+                  style={{ background: 'var(--glass-sunken)', borderColor: 'var(--hairline)' }}
+                />
               ) : (
-                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl text-2xl font-bold" style={{ backgroundColor: `hsl(${hue} 70% 92%)`, color: `hsl(${hue} 60% 32%)` }}>
+                <div
+                  className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border text-2xl font-bold"
+                  style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }}
+                >
                   {nm.charAt(0).toUpperCase()}
                 </div>
               )}
               <div className="min-w-0">
-                <h1 className="truncate text-2xl font-bold tracking-tight text-foreground">{name}</h1>
-                <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
-                  <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 font-semibold ${status.cls}`}>
+                <h1 className="font-display truncate text-2xl font-bold tracking-tight text-foreground">{name}</h1>
+                <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                  <StatusBadge tone={status.tone} dot={false}>
                     <ShieldCheck className="h-3 w-3" /> {status.label}
-                  </span>
-                  {roleName && <span className="rounded-full bg-blue-500/12 px-2.5 py-0.5 font-semibold text-blue-600">{roleName}</span>}
+                  </StatusBadge>
+                  {roleName && <StatusBadge tone="brand" dot={false}>{roleName}</StatusBadge>}
                 </div>
-                <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs text-muted-foreground">
+                <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs" style={{ color: 'var(--ink-soft)' }}>
                   {user?.email && <span className="inline-flex items-center gap-1.5 truncate"><Mail className="h-3.5 w-3.5" /> {user.email}</span>}
                   {(user?.phoneNumber || user?.phone) && <span className="inline-flex items-center gap-1.5"><Phone className="h-3.5 w-3.5" /> {user.phoneNumber || user.phone}</span>}
                 </div>
@@ -148,11 +143,11 @@ export default function AdminUserDetailPage() {
               </div>
             )}
           </div>
-        </div>
+        </GlassPanel>
 
-        {/* Tabs */}
+        {/* Pestañas */}
         <div className="overflow-x-auto">
-          <nav className="flex min-w-max items-center gap-1 border-b border-border">
+          <nav className="flex min-w-max items-center gap-1 border-b" style={{ borderColor: 'var(--hairline)' }}>
             {TABS.map((it) => {
               const active = tab === it.id;
               const Icon = it.icon;
@@ -160,10 +155,16 @@ export default function AdminUserDetailPage() {
                 <button
                   key={it.id}
                   onClick={() => setTab(it.id)}
-                  className={`relative flex items-center gap-1.5 whitespace-nowrap px-3.5 py-2.5 text-sm font-medium transition-colors ${active ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                  className="cg-focus relative flex items-center gap-1.5 whitespace-nowrap px-3.5 py-2.5 text-sm font-semibold transition-colors"
+                  style={{ color: active ? 'var(--brand-text)' : 'var(--ink-soft)' }}
                 >
                   <Icon className="h-4 w-4" /> {it.label}
-                  {active && <span className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-primary" />}
+                  {active && (
+                    <span
+                      className="absolute inset-x-2 -bottom-px h-0.5 rounded-full"
+                      style={{ background: 'var(--brand)', boxShadow: '0 0 12px 0 var(--brand-glow)' }}
+                    />
+                  )}
                 </button>
               );
             })}
@@ -172,13 +173,13 @@ export default function AdminUserDetailPage() {
 
         {/* Content */}
         {loading ? (
-          <div className="py-16 text-center"><Loader2 className="mx-auto h-6 w-6 animate-spin text-muted-foreground" /></div>
+          <SkeletonCards count={2} />
         ) : !user ? (
-          <EmptyState icon={<UserCog className="h-5 w-5" />} title="Usuario no encontrado" description="No se pudo cargar este usuario administrativo." />
+          <EmptyState icon={<UserCog />} title="Usuario no encontrado" description="No se pudo cargar este usuario de oficina." />
         ) : tab === 'perfil' ? (
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
             <div className="lg:col-span-2">
-              <Section title="Información general" icon={<IdCard className="h-4 w-4" />} action={<Button variant="outline" size="sm" onClick={() => navigate(`/back-office/edit/${id}`)}><Pencil className="mr-1.5 h-3.5 w-3.5" /> Editar información</Button>}>
+              <Section title="Información general" icon={<IdCard />} action={<Button variant="outline" size="sm" onClick={() => navigate(`/back-office/edit/${id}`)}><Pencil className="mr-1.5 h-3.5 w-3.5" /> Editar información</Button>}>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <Field label="Nombre completo" value={name} />
                   <Field label="Correo electrónico" value={user.email} />
@@ -190,14 +191,14 @@ export default function AdminUserDetailPage() {
               </Section>
             </div>
             <div>
-              <Section title="Ubicación de oficina" icon={<MapPin className="h-4 w-4" />}>
+              <Section title="Ubicación de oficina" icon={<MapPin />}>
                 {user.officeAddress ? (
                   <div className="space-y-2 text-sm">
-                    <div className="flex items-start gap-1.5"><MapPin className="mt-0.5 h-3.5 w-3.5 text-primary" /> <span>{user.officeAddress}</span></div>
-                    {user.officeGeofenceRadiusM != null && <div className="text-xs text-muted-foreground">Geocerca: {user.officeGeofenceRadiusM} m</div>}
+                    <div className="flex items-start gap-1.5"><MapPin className="mt-0.5 h-3.5 w-3.5" style={{ color: 'var(--brand-text)' }} /> <span>{user.officeAddress}</span></div>
+                    {user.officeGeofenceRadiusM != null && <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>Geocerca: {user.officeGeofenceRadiusM} m</div>}
                   </div>
                 ) : (
-                  <p className="text-sm text-muted-foreground">Sin ubicación de oficina configurada.</p>
+                  <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>Sin ubicación de oficina configurada.</p>
                 )}
               </Section>
             </div>
@@ -205,32 +206,52 @@ export default function AdminUserDetailPage() {
         ) : (
           <Section
             title="Permisos"
-            icon={<KeyRound className="h-4 w-4" />}
+            icon={<KeyRound />}
             action={<Button variant="brand" size="sm" onClick={() => navigate(`/back-office/edit/${id}`)}><KeyRound className="mr-1.5 h-3.5 w-3.5" /> Gestionar permisos</Button>}
           >
             <div className="space-y-4">
-              <div className="rounded-lg bg-muted/40 px-3 py-2.5 text-sm">
-                Rol base: <span className="font-medium text-foreground">{roleName || '—'}</span>. Los permisos se heredan del rol y pueden ajustarse por usuario.
+              <div className="glass-sunken px-3 py-2.5 text-sm">
+                Rol base: <span className="font-semibold text-foreground">{roleName || '—'}</span>. Los permisos se heredan del rol y pueden ajustarse por usuario.
               </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div className="rounded-xl border p-4">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-emerald-600"><CheckCircle2 className="h-4 w-4" /> Concedidos ({overrides.grant.length})</div>
+                <GlassPanel flat className="p-4">
+                  <div className="flex items-center gap-2 text-sm font-semibold" style={{ color: 'var(--ok-text)' }}>
+                    <CheckCircle2 className="h-4 w-4" /> Concedidos ({overrides.grant.length})
+                  </div>
                   {overrides.grant.length ? (
                     <div className="mt-2 flex flex-wrap gap-1.5">
-                      {overrides.grant.slice(0, 12).map((p: string) => <span key={p} className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-[11px] text-emerald-700">{p}</span>)}
-                      {overrides.grant.length > 12 && <span className="text-[11px] text-muted-foreground">+{overrides.grant.length - 12} más</span>}
+                      {overrides.grant.slice(0, 12).map((p: string) => (
+                        <span
+                          key={p}
+                          className="rounded-md px-2 py-0.5 text-[11px] font-medium"
+                          style={{ background: 'color-mix(in oklab, var(--ok) 14%, transparent)', color: 'var(--ok-text)' }}
+                        >
+                          {p}
+                        </span>
+                      ))}
+                      {overrides.grant.length > 12 && <span className="text-[11px]" style={{ color: 'var(--ink-faint)' }}>+{overrides.grant.length - 12} más</span>}
                     </div>
-                  ) : <p className="mt-1 text-xs text-muted-foreground">Sin permisos adicionales al rol.</p>}
-                </div>
-                <div className="rounded-xl border p-4">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-red-600"><XCircle className="h-4 w-4" /> Denegados ({overrides.deny.length})</div>
+                  ) : <p className="mt-1 text-xs" style={{ color: 'var(--ink-soft)' }}>Sin permisos adicionales al rol.</p>}
+                </GlassPanel>
+                <GlassPanel flat className="p-4">
+                  <div className="flex items-center gap-2 text-sm font-semibold" style={{ color: 'var(--bad-text)' }}>
+                    <XCircle className="h-4 w-4" /> Denegados ({overrides.deny.length})
+                  </div>
                   {overrides.deny.length ? (
                     <div className="mt-2 flex flex-wrap gap-1.5">
-                      {overrides.deny.slice(0, 12).map((p: string) => <span key={p} className="rounded-md bg-red-500/10 px-2 py-0.5 text-[11px] text-red-700">{p}</span>)}
-                      {overrides.deny.length > 12 && <span className="text-[11px] text-muted-foreground">+{overrides.deny.length - 12} más</span>}
+                      {overrides.deny.slice(0, 12).map((p: string) => (
+                        <span
+                          key={p}
+                          className="rounded-md px-2 py-0.5 text-[11px] font-medium"
+                          style={{ background: 'color-mix(in oklab, var(--bad) 14%, transparent)', color: 'var(--bad-text)' }}
+                        >
+                          {p}
+                        </span>
+                      ))}
+                      {overrides.deny.length > 12 && <span className="text-[11px]" style={{ color: 'var(--ink-faint)' }}>+{overrides.deny.length - 12} más</span>}
                     </div>
-                  ) : <p className="mt-1 text-xs text-muted-foreground">Ningún permiso del rol fue restringido.</p>}
-                </div>
+                  ) : <p className="mt-1 text-xs" style={{ color: 'var(--ink-soft)' }}>Ningún permiso del rol fue restringido.</p>}
+                </GlassPanel>
               </div>
             </div>
           </Section>

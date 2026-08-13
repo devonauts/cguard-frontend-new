@@ -85,12 +85,13 @@ function messagingLimitLabel(limit?: string | null): string {
   return map[limit.toUpperCase()] || limit;
 }
 
-function qualityTone(rating?: string | null): "green" | "orange" | "red" | "slate" {
+/** Calidad de la cuenta según Meta → tono del sistema (nunca el acento). */
+function qualityTone(rating?: string | null): "ok" | "warn" | "bad" | "neutral" {
   const r = (rating || "").toUpperCase();
-  if (r === "GREEN" || r === "HIGH") return "green";
-  if (r === "YELLOW" || r === "MEDIUM") return "orange";
-  if (r === "RED" || r === "LOW") return "red";
-  return "slate";
+  if (r === "GREEN" || r === "HIGH") return "ok";
+  if (r === "YELLOW" || r === "MEDIUM") return "warn";
+  if (r === "RED" || r === "LOW") return "bad";
+  return "neutral";
 }
 
 function fmtDate(value?: string | null) {
@@ -145,9 +146,9 @@ export default function WhatsAppBusinessCard() {
   }, []);
 
   const qualityLabels: Record<string, string> = {
-    green: t("comms.wa.qualityHigh", { defaultValue: "Alta" }),
-    orange: t("comms.wa.qualityMedium", { defaultValue: "Media" }),
-    red: t("comms.wa.qualityLow", { defaultValue: "Baja" }),
+    ok: t("comms.wa.qualityHigh", { defaultValue: "Alta" }),
+    warn: t("comms.wa.qualityMedium", { defaultValue: "Media" }),
+    bad: t("comms.wa.qualityLow", { defaultValue: "Baja" }),
   };
 
   const onConnect = async () => {
@@ -263,16 +264,22 @@ export default function WhatsAppBusinessCard() {
         icon={<MessageCircle />}
         action={
           connected ? (
-            <StatusBadge tone={status?.status === "error" ? "red" : "green"}>
+            <StatusBadge tone={status?.status === "error" ? "bad" : "ok"}>
               {status?.status === "error"
-                ? t("comms.wa.error", { defaultValue: "Error" })
+                ? t("comms.wa.error", { defaultValue: "Con problemas" })
                 : t("comms.wa.connectedBadge", { defaultValue: "Conectado" })}
             </StatusBadge>
-          ) : undefined
+          ) : (
+            <StatusBadge tone={configured ? "neutral" : "warn"}>
+              {configured
+                ? t("comms.wa.notConnectedBadge", { defaultValue: "Sin conectar" })
+                : t("comms.wa.pendingBadge", { defaultValue: "Pendiente de habilitar" })}
+            </StatusBadge>
+          )
         }
       >
         <div className="space-y-4">
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
             {t("comms.wa.subtitle", {
               defaultValue: "Integración oficial de Meta",
             })}
@@ -286,7 +293,7 @@ export default function WhatsAppBusinessCard() {
             </div>
           ) : !connected ? (
             <div className="space-y-4">
-              <p className="text-sm text-foreground">
+              <p className="text-sm">
                 {t("comms.wa.pitch", {
                   defaultValue:
                     "Conecta el WhatsApp de tu empresa. Tus clientes siguen escribiendo a tu número actual — no hay que cambiar de número.",
@@ -308,7 +315,7 @@ export default function WhatsAppBusinessCard() {
                     : t("comms.wa.connect", { defaultValue: "Conectar WhatsApp" })}
                 </Button>
                 {!configured && (
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs" style={{ color: "var(--warn-text)" }}>
                     {t("comms.wa.notConfigured", {
                       defaultValue:
                         "La plataforma aún no tiene configurada la app de Meta (contacta a soporte).",
@@ -319,27 +326,29 @@ export default function WhatsAppBusinessCard() {
             </div>
           ) : (
             <div className="space-y-5">
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-                <div className="min-w-0">
-                  <div className="cg-eyebrow mb-1">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                <div className="glass-flat min-w-0 p-3">
+                  <div className="cg-eyebrow mb-1.5">
                     {t("comms.wa.state", { defaultValue: "Estado" })}
                   </div>
-                  <StatusBadge tone={status?.status === "error" ? "red" : "green"}>
+                  <StatusBadge tone={status?.status === "error" ? "bad" : "ok"}>
                     {status?.status === "error"
-                      ? t("comms.wa.error", { defaultValue: "Error" })
+                      ? t("comms.wa.error", { defaultValue: "Con problemas" })
                       : t("comms.wa.connectedBadge", { defaultValue: "Conectado" })}
                   </StatusBadge>
                 </div>
                 <Field
+                  className="glass-flat p-3"
                   label={t("comms.wa.business", { defaultValue: "Empresa" })}
                   value={status?.businessName || status?.displayName || "—"}
                 />
                 <Field
+                  className="glass-flat p-3"
                   label={t("comms.wa.phone", { defaultValue: "Teléfono" })}
                   value={status?.displayPhoneNumber || "—"}
                 />
-                <div className="min-w-0">
-                  <div className="cg-eyebrow mb-1">
+                <div className="glass-flat min-w-0 p-3">
+                  <div className="cg-eyebrow mb-1.5">
                     {t("comms.wa.quality", { defaultValue: "Calidad" })}
                   </div>
                   <StatusBadge tone={qTone}>
@@ -347,12 +356,14 @@ export default function WhatsAppBusinessCard() {
                   </StatusBadge>
                 </div>
                 <Field
+                  className="glass-flat p-3"
                   label={t("comms.wa.messagingLimit", {
-                    defaultValue: "Límite de mensajería",
+                    defaultValue: "Mensajes por día",
                   })}
                   value={messagingLimitLabel(status?.messagingLimit)}
                 />
                 <Field
+                  className="glass-flat p-3"
                   label={t("comms.wa.connectedAt", { defaultValue: "Conectado el" })}
                   value={fmtDate(status?.connectedAt)}
                 />
@@ -375,9 +386,9 @@ export default function WhatsAppBusinessCard() {
                     : t("comms.wa.reconnect", { defaultValue: "Reconectar" })}
                 </Button>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
-                  className="border-red-200 text-red-600 hover:bg-red-500/10 hover:text-red-700"
+                  style={{ color: "var(--bad-text)" }}
                   onClick={() => setConfirmOpen(true)}
                   disabled={connecting || disconnecting}
                 >
@@ -420,7 +431,7 @@ export default function WhatsAppBusinessCard() {
           </>
         }
       >
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
           {t("comms.wa.disconnectDesc", {
             defaultValue:
               "La plataforma dejará de enviar mensajes de WhatsApp con tu número. Puedes volver a conectarlo cuando quieras — tu número y tu cuenta de Meta no se ven afectados.",

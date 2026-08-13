@@ -67,10 +67,16 @@ export interface PassdownDetail extends Passdown {
 }
 
 const passdownService = {
-  /** List passdowns, optionally filtered by status/station. */
+  /**
+   * List passdowns, optionally filtered by status/station/fecha.
+   * `from`/`to` (ISO) acotan `createdAt` EN EL SERVIDOR — el informe de relevos
+   * los manda para no depender de "los N más recientes".
+   */
   async list(params?: {
     status?: PassdownStatus;
     stationId?: string;
+    from?: string;
+    to?: string;
     limit?: number;
     offset?: number;
   }): Promise<{ rows: Passdown[]; count: number }> {

@@ -13,10 +13,10 @@ function fmtDate(s?: string | null): string {
   return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString("es-EC");
 }
 
-const PRIORITY_STYLE: Record<string, string> = {
-  alta: "text-red-600",
-  media: "text-amber-600",
-  baja: "text-muted-foreground",
+const PRIORITY_META: Record<string, { label: string; tone: "bad" | "warn" | "neutral" }> = {
+  alta: { label: "Alta", tone: "bad" },
+  media: { label: "Media", tone: "warn" },
+  baja: { label: "Baja", tone: "neutral" },
 };
 
 export default function TaskApprovals() {
@@ -62,17 +62,22 @@ export default function TaskApprovals() {
   };
 
   const columns: Column<TaskRow>[] = [
-    { key: "taskToDo", header: "Tarea", render: (_v, r) => <span className="font-medium text-foreground">{r.taskToDo}</span> },
-    { key: "station", header: "Puesto", render: (_v, r) => <span className="text-xs text-muted-foreground">{r.taskBelongsToStation?.stationName || "—"}</span> },
-    { key: "priority", header: "Prioridad", render: (_v, r) => <span className={`text-xs font-medium ${PRIORITY_STYLE[r.priority || "media"]}`}>{r.priority || "media"}</span> },
-    { key: "dateToDoTheTask", header: "Fecha límite", render: (_v, r) => <span className="text-xs text-muted-foreground">{fmtDate(r.dateToDoTheTask)}</span> },
-    { key: "createdAt", header: "Solicitada", render: (_v, r) => <span className="text-xs text-muted-foreground">{fmtDate(r.createdAt)}</span> },
+    { key: "taskToDo", header: "Tarea", render: (_v, r) => <span className="font-semibold">{r.taskToDo}</span> },
+    { key: "station", header: "Puesto", render: (_v, r) => <span className="text-xs" style={{ color: "var(--ink-soft)" }}>{r.taskBelongsToStation?.stationName || "—"}</span> },
+    {
+      key: "priority", header: "Prioridad", render: (_v, r) => {
+        const m = PRIORITY_META[r.priority || "media"] || PRIORITY_META.media;
+        return <StatusBadge tone={m.tone} dot={false}>{m.label}</StatusBadge>;
+      },
+    },
+    { key: "dateToDoTheTask", header: "Fecha límite", render: (_v, r) => <span className="text-xs tabular-nums" style={{ color: "var(--ink-soft)" }}>{fmtDate(r.dateToDoTheTask)}</span> },
+    { key: "createdAt", header: "Solicitada", render: (_v, r) => <span className="text-xs tabular-nums" style={{ color: "var(--ink-soft)" }}>{fmtDate(r.createdAt)}</span> },
     {
       key: "actions",
       header: "",
       render: (_v, r) => (
         <div className="flex gap-2">
-          <Button size="sm" disabled={busy} className="bg-emerald-600 hover:bg-emerald-700 text-white" onClick={() => approve(r)}>
+          <Button size="sm" disabled={busy} onClick={() => approve(r)}>
             Aprobar
           </Button>
           <Button size="sm" variant="outline" disabled={busy} onClick={() => reject(r)}>
@@ -91,7 +96,7 @@ export default function TaskApprovals() {
             icon={<ClipboardCheck />}
             title="Tareas por aprobar"
             subtitle="Tareas creadas por los clientes para sus puestos. Apruébalas para enviarlas a los vigilantes."
-            badges={rows.length > 0 ? <StatusBadge tone="orange">{rows.length} pendientes</StatusBadge> : undefined}
+            badges={!loading ? <StatusBadge tone={rows.length > 0 ? "warn" : "ok"}>{rows.length > 0 ? `${rows.length} pendientes` : "Nada pendiente"}</StatusBadge> : undefined}
           />
 
           <Section title="Pendientes de aprobación" icon={<ClipboardCheck />}>
@@ -107,7 +112,13 @@ export default function TaskApprovals() {
               <DataTable
                 columns={columns}
                 data={rows}
-                emptyState={<div className="py-10 text-center text-sm text-muted-foreground">No hay tareas pendientes de aprobación</div>}
+                emptyState={
+                  <EmptyState
+                    icon={<Inbox />}
+                    title="No hay tareas pendientes de aprobación"
+                    description="Las tareas que los clientes creen para sus puestos aparecerán aquí."
+                  />
+                }
               />
             )}
           </Section>

@@ -1,7 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Modal, Field, StatusBadge, SkeletonBlock, EmptyState } from '@/components/kit';
 import { Route, MapPin, Pencil } from 'lucide-react';
+import RouteMap, { type RouteMapStop } from './RouteMap';
+import { InsigniaOptimizada, PanelAhorro } from './OptimizacionPanel';
+import { aCoord, leerAhorro, leerExtremo } from './routeOptimizacion';
 import routeService from '@/lib/api/routeService';
 import userService from '@/lib/api/userService';
 import vehicleService from '@/lib/api/vehicleService';
@@ -22,6 +25,10 @@ interface RoutePoint {
   address?: string;
   scheduledHits?: number;
   duration?: number;
+  /** El orden del recorrido. Es lo que decide qué parada es la número 1. */
+  order?: number;
+  lat?: number | string | null;
+  lng?: number | string | null;
 }
 
 interface RouteType {
@@ -43,6 +50,17 @@ interface RouteType {
   endTime?: string;
   points?: RoutePoint[];
   status?: string;
+  /* ── Recorrido: extremos opcionales y estado de la optimización ────────── */
+  originLat?: number | string | null;
+  originLng?: number | string | null;
+  originLabel?: string | null;
+  destinationLat?: number | string | null;
+  destinationLng?: number | string | null;
+  destinationLabel?: string | null;
+  optimized?: boolean | null;
+  optimizedAt?: string | null;
+  optimizedMeta?: unknown;
+  roadPolyline?: string | null;
 }
 
 const DAY_LABEL: Record<string, string> = {
@@ -161,6 +179,42 @@ export default function RouteDetailModal({ open, onOpenChange, routeId }: Props)
     return () => { mounted = false; };
   }, [route]);
 
+  /** Las paradas EN SU ORDEN. `routePoint.order` es lo que manda. */
+  const paradasOrdenadas = useMemo<RoutePoint[]>(
+    () => (route?.points ? route.points.slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0)) : []),
+    [route],
+  );
+
+  const paradasMapa = useMemo<RouteMapStop[]>(
+    () =>
+      paradasOrdenadas
+        .map((p) => {
+          const c = aCoord(p.lat, p.lng);
+          if (!c) return null;
+          return {
+            id: String(p.id || p.siteId || p.postSiteId || ''),
+            nombre: p.siteName || p.address || String(p.siteId || ''),
+            direccion: p.address,
+            lat: c.lat,
+            lng: c.lng,
+            duracion: p.duration ?? null,
+            pasadas: p.scheduledHits ?? null,
+          } as RouteMapStop;
+        })
+        .filter((x): x is RouteMapStop => x != null),
+    [paradasOrdenadas],
+  );
+
+  const origen = useMemo(
+    () => leerExtremo(route?.originLat, route?.originLng, route?.originLabel),
+    [route],
+  );
+  const destino = useMemo(
+    () => leerExtremo(route?.destinationLat, route?.destinationLng, route?.destinationLabel),
+    [route],
+  );
+  const ahorro = useMemo(() => leerAhorro(route?.optimizedMeta), [route]);
+
   const handleEdit = () => {
     try {
       const t = localStorage.getItem('tenantId');
@@ -224,12 +278,18 @@ export default function RouteDetailModal({ open, onOpenChange, routeId }: Props)
             <Field label="Tipo" value={route.continuous ? 'Continua' : 'Programada'} />
             <Field label="Supervisor" value={supervisorValue} />
             <Field label="Vehículo" value={vehicleValue} />
-            <div className="min-w-0">
-              <div className="cg-eyebrow mb-0.5">Estado</div>
-              <StatusBadge tone={route.completed ? 'green' : (route.active === false ? 'slate' : 'primary')}>
-                {route.completed ? 'Completada' : (route.active === false ? 'Inactivo' : 'Activo')}
-              </StatusBadge>
-            </div>
+            {/* Mismo tono que la lista de rutas, que ya pintaba «Activo» en
+                verde. Aquí iba en el acento de marca: el mismo estado tenía dos
+                colores según por dónde se entrara, y gastaba el acento en un
+                dato que no es un aviso. */}
+            <Field
+              label="Estado"
+              value={(
+                <StatusBadge tone={route.completed ? 'ok' : (route.active === false ? 'neutral' : 'ok')}>
+                  {route.completed ? 'Completada' : (route.active === false ? 'Inactivo' : 'Activo')}
+                </StatusBadge>
+              )}
+            />
             <Field
               label="Ventana"
               value={`${route.windowStart ? new Date(route.windowStart).toLocaleDateString() : '—'} — ${route.windowEnd ? new Date(route.windowEnd).toLocaleDateString() : '—'}`}
@@ -245,19 +305,57 @@ export default function RouteDetailModal({ open, onOpenChange, routeId }: Props)
             {route.days && route.days.length > 0 && (
               <Field className="sm:col-span-2" label="Días" value={route.days.map((day) => DAY_LABEL[day] || day).join(', ')} />
             )}
+            <Field label="Origen" value={origen ? origen.label : 'Empieza en la primera parada'} />
+            <Field label="Destino" value={destino ? destino.label : 'Termina en la última parada'} />
           </div>
+
+          {/* El estado del orden y, si lo hay, lo que se ahorró. Va antes que la
+              lista: es lo primero que se pregunta quien abre una ruta. */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <div className="cg-eyebrow">Orden del recorrido</div>
+              <InsigniaOptimizada optimizada={route.optimized} optimizadaEn={route.optimizedAt} />
+            </div>
+            <PanelAhorro ahorro={ahorro} optimizadaEn={route.optimizedAt} />
+          </div>
+
+          {paradasMapa.length > 0 && (
+            <RouteMap
+              stops={paradasMapa}
+              origen={origen}
+              destino={destino}
+              roadPolyline={route.roadPolyline ?? null}
+              optimizada={Boolean(route.optimized)}
+              height={280}
+            />
+          )}
 
           <div>
             <div className="cg-eyebrow mb-2 flex items-center gap-1.5">
               <MapPin className="size-3.5" /> Puestos
             </div>
-            {(route.points && route.points.length) ? (
+            {paradasOrdenadas.length ? (
               <div className="space-y-2">
-                {route.points.map((p: any) => (
-                  <div key={p.id || p.siteId} className="rounded-xl border bg-muted/20 p-3">
-                    <div className="font-medium text-sm">{p.siteName || p.address || p.siteId}</div>
-                    <div className="mt-0.5 text-xs text-muted-foreground">
-                      Pasadas: {(p.scheduledHits !== undefined && p.scheduledHits !== null) ? String(p.scheduledHits) : '—'} — Duración: {(p.duration !== undefined && p.duration !== null) ? String(p.duration) + ' min' : '—'}
+                {paradasOrdenadas.map((p, idx) => (
+                  <div
+                    key={p.id || p.siteId || idx}
+                    className="flex items-start gap-3 rounded-xl border p-3"
+                    style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}
+                  >
+                    <span
+                      className="grid size-6 shrink-0 place-items-center rounded-full text-xs font-bold tabular-nums"
+                      style={{
+                        background: `color-mix(in oklab, var(--${route.optimized ? 'ok' : 'brand'}) 16%, transparent)`,
+                        color: `var(--${route.optimized ? 'ok' : 'brand'}-text)`,
+                      }}
+                    >
+                      {idx + 1}
+                    </span>
+                    <div className="min-w-0">
+                      <div className="text-sm font-medium">{p.siteName || p.address || p.siteId}</div>
+                      <div className="mt-0.5 text-xs" style={{ color: 'var(--ink-soft)' }}>
+                        Pasadas: {(p.scheduledHits !== undefined && p.scheduledHits !== null) ? String(p.scheduledHits) : '—'} — Duración: {(p.duration !== undefined && p.duration !== null) ? String(p.duration) + ' min' : '—'}
+                      </div>
                     </div>
                   </div>
                 ))}

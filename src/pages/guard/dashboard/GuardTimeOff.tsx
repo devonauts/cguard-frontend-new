@@ -57,9 +57,9 @@ export default function GuardTimeOff() {
 
   const statusIcon = (status: string) => {
     switch (status) {
-      case 'approved': return <CheckCircle size={14} className="text-green-600" />;
-      case 'rejected': return <XCircle size={14} className="text-red-600" />;
-      default: return <Clock size={14} className="text-amber-600" />;
+      case 'approved': return <CheckCircle size={14} style={{ color: 'var(--ok-text)' }} />;
+      case 'rejected': return <XCircle size={14} style={{ color: 'var(--bad-text)' }} />;
+      default: return <Clock size={14} style={{ color: 'var(--warn-text)' }} />;
     }
   };
 

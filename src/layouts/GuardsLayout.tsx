@@ -6,6 +6,7 @@ import {
   ChevronRight, Pencil, Mail, Phone, IdCard, MapPin, ShieldCheck,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Avatar, StatusBadge, TabNav } from '@/components/kit';
 import securityGuardService from '@/lib/api/securityGuardService';
 import { supervisorService } from '@/lib/api/supervisorService';
 import { fileUrlFromFile } from '@/lib/fileUrl';
@@ -24,12 +25,6 @@ const HIDDEN_GUARD_IDS = new Set([
   'disponibilidad', 'indicadores-kpi', 'recordatorios', 'archivos',
   'conjunto-habilidades', 'departamento', 'configuracion',
 ]);
-
-const HUES = [28, 205, 150, 265, 340, 95, 180, 12];
-const hueFor = (s: string) => {
-  let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
-  return HUES[h % HUES.length];
-};
 
 export default function GuardsLayout({ navKey, title, children }: Props) {
   const { t } = useTranslation();
@@ -101,8 +96,6 @@ export default function GuardsLayout({ navKey, title, children }: Props) {
   const rootLabel = isSupervisor ? 'Supervisores' : t('guards.list.title', 'Vigilantes');
   const landingPath = isSupervisor ? `/supervisors/${id}/perfil` : `/guards/${id}/resumen`;
   const displayName = entity?.name || (title ? t(title) : (cfg?.title ? t(cfg.title) : '—'));
-  const nm = String(displayName || '?');
-  const hue = hueFor(nm);
 
   const editTarget = isSupervisor ? `/supervisors/${id}/perfil` : `/security-guards/edit/${id}`;
 
@@ -127,27 +120,20 @@ export default function GuardsLayout({ navKey, title, children }: Props) {
       <div className="rounded-2xl border border-border bg-card p-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex min-w-0 items-start gap-4">
-            {entity?.photo ? (
-              <img src={entity.photo} alt="" className="h-16 w-16 shrink-0 rounded-2xl border object-cover bg-muted" />
-            ) : (
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl text-2xl font-bold" style={{ backgroundColor: `hsl(${hue} 70% 92%)`, color: `hsl(${hue} 60% 32%)` }}>
-                {nm.charAt(0).toUpperCase()}
-              </div>
-            )}
+            <Avatar name={displayName} src={entity?.photo} size="lg" className="h-16 w-16 text-xl" />
             <div className="min-w-0">
               <h1 className="truncate text-2xl font-bold tracking-tight text-foreground">{displayName}</h1>
               <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
                 {isSupervisor ? (
-                  <span className="rounded-full bg-blue-500/12 px-2.5 py-0.5 font-semibold text-blue-600">Supervisor</span>
+                  <StatusBadge tone="info" dot={false}>Supervisor</StatusBadge>
                 ) : (
-                  <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 font-semibold ${entity?.activated ? 'bg-emerald-500/12 text-emerald-600' : 'bg-muted text-muted-foreground'}`}>
+                  <StatusBadge tone={entity?.activated ? 'ok' : 'neutral'} dot={false}>
                     <ShieldCheck className="h-3 w-3" /> {entity?.activated ? t('guards.profile.access.statusActive', 'App activa') : t('guards.profile.access.statusPending', 'App pendiente')}
-                  </span>
+                  </StatusBadge>
                 )}
-                <span className={`inline-flex items-center gap-1 font-medium ${entity?.onDuty ? 'text-emerald-600' : 'text-muted-foreground'}`}>
-                  <span className={`h-1.5 w-1.5 rounded-full ${entity?.onDuty ? 'bg-emerald-500' : 'bg-slate-400'}`} />
+                <StatusBadge tone={entity?.onDuty ? 'ok' : 'neutral'}>
                   {entity?.onDuty ? 'En servicio' : 'Fuera de servicio'}
-                </span>
+                </StatusBadge>
                 {entity?.zone && <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-0.5 font-medium text-muted-foreground"><MapPin className="h-3 w-3" /> {entity.zone}</span>}
                 {!isSupervisor && rating && (
                   <GuardRatingLevel average={rating.average} count={rating.count} onClick={() => navigate(`/guards/${id}/reviews`)} />
@@ -170,25 +156,14 @@ export default function GuardsLayout({ navKey, title, children }: Props) {
         </div>
       </div>
 
-      {/* Tabs (sección horizontal, igual que el detalle de cliente) */}
-      <div className="overflow-x-auto">
-        <nav className="flex min-w-max items-center gap-1 border-b border-border">
-          {items.map((it: any) => {
-            const path = resolvePath(it.path);
-            const active = location.pathname === path || location.pathname.startsWith(path + '/');
-            return (
-              <Link
-                key={it.id}
-                to={path}
-                className={`relative flex items-center gap-1.5 whitespace-nowrap px-3.5 py-2.5 text-sm font-medium transition-colors ${active ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
-              >
-                {labelOf(it)}
-                {active && <span className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-primary" />}
-              </Link>
-            );
-          })}
-        </nav>
-      </div>
+      {/* Pestañas de la ficha — la pieza del kit, igual que en cliente y puesto. */}
+      <TabNav
+        value={items.find((it: any) => {
+          const path = resolvePath(it.path);
+          return location.pathname === path || location.pathname.startsWith(path + '/');
+        })?.id ?? ''}
+        items={items.map((it: any) => ({ value: it.id, label: labelOf(it), to: resolvePath(it.path) }))}
+      />
 
       <div>{children}</div>
     </div>

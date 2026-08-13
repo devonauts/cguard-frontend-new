@@ -127,14 +127,20 @@ export function CategorySelect({
                         </span>
                     ) : (
                         selected.map((s) => (
-                            <span key={s.id} className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                            <span
+                                key={s.id}
+                                className="inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs font-medium"
+                                style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }}
+                            >
                                 {s.name}
                                 <span
                                     role="button"
                                     tabIndex={-1}
                                     aria-label={`Quitar ${s.name}`}
                                     onClick={(e) => { e.stopPropagation(); remove(s.id); }}
-                                    className="-mr-0.5 rounded p-0.5 hover:bg-primary/20 hover:text-[#8a5e07]"
+                                    // El `#8a5e07` de antes era el oro viejo oscurecido a mano —
+                                    // sólo funcionaba si el acento seguía siendo dorado.
+                                    className="-mr-0.5 rounded p-0.5 hover:bg-[var(--brand-line)]"
                                 >
                                     <X size={12} />
                                 </span>
@@ -167,7 +173,14 @@ export function CategorySelect({
                                 const checked = selectedIds.includes(opt.id);
                                 return (
                                     <CommandItem key={opt.id} value={opt.name} onSelect={() => toggle(opt.id)} className="gap-2">
-                                        <span className={`flex h-4 w-4 items-center justify-center rounded border ${checked ? 'border-primary bg-primary text-white' : 'border-input'}`}>
+                                        {/* Marcado: relleno de marca con tinta `--brand-ink`. Blanco
+                                            sobre `--brand` daría ~2,2:1 — ver tokens.css. */}
+                                        <span
+                                            className="flex h-4 w-4 items-center justify-center rounded border"
+                                            style={checked
+                                                ? { borderColor: 'var(--brand)', background: 'var(--brand)', color: 'var(--brand-ink)' }
+                                                : { borderColor: 'var(--hairline)' }}
+                                        >
                                             {checked && <Check size={12} />}
                                         </span>
                                         <span>{opt.name}</span>

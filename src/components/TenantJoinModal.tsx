@@ -700,8 +700,22 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
 
                 <div className="mt-4">
                     <div className="flex gap-3 mb-4">
-                        <button className={`px-4 py-2 rounded ${mode === 'join' ? 'bg-black text-white' : 'bg-transparent border'}`} onClick={() => setMode('join')}>{t('tenantJoinModal.joinButton')}</button>
-                        <button className={`px-4 py-2 rounded ${mode === 'create' ? 'bg-black text-white' : 'bg-transparent border'}`} onClick={() => setMode('create')}>{t('tenantJoinModal.createButton')}</button>
+                        {/* Conmutador de modo. El negro plano de antes no salía de
+                            ningún token y no se veía en tema oscuro; ahora es el
+                            relleno de marca con tinta `--brand-ink`, que sigue al
+                            acento configurado. */}
+                        <button
+                            className="cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-colors"
+                            style={mode === 'join'
+                                ? { background: 'var(--brand)', color: 'var(--brand-ink)', boxShadow: '0 0 18px -6px var(--brand-glow)' }
+                                : { background: 'transparent', color: 'var(--ink-soft)', border: '1px solid var(--hairline)' }}
+                            onClick={() => setMode('join')}>{t('tenantJoinModal.joinButton')}</button>
+                        <button
+                            className="cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-colors"
+                            style={mode === 'create'
+                                ? { background: 'var(--brand)', color: 'var(--brand-ink)', boxShadow: '0 0 18px -6px var(--brand-glow)' }
+                                : { background: 'transparent', color: 'var(--ink-soft)', border: '1px solid var(--hairline)' }}
+                            onClick={() => setMode('create')}>{t('tenantJoinModal.createButton')}</button>
                     </div>
 
                     {mode === 'join' ? (
@@ -716,7 +730,7 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
                             />
                             <div className="flex justify-end gap-2">
                                 <Button variant="ghost" onClick={() => setToken('')} disabled={loading}>{t('actions.cancel') || 'Limpiar'}</Button>
-                                <Button className="bg-primary hover:bg-primary/90 text-white px-8"
+                                <Button className="px-8"
                                     onClick={handleAccept} disabled={loading}>{t('tenantJoinModal.joinButton') /* reuse join text */}</Button>
                             </div>
                         </div>
@@ -724,7 +738,7 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
                         <div className="grid gap-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="text-sm">{t('tenantJoinModal.companyName')}<span className="text-red-500 ml-1">*</span></label>
+                                    <label className="text-sm">{t('tenantJoinModal.companyName')}<span className="ml-1" style={{ color: "var(--bad-text)" }}>*</span></label>
                                     <Input value={form.name} onChange={(e) => setForm((s: any) => ({ ...s, name: e.target.value }))} />
                                 </div>
                                 <div>
@@ -735,27 +749,27 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
                                         onCountryChange={(c: any) => setLandlineCountry(c?.code || c?.name || '')}
                                         placeholder="Número fijo"
                                     />
-                                    {landlineError && <div className="text-red-500 text-xs mt-1">{landlineError}</div>}
+                                    {landlineError && <div className="text-xs mt-1" style={{ color: "var(--bad-text)" }}>{landlineError}</div>}
                                 </div>
                                 <div>
-                                    <label className="text-sm">{t('tenantJoinModal.mobilePhone')}<span className="text-red-500 ml-1">*</span></label>
+                                    <label className="text-sm">{t('tenantJoinModal.mobilePhone')}<span className="ml-1" style={{ color: "var(--bad-text)" }}>*</span></label>
                                     <PhoneInput
                                         value={form.phone}
                                         onChange={(v) => setForm((s: any) => ({ ...s, phone: v }))}
                                         onCountryChange={(c: any) => setForm((s: any) => ({ ...s, phoneCountry: c?.code || c?.name || '' }))}
                                         placeholder="Número móvil"
                                     />
-                                    {phoneError && <p className="text-sm text-red-600 mt-1">{phoneError}</p>}
+                                    {phoneError && <p className="text-sm mt-1" style={{ color: "var(--bad-text)" }}>{phoneError}</p>}
                                 </div>
                                 <div>
-                                    <label className="text-sm">Email<span className="text-red-500 ml-1">*</span></label>
+                                    <label className="text-sm">Email<span className="ml-1" style={{ color: "var(--bad-text)" }}>*</span></label>
                                     <Input
                                         value={form.email}
                                         onChange={e => setForm((s: any) => ({ ...s, email: e.target.value }))}
                                         placeholder="correo@ejemplo.com"
                                         type="email"
                                     />
-                                    {emailError && <p className="text-sm text-red-600 mt-1">{emailError}</p>}
+                                    {emailError && <p className="text-sm mt-1" style={{ color: "var(--bad-text)" }}>{emailError}</p>}
                                 </div>
                             </div>
 
@@ -768,7 +782,7 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
                                         placeholder="empresa.com"
                                         type="url"
                                     />
-                                    {websiteError && <p className="text-sm text-red-600 mt-1">{websiteError}</p>}
+                                    {websiteError && <p className="text-sm mt-1" style={{ color: "var(--bad-text)" }}>{websiteError}</p>}
                                 </div>
                                 <div>
                                     <label className="text-sm">{t('tenantJoinModal.businessLogo')}</label>
@@ -785,25 +799,25 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
                                         </Button>
                                         {logoFile && <span className="text-xs text-foreground/70 truncate max-w-[220px]">{logoFile.name}</span>}
                                     </div>
-                                    {logoError && <p className="text-sm text-red-600 mt-1">{logoError}</p>}
+                                    {logoError && <p className="text-sm mt-1" style={{ color: "var(--bad-text)" }}>{logoError}</p>}
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="text-sm">{t('tenantJoinModal.businessTitle')}<span className="text-red-500 ml-1">*</span></label>
+                                    <label className="text-sm">{t('tenantJoinModal.businessTitle')}<span className="ml-1" style={{ color: "var(--bad-text)" }}>*</span></label>
                                     <Input value={form.businessTitle} onChange={(e) => setForm((s: any) => ({ ...s, businessTitle: e.target.value }))} />
                                 </div>
                                 <div>
-                                    <label className="text-sm">{t('tenantJoinModal.taxNumber')}<span className="text-red-500 ml-1">*</span></label>
+                                    <label className="text-sm">{t('tenantJoinModal.taxNumber')}<span className="ml-1" style={{ color: "var(--bad-text)" }}>*</span></label>
                                     <Input value={form.taxNumber} onChange={(e) => setForm((s: any) => ({ ...s, taxNumber: e.target.value }))} />
-                                    {taxError && <p className="text-sm text-red-600 mt-1">{taxError}</p>}
+                                    {taxError && <p className="text-sm mt-1" style={{ color: "var(--bad-text)" }}>{taxError}</p>}
                                 </div>
                             </div>
 
                             <div className="grid gap-3">
                                 <div className="flex items-center justify-between">
-                                    <label className="text-sm">{t('tenantJoinModal.searchAddress')}<span className="text-red-500 ml-1">*</span></label>
+                                    <label className="text-sm">{t('tenantJoinModal.searchAddress')}<span className="ml-1" style={{ color: "var(--bad-text)" }}>*</span></label>
                                     <Button
                                         type="button"
                                         variant="outline"
@@ -856,7 +870,7 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
 
                                 {!showAddressAutocomplete && (
                                     <div>
-                                        <label className="text-sm">Dirección<span className="text-red-500 ml-1">*</span></label>
+                                        <label className="text-sm">Dirección<span className="ml-1" style={{ color: "var(--bad-text)" }}>*</span></label>
                                         <Input value={form.address} onChange={(e) => setForm((s: any) => ({ ...s, address: e.target.value }))} placeholder="Ingrese la dirección completa" />
                                     </div>
                                 )}
@@ -899,11 +913,11 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
 
                             <div className="flex items-center justify-between gap-3 mt-2">
                                 <div className="flex flex-col gap-2">
-                                    <Button variant="destructive" className="bg-red-500 hover:bg-red-600 text-white" onClick={clearDraft} disabled={loading}>Borrar borrador</Button>
+                                    <Button variant="destructive" onClick={clearDraft} disabled={loading}>Borrar borrador</Button>
                                 </div>
                                 <div className="flex justify-end gap-3">
                                     <Button variant="ghost" onClick={() => closeWithoutReopen()} disabled={loading}>{t('actions.cancel')}</Button>
-                                    <Button className="bg-primary hover:bg-primary/90 text-white px-8"
+                                    <Button className="px-8"
                                         onClick={handleCreate}
                                         disabled={
                                             loading ||

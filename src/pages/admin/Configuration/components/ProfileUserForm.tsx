@@ -11,15 +11,14 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Mail, Phone, Globe } from "lucide-react";
+import { Mail, Phone, Globe, UserRound, Languages } from "lucide-react";
 import AccountService, { ProfilePayload } from "@/services/accountService";
 import { useAuth } from "@/contexts/AuthContext";
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import AvatarUploader from "./profile/AvatarUploader";
 import PhoneField from "./profile/PhoneField";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Section, Modal } from "@/components/kit";
+import { Section, Modal, Stagger, StatusBadge, SkeletonCards } from "@/components/kit";
 
 type MeTenantSetting = { theme?: string; logoUrl?: string | null };
 type MeTenant = { name?: string; phone?: string; settings?: MeTenantSetting[] };
@@ -380,104 +379,124 @@ export default function ProfileUserForm() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-center">
+          <div className="cg-skeleton h-32 w-32 rounded-2xl" />
+        </div>
+        <SkeletonCards count={2} className="sm:grid-cols-1" />
+      </div>
+    );
+  }
+
   return (
     <>
-      <div>
-        <div className="flex justify-center mb-8">
-          {loading ? (
-            <Skeleton className="w-32 h-32 rounded-md" />
-          ) : (
+      <Stagger className="space-y-6">
+        {/* ── Identidad ─────────────────────────────────────────────── */}
+        <Section title="Identidad" icon={<UserRound />} contentClassName="space-y-6">
+          <div className="flex justify-center">
             <AvatarUploader src={avatar ?? undefined} onChange={handleAvatarChange} size={128} />
-          )}
-        </div>
+          </div>
 
-        <Section title={t('profile.name')} icon={<Globe />} contentClassName="space-y-6">
-            {loading ? (
-              <div className="space-y-4">
-                <Skeleton className="h-5 w-40" />
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-5 w-48" />
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-5 w-56" />
-                <Skeleton className="h-10 w-full" />
-              </div>
-            ) : (
-              <>
-                <div className="space-y-2">
-                  <Label>{t('profile.name')}</Label>
-                  <Input value={fullName} onChange={(e) => setFullName(e.target.value)} />
-                </div>
-
-                <div className="mb-0">
-                  <Label>{t('profile.email')}</Label>
-                  <Input value={email} disabled className="cursor-not-allowed pr-48" />
-                  <div className="flex justify-end">
-                    <Button
-                      type="button"
-                      variant="link"
-                      className="text-red-500 text-xs hover:text-red-600"
-                      onClick={handleEmailAction}
-                    >
-                      {emailVerified ? t('profile.changeEmail') : t('profile.verifyEmail')}
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>{t('profile.phone')}</Label>
-                  <PhoneField
-                    code={phoneCode}
-                    number={phoneNumber}
-                    onCodeChange={setPhoneCode}
-                    onNumberChange={setPhoneNumber}
-                  />
-                  <div className="flex justify-between items-center">
-                    <p className="text-xs text-sky-600">{t('profile.phoneExample')}</p>
-                    <Button
-                      type="button"
-                      variant="link"
-                      className="text-red-500 text-xs hover:text-red-600"
-                      onClick={handleSendVerificationCode}
-                    >
-                      {t('profile.confirmNumber')}
-                    </Button>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label>{t('profile.selectLanguage')}</Label>
-                  <Select
-                    value={language}
-                    onValueChange={(value) => {
-                      setLanguage(value as "es" | "en" | "pt");
-                      toast.success(t('profile.languageSaved'));
-                    }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Idioma" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="es">🇪🇸 Español</SelectItem>
-                      <SelectItem value="en">🇺🇸 English</SelectItem>
-                      <SelectItem value="pt">🇧🇷 Português</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-muted-foreground">{t('profile.languageSaved')}</p>
-                </div>
-
-                <div className="flex justify-end">
-                  <Button
-                    type="button"
-                    variant="brand"
-                    disabled={saving}
-                    onClick={handleSave}
-                  >
-                    {saving ? t('profile.saving') : t('profile.save')}
-                  </Button>
-                </div>
-              </>
-            )}
+          <div className="space-y-2">
+            <Label>{t('profile.name')}</Label>
+            <Input value={fullName} onChange={(e) => setFullName(e.target.value)} />
+            <p className="text-xs" style={{ color: 'var(--ink-faint)' }}>
+              Es el nombre con el que te ve el resto del equipo.
+            </p>
+          </div>
         </Section>
-      </div>
+
+        {/* ── Contacto ──────────────────────────────────────────────── */}
+        <Section title="Contacto" icon={<Mail />} contentClassName="grid gap-6 md:grid-cols-2">
+          <div className="space-y-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <Label className="mb-0">{t('profile.email')}</Label>
+              <StatusBadge tone={emailVerified ? 'ok' : 'warn'}>
+                {emailVerified ? 'Verificado' : 'Sin verificar'}
+              </StatusBadge>
+            </div>
+            <Input value={email} disabled className="cursor-not-allowed" />
+            <div className="flex justify-end">
+              <Button
+                type="button"
+                variant="link"
+                className="h-auto p-0 text-xs"
+                style={{ color: 'var(--brand-text)' }}
+                onClick={handleEmailAction}
+              >
+                {emailVerified ? t('profile.changeEmail') : t('profile.verifyEmail')}
+              </Button>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>{t('profile.phone')}</Label>
+            <PhoneField
+              code={phoneCode}
+              number={phoneNumber}
+              onCodeChange={setPhoneCode}
+              onNumberChange={setPhoneNumber}
+            />
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-xs" style={{ color: 'var(--ink-faint)' }}>{t('profile.phoneExample')}</p>
+              <Button
+                type="button"
+                variant="link"
+                className="h-auto p-0 text-xs"
+                style={{ color: 'var(--brand-text)' }}
+                onClick={handleSendVerificationCode}
+              >
+                {t('profile.confirmNumber')}
+              </Button>
+            </div>
+          </div>
+        </Section>
+
+        {/* ── Preferencias ──────────────────────────────────────────── */}
+        <Section title="Preferencias" icon={<Languages />} contentClassName="grid gap-6 md:grid-cols-2">
+          <div className="space-y-2">
+            <Label>{t('profile.selectLanguage')}</Label>
+            <Select
+              value={language}
+              onValueChange={(value) => {
+                setLanguage(value as "es" | "en" | "pt");
+                toast.success(t('profile.languageSaved'));
+              }}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Idioma" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="es">🇪🇸 Español</SelectItem>
+                <SelectItem value="en">🇺🇸 English</SelectItem>
+                <SelectItem value="pt">🇧🇷 Português</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs" style={{ color: 'var(--ink-faint)' }}>{t('profile.languageSaved')}</p>
+          </div>
+
+          <div className="glass-sunken flex items-start gap-3 p-4">
+            <Globe className="mt-0.5 h-4 w-4 shrink-0" style={{ color: 'var(--ink-faint)' }} />
+            <p className="text-xs leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
+              El idioma se aplica sólo a tu cuenta. Cada persona del equipo elige el suyo.
+            </p>
+          </div>
+        </Section>
+
+        <div className="flex justify-end">
+          <Button
+            type="button"
+            variant="brand"
+            className="px-6"
+            disabled={saving}
+            onClick={handleSave}
+          >
+            {saving ? t('profile.saving') : t('profile.save')}
+          </Button>
+        </div>
+      </Stagger>
 
       <Modal
         open={showEmailModal}

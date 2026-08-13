@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Loader2, QrCode, Download, Printer, MapPin, ShieldCheck, AlertTriangle, Crosshair } from 'lucide-react';
 import { ApiService, ApiError } from '@/services/api/apiService';
 import { toast } from 'sonner';
-import { Section, EmptyState, SkeletonCards, Stagger } from '@/components/kit';
+import { Section, EmptyState, SkeletonCards, Stagger, StatusBadge } from '@/components/kit';
 import { Button } from '@/components/ui/button';
 import type { Station } from '@/types';
 
@@ -110,6 +110,16 @@ export default function StationPatrolQR({ station, stationId }: Props) {
 
   useEffect(() => { load(); }, [load]);
 
+  // ── Tinta sobre PAPEL ──────────────────────────────────────────────────────
+  // El PNG que se descarga y la hoja que se imprime salen del CRM y viven fuera
+  // de él: se pegan en una pared. No pueden usar los tokens del tema (en modo
+  // oscuro imprimirían un rectángulo negro), y el QR necesita fondo blanco puro
+  // para que el lector lo reconozca. Por eso, y sólo aquí, el color es fijo.
+  const PAPEL = 'white';
+  const TINTA = 'black';
+  const TINTA_TENUE = 'gray';
+  const FILO_PAPEL = 'gainsboro';
+
   // Download a labeled PNG (QR + checkpoint name + identifier) via canvas.
   const downloadQr = async (cp: Checkpoint) => {
     try {
@@ -121,14 +131,14 @@ export default function StationPatrolQR({ station, stationId }: Props) {
       const canvas = document.createElement('canvas');
       canvas.width = w; canvas.height = h;
       const ctx = canvas.getContext('2d')!;
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = PAPEL;
       ctx.fillRect(0, 0, w, h);
       ctx.drawImage(img, pad, pad, qr, qr);
-      ctx.fillStyle = '#111827';
+      ctx.fillStyle = TINTA;
       ctx.textAlign = 'center';
       ctx.font = 'bold 30px sans-serif';
       ctx.fillText(cp.name.slice(0, 32), w / 2, qr + pad + 48);
-      ctx.fillStyle = '#6b7280';
+      ctx.fillStyle = TINTA_TENUE;
       ctx.font = '20px monospace';
       ctx.fillText(cp.tagIdentifier.slice(0, 40), w / 2, qr + pad + 80);
       const link = document.createElement('a');
@@ -151,11 +161,11 @@ export default function StationPatrolQR({ station, stationId }: Props) {
         .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     const cards = list.map((cp) => `
-      <div style="display:inline-block;width:300px;margin:14px;padding:16px;border:1px solid #e5e7eb;border-radius:12px;text-align:center;page-break-inside:avoid;vertical-align:top;">
+      <div style="display:inline-block;width:300px;margin:14px;padding:16px;border:1px solid ${FILO_PAPEL};border-radius:12px;text-align:center;page-break-inside:avoid;vertical-align:top;background:${PAPEL};">
         <img src="${esc(qrUrl(cp.tagIdentifier, 400))}" style="width:240px;height:240px;" />
-        <div style="font:bold 16px sans-serif;margin-top:10px;color:#111827;">${esc(cp.name)}</div>
-        <div style="font:12px monospace;color:#6b7280;margin-top:4px;">${esc(cp.tagIdentifier)}</div>
-        ${cp.tourName ? `<div style="font:12px sans-serif;color:#9ca3af;margin-top:2px;">${esc(cp.tourName)}</div>` : ''}
+        <div style="font:bold 16px sans-serif;margin-top:10px;color:${TINTA};">${esc(cp.name)}</div>
+        <div style="font:12px monospace;color:${TINTA_TENUE};margin-top:4px;">${esc(cp.tagIdentifier)}</div>
+        ${cp.tourName ? `<div style="font:12px sans-serif;color:${TINTA_TENUE};margin-top:2px;">${esc(cp.tourName)}</div>` : ''}
       </div>`).join('');
     // Wait for every QR image to finish loading before printing so the sheet is
     // never printed with blank/broken QR boxes on a slow connection. A 5s fallback
@@ -215,11 +225,11 @@ export default function StationPatrolQR({ station, stationId }: Props) {
           ) : undefined
         }
       >
-        <p className="-mt-2 text-sm text-muted-foreground">
+        <p className="-mt-2 text-sm" style={{ color: 'var(--ink-soft)' }}>
           {t('station.patrolQr.subtitle', 'Imprime y coloca estos QR en cada punto de control. El vigilante los escanea durante la ronda.')}
         </p>
 
-        <div className="mt-4 flex items-start gap-2 rounded-md bg-emerald-500/10 p-3 text-sm text-emerald-700">
+        <div className="mt-4 flex items-start gap-2 rounded-md p-3 text-sm" style={{ background: 'color-mix(in oklab, var(--ok) 10%, transparent)', color: 'var(--ok-text)' }}>
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />
           <p>
             {t('station.patrolQr.verifyNote', 'Verificación de ubicación: al escanear, el servidor compara el GPS del vigilante con la ubicación del punto. Solo cuenta como válido si está dentro de')}{' '}
@@ -231,7 +241,7 @@ export default function StationPatrolQR({ station, stationId }: Props) {
       {loading ? (
         <SkeletonCards count={6} className="sm:grid-cols-2 xl:grid-cols-3" />
       ) : error ? (
-        <div className="rounded-2xl border border-border bg-card p-6 text-sm text-red-600">{error}</div>
+        <div className="glass p-6 text-sm" style={{ color: 'var(--bad-text)' }}>{error}</div>
       ) : checkpoints.length === 0 ? (
         <EmptyState
           icon={<QrCode />}
@@ -242,34 +252,39 @@ export default function StationPatrolQR({ station, stationId }: Props) {
           {checkpoints.map((cp) => {
             const hasCoords = cp.latitude != null && cp.longitude != null;
             return (
-              <div key={cp.id} className="flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md">
-                <div className="flex items-center justify-center bg-white p-4">
+              <div key={cp.id} className="glass-flat glass-hover flex flex-col overflow-hidden">
+                {/* El QR necesita fondo blanco puro: es lo que el lector del
+                    teléfono espera, en claro y en oscuro por igual. */}
+                <div className="flex items-center justify-center p-4" style={{ background: PAPEL }}>
                   <img src={qrUrl(cp.tagIdentifier, 300)} alt={cp.name} className="h-44 w-44" />
                 </div>
                 <div className="flex flex-1 flex-col gap-2 p-4">
                   <div>
-                    <div className="font-semibold text-foreground">{cp.name}</div>
-                    <div className="font-mono text-xs text-muted-foreground">{cp.tagIdentifier}</div>
+                    <div className="font-semibold">{cp.name}</div>
+                    <div className="font-mono text-xs" style={{ color: 'var(--ink-soft)' }}>{cp.tagIdentifier}</div>
                   </div>
                   <div className="flex flex-wrap items-center gap-2 text-xs">
-                    <span className="inline-flex items-center rounded-full bg-amber-500/10 px-2 py-0.5 font-medium uppercase text-amber-700">{cp.tagType}</span>
-                    {cp.tourName ? <span className="text-muted-foreground">{cp.tourName}</span> : null}
+                    <StatusBadge tone="brand" dot={false} className="uppercase">{cp.tagType}</StatusBadge>
+                    {cp.tourName ? <span style={{ color: 'var(--ink-soft)' }}>{cp.tourName}</span> : null}
                   </div>
 
                   {hasCoords ? (
-                    <div className="inline-flex items-center gap-1.5 text-xs text-emerald-700">
+                    <div className="inline-flex items-center gap-1.5 text-xs" style={{ color: 'var(--ok-text)' }}>
                       <MapPin className="h-3.5 w-3.5" />
                       {cp.latitude!.toFixed(5)}, {cp.longitude!.toFixed(5)}
-                      <span className="text-muted-foreground">· ±{stationRadius}m</span>
+                      <span style={{ color: 'var(--ink-soft)' }}>· ±{stationRadius}m</span>
                     </div>
                   ) : (
-                    <div className="flex flex-col gap-1.5 rounded-md bg-amber-500/10 p-2 text-xs text-amber-700">
+                    <div
+                      className="flex flex-col gap-1.5 rounded-md p-2 text-xs"
+                      style={{ background: 'color-mix(in oklab, var(--warn) 12%, transparent)', color: 'var(--warn-text)' }}
+                    >
                       <span className="inline-flex items-center gap-1.5"><AlertTriangle className="h-3.5 w-3.5" />{t('station.patrolQr.noCoords', 'Sin ubicación — la verificación no funcionará.')}</span>
                       {stationLat != null && stationLng != null && (
                         <button
                           onClick={() => useStationLocation(cp)}
                           disabled={settingLoc === cp.id}
-                          className="inline-flex w-fit items-center gap-1.5 rounded border border-amber-300 bg-white px-2 py-1 font-medium text-amber-800 hover:bg-amber-500/10 disabled:opacity-50"
+                          className="cg-btn-glass cg-focus inline-flex w-fit items-center gap-1.5 rounded px-2 py-1 font-medium disabled:opacity-50"
                         >
                           {settingLoc === cp.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <Crosshair className="h-3 w-3" />}
                           {t('station.patrolQr.useStationLocation', 'Usar ubicación del puesto')}
@@ -279,10 +294,10 @@ export default function StationPatrolQR({ station, stationId }: Props) {
                   )}
 
                   <div className="mt-auto flex gap-2 pt-2">
-                    <button onClick={() => downloadQr(cp)} className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm hover:bg-muted/40">
+                    <button onClick={() => downloadQr(cp)} className="cg-btn-glass cg-focus inline-flex flex-1 items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-sm">
                       <Download className="h-4 w-4" /> {t('common.download', 'Descargar')}
                     </button>
-                    <button onClick={() => printQrs([cp])} className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm hover:bg-muted/40">
+                    <button onClick={() => printQrs([cp])} className="cg-btn-glass cg-focus inline-flex flex-1 items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-sm">
                       <Printer className="h-4 w-4" /> {t('common.print', 'Imprimir')}
                     </button>
                   </div>

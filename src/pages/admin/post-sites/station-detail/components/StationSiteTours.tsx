@@ -1,14 +1,13 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Loader2, Settings, Plus, Trash2, ChevronDown, ChevronRight, MapPin, QrCode, Crosshair, Route,
-} from 'lucide-react';
+import { Loader2, Settings, Plus, Trash2, ChevronDown, ChevronRight, MapPin, QrCode, Crosshair, Route } from 'lucide-react';
 import { toast } from 'sonner';
 import { confirmDialog } from '@/components/ui/confirmDialog';
 import { ApiService } from '@/services/api/apiService';
 import RondaSettingsForm from '@/pages/admin/Configuration/rondas-settings/RondaSettingsForm';
 import CheckpointLocationPicker from '@/components/maps/CheckpointLocationPicker';
 import { Section, EmptyState, SkeletonCards, StatusBadge, Modal } from '@/components/kit';
+import { FIELD_CLS_LG } from '@/pages/admin/clientes/components/_shared/tab-kit';
 import { Button } from '@/components/ui/button';
 import type { Station } from '@/types';
 
@@ -176,7 +175,6 @@ export default function StationSiteTours({ station, stationId, postSiteId }: Pro
     }
   };
 
-  const inputCls = 'w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary';
 
   return (
     <>
@@ -207,7 +205,7 @@ export default function StationSiteTours({ station, stationId, postSiteId }: Pro
         {loading ? (
           <div className="px-5 pb-5"><SkeletonCards count={3} /></div>
         ) : error ? (
-          <div className="px-6 pb-6 text-sm text-red-600">{error}</div>
+          <div className="px-6 pb-6 text-sm" style={{ color: 'var(--bad-text)' }}>{error}</div>
         ) : tours.length === 0 ? (
           <div className="px-5 pb-5">
             <EmptyState
@@ -225,7 +223,7 @@ export default function StationSiteTours({ station, stationId, postSiteId }: Pro
               const isOpen = expanded === id;
               return (
                 <li key={id}>
-                  <div className="flex items-center gap-3 px-6 py-3 hover:bg-muted/20">
+                  <div className="flex items-center gap-3 px-6 py-3 hover:bg-muted/40">
                     <button onClick={() => toggleExpand(id)} className="flex flex-1 items-center gap-3 text-left">
                       {isOpen ? <ChevronDown size={18} className="text-muted-foreground" /> : <ChevronRight size={18} className="text-muted-foreground" />}
                       <span className="font-medium text-foreground">{name}</span>
@@ -238,7 +236,7 @@ export default function StationSiteTours({ station, stationId, postSiteId }: Pro
                         </span>
                       )}
                     </button>
-                    <button onClick={() => deleteTour(id)} className="rounded p-1.5 text-muted-foreground hover:bg-rose-500/10 hover:text-rose-600" title={t('common.delete', 'Eliminar')}>
+                    <button onClick={() => deleteTour(id)} className="cg-focus rounded p-1.5" style={{ color: 'var(--bad-text)' }} title={t('common.delete', 'Eliminar')}>
                       <Trash2 size={16} />
                     </button>
                   </div>
@@ -246,7 +244,7 @@ export default function StationSiteTours({ station, stationId, postSiteId }: Pro
                   {isOpen && (
                     <div className="border-t bg-muted/10 px-6 py-4">
                       {cpLoading === id ? (
-                        <div className="flex justify-center py-4"><Loader2 className="animate-spin text-primary" size={18} /></div>
+                        <div className="flex justify-center py-4"><Loader2 className="animate-spin brand-text" size={18} /></div>
                       ) : (
                         <>
                           {list.length === 0 ? (
@@ -254,7 +252,7 @@ export default function StationSiteTours({ station, stationId, postSiteId }: Pro
                           ) : (
                             <ul className="space-y-2">
                               {list.map((c) => (
-                                <li key={c.id} className="flex items-center justify-between rounded-md border border-border bg-background px-3 py-2">
+                                <li key={c.id} className="glass-sunken flex items-center justify-between px-3 py-2">
                                   <div className="min-w-0">
                                     <div className="flex items-center gap-2">
                                       <span className="font-medium text-foreground">{c.name}</span>
@@ -262,16 +260,16 @@ export default function StationSiteTours({ station, stationId, postSiteId }: Pro
                                     </div>
                                     <div className="mt-0.5 text-xs">
                                       {c.latitude != null && c.longitude != null ? (
-                                        <span className="inline-flex items-center gap-1 text-emerald-700">
+                                        <span className="inline-flex items-center gap-1" style={{ color: 'var(--ok-text)' }}>
                                           <MapPin size={12} />{c.latitude.toFixed(5)}, {c.longitude.toFixed(5)}
                                           <span className="ml-1 text-muted-foreground">· ±{c.radius ?? stationRadius} m</span>
                                         </span>
                                       ) : (
-                                        <span className="text-amber-700">{t('station.siteTours.cpNoLoc', 'Sin ubicación — la verificación no funcionará')}</span>
+                                        <span style={{ color: 'var(--warn-text)' }}>{t('station.siteTours.cpNoLoc', 'Sin ubicación — la verificación no funcionará')}</span>
                                       )}
                                     </div>
                                   </div>
-                                  <button onClick={() => deleteCheckpoint(id, c.id)} className="rounded p-1.5 text-muted-foreground hover:bg-rose-500/10 hover:text-rose-600">
+                                  <button onClick={() => deleteCheckpoint(id, c.id)} className="cg-focus rounded p-1.5" style={{ color: 'var(--bad-text)' }}>
                                     <Trash2 size={15} />
                                   </button>
                                 </li>
@@ -280,19 +278,28 @@ export default function StationSiteTours({ station, stationId, postSiteId }: Pro
                           )}
 
                           {addingFor === id ? (
-                            <div className="mt-3 space-y-3 rounded-md border border-border bg-background p-3">
+                            <div className="glass-sunken mt-3 space-y-3 p-3">
                               <div>
-                                <label className="mb-1 block text-xs font-medium text-foreground">{t('station.siteTours.cpName', 'Nombre del punto')}</label>
-                                <input className={inputCls} value={cpName} onChange={(e) => setCpName(e.target.value)} placeholder={t('station.siteTours.cpPlaceholder', 'Ej. Entrada principal') as string} autoFocus />
+                                <label className="cg-eyebrow mb-1 block">{t('station.siteTours.cpName', 'Nombre del punto')}</label>
+                                <input className={FIELD_CLS_LG} value={cpName} onChange={(e) => setCpName(e.target.value)} placeholder={t('station.siteTours.cpPlaceholder', 'Ej. Entrada principal') as string} autoFocus />
                               </div>
                               <CheckpointLocationPicker
                                 lat={cpLat}
                                 lng={cpLng}
                                 radius={cpRadius}
                                 onChange={(la, ln, r) => { setCpLat(la); setCpLng(ln); setCpRadius(r); }}
+                                // Con el puesto como referencia, el mapa dice «a
+                                // 34 m del puesto»: la comprobación que importa
+                                // aquí, porque una dirección postal no distingue
+                                // el vestíbulo de la azotea y una distancia sí.
+                                reference={
+                                  stationLat != null && stationLng != null
+                                    ? { lat: stationLat, lng: stationLng, label: 'el puesto' }
+                                    : null
+                                }
                               />
                               {stationLat != null && stationLng != null && (
-                                <button onClick={() => { setCpLat(stationLat); setCpLng(stationLng); }} className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline">
+                                <button onClick={() => { setCpLat(stationLat); setCpLng(stationLng); }} className="inline-flex items-center gap-1.5 text-xs brand-text hover:underline">
                                   <Crosshair size={13} /> {t('station.siteTours.useStationLoc', 'Usar ubicación del puesto')}
                                 </button>
                               )}
@@ -304,7 +311,7 @@ export default function StationSiteTours({ station, stationId, postSiteId }: Pro
                               </div>
                             </div>
                           ) : (
-                            <button onClick={() => openAddCheckpoint(id)} className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-dashed border-primary/50 px-3 py-1.5 text-sm font-medium text-primary hover:bg-primary/5">
+                            <button onClick={() => openAddCheckpoint(id)} className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-dashed border-primary/50 px-3 py-1.5 text-sm font-medium brand-text hover:bg-primary/5">
                               <Plus size={15} /> {t('station.siteTours.addPoint', 'Agregar punto de control')}
                             </button>
                           )}
@@ -338,11 +345,11 @@ export default function StationSiteTours({ station, stationId, postSiteId }: Pro
         <div className="space-y-4">
           <div>
             <label className="mb-1.5 block text-sm font-medium text-foreground">{t('station.siteTours.name', 'Nombre')} *</label>
-            <input className={inputCls} value={tourName} onChange={(e) => setTourName(e.target.value)} placeholder={t('station.siteTours.namePlaceholder', 'Ej. Ronda nocturna') as string} autoFocus />
+            <input className={FIELD_CLS_LG} value={tourName} onChange={(e) => setTourName(e.target.value)} placeholder={t('station.siteTours.namePlaceholder', 'Ej. Ronda nocturna') as string} autoFocus />
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-medium text-foreground">{t('station.siteTours.desc', 'Descripción')}</label>
-            <textarea className={`${inputCls} resize-none`} rows={3} value={tourDesc} onChange={(e) => setTourDesc(e.target.value)} />
+            <textarea className={`${FIELD_CLS_LG} resize-none`} rows={3} value={tourDesc} onChange={(e) => setTourDesc(e.target.value)} />
           </div>
         </div>
       </Modal>

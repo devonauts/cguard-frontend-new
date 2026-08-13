@@ -1,5 +1,6 @@
 import { AlertTriangle } from "lucide-react";
 import DataReport, { type ReportColumn } from "./DataReport";
+import { formatDateTime, rangeBounds, REPORT_ROW_LIMIT, warnIfCapped } from "./reportFormat";
 import { ApiService } from "@/services/api/apiService";
 
 interface Incident {
@@ -14,10 +15,6 @@ interface Incident {
   station?: { stationName?: string } | null;
 }
 
-const fmt = (iso?: string | null) =>
-  iso
-    ? new Date(iso).toLocaleString("es-EC", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })
-    : "—";
 
 const trim = (s?: string | null, n = 80) => {
   const v = (s || "").trim();
@@ -25,7 +22,7 @@ const trim = (s?: string | null, n = 80) => {
 };
 
 const columns: ReportColumn<Incident>[] = [
-  { key: "created", label: "Fecha", value: (r) => fmt(r.createdAt) },
+  { key: "created", label: "Fecha", value: (r) => formatDateTime(r.createdAt) },
   { key: "title", label: "Título", value: (r) => r.title || "—" },
   { key: "priority", label: "Prioridad", value: (r) => r.priority || "—", align: "center" },
   { key: "status", label: "Estado", value: (r) => r.status || "—" },
@@ -40,25 +37,31 @@ export default function Incident() {
       title="Informe de Incidente"
       description="Incidentes reportados: prioridad, estado, ubicación y descripción por puesto."
       icon={AlertTriangle}
-      accent="#ef4444"
+      tone="bad"
       columns={columns}
+      // Un incidente de prioridad alta/crítica todavía abierto se señala en rojo.
+      rowTone={(r) => {
+        const p = String(r.priority || "").toLowerCase();
+        const abierto = !/closed|cerrado|resolved|resuelto/i.test(String(r.status || ""));
+        if (/critical|crítica|critica|alta|high|urgent/.test(p)) return abierto ? "bad" : "warn";
+        return undefined;
+      }}
       load={async ({ from, to }) => {
         const tenantId = localStorage.getItem("tenantId") || "";
         // Filter by date range on the SERVER (filter[createdAtRange]) — the old
         // limit=2000 + client-side date filter silently dropped any range older
         // than the newest 2000 incidents.
-        const start = new Date(`${from}T00:00:00.000Z`).toISOString();
-        const end = new Date(`${to}T23:59:59.999Z`).toISOString();
+        const { start, end } = rangeBounds(from, to);
         const params = new URLSearchParams();
         params.append("filter[createdAtRange][]", start);
         params.append("filter[createdAtRange][]", end);
         params.append("orderBy", "createdAt_DESC");
-        params.append("limit", "5000");
+        params.append("limit", String(REPORT_ROW_LIMIT));
         const res: Incident[] | { rows?: Incident[] } = await ApiService.get(
           `/tenant/${tenantId}/incident?${params.toString()}`,
         );
         const rows: Incident[] = Array.isArray(res) ? res : res?.rows || [];
-        return rows;
+        return warnIfCapped(rows);
       }}
     />
   );

@@ -10,8 +10,8 @@ import { ServiceTypeBadge } from '@/components/post-sites/ServiceTypeBadge';
 import { postSiteService } from '@/lib/api/postSiteService';
 import { stationService } from '@/lib/api/stationService';
 import { toast } from 'sonner';
-import { StatusBadge, EmptyState } from '@/components/kit';
-import { MapPin, Phone, Mail, Building2, Globe, Tag, Pencil, Check, X, DollarSign, Shield, ShieldCheck, ShieldOff, Clock, UserCircle2 } from 'lucide-react';
+import { StatusBadge, EmptyState, SkeletonCards } from '@/components/kit';
+import { MapPin, Phone, Mail, Building2, Globe, Tag, Pencil, Check, X, Shield, ShieldCheck, ShieldOff, Clock, UserCircle2 } from 'lucide-react';
 
 function formatDate(d?: string) {
     if (!d) return '-';
@@ -24,8 +24,8 @@ function formatDate(d?: string) {
 
 const InfoRow = ({ label, value }: { label: string; value: React.ReactNode }) => (
     <div className="flex flex-col gap-0.5">
-        <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">{label}</span>
-        <span className="text-sm font-semibold text-foreground">{value || '-'}</span>
+        <span className="cg-eyebrow">{label}</span>
+        <span className="text-sm font-semibold">{value || '-'}</span>
     </div>
 );
 
@@ -40,10 +40,10 @@ const RateRow = ({
     onEdit: () => void; onSave: () => void; onCancel: () => void;
 }) => (
     <div className="flex flex-col gap-0.5">
-        <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">{label}</span>
+        <span className="cg-eyebrow">{label}</span>
         {editing ? (
             <div className="flex items-center gap-1">
-                <span className="text-muted-foreground text-sm">$</span>
+                <span className="text-sm" style={{ color: 'var(--ink-soft)' }}>$</span>
                 <input
                     ref={inputRef}
                     type="text"
@@ -54,28 +54,29 @@ const RateRow = ({
                         if (v === '' || /^\d*\.?\d*$/.test(v)) onChange(v);
                     }}
                     onKeyDown={(e) => { if (e.key === 'Enter') onSave(); if (e.key === 'Escape') onCancel(); }}
-                    className="w-32 text-sm border border-border rounded px-2 py-0.5 focus:outline-none focus:ring-1 focus:ring-amber-400"
+                    className="cg-input cg-focus w-32 px-2 py-0.5 text-sm"
                     disabled={saving}
                     placeholder="0.00"
                 />
-                <button onClick={onSave} disabled={saving} className="p-1 rounded hover:bg-green-500/10 text-green-600 disabled:opacity-40">
+                <button onClick={onSave} disabled={saving} aria-label="Guardar tarifa" className="cg-focus rounded p-1 disabled:opacity-40" style={{ color: 'var(--ok-text)' }}>
                     <Check size={14} />
                 </button>
-                <button onClick={onCancel} disabled={saving} className="p-1 rounded hover:bg-red-500/10 text-red-500 disabled:opacity-40">
+                <button onClick={onCancel} disabled={saving} aria-label="Cancelar" className="cg-focus rounded p-1 disabled:opacity-40" style={{ color: 'var(--bad-text)' }}>
                     <X size={14} />
                 </button>
             </div>
         ) : (
-            <div className="flex items-center gap-1.5 group">
-                <span className="text-sm font-semibold text-foreground">
+            <div className="group flex items-center gap-1.5">
+                <span className="text-sm font-semibold">
                     {value ? `$${parseFloat(value).toFixed(2)}` : '-'}
                 </span>
                 <button
                     onClick={onEdit}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded hover:bg-muted"
-                    title="Edit"
+                    className="cg-btn-ghost cg-focus rounded p-0.5 opacity-0 transition-opacity group-hover:opacity-100"
+                    title="Editar"
+                    aria-label="Editar tarifa"
                 >
-                    <Pencil size={11} className="text-muted-foreground" />
+                    <Pencil size={11} />
                 </button>
             </div>
         )}
@@ -211,21 +212,21 @@ export default function PostSiteProfile({ site }: { site?: any }) {
 
     return (
         <div ref={containerRef} className="space-y-0 animate-fade-up">
-            <div className="bg-card border rounded-xl shadow-sm overflow-hidden">
+            <div className="glass overflow-hidden">
 
                 {/* ── Cover photo ─────────────────────────────────────────── */}
-                <div className="relative h-64 md:h-80 bg-gradient-to-br from-gray-200 to-gray-300 overflow-hidden">
+                <div className="relative h-64 overflow-hidden md:h-80" style={{ background: 'var(--glass-sunken)' }}>
                     {placePicImgUrl ? (
                         <img src={placePicImgUrl} alt={siteName} className="w-full h-full object-cover" />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                            <Building2 size={64} className="text-muted-foreground/60" />
+                        <div className="flex h-full w-full items-center justify-center" style={{ color: 'var(--ink-faint)' }}>
+                            <Building2 size={64} />
                         </div>
                     )}
                     {id && (
                         <Link
                             to={`/post-sites/${id}/edit`}
-                            className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1.5 bg-white/90 hover:bg-card text-foreground rounded-full text-xs font-semibold shadow transition"
+                            className="cg-btn-glass cg-focus absolute right-4 top-4 flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition"
                         >
                             <Pencil size={12} />
                             {t('postSites.profile.Edit', 'Editar')}
@@ -234,36 +235,39 @@ export default function PostSiteProfile({ site }: { site?: any }) {
                 </div>
 
                 {/* ── Identity strip ──────────────────────────────────────── */}
-                <div className="px-6 pb-6 relative z-10">
+                <div className="relative z-10 px-6 pb-6">
                     {/* Logo sits on the border just below the cover */}
-                    <div className="flex items-center gap-4 mt-4 mb-5">
-                        <div className="flex-shrink-0 w-16 h-16 rounded-xl border-4 border-white shadow-md overflow-hidden bg-card">
+                    <div className="mb-5 mt-4 flex items-center gap-4">
+                        <div
+                            className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl border-4"
+                            style={{ borderColor: 'var(--glass-solid)', background: 'var(--glass-sunken)', boxShadow: 'var(--lift-2)' }}
+                        >
                             {logoImgUrl ? (
                                 <img src={logoImgUrl} alt={clientName} className="w-full h-full object-contain p-1" />
                             ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-muted">
-                                    <Building2 size={26} className="text-muted-foreground/60" />
+                                <div className="flex h-full w-full items-center justify-center" style={{ color: 'var(--ink-faint)' }}>
+                                    <Building2 size={26} />
                                 </div>
                             )}
                         </div>
                         <div className="min-w-0">
                             <div className="flex flex-wrap items-center gap-2">
-                                <h2 className="text-xl font-bold text-foreground leading-tight">{siteName}</h2>
+                                <h2 className="font-display text-xl font-bold leading-tight">{siteName}</h2>
                                 <ServiceTypeBadge value={site?.serviceType} size="md" />
                             </div>
-                            <p className="text-sm text-muted-foreground mt-0.5">{clientName}</p>
+                            <p className="mt-0.5 text-sm" style={{ color: 'var(--ink-soft)' }}>{clientName}</p>
                         </div>
                     </div>
 
                     {site?.description && (
-                        <p className="text-sm text-foreground/70 mb-5 leading-relaxed">{site.description}</p>
+                        <p className="mb-5 text-sm leading-relaxed" style={{ color: 'var(--ink-soft)' }}>{site.description}</p>
                     )}
 
                     {/* ── Three info cards ───────────────────────────────── */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* General Information */}
-                        <div className="rounded-lg border border-border bg-muted/30 p-4 space-y-3">
-                            <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{t('postSites.profile.GeneralInformation.title')}</h4>
+                        <div className="glass-sunken space-y-3 p-4">
+                            <h4 className="cg-eyebrow">{t('postSites.profile.GeneralInformation.title')}</h4>
                             <InfoRow label={t('postSites.profile.GeneralInformation.client')} value={clientName} />
                             <InfoRow label={t('postSites.profile.GeneralInformation.siteName')} value={siteName} />
                             <InfoRow label={t('postSites.profile.GeneralInformation.addedOn')} value={addedOn} />
@@ -271,7 +275,7 @@ export default function PostSiteProfile({ site }: { site?: any }) {
                                 label={t('postSites.profile.GeneralInformation.address')}
                                 value={address !== '-' ? (
                                     <span className="flex items-start gap-1">
-                                        <MapPin size={13} className="mt-0.5 text-muted-foreground flex-shrink-0" />
+                                        <MapPin size={13} className="mt-0.5 flex-shrink-0" style={{ color: 'var(--brand-text)' }} />
                                         {address}
                                     </span>
                                 ) : '-'}
@@ -279,12 +283,12 @@ export default function PostSiteProfile({ site }: { site?: any }) {
                         </div>
 
                         {/* Contact Details */}
-                        <div className="rounded-lg border border-border bg-muted/30 p-4 space-y-3">
-                            <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{t('postSites.profile.ContactDetails.title')}</h4>
+                        <div className="glass-sunken space-y-3 p-4">
+                            <h4 className="cg-eyebrow">{t('postSites.profile.ContactDetails.title')}</h4>
                             <InfoRow
                                 label={t('postSites.profile.ContactDetails.phoneNumber')}
                                 value={contactPhone !== '-' ? (
-                                    <a href={`tel:${contactPhone}`} className="flex items-center gap-1 text-blue-600 hover:underline">
+                                    <a href={`tel:${contactPhone}`} className="cg-btn-link cg-focus flex items-center gap-1 rounded hover:underline">
                                         <Phone size={12} />{contactPhone}
                                     </a>
                                 ) : '-'}
@@ -292,7 +296,7 @@ export default function PostSiteProfile({ site }: { site?: any }) {
                             <InfoRow
                                 label={t('postSites.profile.ContactDetails.email')}
                                 value={contactEmail !== '-' ? (
-                                    <a href={`mailto:${contactEmail}`} className="flex items-center gap-1 text-blue-600 hover:underline break-all">
+                                    <a href={`mailto:${contactEmail}`} className="cg-btn-link cg-focus flex items-center gap-1 break-all rounded hover:underline">
                                         <Mail size={12} />{contactEmail}
                                     </a>
                                 ) : '-'}
@@ -301,23 +305,23 @@ export default function PostSiteProfile({ site }: { site?: any }) {
                         </div>
 
                         {/* More Information + Rates */}
-                        <div className="rounded-lg border border-border bg-muted/30 p-4 space-y-3">
-                            <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{t('postSites.profile.MoreInformation.title')}</h4>
+                        <div className="glass-sunken space-y-3 p-4">
+                            <h4 className="cg-eyebrow">{t('postSites.profile.MoreInformation.title')}</h4>
                             {categories !== '-' && (
                                 <InfoRow
                                     label={t('postSites.profile.MoreInformation.categories')}
-                                    value={<span className="flex items-center gap-1"><Tag size={12} className="text-muted-foreground" />{categories}</span>}
+                                    value={<span className="flex items-center gap-1"><Tag size={12} style={{ color: 'var(--brand-text)' }} />{categories}</span>}
                                 />
                             )}
                             <InfoRow label={t('postSites.profile.MoreInformation.city')} value={
                                 <span className="flex items-center gap-1">
-                                    {city !== '-' && <Globe size={12} className="text-muted-foreground" />}
+                                    {city !== '-' && <Globe size={12} style={{ color: 'var(--brand-text)' }} />}
                                     {[city, country].filter(v => v && v !== '-').join(', ') || '-'}
                                 </span>
                             } />
                             <InfoRow label={t('postSites.profile.MoreInformation.postalCode')} value={postalCode} />
 
-                            <div className="pt-1 border-t border-border space-y-3">
+                            <div className="space-y-3 border-t pt-1" style={{ borderColor: 'var(--hairline)' }}>
                                 <RateRow
                                     label={t('postSites.profile.MoreInformation.postSiteChargeRate')}
                                     value={chargeRate}
@@ -346,58 +350,61 @@ export default function PostSiteProfile({ site }: { site?: any }) {
                 </div>
 
                 {/* ── Map ─────────────────────────────────────────────────── */}
-                <div className="border-t">
+                <div className="border-t" style={{ borderColor: 'var(--hairline)' }}>
                     {!isNaN(mapLatNum) && !isNaN(mapLngNum) ? (
                         <div className="h-64">
                             <IncidentMap lat={mapLatNum} lng={mapLngNum} label={siteName} />
                         </div>
                     ) : mapAddress ? (
-                        <div className="h-20 flex items-center justify-center gap-3 text-sm text-muted-foreground bg-muted/30">
-                            <MapPin size={16} className="text-muted-foreground" />
+                        <div className="flex h-20 items-center justify-center gap-3 text-sm" style={{ background: 'var(--glass-sunken)', color: 'var(--ink-soft)' }}>
+                            <MapPin size={16} />
                             <span>{t('postSites.profile.Map.NoCoordinates')}</span>
                             <a
                                 href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapAddress)}`}
                                 target="_blank" rel="noreferrer"
-                                className="text-blue-600 underline"
-                            >Open in Google Maps</a>
+                                className="cg-btn-link cg-focus rounded underline"
+                            >Abrir en Google Maps</a>
                         </div>
                     ) : null}
                 </div>
             </div>
 
             {/* ── Stations & On-Duty Guards ────────────────────────────────── */}
-            <div className="bg-card border rounded-xl shadow-sm overflow-hidden mt-4">
-                <div className="px-6 py-4 border-b border-border flex items-center justify-between">
+            <div className="glass mt-4 overflow-hidden">
+                <div className="flex items-center justify-between border-b px-6 py-4" style={{ borderColor: 'var(--hairline)' }}>
                     <div className="flex items-center gap-2">
-                        <Shield size={16} className="text-blue-600" />
-                        <h3 className="text-sm font-bold text-foreground uppercase tracking-wide">Estaciones de Servicio</h3>
+                        <Shield size={16} style={{ color: 'var(--brand-text)' }} />
+                        <h3 className="text-sm font-bold uppercase tracking-wide">Estaciones de servicio</h3>
                     </div>
                     {activeStatusLoading && (
-                        <span className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin inline-block" />
+                        <span
+                            className="inline-block h-4 w-4 animate-spin rounded-full border-2"
+                            style={{ borderColor: 'var(--brand)', borderTopColor: 'transparent' }}
+                        />
                     )}
                 </div>
 
                 {!Array.isArray(activeStatus?.stations) || activeStatus.stations.length === 0 ? (
                     activeStatusLoading ? (
-                        <div className="px-6 py-10 text-center text-muted-foreground text-sm">Cargando estaciones...</div>
+                        <div className="p-6"><SkeletonCards count={2} /></div>
                     ) : (
                         <div className="p-6">
                             <EmptyState icon={<Shield />} title="No hay estaciones registradas para esta sede." />
                         </div>
                     )
                 ) : (
-                    <div className="divide-y divide-border">
+                    <div>
                         {activeStatus.stations.map((station) => (
-                            <div key={station.id} className="px-6 py-4">
+                            <div key={station.id} className="border-b px-6 py-4 last:border-0" style={{ borderColor: 'var(--hairline)' }}>
                                 {/* Station header */}
-                                <div className="flex items-center gap-2 mb-3">
+                                <div className="mb-3 flex items-center gap-2">
                                     {station.isActive ? (
-                                        <ShieldCheck size={16} className="text-emerald-500 flex-shrink-0" />
+                                        <ShieldCheck size={16} className="flex-shrink-0" style={{ color: 'var(--ok-text)' }} />
                                     ) : (
-                                        <ShieldOff size={16} className="text-muted-foreground flex-shrink-0" />
+                                        <ShieldOff size={16} className="flex-shrink-0" style={{ color: 'var(--ink-faint)' }} />
                                     )}
-                                    <span className="font-semibold text-foreground text-sm">{station.stationName}</span>
-                                    <StatusBadge tone={station.isActive ? 'green' : 'slate'} className="ml-auto">
+                                    <span className="text-sm font-semibold">{station.stationName}</span>
+                                    <StatusBadge tone={station.isActive ? 'ok' : 'neutral'} className="ml-auto">
                                         {station.isActive ? 'Activo' : 'Sin cobertura'}
                                     </StatusBadge>
                                 </div>
@@ -406,21 +413,35 @@ export default function PostSiteProfile({ site }: { site?: any }) {
                                 {station.isActive && (station.activeGuards?.length ?? 0) > 0 && (
                                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                                         {station.activeGuards?.map((guard) => (
-                                            <div key={guard.id} className="flex flex-col items-center gap-1.5 bg-emerald-500/10 border border-emerald-100 rounded-xl p-3">
+                                            <div
+                                                key={guard.id}
+                                                className="flex flex-col items-center gap-1.5 rounded-xl border p-3"
+                                                style={{
+                                                    background: 'color-mix(in oklab, var(--ok) 10%, transparent)',
+                                                    borderColor: 'color-mix(in oklab, var(--ok) 26%, transparent)',
+                                                }}
+                                            >
                                                 {guard.photoUrl ? (
                                                     <img
                                                         src={guard.photoUrl}
                                                         alt={guard.fullName}
-                                                        className="w-12 h-12 rounded-full object-cover border-2 border-emerald-300"
+                                                        className="h-12 w-12 rounded-full border-2 object-cover"
+                                                        style={{ borderColor: 'color-mix(in oklab, var(--ok) 40%, transparent)' }}
                                                     />
                                                 ) : (
-                                                    <div className="w-12 h-12 rounded-full bg-emerald-200 flex items-center justify-center">
-                                                        <UserCircle2 size={26} className="text-emerald-600" />
+                                                    <div
+                                                        className="flex h-12 w-12 items-center justify-center rounded-full"
+                                                        style={{ background: 'color-mix(in oklab, var(--ok) 18%, transparent)', color: 'var(--ok-text)' }}
+                                                    >
+                                                        <UserCircle2 size={26} />
                                                     </div>
                                                 )}
-                                                <span className="text-xs font-semibold text-foreground text-center leading-tight">{guard.fullName}</span>
-                                                <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-600 bg-emerald-500/15 px-1.5 py-0.5 rounded-full">
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                                <span className="text-center text-xs font-semibold leading-tight">{guard.fullName}</span>
+                                                <span
+                                                    className="inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[10px] font-medium"
+                                                    style={{ background: 'color-mix(in oklab, var(--ok) 16%, transparent)', color: 'var(--ok-text)' }}
+                                                >
+                                                    <span className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: 'var(--ok)' }} />
                                                     En turno
                                                 </span>
                                             </div>
@@ -430,23 +451,23 @@ export default function PostSiteProfile({ site }: { site?: any }) {
 
                                 {/* No active guards — show next shift */}
                                 {!station.isActive && (
-                                    <div className="flex items-start gap-3 bg-muted/30 rounded-lg px-4 py-3 mt-1">
-                                        <Clock size={15} className="text-muted-foreground mt-0.5 flex-shrink-0" />
+                                    <div className="glass-sunken mt-1 flex items-start gap-3 px-4 py-3">
+                                        <Clock size={15} className="mt-0.5 flex-shrink-0" style={{ color: 'var(--ink-faint)' }} />
                                         {station.nextShift ? (
-                                            <div className="text-sm text-foreground/70">
-                                                <span className="block text-xs text-muted-foreground mb-0.5">Próximo turno</span>
-                                                <span className="font-semibold text-foreground">
+                                            <div className="text-sm">
+                                                <span className="cg-eyebrow mb-0.5 block">Próximo turno</span>
+                                                <span className="font-semibold">
                                                     {new Date(station.nextShift.startTime).toLocaleString('es', { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: getTenantTimezone() })}
                                                 </span>
                                                 {station.nextShift.guard && (
-                                                    <span className="text-muted-foreground"> · {station.nextShift.guard.fullName}</span>
+                                                    <span style={{ color: 'var(--ink-soft)' }}> · {station.nextShift.guard.fullName}</span>
                                                 )}
-                                                <span className="text-muted-foreground text-xs ml-1">
+                                                <span className="ml-1 text-xs" style={{ color: 'var(--ink-soft)' }}>
                                                     hasta {new Date(station.nextShift.endTime).toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit', timeZone: getTenantTimezone() })}
                                                 </span>
                                             </div>
                                         ) : (
-                                            <span className="text-sm text-muted-foreground">Sin turnos programados en los próximos 7 días.</span>
+                                            <span className="text-sm" style={{ color: 'var(--ink-soft)' }}>Sin turnos programados en los próximos 7 días.</span>
                                         )}
                                     </div>
                                 )}

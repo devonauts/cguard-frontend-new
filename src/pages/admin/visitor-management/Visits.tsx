@@ -1,8 +1,17 @@
 import { loadXlsx } from '../../../lib/lazyXlsx';
 import { useMemo, useState, useEffect, useCallback, FormEvent } from "react";
 import { useAsyncList } from "@/hooks/useAsyncList";
-import { Search, Filter as FilterIcon, MoreVertical, FileDown, FileSpreadsheet, Printer, ClipboardList } from "lucide-react";
-import { PageContainer, PageHeader, Section, EmptyState } from "@/components/kit";
+import { Search, Filter as FilterIcon, MoreVertical, FileDown, FileSpreadsheet, Printer, ClipboardList, LogIn, LogOut } from "lucide-react";
+import {
+    PageContainer,
+    PageHeader,
+    Section,
+    EmptyState,
+    Toolbar,
+    StatCard,
+    StatusBadge,
+    SkeletonCards,
+} from "@/components/kit";
 import AppLayout from "@/layouts/app-layout";
 import Breadcrumb from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
@@ -137,6 +146,16 @@ const formatDateTime = (val: string | undefined | null) => {
     const d = new Date(val);
     if (isNaN(d.getTime())) return String(val);
     return d.toLocaleString();
+};
+
+// Sin hora de salida el visitante sigue dentro. Pasadas 24 h desde la entrada la
+// visita deja de leerse como «en curso» y pasa a ser una salida sin registrar.
+const VISITA_VENCIDA_MS = 24 * 60 * 60 * 1000;
+const visitaVencida = (rec: VisitLogRow) => {
+    if (!rec.visitDate) return false;
+    const d = new Date(rec.visitDate);
+    if (isNaN(d.getTime())) return false;
+    return Date.now() - d.getTime() > VISITA_VENCIDA_MS;
 };
 
 // Escape any user/server-supplied value before interpolating into print/PDF HTML.
@@ -377,8 +396,8 @@ export default function Visits() {
                 <title>${escapeHtml(title)}</title>
                 <style>
                     table{border-collapse:collapse;width:100%}
-                    th,td{border:1px solid #ccc;padding:6px;text-align:left}
-                    th{background:#f5f5f5}
+                    th,td{border:1px solid rgba(0,0,0,0.22);padding:6px;text-align:left}
+                    th{background:rgba(0,0,0,0.05)}
                 </style>
             </head>
             <body>
@@ -404,6 +423,9 @@ export default function Visits() {
     const pageStart = count === 0 ? 0 : offset + 1;
     const pageEnd = Math.min(offset + limit, count);
     const allSelected = rows.length > 0 && rows.every((r) => selected[r.id]);
+    // Recuento sobre los registros mostrados: quién sigue dentro y quién ya salió.
+    const dentro = rows.filter((r) => !r.exitTime).length;
+    const conSalida = rows.length - dentro;
 
     return (
         <AppLayout>
@@ -432,15 +454,38 @@ export default function Visits() {
                     }
                 />
 
-                <Section
-                    title="Registro de visitas"
-                    icon={<ClipboardList />}
-                    action={
-                    <div className="flex items-center gap-2">
-                        <div className="relative">
-                            <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                <div className="grid gap-4 sm:grid-cols-3">
+                    <StatCard
+                        label="Registros encontrados"
+                        value={count}
+                        icon={<ClipboardList />}
+                        accent="brand"
+                        hint="Con los filtros aplicados"
+                    />
+                    <StatCard
+                        label="Dentro de las instalaciones"
+                        value={dentro}
+                        icon={<LogIn />}
+                        accent="ok"
+                        hint="De los registros mostrados"
+                    />
+                    <StatCard
+                        label="Con salida registrada"
+                        value={conSalida}
+                        icon={<LogOut />}
+                        accent="neutral"
+                        hint="De los registros mostrados"
+                    />
+                </div>
+
+                <Toolbar>
+                        <div className="relative min-w-0 flex-1 sm:max-w-xs">
+                            <Search
+                                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
+                                style={{ color: 'var(--ink-faint)' }}
+                            />
                             <Input
-                                className="w-64 pl-9"
+                                className="w-full pl-9"
                                 placeholder="Buscar registro de visitas"
                                 value={search}
                                 onChange={(e) => {
@@ -452,7 +497,7 @@ export default function Visits() {
 
                         <Sheet open={openFilter} onOpenChange={setOpenFilter}>
                             <SheetTrigger asChild>
-                                <Button variant="outline" className="border-primary/30 text-primary">
+                                <Button variant="outline" style={{ color: 'var(--brand-text)', borderColor: 'var(--brand-line)' }}>
                                     <FilterIcon className="mr-2 h-4 w-4" />
                                     Filtros
                                 </Button>
@@ -626,35 +671,35 @@ export default function Visits() {
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
-                    </div>
-                    }
-                >
+                </Toolbar>
+
+                <Section title="Registro de visitas" icon={<ClipboardList />}>
                 <div className="overflow-hidden rounded-xl border">
                     <div className="overflow-x-auto">
                     <table className="min-w-full border-collapse text-left text-sm">
-                        <thead className="bg-muted/30">
+                        <thead>
                             <tr className="border-b">
-                                <th className="px-4 py-3">
+                                <th className="cg-eyebrow px-2 py-2">
                                     <Checkbox
                                         checked={allSelected}
                                         onCheckedChange={(v) => selectAll(Boolean(v))}
                                     />
                                 </th>
-                                <th className="px-4 py-3 font-semibold">Nombre</th>
-                                <th className="px-4 py-3 font-semibold">Vehículo</th>
-                                <th className="px-4 py-3 font-semibold">Hora de entrada</th>
-                                <th className="px-4 py-3 font-semibold">Hora de salida</th>
-                                <th className="px-4 py-3 font-semibold">Puesto de seguridad</th>
-                                <th className="px-4 py-3 font-semibold">Registrado por</th>
-                                <th className="px-4 py-3 font-semibold">Salido por</th>
+                                <th className="cg-eyebrow px-2 py-2">Nombre</th>
+                                <th className="cg-eyebrow px-2 py-2">Vehículo</th>
+                                <th className="cg-eyebrow px-2 py-2">Hora de entrada</th>
+                                <th className="cg-eyebrow px-2 py-2">Hora de salida</th>
+                                <th className="cg-eyebrow px-2 py-2">Puesto de seguridad</th>
+                                <th className="cg-eyebrow px-2 py-2">Registrado por</th>
+                                <th className="cg-eyebrow px-2 py-2">Salido por</th>
                             </tr>
                         </thead>
 
                         <tbody>
                             {loading ? (
                                 <tr>
-                                    <td colSpan={8} className="py-8 text-center text-muted-foreground">
-                                        Cargando...
+                                    <td colSpan={8} className="p-4">
+                                        <SkeletonCards count={4} />
                                     </td>
                                 </tr>
                             ) : rows.length === 0 ? (
@@ -671,23 +716,35 @@ export default function Visits() {
                             ) : (
                                 rows.map((r) => (
                                     <tr key={r.id} className="border-b hover:bg-muted/40">
-                                        <td className="px-4 py-3">
+                                        <td className="px-2 py-2.5">
                                             <Checkbox
                                                 checked={!!selected[r.id]}
                                                 onCheckedChange={() => toggleSelect(r.id)}
                                             />
                                         </td>
-                                        <td className="px-4 py-3">
+                                        <td className="px-2 py-2.5 font-medium">
                                             {`${r.firstName ?? ""} ${r.lastName ?? ""}`.trim() || "-"}
                                         </td>
-                                        <td className="px-4 py-3">{getVehicleLabel(r)}</td>
-                                        <td className="px-4 py-3">{formatDateTime(r.visitDate)}</td>
-                                        <td className="px-4 py-3">
-                                            {r.exitTime ? formatDateTime(r.exitTime) : "-"}
+                                        <td className="px-2 py-2.5">{getVehicleLabel(r)}</td>
+                                        <td className="px-2 py-2.5">{formatDateTime(r.visitDate)}</td>
+                                        <td className="px-2 py-2.5">
+                                            {r.exitTime ? (
+                                                formatDateTime(r.exitTime)
+                                            ) : visitaVencida(r) ? (
+                                                <StatusBadge tone="warn">Sin salida registrada</StatusBadge>
+                                            ) : (
+                                                <StatusBadge tone="ok" dot={false}>
+                                                    <span
+                                                        className="cc-dot"
+                                                        style={{ background: 'var(--ok)' }}
+                                                    />
+                                                    En curso
+                                                </StatusBadge>
+                                            )}
                                         </td>
-                                        <td className="px-4 py-3">{getPostSiteLabel(r)}</td>
-                                        <td className="px-4 py-3">-</td>
-                                        <td className="px-4 py-3">-</td>
+                                        <td className="px-2 py-2.5">{getPostSiteLabel(r)}</td>
+                                        <td className="px-2 py-2.5">-</td>
+                                        <td className="px-2 py-2.5">-</td>
                                     </tr>
                                 ))
                             )}
@@ -695,7 +752,7 @@ export default function Visits() {
                     </table>
                     </div>
 
-                    <div className="flex items-center justify-between bg-muted/30 px-4 py-3 text-sm text-foreground/70">
+                    <div className="flex items-center justify-between bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
                         <div className="flex items-center gap-2">
                             <span>Elementos por página</span>
                             <Select

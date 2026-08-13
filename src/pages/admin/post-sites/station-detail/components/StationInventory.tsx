@@ -68,7 +68,7 @@ export default function StationInventory({ stationId }: Props) {
       {loading ? (
         <div className="px-5 pb-5"><SkeletonCards count={3} /></div>
       ) : error ? (
-        <div className="px-5 pb-5 text-sm text-red-600">{error}</div>
+        <div className="px-5 pb-5 text-sm" style={{ color: 'var(--bad-text)' }}>{error}</div>
       ) : rows.length === 0 ? (
         <div className="px-5 pb-5">
           <EmptyState
@@ -79,18 +79,18 @@ export default function StationInventory({ stationId }: Props) {
       ) : (
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
-            <thead className="bg-muted/30 border-y">
+            <thead className="border-y" style={{ borderColor: 'var(--hairline)' }}>
               <tr>
-                <th className="px-6 py-3 text-left font-semibold text-foreground/70">
+                <th className="cg-eyebrow px-2 py-2">
                   {t('station.inventory.col.item', 'Artículo')}
                 </th>
-                <th className="px-6 py-3 text-left font-semibold text-foreground/70">
+                <th className="cg-eyebrow px-2 py-2">
                   {t('station.inventory.col.serial', 'Serie / Código')}
                 </th>
-                <th className="px-6 py-3 text-left font-semibold text-foreground/70">
+                <th className="cg-eyebrow px-2 py-2">
                   {t('station.inventory.col.condition', 'Estado')}
                 </th>
-                <th className="px-6 py-3 text-left font-semibold text-foreground/70">
+                <th className="cg-eyebrow px-2 py-2">
                   {t('station.inventory.col.assignedTo', 'Asignado a')}
                 </th>
               </tr>
@@ -106,11 +106,11 @@ export default function StationInventory({ stationId }: Props) {
                   ? [guard.firstName || guard.first_name, guard.lastName || guard.last_name].filter(Boolean).join(' ') || guard.name || guard.fullName || String(guard)
                   : '-';
                 return (
-                  <tr key={r.id || i} className="hover:bg-muted/30">
-                    <td className="px-6 py-3 text-foreground font-medium">{name}</td>
-                    <td className="px-6 py-3 text-foreground">{serial}</td>
-                    <td className="px-6 py-3 text-muted-foreground capitalize">{condition}</td>
-                    <td className="px-6 py-3 text-foreground">{guardName}</td>
+                  <tr key={r.id || i} className="hover:bg-muted/40">
+                    <td className="px-2 py-2.5 text-foreground font-medium">{name}</td>
+                    <td className="px-2 py-2.5 text-foreground">{serial}</td>
+                    <td className="px-2 py-2.5 text-muted-foreground capitalize">{condition}</td>
+                    <td className="px-2 py-2.5 text-foreground">{guardName}</td>
                   </tr>
                 );
               })}

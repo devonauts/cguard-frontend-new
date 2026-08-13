@@ -37,12 +37,11 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Search, Filter, EllipsisVertical, FileText, FileSpreadsheet,
-  Printer, Mail, ChevronsUpDown, X, Loader2, CheckCircle, XCircle, Trash2,
+  Search, ChevronsUpDown, X, Loader2, CheckCircle, XCircle, Trash2,
   CalendarOff, Clock, ThumbsUp, ThumbsDown, Plus,
 } from "lucide-react";
 import Breadcrumb from "@/components/ui/breadcrumb";
-import { PageContainer, PageHeader, Section, StatCard, Stagger, StatusBadge, EmptyState } from "@/components/kit";
+import { PageContainer, PageHeader, Section, MetricTile, Stagger, StatusBadge, EmptyState, Toolbar, Segmented } from "@/components/kit";
 import timeOffRequestService, { TimeOffRecord } from "@/lib/api/timeOffRequestService";
 import { securityGuardService } from "@/lib/api/securityGuardService";
 
@@ -81,7 +80,6 @@ export default function TimeOff() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
   const [isNewRequestOpen, setIsNewRequestOpen] = useState(false);
-  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
 
@@ -162,6 +160,11 @@ export default function TimeOff() {
     );
   });
 
+  // Reparto de las solicitudes entre los tres estados, para que cada KPI diga
+  // qué porción del total representa.
+  const totalPermisos = stats.pending + stats.approved + stats.rejected;
+  const pctPermisos = (n: number) => (totalPermisos > 0 ? Math.round((n / totalPermisos) * 100) : 0);
+
   const totalPages = Math.ceil(filtered.length / pageSize);
   const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
 
@@ -171,7 +174,7 @@ export default function TimeOff() {
 
   const handleCreate = async () => {
     if (!form.type || !form.startDate || !form.endDate || !form.reason) {
-      toast.error("Por favor complete los campos requeridos: Tipo, Desde, Hasta y Razón");
+      toast.error("Faltan campos: tipo, desde, hasta y motivo");
       return;
     }
     setSaving(true);
@@ -229,13 +232,13 @@ export default function TimeOff() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "pending":
-        return <StatusBadge tone="orange">Pendiente</StatusBadge>;
+        return <StatusBadge tone="warn">Pendiente</StatusBadge>;
       case "approved":
-        return <StatusBadge tone="green">Aprobado</StatusBadge>;
+        return <StatusBadge tone="ok">Aprobado</StatusBadge>;
       case "rejected":
-        return <StatusBadge tone="red">Rechazado</StatusBadge>;
+        return <StatusBadge tone="bad">Rechazado</StatusBadge>;
       default:
-        return <StatusBadge tone="slate">{status}</StatusBadge>;
+        return <StatusBadge tone="neutral">{status}</StatusBadge>;
     }
   };
 
@@ -250,38 +253,55 @@ export default function TimeOff() {
       <PageContainer width="wide" className="px-4 lg:px-6">
         <PageHeader
           icon={<CalendarOff />}
-          title="Tiempo Libre"
+          title="Tiempo libre"
           subtitle="Solicitudes de vacaciones, enfermedad y permisos del personal."
         />
 
-        {/* Stats */}
-        <Stagger className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <StatCard label="Pendientes" value={stats.pending} icon={<Clock />} accent="orange" />
-          <StatCard label="Aprobadas" value={stats.approved} icon={<ThumbsUp />} accent="green" />
-          <StatCard label="Rechazadas" value={stats.rejected} icon={<ThumbsDown />} accent="red" />
+        {/* KPIs */}
+        <Stagger className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <MetricTile
+            label="Pendientes"
+            value={stats.pending}
+            icon={<Clock />}
+            delta={totalPermisos > 0 ? { value: `${pctPermisos(stats.pending)} %`, direction: stats.pending > 0 ? "up" : "flat" } : undefined}
+            hint="Esperando una decisión"
+          />
+          <MetricTile
+            label="Aprobadas"
+            value={stats.approved}
+            icon={<ThumbsUp />}
+            delta={totalPermisos > 0 ? { value: `${pctPermisos(stats.approved)} %`, direction: "up" } : undefined}
+            hint="Del total de solicitudes"
+          />
+          <MetricTile
+            label="Rechazadas"
+            value={stats.rejected}
+            icon={<ThumbsDown />}
+            delta={totalPermisos > 0 ? { value: `${pctPermisos(stats.rejected)} %`, direction: stats.rejected > 0 ? "down" : "flat" } : undefined}
+            hint="Del total de solicitudes"
+          />
         </Stagger>
 
-        {/* Toolbar */}
-        <div className="flex flex-col md:flex-row justify-between gap-4">
-          <div className="w-full md:w-52">
-            <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v as "all" | "pending" | "approved" | "rejected"); setPage(1); }}>
-              <SelectTrigger>
-                <SelectValue placeholder="Todos los estados" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos los estados</SelectItem>
-                <SelectItem value="pending">Pendiente</SelectItem>
-                <SelectItem value="approved">Aprobado</SelectItem>
-                <SelectItem value="rejected">Rechazado</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        {/* Barra de filtros */}
+        <Toolbar className="justify-between gap-4">
+          {/* Elegir UNO de cuatro estados: el conmutador del sistema, no un
+              desplegable. Muestra las cuatro opciones sin abrir nada. */}
+          <Segmented<"all" | "pending" | "approved" | "rejected">
+            value={statusFilter}
+            onChange={(v) => { setStatusFilter(v); setPage(1); }}
+            options={[
+              { value: "all", label: "Todos" },
+              { value: "pending", label: "Pendiente" },
+              { value: "approved", label: "Aprobado" },
+              { value: "rejected", label: "Rechazado" },
+            ]}
+          />
 
-          <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto items-center">
+          <div className="flex w-full flex-col items-center gap-4 md:w-auto md:flex-row">
             <div className="relative w-full md:w-80">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: "var(--ink-faint)" }} />
               <Input
-                placeholder="Buscar vigilante, tipo o razón"
+                placeholder="Buscar vigilante, tipo o motivo"
                 className="pl-9"
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
@@ -358,9 +378,9 @@ export default function TimeOff() {
                     </div>
 
                     <div className="grid gap-2">
-                      <Label>Razón*</Label>
+                      <Label>Motivo*</Label>
                       <Input
-                        placeholder="Describa la razón..."
+                        placeholder="Describe el motivo…"
                         value={form.reason}
                         onChange={(e) => setForm({ ...form, reason: e.target.value })}
                       />
@@ -372,7 +392,7 @@ export default function TimeOff() {
                         rows={3}
                         value={form.comment}
                         onChange={(e) => setForm({ ...form, comment: e.target.value })}
-                        placeholder="Comentario adicional..."
+                        placeholder="Comentario adicional…"
                       />
                     </div>
 
@@ -393,53 +413,28 @@ export default function TimeOff() {
                       onClick={handleCreate}
                     >
                       {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                      AÑADIR
+                      Crear solicitud
                     </Button>
                   </SheetFooter>
                 </SheetContent>
               </Sheet>
 
-              <Sheet open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
-                <SheetTrigger asChild>
-                  <Button variant="outline" className="text-primary border-primary/30 hover:bg-primary/10 hover:text-primary">
-                    <Filter className="h-4 w-4 mr-2" /> Filtros
-                  </Button>
-                </SheetTrigger>
-                <SheetContent className="w-[400px] sm:w-[540px]">
-                  <SheetHeader className="relative">
-                    <SheetTitle>Filtros</SheetTitle>
-                    <Button variant="ghost" size="icon" className="absolute right-0 top-0" onClick={() => setIsFiltersOpen(false)}>
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </SheetHeader>
-                  <div className="space-y-4 py-4">
-                    <p className="text-sm text-muted-foreground">Usa el filtro de estado en la barra principal para filtrar por pendiente, aprobado o rechazado.</p>
-                    <Button
-                      variant="brand"
-                      className="w-full"
-                      onClick={() => setIsFiltersOpen(false)}
-                    >
-                      Cerrar
-                    </Button>
-                  </div>
-                </SheetContent>
-              </Sheet>
             </div>
           </div>
-        </div>
+        </Toolbar>
 
-        {/* Table */}
+        {/* Tabla */}
         <Section title="Solicitudes de tiempo libre" icon={<CalendarOff />} contentClassName="overflow-x-auto -mx-1">
           <Table>
-            <TableHeader className="bg-muted/40">
+            <TableHeader style={{ background: "var(--glass-sunken)" }}>
               <TableRow>
                 <TableHead className="w-[50px]"><Checkbox /></TableHead>
-                <TableHead className="font-bold text-foreground">Fecha de solicitud</TableHead>
-                <TableHead className="font-bold text-foreground">Vigilante</TableHead>
-                <TableHead className="font-bold text-foreground">Tipo</TableHead>
-                <TableHead className="font-bold text-foreground">Desde</TableHead>
-                <TableHead className="font-bold text-foreground">Hasta</TableHead>
-                <TableHead className="font-bold text-foreground">Estado</TableHead>
+                <TableHead className="cg-eyebrow">Fecha de solicitud</TableHead>
+                <TableHead className="cg-eyebrow">Vigilante</TableHead>
+                <TableHead className="cg-eyebrow">Tipo</TableHead>
+                <TableHead className="cg-eyebrow">Desde</TableHead>
+                <TableHead className="cg-eyebrow">Hasta</TableHead>
+                <TableHead className="cg-eyebrow">Estado</TableHead>
                 <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
@@ -447,7 +442,7 @@ export default function TimeOff() {
               {loading ? (
                 <TableRow>
                   <TableCell colSpan={8} className="h-[200px] text-center">
-                    <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground" />
+                    <Loader2 className="mx-auto h-6 w-6 animate-spin" style={{ color: "var(--ink-faint)" }} />
                   </TableCell>
                 </TableRow>
               ) : paginated.length === 0 ? (
@@ -465,13 +460,13 @@ export default function TimeOff() {
                 paginated.map((rec) => (
                   <TableRow key={rec.id}>
                     <TableCell><Checkbox /></TableCell>
-                    <TableCell>{formatDate(rec.requestDate)}</TableCell>
-                    <TableCell>{rec.guard?.fullName ?? rec.guardName ?? "—"}</TableCell>
+                    <TableCell className="tabular-nums">{formatDate(rec.requestDate)}</TableCell>
+                    <TableCell className="font-medium">{rec.guard?.fullName ?? rec.guardName ?? "—"}</TableCell>
                     <TableCell className="capitalize">{rec.type ?? "—"}</TableCell>
-                    <TableCell>
+                    <TableCell className="tabular-nums">
                       {rec.startDate ? `${rec.startDate}${rec.startTime ? " " + rec.startTime : ""}` : "—"}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="tabular-nums">
                       {rec.endDate ? `${rec.endDate}${rec.endTime ? " " + rec.endTime : ""}` : "—"}
                     </TableCell>
                     <TableCell>{getStatusBadge(rec.status)}</TableCell>
@@ -479,21 +474,21 @@ export default function TimeOff() {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon">
-                            <ChevronsUpDown className="h-4 w-4 text-muted-foreground" />
+                            <ChevronsUpDown className="h-4 w-4" style={{ color: "var(--ink-soft)" }} />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           {rec.status === "pending" && (
                             <>
                               <DropdownMenuItem onClick={() => handleApprove(rec.id)}>
-                                <CheckCircle className="mr-2 h-4 w-4 text-green-500" /> Aprobar
+                                <CheckCircle className="mr-2 h-4 w-4" style={{ color: "var(--ok-text)" }} /> Aprobar
                               </DropdownMenuItem>
                               <DropdownMenuItem onClick={() => handleReject(rec.id)}>
-                                <XCircle className="mr-2 h-4 w-4 text-red-500" /> Rechazar
+                                <XCircle className="mr-2 h-4 w-4" style={{ color: "var(--bad-text)" }} /> Rechazar
                               </DropdownMenuItem>
                             </>
                           )}
-                          <DropdownMenuItem onClick={() => handleDelete(rec.id)} className="text-red-600">
+                          <DropdownMenuItem onClick={() => handleDelete(rec.id)} style={{ color: "var(--bad-text)" }}>
                             <Trash2 className="mr-2 h-4 w-4" /> Eliminar
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -508,7 +503,7 @@ export default function TimeOff() {
 
         {/* Pagination */}
         <div className="flex items-center justify-end space-x-2 py-4">
-          <div className="text-sm text-muted-foreground">Elementos por página</div>
+          <div className="text-sm" style={{ color: "var(--ink-soft)" }}>Elementos por página</div>
           <Select value={String(pageSize)} onValueChange={(v) => { setPageSize(Number(v)); setPage(1); }}>
             <SelectTrigger className="w-[70px]"><SelectValue /></SelectTrigger>
             <SelectContent>
@@ -517,10 +512,10 @@ export default function TimeOff() {
               <SelectItem value="100">100</SelectItem>
             </SelectContent>
           </Select>
-          <div className="text-sm text-muted-foreground mx-4">
+          <div className="mx-4 text-sm tabular-nums" style={{ color: "var(--ink-soft)" }}>
             {filtered.length === 0
-              ? "0 of 0"
-              : `${(page - 1) * pageSize + 1}–${Math.min(page * pageSize, filtered.length)} of ${filtered.length}`}
+              ? "0 de 0"
+              : `${(page - 1) * pageSize + 1}–${Math.min(page * pageSize, filtered.length)} de ${filtered.length}`}
           </div>
           <div className="flex items-center space-x-2">
             <Button variant="outline" size="icon" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>

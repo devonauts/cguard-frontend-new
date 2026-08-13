@@ -1,5 +1,6 @@
 import { Route } from "lucide-react";
 import DataReport, { type ReportColumn } from "./DataReport";
+import { formatDateTime, rangeBounds, REPORT_ROW_LIMIT, warnIfCapped } from "./reportFormat";
 import { ApiService } from "@/services/api/apiService";
 
 interface TagScan {
@@ -12,13 +13,9 @@ interface TagScan {
   station?: { stationName?: string } | null;
 }
 
-const fmt = (iso?: string | null) =>
-  iso
-    ? new Date(iso).toLocaleString("es-EC", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })
-    : "—";
 
 const columns: ReportColumn<TagScan>[] = [
-  { key: "scanned", label: "Fecha/Hora", value: (r) => fmt(r.scannedAt) },
+  { key: "scanned", label: "Fecha/Hora", value: (r) => formatDateTime(r.scannedAt) },
   { key: "tour", label: "Recorrido", value: (r) => r.tag?.siteTour?.name || "—" },
   { key: "tag", label: "Punto (etiqueta)", value: (r) => r.tag?.name || r.tag?.tagIdentifier || "—" },
   { key: "guard", label: "Vigilante", value: (r) => r.guard?.fullName || "—" },
@@ -33,18 +30,21 @@ export default function SiteTour() {
       title="Informe de Recorridos del Sitio"
       description="Escaneos de rondas: puntos de control marcados por vigilante, con validación de ubicación."
       icon={Route}
-      accent="#0ea5e9"
       columns={columns}
+      // Un punto marcado fuera de rango es una anomalía, no un dato más.
+      rowTone={(r) => (r.validLocation === false ? "warn" : undefined)}
       load={async ({ from, to }) => {
         const tenantId = localStorage.getItem("tenantId") || "";
-        const res: TagScan[] | { rows?: TagScan[] } = await ApiService.get(`/tenant/${tenantId}/site-tour/tag-scans?limit=2000`);
+        // El rango (`scannedAt`) va EN LA CONSULTA. Antes se pedían los 2000
+        // escaneos más recientes y se recortaba aquí: un rango antiguo se
+        // exportaba vacío.
+        const { start, end } = rangeBounds(from, to);
+        const params = new URLSearchParams({ from: start, to: end, limit: String(REPORT_ROW_LIMIT) });
+        const res: TagScan[] | { rows?: TagScan[] } = await ApiService.get(
+          `/tenant/${tenantId}/site-tour/tag-scans?${params.toString()}`,
+        );
         const rows: TagScan[] = Array.isArray(res) ? res : res?.rows || [];
-        const start = new Date(`${from}T00:00:00.000Z`).getTime();
-        const end = new Date(`${to}T23:59:59.999Z`).getTime();
-        return rows.filter((r) => {
-          const t = r.scannedAt ? new Date(r.scannedAt).getTime() : NaN;
-          return !Number.isNaN(t) && t >= start && t <= end;
-        });
+        return warnIfCapped(rows);
       }}
     />
   );

@@ -42,13 +42,23 @@ function formatDate(iso: string | null) {
   });
 }
 
+/**
+ * Las estrellas van en `--warn` y no en el acento a propósito: una estrella de
+ * calificación se lee dorada en cualquier producto, y si siguiera al acento
+ * quedarían estrellas azules o violetas según la preferencia del usuario.
+ */
 function Stars({ value }: { value: number }) {
   return (
     <span className="inline-flex items-center gap-0.5" aria-label={`${value} de 5`}>
       {[1, 2, 3, 4, 5].map((i) => (
         <Star
           key={i}
-          className={`h-4 w-4 ${i <= value ? "fill-yellow-400 text-yellow-400" : "text-slate-300"}`}
+          className="h-4 w-4"
+          style={
+            i <= value
+              ? { fill: 'var(--warn)', color: 'var(--warn)' }
+              : { color: 'var(--ink-faint)', opacity: 0.5 }
+          }
         />
       ))}
     </span>
@@ -197,16 +207,16 @@ export default function GuardRatings() {
         {/* Table — Calificaciones a personal (las reseñas son hacia cada
             vigilante, no hacia la empresa). Cada fila abre el perfil del
             vigilante › Reseñas. */}
-        <Section title="Calificaciones a personal" icon={<Star />} contentClassName="overflow-hidden rounded-xl border">
+        <Section title="Calificaciones a personal" icon={<Star />} contentClassName="overflow-hidden rounded-2xl" >
           <Table>
-            <TableHeader className="bg-muted/50">
+            <TableHeader style={{ background: 'var(--glass-sunken)' }}>
               <TableRow>
-                <TableHead className="font-bold text-foreground">Fecha</TableHead>
-                <TableHead className="font-bold text-foreground">Vigilante</TableHead>
-                <TableHead className="font-bold text-foreground">Cliente</TableHead>
-                <TableHead className="font-bold text-foreground">Estación</TableHead>
-                <TableHead className="font-bold text-foreground">Calificación</TableHead>
-                <TableHead className="font-bold text-foreground">Comentario</TableHead>
+                <TableHead className="cg-eyebrow">Fecha</TableHead>
+                <TableHead className="cg-eyebrow">Vigilante</TableHead>
+                <TableHead className="cg-eyebrow">Cliente</TableHead>
+                <TableHead className="cg-eyebrow">Estación</TableHead>
+                <TableHead className="cg-eyebrow">Calificación</TableHead>
+                <TableHead className="cg-eyebrow">Comentario</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -252,7 +262,7 @@ export default function GuardRatings() {
                     title={rec.guardId ? "Ver reseñas del vigilante" : undefined}
                   >
                     <TableCell className="whitespace-nowrap">{formatDate(rec.createdAt)}</TableCell>
-                    <TableCell className="font-medium text-primary hover:underline">{rec.guardName ?? "—"}</TableCell>
+                    <TableCell className="font-medium hover:underline" style={{ color: 'var(--brand-text)' }}>{rec.guardName ?? "—"}</TableCell>
                     <TableCell>{rec.clientName ?? "—"}</TableCell>
                     <TableCell>{rec.stationName ?? "—"}</TableCell>
                     <TableCell><Stars value={rec.rating} /></TableCell>

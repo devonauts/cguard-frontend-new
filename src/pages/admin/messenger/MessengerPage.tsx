@@ -2,8 +2,9 @@ import { useState, useEffect, useRef, useCallback, useMemo, type ReactNode } fro
 import AppLayout from "@/layouts/app-layout";
 import Breadcrumb from "@/components/ui/breadcrumb";
 import { MessageSquareText, Send, Plus, Search, Loader2, X, Check, CheckCheck, Paperclip, Play, Trash2, Users, Mic, UserPlus, RefreshCw, UserCircle2 } from "lucide-react";
-import { PageHeader, Modal } from "@/components/kit";
+import { PageHeader, Modal, EmptyState, SkeletonCards, Segmented, StatusBadge } from "@/components/kit";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { messageService, type MessageAttachment, type GroupMember } from "@/lib/api/messageService";
 import securityGuardService from "@/lib/api/securityGuardService";
 import { postSiteService } from "@/lib/api/postSiteService";
@@ -23,7 +24,13 @@ function MessageAttachmentView({ att }: { att: MessageAttachment }) {
   const url = useFileUrl(att.url);
   if (att.type === "video") {
     return (
-      <video src={url || undefined} controls preload="metadata" className="max-h-72 max-w-full rounded-lg bg-black/20" />
+      <video
+        src={url || undefined}
+        controls
+        preload="metadata"
+        className="max-h-72 max-w-full rounded-lg"
+        style={{ background: 'var(--glass-sunken)' }}
+      />
     );
   }
   if (att.type === "audio") {
@@ -211,41 +218,63 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
           title={pageTitle}
           subtitle={isClient ? "Conversaciones con tus clientes." : "Conversaciones con vigilantes, supervisores y grupos por puesto."}
           actions={
-            <button onClick={() => setComposeOpen(true)} className="cg-gradient-brand inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition hover:shadow-lg hover:brightness-[1.04]">
-              <Plus size={15} /> Nuevo
-            </button>
+            <Button variant="brand" onClick={() => setComposeOpen(true)}>
+              <Plus size={15} className="mr-1.5" /> Nuevo
+            </Button>
           }
         />
-        <div className="flex h-[calc(100vh-240px)] overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+        <div className="glass flex h-[calc(100vh-240px)] overflow-hidden">
           {/* Conversation list */}
-          <aside className="flex w-full max-w-xs flex-col border-r border-border">
-            <div className="flex items-center justify-between gap-2 border-b border-border p-3">
-              <h2 className="text-sm font-bold text-foreground">{pageTitle}</h2>
-              <button onClick={() => setComposeOpen(true)} className="flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-white hover:bg-primary/90">
-                <Plus size={14} /> Nuevo
-              </button>
+          <aside className="flex w-full max-w-xs flex-col border-r" style={{ borderColor: 'var(--hairline)' }}>
+            <div className="flex items-center justify-between gap-2 border-b p-3" style={{ borderColor: 'var(--hairline)' }}>
+              <h2 className="text-sm font-bold">{pageTitle}</h2>
+              <Button size="sm" variant="brand" onClick={() => setComposeOpen(true)}>
+                <Plus size={14} className="mr-1" /> Nuevo
+              </Button>
             </div>
-            <div className="flex-1 overflow-auto">
+            <div className="flex-1 space-y-2 overflow-auto p-2">
               {loadingList ? (
-                <div className="flex justify-center py-10"><Loader2 className="animate-spin text-muted-foreground" /></div>
+                <SkeletonCards count={4} className="sm:grid-cols-1" />
               ) : visibleConversations.length === 0 ? (
-                <p className="px-4 py-10 text-center text-xs text-muted-foreground">{isClient ? "Sin mensajes de clientes todavía." : "Sin conversaciones. Crea una con \"Nuevo\"."}</p>
+                <EmptyState
+                  icon={<MessageSquareText />}
+                  title={isClient ? "Sin mensajes de clientes" : "Sin conversaciones"}
+                  description={isClient ? "Todavía no hay mensajes de tus clientes." : "Empieza una nueva con el botón «Nuevo»."}
+                />
               ) : (
-                visibleConversations.map((c) => (
-                  <button key={c.id} onClick={() => onSelect(c)} className={`flex w-full items-start gap-3 border-b border-border/40 px-3 py-3 text-left hover:bg-muted/40 ${selected?.id === c.id ? "bg-muted/60" : ""}`}>
-                    <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary/15 text-xs font-bold text-primary">
-                      {c.isGroup ? <Users size={16} /> : (c.recipientName || "?").slice(0, 2).toUpperCase()}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center justify-between gap-2">
-                        <p className="truncate text-sm font-semibold text-foreground">{c.recipientName}</p>
-                        <span className="shrink-0 text-[10px] text-muted-foreground">{fmtTime(c.lastMessageAt)}</span>
+                visibleConversations.map((c) => {
+                  const activa = selected?.id === c.id;
+                  return (
+                    <button
+                      key={c.id}
+                      onClick={() => onSelect(c)}
+                      aria-current={activa || undefined}
+                      className={`glass-flat cg-focus flex w-full items-start gap-3 px-3 py-3 text-left transition-colors ${activa ? "glass-brand brand-rail" : "hover:bg-muted/40"}`}
+                    >
+                      <div
+                        className="grid h-9 w-9 shrink-0 place-items-center rounded-full border text-xs font-bold"
+                        style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }}
+                      >
+                        {c.isGroup ? <Users size={16} /> : (c.recipientName || "?").slice(0, 2).toUpperCase()}
                       </div>
-                      <p className="truncate text-xs text-muted-foreground">{c.lastMessagePreview || (c.isGroup ? `Grupo · ${c.memberCount || 0} miembros` : c.recipientType === "guard" ? "Vigilante" : "Cliente")}</p>
-                    </div>
-                    {(c.unreadCount || 0) > 0 && <span className="ml-1 grid h-5 min-w-5 shrink-0 place-items-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">{c.unreadCount}</span>}
-                  </button>
-                ))
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="truncate text-sm font-semibold">{c.recipientName}</p>
+                          <span className="shrink-0 text-[10px]" style={{ color: 'var(--ink-faint)' }}>{fmtTime(c.lastMessageAt)}</span>
+                        </div>
+                        <p className="truncate text-xs" style={{ color: 'var(--ink-soft)' }}>{c.lastMessagePreview || (c.isGroup ? `Grupo · ${c.memberCount || 0} miembros` : c.recipientType === "guard" ? "Vigilante" : "Cliente")}</p>
+                      </div>
+                      {(c.unreadCount || 0) > 0 && (
+                        <span
+                          className="ml-1 grid h-5 min-w-5 shrink-0 place-items-center rounded-full px-1.5 text-[10px] font-bold tabular-nums"
+                          style={{ background: 'var(--brand)', color: 'var(--brand-ink)' }}
+                        >
+                          {c.unreadCount}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })
               )}
             </div>
           </aside>
@@ -253,23 +282,35 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
           {/* Thread */}
           <section className="flex min-w-0 flex-1 flex-col">
             {!selected ? (
-              <div className="flex flex-1 flex-col items-center justify-center text-center text-muted-foreground">
-                <MessageSquareText className="mb-3 h-16 w-16 stroke-[1.25]" />
-                <p className="text-sm">Selecciona una conversación o crea una nueva.</p>
+              <div className="flex flex-1 flex-col items-center justify-center p-6">
+                <EmptyState
+                  icon={<MessageSquareText />}
+                  title="Ninguna conversación abierta"
+                  description="Selecciona una conversación de la lista o crea una nueva."
+                />
               </div>
             ) : (
               <>
-                <div className="flex items-center gap-3 border-b border-border p-3">
-                  <div className="grid h-9 w-9 place-items-center rounded-full bg-primary/15 text-xs font-bold text-primary">{selected.isGroup ? <Users size={16} /> : (selected.recipientName || "?").slice(0, 2).toUpperCase()}</div>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-bold text-foreground">{selected.recipientName}</p>
-                    <p className="text-[11px] text-muted-foreground">{selected.isGroup ? `Grupo · ${selected.memberCount || 0} miembros` : selected.recipientType === "guard" ? "Vigilante" : "Cliente"}{selected.isOneWay ? " · Solo lectura" : ""}</p>
+                <div className="flex items-center gap-3 border-b p-3" style={{ borderColor: 'var(--hairline)' }}>
+                  <div
+                    className="grid h-9 w-9 place-items-center rounded-full border text-xs font-bold"
+                    style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }}
+                  >
+                    {selected.isGroup ? <Users size={16} /> : (selected.recipientName || "?").slice(0, 2).toUpperCase()}
                   </div>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-bold">{selected.recipientName}</p>
+                    <p className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>{selected.isGroup ? `Grupo · ${selected.memberCount || 0} miembros` : selected.recipientType === "guard" ? "Vigilante" : "Cliente"}</p>
+                  </div>
+                  {selected.isOneWay && (
+                    <StatusBadge tone="info" className="ml-2 shrink-0">Solo lectura</StatusBadge>
+                  )}
                   {selected.isGroup && (
                     <button
                       onClick={() => setMembersOpen(true)}
                       title="Miembros del grupo"
-                      className="ml-auto grid h-9 w-9 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      className="cg-focus ml-auto grid h-9 w-9 place-items-center rounded-lg transition-colors hover:bg-muted"
+                      style={{ color: 'var(--ink-soft)' }}
                     >
                       <Users className="h-4 w-4" />
                     </button>
@@ -277,7 +318,16 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
                   <button
                     onClick={onDeleteConversation}
                     title={selected.isGroup ? "Eliminar grupo" : "Eliminar conversación"}
-                    className={`${selected.isGroup ? "" : "ml-auto"} grid h-9 w-9 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-red-500/10 hover:text-red-600`}
+                    className={`${selected.isGroup ? "" : "ml-auto"} cg-focus grid h-9 w-9 place-items-center rounded-lg transition-colors`}
+                    style={{ color: 'var(--ink-soft)' }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'color-mix(in oklab, var(--bad) 12%, transparent)';
+                      e.currentTarget.style.color = 'var(--bad-text)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = '';
+                      e.currentTarget.style.color = 'var(--ink-soft)';
+                    }}
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -288,8 +338,13 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
                     const mine = m.senderType === "staff";
                     return (
                       <div key={m.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
-                        <div className={`max-w-[75%] rounded-2xl px-3.5 py-2 text-sm ${mine ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"}`}>
-                          {!mine && <p className="mb-0.5 text-[10px] font-semibold opacity-70">{m.senderName}</p>}
+                        {/* La burbuja propia va en el acento; la ajena en cristal plano
+                            (plano, no `.glass`: se repite por cada mensaje del hilo). */}
+                        <div
+                          className={`max-w-[75%] rounded-2xl px-3.5 py-2 text-sm ${mine ? "" : "glass-flat"}`}
+                          style={mine ? { background: 'var(--brand)', color: 'var(--brand-ink)' } : undefined}
+                        >
+                          {!mine && <p className="mb-0.5 text-[10px] font-semibold" style={{ color: 'var(--ink-soft)' }}>{m.senderName}</p>}
                           {Array.isArray(m.attachments) && m.attachments.length > 0 && (
                             <div className="mb-1 grid gap-1.5">
                               {m.attachments.map((a, i) => (
@@ -298,7 +353,10 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
                             </div>
                           )}
                           {m.body && <p className="whitespace-pre-wrap break-words">{m.body}</p>}
-                          <div className={`mt-0.5 flex items-center justify-end gap-1 text-[10px] ${mine ? "text-white/70" : "text-muted-foreground"}`}>
+                          <div
+                            className="mt-0.5 flex items-center justify-end gap-1 text-[10px]"
+                            style={mine ? { color: 'var(--brand-ink)', opacity: 0.72 } : { color: 'var(--ink-faint)' }}
+                          >
                             {fmtTime(m.createdAt)}
                             {mine && (m.receipt?.deliveryStatus === "read" ? <CheckCheck size={12} /> : <Check size={12} />)}
                           </div>
@@ -308,34 +366,69 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
                   })}
                 </div>
 
-                <div className="border-t border-border p-3">
+                <div className="glass-sunken m-3 rounded-2xl p-3">
                   {pending.length > 0 && (
                     <div className="mb-2 flex flex-wrap gap-2">
                       {pending.map((a, i) => (
-                        <div key={i} className="relative h-16 w-16 overflow-hidden rounded-lg border border-border">
+                        <div key={i} className="relative h-16 w-16 overflow-hidden rounded-lg border" style={{ borderColor: 'var(--hairline)' }}>
                           {a.type === "video" ? (
-                            <div className="flex h-full w-full items-center justify-center bg-black/60 text-white"><Play size={18} /></div>
+                            <div
+                              className="flex h-full w-full items-center justify-center"
+                              style={{ background: 'var(--glass-sunken)', color: 'var(--ink-soft)' }}
+                            >
+                              <Play size={18} />
+                            </div>
                           ) : a.type === "audio" ? (
-                            <div className="flex h-full w-full items-center justify-center bg-primary/15 text-primary"><Mic size={18} /></div>
+                            <div
+                              className="flex h-full w-full items-center justify-center"
+                              style={{ background: 'var(--brand-wash)', color: 'var(--brand-text)' }}
+                            >
+                              <Mic size={18} />
+                            </div>
                           ) : (
                             <PendingThumb att={a} />
                           )}
-                          <button onClick={() => setPending((p) => p.filter((_, j) => j !== i))} className="absolute right-0 top-0 grid h-5 w-5 place-items-center rounded-bl bg-black/70 text-white"><X size={12} /></button>
+                          <button
+                            onClick={() => setPending((p) => p.filter((_, j) => j !== i))}
+                            aria-label="Quitar adjunto"
+                            className="cg-focus absolute right-0 top-0 grid h-5 w-5 place-items-center rounded-bl"
+                            style={{ background: 'oklch(0 0 0 / 0.62)', color: 'oklch(1 0 0)' }}
+                          >
+                            <X size={12} />
+                          </button>
                         </div>
                       ))}
                     </div>
                   )}
                   <div className="flex items-end gap-2">
                     <input ref={fileRef} type="file" accept="image/*,video/*,audio/*" multiple className="hidden" onChange={(e) => onPickFiles(e.target.files)} />
-                    <button onClick={() => fileRef.current?.click()} disabled={uploading || recorder.recording} title="Adjuntar imagen, video o audio" className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-input text-muted-foreground hover:text-foreground disabled:opacity-50">
+                    <button
+                      onClick={() => fileRef.current?.click()}
+                      disabled={uploading || recorder.recording}
+                      title="Adjuntar imagen, video o audio"
+                      className="cg-btn-glass cg-focus grid h-10 w-10 shrink-0 place-items-center rounded-xl disabled:opacity-50"
+                    >
                       {uploading ? <Loader2 size={16} className="animate-spin" /> : <Paperclip size={16} />}
                     </button>
                     {recorder.recording ? (
-                      <div className="flex flex-1 items-center gap-2 rounded-xl border border-primary/40 bg-primary/10 px-3.5 py-2 text-sm">
-                        <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-red-500" />
-                        <span className="font-mono text-foreground">{String(Math.floor(recorder.elapsedMs / 60000)).padStart(2, "0")}:{String(Math.floor((recorder.elapsedMs % 60000) / 1000)).padStart(2, "0")}</span>
-                        <span className="text-muted-foreground">Grabando nota de voz…</span>
-                        <button onClick={() => recorder.cancel()} title="Cancelar" className="ml-auto text-muted-foreground hover:text-red-600"><X size={16} /></button>
+                      <div
+                        className="flex flex-1 items-center gap-2 rounded-xl border px-3.5 py-2 text-sm"
+                        style={{
+                          borderColor: 'color-mix(in oklab, var(--bad) 38%, transparent)',
+                          background: 'color-mix(in oklab, var(--bad) 10%, transparent)',
+                        }}
+                      >
+                        <span className="cc-dot" style={{ background: 'var(--bad)' }} />
+                        <span className="font-mono tabular-nums">{String(Math.floor(recorder.elapsedMs / 60000)).padStart(2, "0")}:{String(Math.floor((recorder.elapsedMs % 60000) / 1000)).padStart(2, "0")}</span>
+                        <span style={{ color: 'var(--ink-soft)' }}>Grabando nota de voz…</span>
+                        <button
+                          onClick={() => recorder.cancel()}
+                          title="Cancelar"
+                          className="cg-focus ml-auto"
+                          style={{ color: 'var(--bad-text)' }}
+                        >
+                          <X size={16} />
+                        </button>
                       </div>
                     ) : (
                       <textarea
@@ -344,7 +437,7 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
                         onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); onSend(); } }}
                         placeholder="Escribe un mensaje…"
                         rows={1}
-                        className="max-h-32 min-h-[40px] flex-1 resize-none rounded-xl border border-input bg-background px-3.5 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        className="cg-input max-h-32 min-h-[40px] flex-1 resize-none px-3.5 py-2 text-sm"
                       />
                     )}
                     {recorder.supported && !draft.trim() && pending.length === 0 && (
@@ -352,13 +445,17 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
                         onClick={onToggleRecord}
                         disabled={uploading}
                         title={recorder.recording ? "Detener y enviar" : "Grabar nota de voz"}
-                        className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl text-white disabled:opacity-50 ${recorder.recording ? "bg-red-500 hover:bg-red-600" : "bg-primary hover:bg-primary/90"}`}
+                        className={`cg-focus grid h-10 w-10 shrink-0 place-items-center rounded-xl disabled:opacity-50 ${recorder.recording ? "cg-btn-bad" : "cg-btn-brand"}`}
                       >
                         {recorder.recording ? <Send size={16} /> : <Mic size={16} />}
                       </button>
                     )}
                     {(!recorder.supported || draft.trim() || pending.length > 0) && (
-                      <button onClick={onSend} disabled={sending || uploading || recorder.recording || (!draft.trim() && pending.length === 0)} className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
+                      <button
+                        onClick={onSend}
+                        disabled={sending || uploading || recorder.recording || (!draft.trim() && pending.length === 0)}
+                        className="cg-btn-brand cg-focus grid h-10 w-10 shrink-0 place-items-center rounded-xl disabled:opacity-50"
+                      >
                         {sending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
                       </button>
                     )}
@@ -467,13 +564,8 @@ function ComposeDialog({ scope, onClose, onSent }: { scope: "operational" | "cli
     } finally { setSending(false); }
   };
 
-  const Tab = ({ id, icon, label }: { id: "direct" | "group"; icon: ReactNode; label: string }) => (
-    <button
-      onClick={() => setMode(id)}
-      className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition-colors ${mode === id ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
-    >
-      {icon} {label}
-    </button>
+  const tabLabel = (icon: ReactNode, label: string) => (
+    <span className="inline-flex items-center gap-1.5">{icon} {label}</span>
   );
 
   return (
@@ -500,27 +592,32 @@ function ComposeDialog({ scope, onClose, onSent }: { scope: "operational" | "cli
         <div className="space-y-3">
           {/* Groups are an operational feature (vigilantes by puesto); clients only get direct chats. */}
           {!isClient && (
-            <div className="flex gap-1 rounded-xl bg-muted/50 p-1">
-              <Tab id="direct" icon={<UserCircle2 size={14} />} label="Directo" />
-              <Tab id="group" icon={<Users size={14} />} label="Grupo" />
-            </div>
+            <Segmented
+              className="w-full [&>button]:flex-1"
+              value={mode}
+              onChange={setMode}
+              options={[
+                { value: "direct" as const, label: tabLabel(<UserCircle2 size={14} />, "Directo") },
+                { value: "group" as const, label: tabLabel(<Users size={14} />, "Grupo") },
+              ]}
+            />
           )}
 
           {mode === "direct" ? (
             <>
               {picked ? (
-                <div className="flex items-center justify-between rounded-xl border border-border bg-muted/40 px-3 py-2">
-                  <span className="text-sm font-medium text-foreground">{picked.label}</span>
-                  <button onClick={() => setPicked(null)} className="text-muted-foreground hover:text-foreground"><X size={15} /></button>
+                <div className="glass-flat glass-brand flex items-center justify-between px-3 py-2">
+                  <span className="text-sm font-medium">{picked.label}</span>
+                  <button onClick={() => setPicked(null)} className="cg-focus" style={{ color: 'var(--ink-soft)' }}><X size={15} /></button>
                 </div>
               ) : (
                 <div>
                   <div className="relative">
-                    <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                    <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={isClient ? "Buscar cliente…" : "Buscar vigilante…"} className="w-full rounded-xl border border-input bg-background py-2 pl-9 pr-3 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                    <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
+                    <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={isClient ? "Buscar cliente…" : "Buscar vigilante…"} className="cg-input w-full py-2 pl-9 pr-3 text-sm" />
                   </div>
                   {results.length > 0 && (
-                    <div className="mt-2 max-h-44 overflow-auto rounded-xl border border-border">
+                    <div className="mt-2 max-h-44 overflow-auto rounded-xl border" style={{ borderColor: 'var(--hairline)' }}>
                       {results.map((r) => (
                         <button key={r.id} onClick={() => { setPicked(r); setResults([]); setQ(""); }} className="block w-full px-3 py-2 text-left text-sm hover:bg-muted/50">{r.label}</button>
                       ))}
@@ -528,37 +625,37 @@ function ComposeDialog({ scope, onClose, onSent }: { scope: "operational" | "cli
                   )}
                 </div>
               )}
-              <textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="Mensaje…" rows={4} className="w-full resize-none rounded-xl border border-input bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" />
+              <textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="Mensaje…" rows={4} className="cg-input w-full resize-none px-3 py-2 text-sm" />
             </>
           ) : (
             <>
-              <input value={groupName} onChange={(e) => setGroupName(e.target.value)} placeholder="Nombre del grupo" className="w-full rounded-xl border border-input bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" />
+              <input value={groupName} onChange={(e) => setGroupName(e.target.value)} placeholder="Nombre del grupo" className="cg-input w-full px-3 py-2 text-sm" />
               {site ? (
-                <div className="flex items-center justify-between rounded-xl border border-border bg-muted/40 px-3 py-2">
-                  <span className="text-sm font-medium text-foreground">Puesto: {site.label}</span>
-                  <button onClick={() => setSite(null)} className="text-muted-foreground hover:text-foreground"><X size={15} /></button>
+                <div className="glass-flat glass-brand flex items-center justify-between px-3 py-2">
+                  <span className="text-sm font-medium">Puesto: {site.label}</span>
+                  <button onClick={() => setSite(null)} className="cg-focus" style={{ color: 'var(--ink-soft)' }}><X size={15} /></button>
                 </div>
               ) : (
                 <div>
                   <div className="relative">
-                    <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                    <input value={siteQ} onChange={(e) => setSiteQ(e.target.value)} placeholder="Buscar puesto/sitio…" className="w-full rounded-xl border border-input bg-background py-2 pl-9 pr-3 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                    <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
+                    <input value={siteQ} onChange={(e) => setSiteQ(e.target.value)} placeholder="Buscar puesto/sitio…" className="cg-input w-full py-2 pl-9 pr-3 text-sm" />
                   </div>
                   {siteResults.length > 0 && (
-                    <div className="mt-2 max-h-44 overflow-auto rounded-xl border border-border">
+                    <div className="mt-2 max-h-44 overflow-auto rounded-xl border" style={{ borderColor: 'var(--hairline)' }}>
                       {siteResults.map((r) => (
                         <button key={r.id} onClick={() => { setSite(r); setSiteResults([]); setSiteQ(""); }} className="block w-full px-3 py-2 text-left text-sm hover:bg-muted/50">{r.label}</button>
                       ))}
                     </div>
                   )}
-                  <p className="mt-1.5 text-[11px] text-muted-foreground">Los vigilantes asignados a este puesto se añaden automáticamente y el grupo se mantiene al día con las asignaciones.</p>
+                  <p className="mt-1.5 text-[11px]" style={{ color: 'var(--ink-soft)' }}>Los vigilantes asignados a este puesto se añaden automáticamente y el grupo se mantiene al día con las asignaciones.</p>
                 </div>
               )}
-              <label className="flex items-center gap-2 text-sm text-foreground">
-                <input type="checkbox" checked={oneWay} onChange={(e) => setOneWay(e.target.checked)} className="h-4 w-4 rounded border-input text-primary focus:ring-primary/30" />
+              <label className="flex items-center gap-2 text-sm">
+                <Checkbox checked={oneWay} onCheckedChange={(v) => setOneWay(Boolean(v))} />
                 Solo anuncios (los miembros no pueden responder)
               </label>
-              <textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="Primer mensaje (opcional)…" rows={3} className="w-full resize-none rounded-xl border border-input bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" />
+              <textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="Primer mensaje (opcional)…" rows={3} className="cg-input w-full resize-none px-3 py-2 text-sm" />
             </>
           )}
         </div>
@@ -615,44 +712,67 @@ function MembersPanel({ conversation, onClose, onChanged }: { conversation: Conv
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-black/50" onClick={onClose}>
-      <div className="flex h-full w-full max-w-sm flex-col border-l border-border bg-card shadow-2xl" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between border-b border-border p-4">
+    <div
+      className="fixed inset-0 z-50 flex justify-end"
+      style={{ background: 'oklch(0 0 0 / 0.5)' }}
+      onClick={onClose}
+    >
+      <div className="glass-raised flex h-full w-full max-w-sm flex-col rounded-none" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between border-b p-4" style={{ borderColor: 'var(--hairline)' }}>
           <div className="min-w-0">
-            <h3 className="truncate text-base font-bold text-foreground">{conversation.recipientName}</h3>
-            <p className="text-[11px] text-muted-foreground">{members.length} miembros</p>
+            <h3 className="truncate text-base font-bold">{conversation.recipientName}</h3>
+            <p className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>{members.length} miembros</p>
           </div>
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground"><X size={18} /></button>
+          <button onClick={onClose} aria-label="Cerrar" className="cg-focus" style={{ color: 'var(--ink-soft)' }}><X size={18} /></button>
         </div>
-        <div className="border-b border-border p-3">
+        <div className="border-b p-3" style={{ borderColor: 'var(--hairline)' }}>
           <div className="relative">
-            <UserPlus size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Añadir vigilante…" disabled={busy} className="w-full rounded-xl border border-input bg-background py-2 pl-9 pr-3 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" />
+            <UserPlus size={15} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Añadir vigilante…" disabled={busy} className="cg-input w-full py-2 pl-9 pr-3 text-sm" />
           </div>
           {results.length > 0 && (
-            <div className="mt-2 max-h-40 overflow-auto rounded-xl border border-border">
+            <div className="mt-2 max-h-40 overflow-auto rounded-xl border" style={{ borderColor: 'var(--hairline)' }}>
               {results.map((r) => (
                 <button key={r.id} onClick={() => addMember(r.id)} className="block w-full px-3 py-2 text-left text-sm hover:bg-muted/50">{r.label}</button>
               ))}
             </div>
           )}
-          <button onClick={resync} disabled={busy} className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl border border-input py-2 text-xs font-medium text-muted-foreground hover:text-foreground disabled:opacity-50">
+          <button onClick={resync} disabled={busy} className="cg-btn-glass cg-focus mt-2 flex w-full items-center justify-center gap-2 rounded-xl py-2 text-xs font-medium disabled:opacity-50">
             <RefreshCw size={13} className={busy ? "animate-spin" : ""} /> Sincronizar con asignaciones
           </button>
         </div>
-        <div className="flex-1 overflow-auto p-2">
+        <div className="flex-1 space-y-2 overflow-auto p-2">
           {loading ? (
-            <div className="flex justify-center py-10"><Loader2 className="animate-spin text-muted-foreground" /></div>
+            <SkeletonCards count={4} className="sm:grid-cols-1" />
+          ) : members.length === 0 ? (
+            <EmptyState
+              icon={<Users />}
+              title="El grupo no tiene miembros"
+              description="Añade vigilantes con el buscador o sincroniza con las asignaciones del puesto."
+            />
           ) : (
             members.map((m) => (
-              <div key={m.id} className="flex items-center gap-3 rounded-xl px-3 py-2 hover:bg-muted/40">
-                <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-primary/15 text-[10px] font-bold text-primary">{(m.name || "?").slice(0, 2).toUpperCase()}</div>
+              <div key={m.id} className="glass-flat flex items-center gap-3 px-3 py-2">
+                <div
+                  className="grid h-8 w-8 shrink-0 place-items-center rounded-full border text-[10px] font-bold"
+                  style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }}
+                >
+                  {(m.name || "?").slice(0, 2).toUpperCase()}
+                </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-foreground">{m.name}</p>
-                  <p className="text-[10px] text-muted-foreground">{m.participantType === "staff" ? "Operador" : "Vigilante"}{m.role === "admin" ? " · Admin" : ""}{m.source === "auto" ? " · Auto" : ""}</p>
+                  <p className="truncate text-sm font-medium">{m.name}</p>
+                  <p className="text-[10px]" style={{ color: 'var(--ink-faint)' }}>{m.participantType === "staff" ? "Operador" : "Vigilante"}{m.role === "admin" ? " · Admin" : ""}{m.source === "auto" ? " · Auto" : ""}</p>
                 </div>
                 {m.role !== "admin" && (
-                  <button onClick={() => removeMember(m.userId)} disabled={busy} title="Quitar" className="grid h-7 w-7 place-items-center rounded-lg text-muted-foreground hover:bg-red-500/10 hover:text-red-600 disabled:opacity-50"><X size={14} /></button>
+                  <button
+                    onClick={() => removeMember(m.userId)}
+                    disabled={busy}
+                    title="Quitar"
+                    className="cg-focus grid h-7 w-7 place-items-center rounded-lg disabled:opacity-50"
+                    style={{ color: 'var(--bad-text)' }}
+                  >
+                    <X size={14} />
+                  </button>
                 )}
               </div>
             ))

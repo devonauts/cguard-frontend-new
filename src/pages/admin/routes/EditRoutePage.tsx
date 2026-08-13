@@ -51,6 +51,10 @@ export default function EditRoutePage() {
           }
         }
         if (!supervisorId && route.supervisorId) supervisorId = String(route.supervisorId);
+        // El orden lo manda `routePoint.order` — es el recorrido, no un detalle.
+        const puntos: any[] = Array.isArray(route.points)
+          ? route.points.slice().sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0))
+          : [];
         const vehicleId = route.vehicle?.id ? String(route.vehicle.id) : route.vehicleId ? String(route.vehicleId) : '';
         const vehicleName = route.vehicle?.name || '';
         const vehicleLicensePlate = route.vehicle?.licensePlate || '';
@@ -69,7 +73,7 @@ export default function EditRoutePage() {
           days: route.days || [],
           supervisorId,
           supervisorName,
-          siteIds: Array.isArray(route.points) ? route.points.map((point: any) => point.siteId) : [],
+          siteIds: puntos.map((point: any) => point.siteId),
           vehicleId,
           vehicleName,
           vehicleLicensePlate,
@@ -78,17 +82,27 @@ export default function EditRoutePage() {
           notifyBefore: route.notifyBefore || '00:15',
           autoCheckInByGeofence: route.autoCheckInByGeofence || false,
           forceCheckInBeforeStart: route.forceCheckInBeforeStart || false,
-          points: Array.isArray(route.points)
-            ? route.points.map((point: any) => ({
-                siteId: point.siteId,
-                siteName: point.siteName,
-                address: point.address || '',
-                duration: point.duration ?? 5,
-                scheduledHits: point.scheduledHits ?? 1,
-                lat: point.lat ?? null,
-                lng: point.lng ?? null,
-              }))
-            : [],
+          points: puntos.map((point: any) => ({
+            siteId: point.siteId,
+            siteName: point.siteName,
+            address: point.address || '',
+            duration: point.duration ?? 5,
+            scheduledHits: point.scheduledHits ?? 1,
+            lat: point.lat ?? null,
+            lng: point.lng ?? null,
+          })),
+          // Extremos opcionales del recorrido.
+          originLat: route.originLat ?? null,
+          originLng: route.originLng ?? null,
+          originLabel: route.originLabel ?? null,
+          destinationLat: route.destinationLat ?? null,
+          destinationLng: route.destinationLng ?? null,
+          destinationLabel: route.destinationLabel ?? null,
+          // Estado de la optimización.
+          optimized: route.optimized ?? false,
+          optimizedAt: route.optimizedAt ?? null,
+          optimizedMeta: route.optimizedMeta ?? null,
+          roadPolyline: route.roadPolyline ?? null,
         });
       } catch (error) {
         console.error(error);

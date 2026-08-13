@@ -26,16 +26,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
-import { Search, Filter, EllipsisVertical, FileText, FileSpreadsheet, Printer, Mail, ChevronsUpDown, X, Loader2, ListChecks, Clock, PlayCircle, CheckCircle2, XCircle } from "lucide-react";
+import { Search, Filter, ChevronsUpDown, X, Loader2, ListChecks, Clock, PlayCircle, CheckCircle2, XCircle } from "lucide-react";
 import Breadcrumb from "@/components/ui/breadcrumb";
-import { PageContainer, PageHeader, Section, StatCard, Stagger, StatusBadge, EmptyState } from "@/components/kit";
+import { PageContainer, PageHeader, Section, MetricTile, Stagger, StatusBadge, EmptyState, Toolbar } from "@/components/kit";
 import shiftService, { ShiftRecord } from "@/lib/api/shiftService";
 
 // ── helpers ──────────────────────────────────────────────────────────────────
@@ -150,6 +144,11 @@ export default function ShiftStatus() {
     return true;
   });
 
+  // Reparto de los turnos del rango entre los cuatro estados, para que cada KPI
+  // diga qué porción representa.
+  const totalTurnos = stats.pending + stats.inProgress + stats.completed + stats.cancelled;
+  const pctTurnos = (n: number) => (totalTurnos > 0 ? Math.round((n / totalTurnos) * 100) : 0);
+
   const totalPages = Math.ceil(filtered.length / pageSize);
   const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
 
@@ -157,13 +156,13 @@ export default function ShiftStatus() {
   const getStatusBadge = (status: ShiftStatusValue) => {
     switch (status) {
       case "pending":
-        return <StatusBadge tone="orange">Pendiente</StatusBadge>;
+        return <StatusBadge tone="warn">Pendiente</StatusBadge>;
       case "in-progress":
-        return <StatusBadge tone="blue">En Progreso</StatusBadge>;
+        return <StatusBadge tone="info">En curso</StatusBadge>;
       case "completed":
-        return <StatusBadge tone="green">Completado</StatusBadge>;
+        return <StatusBadge tone="ok">Completado</StatusBadge>;
       case "cancelled":
-        return <StatusBadge tone="red">Cancelado</StatusBadge>;
+        return <StatusBadge tone="bad">Cancelado</StatusBadge>;
     }
   };
 
@@ -178,20 +177,44 @@ export default function ShiftStatus() {
       <PageContainer width="wide" className="px-4 lg:px-6">
         <PageHeader
           icon={<ListChecks />}
-          title="Estado de Turnos"
+          title="Estado de turnos"
           subtitle="Seguimiento del progreso de los turnos: pendientes, en curso y completados."
         />
 
-        {/* Stats */}
-        <Stagger className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <StatCard label="Pendientes" value={stats.pending} icon={<Clock />} accent="orange" />
-          <StatCard label="En Progreso" value={stats.inProgress} icon={<PlayCircle />} accent="blue" />
-          <StatCard label="Completados" value={stats.completed} icon={<CheckCircle2 />} accent="green" />
-          <StatCard label="Cancelados" value={stats.cancelled} icon={<XCircle />} accent="red" />
+        {/* KPIs */}
+        <Stagger className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          <MetricTile
+            label="Pendientes"
+            value={stats.pending}
+            icon={<Clock />}
+            delta={totalTurnos > 0 ? { value: `${pctTurnos(stats.pending)} %`, direction: "flat" } : undefined}
+            hint="Aún no empiezan"
+          />
+          <MetricTile
+            label="En curso"
+            value={stats.inProgress}
+            icon={<PlayCircle />}
+            delta={totalTurnos > 0 ? { value: `${pctTurnos(stats.inProgress)} %`, direction: "up" } : undefined}
+            hint="Sucediendo ahora mismo"
+          />
+          <MetricTile
+            label="Completados"
+            value={stats.completed}
+            icon={<CheckCircle2 />}
+            delta={totalTurnos > 0 ? { value: `${pctTurnos(stats.completed)} %`, direction: "up" } : undefined}
+            hint="Turnos ya cerrados"
+          />
+          <MetricTile
+            label="Cancelados"
+            value={stats.cancelled}
+            icon={<XCircle />}
+            delta={totalTurnos > 0 ? { value: `${pctTurnos(stats.cancelled)} %`, direction: stats.cancelled > 0 ? "down" : "flat" } : undefined}
+            hint="Quedaron sin vigilante"
+          />
         </Stagger>
 
-        {/* Toolbar */}
-        <div className="flex flex-col md:flex-row justify-between gap-4">
+        {/* Barra de filtros */}
+        <Toolbar className="justify-between gap-4">
           <div className="w-full md:w-52">
             <Select
               value={statusFilter}
@@ -210,11 +233,11 @@ export default function ShiftStatus() {
             </Select>
           </div>
 
-          <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto items-center">
+          <div className="flex w-full flex-col items-center gap-4 md:w-auto md:flex-row">
             <div className="relative w-full md:w-80">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: "var(--ink-faint)" }} />
               <Input
-                placeholder="Buscar vigilante o estación"
+                placeholder="Buscar vigilante o puesto"
                 className="pl-9"
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
@@ -224,7 +247,7 @@ export default function ShiftStatus() {
             <div className="flex items-center gap-2">
               <Sheet open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="outline" className="text-primary border-primary/30 hover:bg-primary/10 hover:text-primary">
+                  <Button variant="outline">
                     <Filter className="h-4 w-4 mr-2" /> Filtros
                   </Button>
                 </SheetTrigger>
@@ -293,7 +316,7 @@ export default function ShiftStatus() {
                       </Button>
                       <Button
                         variant="outline"
-                        className="w-full text-primary border-primary/30 hover:bg-primary/10"
+                        className="w-full"
                         onClick={() => {
                           const empty = { startDate: "", startTime: "", endDate: "", endTime: "" };
                           setFilters(empty);
@@ -309,20 +332,20 @@ export default function ShiftStatus() {
               </Sheet>
             </div>
           </div>
-        </div>
+        </Toolbar>
 
-        {/* Table */}
+        {/* Tabla */}
         <Section title="Turnos" icon={<ListChecks />} contentClassName="overflow-x-auto -mx-1">
           <Table>
-            <TableHeader className="bg-muted/40">
+            <TableHeader style={{ background: "var(--glass-sunken)" }}>
               <TableRow>
                 <TableHead className="w-[50px]"><Checkbox /></TableHead>
-                <TableHead className="font-bold text-foreground">Fecha</TableHead>
-                <TableHead className="font-bold text-foreground">Vigilante</TableHead>
-                <TableHead className="font-bold text-foreground">Estación</TableHead>
-                <TableHead className="font-bold text-foreground">Hora de Inicio</TableHead>
-                <TableHead className="font-bold text-foreground">Hora de Fin</TableHead>
-                <TableHead className="font-bold text-foreground">Estado</TableHead>
+                <TableHead className="cg-eyebrow">Fecha</TableHead>
+                <TableHead className="cg-eyebrow">Vigilante</TableHead>
+                <TableHead className="cg-eyebrow">Puesto</TableHead>
+                <TableHead className="cg-eyebrow">Hora de inicio</TableHead>
+                <TableHead className="cg-eyebrow">Hora de fin</TableHead>
+                <TableHead className="cg-eyebrow">Estado</TableHead>
                 <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
@@ -330,7 +353,7 @@ export default function ShiftStatus() {
               {loading ? (
                 <TableRow>
                   <TableCell colSpan={8} className="h-[200px] text-center">
-                    <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground" />
+                    <Loader2 className="mx-auto h-6 w-6 animate-spin" style={{ color: "var(--ink-faint)" }} />
                   </TableCell>
                 </TableRow>
               ) : paginated.length === 0 ? (
@@ -348,15 +371,15 @@ export default function ShiftStatus() {
                 paginated.map((row) => (
                   <TableRow key={row.id}>
                     <TableCell><Checkbox /></TableCell>
-                    <TableCell>{formatDate(row.startTime)}</TableCell>
-                    <TableCell>{row._guardName}</TableCell>
+                    <TableCell className="tabular-nums">{formatDate(row.startTime)}</TableCell>
+                    <TableCell className="font-medium">{row._guardName}</TableCell>
                     <TableCell>{row._stationName}</TableCell>
-                    <TableCell>{formatTime(row.startTime)}</TableCell>
-                    <TableCell>{formatTime(row.endTime)}</TableCell>
+                    <TableCell className="tabular-nums">{formatTime(row.startTime)}</TableCell>
+                    <TableCell className="tabular-nums">{formatTime(row.endTime)}</TableCell>
                     <TableCell>{getStatusBadge(row._status)}</TableCell>
                     <TableCell>
                       <Button variant="ghost" size="icon">
-                        <ChevronsUpDown className="h-4 w-4 text-muted-foreground" />
+                        <ChevronsUpDown className="h-4 w-4" style={{ color: "var(--ink-soft)" }} />
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -368,7 +391,7 @@ export default function ShiftStatus() {
 
         {/* Pagination */}
         <div className="flex items-center justify-end space-x-2 py-4">
-          <div className="text-sm text-muted-foreground">Elementos por página</div>
+          <div className="text-sm" style={{ color: "var(--ink-soft)" }}>Elementos por página</div>
           <Select value={String(pageSize)} onValueChange={(v) => { setPageSize(Number(v)); setPage(1); }}>
             <SelectTrigger className="w-[70px]"><SelectValue /></SelectTrigger>
             <SelectContent>
@@ -377,10 +400,10 @@ export default function ShiftStatus() {
               <SelectItem value="100">100</SelectItem>
             </SelectContent>
           </Select>
-          <div className="text-sm text-muted-foreground mx-4">
+          <div className="mx-4 text-sm tabular-nums" style={{ color: "var(--ink-soft)" }}>
             {filtered.length === 0
-              ? "0 of 0"
-              : `${(page - 1) * pageSize + 1}–${Math.min(page * pageSize, filtered.length)} of ${filtered.length}`}
+              ? "0 de 0"
+              : `${(page - 1) * pageSize + 1}–${Math.min(page * pageSize, filtered.length)} de ${filtered.length}`}
           </div>
           <div className="flex items-center space-x-2">
             <Button variant="outline" size="icon" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>

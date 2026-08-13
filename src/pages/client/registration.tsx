@@ -1,16 +1,15 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Building2, CheckCircle2 } from "lucide-react";
+import { AlertTriangle, Bell, Eye, EyeOff, CheckCircle2, MapPin, ShieldCheck } from "lucide-react";
 
 // Mi Seguridad (client app) store links. Real store listings by default; still
 // overridable via env if they ever change.
 const MISEGURIDAD_PLAY_URL = (import.meta as any).env?.VITE_MISEGURIDAD_PLAY_URL || "https://play.google.com/store/apps/details?id=com.cguardpro.miseguridad";
 const MISEGURIDAD_IOS_URL = (import.meta as any).env?.VITE_MISEGURIDAD_IOS_URL || "https://apps.apple.com/us/app/mi-seguridad-by-c-guard-pro/id6778661633";
 import { toast } from "sonner";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { FadeIn } from "@/components/kit";
+import { FadeIn, IconTile, InfoNote } from "@/components/kit";
+import AuthShell, { AvisoError, BOTON_PRINCIPAL, CAMPO, Etiqueta } from "@/pages/auth/AuthShell";
 import { ApiService } from "@/services/api/apiService";
 import { AuthService } from '@/services/auth/authService';
 
@@ -37,9 +36,12 @@ export default function ClientRegistration() {
   const [errors, setErrors] = useState<Record<string, string | undefined>>({});
   const shownToastRef = useRef<string | null>(null);
 
-  const errorClass = (field: string) => (errors[field] ? "border-red-600 ring-1 ring-red-600" : "");
-  const formControl = "h-9 w-full rounded-md border border-input bg-card px-3 py-1 text-sm text-foreground placeholder-slate-400";
-  const labelClass = "mb-2 block text-sm font-medium text-foreground min-h-[3rem] leading-5";
+  /** El campo en rojo cuando falla la validación — con el token, no con un rojo
+   *  de Tailwind, para que el aviso y el borde sean el MISMO rojo. */
+  const estiloError = (field: string) =>
+    errors[field]
+      ? ({ borderColor: 'var(--bad)', boxShadow: '0 0 0 3px color-mix(in oklab, var(--bad) 22%, transparent)' } as React.CSSProperties)
+      : undefined;
 
   useEffect(() => {
     const fetchInvite = async () => {
@@ -200,184 +202,155 @@ export default function ClientRegistration() {
     return 'Por favor, completa tu registro ingresando una contraseña para tu cuenta.';
   };
 
+  const empresa: string | undefined = fetched?.tenant?.name || undefined;
+
+  /** El ojo de mostrar/ocultar. Va DENTRO del campo, así que hereda su hueco. */
+  const Ojo = ({ visible, onToggle }: { visible: boolean; onToggle: () => void }) => (
+    <button
+      type="button"
+      onClick={onToggle}
+      className="cg-focus absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1"
+      style={{ color: 'var(--ink-faint)' }}
+      aria-label={visible ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+    >
+      {visible ? <EyeOff size={18} /> : <Eye size={18} />}
+    </button>
+  );
+
   return (
-    <div className="min-h-screen w-full flex bg-slate-50 dark:bg-[#0A0A0A]">
-      {/* Left panel — tenant branding */}
-      <div
-        className="hidden lg:flex lg:w-1/2 xl:w-3/5 flex-col justify-between p-12 xl:p-16 relative overflow-hidden"
-        style={{ background: "linear-gradient(145deg, #0A0A0A 0%, #171717 50%, #0A0A0A 100%)" }}
-      >
-        {/* Subtle grid pattern */}
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage:
-              "linear-gradient(#C8860A 1px, transparent 1px), linear-gradient(90deg, #C8860A 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-          }}
-        />
-        {/* Decorative orbs */}
-        <div className="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-primary opacity-10 blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 -left-32 h-[32rem] w-[32rem] rounded-full bg-[#F5C300] opacity-5 blur-3xl pointer-events-none" />
-
-        {/* Tenant logo or name */}
-        <div className="relative z-10">
-          {fetched?.tenant?.logoUrl ? (
-            <img
-              src={fetched.tenant.logoUrl}
-              alt={fetched?.tenant?.name || 'Logo'}
-              className="h-16 object-contain"
-            />
-          ) : fetched?.tenant?.name ? (
-            <div className="flex items-center gap-3">
-              <Building2 className="h-10 w-10 text-primary" />
-              <span className="text-2xl font-bold text-white">{fetched.tenant.name}</span>
-            </div>
-          ) : (
-            <div className="h-16" />
-          )}
-        </div>
-
-        {/* Center content */}
-        <div className="relative z-10 flex-1 flex flex-col justify-center py-12">
-          <h1 className="text-4xl xl:text-5xl font-extrabold leading-[1.1] text-white mb-6">
-            {fetched?.tenant?.name ? (
-              <>
-                Bienvenido a{" "}
-                <span
-                  className="block"
-                  style={{ WebkitTextFillColor: "transparent", WebkitBackgroundClip: "text", backgroundClip: "text", backgroundImage: "linear-gradient(90deg, #C8860A, #F5C300)" }}
-                >
-                  {fetched.tenant.name}
-                </span>
-              </>
-            ) : (
-              "Completar registro"
-            )}
-          </h1>
-          <p className="text-base xl:text-lg text-slate-400 leading-relaxed max-w-md">
-            {getRoleDescription()}
+    <AuthShell
+      title={done ? '¡Cuenta activada!' : getTitle()}
+      subtitle={done ? 'Tu acceso quedó listo.' : getRoleDescription()}
+      brandName={empresa}
+      logoUrl={fetched?.tenant?.logoUrl || undefined}
+      eyebrow="Invitación · Portal del cliente"
+      width="lg"
+      /* Ya se ha ido a la red a por la invitación: una cortina de 2,5 s encima
+         sólo retrasa lo que el usuario está esperando. */
+      splash={false}
+      features={[
+        { icon: ShieldCheck, label: 'Tu servicio, en directo' },
+        { icon: MapPin, label: 'Rondas y puestos con GPS' },
+        { icon: Bell, label: 'Avisos de incidentes' },
+      ]}
+    >
+      {done ? (
+        /* Un cliente NO entra por la web: su casa es la app Mi Seguridad. */
+        <FadeIn className="text-center">
+          <div className="mb-5 flex justify-center">
+            <IconTile tone="ok" size="lg"><CheckCircle2 /></IconTile>
+          </div>
+          <p className="text-sm leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
+            Tu cuenta con <strong style={{ color: 'var(--ink)' }}>{empresa || 'tu proveedor de seguridad'}</strong> está lista.
+            Descarga <strong style={{ color: 'var(--ink)' }}>Mi Seguridad</strong> para monitorear y gestionar tu servicio de seguridad desde tu teléfono.
           </p>
-        </div>
 
-        {/* Footer */}
-        <div className="relative z-10 flex items-center gap-3">
-          <div className="h-px flex-1 bg-white/10" />
-          <span className="text-xs text-slate-500">{fetched?.tenant?.name || ''}</span>
-          <div className="h-px flex-1 bg-white/10" />
-        </div>
-      </div>
-
-      {/* Right panel — form */}
-      <div className="flex flex-1 flex-col items-center justify-center p-6 lg:p-12 relative">
-        {/* Mobile tenant branding */}
-        <div className="mb-8 lg:hidden text-center">
-          {fetched?.tenant?.logoUrl ? (
-            <img src={fetched.tenant.logoUrl} alt={fetched?.tenant?.name || 'Logo'} className="h-12 object-contain mx-auto" />
-          ) : fetched?.tenant?.name ? (
-            <div className="flex items-center justify-center gap-2">
-              <Building2 className="h-8 w-8 text-primary" />
-              <span className="text-xl font-bold text-foreground">{fetched.tenant.name}</span>
+          <div className="glass-sunken mt-6 flex items-center gap-3 p-4 text-left">
+            <img src="/assets/logo/miseguridad.png" alt="Mi Seguridad" className="h-12 w-12 shrink-0 rounded-xl object-contain" />
+            <div className="min-w-0">
+              <p className="text-sm font-bold">Mi Seguridad</p>
+              <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>
+                Vigilantes y puestos en tiempo real, rondas con GPS, incidentes y reportes.
+              </p>
             </div>
-          ) : null}
-        </div>
-
-        <div className="w-full max-w-md">
-          {/* Card header */}
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold text-foreground mb-1">
-              {done ? '¡Cuenta activada!' : getTitle()}
-            </h2>
-            {done && <p className="text-sm text-muted-foreground">Tu acceso quedó listo.</p>}
           </div>
 
-          {/* Finish: Mi Seguridad app + download links (clients don't use the web login) */}
-          {done ? (
-            <FadeIn className="rounded-2xl bg-white dark:bg-[#171717] p-8 shadow-xl shadow-slate-200/60 dark:shadow-slate-900/60 border border-slate-200 dark:border-white/5 text-center">
-              <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-primary/12">
-                <CheckCircle2 className="h-9 w-9 text-primary" />
-              </div>
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                Tu cuenta con <strong className="text-foreground">{fetched?.tenant?.name || 'tu proveedor de seguridad'}</strong> está lista.
-                Descarga <strong className="text-foreground">Mi Seguridad</strong> para monitorear y gestionar tu servicio de seguridad desde tu teléfono.
-              </p>
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+            <a href={MISEGURIDAD_PLAY_URL} target="_blank" rel="noreferrer" className="cg-focus rounded-lg transition-opacity hover:opacity-90">
+              <img src="/assets/badges/google-play.png" alt="Descargar en Google Play" className="h-12 w-auto" />
+            </a>
+            <a href={MISEGURIDAD_IOS_URL} target="_blank" rel="noreferrer" className="cg-focus rounded-lg transition-opacity hover:opacity-90">
+              <img src="/assets/badges/app-store.png" alt="Consíguelo en el App Store" className="h-12 w-auto" />
+            </a>
+          </div>
 
-              {/* App card */}
-              <div className="mt-6 flex items-center gap-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5/40 p-4 text-left">
-                <img src="/assets/logo/miseguridad.png" alt="Mi Seguridad" className="h-12 w-12 rounded-xl object-contain shrink-0" />
-                <div>
-                  <p className="text-sm font-bold text-foreground">Mi Seguridad</p>
-                  <p className="text-xs text-muted-foreground">Vigilantes y puestos en tiempo real, rondas con GPS, incidentes y reportes.</p>
-                </div>
-              </div>
-
-              {/* Download buttons — official store badges */}
-              <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
-                <a href={MISEGURIDAD_PLAY_URL} target="_blank" rel="noreferrer" className="transition-opacity hover:opacity-90">
-                  <img src="/assets/badges/google-play.png" alt="Descargar en Google Play" className="h-12 w-auto" />
-                </a>
-                <a href={MISEGURIDAD_IOS_URL} target="_blank" rel="noreferrer" className="transition-opacity hover:opacity-90">
-                  <img src="/assets/badges/app-store.png" alt="Consíguelo en el App Store" className="h-12 w-auto" />
-                </a>
-              </div>
-
-              <p className="mt-5 text-xs text-muted-foreground">Inicia sesión en la app con el correo y la contraseña que acabas de crear.</p>
-            </FadeIn>
-          ) : (
-          <FadeIn className="rounded-2xl bg-white dark:bg-[#171717] p-8 shadow-xl shadow-slate-200/60 dark:shadow-slate-900/60 border border-slate-200 dark:border-white/5">
-            <form className="space-y-3" onSubmit={handleSubmit}>
-              {inviteNotFound && (
-                <div className="rounded-md border border-yellow-300 dark:border-yellow-600 bg-yellow-50 dark:bg-yellow-900/20 p-3 text-sm text-yellow-800 dark:text-yellow-300">
-                  {t('client.invite_not_found', { defaultValue: 'Invitación no encontrada o inválida.' })}
-                </div>
-              )}
-              {fetched && !inviteNotFound && (
-                <div className="rounded-md border border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/20 p-3 text-sm text-blue-700 dark:text-blue-300 mb-4">
-                  {getRoleDescription()}
-                </div>
-              )}
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <div>
-                  <label className={labelClass}>Nombre<span style={{ color: "#F75638" }}>*</span></label>
-                  <Input className={`${formControl} ${errorClass('name')}`} value={name} onChange={e => { setName(e.target.value); setErrors((p) => ({ ...p, name: undefined })); }} placeholder="Nombre" disabled={isLoading || lockedName} />
-                  {errors.name && <div className="text-red-600 text-sm mt-1">{errors.name}</div>}
-                </div>
-                <div>
-                  <label className={labelClass}>Email<span style={{ color: "#F75638" }}>*</span></label>
-                  <Input className={`${formControl} ${errorClass('email')}`} value={email} onChange={e => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: undefined })); }} placeholder="Email" disabled={isLoading || lockedEmail} />
-                  {errors.email && <div className="text-red-600 text-sm mt-1">{errors.email}</div>}
-                </div>
-              </div>
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <div>
-                  <label className={labelClass}>Contraseña<span style={{ color: "#F75638" }}>*</span></label>
-                  <div className="relative">
-                    <Input className={`${formControl} ${errorClass('password')}`} type={showPwd ? "text" : "password"} value={password} onChange={e => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: undefined })); }} placeholder="Contraseña" disabled={isLoading} />
-                    <button type="button" className="absolute right-2 top-2 text-slate-500 dark:text-slate-400" tabIndex={-1} onClick={() => setShowPwd((v) => !v)}>{showPwd ? <EyeOff size={18} /> : <Eye size={18} />}</button>
-                  </div>
-                  {errors.password && <div className="text-red-600 text-sm mt-1">{errors.password}</div>}
-                </div>
-                <div>
-                  <label className={labelClass}>Confirmar contraseña<span style={{ color: "#F75638" }}>*</span></label>
-                  <div className="relative">
-                    <Input className={`${formControl} ${errorClass('confirm')}`} type={showConfirm ? "text" : "password"} value={confirm} onChange={e => { setConfirm(e.target.value); setErrors((p) => ({ ...p, confirm: undefined })); }} placeholder="Confirmar contraseña" disabled={isLoading} />
-                    <button type="button" className="absolute right-2 top-2 text-slate-500 dark:text-slate-400" tabIndex={-1} onClick={() => setShowConfirm((v) => !v)}>{showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}</button>
-                  </div>
-                  {errors.confirm && <div className="text-red-600 text-sm mt-1">{errors.confirm}</div>}
-                </div>
-              </div>
-              <div className="flex justify-end mt-4">
-                <Button type="submit" variant="brand" size="lg" className="px-8" disabled={isLoading}>{isLoading ? t('client.registering', { defaultValue: 'Registrando...' }) : t('client.register', { defaultValue: 'Registrar' })}</Button>
-              </div>
-            </form>
-          </FadeIn>
+          <p className="mt-5 text-xs" style={{ color: 'var(--ink-faint)' }}>
+            Inicia sesión en la app con el correo y la contraseña que acabas de crear.
+          </p>
+        </FadeIn>
+      ) : (
+        <form className="space-y-5" onSubmit={handleSubmit}>
+          {inviteNotFound && (
+            <InfoNote tone="warn" icon={<AlertTriangle />}>
+              {t('client.invite_not_found', { defaultValue: 'Invitación no encontrada o inválida.' })}
+            </InfoNote>
           )}
 
-          <p className="mt-6 text-center text-xs text-muted-foreground">
-            {fetched?.tenant?.name ? `© ${new Date().getFullYear()} ${fetched.tenant.name}` : ''}
-          </p>
-        </div>
-      </div>
-    </div>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <div>
+              <Etiqueta htmlFor="cliente-nombre">Nombre</Etiqueta>
+              <input
+                id="cliente-nombre"
+                className={CAMPO}
+                style={estiloError('name')}
+                value={name}
+                onChange={(e) => { setName(e.target.value); setErrors((p) => ({ ...p, name: undefined })); }}
+                placeholder="Nombre"
+                disabled={isLoading || lockedName}
+                aria-invalid={!!errors.name}
+              />
+              {errors.name && <p className="mt-1.5 text-xs" style={{ color: 'var(--bad-text)' }}>{errors.name}</p>}
+            </div>
+            <div>
+              <Etiqueta htmlFor="cliente-email">Correo electrónico</Etiqueta>
+              <input
+                id="cliente-email"
+                type="email"
+                className={CAMPO}
+                style={estiloError('email')}
+                value={email}
+                onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: undefined })); }}
+                placeholder="tu@correo.com"
+                disabled={isLoading || lockedEmail}
+                aria-invalid={!!errors.email}
+              />
+              {errors.email && <p className="mt-1.5 text-xs" style={{ color: 'var(--bad-text)' }}>{errors.email}</p>}
+            </div>
+            <div>
+              <Etiqueta htmlFor="cliente-clave">Contraseña</Etiqueta>
+              <div className="relative">
+                <input
+                  id="cliente-clave"
+                  className={`${CAMPO} pr-12`}
+                  style={estiloError('password')}
+                  type={showPwd ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: undefined })); }}
+                  placeholder="Mínimo 8 caracteres"
+                  disabled={isLoading}
+                  aria-invalid={!!errors.password}
+                />
+                <Ojo visible={showPwd} onToggle={() => setShowPwd((v) => !v)} />
+              </div>
+              {errors.password && <p className="mt-1.5 text-xs" style={{ color: 'var(--bad-text)' }}>{errors.password}</p>}
+            </div>
+            <div>
+              <Etiqueta htmlFor="cliente-confirmar">Confirmar contraseña</Etiqueta>
+              <div className="relative">
+                <input
+                  id="cliente-confirmar"
+                  className={`${CAMPO} pr-12`}
+                  style={estiloError('confirm')}
+                  type={showConfirm ? 'text' : 'password'}
+                  value={confirm}
+                  onChange={(e) => { setConfirm(e.target.value); setErrors((p) => ({ ...p, confirm: undefined })); }}
+                  placeholder="Repite la contraseña"
+                  disabled={isLoading}
+                  aria-invalid={!!errors.confirm}
+                />
+                <Ojo visible={showConfirm} onToggle={() => setShowConfirm((v) => !v)} />
+              </div>
+              {errors.confirm && <p className="mt-1.5 text-xs" style={{ color: 'var(--bad-text)' }}>{errors.confirm}</p>}
+            </div>
+          </div>
+
+          <button type="submit" className={BOTON_PRINCIPAL} disabled={isLoading}>
+            {isLoading
+              ? t('client.registering', { defaultValue: 'Registrando…' })
+              : t('client.register', { defaultValue: 'Activar mi cuenta' })}
+          </button>
+        </form>
+      )}
+    </AuthShell>
   );
 }

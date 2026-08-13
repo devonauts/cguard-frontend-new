@@ -1,13 +1,17 @@
-import AppLayout from "@/layouts/app-layout";
-import SettingsLayout from "@/layouts/SettingsLayout";
+import { FileText } from "lucide-react";
+import SettingsPageShell from "../components/SettingsPageShell";
 import CompanyPoliciesTable from "./CompanyPoliciesTable";
 
 export default function CompanyPoliciesIndexPage() {
   return (
-    <AppLayout>
-      <SettingsLayout navKey="configuracion" title="Políticas y Documentos de la Empresa">
-        <CompanyPoliciesTable />
-      </SettingsLayout>
-    </AppLayout>
+    <SettingsPageShell
+      kind="table"
+      icon={<FileText />}
+      title="Políticas y Documentos"
+      navTitle="Políticas y Documentos de la Empresa"
+      subtitle="Reúne aquí los reglamentos, manuales y comunicados que tu equipo debe conocer."
+    >
+      <CompanyPoliciesTable />
+    </SettingsPageShell>
   );
 }

@@ -670,15 +670,15 @@ export default function PostSiteTours({ site, guards = [] }: { site?: SiteProp; 
 
   return (
     <div ref={containerRef} className="min-h-screen flex flex-col animate-fade-up">
-      <div className="cg-card p-4 flex-1 flex flex-col">
-        <div className="flex items-center justify-between gap-4 mb-4 sticky top-0 bg-card z-10">
+      <div className="glass flex flex-1 flex-col p-4">
+        <div className="sticky top-0 z-10 mb-4 flex items-center justify-between gap-4" style={{ background: 'var(--glass-solid)' }}>
             <div className="relative">
-            <button onClick={() => setActionOpen(v => !v)} className="px-3 py-2 border rounded-full bg-card text-sm inline-flex items-center gap-2">
+            <button onClick={() => setActionOpen(v => !v)} className="cg-btn-glass cg-focus inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm">
               {t('siteTour.menu.action', 'Action')}
               <ChevronDown size={14} />
             </button>
             {actionOpen && (
-              <div className="absolute mt-2 bg-card border rounded-md shadow-lg z-10 w-48">
+              <div className="glass-raised absolute z-10 mt-2 w-48">
                 <button
                   className="block w-full text-left px-4 py-2 text-sm hover:bg-muted/30"
                   onClick={() => {
@@ -694,7 +694,7 @@ export default function PostSiteTours({ site, guards = [] }: { site?: SiteProp; 
                 </button>
 
                 <button
-                  className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-muted/30"
+                  className="cg-btn-ghost block w-full px-4 py-2 text-left text-sm" style={{ color: 'var(--bad-text)' }}
                   onClick={() => {
                     setActionOpen(false);
                     if (!selectedTourIds || selectedTourIds.length === 0) {
@@ -721,25 +721,21 @@ export default function PostSiteTours({ site, guards = [] }: { site?: SiteProp; 
 
           <div className="flex-shrink-0 flex items-center gap-3">
             {/* TagScans ahora es un componente independiente; abre la vista de Etiquetas desde el menú lateral o la ruta dedicada. */}
-            <button onClick={() => setShowSettingsModal(true)} className="inline-flex items-center gap-2 border border-border bg-card text-foreground px-4 py-2 rounded-full hover:bg-muted/30">
-              <Settings size={16} />
-              <span className="text-sm font-medium">Configuraciones</span>
-            </button>
-            <button onClick={() => { setEditingTourId(null); setTourName(''); setTourDesc(''); setScheduledDays([]); setContinuous(false); setTimeMode('specific'); setSelectTime(''); setMaxDuration(''); setStationId(''); setShowNewTourModal(true); }} className="inline-flex items-center gap-3 bg-primary text-primary-foreground px-4 py-2 rounded-full hover:bg-primary/90">
-              <span className="w-6 h-6 bg-white/10 rounded-full flex items-center justify-center">
-                <Plus size={14} />
-              </span>
-              <span className="text-sm font-medium">{t('siteTour.newTour')}</span>
-            </button>
+            <Button variant="outline" size="sm" onClick={() => setShowSettingsModal(true)}>
+              <Settings className="mr-1.5 h-4 w-4" /> Configuraciones
+            </Button>
+            <Button variant="brand" size="sm" onClick={() => { setEditingTourId(null); setTourName(''); setTourDesc(''); setScheduledDays([]); setContinuous(false); setTimeMode('specific'); setSelectTime(''); setMaxDuration(''); setStationId(''); setShowNewTourModal(true); }}>
+              <Plus className="mr-1.5 h-4 w-4" /> {t('siteTour.newTour')}
+            </Button>
           </div>
         </div>
 
         <div className="flex-1 flex flex-col overflow-hidden">
           <div className="md:block hidden overflow-auto flex-1">
             <table className="w-full text-sm md:text-base">
-              <thead className="bg-muted/30">
+              <thead>
                 <tr>
-                  <th className="px-6 py-4 align-middle">
+                  <th className="cg-eyebrow px-2 py-2 align-middle">
                     <div className="flex items-center h-full">
                       <input
                         type="checkbox"
@@ -757,11 +753,11 @@ export default function PostSiteTours({ site, guards = [] }: { site?: SiteProp; 
                       />
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-left">{t('siteTour.table.name')}</th>
-                  <th className="px-6 py-4 text-left">{t('siteTour.table.station', 'Station')}</th>
-                  <th className="px-6 py-4 text-left">{t('siteTour.table.duration')}</th>
-                  <th className="px-6 py-4 text-left">{t('siteTour.table.type')}</th>
-                  <th className="px-6 py-4 text-left">&nbsp;</th>
+                  <th className="cg-eyebrow px-2 py-2">{t('siteTour.table.name')}</th>
+                  <th className="cg-eyebrow px-2 py-2">{t('siteTour.table.station', 'Station')}</th>
+                  <th className="cg-eyebrow px-2 py-2">{t('siteTour.table.duration')}</th>
+                  <th className="cg-eyebrow px-2 py-2">{t('siteTour.table.type')}</th>
+                  <th className="cg-eyebrow px-2 py-2">&nbsp;</th>
                 </tr>
               </thead>
               <tbody>
@@ -785,7 +781,7 @@ export default function PostSiteTours({ site, guards = [] }: { site?: SiteProp; 
                     const checked = selectedTourIds.includes(tid);
                     return (
                       <tr key={tid} className="border-b">
-                        <td className="px-6 py-4 align-middle">
+                        <td className="px-2 py-2.5 align-middle">
                           <div className="flex items-center h-full">
                             <input
                               type="checkbox"
@@ -802,17 +798,17 @@ export default function PostSiteTours({ site, guards = [] }: { site?: SiteProp; 
                             />
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-left">{tour.name || '-'}</td>
-                        <td className="px-6 py-4 text-left">{resolveStationName(tour)}</td>
-                        <td className="px-6 py-4 text-left">{tour.maxDuration || '-'}</td>
-                        <td className="px-6 py-4 text-left">{translateTimeMode(tour.timeMode)}</td>
-                        <td className="px-6 py-4 text-right">
+                        <td className="px-2 py-2.5 text-left">{tour.name || '-'}</td>
+                        <td className="px-2 py-2.5 text-left">{resolveStationName(tour)}</td>
+                        <td className="px-2 py-2.5 text-left">{tour.maxDuration || '-'}</td>
+                        <td className="px-2 py-2.5 text-left">{translateTimeMode(tour.timeMode)}</td>
+                        <td className="px-2 py-2.5 text-right">
                           <div className="relative inline-block">
                             <button onClick={() => setRowActionOpenId(rowActionOpenId === tid ? null : tid)} className="p-2 rounded-full hover:bg-muted">
                               <EllipsisVertical size={16} />
                             </button>
                             {rowActionOpenId === tid && (
-                              <div className="absolute right-0 mt-2 bg-card border rounded-md shadow-lg z-20 w-40">
+                              <div className="glass-raised absolute right-0 z-20 mt-2 w-40">
                                 <button className="block w-full text-left px-4 py-2 text-sm hover:bg-muted/30" onClick={async () => {
                                   setRowActionOpenId(null);
                                   // view details
@@ -874,7 +870,7 @@ export default function PostSiteTours({ site, guards = [] }: { site?: SiteProp; 
                                   <div className="flex items-center gap-2"><Edit size={14} /> <span>{t('siteTour.actions.edit', 'Editar')}</span></div>
                                 </button>
 
-                                <button className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-muted/30" onClick={() => {
+                                <button className="cg-btn-ghost block w-full px-4 py-2 text-left text-sm" style={{ color: 'var(--bad-text)' }} onClick={() => {
                                   setRowActionOpenId(null);
                                   setSelectedTourIds([tid]);
                                   setShowConfirmDelete(true);
@@ -1021,13 +1017,13 @@ export default function PostSiteTours({ site, guards = [] }: { site?: SiteProp; 
                       {(() => {
                         const candidateId = detailTour.assignedGuard || detailTour.securityGuardId || detailTour.security_guard_id || detailTour.guard || detailTour.assigned_guard || detailTour.guardId || detailTour.guard_id || null;
                         if (detailGuardName === '-') {
-                          return <span className="text-red-600">{candidateId || '-'}</span>;
+                          return <span style={{ color: 'var(--bad-text)' }}>{candidateId || '-'}</span>;
                         }
                         if (detailGuardName) return <span>{detailGuardName}</span>;
                         // fallback: try resolving from candidate id synchronously
                         const sync = candidateId ? resolveGuardName(candidateId) : null;
                         if (sync && sync !== String(candidateId)) return <span>{sync}</span>;
-                        return <span className="text-red-600">{candidateId || '-'}</span>;
+                        return <span style={{ color: 'var(--bad-text)' }}>{candidateId || '-'}</span>;
                       })()}
                     </div>
                   </div>
@@ -1051,7 +1047,7 @@ export default function PostSiteTours({ site, guards = [] }: { site?: SiteProp; 
             <MobileCardList
               items={filteredTours}
               renderCard={(tour: any) => (
-                <div className="p-4 bg-card border rounded-lg">
+                <div className="glass-flat p-4">
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="text-sm font-semibold">{tour.name || t('siteTour.placeholders.tourNameFallback')}</div>
@@ -1068,9 +1064,9 @@ export default function PostSiteTours({ site, guards = [] }: { site?: SiteProp; 
 
       {showNewTourModal && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center sm:justify-end p-4 sm:p-0">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setShowNewTourModal(false)} />
+          <div className="absolute inset-0" style={{ background: 'oklch(0 0 0 / 0.45)' }} onClick={() => setShowNewTourModal(false)} />
 
-          <aside className="relative w-full sm:ml-auto sm:max-w-md lg:max-w-xl bg-card shadow-xl overflow-hidden rounded-lg flex flex-col h-screen">
+          <aside className="glass-raised relative flex h-screen w-full flex-col overflow-hidden sm:ml-auto sm:max-w-md lg:max-w-xl">
             <div className="flex items-center justify-between p-4 border-b">
               <h3 className="text-lg font-semibold">{t('siteTour.modal.title')}</h3>
               <button onClick={() => { setShowNewTourModal(false); setEditingTourId(null); }} className="p-2 text-muted-foreground hover:text-foreground">
@@ -1082,7 +1078,7 @@ export default function PostSiteTours({ site, guards = [] }: { site?: SiteProp; 
               <div>
                 <input value={tourName} onChange={e => setTourName(e.target.value)} placeholder={t('siteTour.form.tourName')} className="w-full border rounded-lg h-12 px-3" />
                 {submitAttempted && !tourName.trim() && (
-                  <div className="text-sm text-red-600 mt-1">{t('siteTour.form.validation.tourNameRequired', 'Tour name is required')}</div>
+                  <div className="mt-1 text-sm" style={{ color: 'var(--bad-text)' }}>{t('siteTour.form.validation.tourNameRequired', 'Tour name is required')}</div>
                 )}
               </div>
 
@@ -1117,7 +1113,7 @@ export default function PostSiteTours({ site, guards = [] }: { site?: SiteProp; 
                   placeholder={t('siteTour.form.scheduledDaysPlaceholder', 'Selecciona los días...')}
                 />
                 {submitAttempted && scheduledDays.length === 0 && (
-                  <div className="text-sm text-red-600 mt-1">{t('siteTour.form.validation.scheduledDaysRequired', 'Selecciona al menos un día')}</div>
+                  <div className="mt-1 text-sm" style={{ color: 'var(--bad-text)' }}>{t('siteTour.form.validation.scheduledDaysRequired', 'Selecciona al menos un día')}</div>
                 )}
               </div>
 
@@ -1205,7 +1201,7 @@ export default function PostSiteTours({ site, guards = [] }: { site?: SiteProp; 
                   ))}
                 </select>
                 {submitAttempted && !stationId && (
-                  <div className="text-sm text-red-600 mt-1">{t('siteTour.form.validation.stationRequired', 'Station is required')}</div>
+                  <div className="mt-1 text-sm" style={{ color: 'var(--bad-text)' }}>{t('siteTour.form.validation.stationRequired', 'Station is required')}</div>
                 )}
               </div>
 
@@ -1285,9 +1281,12 @@ export default function PostSiteTours({ site, guards = [] }: { site?: SiteProp; 
                         toast.error(msg);
                       }
                     }}
-                    className={"ml-2 inline-flex items-center justify-center px-4 py-2 rounded-full shadow-lg " + (isFormValid ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-muted text-muted-foreground cursor-not-allowed")}
+                    className="ml-2 inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50"
+                    style={isFormValid
+                      ? { background: 'var(--brand)', color: 'var(--brand-ink)', boxShadow: '0 6px 20px -8px var(--brand-glow)' }
+                      : { background: 'var(--glass-sunken)', color: 'var(--ink-faint)' }}
                   >
-                    <span className="text-sm font-semibold">{t('siteTour.buttons.submit')}</span>
+                    {t('siteTour.buttons.submit')}
                   </button>
                 </div>
               </div>

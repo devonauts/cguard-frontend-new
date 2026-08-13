@@ -144,9 +144,9 @@ export default function EditSecurityGuardPage() {
   // null (not "") when the user hasn't picked a value for a not-yet-filled draft.
   const orNull = (v: string) => (v && String(v).trim() ? v : null);
 
-  // Match the shadcn Input look so the native selects blend in.
+  // Mismo aspecto que los campos del sistema para que los selects nativos encajen.
   const selectClass =
-    "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50";
+    "cg-input flex h-10 w-full px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50";
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -206,7 +206,14 @@ export default function EditSecurityGuardPage() {
         />
 
         {error && (
-          <div className="p-3 rounded-2xl bg-red-500/15 text-red-700 border border-red-200">
+          <div
+            className="rounded-2xl border p-3 text-sm"
+            style={{
+              background: 'color-mix(in oklab, var(--bad) 12%, transparent)',
+              borderColor: 'color-mix(in oklab, var(--bad) 28%, transparent)',
+              color: 'var(--bad-text)',
+            }}
+          >
             {error}
           </div>
         )}
@@ -303,7 +310,7 @@ export default function EditSecurityGuardPage() {
                   <Input name="hiringContractDate" value={form.hiringContractDate} onChange={handleChange} type="date" />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium mb-1">Guard Credentials</label>
+                  <label className="block text-sm font-medium mb-1">Credenciales del vigilante</label>
                   <Input name="guardCredentials" value={form.guardCredentials} onChange={handleChange} />
                 </div>
               </div>

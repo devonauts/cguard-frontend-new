@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Building2 } from "lucide-react";
+import { Building2, Plus } from "lucide-react";
 import { toast } from "sonner";
 import AppLayout from "@/layouts/app-layout";
 import SettingsLayout from "@/layouts/SettingsLayout";
-import { PageContainer, PageHeader, Section } from "@/components/kit";
+import { Button } from "@/components/ui/button";
+import { PageContainer, PageHeader, StatusBadge } from "@/components/kit";
 import { usePermissions } from "@/hooks/usePermissions";
 import departmentService, { Department } from "@/lib/api/departmentService";
 import { userService } from "@/lib/api/userService";
@@ -168,38 +169,52 @@ export default function DepartmentPage() {
             icon={<Building2 />}
             title="Departamentos"
             subtitle="Organiza tu equipo interno en departamentos (Operaciones, Talento Humano, Nómina…) y asigna un responsable a cada uno."
+            badges={
+              !loading && all.length > 0 ? (
+                <StatusBadge tone="neutral">
+                  {all.length} {all.length === 1 ? "departamento" : "departamentos"}
+                </StatusBadge>
+              ) : undefined
+            }
+            actions={
+              <Button
+                variant="brand"
+                disabled={!canEdit}
+                onClick={() => {
+                  setEdit(null);
+                  setOpen(true);
+                }}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Nuevo departamento
+              </Button>
+            }
           />
-          <Section>
-            <DepartmentsTable
-              rows={rows}
-              total={filtered.length}
-              page={page}
-              pageSize={pageSize}
-              loading={loading}
-              query={query}
-              onQueryChange={(v) => {
-                setQuery(v);
-                setPage(1);
-              }}
-              onPageChange={setPage}
-              onPageSizeChange={(v) => {
-                setPageSize(v);
-                setPage(1);
-              }}
-              onCreate={() => {
-                setEdit(null);
-                setOpen(true);
-              }}
-              onEdit={(r) => {
-                setEdit(r);
-                setOpen(true);
-              }}
-              onToggleStatus={handleToggle}
-              onDelete={handleDelete}
-              onBulkDelete={handleBulkDelete}
-              canEdit={canEdit}
-            />
-          </Section>
+          <DepartmentsTable
+            rows={rows}
+            total={filtered.length}
+            page={page}
+            pageSize={pageSize}
+            loading={loading}
+            query={query}
+            onQueryChange={(v) => {
+              setQuery(v);
+              setPage(1);
+            }}
+            onPageChange={setPage}
+            onPageSizeChange={(v) => {
+              setPageSize(v);
+              setPage(1);
+            }}
+            onEdit={(r) => {
+              setEdit(r);
+              setOpen(true);
+            }}
+            onToggleStatus={handleToggle}
+            onDelete={handleDelete}
+            onBulkDelete={handleBulkDelete}
+            canEdit={canEdit}
+          />
           <DepartmentDialog
             open={open}
             onOpenChange={(v) => {

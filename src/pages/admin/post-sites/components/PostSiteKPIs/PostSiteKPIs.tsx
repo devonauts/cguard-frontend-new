@@ -27,6 +27,7 @@ import { useTranslation } from "react-i18next";
 import MobileCardList from '@/components/responsive/MobileCardList';
 import { Button } from '@/components/ui/button';
 import { EmptyState, StatusBadge, Modal } from '@/components/kit';
+import { FIELD_CLS, FIELD_CLS_LG } from '@/pages/admin/clientes/components/_shared/tab-kit';
 import useScrollToTopOnMount from '@/hooks/useScrollToTopOnMount';
 import type { PostSite } from '@/types';
 type Props = {
@@ -415,12 +416,12 @@ export default function PostSiteKPIs({ site }: Props) {
   }, []);
 
     return (
-      <div ref={containerRef} className="cg-card p-6 min-h-[560px] animate-fade-up">
+      <div ref={containerRef} className="glass min-h-[560px] p-6 animate-fade-up">
         <div className="flex items-center justify-between gap-4 mb-6">
           <div className="relative inline-block">
             <button
               onClick={() => setActionOpen(!actionOpen)}
-              className="ml-2 px-3 py-2 border rounded-md bg-card text-foreground text-sm font-medium flex items-center gap-2 hover:bg-muted/30"
+              className="cg-btn-glass cg-focus ml-2 flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium"
               data-kpi-menu-button
             >
               {actionSelection}
@@ -428,7 +429,7 @@ export default function PostSiteKPIs({ site }: Props) {
             </button>
 
             {actionOpen && (
-              <div className="absolute mt-2 right-0 w-full bg-card border rounded shadow z-40 py-1" data-kpi-menu>
+              <div className="glass-raised absolute right-0 z-40 mt-2 w-full py-1" data-kpi-menu>
                 <button
                   onClick={() => {
                     setActionOpen(false);
@@ -452,7 +453,7 @@ export default function PostSiteKPIs({ site }: Props) {
                 placeholder={t('postSites.KPI.kpisearch', 'Buscar KPI')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                className={`${FIELD_CLS} pl-9`}
               />
             </div>
           </div>
@@ -474,7 +475,7 @@ export default function PostSiteKPIs({ site }: Props) {
             <table className="w-full min-h-[220px]">
             <thead>
               <tr className="border-b bg-muted/30">
-                <th className="px-4 py-3 text-left">
+                <th className="cg-eyebrow px-2 py-2">
                   <input
                     type="checkbox"
                     className="rounded"
@@ -485,10 +486,10 @@ export default function PostSiteKPIs({ site }: Props) {
                     }}
                   />
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-foreground">{t('postSites.KPI.kpitable.kpitype', 'Tipo')}</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-foreground">{t('postSites.KPI.kpitable.kpidate', 'Fecha/Hora')}</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-foreground">{t('postSites.KPI.kpitable.kpicreatedfor', 'Agregado por')}</th>
-                <th className="px-4 py-3 text-right text-sm font-semibold text-foreground">
+                <th className="cg-eyebrow px-2 py-2">{t('postSites.KPI.kpitable.kpitype', 'Tipo')}</th>
+                <th className="cg-eyebrow px-2 py-2">{t('postSites.KPI.kpitable.kpidate', 'Fecha/Hora')}</th>
+                <th className="cg-eyebrow px-2 py-2">{t('postSites.KPI.kpitable.kpicreatedfor', 'Agregado por')}</th>
+                <th className="cg-eyebrow px-2 py-2 text-right">
                   <button className="hover:text-foreground"><ArrowUpDown className="h-3.5 w-3.5" /></button>
                 </th>
               </tr>
@@ -507,8 +508,8 @@ export default function PostSiteKPIs({ site }: Props) {
               ) : (
                 kpiData.map((kpi, idx) => (
                   <React.Fragment key={kpi.id || idx}>
-                    <tr onClick={() => setExpandedId(expandedId === kpi.id ? null : kpi.id)} className="border-b hover:bg-muted/30">
-                      <td className="px-4 py-3">
+                    <tr onClick={() => setExpandedId(expandedId === kpi.id ? null : kpi.id)} className="border-b hover:bg-muted/40 cursor-pointer">
+                      <td className="px-2 py-2.5">
                         <input
                           type="checkbox"
                           className="rounded"
@@ -519,10 +520,10 @@ export default function PostSiteKPIs({ site }: Props) {
                           }}
                         />
                       </td>
-                      <td className="px-4 py-3 text-sm text-foreground">{typeof kpi.type === 'object' ? (kpi.type?.name || '-') : (kpi.type || '-')}</td>
-                      <td className="px-4 py-3 text-sm text-foreground">{formatDate(kpi.dateTime)}</td>
-                      <td className="px-4 py-3 text-sm text-foreground">{typeof kpi.addedBy === 'object' ? (kpi.addedBy?.fullName || kpi.addedBy?.name || '-') : (kpi.addedBy || '-')}</td>
-                        <td className="px-4 py-3 text-right relative" onClick={(e) => e.stopPropagation()}>
+                      <td className="px-2 py-2.5 text-sm text-foreground">{typeof kpi.type === 'object' ? (kpi.type?.name || '-') : (kpi.type || '-')}</td>
+                      <td className="px-2 py-2.5 text-sm text-foreground">{formatDate(kpi.dateTime)}</td>
+                      <td className="px-2 py-2.5 text-sm text-foreground">{typeof kpi.addedBy === 'object' ? (kpi.addedBy?.fullName || kpi.addedBy?.name || '-') : (kpi.addedBy || '-')}</td>
+                        <td className="px-2 py-2.5 text-right relative" onClick={(e) => e.stopPropagation()}>
                         <div className="inline-flex items-center">
                           <button
                             onClick={(e) => { e.stopPropagation(); setMenuOpenId(menuOpenId === kpi.id ? null : kpi.id); }}
@@ -541,7 +542,7 @@ export default function PostSiteKPIs({ site }: Props) {
                           </button>
 
                           {menuOpenId === kpi.id && (
-                            <div data-kpi-menu={"kpi-" + (kpi.id || idx)} className="absolute right-4 top-full translate-y-2 w-44 min-w-[11rem] bg-card border rounded shadow-lg z-50 py-1 divide-y divide-border overflow-hidden">
+                            <div data-kpi-menu={"kpi-" + (kpi.id || idx)} className="glass-raised absolute right-4 top-full z-50 w-44 min-w-[11rem] translate-y-2 overflow-hidden py-1">
                             <button disabled={!canEdit} onClick={() => { if (!canEdit) return; setEditingId(kpi.id); setFormData({
                               frequency: kpi.frequency || '',
                               description: kpi.description || '',
@@ -562,7 +563,7 @@ export default function PostSiteKPIs({ site }: Props) {
                             </button>
 
                             <button disabled={!canEdit} onClick={() => { if (!canEdit) return; setToDeleteId(kpi.id); setDeleteModalOpen(true); setMenuOpenId(null); }} className="w-full text-left px-4 py-2 hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40">
-                              <div className="flex items-center gap-2 text-sm text-red-600"><Trash size={16} />{t('actions.delete', 'Delete')}</div>
+                              <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--bad-text)' }}><Trash size={16} />{t('actions.delete', 'Delete')}</div>
                             </button>
 
                             <button onClick={() => { handleExportPdf(kpi); }} className="w-full text-left px-4 py-2 hover:bg-muted">
@@ -582,7 +583,7 @@ export default function PostSiteKPIs({ site }: Props) {
                     </tr>
 
                     {expandedId === kpi.id && (
-                      <tr className="bg-card">
+                      <tr style={{ background: 'var(--glass-sunken)' }}>
                         <td colSpan={5} className="p-4">
                           <div className="space-y-4 min-h-[360px]">
                             <div className="flex items-start justify-between">
@@ -617,24 +618,24 @@ export default function PostSiteKPIs({ site }: Props) {
                                     <table className="w-full border-collapse border">
                                       <thead>
                                         <tr className="bg-muted/30">
-                                          <th className="border px-4 py-2">{t('postSites.KPI.table.name', 'Name')}</th>
-                                          <th className="border px-4 py-2">{t('postSites.KPI.table.target', 'Target')}</th>
-                                          <th className="border px-4 py-2">{t('postSites.KPI.table.actual', 'Actual')}</th>
-                                          <th className="border px-4 py-2">{t('postSites.KPI.table.status', 'Status')}</th>
+                                          <th className="cg-eyebrow px-2 py-2">{t('postSites.KPI.table.name', 'Name')}</th>
+                                          <th className="cg-eyebrow px-2 py-2">{t('postSites.KPI.table.target', 'Target')}</th>
+                                          <th className="cg-eyebrow px-2 py-2">{t('postSites.KPI.table.actual', 'Actual')}</th>
+                                          <th className="cg-eyebrow px-2 py-2">{t('postSites.KPI.table.status', 'Status')}</th>
                                         </tr>
                                       </thead>
                                       <tbody>
                                         {metrics.length === 0 ? (
                                           <tr>
-                                            <td className="border px-4 py-2" colSpan={4}>{t('postSites.KPI.table.noTargets', 'No targets defined')}</td>
+                                            <td className="border px-2 py-2.5" colSpan={4}>{t('postSites.KPI.table.noTargets', 'No targets defined')}</td>
                                           </tr>
                                         ) : (
                                           metrics.map((m) => (
                                             <tr key={m.key}>
-                                                <td className="border px-4 py-2 font-semibold">{m.name.toUpperCase()}</td>
-                                                <td className="border px-4 py-2">{m.target}</td>
-                                                <td className="border px-4 py-2">{m.actual}</td>
-                                                <td className="border px-4 py-2"><StatusBadge tone={m.actual >= m.target ? 'green' : 'red'}>{m.actual >= m.target ? t('postSites.KPI.status.achieved', 'Achieved') : t('postSites.KPI.status.notAchieved', 'Not Achieved')}</StatusBadge></td>
+                                                <td className="border px-2 py-2.5 font-semibold">{m.name.toUpperCase()}</td>
+                                                <td className="border px-2 py-2.5">{m.target}</td>
+                                                <td className="border px-2 py-2.5">{m.actual}</td>
+                                                <td className="border px-2 py-2.5"><StatusBadge tone={m.actual >= m.target ? 'ok' : 'bad'}>{m.actual >= m.target ? t('postSites.KPI.status.achieved', 'Achieved') : t('postSites.KPI.status.notAchieved', 'Not Achieved')}</StatusBadge></td>
                                               </tr>
                                           ))
                                         )}
@@ -678,21 +679,21 @@ export default function PostSiteKPIs({ site }: Props) {
 
       {showModal && (
         <div className="fixed inset-0 z-60 flex items-end sm:items-center" onClick={handleCloseModal}>
-          <div className="absolute inset-0 bg-black/40 z-50" onClick={handleCloseModal} />
+          <div className="absolute inset-0 z-50" style={{ background: 'oklch(0 0 0 / 0.45)' }} onClick={handleCloseModal} />
 
-          <div className="w-full sm:ml-auto sm:max-w-md bg-card shadow-2xl overflow-y-auto rounded-t-lg sm:rounded-md relative z-60 pointer-events-auto max-h-[90vh] pb-28" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between p-6 border-b sticky top-0 bg-card">
+          <div className="glass-raised pointer-events-auto relative z-60 max-h-[90vh] w-full overflow-y-auto pb-28 sm:ml-auto sm:max-w-md" onClick={(e) => e.stopPropagation()}>
+            <div className="sticky top-0 flex items-center justify-between border-b p-6">
               <h2 className="text-lg font-semibold text-foreground">{t('postSites.KPI.modal.title', 'Add New KPIs (Key Performance Indicators)')}</h2>
             </div>
 
             <div className="p-6 space-y-6">
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">{t('postSites.KPI.modal.frequency', 'Frequency')} <span className="text-red-500">*</span></label>
+                <label className="cg-eyebrow mb-1.5 block">{t('postSites.KPI.modal.frequency', 'Frequency')} <span style={{ color: 'var(--bad-text)' }}>*</span></label>
                 <select
                   autoFocus
                   value={formData.frequency}
                   onChange={(e) => setFormData({ ...formData, frequency: e.target.value })}
-                  className="w-full px-3 py-2 border rounded-md text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary bg-card"
+                  className="cg-input cg-focus w-full px-3 py-2 text-sm"
                 >
                   <option value="">{t('postSites.KPI.modal.frequencyOptions.select', 'Select frequency')}</option>
                   <option value="diario">{t('postSites.KPI.modal.frequencyOptions.daily', 'Daily')}</option>
@@ -702,12 +703,12 @@ export default function PostSiteKPIs({ site }: Props) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">{t('postSites.KPI.modal.description', 'Description')} <span className="text-red-500">*</span></label>
+                <label className="cg-eyebrow mb-1.5 block">{t('postSites.KPI.modal.description', 'Description')} <span style={{ color: 'var(--bad-text)' }}>*</span></label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder={t('postSites.KPI.modal.descriptionPlaceholder', 'Enter description')}
-                  className="w-full px-3 py-2 border rounded-md text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                  className={`${FIELD_CLS_LG} resize-none`}
                   rows={4}
                 />
               </div>
@@ -733,7 +734,7 @@ export default function PostSiteKPIs({ site }: Props) {
                           }}
                           disabled={!formData.standardReports}
                           placeholder={t('postSites.KPI.modal.defineNumber', 'Define a Number')}
-                          className="w-32 px-2 py-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-300 disabled:cursor-not-allowed"
+                          className="cg-input cg-focus w-32 px-2 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                         />
                   </div>
                 </div>
@@ -758,7 +759,7 @@ export default function PostSiteKPIs({ site }: Props) {
                           }}
                           disabled={!formData.incidentReports}
                           placeholder={t('postSites.KPI.modal.defineNumber', 'Define a Number')}
-                          className="w-32 px-2 py-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-300 disabled:cursor-not-allowed"
+                          className="cg-input cg-focus w-32 px-2 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                         />
                   </div>
                 </div>
@@ -783,7 +784,7 @@ export default function PostSiteKPIs({ site }: Props) {
                           }}
                           disabled={!formData.routeReports}
                           placeholder={t('postSites.KPI.modal.defineNumber', 'Define a Number')}
-                          className="w-32 px-2 py-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-300 disabled:cursor-not-allowed"
+                          className="cg-input cg-focus w-32 px-2 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                         />
                   </div>
                 </div>
@@ -808,7 +809,7 @@ export default function PostSiteKPIs({ site }: Props) {
                           }}
                           disabled={!formData.taskReports}
                           placeholder={t('postSites.KPI.modal.defineNumber', 'Define a Number')}
-                          className="w-32 px-2 py-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-300 disabled:cursor-not-allowed"
+                          className="cg-input cg-focus w-32 px-2 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                         />
                   </div>
                 </div>
@@ -833,7 +834,7 @@ export default function PostSiteKPIs({ site }: Props) {
                           }}
                           disabled={!formData.verificationReports}
                           placeholder={t('postSites.KPI.modal.defineNumber', 'Define a Number')}
-                          className="w-32 px-2 py-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-300 disabled:cursor-not-allowed"
+                          className="cg-input cg-focus w-32 px-2 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                         />
                   </div>
                 </div>
@@ -873,20 +874,21 @@ export default function PostSiteKPIs({ site }: Props) {
                           onChange={(e) => { setCurrentEmail(e.target.value); setEmailError(''); }}
                           onKeyPress={handleKeyPress}
                           placeholder={t('postSites.KPI.modal.newEmailPlaceholder', 'New email...')}
-                          className={`flex-1 px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 ${emailError ? 'border-red-500 focus:ring-red-500' : 'focus:ring-primary'}`}
+                          className="cg-input cg-focus flex-1 px-3 py-2 text-sm"
+                          style={emailError ? { borderColor: 'var(--bad)' } : undefined}
                         />
                         <Button variant="brand" onClick={handleAddEmail}>
                           {t('postSites.KPI.modal.addEmail', 'Add')}
                         </Button>
                       </div>
-                      {emailError && (<p className="text-xs text-red-500">{emailError}</p>)}
+                      {emailError && (<p className="text-xs" style={{ color: 'var(--bad-text)' }}>{emailError}</p>)}
                     </div>
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3 p-6 border-t sticky bottom-0 bg-card">
+            <div className="sticky bottom-0 flex items-center justify-end gap-3 border-t p-6">
               <Button variant="brand" onClick={handleSubmitKPI} className="px-6">{t('postSites.KPI.modal.add', 'ADD')}</Button>
             </div>
           </div>

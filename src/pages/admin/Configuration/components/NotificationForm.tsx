@@ -1,14 +1,13 @@
 import * as React from "react";
-import { Info, Loader2, Bell } from "lucide-react";
+import { Info, Loader2, Bell, MonitorSmartphone, Mail, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { notificationSettingsService } from "@/lib/api/notificationSettingsService";
-import { Section } from "@/components/kit";
+import { Section, SkeletonCards } from "@/components/kit";
 
 type ChannelKey = "dashboard" | "email" | "sms";
 
@@ -56,10 +55,10 @@ const NOTIFICATIONS: NotificationItem[] = [
   { id: "fall-detection", label: "Caída del Vigilante/Dispositivo" },
 ];
 
-const columns: { key: ChannelKey; label: string }[] = [
-  { key: "dashboard", label: "Panel de control" },
-  { key: "email", label: "Correo electrónico" },
-  { key: "sms", label: "SMS" },
+const columns: { key: ChannelKey; label: string; icon: React.ReactNode }[] = [
+  { key: "dashboard", label: "Panel de control", icon: <MonitorSmartphone className="h-3.5 w-3.5" /> },
+  { key: "email", label: "Correo electrónico", icon: <Mail className="h-3.5 w-3.5" /> },
+  { key: "sms", label: "SMS", icon: <MessageSquare className="h-3.5 w-3.5" /> },
 ];
 
 // =============================================================================
@@ -160,91 +159,109 @@ export default function NotificationMatrix() {
     }
   };
 
+  if (loading) {
+    return <SkeletonCards count={3} className="sm:grid-cols-1" />;
+  }
+
   return (
-    <Section title="Preferencias de notificación" icon={<Bell />} contentClassName="space-y-4">
+    <div className="space-y-6">
+      <Section
+        title="Avisos y por dónde llegan"
+        icon={<Bell />}
+        contentClassName="space-y-3"
+      >
+        <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
+          Marca por qué vía quieres recibir cada aviso. La casilla de la cabecera activa o
+          desactiva una vía completa; la de cada fila, todas las vías de ese aviso.
+        </p>
 
-      <div className="rounded-2xl border overflow-hidden">
-        {/* Header */}
-        <div className="grid grid-cols-[1fr_repeat(3,160px)] items-center gap-2 px-4 py-3 bg-muted/30">
-          <div className="text-[13px] font-medium text-muted-foreground">Tipo de Notificación</div>
-          {columns.map((c) => {
-            const all = allCheckedByColumn(c.key);
-            const some = someCheckedByColumn(c.key);
-            return (
-              <div key={c.key} className="flex items-center justify-center gap-2">
-                <Checkbox
-                  checked={all}
-                  onCheckedChange={(v) => toggleColumn(c.key, Boolean(v))}
-                  aria-label={`Seleccionar todo ${c.label}`}
-                  className={cn(some && !all && "data-[state=indeterminate]:opacity-100")}
-                />
-                <span className="text-[13px] font-medium">{c.label}</span>
-              </div>
-            );
-          })}
-        </div>
-        <Separator />
-
-        {/* Body */}
-        <ScrollArea className="max-h-[68vh]">
-          <div className="divide-y">
-            {NOTIFICATIONS.map((n) => {
-              const row = state[n.id];
-              const allRow = row.dashboard && row.email && row.sms;
-              const someRow = [row.dashboard, row.email, row.sms].some(Boolean) && !allRow;
-
-              return (
-                <div
-                  key={n.id}
-                  className="grid grid-cols-[1fr_repeat(3,160px)] items-center gap-2 px-4 py-3"
-                >
-                  <div className="flex items-center gap-2">
-                    <Checkbox
-                      checked={allRow}
-                      onCheckedChange={(v) => toggleRow(n.id, Boolean(v))}
-                      className={cn(someRow && "data-[state=indeterminate]:opacity-100")}
-                    />
-                    <div className="flex items-center gap-1">
-                      <span className="text-sm">{n.label}</span>
-                      {n.hint && (
-                        <TooltipProvider delayDuration={150}>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Info className="h-3.5 w-3.5 text-muted-foreground" />
-                            </TooltipTrigger>
-                            <TooltipContent className="max-w-xs text-xs">{n.hint}</TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      )}
-                    </div>
-                  </div>
-
-                  {columns.map((c) => (
-                    <div key={c.key} className="flex justify-center">
-                      <Checkbox
-                        checked={row[c.key]}
-                        onCheckedChange={(v) => toggleCell(n.id, c.key, Boolean(v))}
-                        aria-label={`${n.label} - ${c.label}`}
-                      />
-                    </div>
-                  ))}
-                </div>
-              );
-            })}
-          </div>
-        </ScrollArea>
-
-        <div className="flex py-3 px-3 justify-end border-t bg-muted/20">
-          <Button
-              variant="brand"
-              onClick={onSave}
-              disabled={saving || loading}
+        <div className="overflow-x-auto">
+          <div className="min-w-[640px]">
+            {/* Cabecera de la tabla */}
+            <div
+              className="glass-sunken grid grid-cols-[1fr_repeat(3,150px)] items-center gap-2 px-4 py-3"
+              style={{ borderRadius: 'var(--r-md) var(--r-md) 0 0' }}
             >
-              {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Guardar
-            </Button>
+              <div className="cg-eyebrow">Tipo de aviso</div>
+              {columns.map((c) => {
+                const all = allCheckedByColumn(c.key);
+                const some = someCheckedByColumn(c.key);
+                return (
+                  <label key={c.key} className="flex cursor-pointer items-center justify-center gap-2">
+                    <Checkbox
+                      checked={all}
+                      onCheckedChange={(v) => toggleColumn(c.key, Boolean(v))}
+                      aria-label={`Seleccionar todo ${c.label}`}
+                      className={cn(some && !all && "data-[state=indeterminate]:opacity-100")}
+                    />
+                    <span className="flex items-center gap-1.5 text-[13px] font-semibold">
+                      <span style={{ color: 'var(--ink-faint)' }}>{c.icon}</span>
+                      {c.label}
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+
+            {/* Filas */}
+            <ScrollArea className="max-h-[62vh]">
+              <div className="divide-y border-x border-b" style={{ borderRadius: '0 0 var(--r-md) var(--r-md)' }}>
+                {NOTIFICATIONS.map((n) => {
+                  const row = state[n.id];
+                  const allRow = row.dashboard && row.email && row.sms;
+                  const someRow = [row.dashboard, row.email, row.sms].some(Boolean) && !allRow;
+
+                  return (
+                    <div
+                      key={n.id}
+                      className="grid grid-cols-[1fr_repeat(3,150px)] items-center gap-2 px-4 py-3"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          checked={allRow}
+                          onCheckedChange={(v) => toggleRow(n.id, Boolean(v))}
+                          aria-label={`Todas las vías de ${n.label}`}
+                          className={cn(someRow && "data-[state=indeterminate]:opacity-100")}
+                        />
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-sm">{n.label}</span>
+                          {n.hint && (
+                            <TooltipProvider delayDuration={150}>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Info className="h-3.5 w-3.5" style={{ color: 'var(--ink-faint)' }} />
+                                </TooltipTrigger>
+                                <TooltipContent className="max-w-xs text-xs">{n.hint}</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          )}
+                        </div>
+                      </div>
+
+                      {columns.map((c) => (
+                        <div key={c.key} className="flex justify-center">
+                          <Checkbox
+                            checked={row[c.key]}
+                            onCheckedChange={(v) => toggleCell(n.id, c.key, Boolean(v))}
+                            aria-label={`${n.label} - ${c.label}`}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })}
+              </div>
+            </ScrollArea>
+          </div>
         </div>
+      </Section>
+
+      <div className="flex justify-end">
+        <Button variant="brand" className="px-6" onClick={onSave} disabled={saving || loading}>
+          {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          Guardar
+        </Button>
       </div>
-    </Section>
+    </div>
   );
 }

@@ -10,6 +10,7 @@ import securityGuardService from "@/lib/api/securityGuardService";
 import userService from "@/lib/api/userService";
 import { AuthService } from '@/services/auth/authService';
 import { PhoneInput } from "@/components/phone/PhoneInput";
+import { InfoNote } from "@/components/kit";
 
 /**
  * Mirror the BACKEND password policy (securityGuardCreate.isStrongPassword):
@@ -67,9 +68,14 @@ export default function GuardRegistration() {
   const [errors, setErrors] = useState<Record<string, string | undefined>>({});
   const shownToastRef = useRef<string | null>(null);
 
-  const errorClass = (field: string) => (errors[field] ? "!border-red-500 ring-2 ring-red-500/30" : "");
+  /* El filo de error con el token, para que el borde y el mensaje sean el MISMO
+     rojo del sistema (y no dos rojos parecidos que no casan en oscuro). */
+  const errorStyle = (field: string): React.CSSProperties | undefined =>
+    errors[field]
+      ? { borderColor: 'var(--bad)', boxShadow: '0 0 0 3px color-mix(in oklab, var(--bad) 22%, transparent)' }
+      : undefined;
 
-  const formControl = "h-11 w-full rounded-lg border border-input bg-background px-3.5 text-sm text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25 focus:outline-none transition-colors disabled:opacity-60 disabled:cursor-not-allowed";
+  const formControl = "cg-input h-11 w-full px-3.5 text-sm transition-colors motion-reduce:transition-none disabled:opacity-60 disabled:cursor-not-allowed";
   const labelClass = "mb-1.5 block min-h-[32px] text-[11px] font-semibold uppercase leading-snug tracking-wide text-muted-foreground";
   // Native textarea/select share the input look but manage their own height.
   const textareaControl = "w-full rounded-lg border border-input bg-background px-3.5 py-2.5 text-sm min-h-[84px] resize-none text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25 focus:outline-none transition-colors disabled:opacity-60 disabled:cursor-not-allowed";
@@ -639,9 +645,9 @@ export default function GuardRegistration() {
       ) : (
       <form className="space-y-3" onSubmit={handleSubmit}>
         {inviteNotFound && (
-          <div className="rounded-md border border-yellow-300 bg-yellow-50 p-3 text-sm text-yellow-800">
+          <InfoNote tone="warn">
             {t('guard.invite_not_found', { defaultValue: 'Invitation not found or invalid — you can complete the form manually.' })}
-          </div>
+          </InfoNote>
         )}
 
         <div className="mb-5">
@@ -673,19 +679,19 @@ export default function GuardRegistration() {
         {step === 1 && (
           <div className="grid grid-cols-1 gap-x-4 gap-y-4 md:grid-cols-2">
             <div>
-              <label className={labelClass}>Nombre<span style={{ color: "#F75638" }}>*</span></label>
-              <Input className={`${formControl} ${errorClass('firstName')}`} value={firstName} onChange={(e: any) => { setFirstName(e.target.value); setErrors((p) => ({ ...p, firstName: undefined })); }} placeholder="Nombre" disabled={isLoading || lockedFirstName} />
-              {errors.firstName && <div className="text-red-600 text-sm mt-1">{errors.firstName}</div>}
+              <label className={labelClass}>Nombre<span style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
+              <Input className={formControl} style={errorStyle('firstName')} value={firstName} onChange={(e: any) => { setFirstName(e.target.value); setErrors((p) => ({ ...p, firstName: undefined })); }} placeholder="Nombre" disabled={isLoading || lockedFirstName} />
+              {errors.firstName && <div className="mt-1 text-sm" style={{ color: 'var(--bad-text)' }}>{errors.firstName}</div>}
             </div>
             <div>
-              <label className={labelClass}>Apellido<span style={{ color: "#F75638" }}>*</span></label>
-              <Input className={`${formControl} ${errorClass('lastName')}`} value={lastName} onChange={(e: any) => { setLastName(e.target.value); setErrors((p) => ({ ...p, lastName: undefined })); }} placeholder="Apellido" disabled={isLoading || lockedLastName} />
-              {errors.lastName && <div className="text-red-600 text-sm mt-1">{errors.lastName}</div>}
+              <label className={labelClass}>Apellido<span style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
+              <Input className={formControl} style={errorStyle('lastName')} value={lastName} onChange={(e: any) => { setLastName(e.target.value); setErrors((p) => ({ ...p, lastName: undefined })); }} placeholder="Apellido" disabled={isLoading || lockedLastName} />
+              {errors.lastName && <div className="mt-1 text-sm" style={{ color: 'var(--bad-text)' }}>{errors.lastName}</div>}
             </div>
             <div className="md:col-span-2">
-              <label className={labelClass}>Correo electrónico<span style={{ color: "#F75638" }}>*</span></label>
-              <Input className={`${formControl} ${errorClass('email')}`} type="email" value={email} onChange={(e: any) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: undefined })); }} placeholder="Correo electrónico*" disabled={isLoading || lockedEmail} />
-              {errors.email && <div className="text-red-600 text-sm mt-1">{errors.email}</div>}
+              <label className={labelClass}>Correo electrónico<span style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
+              <Input className={formControl} style={errorStyle('email')} type="email" value={email} onChange={(e: any) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: undefined })); }} placeholder="Correo electrónico*" disabled={isLoading || lockedEmail} />
+              {errors.email && <div className="mt-1 text-sm" style={{ color: 'var(--bad-text)' }}>{errors.email}</div>}
             </div>
           </div>
         )}
@@ -693,22 +699,22 @@ export default function GuardRegistration() {
         {step === 2 && (
           <div className="grid grid-cols-1 gap-x-4 gap-y-4 md:grid-cols-2">
             <div>
-              <label className={labelClass}>Documento de identidad<span className="ml-0.5 text-[#F75638]">*</span></label>
-              <Input className={`${formControl} ${errorClass('governmentId')}`} value={governmentId} onChange={(e: any) => { setGovernmentId(e.target.value); setErrors((p) => ({ ...p, governmentId: undefined })); }} placeholder="Documento de identidad" disabled={isLoading} />
-              {errors.governmentId && <div className="mt-1 text-sm text-red-600">{errors.governmentId}</div>}
+              <label className={labelClass}>Documento de identidad<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
+              <Input className={formControl} style={errorStyle('governmentId')} value={governmentId} onChange={(e: any) => { setGovernmentId(e.target.value); setErrors((p) => ({ ...p, governmentId: undefined })); }} placeholder="Documento de identidad" disabled={isLoading} />
+              {errors.governmentId && <div className="mt-1 text-sm" style={{ color: 'var(--bad-text)' }}>{errors.governmentId}</div>}
             </div>
             <div>
-              <label className={labelClass}>Fecha de nacimiento<span className="ml-0.5 text-[#F75638]">*</span></label>
-              <Input className={`${formControl} ${errorClass('birthDate')}`} type="date" value={birthDate} onChange={(e: any) => { setBirthDate(e.target.value); setErrors((p) => ({ ...p, birthDate: undefined })); }} disabled={isLoading} />
-              {errors.birthDate && <div className="mt-1 text-sm text-red-600">{errors.birthDate}</div>}
+              <label className={labelClass}>Fecha de nacimiento<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
+              <Input className={formControl} style={errorStyle('birthDate')} type="date" value={birthDate} onChange={(e: any) => { setBirthDate(e.target.value); setErrors((p) => ({ ...p, birthDate: undefined })); }} disabled={isLoading} />
+              {errors.birthDate && <div className="mt-1 text-sm" style={{ color: 'var(--bad-text)' }}>{errors.birthDate}</div>}
             </div>
             <div>
-              <label className={labelClass}>Lugar de nacimiento<span className="ml-0.5 text-[#F75638]">*</span></label>
-              <Input className={`${formControl} ${errorClass('birthPlace')}`} value={birthPlace} onChange={(e: any) => setBirthPlace(e.target.value)} placeholder="Lugar de nacimiento" disabled={isLoading} />
+              <label className={labelClass}>Lugar de nacimiento<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
+              <Input className={formControl} style={errorStyle('birthPlace')} value={birthPlace} onChange={(e: any) => setBirthPlace(e.target.value)} placeholder="Lugar de nacimiento" disabled={isLoading} />
             </div>
             <div>
-              <label className={labelClass}>Género<span className="ml-0.5 text-[#F75638]">*</span></label>
-              <select value={gender} onChange={(e) => setGender(e.target.value)} className={`${formControl} ${errorClass('gender')}`} disabled={isLoading}>
+              <label className={labelClass}>Género<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
+              <select value={gender} onChange={(e) => setGender(e.target.value)} className={formControl} style={errorStyle('gender')} disabled={isLoading}>
                 <option value="">Seleccione</option>
                 <option value="Masculino">Masculino</option>
                 <option value="Femenino">Femenino</option>
@@ -716,8 +722,8 @@ export default function GuardRegistration() {
               </select>
             </div>
             <div>
-              <label className={labelClass}>Estado civil<span className="ml-0.5 text-[#F75638]">*</span></label>
-              <select value={maritalStatus} onChange={(e) => setMaritalStatus(e.target.value)} className={`${formControl} ${errorClass('maritalStatus')}`} disabled={isLoading}>
+              <label className={labelClass}>Estado civil<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
+              <select value={maritalStatus} onChange={(e) => setMaritalStatus(e.target.value)} className={formControl} style={errorStyle('maritalStatus')} disabled={isLoading}>
                 <option value="">Seleccione</option>
                 <option value="Soltero">Soltero</option>
                 <option value="Casado">Casado</option>
@@ -725,8 +731,8 @@ export default function GuardRegistration() {
               </select>
             </div>
             <div>
-              <label className={labelClass}>Formación académica<span className="ml-0.5 text-[#F75638]">*</span></label>
-              <select value={academicInstruction} onChange={(e) => setAcademicInstruction(e.target.value)} className={`${formControl} ${errorClass('academicInstruction')}`} disabled={isLoading}>
+              <label className={labelClass}>Formación académica<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
+              <select value={academicInstruction} onChange={(e) => setAcademicInstruction(e.target.value)} className={formControl} style={errorStyle('academicInstruction')} disabled={isLoading}>
                 <option value="">Seleccione</option>
                 <option>Primaria</option>
                 <option>Secundaria</option>
@@ -739,12 +745,12 @@ export default function GuardRegistration() {
         {step === 3 && (
           <div className="grid grid-cols-1 gap-x-4 gap-y-4 md:grid-cols-2">
             <div>
-              <label className={labelClass}>Fecha de contratación<span className="ml-0.5 text-[#F75638]">*</span></label>
-              <Input className={`${formControl} ${errorClass('hiringContractDate')}`} type="date" value={hiringContractDate} onChange={(e: any) => setHiringContractDate(e.target.value)} disabled={isLoading} />
+              <label className={labelClass}>Fecha de contratación<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
+              <Input className={formControl} style={errorStyle('hiringContractDate')} type="date" value={hiringContractDate} onChange={(e: any) => setHiringContractDate(e.target.value)} disabled={isLoading} />
             </div>
             <div>
-              <label className={labelClass}>Grupo sanguíneo<span className="ml-0.5 text-[#F75638]">*</span></label>
-              <select value={bloodType} onChange={(e) => setBloodType(e.target.value)} className={`${formControl} ${errorClass('bloodType')}`} disabled={isLoading}>
+              <label className={labelClass}>Grupo sanguíneo<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
+              <select value={bloodType} onChange={(e) => setBloodType(e.target.value)} className={formControl} style={errorStyle('bloodType')} disabled={isLoading}>
                 <option value="">Seleccione</option>
                 <option>O+</option><option>O-</option>
                 <option>A+</option><option>A-</option>
@@ -753,26 +759,26 @@ export default function GuardRegistration() {
               </select>
             </div>
             <div>
-              <label className={labelClass}>Credenciales<span className="ml-0.5 text-[#F75638]">*</span></label>
-              <Input className={`${formControl} ${errorClass('guardCredentials')}`} value={guardCredentials} onChange={(e: any) => setGuardCredentials(e.target.value)} placeholder="Credenciales" disabled={isLoading} />
+              <label className={labelClass}>Credenciales<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
+              <Input className={formControl} style={errorStyle('guardCredentials')} value={guardCredentials} onChange={(e: any) => setGuardCredentials(e.target.value)} placeholder="Credenciales" disabled={isLoading} />
             </div>
             <div>
-              <label className={labelClass}>Teléfono móvil<span className="ml-0.5 text-[#F75638]">*</span></label>
+              <label className={labelClass}>Teléfono móvil<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
               <PhoneInput
                 value={phone || ""}
                 onChange={(val: string) => setPhone(val)}
                 placeholder="p.ej. +12015550123"
               />
-              {errors.phone && <div className="mt-1 text-sm text-red-600">{errors.phone}</div>}
+              {errors.phone && <div className="mt-1 text-sm" style={{ color: 'var(--bad-text)' }}>{errors.phone}</div>}
             </div>
 
             <div className="md:col-span-2">
-              <label className={labelClass}>Dirección<span className="ml-0.5 text-[#F75638]">*</span></label>
-              <textarea value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Dirección" className={`${textareaControl} ${errorClass('address')}`} disabled={isLoading} />
+              <label className={labelClass}>Dirección<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
+              <textarea value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Dirección" className={textareaControl} style={errorStyle('address')} disabled={isLoading} />
             </div>
 
             <div>
-              <label className={labelClass}>Contraseña<span className="ml-0.5 text-[#F75638]">*</span></label>
+              <label className={labelClass}>Contraseña<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
               <div className="relative">
                 <input
                   type={showPwd ? "text" : "password"}
@@ -780,15 +786,15 @@ export default function GuardRegistration() {
                   value={password}
                   onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: undefined })); }}
                   disabled={isLoading}
-                  className={`${formControl} pr-10 ${errorClass('password')}`}
+                  className={`${formControl} pr-10`} style={errorStyle('password')}
                 />
                 <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowPwd((v) => !v)}>{showPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
               </div>
-              {errors.password && <div className="mt-1 text-sm text-red-600">{errors.password}</div>}
+              {errors.password && <div className="mt-1 text-sm" style={{ color: 'var(--bad-text)' }}>{errors.password}</div>}
             </div>
 
             <div>
-              <label htmlFor="confirm-password" className={labelClass}>Confirmar contraseña<span className="ml-0.5 text-[#F75638]">*</span></label>
+              <label htmlFor="confirm-password" className={labelClass}>Confirmar contraseña<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
               <div className="relative">
                 <input
                   id="confirm-password"
@@ -797,11 +803,11 @@ export default function GuardRegistration() {
                   value={confirm}
                   onChange={(e) => { setConfirm(e.target.value); setErrors((p) => ({ ...p, confirm: undefined })); }}
                   disabled={isLoading}
-                  className={`${formControl} pr-10 ${errorClass('confirm')}`}
+                  className={`${formControl} pr-10`} style={errorStyle('confirm')}
                 />
                 <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowConfirm((v) => !v)}>{showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
               </div>
-              {errors.confirm && <div className="mt-1 text-sm text-red-600">{errors.confirm}</div>}
+              {errors.confirm && <div className="mt-1 text-sm" style={{ color: 'var(--bad-text)' }}>{errors.confirm}</div>}
             </div>
           </div>
         )}
@@ -809,16 +815,16 @@ export default function GuardRegistration() {
         <div className="flex items-center justify-between gap-3 pt-4">
           <div>
             {step > 1 && (
-              <button type="button" onClick={handlePrev} className="rounded-lg border border-input bg-transparent px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted/40">Volver</button>
+              <button type="button" onClick={handlePrev} className="cg-btn-glass cg-focus rounded-full px-5 py-2.5 text-sm font-medium transition-colors motion-reduce:transition-none">Volver</button>
             )}
           </div>
           <div className="ml-auto flex gap-2">
             {step < totalSteps && (
-              <button type="button" onClick={handleNext} className="rounded-lg bg-primary px-7 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#a96f08]">Siguiente</button>
+              <button type="button" onClick={handleNext} className="cg-btn-brand cg-focus rounded-full px-7 py-2.5 text-sm font-semibold transition-all motion-reduce:transition-none">Siguiente</button>
             )}
             {step === totalSteps && (
-              <button type="submit" disabled={isLoading} className="inline-flex items-center gap-2 rounded-lg bg-primary px-7 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#a96f08] disabled:opacity-60 disabled:cursor-not-allowed">
-                {isLoading && <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />}
+              <button type="submit" disabled={isLoading} className="cg-btn-brand cg-focus inline-flex items-center gap-2 rounded-full px-7 py-2.5 text-sm font-semibold transition-all motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-60">
+                {isLoading && <span className="h-4 w-4 animate-spin rounded-full border-2 motion-reduce:animate-none" style={{ borderColor: 'color-mix(in oklab, var(--brand-ink) 35%, transparent)', borderTopColor: 'var(--brand-ink)' }} />}
                 {isLoading ? "Registrando…" : "Registrarse"}
               </button>
             )}

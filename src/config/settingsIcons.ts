@@ -29,6 +29,7 @@ import {
   FileDown,
   FileText,
   Settings2,
+  Palette,
   type LucideIcon,
 } from "lucide-react";
 
@@ -38,7 +39,7 @@ export const SETTINGS_ICONS: Record<string, LucideIcon> = {
   User, KeyRound, ShieldCheck, Building2, CreditCard, Network, ShieldHalf,
   ListChecks, MapPinned, Shield, Route, AlertTriangle, BadgeCheck, Wrench,
   Bell, Mail, MessageSquare, Radio, Smartphone, TabletSmartphone, Wallet, Clock, FileBarChart, FileCog,
-  Plug, Code, FileDown, FileText, Settings2,
+  Plug, Code, FileDown, FileText, Settings2, Palette,
 };
 
 export function settingsIcon(name?: string): LucideIcon {

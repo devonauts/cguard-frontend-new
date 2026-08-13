@@ -27,8 +27,9 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Search, Filter as FilterIcon, Plus, Route as RouteIcon } from "lucide-react";
-import { PageContainer, PageHeader, Section, EmptyState, StatusBadge } from '@/components/kit';
+import { PageContainer, PageHeader, Section, EmptyState, StatusBadge, Toolbar, SkeletonCards } from '@/components/kit';
 import RouteDetailModal from './RouteDetailModal';
+import { InsigniaOptimizada } from './OptimizacionPanel';
 
 import {
   type RouteFilters,
@@ -203,7 +204,7 @@ export default function RoutesPage() {
           )}
         />
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <Toolbar className="justify-between">
           <div className="flex items-center gap-2">
             <Select
               value=""
@@ -236,7 +237,7 @@ export default function RoutesPage() {
 
             <Sheet open={openFilter} onOpenChange={setOpenFilter}>
               <SheetTrigger asChild>
-                <Button variant="outline" className="border-primary/30 text-primary">
+                <Button variant="outline" style={{ borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }}>
                   <FilterIcon className="mr-2 h-4 w-4" />
                   Filtros
                 </Button>
@@ -292,17 +293,14 @@ export default function RoutesPage() {
                     Los filtros por sector y estado estarán disponibles próximamente.
                     Usa el buscador para filtrar rutas por nombre.
                   </p>
-                  <Button
-                    className="w-full bg-primary text-white hover:bg-primary"
-                    disabled
-                  >
+                  <Button variant="brand" className="w-full" disabled>
                     Filtro
                   </Button>
                 </div>
               </SheetContent>
             </Sheet>
           </div>
-        </div>
+        </Toolbar>
 
         <Section icon={<RouteIcon />} title="Listado de rutas" contentClassName="overflow-hidden rounded-xl border">
           <table className="min-w-full border-collapse text-left text-sm">
@@ -326,7 +324,10 @@ export default function RoutesPage() {
             </thead>
 
             <tbody>
-              {rows.length === 0 && (
+              {loading && (
+                <tr><td colSpan={8} className="p-4"><SkeletonCards count={4} /></td></tr>
+              )}
+              {!loading && rows.length === 0 && (
                 <tr>
                   <td colSpan={8} className="py-10">
                     <EmptyState
@@ -337,7 +338,7 @@ export default function RoutesPage() {
                   </td>
                 </tr>
               )}
-              {rows.length > 0 && rows.map((r: any) => (
+              {!loading && rows.length > 0 && rows.map((r: any) => (
                 <tr key={r.id || r._id} className="border-b">
                   <td className="px-4 py-3">
                     <Checkbox
@@ -346,7 +347,15 @@ export default function RoutesPage() {
                       aria-label="Seleccionar ruta"
                     />
                   </td>
-                  <td className="px-4 py-3 font-medium">{r.name || r.title || r.routeName || '—'}</td>
+                  <td className="px-4 py-3 font-medium">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span>{r.name || r.title || r.routeName || '—'}</span>
+                      {/* Sólo cuando lo está: una insignia «sin optimizar» en
+                          cada fila de la lista sería ruido en el 90 % de ellas.
+                          La ficha sí enseña siempre el estado. */}
+                      {r.optimized ? <InsigniaOptimizada optimizada compacta /> : null}
+                    </div>
+                  </td>
                   <td className="px-4 py-3">{(() => {
                     const pts = r.points && Array.isArray(r.points) ? r.points : [];
                     if (pts.length > 0) {
@@ -387,7 +396,7 @@ export default function RoutesPage() {
                       : <StatusBadge tone="green">Activo</StatusBadge>}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <Button variant="ghost" size="sm" className="text-primary" onClick={() => { setDetailId(r.id); setDetailOpen(true); }}>Ver</Button>
+                    <Button variant="ghost" size="sm" style={{ color: 'var(--brand-text)' }} onClick={() => { setDetailId(r.id); setDetailOpen(true); }}>Ver</Button>
                   </td>
                 </tr>
               ))}
