@@ -564,6 +564,159 @@ body:has(.cg-flotante) .cg-scrim-menu { opacity: 1; }
   }
 }
 
+/* ════════════════════════════════════════════════════════════════════════════
+   AVISOS FLOTANTES (sonner)
+   Mismo material que un panel elevado: un aviso FLOTA sobre la página, así que
+   necesita fondo propio (`--float`), no el tinte de `--glass-raised`, que da por
+   hecho que detrás hay una tarjeta. Aquí detrás está el CRM entero.
+
+   ── TRES COSAS QUE NO SON OBVIAS ───────────────────────────────────────────
+
+   1. EL FILO ILUMINADO VA COMO CAPA DE FONDO, NO COMO `::before`.
+      En todas las demás superficies ese filo es un pseudo-elemento (ver
+      `.glass::before`). Aquí no se puede: sonner YA usa `::before` y `::after`
+      del propio aviso para el gesto de deslizar y para el apilado. Robárselos
+      rompe el descarte con el dedo, que en móvil es la única forma de quitarlo.
+      Un degradado de 1 px anclado arriba da exactamente el mismo filo.
+
+   2. LA ESPECIFICIDAD TIENE QUE SER 0,3,0 — Y NO ES CAPRICHO.
+      sonner NO trae una hoja que se importe: se inyecta por JavaScript en el
+      <head> al montarse, así que aterriza DESPUÉS de este archivo. A igualdad
+      de especificidad gana él. Su regla base es
+      `[data-sonner-toast][data-styled='true']` (0,2,0), de modo que anteponer
+      `[data-sonner-toaster]` basta para ganar sin un solo `!important`.
+
+   3. EL COLOR LO LLEVA EL ICONO, NO LA CAJA.
+      La caja se queda acromática en los cinco casos. Pintar el fondo entero de
+      verde o rojo —lo que hace `richColors`, ya retirado en main.tsx— rompe dos
+      cosas a la vez: tapa el cristal, y mete en pantalla un color que compite
+      con el acento configurado. La placa tintada del icono es además el mismo
+      gesto que ya usan la barra lateral y el aviso de novedades en vivo.
+
+   Los tonos de estado salen de las variables FIJAS de tokens.css: un error es
+   rojo aunque el acento sea rojo, y no se vuelve verde porque alguien eligiera
+   verde.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+[data-sonner-toaster] [data-sonner-toast][data-styled='true'] {
+  background:
+    linear-gradient(90deg, transparent, var(--hairline-lit) 22%, var(--hairline-lit) 78%, transparent)
+      top left / 100% 1px no-repeat,
+    var(--float);
+  backdrop-filter: blur(calc(var(--blur) * 1.4)) saturate(200%);
+  -webkit-backdrop-filter: blur(calc(var(--blur) * 1.4)) saturate(200%);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-xl);
+  box-shadow: var(--lift-4), inset 0 1px 0 0 var(--hairline-lit);
+  color: var(--ink);
+  padding: 0.875rem;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-styled='true'] [data-title] {
+  color: var(--ink);
+  font-weight: 600;
+  line-height: 1.35;
+}
+[data-sonner-toaster] [data-sonner-toast][data-styled='true'] [data-description] {
+  color: var(--ink-soft);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+/* ── La placa del icono ─────────────────────────────────────────────────────
+   Tamaño fijo y rejilla: sonner entrega el svg suelto y sin caja se descuelga
+   del texto en cuanto el aviso tiene dos líneas. */
+[data-sonner-toaster] [data-sonner-toast][data-styled='true'] [data-icon] {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin: 0;
+  flex-shrink: 0;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  background: color-mix(in oklab, var(--ink-faint) 14%, transparent);
+  border-color: color-mix(in oklab, var(--ink-faint) 30%, transparent);
+  color: var(--ink-soft);
+}
+[data-sonner-toaster] [data-sonner-toast][data-styled='true'] [data-icon] > svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-styled='true'][data-type='success'] [data-icon] {
+  background: color-mix(in oklab, var(--ok) 14%, transparent);
+  border-color: color-mix(in oklab, var(--ok) 30%, transparent);
+  color: var(--ok-text);
+}
+[data-sonner-toaster] [data-sonner-toast][data-styled='true'][data-type='error'] [data-icon] {
+  background: color-mix(in oklab, var(--bad) 14%, transparent);
+  border-color: color-mix(in oklab, var(--bad) 30%, transparent);
+  color: var(--bad-text);
+}
+[data-sonner-toaster] [data-sonner-toast][data-styled='true'][data-type='warning'] [data-icon] {
+  background: color-mix(in oklab, var(--warn) 14%, transparent);
+  border-color: color-mix(in oklab, var(--warn) 30%, transparent);
+  color: var(--warn-text);
+}
+[data-sonner-toaster] [data-sonner-toast][data-styled='true'][data-type='info'] [data-icon] {
+  background: color-mix(in oklab, var(--info) 14%, transparent);
+  border-color: color-mix(in oklab, var(--info) 30%, transparent);
+  color: var(--info-text);
+}
+/* El que gira mientras se espera: acromático a propósito. Todavía no se sabe si
+   la cosa acabará bien o mal, así que no se adelanta un color. */
+[data-sonner-toaster] [data-sonner-toast][data-styled='true'][data-type='loading'] [data-icon] {
+  background: color-mix(in oklab, var(--ink-faint) 12%, transparent);
+  border-color: color-mix(in oklab, var(--ink-faint) 26%, transparent);
+  color: var(--ink-soft);
+}
+
+/* ── Botones ───────────────────────────────────────────────────────────────── */
+[data-sonner-toaster] [data-sonner-toast][data-styled='true'] [data-button] {
+  background: var(--brand);
+  color: var(--brand-ink);
+  border: none;
+  border-radius: 999px;
+  font-weight: 600;
+  height: 1.75rem;
+  padding: 0 0.75rem;
+  transition: filter 0.2s var(--ease);
+}
+[data-sonner-toaster] [data-sonner-toast][data-styled='true'] [data-button]:hover { filter: brightness(1.06); }
+
+[data-sonner-toaster] [data-sonner-toast][data-styled='true'] [data-cancel] {
+  background: var(--glass-sunken);
+  color: var(--ink);
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  font-weight: 600;
+  height: 1.75rem;
+  padding: 0 0.75rem;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-styled='true'] [data-close-button] {
+  background: var(--float);
+  border: 1px solid var(--hairline);
+  color: var(--ink-faint);
+  transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+[data-sonner-toaster] [data-sonner-toast][data-styled='true'] [data-close-button]:hover {
+  color: var(--ink);
+  border-color: var(--brand-line);
+}
+
+/* Desenfocar el fondo es justo lo que marea a quien pide calma. Se conserva el
+   fondo opaco, que es lo que hace legible el aviso. */
+@media (prefers-reduced-motion: reduce) {
+  [data-sonner-toaster] [data-sonner-toast][data-styled='true'] {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
 /* ── DÓNDE MANDA SAIRA ──────────────────────────────────────────────────────
    La familia de titulares no se queda en los `<h1>`. Se extiende a lo que se
    LEE DE UN VISTAZO —botones, navegación, etiquetas en mayúsculas, píldoras de

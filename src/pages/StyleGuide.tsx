@@ -13,6 +13,7 @@
  * ════════════════════════════════════════════════════════════════════════════
  */
 import { useState } from 'react';
+import { toast } from 'sonner';
 import {
   Activity, AlertTriangle, ArrowRight, Bell, Building2, Calendar as CalendarIcon, Check,
   ChevronDown, Clock, Copy, Download, FileText, Filter, Info, Mail, MapPin, MoreHorizontal,
@@ -1153,6 +1154,67 @@ export default function StyleGuide() {
               <AlertTitle>Puesto sin cubrir</AlertTitle>
               <AlertDescription>Planta Sur — Garita 2 lleva 25 minutos sin nadie asignado.</AlertDescription>
             </Alert>
+          </div>
+        </Bloque>
+
+        <Bloque
+          titulo="Avisos flotantes"
+          uso="Confirman una acción que acaba de ocurrir. Pruébalos: aparecen arriba, se apilan y se descartan deslizando."
+          api={['toast()', '[data-sonner-toast]']}
+          nota="La caja es acromática en los cinco casos y el tono lo lleva SÓLO la placa del icono. Pintar el fondo entero de verde o rojo —lo que hacía `richColors`— tapaba el cristal y metía en pantalla un color que compite con el acento configurado. Los colores de estado son los fijos de tokens.css: un error sigue siendo rojo aunque el acento sea rojo."
+        >
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" size="sm" onClick={() => toast.success('Turno guardado')}>
+              Correcto
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => toast.error('No se pudo guardar el turno')}>
+              Error
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => toast.warning('Este puesto queda sin cubrir')}>
+              Atención
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => toast.info('El vigilante fichó entrada')}>
+              Información
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => toast('Ronda registrada')}>
+              Neutro
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                toast.success('Ronda completa', {
+                  description: 'Los ocho puntos se escanearon dentro de la ventana prevista.',
+                })
+              }
+            >
+              Con detalle
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                toast.warning('Cobertura incompleta', {
+                  description: 'Faltan 2 vigilantes para el fin de semana.',
+                  action: { label: 'Asignar', onClick: () => toast.success('Asignado') },
+                })
+              }
+            >
+              Con acción
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                toast.promise(new Promise((r) => setTimeout(r, 1800)), {
+                  loading: 'Optimizando la ruta…',
+                  success: 'Ruta optimizada: 127,8 km menos',
+                  error: 'No se pudo optimizar',
+                })
+              }
+            >
+              En curso
+            </Button>
           </div>
         </Bloque>
 

@@ -48,8 +48,11 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <ConfirmHost />
         {/* Notifications must sit at the very top of the stacking context so the
             live alert is never hidden behind a dialog/overlay. */}
+        {/* Sin `richColors`: pintaba la caja entera de verde/rojo con la paleta
+            propia de sonner, que ni es cristal ni conoce el acento elegido. El
+            tono ahora lo lleva la placa del icono (ver glass.css › AVISOS
+            FLOTANTES), con los colores de estado FIJOS de tokens.css. */}
         <Toaster
-          richColors
           expand
           position="top-center"
           duration={8000}
