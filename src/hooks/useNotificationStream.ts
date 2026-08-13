@@ -9,23 +9,12 @@
  */
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { io, Socket } from 'socket.io-client';
+import { type Socket } from 'socket.io-client';
 import { getAuthToken } from '@/lib/api';
 import { playNotificationChime } from '@/lib/notificationSound';
+import { crearSocket, cerrarSocket } from '@/lib/socket';
 
 const API_URL = (import.meta.env.VITE_API_URL as string | undefined) || '';
-
-// The socket is served under /api/socket.io (see backend lib/realtime.ts) so it
-// rides the same routing that already proxies /api to the backend.
-const SOCKET_PATH = '/api/socket.io';
-
-function socketOrigin(): string {
-  try {
-    return new URL(API_URL || window.location.origin, window.location.origin).origin;
-  } catch {
-    return window.location.origin;
-  }
-}
 
 export interface PlatformNotification {
   id: string;
@@ -133,12 +122,7 @@ export function useNotificationStream(
       })
       .catch(() => {});
 
-    const socket = io(socketOrigin(), {
-      path: SOCKET_PATH,
-      transports: ['websocket'],
-      withCredentials: true,
-      auth: { token, tenantId },
-    });
+    const socket = crearSocket(token, tenantId);
     socketRef.current = socket;
 
     socket.on('connect', () => {
@@ -201,8 +185,7 @@ export function useNotificationStream(
     return () => {
       destroyed = true;
       setConnected(false);
-      socket.removeAllListeners();
-      socket.disconnect();
+      cerrarSocket(socket);
       socketRef.current = null;
     };
   }, [tenantId, addNotification]);

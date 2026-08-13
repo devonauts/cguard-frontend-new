@@ -12,19 +12,12 @@
  * Mounted once at the app root; no-op when unauthenticated.
  */
 import { useEffect, useRef, useState } from 'react';
-import { io, type Socket } from 'socket.io-client';
+import { type Socket } from 'socket.io-client';
+import { crearSocket, cerrarSocket } from '@/lib/socket';
 import { getAuthToken } from '@/lib/api';
 import { Eye, MousePointer2, Hand } from 'lucide-react';
 
-const SOCKET_PATH = '/api/socket.io';
 const API_URL = (import.meta.env.VITE_API_URL as string | undefined) || '';
-function socketOrigin(): string {
-  try {
-    return new URL(API_URL || window.location.origin, window.location.origin).origin;
-  } catch {
-    return window.location.origin;
-  }
-}
 
 export default function CoBrowseAgent() {
   const [watchedBy, setWatchedBy] = useState<string | null>(null);
@@ -148,12 +141,7 @@ export default function CoBrowseAgent() {
       const token = getAuthToken();
       const tenantId = (() => { try { return localStorage.getItem('tenantId') || ''; } catch { return ''; } })();
       if (!token || !tenantId) return false;
-      const socket = io(socketOrigin(), {
-        path: SOCKET_PATH,
-        transports: ['websocket'],
-        withCredentials: true,
-        auth: { token, tenantId },
-      });
+      const socket = crearSocket(token, tenantId);
       socketRef.current = socket;
       socket.on('cobrowse:start', (p: { by?: string; fresh?: boolean } = {}) => {
         // eslint-disable-next-line no-console
@@ -191,7 +179,7 @@ export default function CoBrowseAgent() {
       if (pollTimer) clearInterval(pollTimer);
       stopRecording();
       const socket = socketRef.current;
-      if (socket) { socket.removeAllListeners(); socket.disconnect(); }
+      cerrarSocket(socket);
       socketRef.current = null;
     };
   }, []);
@@ -200,17 +188,39 @@ export default function CoBrowseAgent() {
 
   const controlling = !!controller;
 
+  /**
+   * Los dos estados de este aviso son SEMÁNTICOS, no de marca: «te están
+   * mirando» es una advertencia y «te están controlando» es grave. Salen de
+   * `--warn` y `--bad`, que en tokens.css son fijos — si el acento de la empresa
+   * fuera ámbar, un banner de marca dejaría de leerse como aviso.
+   *
+   * `--bad` vale 0.55 en claro y 0.70 en oscuro, y a 0.70 el blanco encima cae a
+   * ~2,5:1: se rebaja con `color-mix` para que la tinta blanca pase en los dos
+   * temas con una sola declaración (mismo criterio que el overlay de pánico).
+   * Sobre el ámbar la tinta correcta es la oscura, que es lo que `--brand-ink`
+   * es: negro acromático a 0.16, no un color de marca pese al nombre.
+   */
+  const fondo = controlling ? 'color-mix(in oklab, var(--bad) 72%, black)' : 'var(--warn)';
+  const tinta = controlling ? 'oklch(1 0 0)' : 'var(--brand-ink)';
+
   return (
     <>
       {/* Awareness banner — amber while watched, red while support is controlling. */}
       <div
         role="status"
-        className={`fixed inset-x-0 top-0 z-[100000] flex items-center justify-center gap-2 px-3 py-1.5 text-center text-xs font-semibold shadow-md ${controlling ? 'bg-red-600 text-white' : 'bg-amber-500 text-black'}`}
-        style={{ paddingTop: 'max(6px, env(safe-area-inset-top))' }}
+        className="fixed inset-x-0 top-0 z-[100000] flex items-center justify-center gap-2 px-3 py-1.5 text-center text-xs font-semibold"
+        style={{
+          paddingTop: 'max(6px, env(safe-area-inset-top))',
+          background: fondo,
+          color: tinta,
+          boxShadow: 'var(--lift-2)',
+        }}
       >
+        {/* El punto va del color de la TINTA, no blanco: sobre el ámbar un punto
+            blanco casi desaparece. */}
         <span className="relative flex h-2.5 w-2.5">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
-          <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-white" />
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" style={{ background: tinta }} />
+          <span className="relative inline-flex h-2.5 w-2.5 rounded-full" style={{ background: tinta }} />
         </span>
         {controlling ? <Hand className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
         {controlling
@@ -219,7 +229,8 @@ export default function CoBrowseAgent() {
         {controlling && (
           <button
             onClick={reclaimControl}
-            className="ml-2 rounded-md bg-white/90 px-2 py-0.5 text-[11px] font-bold text-red-700 hover:bg-white"
+            className="cg-focus ml-2 rounded-full px-2 py-0.5 text-[11px] font-bold transition-[filter] hover:brightness-95"
+            style={{ background: tinta, color: fondo }}
           >
             Recuperar control
           </button>
@@ -232,8 +243,11 @@ export default function CoBrowseAgent() {
           className="pointer-events-none fixed z-[100001] flex items-center gap-1"
           style={{ left: cursor.x, top: cursor.y, transform: 'translate(-2px, -2px)' }}
         >
-          <MousePointer2 className="h-5 w-5 fill-amber-400 text-amber-600 drop-shadow" />
-          <span className="rounded bg-amber-500 px-1.5 py-0.5 text-[10px] font-bold text-black shadow">Soporte</span>
+          <MousePointer2 className="h-5 w-5 drop-shadow" style={{ fill: 'var(--warn)', color: 'var(--warn-text)' }} />
+          <span
+            className="rounded px-1.5 py-0.5 text-[10px] font-bold"
+            style={{ background: 'var(--warn)', color: 'var(--brand-ink)', boxShadow: 'var(--lift-2)' }}
+          >Soporte</span>
         </div>
       )}
     </>

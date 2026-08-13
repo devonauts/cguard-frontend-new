@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
+import { crearSocket, cerrarSocket } from "@/lib/socket";
 import AppLayout from "@/layouts/app-layout";
 
 import { Button } from "@/components/ui/button";
@@ -19,11 +20,15 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Filter, MapPinned, MapPin, Route as RouteIcon, CheckCircle2, Clock } from "lucide-react";
+import { Filter, MapPinned, MapPin, Route as RouteIcon, CheckCircle2, Clock, Radio } from "lucide-react";
 import Breadcrumb from "@/components/ui/breadcrumb";
 import { PageContainer, PageHeader, Section, EmptyState, StatusBadge } from "@/components/kit";
+import { getAuthToken } from "@/lib/api";
 import routeService from "@/lib/api/routeService";
-import RouteTrackingMap, { type RouteStopMarker } from "./RouteTrackingMap";
+import { securityGuardService } from "@/lib/api/securityGuardService";
+import { supervisorService } from "@/lib/api/supervisorService";
+import RouteTrackingMap, { type LiveUnit, type RouteStopMarker } from "./RouteTrackingMap";
+import { haceCuanto } from "./trackGeometry";
 
 const DOW_NUM: Record<string, number> = {
   sun: 0, sunday: 0, dom: 0, domingo: 0,
@@ -53,6 +58,24 @@ const parseCoord = (v: any): number | null => {
   return Number.isFinite(n) ? n : null;
 };
 
+/* ── Canal en vivo ─────────────────────────────────────────────────────────
+   Dos fuentes, y no se pisan:
+
+   · El SONDEO de `active-locations` es la lista de QUIÉN está en servicio — es
+     quien da de alta y de baja las unidades (un fichaje de salida no llega por
+     ningún evento). Cada 15 s, con guardia monótona: un sondeo lento no puede
+     sobrescribir a uno más nuevo (los marcadores retrocedían).
+   · El SOCKET `location:update` es MOVIMIENTO, y sólo lo emiten hoy los
+     supervisores (la telemetría del vigilante escribe en la base pero no emite).
+     Mueve la unidad al instante sin esperar al siguiente sondeo.
+
+   Los identificadores son los MISMOS que usa el centro de control (`g-…`,
+   `sup-…`), que son los que trae el evento: así el socket MUEVE la chincheta en
+   lugar de duplicarla. */
+const MS_SONDEO = 15000;
+
+const tenantId = () => localStorage.getItem("tenantId") || "";
+
 export default function LiveTrackingPage() {
   const [openFilter, setOpenFilter] = useState(false);
   const [mapType, setMapType] = useState<"roadmap" | "satellite" | "hybrid" | "terrain">("roadmap");
@@ -65,7 +88,12 @@ export default function LiveTrackingPage() {
   const [routeFilter, setRouteFilter] = useState<string>("all");
   const [showAll, setShowAll] = useState(false);
 
+  const [verVigilantes, setVerVigilantes] = useState(true);
+  const [verSupervisores, setVerSupervisores] = useState(true);
+  const [unidades, setUnidades] = useState<LiveUnit[]>([]);
+
   const weekday = useMemo(() => new Date(`${date}T12:00:00`).getDay(), [date]);
+  const esHoy = useMemo(() => date === new Date().toISOString().slice(0, 10), [date]);
 
   useEffect(() => {
     let mounted = true;
@@ -87,6 +115,123 @@ export default function LiveTrackingPage() {
     })();
     return () => { mounted = false; };
   }, [date]);
+
+  /* ── Quién está en servicio ───────────────────────────────────────────── */
+  const secuenciaRef = useRef(0);
+
+  useEffect(() => {
+    // El personal en servicio es de AHORA: mirando el mapa de otro día, la capa
+    // en vivo se apaga en vez de mentir con posiciones actuales.
+    if (!esHoy) { setUnidades([]); return; }
+    let vivo = true;
+
+    const traer = async () => {
+      const mio = ++secuenciaRef.current;
+      const [guardias, supervisores] = await Promise.all([
+        securityGuardService.activeLocations().catch(() => null),
+        supervisorService.list().catch(() => null),
+      ]);
+      if (!vivo || mio !== secuenciaRef.current) return;
+
+      const salida: LiveUnit[] = [];
+
+      const filasG: any[] = (guardias as any)?.rows ?? (Array.isArray(guardias) ? guardias : []);
+      filasG.forEach((g: any) => {
+        const lat = parseCoord(g.latitude ?? g.punchInLatitude);
+        const lng = parseCoord(g.longitude ?? g.punchInLongitude);
+        if (lat == null || lng == null) return;
+        salida.push({
+          id: `g-${g.guardId || g.id}`,
+          kind: "guard",
+          nombre: g.fullName || "Vigilante",
+          sub: g.postSiteName || undefined,
+          lat,
+          lng,
+          // `punchInTime` viaja como «última señal»: el servidor ya lo hace
+          // seguir a la fuente de la coordenada (ping en vivo o fichaje).
+          at: g.punchInTime || null,
+          bateria: typeof g.punchInBattery === "number" ? g.punchInBattery : null,
+          desde: g.punchInTime || null,
+          guardId: g.guardId || g.id || null,
+        });
+      });
+
+      const filasS: any[] = (supervisores as any)?.rows ?? (Array.isArray(supervisores) ? supervisores : []);
+      filasS.forEach((s: any) => {
+        if (!(s?.isOnDuty ?? s?.onDuty)) return;
+        const lat = parseCoord(s.latitude);
+        const lng = parseCoord(s.longitude);
+        if (lat == null || lng == null) return;
+        salida.push({
+          id: `sup-${s.id}`,
+          kind: "supervisor",
+          nombre: s.fullName || "Supervisor",
+          sub: s.zone || s.assignedVehicle || undefined,
+          lat,
+          lng,
+          at: s.onDutySince || null,
+          telefono: s.phoneNumber || null,
+          desde: s.onDutySince || null,
+        });
+      });
+
+      setUnidades((previas) => {
+        // El socket puede haber movido a alguien DESPUÉS de que saliera este
+        // sondeo. Se conserva la posición más fresca de las dos.
+        const porId = new Map(previas.map((u) => [u.id, u]));
+        return salida.map((u) => {
+          const previa = porId.get(u.id);
+          if (!previa) return u;
+          const tPrev = previa.at ? new Date(previa.at).getTime() : 0;
+          const tNueva = u.at ? new Date(u.at).getTime() : 0;
+          return tPrev > tNueva
+            ? { ...u, lat: previa.lat, lng: previa.lng, at: previa.at, velocidad: previa.velocidad }
+            : u;
+        });
+      });
+    };
+
+    traer();
+    const iv = window.setInterval(traer, MS_SONDEO);
+    return () => { vivo = false; window.clearInterval(iv); };
+  }, [esHoy]);
+
+  /* ── Movimiento instantáneo por el canal en vivo ──────────────────────── */
+  useEffect(() => {
+    const tid = tenantId();
+    if (!tid || !esHoy) return;
+    const socket = crearSocket(getAuthToken() || "", tid);
+
+    const alMover = (e: any) => {
+      const lat = parseCoord(e?.lat ?? e?.latitude);
+      const lng = parseCoord(e?.lng ?? e?.longitude);
+      const id = e?.id ? String(e.id) : "";
+      if (lat == null || lng == null || !id) return;
+      setUnidades((previas) => {
+        const i = previas.findIndex((u) => u.id === id);
+        // Sólo se MUEVE lo que el sondeo ya dio de alta: así la capa en vivo no
+        // se llena de gente que ya fichó salida y sigue mandando pings.
+        if (i < 0) return previas;
+        const copia = previas.slice();
+        copia[i] = {
+          ...copia[i],
+          lat,
+          lng,
+          at: e?.at || new Date().toISOString(),
+          velocidad: typeof e?.speed === "number" ? e.speed : copia[i].velocidad,
+        };
+        return copia;
+      });
+    };
+
+    socket.on("location:update", alMover);
+    return () => { socket.off("location:update", alMover); cerrarSocket(socket); };
+  }, [esHoy]);
+
+  const unidadesVisibles = useMemo(
+    () => unidades.filter((u) => (u.kind === "guard" ? verVigilantes : verSupervisores)),
+    [unidades, verVigilantes, verSupervisores],
+  );
 
   const isDone = (routeId: string) => runs.some((x) => x.routeId === routeId && x.status === "completed");
 
@@ -125,32 +270,44 @@ export default function LiveTrackingPage() {
 
   const totalPoints = visibleRoutes.reduce((n, r) => n + (r.points?.length || 0), 0);
 
+  const ultimaSenal = useMemo(() => {
+    let mejor = 0;
+    unidades.forEach((u) => {
+      const t = u.at ? new Date(u.at).getTime() : 0;
+      if (t > mejor) mejor = t;
+    });
+    return mejor ? new Date(mejor).toISOString() : null;
+  }, [unidades]);
+
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          { label: "Panel de control", path: "/dashboard" },
-          { label: "Seguimiento en vivo" },
-        ]}
-      />
+      <PageContainer width="wide" className="p-4 sm:p-6">
+        {/* Dentro del contenedor, como en «Historial de seguimiento»: fuera se
+            alineaba con el borde de la ventana y no con la página. */}
+        <Breadcrumb
+          items={[
+            { label: "Panel de control", path: "/dashboard" },
+            { label: "Seguimiento en vivo" },
+          ]}
+        />
 
-      <PageContainer width="wide" className="p-4">
         <PageHeader
           icon={<MapPinned />}
           title="Seguimiento en vivo"
-          subtitle="Ubicación de las paradas de las rutas de patrulla y su estado del día."
+          subtitle="Vigilantes y supervisores en servicio, sobre las paradas de las rutas de patrulla del día."
           actions={
             <div className="flex flex-wrap items-center gap-2">
               <input
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground"
+                aria-label="Fecha"
+                className="cg-input cg-focus h-9 px-3 text-sm"
               />
               <Sheet open={openFilter} onOpenChange={setOpenFilter}>
                 <SheetTrigger asChild>
-                  <Button variant="outline" className="text-primary border-primary/30">
-                    <Filter className="mr-2 h-4 w-4" />
+                  <Button variant="outline">
+                    <Filter className="size-4" />
                     Filtros
                   </Button>
                 </SheetTrigger>
@@ -185,8 +342,21 @@ export default function LiveTrackingPage() {
                       </span>
                     </label>
 
+                    <div className="space-y-2 border-t pt-4">
+                      <Label>Personal en el mapa</Label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <Checkbox checked={verVigilantes} onCheckedChange={(v) => setVerVigilantes(Boolean(v))} />
+                        <span className="text-sm text-foreground">Vigilantes</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <Checkbox checked={verSupervisores} onCheckedChange={(v) => setVerSupervisores(Boolean(v))} />
+                        <span className="text-sm text-foreground">Supervisores</span>
+                      </label>
+                    </div>
+
                     <Button
-                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                      variant="brand"
+                      className="w-full"
                       onClick={() => setOpenFilter(false)}
                     >
                       Aplicar
@@ -226,9 +396,16 @@ export default function LiveTrackingPage() {
               <span className="text-sm text-foreground">Mostrar Geovalla</span>
             </label>
 
-            <div className="ml-auto flex items-center gap-4 pb-2 text-xs text-muted-foreground">
+            <div className="ml-auto flex flex-wrap items-center gap-4 pb-2 text-xs text-muted-foreground">
+              {esHoy && (
+                <span className="flex items-center gap-1.5">
+                  <Radio className="h-3.5 w-3.5" style={{ color: "var(--ok-text)" }} />
+                  {unidadesVisibles.length} en servicio
+                  {ultimaSenal ? ` · señal ${haceCuanto(ultimaSenal)}` : ""}
+                </span>
+              )}
               <span className="flex items-center gap-1.5">
-                <RouteIcon className="h-3.5 w-3.5 text-[color:var(--primary)]" />
+                <RouteIcon className="h-3.5 w-3.5" style={{ color: 'var(--brand-text)' }} />
                 {visibleRoutes.length} rutas · {totalPoints} paradas
               </span>
             </div>
@@ -239,9 +416,10 @@ export default function LiveTrackingPage() {
             {/* Mapa */}
             <RouteTrackingMap
               stops={stops}
+              units={unidadesVisibles}
               mapType={mapType}
               showGeofence={showGeofence}
-              height={380}
+              height={420}
             />
 
             {/* Tabla debajo del mapa */}

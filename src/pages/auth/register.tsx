@@ -1,7 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { Mail, Lock, Eye, EyeOff, User } from "lucide-react";
-import AuthLayout from "@/layouts/auth-layout";
-import { FadeIn } from "@/components/kit";
+import { Mail, Lock, Eye, EyeOff, User, ArrowRight } from "lucide-react";
+import AuthShell, { CAMPO_ICONO, BOTON_PRINCIPAL, Etiqueta } from "./AuthShell";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -9,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 export default function Register() {
   const { t } = useTranslation();
-  const { signUp, signInWithToken } = useAuth();
+  const { signUp } = useAuth();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -59,93 +58,14 @@ export default function Register() {
       toast.error(msg);
     }
   };
-  const handleSocialLogin = (provider: "google" | "microsoft") => {
-    const width = 600;
-    const height = 700;
-    const left = window.screenX + (window.innerWidth - width) / 2;
-    const top = window.screenY + (window.innerHeight - height) / 2;
-
-    // Nota: el backend debe exponer /auth/oauth/:provider que hace el flujo OAuth
-    // y luego ejecuta window.opener.postMessage({ type: 'oauth_callback', token, user }, window.opener.location.origin)
-    const base = (import.meta.env.VITE_API_URL ?? "http://localhost:3001/api").replace(/\/+$/, "");
-    const url = `${base}/auth/oauth/${provider}`;
-    // Expected origin of the backend that sends the postMessage. Derived from the
-    // API base so we can reject messages from any other (attacker) origin.
-    let expectedOrigin = "";
-    try { expectedOrigin = new URL(base, window.location.origin).origin; } catch {}
-    const popup = window.open(url, "oauth_popup", `width=${width},height=${height},left=${left},top=${top}`);
-    if (!popup) {
-      toast.error(t('auth.could_not_open_auth_window'));
-      return;
-    }
-
-    const listener = async (e: MessageEvent) => {
-      // Only trust messages from the exact backend origin and from the popup we opened.
-      if (!expectedOrigin || e.origin !== expectedOrigin) return;
-      if (e.source !== popup) return;
-      if (!e.data || e.data.type !== "oauth_callback") return;
-      const { token, user, error } = e.data;
-      window.removeEventListener("message", listener);
-      try { popup.close(); } catch { }
-      if (error) {
-        toast.error(error);
-        return;
-      }
-      const res = await signInWithToken(token, user);
-      if (res.success) {
-        toast.success(t('auth.login_success'));
-        navigate("/dashboard");
-      } else {
-        toast.error(res.error || t('auth.login_failed'));
-      }
-    };
-
-    window.addEventListener("message", listener);
-  };
-  
   return (
-    <AuthLayout
-      title={t('auth.register_prompt') || 'Crea tu cuenta'}
-    >
-      <FadeIn>
-      {/* Botones Sociales */}
-        <div className="mb-6 flex justify-center">
-        <button
-          type="button"
-          onClick={() => handleSocialLogin("google")}
-          className="w-64 flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-card py-3 text-sm font-medium text-foreground transition-all hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10"
-        >
-          <svg className="h-5 w-5" viewBox="0 0 24 24">
-            <path fill="#EA4335" d="M5.266 9.765A7.077 7.077 0 0 1 12 4.909c1.69 0 3.218.6 4.418 1.582L19.91 3C17.782 1.145 15.055 0 12 0 7.27 0 3.198 2.698 1.24 6.65l4.026 3.115Z" />
-            <path fill="#34A853" d="M16.04 18.013A7.077 7.077 0 0 1 12 19.091c-3.134 0-5.781-2.014-6.723-4.823L1.237 17.35C3.193 21.294 7.265 24 12 24c2.933 0 5.735-1.043 7.834-3l-3.793-2.987Z" />
-            <path fill="#4A90E2" d="M19.834 21c2.195-2.048 3.62-5.096 3.62-9 0-.71-.109-1.473-.272-2.182H12v4.637h6.436c-.317 1.559-1.17 2.766-2.395 3.558L19.834 21Z" />
-            <path fill="#FBBC05" d="M5.277 14.268A7.12 7.12 0 0 1 4.909 12c0-.782.125-1.533.357-2.235L1.24 6.65A11.934 11.934 0 0 0 0 12c0 1.92.445 3.73 1.237 5.335l4.04-3.067Z" />
-          </svg>
-          Google
-        </button>
-
-        {/* Microsoft sign-in removed per request */}
-        </div>
-
-      {/* Separador */}
-      <div className="relative mb-6">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-slate-200 dark:border-white/10" />
-        </div>
-        <div className="relative flex justify-center text-sm">
-          <span className="bg-white/80 px-4 text-muted-foreground dark:bg-[#171717] dark:text-muted-foreground">o</span>
-        </div>
-      </div>
-
-      {/* Formulario */}
+    <AuthShell title={t('auth.register_prompt') || 'Crea tu cuenta'}>
       <form className="space-y-4" onSubmit={handleRegister}>
         {/* Nombre */}
         <div>
-          <label htmlFor="name" className="mb-2 block text-sm font-medium text-foreground dark:text-muted-foreground/60">
-            {t('auth.name_label')}<span className="text-primary">*</span>
-          </label>
+          <Etiqueta htmlFor="name">{t('auth.name_label')}</Etiqueta>
           <div className="relative">
-            <User className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+            <User className="pointer-events-none absolute left-3.5 top-1/2 h-4.5 w-4.5 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
             <input
               id="name"
               type="text"
@@ -154,18 +74,17 @@ export default function Register() {
               onChange={(e) => setName(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleRegister()}
               disabled={isLoading}
-              className="w-full rounded-lg border border-slate-200 bg-card py-3 pl-10 pr-4 text-foreground placeholder-slate-400 transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-primary dark:focus:ring-primary/20"
+              className={CAMPO_ICONO}
               autoComplete="name"
             />
           </div>
         </div>
-        {/* Email */}
+
+        {/* Correo */}
         <div>
-          <label htmlFor="email" className="mb-2 block text-sm font-medium text-foreground dark:text-muted-foreground/60">
-            Correo Electrónico<span className="text-primary">*</span>
-          </label>
+          <Etiqueta htmlFor="email">{t('auth.email_label', { defaultValue: 'Correo electrónico' })}</Etiqueta>
           <div className="relative">
-            <Mail className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+            <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4.5 w-4.5 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
             <input
               id="email"
               type="email"
@@ -174,7 +93,7 @@ export default function Register() {
               onChange={(e) => setEmail(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleRegister()}
               disabled={isLoading}
-              className="w-full rounded-lg border border-slate-200 bg-card py-3 pl-10 pr-4 text-foreground placeholder-slate-400 transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-primary dark:focus:ring-primary/20"
+              className={CAMPO_ICONO}
               autoComplete="email"
             />
           </div>
@@ -182,11 +101,9 @@ export default function Register() {
 
         {/* Contraseña */}
         <div>
-          <label htmlFor="password" className="mb-2 block text-sm font-medium text-foreground dark:text-muted-foreground/60">
-            {t('auth.password_label')}<span className="text-primary">*</span>
-          </label>
+          <Etiqueta htmlFor="password">{t('auth.password_label')}</Etiqueta>
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+            <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-4.5 w-4.5 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
             <input
               id="password"
               type={showPwd ? "text" : "password"}
@@ -195,26 +112,26 @@ export default function Register() {
               onChange={(e) => setPassword(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleRegister()}
               disabled={isLoading}
-              className="w-full rounded-lg border border-slate-200 bg-card py-3 pl-10 pr-12 text-foreground placeholder-slate-400 transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-primary dark:focus:ring-primary/20"
+              className={`${CAMPO_ICONO} pr-12`}
               autoComplete="new-password"
             />
             <button
               type="button"
               onClick={() => setShowPwd((v) => !v)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground dark:text-muted-foreground dark:hover:text-muted-foreground/60"
+              aria-label={showPwd ? t('auth.hide_password', { defaultValue: 'Ocultar contraseña' }) : t('auth.show_password', { defaultValue: 'Mostrar contraseña' })}
+              className="cg-focus absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 transition-colors"
+              style={{ color: 'var(--ink-faint)' }}
             >
-              {showPwd ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              {showPwd ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
             </button>
           </div>
         </div>
 
-        {/* Confirmar Contraseña */}
+        {/* Confirmar contraseña */}
         <div>
-          <label htmlFor="confirm" className="mb-2 block text-sm font-medium text-foreground dark:text-muted-foreground/60">
-            {t('auth.confirm_password_label')}<span className="text-primary">*</span>
-          </label>
+          <Etiqueta htmlFor="confirm">{t('auth.confirm_password_label')}</Etiqueta>
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+            <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-4.5 w-4.5 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
             <input
               id="confirm"
               type={showConfirm ? "text" : "password"}
@@ -223,49 +140,32 @@ export default function Register() {
               onChange={(e) => setConfirm(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleRegister()}
               disabled={isLoading}
-              className="w-full rounded-lg border border-slate-200 bg-card py-3 pl-10 pr-12 text-foreground placeholder-slate-400 transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-primary dark:focus:ring-primary/20"
+              className={`${CAMPO_ICONO} pr-12`}
               autoComplete="new-password"
             />
             <button
               type="button"
               onClick={() => setShowConfirm((v) => !v)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground dark:text-muted-foreground dark:hover:text-muted-foreground/60"
+              aria-label={showConfirm ? t('auth.hide_password', { defaultValue: 'Ocultar contraseña' }) : t('auth.show_password', { defaultValue: 'Mostrar contraseña' })}
+              className="cg-focus absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 transition-colors"
+              style={{ color: 'var(--ink-faint)' }}
             >
-              {showConfirm ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              {showConfirm ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
             </button>
           </div>
         </div>
 
-
-
-        {/* Botón de Enviar */}
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="cg-gradient-brand w-full rounded-lg py-3 font-semibold text-primary-foreground transition-all hover:shadow-lg hover:brightness-[1.04] disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {isLoading ? t('auth.creating_account') : t('auth.create_account')}
+        <button type="submit" disabled={isLoading} className={BOTON_PRINCIPAL}>
+          {isLoading ? t('auth.creating_account') : <>{t('auth.create_account')} <ArrowRight className="h-4 w-4" /></>}
         </button>
 
-        {/* Separador */}
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-slate-200 dark:border-white/10" />
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="bg-white/80 px-4 text-muted-foreground dark:bg-[#171717] dark:text-muted-foreground">o</span>
-          </div>
-        </div>
-
-        {/* Enlace para Iniciar Sesión */}
-        <div className="text-center">
-          <span className="text-sm text-foreground/70 dark:text-muted-foreground">{t('auth.already_have_account')} </span>
-          <NavLink to="/login" className="text-sm font-semibold text-primary hover:underline">
+        <div className="pt-1 text-center text-sm">
+          <span style={{ color: 'var(--ink-soft)' }}>{t('auth.already_have_account')} </span>
+          <NavLink to="/login" className="font-semibold hover:underline" style={{ color: 'var(--brand-text)' }}>
             {t('auth.login')}
           </NavLink>
         </div>
       </form>
-      </FadeIn>
-    </AuthLayout>
+    </AuthShell>
   );
 }

@@ -1,24 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { io } from "socket.io-client";
 import api, { getAuthToken } from "@/lib/api";
+import { crearSocket, cerrarSocket } from "@/lib/socket";
 import { openEventStream } from "@/lib/api/eventStream";
 import securityGuardService from "@/lib/api/securityGuardService";
 import { supervisorService } from "@/lib/api/supervisorService";
 import tenantService from "@/services/tenant.service";
 import { resolveDefaultCenter, companyCenter } from "./defaultCenter";
 import type {
-  ControlCenterData, DashboardStats, Kpi, MapEntity, MonthPoint,
+  ControlCenterData, DashboardStats, Kpi, MapEntity, MapEntityMeta, MonthPoint,
   RevenueSeries, ActivityItem, LiveStatus,
 } from "./types";
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
-// socket.io is served under /api/socket.io (same origin/proxy as REST).
-const SOCKET_PATH = "/api/socket.io";
-function socketOrigin(): string {
-  const apiUrl = (import.meta.env.VITE_API_URL as string | undefined) || "";
-  try { return new URL(apiUrl || window.location.origin, window.location.origin).origin; }
-  catch { return window.location.origin; }
-}
 // ── loosely-typed rows returned by the dashboard/stats + list endpoints ──
 interface StationRow {
   id?: string | number;
@@ -26,17 +19,50 @@ interface StationRow {
   longitud?: number | string; longitude?: number | string;
   stationName?: string; name?: string; postSiteName?: string;
   geofenceRadius?: number;
+  /** JSON con [{lat,lng}] cuando el puesto tiene geocerca poligonal. */
+  geofencePolygon?: unknown;
+  isMobile?: boolean;
+  address?: string;
+  postSiteId?: string;
+  postSite?: { id?: string; businessName?: string } | null;
+  /** Alias de la asociación con el cliente en el listado de puestos. */
+  stationOrigin?: { id?: string; name?: string; commercialName?: string } | null;
+  guardsCount?: number; assignedGuardsCount?: number;
+}
+interface PostSiteRow {
+  id?: string | number;
+  companyName?: string; businessName?: string; name?: string;
+  latitud?: number | string; longitud?: number | string;
+  address?: string; city?: string; contactPhone?: string;
+  clientAccountId?: string;
+  active?: boolean;
+}
+interface ClientRow {
+  id?: string | number;
+  name?: string; commercialName?: string;
+  latitude?: number | string; longitude?: number | string;
+  address?: string; city?: string; phoneNumber?: string; landline?: string;
+  riskLevel?: string; active?: boolean;
 }
 interface ActiveGuardRow {
-  id?: string | number; guardId?: string | number;
+  id?: string | number; guardId?: string | number; userId?: string | number;
   latitude?: number | string; lat?: number | string; punchInLatitude?: number | string;
   longitude?: number | string; lng?: number | string; punchInLongitude?: number | string;
-  fullName?: string; name?: string; postSiteName?: string;
-  punchInTime?: string; punchInBattery?: number;
+  fullName?: string; name?: string; postSiteName?: string; stationName?: string;
+  punchInTime?: string;
+  // Telemetría: el endpoint devuelve hoy sólo posición + `punchInTime`. Estos
+  // campos EXISTEN en `guardShifts` (liveBattery/liveSpeed/liveAccuracy) y se
+  // leen aquí para que aparezcan solos el día que el listado los exponga; sin
+  // ellos el globo simplemente no pinta esas filas.
+  punchInBattery?: number; liveBattery?: number; battery?: number;
+  liveSpeed?: number; speed?: number;
+  liveAccuracy?: number; accuracy?: number;
+  liveLocationAt?: string; lastSeenAt?: string;
 }
 interface IncidentRow {
-  id?: string | number; status?: string;
+  id?: string | number; status?: string; severity?: string; priority?: string;
   title?: string; subject?: string; location?: string; stationName?: string;
+  latitude?: number | string; longitude?: number | string;
   incidentAt?: string; createdAt?: string;
 }
 interface UserRow {
@@ -52,7 +78,7 @@ interface EventRow {
 interface LocationUpdate {
   id?: string | number; lat?: number | string; lng?: number | string;
   kind?: string; status?: LiveStatus; label?: string; sub?: string;
-  meta?: Record<string, unknown>;
+  meta?: MapEntityMeta;
 }
 
 const num = (v: unknown) => (typeof v === "number" ? v : Number(v) || 0);
@@ -68,12 +94,55 @@ const rows = (r: unknown): unknown[] => {
   return o?.rows ?? o?.data ?? [];
 };
 const coord = (v: unknown): number | null => { const n = parseFloat(v as string); return Number.isFinite(n) ? n : null; };
+const texto = (v: unknown): string | undefined => {
+  const s = typeof v === "string" ? v.trim() : v == null ? "" : String(v).trim();
+  return s || undefined;
+};
+const entero = (v: unknown): number | undefined => {
+  const n = typeof v === "number" ? v : Number(v);
+  return Number.isFinite(n) ? n : undefined;
+};
+/** `geofencePolygon` viaja como TEXT en la base y como array ya parseado según
+ *  el camino; se acepta cualquiera de los dos y se descarta lo que no sea un
+ *  polígono de verdad (menos de 3 vértices no encierra nada). */
+const poligono = (v: unknown): Array<{ lat: number; lng: number }> | undefined => {
+  let bruto: unknown = v;
+  if (typeof bruto === "string") { try { bruto = JSON.parse(bruto); } catch { return undefined; } }
+  if (!Array.isArray(bruto)) return undefined;
+  const puntos = bruto
+    .map((p) => {
+      const la = coord((p as any)?.lat ?? (p as any)?.latitude);
+      const ln = coord((p as any)?.lng ?? (p as any)?.longitude);
+      return la != null && ln != null ? { lat: la, lng: ln } : null;
+    })
+    .filter((p): p is { lat: number; lng: number } => !!p);
+  return puntos.length >= 3 ? puntos : undefined;
+};
 const sameDay = (iso?: string): boolean => {
   if (!iso) return false;
   const d = new Date(iso); if (Number.isNaN(d.getTime())) return false;
   const n = new Date();
   return d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth() && d.getDate() === n.getDate();
 };
+
+/**
+ * Los datos de un vigilante en servicio, en el MISMO formato tanto en la carga
+ * inicial como en el sondeo de posiciones. Estaban duplicados y divergían: el
+ * sondeo perdía la hora de entrada, así que a los 15 s el globo dejaba de saber
+ * desde cuándo estaba el vigilante en el puesto.
+ */
+function guardMeta(g: ActiveGuardRow): MapEntity["meta"] {
+  return {
+    entityId: texto(g.guardId ?? g.id),
+    userId: texto(g.userId),
+    punchInTime: texto(g.punchInTime),
+    lastSeenAt: texto(g.liveLocationAt ?? g.lastSeenAt ?? g.punchInTime),
+    battery: entero(g.liveBattery ?? g.battery ?? g.punchInBattery),
+    speed: entero(g.liveSpeed ?? g.speed),
+    accuracy: entero(g.liveAccuracy ?? g.accuracy),
+    stationName: texto(g.postSiteName ?? g.stationName),
+  };
+}
 
 async function safe<T>(p: Promise<T>, fallback: T): Promise<T> {
   try { return await p; } catch { return fallback; }
@@ -128,7 +197,8 @@ export function useControlCenter(intervalSec = 15): ControlCenterData & { refres
       if (!alive) return;
 
       const stationRows = rows(stationsR) as StationRow[];
-      const postRows = rows(postsR);
+      const postRows = rows(postsR) as PostSiteRow[];
+      const clientRows = rows(clientsR) as ClientRow[];
       const activeRows = rows(active) as ActiveGuardRow[];
       const incidentRows = rows(incidentsR) as IncidentRow[];
       const userRows = rows(usersR) as UserRow[];
@@ -139,14 +209,112 @@ export function useControlCenter(intervalSec = 15): ControlCenterData & { refres
       const tLat = coord(tenant?.latitude), tLng = coord(tenant?.longitude);
       if (tLat != null && tLng != null) {
         entities.push({ id: "tenant", kind: "tenant", lat: tLat, lng: tLng, status: "online",
-          label: tenant?.name || "Sede central", sub: tenant?.address || "Oficina principal" });
+          label: tenant?.name || "Sede central", sub: tenant?.address || "Oficina principal",
+          meta: { address: texto(tenant?.address), phone: texto(tenant?.phoneNumber ?? tenant?.phone) } });
       } else gaps.push("Tenant sin coordenadas (latitude/longitude) — pin de sede oculto.");
+
+      // Cuántos PUESTOS cuelgan de cada cliente — la cifra que el globo del
+      // cliente enseña sin tener que pedir nada más.
+      const puestosPorCliente = new Map<string, number>();
 
       stationRows.forEach((s: StationRow) => {
         const la = coord(s.latitud ?? s.latitude), ln = coord(s.longitud ?? s.longitude);
+        const clienteId = texto(s.stationOrigin?.id);
+        if (clienteId) puestosPorCliente.set(clienteId, (puestosPorCliente.get(clienteId) || 0) + 1);
         if (la == null || ln == null) return;
-        entities.push({ id: `st-${s.id}`, kind: "station", lat: la, lng: ln, status: "online",
-          label: s.stationName || s.name || "Puesto", sub: s.postSiteName || "", meta: { geofenceRadius: s.geofenceRadius } });
+        const sitio = texto(s.postSite?.businessName ?? s.postSiteName);
+        const cliente = texto(s.stationOrigin?.commercialName ?? s.stationOrigin?.name);
+        entities.push({
+          id: `st-${s.id}`, kind: "station", lat: la, lng: ln, status: "online",
+          label: s.stationName || s.name || "Puesto",
+          sub: cliente || sitio || "",
+          meta: {
+            entityId: texto(s.id),
+            geofenceRadius: entero(s.geofenceRadius),
+            geofencePolygon: poligono(s.geofencePolygon),
+            isMobile: !!s.isMobile,
+            postSiteId: texto(s.postSiteId ?? s.postSite?.id),
+            postSiteName: sitio,
+            clientId: clienteId,
+            clientName: cliente,
+            address: texto(s.address),
+            guardsCount: entero(s.guardsCount ?? s.assignedGuardsCount),
+          },
+        });
+      });
+
+      // ── CLIENTES: sus SEDES sobre el terreno ──────────────────────────────
+      // Un cliente no es un punto abstracto: es donde están sus instalaciones.
+      // Primero sus sedes (post-sites con coordenadas) y, si no tiene ninguna
+      // ubicada, la dirección del propio cliente — así no desaparece del mapa.
+      // Ambas listas YA se piden arriba para las cifras: cero peticiones nuevas.
+      const clientePorId = new Map<string, ClientRow>();
+      clientRows.forEach((c) => { const id = texto(c.id); if (id) clientePorId.set(id, c); });
+      const clientesUbicados = new Set<string>();
+
+      postRows.forEach((p: PostSiteRow) => {
+        const la = coord(p.latitud), ln = coord(p.longitud);
+        if (la == null || ln == null) return;
+        const clienteId = texto(p.clientAccountId);
+        const cliente = clienteId ? clientePorId.get(clienteId) : undefined;
+        const nombreCliente = texto(cliente?.commercialName ?? cliente?.name);
+        if (clienteId) clientesUbicados.add(clienteId);
+        entities.push({
+          id: `cl-${p.id}`, kind: "client", lat: la, lng: ln, status: "online",
+          label: texto(p.companyName ?? p.businessName ?? p.name) || "Sede",
+          sub: nombreCliente || "Sede del cliente",
+          meta: {
+            entityId: texto(p.id),
+            clientId: clienteId,
+            clientName: nombreCliente,
+            address: texto(p.address),
+            city: texto(p.city),
+            phone: texto(p.contactPhone ?? cliente?.phoneNumber ?? cliente?.landline),
+            riskLevel: texto(cliente?.riskLevel),
+            stationsCount: clienteId ? puestosPorCliente.get(clienteId) : undefined,
+          },
+        });
+      });
+
+      clientRows.forEach((c: ClientRow) => {
+        const id = texto(c.id);
+        if (!id || clientesUbicados.has(id)) return;
+        const la = coord(c.latitude), ln = coord(c.longitude);
+        if (la == null || ln == null) return;
+        entities.push({
+          id: `cl-acc-${id}`, kind: "client", lat: la, lng: ln, status: "online",
+          label: texto(c.commercialName ?? c.name) || "Cliente",
+          sub: texto(c.city) || "Cliente",
+          meta: {
+            entityId: id, clientId: id, clientName: texto(c.commercialName ?? c.name),
+            address: texto(c.address), city: texto(c.city),
+            phone: texto(c.phoneNumber ?? c.landline), riskLevel: texto(c.riskLevel),
+            stationsCount: puestosPorCliente.get(id),
+          },
+        });
+      });
+
+      // ── Incidentes ABIERTOS con coordenadas ───────────────────────────────
+      // Salen de la misma lista que ya alimenta las cifras y el parte de
+      // novedades. Sólo los abiertos: un incidente cerrado en el mapa es ruido,
+      // y además cuentan para marcar «en riesgo» el puesto que los rodea.
+      incidentRows.forEach((i: IncidentRow) => {
+        if (String(i.status || "").toLowerCase() !== "abierto") return;
+        const la = coord(i.latitude), ln = coord(i.longitude);
+        if (la == null || ln == null) return;
+        const critico = ["critica", "crítica", "alta", "critical", "high"]
+          .includes(String(i.severity ?? i.priority ?? "").toLowerCase());
+        entities.push({
+          id: `inc-${i.id}`, kind: "incident", lat: la, lng: ln,
+          status: critico ? "emergency" : "incident",
+          label: texto(i.title ?? i.subject) || "Incidente",
+          sub: texto(i.location ?? i.stationName) || "",
+          meta: {
+            entityId: texto(i.id),
+            address: texto(i.location),
+            lastSeenAt: texto(i.incidentAt ?? i.createdAt),
+          },
+        });
       });
 
       let onDuty = 0;
@@ -155,8 +323,8 @@ export function useControlCenter(intervalSec = 15): ControlCenterData & { refres
         onDuty++;
         if (la == null || ln == null) return;
         entities.push({ id: `g-${g.guardId || g.id}`, kind: "guard", lat: la, lng: ln, status: "online",
-          label: g.fullName || g.name || "Vigilante", sub: g.postSiteName || "En servicio",
-          meta: { punchInTime: g.punchInTime, battery: g.punchInBattery } });
+          label: g.fullName || g.name || "Vigilante", sub: g.postSiteName || g.stationName || "En servicio",
+          meta: guardMeta(g) });
       });
 
       // Supervisores en servicio con posición (profile lat/lng, sembrada al fichar
@@ -168,8 +336,14 @@ export function useControlCenter(intervalSec = 15): ControlCenterData & { refres
         const la = coord(sup.latitude ?? sup.lat), ln = coord(sup.longitude ?? sup.lng);
         if (la == null || ln == null) return;
         entities.push({ id: `sup-${sup.id}`, kind: "supervisor", lat: la, lng: ln, status: "patrol",
-          label: sup.fullName || "Supervisor", sub: sup.zone || "En patrulla",
-          meta: { onDutySince: sup.onDutySince } });
+          label: sup.fullName || "Supervisor", sub: texto(sup.zone) || "En patrulla",
+          meta: {
+            entityId: texto(sup.id), userId: texto(sup.id),
+            phone: texto(sup.phoneNumber), zone: texto(sup.zone),
+            vehicle: texto(sup.assignedVehicle), photoUrl: texto(sup.photoUrl),
+            onDutySince: texto(sup.onDutySince),
+            dutyLateMinutes: entero(sup.dutyLateMinutes),
+          } });
       });
 
       // ── revenue from /dashboard/stats (billing.montoPorPagar by month) ──
@@ -292,7 +466,8 @@ export function useControlCenter(intervalSec = 15): ControlCenterData & { refres
           const la = coord(g.latitude ?? g.punchInLatitude), ln = coord(g.longitude ?? g.punchInLongitude);
           if (la == null || ln == null) return;
           guards.push({ id: `g-${g.guardId || g.id}`, kind: "guard", lat: la, lng: ln, status: "online",
-            label: g.fullName || "Vigilante", sub: g.postSiteName || "En servicio", meta: { battery: g.punchInBattery } });
+            label: g.fullName || "Vigilante", sub: g.postSiteName || g.stationName || "En servicio",
+            meta: guardMeta(g) });
         });
         return { ...s, entities: [...others, ...guards],
           health: { ...s.health, onlineDevices: onDuty, lastSync: new Date().toISOString() } };
@@ -333,17 +508,13 @@ export function useControlCenter(intervalSec = 15): ControlCenterData & { refres
   useEffect(() => {
     const tid = tenantId();
     if (!tid) return;
-    const socket = io(socketOrigin(), {
-      path: SOCKET_PATH,
-      transports: ["websocket"],
-      withCredentials: true,
-      auth: { token: getAuthToken(), tenantId: tid },
-    });
+    const socket = crearSocket(getAuthToken() || "", tid);
     const onLocation = (e: LocationUpdate) => {
       const la = coord(e?.lat), ln = coord(e?.lng);
       if (la == null || ln == null || !e?.id) return;
       setState((s) => {
         const others = s.entities.filter((x) => x.id !== String(e.id));
+        const previa = s.entities.find((x) => x.id === String(e.id));
         const entity: MapEntity = {
           id: String(e.id),
           kind: (e.kind as MapEntity["kind"]) || "supervisor",
@@ -351,13 +522,17 @@ export function useControlCenter(intervalSec = 15): ControlCenterData & { refres
           status: e.status || "patrol",
           label: e.label || "Supervisor",
           sub: e.sub || "Patrulla",
-          meta: e.meta,
+          // Se conserva lo que ya se sabía (teléfono, zona, vehículo: el emit de
+          // posición no los repite) y se SELLA la hora: esta coordenada acaba de
+          // llegar por el socket, así que su marca de tiempo es AHORA. De ahí
+          // sale el latido del mapa, que sólo late con señal fresca de verdad.
+          meta: { ...previa?.meta, ...e.meta, lastSeenAt: new Date().toISOString() },
         };
         return { ...s, entities: [...others, entity] };
       });
     };
     socket.on("location:update", onLocation);
-    return () => { socket.off("location:update", onLocation); socket.disconnect(); };
+    return () => { socket.off("location:update", onLocation); cerrarSocket(socket); };
   }, []);
 
   return { ...state, refresh };
