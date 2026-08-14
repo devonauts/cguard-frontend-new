@@ -1,4 +1,4 @@
-import { Cog, Power, ArrowLeft, Puzzle, Plug, ListChecks, ClipboardCheck, Info } from "lucide-react";
+import { ArrowLeft, Puzzle, Plug, ListChecks, ClipboardCheck, Info } from "lucide-react";
 import { Link, useParams, Navigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { INTEGRATIONS } from "./integrations.data";
@@ -56,23 +56,14 @@ export default function IntegrationDetail() {
                                         Volver
                                     </Link>
                                 </Button>
-                                {data.enabled ? (
-                                    <>
-                                        <Button variant="outline" className="gap-2">
-                                            <Cog className="h-4 w-4" />
-                                            Ajustes
-                                        </Button>
-                                        <Button variant="destructive" className="gap-2">
-                                            <Power className="h-4 w-4" />
-                                            Desconectar
-                                        </Button>
-                                    </>
-                                ) : (
-                                    <Button variant="brand" className="gap-2">
-                                        <Power className="h-4 w-4" />
-                                        Conectar
-                                    </Button>
-                                )}
+                                {/* Estos botones NO tenían `onClick`: ni conectaban,
+                                    ni desconectaban, ni abrían ajustes. Y no hay
+                                    ningún módulo de integraciones en el backend,
+                                    así que no era un cable suelto sino una
+                                    maqueta. Se retiran hasta que exista el motor:
+                                    un botón que no hace nada es peor que su
+                                    ausencia, porque el dueño pulsa, comprueba, y a
+                                    partir de ahí desconfía de los que sí sirven. */}
                             </>
                         }
                     />

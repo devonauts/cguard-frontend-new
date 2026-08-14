@@ -1,65 +1,55 @@
-import { Puzzle, Info } from "lucide-react";
+/**
+ * Configuración › Datos y conexiones › Conexiones y API
+ *
+ * QUÉ HABÍA AQUÍ Y POR QUÉ SE FUE:
+ * Un catálogo de ocho integraciones escrito a mano —QuickBooks, ADP, Paychex,
+ * Gusto, Xero…— con tres problemas a la vez:
+ *
+ *   · No existía NINGÚN módulo de integraciones en el backend. Los botones
+ *     «Conectar», «Desconectar» y «Ajustes» no tenían siquiera `onClick`.
+ *   · Los dos archivos que lo definían se contradecían: QuickBooks salía
+ *     `active: true` en la lista y `enabled: false` en los datos; ADP al revés,
+ *     de modo que la pantalla anunciaba «Conectada» una integración inexistente.
+ *   · Los logotipos se cargaban desde `app.guardspro.com` — el dominio de otro
+ *     producto — y todo el catálogo era nómina de Estados Unidos en una
+ *     plataforma que pide RUC ecuatoriano y RFC mexicano.
+ *
+ * Se sustituye por la verdad. Es el mismo criterio con el que se vació «Otras
+ * configuraciones»: una pantalla que promete lo que no hay no es un adelanto,
+ * es una deuda con el cliente que la abre.
+ */
+import { Plug, Info } from "lucide-react";
+
 import AppLayout from "@/layouts/app-layout";
 import SettingsLayout from "@/layouts/SettingsLayout";
-import { PageContainer, PageHeader, Section, Stagger, StatusBadge } from "@/components/kit";
-import IntegrationCard from "./IntegrationCard";
-
-const INTEGRATIONS = [
-    { image: "https://app.guardspro.com/assets/icons/custom/logo-qb.png", title: "QuickBooks", subtitle: "QuickBooks Online", slug: "quickbooks-online", active: true },
-    { image: "https://app.guardspro.com/assets/icons/custom/adpworkforcenow.png", title: "ADP Workforce Now", subtitle: "ADP Workforce Now CSV", slug: "adp-workforce-now", active: false },
-    { image: "https://app.guardspro.com/assets/icons/custom/paychex_logo.png", title: "Paychex", subtitle: "Paychex CSV", slug: "paychex-csv", active: false },
-    { image: "https://app.guardspro.com/assets/icons/custom/gusto_logo.png", title: "Gusto", subtitle: "Gusto CSV", slug: "gusto-csv", active: false },
-    { image: "https://app.guardspro.com/assets/icons/custom/xero_logo.png", title: "Xero", subtitle: "Xero (Reino Unido)", slug: "xero-uk", active: false },
-    { image: "https://app.guardspro.com/assets/icons/custom/xero_logo.png", title: "Xero", subtitle: "Xero (AU)", slug: "xero-au", active: false },
-    { image: "https://app.guardspro.com/assets/icons/custom/adp.svg", title: "ADP Run", subtitle: "ADP Run CSV", slug: "adp-run-csv", active: false },
-    { image: "https://app.guardspro.com/assets/icons/custom/square_payroll_logo_light.png", title: "Square", subtitle: "Square", slug: "square-payroll", active: false },
-];
+import { PageContainer, PageHeader, EmptyState, InfoNote } from "@/components/kit";
 
 export default function IntegrationsList() {
-    const conectadas = INTEGRATIONS.filter((it) => it.active).length;
+  return (
+    <AppLayout>
+      <SettingsLayout navKey="configuracion" title="Conexiones y API">
+        <PageContainer width="narrow">
+          <PageHeader
+            icon={<Plug />}
+            title="Conexiones y API"
+            subtitle="Conectar C-Guard Pro con otros sistemas de tu empresa."
+          />
 
-    return (
-        <AppLayout>
-            <SettingsLayout navKey="configuracion" title="Integraciones">
-                <PageContainer width="wide">
-                    <PageHeader
-                        icon={<Puzzle />}
-                        title="Integraciones"
-                        subtitle="Conecta C-Guard Pro con tus herramientas de nómina y contabilidad."
-                        badges={
-                            <>
-                                <StatusBadge tone={conectadas ? "ok" : "neutral"}>
-                                    {conectadas} conectada{conectadas === 1 ? "" : "s"}
-                                </StatusBadge>
-                                <StatusBadge tone="neutral" dot={false}>
-                                    {INTEGRATIONS.length} disponibles
-                                </StatusBadge>
-                            </>
-                        }
-                    />
+          <EmptyState
+            icon={<Plug />}
+            title="Todavía no hay integraciones disponibles"
+            description="Cuando existan, aparecerán aquí y podrás conectarlas tú mismo. Mientras tanto, nada de esta pantalla está conectado: preferimos decírtelo a enseñarte un catálogo que no funciona."
+          />
 
-                    <Section title="Cómo funcionan" icon={<Info />}>
-                        <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-                            Al conectar una herramienta de nómina o contabilidad, las horas trabajadas y los datos del
-                            personal viajan solos y dejas de exportarlos a mano. Elige la que usa tu empresa para ver
-                            sus requisitos y activarla.
-                        </p>
-                    </Section>
-
-                    <Stagger className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                        {INTEGRATIONS.map((it) => (
-                            <IntegrationCard
-                                key={`${it.title}-${it.subtitle}`}
-                                image={it.image}
-                                title={it.title}
-                                subtitle={it.subtitle}
-                                active={it.active}
-                                href={`/setting/integracion/${it.slug}`}
-                            />
-                        ))}
-                    </Stagger>
-                </PageContainer>
-            </SettingsLayout>
-        </AppLayout>
-    );
+          <InfoNote tone="info" icon={<Info />} className="mt-5">
+            ¿Necesitas mover datos hoy? Los informes de <strong>Operación</strong> y los
+            del portal de tu cliente se exportan en CSV y PDF, y el detalle de qué
+            incluyen se configura en <strong>Datos y conexiones › Informes</strong>.
+            Si tienes un sistema concreto con el que necesitas integrarte, dínoslo:
+            saber cuál es lo que decide en qué orden se construyen.
+          </InfoNote>
+        </PageContainer>
+      </SettingsLayout>
+    </AppLayout>
+  );
 }

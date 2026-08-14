@@ -45,6 +45,14 @@
             "keywords": "ruc rfc razon social licencia direccion zona horaria timezone logo identidad"
           },
           {
+            "id": "marca",
+            "label": "Marca",
+            "path": "/setting/marca",
+            "icon": "Palette",
+            "desc": "Un color para tus correos y para las apps de tu equipo.",
+            "keywords": "marca color acento logo identidad corporativo correo app branding"
+          },
+          {
             "id": "roles",
             "label": "Roles y permisos",
             "path": "/setting/roles",
@@ -203,6 +211,14 @@
             "icon": "FileCog",
             "desc": "Privacidad, encabezado y pie de los informes que recibe tu cliente.",
             "keywords": "informe reporte pdf excel csv privacidad ocultar nombre encabezado pie exportar"
+          },
+          {
+            "id": "registro-actividad",
+            "label": "Registro de actividad",
+            "path": "/setting/registro-actividad",
+            "icon": "FileBarChart",
+            "desc": "Quién cambió qué, quién entró y qué hizo la plataforma sola.",
+            "keywords": "auditoria auditar registro log historial acceso sesion cambios trazabilidad cumplimiento"
           },
           {
             "id": "integraciones",

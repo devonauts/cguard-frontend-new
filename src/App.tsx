@@ -46,6 +46,8 @@ const OtherSettingsPage = lazy(() => import("./pages/admin/Configuration/other-s
 const GuardsGlobalSettingsPage = lazy(() => import("./pages/admin/Configuration/guards-settings/GuardsGlobalSettingsPage"));
 const RondasSettingsPage = lazy(() => import("./pages/admin/Configuration/rondas-settings/RondasSettingsPage"));
 const JornadaPage = lazy(() => import("./pages/admin/Configuration/scheduling/JornadaPage"));
+const ActivityLogHubPage = lazy(() => import("./pages/admin/Configuration/activity-log/ActivityLogHubPage"));
+const MarcaPage = lazy(() => import("./pages/admin/Configuration/brand/MarcaPage"));
 const EmailPreferencesPage = lazy(() => import("./pages/admin/Configuration/email-preferences/EmailPreferencesPage"));
 const SmsBalancePage = lazy(() => import("./pages/admin/Configuration/sms/SmsBalancePage"));
 const CommunicationsPage = lazy(() => import("./pages/admin/Configuration/communications/CommunicationsPage"));
@@ -1611,6 +1613,22 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <JornadaPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/setting/registro-actividad"
+                element={
+                  <ProtectedRoute>
+                    <ActivityLogHubPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/setting/marca"
+                element={
+                  <ProtectedRoute>
+                    <MarcaPage />
                   </ProtectedRoute>
                 }
               />
