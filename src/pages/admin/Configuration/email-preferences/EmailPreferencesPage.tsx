@@ -1,18 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Loader2, Save, Mail, Lock, Palette, RotateCcw, Eye } from "lucide-react";
+import { Loader2, Save, Mail, Lock, Palette, RotateCcw, Eye, Info, TriangleAlert } from "lucide-react";
 
 import AppLayout from "@/layouts/app-layout";
 import SettingsLayout from "@/layouts/SettingsLayout";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { PageContainer, PageHeader, Section, SkeletonCards, StatusBadge, GlassPanel } from "@/components/kit";
+import { PageContainer, PageHeader, Section, SkeletonCards, SkeletonBlock, StatusBadge, GlassPanel, Modal, InfoNote } from "@/components/kit";
 import {
   emailPreferencesService,
   EmailCatalogItem,
   EmailBranding,
+  EmailPreviewResult,
 } from "@/lib/api/emailPreferencesService";
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -28,10 +29,11 @@ const PRESET_HEADERS = ["#0A0E16", "#1F2937", "#0F3D2E", "#1E293B", "#3B1D5E"];
 
 /** Fila de conmutador: título + descripción a la izquierda, interruptor a la
  *  derecha. Superficie plana porque se repite dentro de un `map()`. */
-function ToggleRow({ item, checked, onCheckedChange }: {
+function ToggleRow({ item, checked, onCheckedChange, onVerEjemplo }: {
   item: EmailCatalogItem;
   checked: boolean;
   onCheckedChange: (b: boolean) => void;
+  onVerEjemplo: () => void;
 }) {
   return (
     <div className="glass-flat flex items-center justify-between gap-4 px-4 py-3">
@@ -47,6 +49,15 @@ function ToggleRow({ item, checked, onCheckedChange }: {
         {item.description && (
           <p className="mt-0.5 text-xs" style={{ color: "var(--ink-soft)" }}>{item.description}</p>
         )}
+        {/* Decidir si se apaga un correo sin haberlo visto es adivinar. */}
+        <button
+          type="button"
+          onClick={onVerEjemplo}
+          className="cg-focus mt-1.5 inline-flex items-center gap-1.5 text-xs font-semibold transition-colors hover:underline"
+          style={{ color: "var(--brand-text)" }}
+        >
+          <Eye size={13} /> Ver ejemplo
+        </button>
       </div>
       <Switch
         checked={checked}
@@ -54,6 +65,76 @@ function ToggleRow({ item, checked, onCheckedChange }: {
         onCheckedChange={onCheckedChange}
       />
     </div>
+  );
+}
+
+/** El correo tal cual le llega al destinatario.
+ *
+ *  Va en un `<iframe srcDoc>` y no inyectado en la página por dos razones que no
+ *  son estéticas: el HTML de un correo trae sus propios estilos —tablas, anchos
+ *  fijos, colores absolutos— que se escaparían al resto del CRM; y un iframe sin
+ *  `allow-same-origin` no puede tocar la sesión. Lo que se ve es exactamente lo
+ *  que renderiza el servidor al enviarlo de verdad. */
+function EjemploDeCorreo({ item, abierto, onCerrar }: {
+  item: EmailCatalogItem | null;
+  abierto: boolean;
+  onCerrar: () => void;
+}) {
+  const [cargando, setCargando] = useState(false);
+  const [datos, setDatos] = useState<EmailPreviewResult | null>(null);
+
+  useEffect(() => {
+    if (!abierto || !item) return;
+    let vivo = true;
+    setCargando(true);
+    setDatos(null);
+    emailPreferencesService
+      .previewTemplate(item.key)
+      .then((r) => { if (vivo) setDatos(r); })
+      .catch(() => { if (vivo) setDatos({ disponible: false, motivo: "No se pudo cargar el ejemplo." }); })
+      .finally(() => { if (vivo) setCargando(false); });
+    return () => { vivo = false; };
+  }, [abierto, item]);
+
+  if (!item) return null;
+
+  return (
+    <Modal open={abierto} onOpenChange={(o) => { if (!o) onCerrar(); }} title={item.label} icon={<Mail />} size="lg">
+      {cargando && <SkeletonBlock className="h-[28rem] w-full" />}
+
+      {!cargando && datos && !datos.disponible && (
+        <InfoNote tone="neutral" icon={<Info />}>{datos.motivo}</InfoNote>
+      )}
+
+      {!cargando && datos && datos.disponible && (
+        <div className="space-y-3">
+          <div className="glass-sunken px-3 py-2">
+            <p className="cg-eyebrow">Asunto</p>
+            <p className="mt-0.5 text-sm font-semibold">{datos.asunto}</p>
+          </div>
+
+          {datos.avisoSendgrid && (
+            <InfoNote tone="warn" icon={<TriangleAlert />}>
+              Este correo se está enviando con una plantilla externa, así que lo
+              que llega puede no coincidir con este ejemplo.
+            </InfoNote>
+          )}
+
+          <iframe
+            title={`Ejemplo — ${item.label}`}
+            srcDoc={datos.html}
+            sandbox=""
+            className="h-[28rem] w-full rounded-xl border"
+            style={{ borderColor: "var(--hairline)", background: "#fff" }}
+          />
+
+          <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
+            Con datos de ejemplo. El nombre, el logotipo y los colores son los de
+            tu organización; el enlace de este ejemplo no es válido.
+          </p>
+        </div>
+      )}
+    </Modal>
   );
 }
 
@@ -97,6 +178,8 @@ export default function EmailPreferencesPage() {
   const [branding, setBranding] = useState<EmailBranding>({ brandColor: DEFAULT_BRAND, headerColor: DEFAULT_HEADER });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  // Qué correo se está mirando. null = ninguno.
+  const [ejemplo, setEjemplo] = useState<EmailCatalogItem | null>(null);
 
   const [previewHtml, setPreviewHtml] = useState<string>("");
   const [previewLoading, setPreviewLoading] = useState(false);
@@ -257,6 +340,7 @@ export default function EmailPreferencesPage() {
                           item={item}
                           checked={item.locked ? true : prefs[item.key] !== false}
                           onCheckedChange={(b) => setPref(item.key, b)}
+                          onVerEjemplo={() => setEjemplo(item)}
                         />
                       ))}
                     </div>
@@ -298,6 +382,12 @@ export default function EmailPreferencesPage() {
             </div>
           )}
         </PageContainer>
+
+        <EjemploDeCorreo
+          item={ejemplo}
+          abierto={!!ejemplo}
+          onCerrar={() => setEjemplo(null)}
+        />
       </SettingsLayout>
     </AppLayout>
   );

@@ -20,6 +20,20 @@ export interface EmailBranding {
   headerColor: string;
 }
 
+/** `disponible: false` no es un error: hay avisos que no salen de una plantilla
+ *  de archivo, y otros que esta plataforma sencillamente no envía. En esos casos
+ *  `motivo` explica cuál de las dos cosas es. */
+export interface EmailPreviewResult {
+  disponible: boolean;
+  motivo?: string;
+  key?: string;
+  label?: string;
+  asunto?: string;
+  html?: string;
+  plantilla?: string;
+  avisoSendgrid?: boolean;
+}
+
 export interface EmailPreferencesResponse {
   catalog: EmailCatalogItem[];
   preferences: Record<string, boolean>;
@@ -46,6 +60,13 @@ export const emailPreferencesService = {
     return ApiService.post(`/tenant/${tenantId()}/email-preferences/preview`, {
       data: { ...(branding ? { branding } : {}) },
     });
+  },
+
+  /** El correo REAL de un punto del catálogo, con datos de ejemplo. Lo renderiza
+   *  el propio remitente parándose antes de enviar, así que no puede diferir de
+   *  lo que recibe el destinatario. */
+  previewTemplate(key: string): Promise<EmailPreviewResult> {
+    return ApiService.get(`/tenant/${tenantId()}/email-preferences/preview/${encodeURIComponent(key)}`);
   },
 };
 
