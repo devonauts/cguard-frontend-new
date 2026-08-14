@@ -27,32 +27,39 @@ type MatrixState = Record<
   }
 >;
 
-// ================== Datos (puedes moverlos a un JSON externo) ==================
+/* ────────────────────────────────────────────────────────────────────────────
+   ESTA LISTA TIENE QUE COINCIDIR CON `EVENT_TO_ROW` DEL BACKEND
+   (backend/src/lib/notificationChannels.ts). Una fila que no esté allí no
+   gobierna ningún aviso: se guarda, se pinta marcada, y no hace absolutamente
+   nada.
+
+   Había 24 filas y sólo 11 estaban conectadas. Las trece decorativas —informe
+   enviado, órdenes reconocidas, política reconocida, modo vigilancia, lista de
+   verificación, vigilante tardío, sin asistencia, ruta de patrulla, mención en
+   comentario, estacionamiento, caída del dispositivo— se han retirado. Y
+   faltaban dos que el backend SÍ enruta y el dueño no podía tocar: las
+   excepciones de asistencia y sus aprobaciones, que son justo los avisos que
+   más le importan a un jefe de operaciones.
+
+   Al añadir una fila nueva aquí, añade su evento allí. Si no, vuelve el mismo
+   problema.
+   ──────────────────────────────────────────────────────────────────────────── */
 const NOTIFICATIONS: NotificationItem[] = [
   { id: "check-in-out", label: "Vigilante registrado/salida", hint: "Check-in/out del vigilante", default: { dashboard: true, email: true } },
-  { id: "report-sent", label: "Informe enviado", default: { dashboard: true } },
-  { id: "task-completed", label: "Tarea completada", default: { dashboard: true } },
-  { id: "task-missed", label: "Tarea perdida o retrasada", default: { dashboard: true } },
-  { id: "post-orders-ack", label: "Órdenes de publicación reconocidas", default: { dashboard: true } },
-  { id: "policy-ack", label: "Política de la empresa reconocida", default: { dashboard: true } },
-  { id: "site-tour-complete", label: "Recorrido del sitio completado", default: { dashboard: true } },
-  { id: "site-tour-missed", label: "Recorrido del sitio perdido o retrasado", default: { dashboard: true } },
+  { id: "panic-button", label: "Botón de pánico", hint: "La alerta más crítica: entra por todos los canales salvo que la apagues", default: { dashboard: true, email: true, sms: true } },
   { id: "dispatch-updates", label: "Actualizaciones de tickets de Incidente", default: { dashboard: true } },
-  { id: "shift-status", label: "Actualizaciones del estado del turno", default: { dashboard: true } },
+  { id: "attendance-exceptions", label: "Novedades de asistencia", hint: "Atraso, inasistencia, salida anticipada, salida sin marcar y marcación fuera de la geocerca", default: { dashboard: true } },
+  { id: "attendance-approvals", label: "Aprobaciones de asistencia", hint: "Correcciones enviadas, pendientes de aprobar, aprobadas y rechazadas", default: { dashboard: true } },
   { id: "late-on-shift", label: "Retraso en el turno", default: { dashboard: true } },
-  { id: "vigilance-mode", label: "Entrada de modo vigilancia enviada", default: { dashboard: true } },
-  { id: "checklist-complete", label: "Lista de verificación completada", default: { dashboard: true } },
   { id: "inactive-guard-alert", label: "Alerta de inactividad para vigilantes inactivos", default: { dashboard: true } },
   { id: "geofence-alert", label: "Alertas de geovalla al entrar/salir", default: { dashboard: true } },
+  { id: "site-tour-complete", label: "Recorrido del sitio completado", default: { dashboard: true } },
+  { id: "site-tour-missed", label: "Recorrido del sitio perdido o retrasado", default: { dashboard: true } },
+  { id: "task-completed", label: "Tarea completada", default: { dashboard: true } },
+  { id: "task-missed", label: "Tarea perdida o retrasada", default: { dashboard: true } },
+  { id: "shift-status", label: "Actualizaciones del estado del turno", default: { dashboard: true } },
   { id: "pto-request", label: "Solicitud de tiempo libre", default: { dashboard: true } },
-  { id: "panic-button", label: "Informe del botón de pánico", default: { dashboard: true } },
-  { id: "guard-late", label: "Vigilante tardío", default: { dashboard: true } },
-  { id: "no-show", label: "Vigilante sin asistencia", default: { dashboard: true } },
-  { id: "patrol-route", label: "Inicio y fin de ruta de patrulla vehicular", default: { dashboard: true } },
-  { id: "comment-mention", label: "Mención en un comentario", default: { dashboard: true } },
-  { id: "parking-admin", label: "Administrador de estacionamiento", default: { dashboard: true } },
-  { id: "license-expiry", label: "Expiración de Licencia" },
-  { id: "fall-detection", label: "Caída del Vigilante/Dispositivo" },
+  { id: "license-expiry", label: "Expiración de Licencia", default: { dashboard: true } },
 ];
 
 const columns: { key: ChannelKey; label: string; icon: React.ReactNode }[] = [
@@ -120,6 +127,19 @@ export default function NotificationMatrix() {
     NOTIFICATIONS.some((n) => state[n.id]?.[col]);
 
   const toggleColumn = (col: ChannelKey, value: boolean) => {
+    // Encender la columna de SMS de un clic arma un canal DE PAGO en todos los
+    // avisos a la vez. Se pide confirmación diciendo cuántos son: el gasto lo
+    // paga el tenant por mensaje y por destinatario, y hasta ahora no había
+    // ningún aviso antes de comprometerlo.
+    if (col === "sms" && value) {
+      const ok = window.confirm(
+        `Vas a activar el envío por SMS en los ${NOTIFICATIONS.length} avisos.\n\n` +
+          `El SMS se cobra por mensaje y por destinatario, y se descuenta de tu saldo. ` +
+          `Un aviso frecuente —como las entradas y salidas de turno— puede consumirlo rápido.\n\n` +
+          `¿Continuar?`,
+      );
+      if (!ok) return;
+    }
     setState((prev) => {
       const copy: MatrixState = { ...prev };
       NOTIFICATIONS.forEach((n) => {
