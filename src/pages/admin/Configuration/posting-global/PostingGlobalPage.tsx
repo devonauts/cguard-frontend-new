@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { ShieldCheck, Route as RouteIcon, MapPin, ClipboardList, BellRing } from "lucide-react";
 import { Section, Stagger, SkeletonCards } from "@/components/kit";
 import SettingsPageShell from "../components/SettingsPageShell";
-import { ToggleRow, SaveBar, SettingsLinkCard, SettingsLinkGrid } from "../components/SettingsForm";
+import { ToggleRow, SaveBar } from "../components/SettingsForm";
 import { usePermissions } from "@/hooks/usePermissions";
 import api from "@/lib/api";
 
@@ -171,34 +171,12 @@ export default function PostingGlobalPage() {
                             </p>
                         </Section>
 
-                        <Section title="Reglas relacionadas" icon={<ClipboardList />}>
-                            <SettingsLinkGrid>
-                                <SettingsLinkCard
-                                    to="/nomina/settings"
-                                    icon={<MapPin className="h-4 w-4" />}
-                                    title="Geocerca al marcar entrada"
-                                    description="Bloquear marcaciones fuera de geocerca, radio por defecto y auto-cierre de turnos sin salida: Asistencia › Ajustes."
-                                />
-                                <SettingsLinkCard
-                                    to="/setting/notifications"
-                                    icon={<BellRing className="h-4 w-4" />}
-                                    title="Canales de notificación"
-                                    description="Qué llega al panel, correo o SMS por cada tipo de evento."
-                                />
-                                <SettingsLinkCard
-                                    to="/post-sites"
-                                    icon={<ClipboardList className="h-4 w-4" />}
-                                    title="Consignas del puesto"
-                                    description="Las órdenes permanentes (consignas específicas) se gestionan por estación, en el detalle de cada puesto."
-                                />
-                                <SettingsLinkCard
-                                    to="/setting/rondas"
-                                    icon={<RouteIcon className="h-4 w-4" />}
-                                    title="Reglas de rondas"
-                                    description="Foto/nota obligatoria y geocerca por punto de control: Configuración › Rondas."
-                                />
-                            </SettingsLinkGrid>
-                        </Section>
+                        {/* Aquí había una rejilla de tarjetas-enlace a otras
+                            páginas de ajustes. Era el índice de Configuración
+                            redibujado a mano, porque no existía navegación
+                            lateral: en esta página había 5 ajustes y 6 enlaces,
+                            más señalización que producto. Se quitó al devolver
+                            la columna de índice en SettingsLayout. */}
 
                         <SaveBar onSave={save} saving={saving} disabled={!canEdit || loading} />
                     </Stagger>

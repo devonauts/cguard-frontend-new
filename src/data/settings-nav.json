@@ -3,70 +3,207 @@
     "title": "Configuración",
     "sections": [
       {
-        "label": "MI CUENTA",
+        "label": "Mi cuenta",
+        "hint": "Sólo te afecta a ti",
         "items": [
-          { "id": "perfil-usuario", "label": "Perfil del Usuario", "path": "/setting/user-profile", "icon": "User", "desc": "Tus datos personales y foto." },
-          { "id": "cambiar-contrasena", "label": "Cambiar Contraseña", "path": "/setting/change-password", "icon": "KeyRound", "desc": "Actualiza tu contraseña de acceso." },
-          { "id": "apariencia", "label": "Apariencia", "path": "/setting/apariencia", "icon": "Palette", "desc": "Color de la plataforma y modo claro u oscuro." }
+          {
+            "id": "perfil-usuario",
+            "label": "Mi perfil",
+            "path": "/setting/user-profile",
+            "icon": "User",
+            "desc": "Tus datos, tu foto y tu correo.",
+            "keywords": "nombre telefono foto avatar correo email idioma"
+          },
+          {
+            "id": "cambiar-contrasena",
+            "label": "Mi contraseña",
+            "path": "/setting/change-password",
+            "icon": "KeyRound",
+            "desc": "Cambia tu contraseña de acceso.",
+            "keywords": "clave seguridad acceso login sesion"
+          },
+          {
+            "id": "apariencia",
+            "label": "Apariencia",
+            "path": "/setting/apariencia",
+            "icon": "Palette",
+            "desc": "Color de acento y modo claro u oscuro. Se guarda en este navegador.",
+            "keywords": "tema color oscuro claro acento marca aspecto"
+          }
         ]
       },
       {
-        "label": "EMPRESA",
+        "label": "Empresa",
+        "hint": "Quiénes somos y quién manda",
         "items": [
-          { "id": "perfil-empresa", "label": "Perfil de la Empresa", "path": "/setting/company-profile", "icon": "Building2", "desc": "Datos, logo e identidad de la empresa." },
-          { "id": "billing", "label": "Suscripción", "path": "/setting/billing", "icon": "CreditCard", "desc": "Plan, facturación y pagos." },
-          { "id": "departamentos", "label": "Departamentos", "path": "/setting/Departamentos", "icon": "Network", "desc": "Estructura organizacional interna." },
-          { "id": "roles", "label": "Roles de Usuario", "path": "/setting/roles", "icon": "ShieldHalf", "desc": "Define roles y permisos por tenant." },
-          { "id": "campos-perfil", "label": "Campos de Perfil", "path": "/setting/campos-perfil", "icon": "ListChecks", "desc": "Campos propios en las fichas (aún no disponible)." }
+          {
+            "id": "perfil-empresa",
+            "label": "Perfil de la empresa",
+            "path": "/setting/company-profile",
+            "icon": "Building2",
+            "desc": "Datos, logotipo, dirección y zona horaria.",
+            "keywords": "ruc rfc razon social licencia direccion zona horaria timezone logo identidad"
+          },
+          {
+            "id": "roles",
+            "label": "Roles y permisos",
+            "path": "/setting/roles",
+            "icon": "ShieldHalf",
+            "desc": "Qué puede hacer cada rol dentro de la plataforma.",
+            "keywords": "permisos accesos rol usuario administrador supervisor despachador"
+          },
+          {
+            "id": "departamentos",
+            "label": "Departamentos",
+            "path": "/setting/Departamentos",
+            "icon": "Network",
+            "desc": "Estructura interna y responsables.",
+            "keywords": "areas organigrama equipos jefatura"
+          },
+          {
+            "id": "politicas",
+            "label": "Políticas y documentos",
+            "path": "/setting/politicas",
+            "icon": "FileText",
+            "desc": "Reglamentos internos con acuse de recibo.",
+            "keywords": "reglamento normativa acuse firma cumplimiento rrhh"
+          },
+          {
+            "id": "billing",
+            "label": "Plan y facturación",
+            "path": "/setting/billing",
+            "icon": "CreditCard",
+            "desc": "Tu suscripción, tus facturas y tu método de pago.",
+            "keywords": "suscripcion pago tarjeta stripe plan prueba trial factura"
+          }
         ]
       },
       {
-        "label": "OPERACIONES",
+        "label": "Operación",
+        "hint": "Las reglas del trabajo en campo",
         "items": [
-          { "id": "publishing-sites", "label": "Puestos de Vigilancia", "path": "/setting/publishing-sites", "icon": "MapPinned", "desc": "Ubicaciones y puestos de servicio." },
-          { "id": "keep-safe", "label": "Guardias", "path": "/setting/keep-safe", "icon": "Shield", "desc": "Configuración del personal de seguridad." },
-          { "id": "rondas-config", "label": "Configuración de Rondas", "path": "/setting/rondas", "icon": "Route", "desc": "Parámetros de rondas y patrullaje." },
-          { "id": "tipos-incidentes", "label": "Tipos de Incidentes", "path": "/setting/tipos-incidentes", "icon": "AlertTriangle", "desc": "Categorías para reportar incidentes." },
-          { "id": "tipos-licencias", "label": "Tipos de Licencias", "path": "/setting/tipos-licencias", "icon": "BadgeCheck", "desc": "Licencias y certificaciones válidas." }
+          {
+            "id": "attendance-setup",
+            "label": "Turnos y marcaciones",
+            "path": "/nomina/settings",
+            "icon": "Clock",
+            "desc": "Tolerancias de entrada y salida, geocerca al marcar, periodo y aprobaciones.",
+            "keywords": "asistencia fichaje reloj turno horario atraso tardanza geocerca gps nomina periodo quincena aprobacion selfie extra"
+          },
+          {
+            "id": "publishing-sites",
+            "label": "Reglas de puestos y geocercas",
+            "path": "/setting/publishing-sites",
+            "icon": "MapPinned",
+            "desc": "Alertas de salida y regreso, y minutos antes de escalar un puesto sin cubrir.",
+            "keywords": "puesto estacion geocerca geovalla abandono cobertura escalar sin cubrir consignas"
+          },
+          {
+            "id": "keep-safe",
+            "label": "Vigilantes en turno",
+            "path": "/setting/keep-safe",
+            "icon": "Shield",
+            "desc": "Inactividad, recordatorios de turno y aviso de credenciales por vencer.",
+            "keywords": "guardia vigilante inactividad recordatorio credencial licencia vencimiento carnet"
+          },
+          {
+            "id": "rondas-config",
+            "label": "Rondas",
+            "path": "/setting/rondas",
+            "icon": "Route",
+            "desc": "Frecuencia, tolerancia, foto y ubicación obligatorias, y a quién se avisa.",
+            "keywords": "ronda patrullaje recorrido checkpoint punto control escaneo qr nfc frecuencia"
+          },
+          {
+            "id": "tipos-incidentes",
+            "label": "Tipos de incidente",
+            "path": "/setting/tipos-incidentes",
+            "icon": "AlertTriangle",
+            "desc": "El catálogo con el que se clasifica lo que pasa en los puestos.",
+            "keywords": "incidente novedad categoria catalogo reporte"
+          },
+          {
+            "id": "tipos-licencias",
+            "label": "Tipos de credencial",
+            "path": "/setting/tipos-licencias",
+            "icon": "BadgeCheck",
+            "desc": "Credenciales y certificaciones que tu personal debe tener vigentes.",
+            "keywords": "licencia credencial carnet certificacion permiso portacion vencimiento"
+          }
         ]
       },
       {
-        "label": "COMUNICACIONES",
+        "label": "Avisos y mensajes",
+        "hint": "Qué se avisa, a quién y por dónde",
         "items": [
-          { "id": "notificaciones", "label": "Notificaciones", "path": "/setting/notifications", "icon": "Bell", "desc": "Alertas y avisos del sistema." },
-          { "id": "preferencias-correo", "label": "Preferencias de Correo", "path": "/setting/email-preferences", "icon": "Mail", "desc": "Qué correos recibes y cuándo." },
-          { "id": "comunicaciones", "label": "Comunicaciones", "path": "/setting/comunicaciones", "icon": "Radio", "desc": "Canales, WhatsApp, saldo y uso de mensajería." },
-          { "id": "sms", "label": "Saldo SMS", "path": "/setting/sms", "icon": "MessageSquare", "desc": "Consumo y recarga de mensajes SMS." },
-          { "id": "mobil", "label": "App Móvil", "path": "/setting/mobil", "icon": "Smartphone", "desc": "Ajustes de la aplicación móvil." },
-          { "id": "mobile-hub", "label": "Hub Móvil del Equipo", "path": "/setting/mobile-hub", "icon": "TabletSmartphone", "desc": "Personaliza las apps del vigilante y supervisor." }
+          {
+            "id": "notificaciones",
+            "label": "Qué avisos se envían",
+            "path": "/setting/notifications",
+            "icon": "Bell",
+            "desc": "Un aviso por fila y un canal por columna: panel, correo o SMS.",
+            "keywords": "notificacion alerta aviso panico incidente asistencia canal push correo sms"
+          },
+          {
+            "id": "preferencias-correo",
+            "label": "Correos y plantillas",
+            "path": "/setting/email-preferences",
+            "icon": "Mail",
+            "desc": "Qué correos salen, con qué colores, y cómo se ve cada uno.",
+            "keywords": "correo email bienvenida invitacion plantilla marca color vista previa"
+          },
+          {
+            "id": "comunicaciones",
+            "label": "Canales y saldo",
+            "path": "/setting/comunicaciones",
+            "icon": "Radio",
+            "desc": "WhatsApp, SMS, saldo del monedero y el historial de consumo.",
+            "keywords": "whatsapp sms saldo recarga monedero twilio meta mensaje consumo gasto otp"
+          }
         ]
       },
       {
-        "label": "NÓMINA Y ASISTENCIA",
+        "label": "Apps y portales",
+        "hint": "Lo que ven quienes nunca entran al CRM",
         "items": [
-          { "id": "payroll-setup", "label": "Configuración de Nómina", "path": "/setting/payroll-setup", "icon": "Wallet", "desc": "Periodos, conceptos y reglas de pago." },
-          { "id": "attendance-setup", "label": "Asistencia (Time & Attendance)", "path": "/nomina/settings", "icon": "Clock", "desc": "Geocercas, ventanas y aprobación." }
+          {
+            "id": "mobile-hub",
+            "label": "App del equipo",
+            "path": "/setting/mobile-hub",
+            "icon": "TabletSmartphone",
+            "desc": "Marca y módulos visibles en las apps del vigilante y del supervisor.",
+            "keywords": "app movil vigilante supervisor modulos marca logo tema entrenamiento visitas"
+          },
+          {
+            "id": "mobil",
+            "label": "App del cliente (Mi Seguridad)",
+            "path": "/setting/mobil",
+            "icon": "Smartphone",
+            "desc": "Banners, servicios y certificaciones que ve tu cliente en su app.",
+            "keywords": "cliente mi seguridad portal banner servicio precio certificacion contenido"
+          }
         ]
       },
       {
-        "label": "INFORMES",
+        "label": "Datos y conexiones",
+        "hint": "Lo que sale, lo que entra y lo que queda registrado",
         "items": [
-          { "id": "report-configuration", "label": "Configuración de Informes", "path": "/setting/report-configuration", "icon": "FileCog", "desc": "Privacidad, encabezado y pie de los informes." }
-        ]
-      },
-      {
-        "label": "INTEGRACIONES Y DESARROLLO",
-        "items": [
-          { "id": "integraciones", "label": "Integraciones", "path": "/setting/integraciones", "icon": "Plug", "desc": "Conecta servicios y herramientas externas." },
-          { "id": "access-token", "label": "Token de Acceso", "path": "/setting/access-token", "icon": "Code", "desc": "Credenciales para la API." },
-          { "id": "request-records", "label": "Solicitar Registros", "path": "/setting/request-records", "icon": "FileDown", "desc": "Exporta o solicita tus datos." }
-        ]
-      },
-      {
-        "label": "OTROS",
-        "items": [
-          { "id": "politicas", "label": "Políticas y Documentos", "path": "/setting/politicas", "icon": "FileText", "desc": "Políticas internas y documentos legales." },
-          { "id": "other-settings", "label": "Otras Configuraciones", "path": "/setting/other-settings", "icon": "Settings2", "desc": "Dónde se configura cada preferencia general." }
+          {
+            "id": "report-configuration",
+            "label": "Informes",
+            "path": "/setting/report-configuration",
+            "icon": "FileCog",
+            "desc": "Privacidad, encabezado y pie de los informes que recibe tu cliente.",
+            "keywords": "informe reporte pdf excel csv privacidad ocultar nombre encabezado pie exportar"
+          },
+          {
+            "id": "integraciones",
+            "label": "Conexiones y API",
+            "path": "/setting/integraciones",
+            "icon": "Plug",
+            "desc": "Servicios externos y credenciales para conectar otros sistemas.",
+            "keywords": "integracion api token webhook conectar externo desarrollador"
+          }
         ]
       }
     ]

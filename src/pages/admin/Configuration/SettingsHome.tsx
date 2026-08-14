@@ -8,8 +8,12 @@ import NAVS from "@/data/settings-nav.json";
 import { settingsIcon } from "@/config/settingsIcons";
 import { PageContainer, PageHeader, FadeIn, Stagger, EmptyState, IconTile } from "@/components/kit";
 
-type SubItem = { id: string; label: string; path: string; icon?: string; desc?: string };
-type Section = { label?: string; items: SubItem[] };
+type SubItem = { id: string; label: string; path: string; icon?: string; desc?: string; keywords?: string };
+type Section = { label?: string; hint?: string; items: SubItem[] };
+
+/** Minúsculas y sin tildes, para que «nómina» encuentre «nomina» y al revés. */
+const sinAcentos = (v: string) =>
+  v.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
 export default function SettingsHome() {
   const { t } = useTranslation();
@@ -24,7 +28,13 @@ export default function SettingsHome() {
         ...sec,
         items: sec.items.filter((it) => {
           const label = t(`settings.configuracion.${it.id}`, { defaultValue: it.label }) as string;
-          return label.toLowerCase().includes(q) || (it.desc ?? "").toLowerCase().includes(q);
+          // Se busca también en `keywords`, y SIN acentos en ninguno de los dos
+          // lados. Antes sólo se miraba etiqueta y descripción tal cual: buscar
+          // «turno» daba CERO resultados aunque cuatro páginas tienen reglas de
+          // turno, y «geocerca» encontraba una habiendo tres. Un buscador que no
+          // encuentra lo que existe enseña a no usarlo.
+          const heno = sinAcentos(`${label} ${it.desc ?? ""} ${it.keywords ?? ""}`);
+          return heno.includes(sinAcentos(q));
         }),
       }))
       .filter((sec) => sec.items.length > 0);
@@ -66,8 +76,11 @@ export default function SettingsHome() {
             />
           ) : (
             sections.map((sec, idx) => {
-              const slug = String(sec.label ?? "")
-                .toLowerCase()
+              // La clave de traducción se generaba con `replace(/[^a-z0-9_]/g,"")`
+              // DESPUÉS de pasar a minúsculas, así que borraba los acentos:
+              // «NÓMINA Y ASISTENCIA» salía como `nmina_y_asistencia` y ninguna
+              // traducción escrita con la clave lógica enganchaba jamás.
+              const slug = sinAcentos(String(sec.label ?? ""))
                 .replace(/\s+/g, "_")
                 .replace(/[^a-z0-9_]/g, "");
               return (

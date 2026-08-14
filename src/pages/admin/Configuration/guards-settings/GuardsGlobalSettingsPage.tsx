@@ -18,7 +18,7 @@ import {
 import { Section, Stagger, SkeletonCards } from "@/components/kit";
 import SettingsPageShell from "../components/SettingsPageShell";
 import {
-    ToggleRow, SettingDetail, SaveBar, SettingsLinkCard, SettingsLinkGrid,
+    ToggleRow, SettingDetail, SaveBar,
 } from "../components/SettingsForm";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -180,46 +180,12 @@ export default function GuardsGlobalSettingsPage() {
                             </ToggleRow>
                         </Section>
 
-                        <Section title="Más configuraciones de vigilantes" icon={<Smartphone />}>
-                            <SettingsLinkGrid>
-                                <SettingsLinkCard
-                                    to="/nomina/settings"
-                                    icon={<Wallet className="h-4 w-4" />}
-                                    title="Marcaciones y geocerca"
-                                    description="Bloqueo fuera de geocerca, tolerancias de entrada/salida y cierre automático de turnos: Asistencia › Ajustes."
-                                />
-                                <SettingsLinkCard
-                                    to="/setting/publishing-sites"
-                                    icon={<MapPin className="h-4 w-4" />}
-                                    title="Reglas globales de puestos"
-                                    description="Exigir turno activo para rondas y alertas de salida de geocerca durante el turno."
-                                />
-                                <SettingsLinkCard
-                                    to="/setting/rondas"
-                                    icon={<RouteIcon className="h-4 w-4" />}
-                                    title="Reglas de rondas"
-                                    description="Foto o nota obligatoria y validación de ubicación en cada punto de control."
-                                />
-                                <SettingsLinkCard
-                                    to="/setting/notifications"
-                                    icon={<BellRing className="h-4 w-4" />}
-                                    title="Canales de notificación"
-                                    description="Decide qué alertas llegan al panel, al correo o por SMS — incluidas las de esta página."
-                                />
-                                <SettingsLinkCard
-                                    to="/setting/mobile-hub"
-                                    icon={<Smartphone className="h-4 w-4" />}
-                                    title="Hub móvil del equipo"
-                                    description="Apariencia de la app del vigilante y qué módulos ve tu equipo (entrenamiento, visitas, mapa…)."
-                                />
-                                <SettingsLinkCard
-                                    to="/setting/roles"
-                                    icon={<ShieldCheck className="h-4 w-4" />}
-                                    title="Roles y permisos"
-                                    description="Qué puede hacer cada rol, incluido el rol Vigilante, en la plataforma y las apps."
-                                />
-                            </SettingsLinkGrid>
-                        </Section>
+                        {/* Aquí había una rejilla de tarjetas-enlace a otras
+                            páginas de ajustes. Era el índice de Configuración
+                            redibujado a mano, porque no existía navegación
+                            lateral: en esta página había 5 ajustes y 6 enlaces,
+                            más señalización que producto. Se quitó al devolver
+                            la columna de índice en SettingsLayout. */}
 
                         <SaveBar onSave={save} saving={saving} disabled={disabled} />
                     </Stagger>
