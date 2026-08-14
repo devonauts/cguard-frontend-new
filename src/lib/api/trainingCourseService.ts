@@ -28,6 +28,9 @@ export interface TrainingQuizSummary {
   id: string;
   bankId: string;
   passPct: number;
+  /** Cuántas preguntas se sortean por intento. Lo devuelve el backend desde
+   *  2026-08-13; antes el formulario no podía hidratarlo y lo pisaba con 5. */
+  questionsPerAttempt?: number;
 }
 
 export interface TrainingCourse {

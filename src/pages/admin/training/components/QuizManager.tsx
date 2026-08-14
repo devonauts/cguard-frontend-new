@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -30,9 +30,22 @@ const blankQ = (): QForm => ({ prompt: '', options: ['', ''], correctIndex: 0 })
 export default function QuizManager({ courseId, quiz, passingScore, readOnly, onChange }: Props) {
   const [editing, setEditing] = useState(false);
   const [passPct, setPassPct] = useState<number>(quiz?.passPct ?? passingScore ?? 70);
-  const [questionsPerAttempt, setQuestionsPerAttempt] = useState<number>(5);
+  // Se hidrata del cuestionario guardado. Antes arrancaba SIEMPRE en 5 y el
+  // formulario reenviaba ese 5 en cada guardado: quien tuviera 10 preguntas por
+  // intento las perdía la próxima vez que tocara cualquier otra cosa del
+  // cuestionario, sin verlo. El respaldo es el valor por defecto del backend.
+  const [questionsPerAttempt, setQuestionsPerAttempt] = useState<number>(
+    quiz?.questionsPerAttempt ?? 10,
+  );
   const [questions, setQuestions] = useState<QForm[]>([blankQ()]);
   const [saving, setSaving] = useState(false);
+
+  // El cuestionario puede llegar DESPUÉS del primer render (carga asíncrona del
+  // curso). Sin esto, el valor real nunca sustituiría al inicial.
+  useEffect(() => {
+    if (quiz?.questionsPerAttempt != null) setQuestionsPerAttempt(quiz.questionsPerAttempt);
+    if (quiz?.passPct != null) setPassPct(quiz.passPct);
+  }, [quiz?.questionsPerAttempt, quiz?.passPct]);
 
   const addQuestion = () => setQuestions((qs) => [...qs, blankQ()]);
   const removeQuestion = (i: number) => setQuestions((qs) => qs.filter((_, idx) => idx !== i));
