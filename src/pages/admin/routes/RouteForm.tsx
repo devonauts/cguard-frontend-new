@@ -1418,6 +1418,13 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
               <Checkbox id="syncHits" checked={field.value} onCheckedChange={field.onChange} />
               <Label htmlFor="syncHits" className="cursor-pointer">
                 Sincronizar pasadas entre supervisores
+              <span
+                className="rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
+                style={{ background: "var(--glass-sunken)", color: "var(--ink-faint)" }}
+                title="Se guarda con la ruta, pero todavía no cambia el comportamiento del recorrido."
+              >
+                aún no activo
+              </span>
               </Label>
             </div>
           )}
@@ -1431,6 +1438,13 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
               <Checkbox id="forceOrder" checked={field.value} onCheckedChange={field.onChange} />
               <Label htmlFor="forceOrder" className="cursor-pointer">
                 Forzar al supervisor a seguir la ruta de patrulla vehicular en orden
+              <span
+                className="rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
+                style={{ background: "var(--glass-sunken)", color: "var(--ink-faint)" }}
+                title="Se guarda con la ruta, pero todavía no cambia el comportamiento del recorrido."
+              >
+                aún no activo
+              </span>
               </Label>
             </div>
           )}
@@ -1450,6 +1464,13 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
               />
               <Label htmlFor="notify" className="cursor-pointer">
                 Enviar notificación antes de las pasadas programadas
+              <span
+                className="rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
+                style={{ background: "var(--glass-sunken)", color: "var(--ink-faint)" }}
+                title="Se guarda con la ruta, pero todavía no cambia el comportamiento del recorrido."
+              >
+                aún no activo
+              </span>
               </Label>
               <Select value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger className="w-28">
@@ -1479,6 +1500,13 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
               />
               <Label htmlFor="autocheck" className="cursor-pointer">
                 Registro automático de entrada y salida en Puestos de Vigilancia según geocerca
+              <span
+                className="rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
+                style={{ background: "var(--glass-sunken)", color: "var(--ink-faint)" }}
+                title="Se guarda con la ruta, pero todavía no cambia el comportamiento del recorrido."
+              >
+                aún no activo
+              </span>
               </Label>
             </div>
           )}
@@ -1496,6 +1524,13 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
               />
               <Label htmlFor="forcecheck" className="cursor-pointer">
                 Forzar registro de entrada antes de comenzar la ruta
+              <span
+                className="rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
+                style={{ background: "var(--glass-sunken)", color: "var(--ink-faint)" }}
+                title="Se guarda con la ruta, pero todavía no cambia el comportamiento del recorrido."
+              >
+                aún no activo
+              </span>
               </Label>
             </div>
           )}

@@ -92,7 +92,7 @@ export default function RondaSettingsForm({
         <Section title="Cadencia de la ronda" icon={<Clock />}>
           <div className="divide-y">
             <NumberRow label="Frecuencia" hint="Cada cuánto debe realizarse una ronda." value={s.frequencyMinutes} onChange={(v) => set("frequencyMinutes", (v ?? 0) as number)} min={1} suffix="minutos" />
-            <NumberRow label="Rondas por turno" hint="Número esperado de rondas en cada turno. Puedes dejarlo vacío." value={s.roundsPerShift} onChange={(v) => set("roundsPerShift", v)} min={1} suffix="rondas" />
+            <NumberRow label="Rondas por turno" hint="Sólo informativo por ahora: queda anotado como expectativa del puesto, pero todavía no genera avisos por sí solo. Quien vigila el cumplimiento es la Frecuencia." value={s.roundsPerShift} onChange={(v) => set("roundsPerShift", v)} min={1} suffix="rondas" />
             <NumberRow label="Tolerancia" hint="Margen antes de marcar una ronda como tarde." value={s.graceMinutes} onChange={(v) => set("graceMinutes", (v ?? 0) as number)} suffix="minutos" />
             <NumberRow label="Duración máxima" hint="Tiempo máximo para completar una ronda entera." value={s.maxDurationMinutes} onChange={(v) => set("maxDurationMinutes", (v ?? 0) as number)} min={1} suffix="minutos" />
           </div>
@@ -113,7 +113,7 @@ export default function RondaSettingsForm({
             <ToggleRow label="Avisar al completar" hint="Cuando una ronda termina correctamente." checked={s.notifyTenantOnComplete} onCheckedChange={(b) => set("notifyTenantOnComplete", b)} />
             <ToggleRow label="Enviar correo al completar" hint="Además del aviso, envía un correo a administradores y supervisores (requiere el correo configurado)." checked={s.emailOnComplete} onCheckedChange={(b) => set("emailOnComplete", b)} />
             <ToggleRow label="Avisar rondas perdidas o tarde" hint="Cuando una ronda no se hace o se hace fuera de tiempo." checked={s.notifyTenantOnMissed} onCheckedChange={(b) => set("notifyTenantOnMissed", b)} />
-            <ToggleRow label="Avisar también al cliente" hint="El cliente del puesto recibe los mismos avisos de ronda." checked={s.notifyClient} onCheckedChange={(b) => set("notifyClient", b)} />
+            <ToggleRow label="Avisar también al cliente" hint="El cliente del puesto recibe un aviso cuando la ronda se COMPLETA. Los inicios y las rondas perdidas son internos: nunca se le muestran." checked={s.notifyClient} onCheckedChange={(b) => set("notifyClient", b)} />
           </div>
         </Section>
       </Stagger>
