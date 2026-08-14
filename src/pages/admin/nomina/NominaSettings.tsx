@@ -36,6 +36,7 @@ interface NominaSettings {
   };
   notifications?: {
     assignedSupervisorsOnly?: boolean;
+    customEmails?: string[];
   };
   approval?: {
     autoApproveNormal?: boolean;
@@ -44,6 +45,7 @@ interface NominaSettings {
   };
   payroll?: {
     periodType?: string;
+    startDayOfWeek?: number;
     overtimeThresholdHours?: number;
   };
 }
@@ -160,6 +162,34 @@ export default function NominaSettings() {
 
             <SettingsSection title="Notificaciones" icon={<BellRing />}>
               <Toggle label="Notificar solo al supervisor asignado al puesto" path="notifications.assignedSupervisorsOnly" />
+              {/* El backend YA enviaba a estos correos (attendanceService y el
+                  barrido nocturno los leen); lo que faltaba era el campo para
+                  escribirlos. Un ajuste funcional e inalcanzable es el problema
+                  inverso al del interruptor muerto, y se nota igual de poco. */}
+              <label className="block">
+                <span className="cg-eyebrow">Avisar además a estos correos</span>
+                <input
+                  type="text"
+                  value={(s.notifications?.customEmails || []).join(", ")}
+                  onChange={(e) =>
+                    setS((p) =>
+                      set(
+                        p as NominaSettings,
+                        "notifications.customEmails",
+                        e.target.value
+                          .split(",")
+                          .map((x) => x.trim())
+                          .filter(Boolean),
+                      ),
+                    )
+                  }
+                  placeholder="operaciones@empresa.com, rrhh@empresa.com"
+                  className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm"
+                />
+                <span className="mt-1 block text-xs" style={{ color: "var(--ink-faint)" }}>
+                  Separados por comas. Reciben las novedades de asistencia además de los supervisores.
+                </span>
+              </label>
             </SettingsSection>
 
             <SettingsSection title="Aprobaciones" icon={<CheckSquare />}>
@@ -182,6 +212,28 @@ export default function NominaSettings() {
                   <option value="monthly">Mensual</option>
                 </select>
               </label>
+              {/* Sólo tiene sentido con periodo semanal: es donde empieza a
+                  contar la semana. Lo lee `periodoVigente` en el backend. */}
+              {(s.payroll?.periodType || "biweekly") === "weekly" && (
+                <label className="block">
+                  <span className="cg-eyebrow">La semana empieza el</span>
+                  <select
+                    value={String(s.payroll?.startDayOfWeek ?? 1)}
+                    onChange={(e) =>
+                      setS((p) => set(p as NominaSettings, "payroll.startDayOfWeek", Number(e.target.value)))
+                    }
+                    className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm"
+                  >
+                    <option value="0">Domingo</option>
+                    <option value="1">Lunes</option>
+                    <option value="2">Martes</option>
+                    <option value="3">Miércoles</option>
+                    <option value="4">Jueves</option>
+                    <option value="5">Viernes</option>
+                    <option value="6">Sábado</option>
+                  </select>
+                </label>
+              )}
               <Num label="Umbral de horas extra (h/turno)" path="payroll.overtimeThresholdHours" />
             </SettingsSection>
 

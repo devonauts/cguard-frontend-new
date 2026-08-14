@@ -37,6 +37,7 @@ type SettingsRow = {
     logos?: unknown[];
     backgroundImages?: unknown[];
     postRules?: Partial<PostRules>;
+    coverage?: { escalateAfterMin?: number };
 };
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
@@ -46,6 +47,11 @@ export default function PostingGlobalPage() {
     const canEdit = hasPermission("settingsEdit");
 
     const [rules, setRules] = useState<PostRules>(DEFAULTS);
+    // Minutos que un puesto puede estar sin cubrir antes de escalar el aviso.
+    // El motor YA lo leía (coverageEscalationService); lo que no existía era la
+    // pantalla: el único parámetro vivo de cobertura sólo se podía cambiar
+    // escribiendo el JSON a mano en la base de datos.
+    const [escalarTrasMin, setEscalarTrasMin] = useState<number>(20);
     const [row, setRow] = useState<SettingsRow | null>(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -56,6 +62,7 @@ export default function PostingGlobalPage() {
                 const { data } = await api.get(`/tenant/${tenantId()}/settings`);
                 setRow(data || {});
                 setRules({ ...DEFAULTS, ...((data && data.postRules) || {}) });
+                setEscalarTrasMin(Number(data?.coverage?.escalateAfterMin) || 20);
             } catch {
                 toast.error("No se pudo cargar la configuración.");
             } finally {
@@ -78,6 +85,7 @@ export default function PostingGlobalPage() {
                     logos: row?.logos || [],
                     backgroundImages: row?.backgroundImages || [],
                     postRules: rules,
+                    coverage: { escalateAfterMin: escalarTrasMin },
                 },
             });
             toast.success("Reglas de puestos guardadas. Aplican de inmediato.");
@@ -107,6 +115,29 @@ export default function PostingGlobalPage() {
                                 onCheckedChange={(v) => set("requireActiveShiftForRounds", v)}
                                 disabled={!canEdit || loading}
                             />
+                        </Section>
+
+                        <Section title="Puesto sin cubrir" icon={<MapPin />} contentClassName="divide-y">
+                            <label className="block py-3">
+                                <span className="text-sm font-medium">Escalar el aviso tras</span>
+                                <p className="mt-0.5 text-xs" style={{ color: "var(--ink-faint)" }}>
+                                    Minutos que un puesto puede quedar sin cubrir antes de que el aviso
+                                    suba de nivel. Se revisa cada 5 minutos, así que por debajo de eso el
+                                    escalado no daría margen de reacción.
+                                </p>
+                                <div className="mt-2 flex items-center gap-2">
+                                    <input
+                                        type="number"
+                                        min={5}
+                                        max={240}
+                                        value={escalarTrasMin}
+                                        onChange={(e) => setEscalarTrasMin(Number(e.target.value))}
+                                        disabled={!canEdit || loading}
+                                        className="cg-input cg-focus w-28 px-3 py-2 text-sm"
+                                    />
+                                    <span className="text-sm" style={{ color: "var(--ink-soft)" }}>minutos</span>
+                                </div>
+                            </label>
                         </Section>
 
                         <Section title="Alertas de geocerca en turno" icon={<MapPin />} contentClassName="divide-y">
