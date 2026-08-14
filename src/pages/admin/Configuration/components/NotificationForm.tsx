@@ -7,6 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { notificationSettingsService } from "@/lib/api/notificationSettingsService";
+import { communicationService } from "@/lib/api/communicationService";
 import { Section, SkeletonCards } from "@/components/kit";
 
 type ChannelKey = "dashboard" | "email" | "sms";
@@ -84,6 +85,9 @@ export default function NotificationMatrix() {
   };
 
   const [state, setState] = React.useState<MatrixState>(buildDefaults);
+  // Horario de silencio. Vive en los ajustes de comunicaciones porque es del
+  // CANAL, no de la matriz, pero se edita aquí: es donde alguien lo busca.
+  const [silencio, setSilencio] = React.useState({ enabled: false, startHour: 22, endHour: 7 });
   const [loading, setLoading] = React.useState(true);
   const [saving, setSaving] = React.useState(false);
 
@@ -115,6 +119,13 @@ export default function NotificationMatrix() {
       .finally(() => {
         if (mounted) setLoading(false);
       });
+    communicationService
+      .getSettings()
+      .then((cs: any) => {
+        if (mounted && cs?.quiet_hours) setSilencio({ enabled: false, startHour: 22, endHour: 7, ...cs.quiet_hours });
+      })
+      .catch(() => { /* se quedan los defectos */ });
+
     return () => {
       mounted = false;
     };
@@ -171,6 +182,10 @@ export default function NotificationMatrix() {
         preferences[n.id] = state[n.id];
       });
       await notificationSettingsService.update(preferences);
+      // El horario de silencio vive en los ajustes de comunicaciones (es del
+      // canal, no de la matriz), pero se edita AQUÍ porque es donde alguien lo
+      // busca cuando piensa «que dejen de despertarme».
+      await communicationService.updateSettings({ quiet_hours: silencio });
       toast.success("Preferencias de notificación guardadas");
     } catch (e: any) {
       toast.error(e?.message || "No se pudieron guardar las preferencias");
@@ -185,6 +200,55 @@ export default function NotificationMatrix() {
 
   return (
     <div className="space-y-6">
+      {/* ── HORARIO DE SILENCIO ──────────────────────────────────────────────
+          No existía en NINGÚN nivel: ni por empresa, ni por rol, ni por usuario.
+          En un producto de turnos 24/7 cuya audiencia son supervisores que
+          duermen, un fichaje olvidado despertaba a alguien a las 3 de la mañana
+          igual que un botón de pánico.
+
+          La regla que lo hace seguro se dice en pantalla, no se deja implícita:
+          lo crítico nunca calla. Si el usuario no lo supiera, poner «de 22:00 a
+          07:00» apagaría sin querer las alertas de emergencia de su turno
+          nocturno — el turno donde más pasan cosas. */}
+      <Section title="Horario de silencio" icon={<Bell />} contentClassName="space-y-3">
+        <label className="flex cursor-pointer items-center gap-2.5">
+          <Checkbox
+            checked={silencio.enabled}
+            onCheckedChange={(v) => setSilencio((q) => ({ ...q, enabled: Boolean(v) }))}
+          />
+          <span className="text-sm font-medium">No enviar avisos al teléfono de noche</span>
+        </label>
+
+        {silencio.enabled && (
+          <div className="flex flex-wrap items-center gap-2 pl-7">
+            <span className="text-sm" style={{ color: "var(--ink-soft)" }}>Desde las</span>
+            <input
+              type="number" min={0} max={23}
+              value={silencio.startHour}
+              onChange={(e) => setSilencio((q) => ({ ...q, startHour: Number(e.target.value) }))}
+              className="cg-input cg-focus w-20 px-3 py-1.5 text-sm"
+            />
+            <span className="text-sm" style={{ color: "var(--ink-soft)" }}>hasta las</span>
+            <input
+              type="number" min={0} max={23}
+              value={silencio.endHour}
+              onChange={(e) => setSilencio((q) => ({ ...q, endHour: Number(e.target.value) }))}
+              className="cg-input cg-focus w-20 px-3 py-1.5 text-sm"
+            />
+            <span className="text-sm" style={{ color: "var(--ink-soft)" }}>
+              (hora local de tu empresa)
+            </span>
+          </div>
+        )}
+
+        <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
+          <strong>Lo urgente sigue sonando siempre:</strong> botón de pánico, inasistencia,
+          puesto abandonado, vigilante inactivo y escalados. El silencio es para el ruido —
+          tareas, recordatorios y avisos informativos. Y sólo afecta al teléfono: el panel y
+          el correo los recibes igual, para que estén ahí cuando te despiertes.
+        </p>
+      </Section>
+
       <Section
         title="Avisos y por dónde llegan"
         icon={<Bell />}

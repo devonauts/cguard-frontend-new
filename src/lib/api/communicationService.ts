@@ -43,6 +43,9 @@ export type MessageType =
 
 /** Mirror of the backend CommunicationSettings blob (defaults merged server-side). */
 export interface CommunicationSettings {
+  /** Horario de silencio del tenant. Sólo afecta al PUSH, y lo crítico
+   *  —pánico, inasistencia, puesto abandonado— nunca calla. */
+  quiet_hours?: { enabled: boolean; startHour: number; endHour: number };
   push_enabled: boolean;
   whatsapp_enabled: boolean;
   sms_enabled: boolean;
