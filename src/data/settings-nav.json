@@ -83,6 +83,14 @@
         "hint": "Las reglas del trabajo en campo",
         "items": [
           {
+            "id": "jornada",
+            "label": "Jornada y descanso",
+            "path": "/setting/jornada",
+            "icon": "Clock",
+            "desc": "Días seguidos, descanso entre turnos, tope semanal y si se puede doblar.",
+            "keywords": "jornada descanso consecutivos horas semanales doblar turno dia libre convenio laboral ley rotacion noche"
+          },
+          {
             "id": "attendance-setup",
             "label": "Turnos y marcaciones",
             "path": "/nomina/settings",

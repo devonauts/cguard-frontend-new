@@ -45,6 +45,7 @@ const ReportSettingsPage = lazy(() => import("./pages/admin/Configuration/report
 const OtherSettingsPage = lazy(() => import("./pages/admin/Configuration/other-settings/OtherSettingsPage"));
 const GuardsGlobalSettingsPage = lazy(() => import("./pages/admin/Configuration/guards-settings/GuardsGlobalSettingsPage"));
 const RondasSettingsPage = lazy(() => import("./pages/admin/Configuration/rondas-settings/RondasSettingsPage"));
+const JornadaPage = lazy(() => import("./pages/admin/Configuration/scheduling/JornadaPage"));
 const EmailPreferencesPage = lazy(() => import("./pages/admin/Configuration/email-preferences/EmailPreferencesPage"));
 const SmsBalancePage = lazy(() => import("./pages/admin/Configuration/sms/SmsBalancePage"));
 const CommunicationsPage = lazy(() => import("./pages/admin/Configuration/communications/CommunicationsPage"));
@@ -1602,6 +1603,14 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <RondasSettingsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/setting/jornada"
+                element={
+                  <ProtectedRoute>
+                    <JornadaPage />
                   </ProtectedRoute>
                 }
               />
