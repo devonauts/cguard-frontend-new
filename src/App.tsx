@@ -48,6 +48,7 @@ const RondasSettingsPage = lazy(() => import("./pages/admin/Configuration/rondas
 const JornadaPage = lazy(() => import("./pages/admin/Configuration/scheduling/JornadaPage"));
 const ActivityLogHubPage = lazy(() => import("./pages/admin/Configuration/activity-log/ActivityLogHubPage"));
 const MarcaPage = lazy(() => import("./pages/admin/Configuration/brand/MarcaPage"));
+const FestivosPage = lazy(() => import("./pages/admin/Configuration/holidays/FestivosPage"));
 const EmailPreferencesPage = lazy(() => import("./pages/admin/Configuration/email-preferences/EmailPreferencesPage"));
 const SmsBalancePage = lazy(() => import("./pages/admin/Configuration/sms/SmsBalancePage"));
 const CommunicationsPage = lazy(() => import("./pages/admin/Configuration/communications/CommunicationsPage"));
@@ -1629,6 +1630,14 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <MarcaPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/setting/festivos"
+                element={
+                  <ProtectedRoute>
+                    <FestivosPage />
                   </ProtectedRoute>
                 }
               />

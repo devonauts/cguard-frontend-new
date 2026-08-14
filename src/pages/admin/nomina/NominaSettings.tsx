@@ -46,6 +46,12 @@ interface NominaSettings {
   payroll?: {
     periodType?: string;
     startDayOfWeek?: number;
+    currency?: string;
+    defaultHourlyRate?: number;
+    overtimeMultiplier?: number;
+    nightSurchargePct?: number;
+    nightStartHour?: number;
+    nightEndHour?: number;
     overtimeThresholdHours?: number;
   };
 }
@@ -235,6 +241,42 @@ export default function NominaSettings() {
                 </label>
               )}
               <Num label="Umbral de horas extra (h/turno)" path="payroll.overtimeThresholdHours" />
+            </SettingsSection>
+
+            {/* ── COSTOS DEL HORARIO ────────────────────────────────────────────
+                El motor de costos (scheduleCostService) lee estos siete valores
+                y NINGUNO tenía campo: todo tenant corría con tarifa 0, así que
+                el panel «Impacto en costo» del Horario mostraba $0 a todo el
+                mundo — la función más vendible del planificador, apagada por no
+                tener dónde escribir un número.
+
+                NO es nómina: el motor de rol de pagos se retiró el 2026-08-06
+                hasta rehacerlo pensando en cualquier país. Esto es la
+                ESTIMACIÓN del planificador, y la pantalla lo dice para que nadie
+                crea que de aquí sale una liquidación. */}
+            <SettingsSection title="Costos del horario" icon={<CalendarRange />}>
+              <p className="mb-3 text-xs" style={{ color: "var(--ink-faint)" }}>
+                Sirven para estimar el costo de un horario ANTES de publicarlo. Sin una
+                tarifa, ese panel muestra cero. No se usan para liquidar sueldos.
+              </p>
+              <label className="block">
+                <span className="cg-eyebrow">Moneda</span>
+                <input
+                  type="text"
+                  maxLength={3}
+                  value={s.payroll?.currency ?? "USD"}
+                  onChange={(e) => setS((p) => set(p as NominaSettings, "payroll.currency", e.target.value.toUpperCase()))}
+                  className="cg-input cg-focus mt-1.5 w-28 px-3 py-2 text-sm uppercase"
+                />
+                <span className="mt-1 block text-xs" style={{ color: "var(--ink-faint)" }}>
+                  Código de tres letras: USD, MXN, COP…
+                </span>
+              </label>
+              <Num label="Tarifa por hora (por defecto)" path="payroll.defaultHourlyRate" />
+              <Num label="Multiplicador de hora extra" path="payroll.overtimeMultiplier" />
+              <Num label="Recargo nocturno (0.25 = 25 %)" path="payroll.nightSurchargePct" />
+              <Num label="La noche empieza a las (hora local)" path="payroll.nightStartHour" />
+              <Num label="La noche termina a las (hora local)" path="payroll.nightEndHour" />
             </SettingsSection>
 
             <div className="fixed bottom-6 right-6 z-10">
