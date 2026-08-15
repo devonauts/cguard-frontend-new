@@ -49,6 +49,7 @@ const JornadaPage = lazy(() => import("./pages/admin/Configuration/scheduling/Jo
 const ActivityLogHubPage = lazy(() => import("./pages/admin/Configuration/activity-log/ActivityLogHubPage"));
 const MarcaPage = lazy(() => import("./pages/admin/Configuration/brand/MarcaPage"));
 const FestivosPage = lazy(() => import("./pages/admin/Configuration/holidays/FestivosPage"));
+const RetencionPage = lazy(() => import("./pages/admin/Configuration/data/RetencionPage"));
 const EmailPreferencesPage = lazy(() => import("./pages/admin/Configuration/email-preferences/EmailPreferencesPage"));
 const SmsBalancePage = lazy(() => import("./pages/admin/Configuration/sms/SmsBalancePage"));
 const CommunicationsPage = lazy(() => import("./pages/admin/Configuration/communications/CommunicationsPage"));
@@ -1638,6 +1639,14 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <FestivosPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/setting/retencion"
+                element={
+                  <ProtectedRoute>
+                    <RetencionPage />
                   </ProtectedRoute>
                 }
               />

@@ -229,6 +229,14 @@
             "keywords": "auditoria auditar registro log historial acceso sesion cambios trazabilidad cumplimiento"
           },
           {
+            "id": "retencion",
+            "label": "Retención de datos",
+            "path": "/setting/retencion",
+            "icon": "DatabaseZap",
+            "desc": "Cuánto tiempo se guarda cada cosa antes de borrarse.",
+            "keywords": "retencion borrado purga privacidad gdpr rastro ubicacion gps bitacora auditoria mensajes historial limpieza almacenamiento"
+          },
+          {
             "id": "integraciones",
             "label": "Conexiones y API",
             "path": "/setting/integraciones",
