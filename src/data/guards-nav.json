@@ -76,11 +76,6 @@
             "path": "/guards/:id/indicadores"
           },
           {
-            "id": "recordatorios",
-            "label": "guards.nav.recordatorios",
-            "path": "/guards/:id/recordatorios"
-          },
-          {
             "id": "archivos",
             "label": "guards.nav.archivos",
             "path": "/guards/:id/archivos"
@@ -89,11 +84,6 @@
             "id": "departamento",
             "label": "guards.nav.departamento",
             "path": "/guards/:id/departamento"
-          },
-          {
-            "id": "configuracion",
-            "label": "guards.nav.configuracion",
-            "path": "/guards/:id/configuracion"
           }
         ]
       }

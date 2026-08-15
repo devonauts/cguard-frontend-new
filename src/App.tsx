@@ -37,12 +37,9 @@ const UserRolesPage = lazy(() => import("./pages/admin/Configuration/user-roles/
 const SettingsHome = lazy(() => import("./pages/admin/Configuration/SettingsHome"));
 const IntegrationsList = lazy(() => import("./pages/admin/Configuration/integrations/IntegrationsList"));
 const ProfileFieldsPage = lazy(() => import("./pages/admin/Configuration/profile-fields/ProfileFieldsPage"));
-const IntegrationDetail = lazy(() => import("./pages/admin/Configuration/integrations/IntegrationDetail"));
 const PasswordChangePage = lazy(() => import("./pages/admin/Configuration/change-password/ChangePasswordPage"));
 const PostingGlobalPage = lazy(() => import("./pages/admin/Configuration/posting-global/PostingGlobalPage"));
-const DeveloperRequestsPage = lazy(() => import("./pages/admin/Configuration/application-records/DeveloperRequestsPage"));
 const ReportSettingsPage = lazy(() => import("./pages/admin/Configuration/report-settings/ReportSettingsPage"));
-const OtherSettingsPage = lazy(() => import("./pages/admin/Configuration/other-settings/OtherSettingsPage"));
 const GuardsGlobalSettingsPage = lazy(() => import("./pages/admin/Configuration/guards-settings/GuardsGlobalSettingsPage"));
 const RondasSettingsPage = lazy(() => import("./pages/admin/Configuration/rondas-settings/RondasSettingsPage"));
 const JornadaPage = lazy(() => import("./pages/admin/Configuration/scheduling/JornadaPage"));
@@ -54,7 +51,6 @@ const EmailPreferencesPage = lazy(() => import("./pages/admin/Configuration/emai
 const SmsBalancePage = lazy(() => import("./pages/admin/Configuration/sms/SmsBalancePage"));
 const CommunicationsPage = lazy(() => import("./pages/admin/Configuration/communications/CommunicationsPage"));
 const BillingPage = lazy(() => import("./pages/admin/Configuration/billing/BillingPage"));
-const DeveloperTokensPage = lazy(() => import("./pages/admin/Configuration/developer-tokens/DeveloperTokensPage"));
 const ActivitiesPage = lazy(() => import("./pages/admin/actividades/ActivitiesPage"));
 const ClientesPage = lazy(() => import("./pages/admin/clientes/ClientsPage"));
 const NewOrEditClientPage = lazy(() => import("./pages/admin/clientes/NewOrEditClientPage"));
@@ -176,11 +172,9 @@ const GuardHorarioPage = lazy(() => import("./pages/admin/security-guards/compon
 const GuardAsistenciaPage = lazy(() => import("./pages/admin/security-guards/components/GuardAsistencia/GuardAsistenciaPage"));
 const GuardDesempenoPage = lazy(() => import("./pages/admin/security-guards/components/GuardDesempeno/GuardDesempenoPage"));
 const GuardDocumentosPage = lazy(() => import("./pages/admin/security-guards/components/GuardDocumentos/GuardDocumentosPage"));
-const GuardRemindersPage = lazy(() => import("./pages/admin/security-guards/components/GuardReminders/GuardRemindersPage"));
 const GuardFilesPage = lazy(() => import("./pages/admin/security-guards/components/GuardFiles/GuardFilesPage"));
 const GuardAsignarSitiosPage = lazy(() => import("./pages/admin/security-guards/components/GuardAssign-Sites/GuardAsignarSitiosPage"));
 const GuardDepartamentoPage = lazy(() => import("./pages/admin/security-guards/components/GuardDepartment/GuardDepartamentoPage"));
-const GuardConfiguracionPage = lazy(() => import("./pages/admin/security-guards/components/GuardConfiguration/GuardConfiguracionPage"));
 import GuardAppLayout from "./layouts/GuardAppLayout";
 const GuardDashboard = lazy(() => import("./pages/guard/dashboard/GuardDashboard"));
 const GuardSchedulePage = lazy(() => import("./pages/guard/dashboard/GuardSchedule"));
@@ -831,14 +825,6 @@ export default function App() {
                 }
               />
               <Route
-                path="/guards/:id/recordatorios"
-                element={
-                  <ProtectedRoute>
-                    <GuardRemindersPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
                 path="/guards/:id/archivos"
                 element={
                   <ProtectedRoute>
@@ -859,14 +845,6 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <GuardDepartamentoPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/guards/:id/configuracion"
-                element={
-                  <ProtectedRoute>
-                    <GuardConfiguracionPage />
                   </ProtectedRoute>
                 }
               />
@@ -1570,14 +1548,6 @@ export default function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route
-                path="/setting/integracion/:slug"
-                element={
-                  <ProtectedRoute>
-                    <IntegrationDetail />
-                  </ProtectedRoute>
-                }
-              />
               {/* The real payroll/nómina config lives at /nomina/settings (salary basis,
                   monthly, extra-hour types). /setting/payroll-setup was a no-op stub —
                   redirect it to the working page. */}
@@ -1688,33 +1658,6 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <ReportSettingsPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/setting/other-settings"
-                element={
-                  <ProtectedRoute>
-                    <OtherSettingsPage />
-                  </ProtectedRoute>
-                }
-              />
-
-
-
-              <Route
-                path="/setting/access-token"
-                element={
-                  <ProtectedRoute>
-                    <DeveloperTokensPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/setting/request-records"
-                element={
-                  <ProtectedRoute>
-                    <DeveloperRequestsPage />
                   </ProtectedRoute>
                 }
               />

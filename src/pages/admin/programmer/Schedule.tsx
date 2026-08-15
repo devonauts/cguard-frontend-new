@@ -131,6 +131,13 @@ interface ProposalWarnings {
   restViolations?: unknown[];
   doubleBookings?: unknown[];
   sfStyleInconsistencies?: unknown[];
+  // Estos dos los calcula scheduleValidation.ts y viajan en la respuesta desde
+  // que se publicó Configuración › Jornada. No estaban declarados aquí, así que
+  // ni siquiera se podían leer sin que TypeScript protestara — y por eso la
+  // lista de avisos de abajo nunca los pintó. El ajuste era real, el motor era
+  // real, y el aviso moría en el borde de la pantalla.
+  shortRests?: unknown[];
+  weeklyOverloads?: unknown[];
   maxConsecutiveAllowed?: number;
 }
 interface ProposalCost {
@@ -3147,10 +3154,26 @@ export default function Schedule() {
             {/* Rest-rule + sacafranco warnings (reqs 3 & 9) */}
             {(() => {
               const w = proposalData?.proposal?.summary?.warnings;
-              if (!w || (!w.total && !w.restViolations?.length && !w.doubleBookings?.length && !w.sfStyleInconsistencies?.length)) return null;
+              if (
+                !w ||
+                (!w.total &&
+                  !w.restViolations?.length &&
+                  !w.doubleBookings?.length &&
+                  !w.sfStyleInconsistencies?.length &&
+                  !w.shortRests?.length &&
+                  !w.weeklyOverloads?.length)
+              )
+                return null;
               const lines: string[] = [];
               if (w.doubleBookings?.length) lines.push(`${w.doubleBookings.length} vigilante(s) con doble asignación el mismo día`);
               if (w.restViolations?.length) lines.push(`${w.restViolations.length} vigilante(s) sin descanso semanal (más de ${w.maxConsecutiveAllowed || 7} días seguidos)`);
+              // Estos dos SE CALCULABAN y viajaban en la respuesta, y esta lista
+              // no los leía: se podía fijar «descanso mínimo 12 h» y «tope 40 h
+              // semanales» en Configuración › Jornada, publicar un horario que
+              // violara las dos, y no recibir ni una señal. El ajuste existía,
+              // el motor existía, y no llegaba a la pantalla.
+              if (w.shortRests?.length) lines.push(`${w.shortRests.length} vigilante(s) con menos del descanso mínimo entre turnos`);
+              if (w.weeklyOverloads?.length) lines.push(`${w.weeklyOverloads.length} vigilante(s) por encima del tope de horas semanales`);
               if (w.sfStyleInconsistencies?.length) lines.push(`${w.sfStyleInconsistencies.length} sitio(s) con sacafrancos en estilos de turno distintos`);
               if (!lines.length) return null;
               return (

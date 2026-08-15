@@ -10,7 +10,23 @@
  *
  * Todo lo de esta pantalla se LEE de verdad: los dos primeros bloques alimentan
  * los avisos del planificador antes de publicar el horario, y los dos
- * interruptores bloquean de verdad en el tablero de cobertura.
+ * interruptores bloquean tanto al TRASLADAR como al CUBRIR un puesto.
+ *
+ * (Hasta la auditoría del 2026-08-15 sólo bloqueaban al trasladar, que es el
+ * camino menos usado: el 90 % de las asignaciones de emergencia entran por
+ * «cubrir».)
+ *
+ * ── LO QUE SE QUITÓ, Y POR QUÉ ────────────────────────────────────────────
+ * «La noche empieza a las» estaba aquí y NO LO LEÍA NADIE: el planificador usa
+ * un 18 escrito a mano en cuatro archivos. Cablearlo obligaría a pasar el ajuste
+ * por todo el motor de horarios y CAMBIARÍA la matemática de cobertura de quien
+ * ya opera —cuántos puestos de día y de noche necesita una estación—, así que no
+ * es un arreglo de última hora: merece su propio cambio y sus propias pruebas.
+ *
+ * Mientras tanto se retira, porque un mando desconectado en una pantalla que
+ * dice «esto se aplica» enseña a desconfiar de los seis ajustes que sí
+ * funcionan. Y además duplicaba un concepto: la hora que de verdad decide
+ * dinero es la del recargo nocturno, en Turnos y marcaciones.
  *
  * Los valores por defecto reproducen el comportamiento anterior (7 días; sin
  * límite de descanso ni de horas; doblar y asignar en descanso permitidos), a
@@ -35,7 +51,6 @@ type Jornada = {
   maxWeeklyHours: number;
   allowDoubleShift: boolean;
   allowRestDayAssignment: boolean;
-  nightBoundaryHour: number;
 };
 
 /** Iguales a SCHEDULING_DEFAULTS del backend. Si divergen, la pantalla miente. */
@@ -45,7 +60,6 @@ const DEFAULTS: Jornada = {
   maxWeeklyHours: 0,
   allowDoubleShift: true,
   allowRestDayAssignment: true,
-  nightBoundaryHour: 18,
 };
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
@@ -190,23 +204,6 @@ export default function JornadaPage() {
                     disabled={!canEdit}
                   />
                 </div>
-              </Section>
-
-              <Section title="Frontera día / noche" icon={<CalendarClock />}>
-                <div className="divide-y" style={{ borderColor: "var(--hairline)" }}>
-                  <NumRow
-                    label="La noche empieza a las"
-                    hint="Con esta hora el planificador clasifica un turno como diurno o nocturno."
-                    value={j.nightBoundaryHour}
-                    onChange={(v) => set("nightBoundaryHour", v)}
-                    min={0} max={23} suffix="h" disabled={!canEdit}
-                  />
-                </div>
-                <InfoNote tone="warn" className="mt-3">
-                  El recargo nocturno de la nómina usa su propia hora, en
-                  Turnos y marcaciones. Si no coinciden, un mismo turno puede
-                  clasificarse como diurno y pagarse con recargo de noche.
-                </InfoNote>
               </Section>
 
               <div className="flex justify-end">
