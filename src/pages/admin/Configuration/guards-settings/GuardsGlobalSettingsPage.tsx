@@ -4,7 +4,7 @@
  * Guarda settings.guardSettings vía el PUT /settings existente (saneado en el
  * backend por guardSettingsService). Cada control tiene motor de verdad:
  *  - inactivityAlert/-ThresholdMin → barrido cada 5 min (guard.inactive)
- *  - shiftRemindersEnabled → recordatorios de turno (2d/1d/12h/1h/10m)
+ *  - shiftRemindersEnabled + shiftReminderOffsets → recordatorios de turno
  *  - licenseExpiryAlert/-Days → barrido diario de credenciales (aviso a RRHH)
  * Lo que vive en otras páginas se enlaza, no se duplica. Reemplaza el clon
  * de 25 toggles falsos (4 tabs, botón Guardar sin handler).
@@ -25,10 +25,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { usePermissions } from "@/hooks/usePermissions";
 import api from "@/lib/api";
 
+type Offset = "2d" | "1d" | "12h" | "1h" | "10m";
+
+/** Los cinco avisos, en orden. Igual que REMINDER_OFFSETS del backend. */
+const AVISOS: { key: Offset; label: string; hint: string }[] = [
+    { key: "2d", label: "2 días antes", hint: "Llega durante el descanso." },
+    { key: "1d", label: "1 día antes", hint: "Para organizar el día siguiente." },
+    { key: "12h", label: "12 horas antes", hint: "" },
+    { key: "1h", label: "1 hora antes", hint: "Suele ser el único que hace falta." },
+    { key: "10m", label: "10 minutos antes", hint: "Justo antes de marcar entrada." },
+];
+
 type GuardSettings = {
     inactivityAlert: boolean;
     inactivityThresholdMin: number;
     shiftRemindersEnabled: boolean;
+    shiftReminderOffsets: Offset[];
     licenseExpiryAlert: boolean;
     licenseExpiryDays: number;
 };
@@ -37,6 +49,9 @@ const DEFAULTS: GuardSettings = {
     inactivityAlert: false,
     inactivityThresholdMin: 20,
     shiftRemindersEnabled: true,
+    // Los cinco, como hasta hoy. Poner aquí un defecto «sensato» cambiaría de
+    // golpe lo que recibe gente que no lo pidió.
+    shiftReminderOffsets: ["2d", "1d", "12h", "1h", "10m"],
     licenseExpiryAlert: true,
     licenseExpiryDays: 30,
 };
@@ -147,11 +162,61 @@ export default function GuardsGlobalSettingsPage() {
                         <Section title="Recordatorios de turno" icon={<CalendarClock />} contentClassName="divide-y">
                             <ToggleRow
                                 label="Recordar a los vigilantes sus próximos turnos"
-                                hint="Avisos automáticos antes de cada turno (2 días, 1 día, 12 horas, 1 hora y 10 minutos antes) para que nadie falte después de sus días de descanso."
+                                hint="Avisos automáticos antes de cada turno, para que nadie falte después de sus días de descanso."
                                 checked={cfg.shiftRemindersEnabled}
                                 onCheckedChange={(v) => set("shiftRemindersEnabled", v)}
                                 disabled={disabled}
-                            />
+                            >
+                                {cfg.shiftRemindersEnabled && (
+                                    <SettingDetail className="flex-col items-stretch gap-0">
+                                        <p className="mb-1 text-sm font-medium">¿Cuáles se envían?</p>
+                                        <p className="mb-2 text-xs" style={{ color: "var(--ink-faint)" }}>
+                                            Cada uno marcado es un mensaje por turno y por vigilante.
+                                            Con veinte turnos al mes, los cinco son cien mensajes a
+                                            cada persona.
+                                        </p>
+                                        <div className="flex flex-col gap-1">
+                                            {AVISOS.map((a) => {
+                                                const on = cfg.shiftReminderOffsets.includes(a.key);
+                                                return (
+                                                    <label
+                                                        key={a.key}
+                                                        className="flex cursor-pointer items-center gap-2.5 py-1.5"
+                                                    >
+                                                        <input
+                                                            type="checkbox"
+                                                            className="cg-focus h-4 w-4"
+                                                            checked={on}
+                                                            disabled={disabled}
+                                                            onChange={() =>
+                                                                set(
+                                                                    "shiftReminderOffsets",
+                                                                    on
+                                                                        ? cfg.shiftReminderOffsets.filter((k) => k !== a.key)
+                                                                        : AVISOS.map((x) => x.key).filter(
+                                                                              (k) => k === a.key || cfg.shiftReminderOffsets.includes(k),
+                                                                          ),
+                                                                )
+                                                            }
+                                                        />
+                                                        <span className="text-sm">{a.label}</span>
+                                                        {a.hint && (
+                                                            <span className="text-xs" style={{ color: "var(--ink-faint)" }}>
+                                                                {a.hint}
+                                                            </span>
+                                                        )}
+                                                    </label>
+                                                );
+                                            })}
+                                        </div>
+                                        <p className="mt-2 text-xs" style={{ color: "var(--ink-faint)" }}>
+                                            {cfg.shiftReminderOffsets.length === 0
+                                                ? "Sin ninguno marcado no se envía ningún recordatorio."
+                                                : `${cfg.shiftReminderOffsets.length} mensaje${cfg.shiftReminderOffsets.length === 1 ? "" : "s"} por turno y por vigilante.`}
+                                        </p>
+                                    </SettingDetail>
+                                )}
+                            </ToggleRow>
                         </Section>
 
                         <Section title="Credenciales y licencias" icon={<IdCard />} contentClassName="divide-y">
