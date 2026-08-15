@@ -72,6 +72,7 @@ const NOTIFICATIONS: NotificationItem[] = [
   { id: "task-completed", label: "Tarea completada", default: { dashboard: true } },
   { id: "pto-request", label: "Solicitud de tiempo libre", default: { dashboard: true } },
   { id: "license-expiry", label: "Expiración de Licencia", default: { dashboard: true } },
+  { id: "contract-expiry", label: "Contrato de cliente por vencer", hint: "Aviso semanal antes de que caduque el contrato de un cliente, con la antelación que fijes en su ficha", default: { dashboard: true, email: true } },
 ];
 
 const columns: { key: ChannelKey; label: string; icon: React.ReactNode }[] = [
