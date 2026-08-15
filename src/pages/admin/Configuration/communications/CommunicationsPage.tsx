@@ -488,7 +488,13 @@ export default function CommunicationsPage() {
                         defaultValue: "SMS para alertas críticas",
                       })}
                       desc={t("comms.smsCriticalDesc", {
-                        defaultValue: "Envía SMS inmediato en pánico/emergencias.",
+                        // Decía «Envía SMS inmediato en pánico/emergencias» y era
+                        // FALSO: el enrutador nunca consulta este ajuste para un
+                        // pánico ni para un escalado — ésos mandan SMS siempre, y
+                        // así se queda, porque un pánico sin SMS no es una opción.
+                        // Lo que este interruptor gobierna de verdad son los
+                        // avisos de visita y de ronda.
+                        defaultValue: "Envía SMS en avisos de visitas y rondas. El botón de pánico manda SMS siempre, no depende de esto.",
                       })}
                       checked={!!settings.sms_critical}
                       onChange={(v) => patch("sms_critical", v)}
