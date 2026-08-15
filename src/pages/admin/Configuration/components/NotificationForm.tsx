@@ -47,7 +47,8 @@ type MatrixState = Record<
    ──────────────────────────────────────────────────────────────────────────── */
 const NOTIFICATIONS: NotificationItem[] = [
   { id: "check-in-out", label: "Vigilante registrado/salida", hint: "Check-in/out del vigilante", default: { dashboard: true, email: true } },
-  { id: "panic-button", label: "Botón de pánico", hint: "La alerta más crítica: entra por todos los canales salvo que la apagues", default: { dashboard: true, email: true, sms: true } },
+  { id: "panic-button", label: "Botón de pánico", hint: "Siempre llega al teléfono y a esta pantalla, aunque desmarques la casilla: es una emergencia", default: { dashboard: true, email: true, sms: true } },
+  { id: "coverage-uncovered", label: "Puesto sin cubrir", hint: "Nadie llegó al puesto o el vigilante lo abandonó. Llega al teléfono aunque desmarques la casilla", default: { dashboard: true, email: true } },
   { id: "dispatch-updates", label: "Actualizaciones de tickets de Incidente", default: { dashboard: true } },
   { id: "attendance-exceptions", label: "Novedades de asistencia", hint: "Atraso, inasistencia, salida anticipada, salida sin marcar y marcación fuera de la geocerca", default: { dashboard: true } },
   { id: "attendance-approvals", label: "Aprobaciones de asistencia", hint: "Correcciones enviadas, pendientes de aprobar, aprobadas y rechazadas", default: { dashboard: true } },
