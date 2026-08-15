@@ -76,9 +76,20 @@ export default function ActivityLogHubPage() {
             ))}
           </Stagger>
 
+          {/* Este texto decía «se conservan sin límite de tiempo, todavía no hay
+              política de retención configurable» — y para cuando se escribió eso
+              era verdad, pero Retención de datos ya está publicada DOS FILAS más
+              arriba en este mismo índice y borra la bitácora de cambios de
+              verdad. Alguien podía leer aquí que su bitácora es eterna, fijar 90
+              días en la pantalla de al lado y perder pruebas. */}
           <InfoNote tone="neutral" icon={<Info />} className="mt-5">
-            Estos registros se conservan sin límite de tiempo. Todavía no hay una
-            política de retención configurable ni forma de exportarlos desde aquí.
+            La <strong>bitácora de cambios</strong> se borra según el plazo que fijes en{' '}
+            <Link to="/setting/retencion" className="underline" style={{ color: 'var(--brand-text)' }}>
+              Retención de datos
+            </Link>
+            ; viene sin plazo, o sea que se conserva hasta que decidas otra cosa. El{' '}
+            <strong>historial de accesos</strong> se conserva siempre. Todavía no se pueden
+            exportar desde aquí.
           </InfoNote>
         </PageContainer>
       </SettingsLayout>

@@ -8,6 +8,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { toast } from "sonner";
 import { notificationSettingsService } from "@/lib/api/notificationSettingsService";
 import { communicationService } from "@/lib/api/communicationService";
+import { Link } from "react-router-dom";
 import { Section, SkeletonCards } from "@/components/kit";
 
 type ChannelKey = "dashboard" | "email" | "sms";
@@ -42,8 +43,22 @@ type MatrixState = Record<
    excepciones de asistencia y sus aprobaciones, que son justo los avisos que
    más le importan a un jefe de operaciones.
 
-   Al añadir una fila nueva aquí, añade su evento allí. Si no, vuelve el mismo
-   problema.
+   SEGUNDA PODA (auditoría 2026-08-15). De las 15 que quedaron, CINCO seguían sin
+   gobernar nada, por dos motivos distintos:
+
+     · «Retraso en el turno», «Tarea perdida» y «Estado del turno» apuntaban a
+       eventos que NO LOS EMITE NADIE — la plantilla existe, el mapeo existe, y
+       no hay una sola llamada que los despache. (El retraso real sí llega, por
+       «Novedades de asistencia», que es la fila que de verdad funciona.)
+
+     · «Recorrido completado» y «Recorrido perdido» eran PEORES que inertes: el
+       aviso de ronda lo escribe rondaNotify directo, obedeciendo a
+       Configuración › Rondas. El dueño desmarcaba la casilla aquí, seguía
+       recibiendo los avisos, y no tenía forma de saber por qué. Se retiran y se
+       señala la pantalla que sí manda.
+
+   Al añadir una fila nueva aquí, añade su evento allí. Y comprueba que alguien
+   lo DESPACHA: un mapeo sin emisor es una casilla que miente.
    ──────────────────────────────────────────────────────────────────────────── */
 const NOTIFICATIONS: NotificationItem[] = [
   { id: "check-in-out", label: "Vigilante registrado/salida", hint: "Check-in/out del vigilante", default: { dashboard: true, email: true } },
@@ -52,14 +67,9 @@ const NOTIFICATIONS: NotificationItem[] = [
   { id: "dispatch-updates", label: "Actualizaciones de tickets de Incidente", default: { dashboard: true } },
   { id: "attendance-exceptions", label: "Novedades de asistencia", hint: "Atraso, inasistencia, salida anticipada, salida sin marcar y marcación fuera de la geocerca", default: { dashboard: true } },
   { id: "attendance-approvals", label: "Aprobaciones de asistencia", hint: "Correcciones enviadas, pendientes de aprobar, aprobadas y rechazadas", default: { dashboard: true } },
-  { id: "late-on-shift", label: "Retraso en el turno", default: { dashboard: true } },
   { id: "inactive-guard-alert", label: "Alerta de inactividad para vigilantes inactivos", default: { dashboard: true } },
   { id: "geofence-alert", label: "Alertas de geovalla al entrar/salir", default: { dashboard: true } },
-  { id: "site-tour-complete", label: "Recorrido del sitio completado", default: { dashboard: true } },
-  { id: "site-tour-missed", label: "Recorrido del sitio perdido o retrasado", default: { dashboard: true } },
   { id: "task-completed", label: "Tarea completada", default: { dashboard: true } },
-  { id: "task-missed", label: "Tarea perdida o retrasada", default: { dashboard: true } },
-  { id: "shift-status", label: "Actualizaciones del estado del turno", default: { dashboard: true } },
   { id: "pto-request", label: "Solicitud de tiempo libre", default: { dashboard: true } },
   { id: "license-expiry", label: "Expiración de Licencia", default: { dashboard: true } },
 ];
@@ -258,6 +268,15 @@ export default function NotificationMatrix() {
         <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
           Marca por qué vía quieres recibir cada aviso. La casilla de la cabecera activa o
           desactiva una vía completa; la de cada fila, todas las vías de ese aviso.
+        </p>
+
+        <p className="text-xs" style={{ color: 'var(--ink-faint)' }}>
+          Los avisos de <strong>rondas</strong> —completada, perdida, iniciada— no se
+          controlan aquí, sino en{' '}
+          <Link to="/setting/rondas" className="underline" style={{ color: 'var(--brand-text)' }}>
+            Configuración › Rondas
+          </Link>
+          , junto al resto de reglas de patrullaje.
         </p>
 
         <div className="overflow-x-auto">

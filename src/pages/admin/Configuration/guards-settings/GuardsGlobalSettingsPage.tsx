@@ -43,6 +43,7 @@ type GuardSettings = {
     shiftReminderOffsets: Offset[];
     licenseExpiryAlert: boolean;
     licenseExpiryDays: number;
+    blockClockInOnExpiredLicense: boolean;
 };
 
 const DEFAULTS: GuardSettings = {
@@ -54,6 +55,9 @@ const DEFAULTS: GuardSettings = {
     shiftReminderOffsets: ["2d", "1d", "12h", "1h", "10m"],
     licenseExpiryAlert: true,
     licenseExpiryDays: 30,
+    // Apagado, igual que en el backend: encenderlo de oficio dejaría sin fichar
+    // a toda plantilla con las fechas de credencial mal cargadas.
+    blockClockInOnExpiredLicense: false,
 };
 
 // Partial view of the tenant settings blob (GET/PUT /settings). Only the fields
@@ -243,6 +247,13 @@ export default function GuardsGlobalSettingsPage() {
                                     </SettingDetail>
                                 )}
                             </ToggleRow>
+                            <ToggleRow
+                                label="Impedir marcar entrada con la credencial vencida"
+                                hint="Hasta ahora una credencial caducada sólo generaba un aviso: el vigilante fichaba igual, se le asignaba un puesto y salía en el informe al cliente. Actívalo sólo cuando las fechas de tus credenciales estén al día — si no, alguien puede quedarse sin poder empezar su turno."
+                                checked={cfg.blockClockInOnExpiredLicense}
+                                onCheckedChange={(v) => set("blockClockInOnExpiredLicense", v)}
+                                disabled={disabled}
+                            />
                         </Section>
 
                         {/* Aquí había una rejilla de tarjetas-enlace a otras
