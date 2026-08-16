@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { ShieldCheck, AlertTriangle, RefreshCw, Inbox } from "lucide-react";
+import { toast } from "sonner";
+import { ShieldCheck, AlertTriangle, RefreshCw, Inbox, Download } from "lucide-react";
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,7 +23,47 @@ export default function AuditLogs() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [q, setQ] = useState("");
+  const [bajando, setBajando] = useState(false);
   const tid = () => localStorage.getItem("tenantId") || "";
+
+  /**
+   * Descarga la bitácora en CSV.
+   *
+   * No se podía exportar: la pantalla listaba y paginaba, y la única salida era
+   * copiar a mano. Es lo primero que pide un auditor externo — y desde que la
+   * retención de datos borra de verdad, es lo que hay que poder sacar ANTES de
+   * que se purgue.
+   *
+   * Va con `fetch` y no con ApiService porque esto no devuelve JSON: es un
+   * archivo, y hace falta el blob y el nombre que manda el servidor.
+   */
+  const exportar = async () => {
+    setBajando(true);
+    try {
+      const params = q.trim() ? `?search=${encodeURIComponent(q.trim())}` : "";
+      // Mismas base y clave de token que ApiService (`authToken`, no `jwt`) — con
+      // la clave equivocada la descarga daría 401 sin decir por qué.
+      const base = (import.meta.env.VITE_API_URL ?? "http://localhost:3001/api").replace(/\/+$/, "");
+      const resp = await fetch(
+        `${base}/tenant/${tid()}/security/audit-logs/export${params}`,
+        { headers: { Authorization: `Bearer ${localStorage.getItem("authToken") || ""}` } },
+      );
+      if (!resp.ok) throw new Error(String(resp.status));
+      const blob = await resp.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `bitacora-accesos-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch {
+      toast.error("No se pudo descargar el registro.");
+    } finally {
+      setBajando(false);
+    }
+  };
 
   const load = () => {
     setLoading(true);
@@ -68,7 +109,17 @@ export default function AuditLogs() {
 
         <Toolbar>
           <AuditSearch value={q} onChange={setQ} placeholder="Buscar por usuario, dirección o dispositivo…" />
-          <Button variant="outline" size="icon" className="ml-auto" onClick={load} title="Recargar" aria-label="Recargar">
+          <Button
+            variant="outline"
+            className="ml-auto"
+            onClick={exportar}
+            disabled={bajando || loading}
+            title="Descargar en CSV lo que estás viendo"
+          >
+            <Download className="mr-2 size-4" />
+            {bajando ? "Preparando…" : "Descargar CSV"}
+          </Button>
+          <Button variant="outline" size="icon" onClick={load} title="Recargar" aria-label="Recargar">
 
             <RefreshCw className={`size-4 ${loading ? "animate-spin" : ""}`} />
           </Button>

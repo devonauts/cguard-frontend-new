@@ -7,6 +7,7 @@ import { clientService } from '@/lib/api/clientService';
 import { toast } from 'sonner';
 import { Section, StatusBadge, Modal, EmptyState, GlassPanel, IconTile } from '@/components/kit';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Globe, Mail, CheckCircle2, AlertCircle, Loader2, Smartphone, Users, ShieldCheck,
   KeyRound, ArrowRight, Building2, AlertTriangle, FileBarChart, ClipboardList, MapPin, Bell,
@@ -22,13 +23,27 @@ interface AccessUser {
   name: string; email: string | null; role: string; status?: string;
 }
 
-const PORTAL_FEATURES = [
-  { icon: MapPin, label: 'Sedes y estaciones', desc: 'Ubicaciones y cobertura de su operación' },
-  { icon: Users, label: 'Vigilantes asignados', desc: 'Quién está en turno en cada sitio' },
-  { icon: AlertTriangle, label: 'Incidentes y novedades', desc: 'Reportes en tiempo real' },
-  { icon: FileBarChart, label: 'Reportes', desc: 'Informes operativos de su servicio' },
-  { icon: ClipboardList, label: 'Tareas y solicitudes', desc: 'Pedidos y seguimiento' },
-  { icon: Bell, label: 'Notificaciones', desc: 'Avisos de turno, SOS y alertas' },
+/**
+ * Los módulos que este cliente ve en su app.
+ *
+ * ANTES ERA UNA LISTA ESCRITA A MANO, sin un solo interruptor detrás: la
+ * pestaña presentaba «¿Qué puede ver el cliente?» como si fuera configurable y
+ * no lo era. Invitar a un cliente le abría de golpe la ubicación en vivo, las
+ * fotos, las rondas, el inventario y la analítica — un condominio y un banco
+ * recibían lo mismo.
+ *
+ * Las claves coinciden con las del backend (clientPortalSettingsService.ts).
+ * El SOS no está aquí a propósito: es un botón de emergencia y no se apaga.
+ */
+const MODULOS: { key: string; icon: any; label: string; desc: string }[] = [
+  { key: 'liveLocation', icon: MapPin, label: 'Ubicación en vivo', desc: 'Ver dónde están los vigilantes ahora, en el mapa' },
+  { key: 'attendance', icon: Users, label: 'Entradas y salidas', desc: 'Quién fichó en cada puesto y a qué hora' },
+  { key: 'incidents', icon: AlertTriangle, label: 'Incidentes', desc: 'Novedades reportadas en sus sedes' },
+  { key: 'rondas', icon: ClipboardList, label: 'Rondas', desc: 'Recorridos y puntos de control' },
+  { key: 'photos', icon: FileBarChart, label: 'Fotos', desc: 'Imágenes adjuntas a incidentes y rondas' },
+  { key: 'inventory', icon: ShieldCheck, label: 'Inventario', desc: 'Equipo asignado a sus puestos' },
+  { key: 'analytics', icon: FileBarChart, label: 'Analítica', desc: 'Panel de indicadores del servicio' },
+  { key: 'visitors', icon: Bell, label: 'Visitas', desc: 'Registro y pre-autorización de visitantes' },
 ];
 
 type Tono = 'brand' | 'neutral' | 'ok' | 'warn' | 'bad' | 'info';
@@ -69,6 +84,40 @@ export default function ClientPortal({ client }: Props) {
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState<{ kind: Kind; recipient: string } | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
+
+  // ── Qué ve este cliente en su app ──────────────────────────────────────
+  // Ausente = encendido, igual que en el backend: publicar esta pantalla no
+  // puede apagarle a nadie algo que ya venía usando.
+  const [portal, setPortal] = useState<Record<string, boolean>>(
+    (client as any)?.portalSettings || {},
+  );
+  const [guardandoPortal, setGuardandoPortal] = useState(false);
+
+  useEffect(() => {
+    setPortal(((client as any)?.portalSettings) || {});
+  }, [client]);
+
+  /**
+   * Se guarda al instante, sin botón. Son ocho casillas independientes: un
+   * «Guardar» aparte sólo añade la posibilidad de tocarlas y salirse sin
+   * aplicarlas — y el fallo se nota enseguida, porque el cliente llama.
+   */
+  const togglePortal = async (key: string) => {
+    if (!client?.id) return;
+    const siguiente = { ...portal, [key]: portal[key] === false };
+    setPortal(siguiente);
+    setGuardandoPortal(true);
+    try {
+      // `updateClient` reenvía el input tal cual, así que un parcial basta: el
+      // backend sanea `portalSettings` y no toca el resto de la ficha.
+      await clientService.updateClient(String(client.id), { portalSettings: siguiente } as any);
+    } catch {
+      setPortal(portal); // se revierte: la casilla no puede mentir sobre lo guardado
+      toast.error('No se pudo guardar. Inténtalo de nuevo.');
+    } finally {
+      setGuardandoPortal(false);
+    }
+  };
 
   const send = async (kind: Kind) => {
     setSending(true); setErrorMsg('');
@@ -187,12 +236,25 @@ export default function ClientPortal({ client }: Props) {
         <div className="space-y-4">
           <Section title="¿Qué puede ver el cliente?" icon={<Smartphone />}>
             <div className="space-y-2.5">
-              {PORTAL_FEATURES.map((f) => (
-                <div key={f.label} className="flex items-start gap-3">
-                  <IconTile size="sm"><f.icon /></IconTile>
-                  <div><div className="text-sm font-medium">{f.label}</div><div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{f.desc}</div></div>
-                </div>
-              ))}
+              {MODULOS.map((f) => {
+                const on = portal[f.key] !== false;
+                return (
+                  <label key={f.key} className="flex cursor-pointer items-start gap-3">
+                    <Checkbox
+                      checked={on}
+                      disabled={guardandoPortal}
+                      onCheckedChange={() => togglePortal(f.key)}
+                      className="mt-0.5"
+                      aria-label={f.label}
+                    />
+                    <IconTile size="sm"><f.icon /></IconTile>
+                    <div>
+                      <div className="text-sm font-medium">{f.label}</div>
+                      <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{f.desc}</div>
+                    </div>
+                  </label>
+                );
+              })}
             </div>
           </Section>
 
