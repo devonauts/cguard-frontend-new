@@ -263,6 +263,49 @@ export default function PostSiteProfile({ site }: { site?: any }) {
                         <p className="mb-5 text-sm leading-relaxed" style={{ color: 'var(--ink-soft)' }}>{site.description}</p>
                     )}
 
+                    {/* ── Lo que se pidió al dar de alta la sede ─────────────
+                        El asistente recoge nivel de riesgo, puestos requeridos,
+                        consignas, equipo especial y formación exigida, los guarda
+                        en `serviceConfig`… y NO LOS MOSTRABA NADIE. Datos de sólo
+                        escritura: el operador los teclea al crear el sitio y no
+                        vuelve a verlos jamás — las consignas del puesto, que es
+                        justo lo que un vigilante nuevo necesita leer.
+                        (El formulario de 45 campos que existía para esto era un
+                        archivo sin importadores; se eliminó.) */}
+                    {(() => {
+                        const cfg: any = (site as any)?.serviceConfig || {};
+                        const lista = (v: any) => (Array.isArray(v) ? v.filter(Boolean) : []);
+                        const equipo = lista(cfg.specialEquipment);
+                        const formacion = lista(cfg.trainingRequired);
+                        const hayAlgo =
+                            cfg.postInstructions || cfg.riskLevel || cfg.stationsRequired ||
+                            equipo.length || formacion.length;
+                        if (!hayAlgo) return null;
+                        return (
+                            <div className="glass-sunken mb-5 space-y-3 p-4">
+                                <h4 className="cg-eyebrow">Condiciones del servicio</h4>
+                                {cfg.riskLevel && <InfoRow label="Nivel de riesgo" value={String(cfg.riskLevel)} />}
+                                {cfg.stationsRequired ? (
+                                    <InfoRow label="Puestos requeridos" value={String(cfg.stationsRequired)} />
+                                ) : null}
+                                {equipo.length ? (
+                                    <InfoRow label="Equipo especial" value={equipo.join(', ')} />
+                                ) : null}
+                                {formacion.length ? (
+                                    <InfoRow label="Formación exigida" value={formacion.join(', ')} />
+                                ) : null}
+                                {cfg.postInstructions && (
+                                    <div>
+                                        <p className="cg-eyebrow mb-1">Consignas del puesto</p>
+                                        <p className="whitespace-pre-line text-sm leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
+                                            {String(cfg.postInstructions)}
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })()}
+
                     {/* ── Three info cards ───────────────────────────────── */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* General Information */}

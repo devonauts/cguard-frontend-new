@@ -15,6 +15,7 @@ const DEFAULTS: RondaSettings = {
   requireGeofence: true,
   geofenceRadius: 50,
   requireNote: false,
+  requireCheckpointOrder: false,
   notifyTenantOnStart: true,
   notifyTenantOnComplete: true,
   notifyTenantOnMissed: true,
@@ -104,6 +105,7 @@ export default function RondaSettingsForm({
             <ToggleRow label="Exigir ubicación" hint="Se comprueba dónde está el vigilante al marcar cada punto." checked={s.requireGeofence} onCheckedChange={(b) => set("requireGeofence", b)} />
             <NumberRow label="Radio permitido" hint="Distancia máxima desde el punto para que el escaneo cuente." value={s.geofenceRadius} onChange={(v) => set("geofenceRadius", (v ?? 0) as number)} suffix="metros" />
             <ToggleRow label="Exigir observación" hint="El vigilante debe dejar una nota escrita en cada punto." checked={s.requireNote} onCheckedChange={(b) => set("requireNote", b)} />
+            <ToggleRow label="Exigir el orden del recorrido" hint="El vigilante debe marcar los puntos en el orden que definiste, no en el que le convenga. Revisa antes ese orden en Puestos › Rondas: hasta ahora no existía, y los puntos se numeraron por la fecha en que se crearon." checked={s.requireCheckpointOrder} onCheckedChange={(b) => set("requireCheckpointOrder", b)} />
           </div>
         </Section>
 

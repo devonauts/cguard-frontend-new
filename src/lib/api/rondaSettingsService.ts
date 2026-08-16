@@ -17,6 +17,8 @@ export interface RondaSettings {
   requireGeofence: boolean;
   geofenceRadius: number;
   requireNote: boolean;
+  /** Exigir que los puntos se marquen en el orden del recorrido. */
+  requireCheckpointOrder: boolean;
   notifyTenantOnStart: boolean;
   notifyTenantOnComplete: boolean;
   notifyTenantOnMissed: boolean;
