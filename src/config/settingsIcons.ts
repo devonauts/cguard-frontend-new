@@ -31,6 +31,7 @@ import {
   Settings2,
   Palette,
   DatabaseZap,
+  BellRing,
   type LucideIcon,
 } from "lucide-react";
 
@@ -40,7 +41,7 @@ export const SETTINGS_ICONS: Record<string, LucideIcon> = {
   User, KeyRound, ShieldCheck, Building2, CreditCard, Network, ShieldHalf,
   ListChecks, MapPinned, Shield, Route, AlertTriangle, BadgeCheck, Wrench,
   Bell, Mail, MessageSquare, Radio, Smartphone, TabletSmartphone, Wallet, Clock, FileBarChart, FileCog,
-  Plug, Code, FileDown, FileText, Settings2, Palette, DatabaseZap,
+  Plug, Code, FileDown, FileText, Settings2, Palette, DatabaseZap, BellRing,
 };
 
 export function settingsIcon(name?: string): LucideIcon {

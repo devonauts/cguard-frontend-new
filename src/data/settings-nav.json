@@ -23,6 +23,14 @@
             "keywords": "clave seguridad acceso login sesion"
           },
           {
+            "id": "mis-avisos",
+            "label": "Mis avisos",
+            "path": "/setting/mis-avisos",
+            "icon": "BellRing",
+            "desc": "Qué avisos quieres recibir tú, y por dónde.",
+            "keywords": "avisos notificaciones correo sms push silenciar ruido molestar personal mios"
+          },
+          {
             "id": "apariencia",
             "label": "Apariencia",
             "path": "/setting/apariencia",

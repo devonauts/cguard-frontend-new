@@ -47,6 +47,7 @@ const ActivityLogHubPage = lazy(() => import("./pages/admin/Configuration/activi
 const MarcaPage = lazy(() => import("./pages/admin/Configuration/brand/MarcaPage"));
 const FestivosPage = lazy(() => import("./pages/admin/Configuration/holidays/FestivosPage"));
 const RetencionPage = lazy(() => import("./pages/admin/Configuration/data/RetencionPage"));
+const MisAvisosPage = lazy(() => import("./pages/admin/Configuration/my-notifications/MisAvisosPage"));
 const EmailPreferencesPage = lazy(() => import("./pages/admin/Configuration/email-preferences/EmailPreferencesPage"));
 const SmsBalancePage = lazy(() => import("./pages/admin/Configuration/sms/SmsBalancePage"));
 const CommunicationsPage = lazy(() => import("./pages/admin/Configuration/communications/CommunicationsPage"));
@@ -1617,6 +1618,14 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <RetencionPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/setting/mis-avisos"
+                element={
+                  <ProtectedRoute>
+                    <MisAvisosPage />
                   </ProtectedRoute>
                 }
               />
