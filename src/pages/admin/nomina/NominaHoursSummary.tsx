@@ -59,8 +59,13 @@ function Num({ v, strong, tone }: { v: React.ReactNode; strong?: boolean; tone?:
 }
 
 export default function NominaHoursSummary() {
+  // Arranca en 14 días sólo hasta que el servidor diga cuál es el periodo real.
+  // Antes se quedaba ahí para siempre: el selector «semanal / quincenal /
+  // mensual» de Configuración se guardaba y no cambiaba una sola cifra de este
+  // informe, así que dos empresas con periodos distintos veían lo mismo.
   const [from, setFrom] = useState(isoDay(new Date(Date.now() - 14 * 864e5)));
   const [to, setTo] = useState(isoDay(new Date()));
+  const [periodo, setPeriodo] = useState<{ label: string; from: string; to: string } | null>(null);
   const [rows, setRows] = useState<SummaryRow[]>([]);
   const [totals, setTotals] = useState<HoursTotals | null>(null);
   const [loading, setLoading] = useState(false);
@@ -77,7 +82,29 @@ export default function NominaHoursSummary() {
       .catch((e) => toast.error(e?.message || "Error al generar el resumen"))
       .finally(() => setLoading(false));
   }, [from, to]);
-  useEffect(load, []);
+
+  // Se pregunta el periodo ANTES de la primera carga y se ajustan las fechas; el
+  // efecto de abajo dispara `load` cuando cambian. Si falla, se queda con los 14
+  // días — un informe con el rango equivocado es mejor que ninguno.
+  useEffect(() => {
+    let vivo = true;
+    attendanceService
+      .currentPeriod()
+      .then((p) => {
+        if (!vivo || !p?.from || !p?.to) return;
+        setPeriodo({ label: p.label, from: p.from, to: p.to });
+        setFrom(p.from);
+        setTo(p.to);
+      })
+      .catch(() => {
+        /* se conserva el rango por defecto */
+      });
+    return () => {
+      vivo = false;
+    };
+  }, []);
+
+  useEffect(load, [from, to]);
 
   const closePeriod = async () => {
     if (!(await confirmDialog({ title: 'Cerrar periodo', message: `Cerrar el periodo hasta ${to}? Los registros quedarán bloqueados (solo lectura).`, confirmText: 'Cerrar periodo', tone: 'danger' }))) return;
@@ -192,7 +219,11 @@ export default function NominaHoursSummary() {
         <PageHeader
           icon={<Clock />}
           title="Resumen de horas"
-          subtitle="Días trabajados y horas por persona en el periodo"
+          subtitle={
+            periodo
+              ? `Días trabajados y horas por persona · periodo ${periodo.label.toLowerCase()}`
+              : "Días trabajados y horas por persona en el periodo"
+          }
         />
 
         {/* Barra: rango de fechas (izquierda) · exportar y acciones (derecha) */}
@@ -209,6 +240,20 @@ export default function NominaHoursSummary() {
             <Button variant="brand" onClick={load} disabled={loading}>
               {loading ? "Generando…" : "Generar"}
             </Button>
+            {/* El periodo que la empresa configuró. Antes esta pantalla abría
+                siempre en 14 días fijos, así que el ajuste no se notaba en
+                ningún sitio y no había forma de volver al corte real después de
+                mirar otras fechas. */}
+            {periodo && (from !== periodo.from || to !== periodo.to) && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => { setFrom(periodo.from); setTo(periodo.to); }}
+                title={`${periodo.from} → ${periodo.to}`}
+              >
+                Volver al periodo {periodo.label.toLowerCase()}
+              </Button>
+            )}
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <Button variant="outline" size="sm" onClick={exportCsv} disabled={!rows.length}>

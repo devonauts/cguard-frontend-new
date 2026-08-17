@@ -53,6 +53,7 @@ interface NominaSettings {
     nightStartHour?: number;
     nightEndHour?: number;
     overtimeThresholdHours?: number;
+    roundingMinutes?: number;
   };
 }
 
@@ -241,6 +242,31 @@ export default function NominaSettings() {
                 </label>
               )}
               <Num label="Umbral de horas extra (h/turno)" path="payroll.overtimeThresholdHours" />
+              {/* No existía: se acumulaban segundos exactos y un informe de
+                  quince días daba cifras como 172,37 h, que hay que redondear a
+                  mano en una hoja de cálculo — donde se pierde el rastro de
+                  quién ajustó qué. */}
+              <label className="block">
+                <span className="text-sm font-medium">Redondear las horas del informe</span>
+                <p className="mt-0.5 text-xs" style={{ color: "var(--ink-faint)" }}>
+                  Se aplica al total de cada persona, no a cada marcación: así el redondeo no
+                  se acumula turno a turno. Déjalo en «Sin redondear» para conservar los
+                  minutos exactos.
+                </p>
+                <select
+                  className="cg-input cg-focus mt-1.5 w-56 px-3 py-2 text-sm"
+                  value={String(s.payroll?.roundingMinutes ?? 0)}
+                  onChange={(e) =>
+                    setS((p) => set(p as NominaSettings, "payroll.roundingMinutes", Number(e.target.value)))
+                  }
+                >
+                  <option value="0">Sin redondear</option>
+                  <option value="5">Al múltiplo de 5 minutos</option>
+                  <option value="15">Al cuarto de hora</option>
+                  <option value="30">A la media hora</option>
+                  <option value="60">A la hora</option>
+                </select>
+              </label>
             </SettingsSection>
 
             {/* ── COSTOS DEL HORARIO ────────────────────────────────────────────

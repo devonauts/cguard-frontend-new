@@ -59,6 +59,17 @@ export default function NominaTimeClock() {
   };
   useEffect(refresh, []);
 
+  // ¿Esta empresa exige selfie al marcar? Se pregunta una vez al abrir; si falla
+  // se asume que NO, para no bloquear el fichaje por un problema nuestro — el
+  // servidor sigue siendo quien decide.
+  const [exigeSelfie, setExigeSelfie] = useState(false);
+  useEffect(() => {
+    attendanceService
+      .getSettings()
+      .then((s: any) => setExigeSelfie(!!s?.general?.requireSelfie))
+      .catch(() => setExigeSelfie(false));
+  }, []);
+
   const getPosition = (): Promise<{ latitude: number; longitude: number }> =>
     new Promise((resolve, reject) => {
       if (!navigator.geolocation) return reject(new Error("Geolocalización no disponible"));
@@ -69,6 +80,49 @@ export default function NominaTimeClock() {
       );
     });
 
+  /**
+   * Captura una foto con la cámara del navegador y la devuelve como fichero.
+   *
+   * Sin esto, activar «Requerir selfie» rompía ESTA pantalla: el servidor la
+   * exigía y el reloj web no la mandaba nunca, así que devolvía 400 sin salida.
+   * La app del vigilante sí la manda, por eso el fallo sólo aparecía por el
+   * camino web — el más difícil de reproducir.
+   */
+  const capturarSelfie = (): Promise<File> =>
+    new Promise((resolve, reject) => {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        return reject(new Error("Este navegador no puede usar la cámara. Marca desde la app."));
+      }
+      navigator.mediaDevices
+        .getUserMedia({ video: { facingMode: "user" } })
+        .then((stream) => {
+          const video = document.createElement("video");
+          video.srcObject = stream;
+          video.playsInline = true;
+          video.play();
+          // Un fotograma en cuanto haya imagen: la cámara tarda en exponer y
+          // disparar de inmediato da una foto negra.
+          video.onloadedmetadata = () => {
+            setTimeout(() => {
+              const canvas = document.createElement("canvas");
+              canvas.width = video.videoWidth || 640;
+              canvas.height = video.videoHeight || 480;
+              canvas.getContext("2d")?.drawImage(video, 0, 0, canvas.width, canvas.height);
+              stream.getTracks().forEach((t) => t.stop());
+              canvas.toBlob(
+                (blob) => {
+                  if (!blob) return reject(new Error("No se pudo tomar la foto"));
+                  resolve(new File([blob], "selfie.jpg", { type: "image/jpeg" }));
+                },
+                "image/jpeg",
+                0.85,
+              );
+            }, 600);
+          };
+        })
+        .catch(() => reject(new Error("No se pudo abrir la cámara. Revisa los permisos del navegador.")));
+    });
+
   const doClockIn = async () => {
     if (mode === "guard" && !stationId) return toast.error("Selecciona un puesto");
     setBusy(true);
@@ -77,8 +131,18 @@ export default function NominaTimeClock() {
       // sent when available so an office geofence can validate them.
       let coords: { latitude?: number; longitude?: number } = {};
       try { coords = await getPosition(); } catch (e) { if (mode === "guard") throw e; }
+
+      // La selfie SÓLO si la empresa la exige y sólo para vigilantes: el reloj
+      // de personal de oficina va por otro endpoint que no la pide.
+      let selfiePhoto: string | undefined;
+      if (mode === "guard" && exigeSelfie) {
+        toast.info("Mira a la cámara…");
+        const foto = await capturarSelfie();
+        selfiePhoto = await attendanceService.uploadClockInSelfie(foto);
+      }
+
       const res: { success?: boolean; message?: string } = mode === "guard"
-        ? await attendanceService.clockIn({ stationId, ...coords })
+        ? await attendanceService.clockIn({ stationId, ...coords, ...(selfiePhoto ? { selfiePhoto } : {}) })
         : await attendanceService.staffClockIn(coords);
       if (res && res.success === false) {
         toast.error(res.message || "No se pudo marcar entrada");

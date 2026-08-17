@@ -144,6 +144,18 @@ const attendanceService = {
     return unwrap(await api.post(`/tenant/${t}/attendance/${id}/correct`, { data }));
   },
 
+  /**
+   * El periodo de nómina vigente del tenant.
+   *
+   * La Hoja de horas mandaba 14 días fijos, así que el selector «semanal /
+   * quincenal / mensual» de Configuración no cambiaba una sola cifra: se
+   * guardaba y no lo leía nadie.
+   */
+  async currentPeriod(): Promise<{ periodType: string; label: string; from: string; to: string }> {
+    const t = getTenantId();
+    return unwrap(await api.get(`/tenant/${t}/attendance/current-period`));
+  },
+
   async payrollSummary(params?: Record<string, unknown>) {
     const t = getTenantId();
     return unwrap(await api.get(`/tenant/${t}/attendance/payroll-summary${buildQuery(params)}`));
@@ -161,7 +173,39 @@ const attendanceService = {
     return unwrap(await api.get(`/tenant/${t}/guard/me`));
   },
 
-  async clockIn(data: { stationId: string; latitude?: number; longitude?: number }) {
+  /**
+   * Sube la selfie del fichaje y devuelve su `privateUrl`, que es lo que el
+   * servidor espera en `selfiePhoto`.
+   *
+   * Hacía falta porque activar «Requerir selfie» ROMPÍA el reloj web: el
+   * servidor la exigía y este cliente no la mandaba nunca, así que devolvía 400
+   * sin salida posible. Sólo fallaba por el camino web —la app del vigilante sí
+   * la manda— que es el más difícil de reproducir.
+   */
+  async uploadClockInSelfie(file: File): Promise<string> {
+    const t = getTenantId();
+    const filename = `selfie-${Date.now()}.jpg`;
+    const creds: any = await api.get(
+      `/tenant/${t}/file/credentials?filename=${encodeURIComponent(filename)}&storageId=guardShiftSelfie`,
+    );
+    const d = creds?.data ?? creds;
+    const uploadUrl = d?.uploadCredentials?.url;
+    if (!uploadUrl) throw new Error("No se pudo preparar la subida de la foto");
+
+    const form = new FormData();
+    form.append("filename", filename);
+    form.append("file", file);
+    const resp = await fetch(uploadUrl, { method: "POST", body: form });
+    if (!resp.ok) throw new Error("No se pudo subir la foto");
+    return d?.privateUrl as string;
+  },
+
+  async clockIn(data: {
+    stationId: string;
+    latitude?: number;
+    longitude?: number;
+    selfiePhoto?: string;
+  }) {
     const t = getTenantId();
     return unwrap(await api.post(`/tenant/${t}/guard/me/clock-in`, { data: { ...data, platform: "web" } }));
   },
