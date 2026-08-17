@@ -192,14 +192,24 @@
 
        GRANDES y con caída larga (74 %): una mancha pequeña se lee como un foco
        apuntando a algo; una que ocupa media pantalla y se apaga despacio se lee
-       como la luz de la sala. Es la diferencia entre decorar y ambientar. */
-    radial-gradient(52vmax 46vmax at 47% 46%,
+       como la luz de la sala. Es la diferencia entre decorar y ambientar.
+
+       ── LO QUE HACE QUE SE VEAN DOS COLORES ─────────────────────────────
+       La SEPARACIÓN, no la saturación. Con las dos manchas casi encima (47/46
+       y 54/55) se fundían en una sola y, al bajar el croma para que quedara
+       apagado, dejaba de distinguirse que había dos.
+
+       Ahora nacen en lados opuestos del centro (37/38 y 64/63) y se cruzan en
+       medio: cada mitad tiene su tono, el centro es la mezcla, y el conjunto
+       sigue centrado. Así se pueden leer dos colores SIN subir el croma — que
+       es lo que habría deshecho lo apagado. */
+    radial-gradient(50vmax 46vmax at 37% 38%,
       color-mix(in oklab, var(--canvas-1) 55%, transparent) 0%,
       transparent 74%),
     /* Mancha 2 — cian, abajo-derecha. Se solapan de sobra: en la
        zona común nace un tercer color que ninguna de las dos tiene, y ése es el
        que hace que parezca luz y no pintura. */
-    radial-gradient(50vmax 44vmax at 54% 55%,
+    radial-gradient(48vmax 44vmax at 64% 63%,
       color-mix(in oklab, var(--canvas-2) 55%, transparent) 0%,
       transparent 72%),
     /* Vela muy tenue por debajo, para que las tarjetas de cristal tengan algo
@@ -218,7 +228,7 @@
    el desenfoque para que quede insinuado, no estampado. */
 :root:not(.dark) .app-shell::before {
   filter: blur(130px);
-  opacity: 0.6;
+  opacity: 0.46;
 }
 
 /* En oscuro el halo tiene que empujar más: sobre un lienzo a L 0.09 un degradado
@@ -232,7 +242,7 @@
    en 0.032 y lo que se levanta es la claridad de las dos luces. Así el negro
    deja de ser plano sin que aparezca «un color» en pantalla — que es justo la
    diferencia entre reservado y decorado. */
-.dark .app-shell::before { opacity: 0.8; }
+.dark .app-shell::before { opacity: 0.6; }
 
 /* Deriva lentísima — 40 s por ciclo, unos pocos píxeles. No se «ve» moverse;
    lo que hace es que la pantalla no se sienta congelada cuando uno lleva horas

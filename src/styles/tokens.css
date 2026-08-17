@@ -56,19 +56,23 @@
      Azules fríos de croma muy bajo: se leen como LUZ DE SALA y conviven con
      cualquier acento que elija el usuario, incluido uno morado o uno azul.
 
-     ── POR QUÉ TAN CERCA Y NO UNA PAREJA CON MÁS CONTRASTE ────────────────
-     La primera versión era índigo 275 + cian 205: 70° de separación, y se leían
-     como DOS colores distintos. Eso es lo contrario de reservado. La referencia
-     es Apple, y su fondo no es un degradado de dos colores — es UN color que se
-     desplaza.
+     ── LA SEPARACIÓN ENTRE LOS DOS TONOS ──────────────────────────────────
+     58°. Se llegó aquí por descarte, probando y mirando:
 
-     35° es lo que hace la diferencia: suficiente para que el ojo note que el
-     lienzo no es plano, insuficiente para nombrarlo como dos colores. Lo que se
-     percibe es profundidad, no decoración.
+       · 70° (índigo 275 + cian 205) → dos colores puestos en pantalla. Chillón.
+       · 35° (262 + 227)            → un solo color desplazándose. Demasiado
+                                       poco: se pierde el degradado.
+       · 58° (278 + 220)            → violeta y azul, se distinguen como DOS,
+                                       y siguen siendo la misma familia fría.
+
+     La clave no está en la distancia entre tonos sino en el CROMA y la OPACIDAD:
+     dos colores muy separados pero apagados se leen como elegantes; dos colores
+     cercanos pero saturados, no. Lo apagado lo dan las dos líneas de abajo, no
+     el ángulo.
 
      Se cambian aquí y sólo aquí. */
-  --canvas-h1: 262;   /* azul-violeta */
-  --canvas-h2: 227;   /* azul */
+  --canvas-h1: 278;   /* violeta */
+  --canvas-h2: 220;   /* azul */
 
   /* ── Acento derivado — MODO CLARO ──────────────────────────────────────── */
   --brand:       oklch(0.72 var(--brand-c) var(--brand-h));
@@ -81,7 +85,7 @@
   /* ── Neutros ACROMÁTICOS — modo claro ──────────────────────────────────── */
   --canvas:      oklch(0.955 0 0);
   /* Las dos luces del lienzo. En claro van altas para no ensuciar el blanco. */
-  --canvas-c:    0.055;
+  --canvas-c:    0.048;
   --canvas-1:    oklch(0.74 var(--canvas-c) var(--canvas-h1));
   --canvas-2:    oklch(0.77 var(--canvas-c) var(--canvas-h2));
   --ink:         oklch(0.17 0 0);
@@ -151,9 +155,9 @@
      lee como una pantalla de presentación, no como una herramienta de trabajo
      que alguien mira ocho horas. Lo que debe percibirse es que el negro NO es
      plano — no que hay un color. */
-  --canvas-c:    0.032;
-  --canvas-1:    oklch(0.62 var(--canvas-c) var(--canvas-h1));
-  --canvas-2:    oklch(0.66 var(--canvas-c) var(--canvas-h2));
+  --canvas-c:    0.034;
+  --canvas-1:    oklch(0.56 var(--canvas-c) var(--canvas-h1));
+  --canvas-2:    oklch(0.60 var(--canvas-c) var(--canvas-h2));
   --ink:         oklch(0.97 0 0);
   --ink-soft:    oklch(0.72 0 0);
   --ink-faint:   oklch(0.56 0 0);
