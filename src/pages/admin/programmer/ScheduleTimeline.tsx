@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { nombreDeVigilante } from "@/lib/guardName";
 import { Clock, Loader2, MapPin, Pencil, Trash2, User, X } from 'lucide-react';
 import { ApiService } from '@/services/api/apiService';
 import { toast } from 'sonner';
@@ -429,7 +430,7 @@ export default function ScheduleTimeline({
   // ─── Render helpers ──────────────────────────────────────────────────────
 
   const guardLabelOf = (s: ShiftRecord) =>
-    s.guard ? `${s.guard.firstName || ''} ${s.guard.lastName || ''}`.trim() : (guardsPool.find(g => g.id === s.guardId)?.label || '?');
+    s.guard ? nombreDeVigilante(s.guard) : (guardsPool.find(g => g.id === s.guardId)?.label || '?');
 
   // El tinte de la columna sale de los tokens: hoy lleva el acento del usuario,
   // el domingo un rojo tenue. Nada de colores fijos que se peleen con el acento.

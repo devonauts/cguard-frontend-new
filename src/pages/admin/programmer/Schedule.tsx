@@ -1,4 +1,5 @@
 import { localToday } from '@/lib/utils';
+import { nombreDeVigilante, inicialesDeVigilante, primerNombre } from "@/lib/guardName";
 import { getTenantTimezone } from '@/utils/tenantLocation';
 import { useState, useEffect, useMemo, useCallback, useRef, useLayoutEffect } from "react";
 import AppLayout from "@/layouts/app-layout";
@@ -645,10 +646,13 @@ export default function Schedule() {
       const dateStr = dateToWall(new Date(s.startTime), tzName).dateStr;
       const key = `${s.stationId}-${dateStr}`;
       const g = s.guard;
-      const fullName = g
-        ? `${g.firstName || ''} ${g.lastName || ''}`.trim()
-        : (guardsPool.find(x => x.id === s.guardId)?.label || 'SF');
-      const initials = g ? `${g.firstName?.[0] || ''}${g.lastName?.[0] || ''}`.toUpperCase() : 'SF';
+      // El respaldo por `guardsPool` cubre el turno que llega sin objeto guard;
+      // el segundo argumento cubre el que lo trae SIN nombre.
+      const fullName = nombreDeVigilante(
+        g,
+        guardsPool.find(x => x.id === s.guardId)?.label || 'SF',
+      );
+      const initials = inicialesDeVigilante(g, 'SF');
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push({ name: initials || 'SF', fullName });
     }
@@ -872,7 +876,7 @@ export default function Schedule() {
         return isWorkDay(a, day) !== 'rest';
       });
     if (occupiedBy) {
-      const nm = occupiedBy.guard ? `${occupiedBy.guard.firstName || ''} ${occupiedBy.guard.lastName || ''}`.trim() : 'el fijo';
+      const nm = nombreDeVigilante(occupiedBy.guard, 'el fijo');
       toast.error(`Ese día ${nm} está de turno en este puesto. Primero libera el día (novedad de Libre/Vacaciones/Permiso, o elimina el turno con clic derecho) y luego arrastra el sacafranco.`);
       return;
     }
@@ -901,7 +905,7 @@ export default function Schedule() {
     // the final turno (D / N / 24h / custom hours) before anything is created.
     const hhmm = (m: number) => `${String(Math.floor(((m % 1440) + 1440) % 1440 / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
     const g = guardsPool.find(x => x.id === sfGuardId);
-    const sfName = g?.label || assignments.find(a => a.guardId === sfGuardId)?.guard?.firstName || 'Sacafranco';
+    const sfName = g?.label || primerNombre(assignments.find(a => a.guardId === sfGuardId)?.guard, 'Sacafranco');
     setSfCover({
       sfGuardId,
       sfName,
@@ -996,8 +1000,8 @@ export default function Schedule() {
     for (const a of posAssignments) {
       const s = shiftByGuardDate.get(`${a.guardId}|${dateStr}`);
       if (s && s.stationId === station.id) {
-        const nm = a.guard?.firstName || 'vigilante';
-        const full = a.guard ? `${a.guard.firstName || ''} ${a.guard.lastName || ''}`.trim() : nm;
+        const nm = primerNombre(a.guard, 'vigilante');
+        const full = nombreDeVigilante(a.guard, nm);
         items.push({ label: `Editar turno de ${nm} (vista Día)…`, onClick: () => jumpToDay(dateStr) });
         items.push({ label: 'Duplicar turno al día siguiente', onClick: () => void duplicateShiftNextDay(s) });
         items.push({ label: 'Eliminar turno de este día', danger: true, onClick: () => void deleteDayShift(s) });
@@ -1006,7 +1010,7 @@ export default function Schedule() {
     }
     if (posAssignments.length) {
       const a = posAssignments[0];
-      const guardName = a.guard ? `${a.guard.firstName || ''} ${a.guard.lastName || ''}`.trim() : 'Vigilante';
+      const guardName = nombreDeVigilante(a.guard, 'Vigilante');
       // On a rest (L) day the puesto is uncovered — offer to assign a sacafranco
       // to cover it (opens the picker modal). Skip when it's already covered.
       const resting = isWorkDay(a, new Date(dateStr + 'T00:00:00')) === 'rest';
@@ -1020,7 +1024,7 @@ export default function Schedule() {
       // the tenant timezone. Gating this on a shift row hid it on most cells,
       // because the grid paints D/N/L from the rotation, not from shift rows.
       items.push({
-        label: `Trasladar a ${a.guard?.firstName || 'vigilante'} a otra estación…`,
+        label: `Trasladar a ${primerNombre(a.guard, 'vigilante')} a otra estación…`,
         onClick: () => setTransferTarget({
           guardId: a.guardId,
           guardName,
@@ -1050,7 +1054,7 @@ export default function Schedule() {
         items.push({ label: 'Quitar cobertura', danger: true, onClick: () => void removeSfCoverage(covShift) });
         items.push({ label: '—' });
       }
-      const gName = sfGuard.guard ? `${sfGuard.guard.firstName || ''} ${sfGuard.guard.lastName || ''}`.trim() : 'Sacafranco';
+      const gName = nombreDeVigilante(sfGuard.guard, 'Sacafranco');
       items.push({
         label: 'Trasladar a otra estación…',
         onClick: () => setTransferTarget({
@@ -1467,7 +1471,7 @@ export default function Schedule() {
     if (cells.length === 1 && type === 'L') {
       const { row, dateStr } = cells[0];
       const a = row.assignments[0];
-      const guardName = a.guard ? `${a.guard.firstName || ''} ${a.guard.lastName || ''}`.trim() : 'Vigilante';
+      const guardName = nombreDeVigilante(a.guard, 'Vigilante');
       await performOverrideSave({ guardId: a.guardId, guardName, date: dateStr, assignmentId: a.id }, type);
       return;
     }
@@ -1524,7 +1528,7 @@ export default function Schedule() {
       return;
     }
     const a = row.assignments[0];
-    const guardName = a.guard ? `${a.guard.firstName || ''} ${a.guard.lastName || ''}`.trim() : 'Vigilante';
+    const guardName = nombreDeVigilante(a.guard, 'Vigilante');
     setOverrideTarget({ guardId: a.guardId, guardName, date: fmtDate(monthDays[sel.fc]), assignmentId: a.id });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sel, selectableRows, monthDays]);
@@ -1729,7 +1733,7 @@ export default function Schedule() {
     if (!row) return null;
     const count = (selBounds.r2 - selBounds.r1 + 1) * (selBounds.c2 - selBounds.c1 + 1);
     const guard = row.assignments[0]?.guard;
-    const who = guard ? `${guard.firstName || ''} ${guard.lastName || ''}`.trim() : 'sin vigilante';
+    const who = nombreDeVigilante(guard, 'sin vigilante');
     return `${count} celda${count === 1 ? '' : 's'} · ${row.station?.stationName || ''} — ${row.pos.name} (${who})`;
   }, [sel, selBounds, selectableRows]);
 
@@ -1782,9 +1786,7 @@ export default function Schedule() {
         ) : (
           <div className="flex-1 flex flex-col gap-0.5">
             {posAssignments.map(assignment => {
-              const guardName = assignment.guard
-                ? `${assignment.guard.firstName || ''} ${assignment.guard.lastName || ''}`.trim()
-                : '?';
+              const guardName = nombreDeVigilante(assignment.guard, '?');
               const color = guardColorMap[assignment.guardId] || 'var(--ink-faint)';
               const override = getOverride(assignment.guardId, dateStr);
 
@@ -2138,7 +2140,7 @@ export default function Schedule() {
                                 {posAssignments.length > 0 && (
                                   <div className="flex flex-col gap-0.5">
                                     {posAssignments.map(a => {
-                                      const name = a.guard ? `${a.guard.firstName || ''} ${a.guard.lastName || ''}`.trim().split(' ')[0] : '?';
+                                      const name = a.guard ? nombreDeVigilante(a.guard).split(' ')[0] : '?';
                                       const color = guardColorMap[a.guardId] || 'var(--ink-faint)';
                                       return (
                                         <button
@@ -2155,7 +2157,7 @@ export default function Schedule() {
                                             borderLeft: `2px solid ${color}`,
                                             color: 'var(--ink)',
                                           }}
-                                          title={`${a.guard?.firstName} ${a.guard?.lastName} — Arrastra para mover · Clic para remover`}
+                                          title={`${nombreDeVigilante(a.guard, 'Vigilante')} — Arrastra para mover · Clic para remover`}
                                         >
                                           {name} ×
                                         </button>
@@ -2276,7 +2278,7 @@ export default function Schedule() {
                                     style={tonePill('ok', 14)}
                                     title="Arrastra para mover · Clic para quitar"
                                   >
-                                    {posAssignments[0].guard.firstName?.split(' ')[0]} ×
+                                    {primerNombre(posAssignments[0].guard)} ×
                                   </button>
                                 )}
                                 {!assigned && (
@@ -2326,7 +2328,7 @@ export default function Schedule() {
                                 const sfGuard = assigned ? posAssignments[0] : null;
                                 const override = sfGuard ? getOverride(sfGuard.guardId, dateStr) : undefined;
                                 if (override && sfGuard) {
-                                  const gName = sfGuard.guard ? `${sfGuard.guard.firstName || ''} ${sfGuard.guard.lastName || ''}`.trim() : '?';
+                                  const gName = nombreDeVigilante(sfGuard.guard, '?');
                                   return (
                                     <div key={dayIdx} {...cellProps} className={cellBase}>
                                       <div
@@ -2343,7 +2345,7 @@ export default function Schedule() {
 
                                 const openSfDetail = () => {
                                   if (!sfGuard) { openAssignForm(pos.stationId, pos.id, dateStr); return; }
-                                  const gName = sfGuard.guard ? `${sfGuard.guard.firstName || ''} ${sfGuard.guard.lastName || ''}`.trim() : '?';
+                                  const gName = nombreDeVigilante(sfGuard.guard, '?');
                                   setOverrideTarget({ guardId: sfGuard.guardId, guardName: gName, date: dateStr, assignmentId: sfGuard.id });
                                 };
 
@@ -2609,7 +2611,7 @@ export default function Schedule() {
                       </div>
                       <div className="space-y-1.5">
                         {sacafrancoData.map(sf => {
-                          const name = sf.guard ? `${sf.guard.firstName || ''} ${sf.guard.lastName || ''}`.trim() : '?';
+                          const name = nombreDeVigilante(sf.guard, '?');
                           const availDays = sf.availability.filter(a => a.status === 'available').length;
                           const coverDays = sf.availability.filter(a => a.status === 'covering').length;
                           const stationsCovering = [...new Set(sf.assignments.map(a => stationsById.get(a.stationId)?.stationName).filter(Boolean))];
@@ -2763,7 +2765,7 @@ export default function Schedule() {
           const gid = sf.assignments[0]?.guardId;
           const av = sf.availability.find(a => fmtDate(a.date) === dateStr);
           const name = sf.guard
-            ? `${sf.guard.firstName || ''} ${sf.guard.lastName || ''}`.trim()
+            ? nombreDeVigilante(sf.guard)
             : (guardsPool.find(g => g.id === gid)?.label || 'Sacafranco');
           return { gid, name: name || 'Sacafranco', busy: av?.status === 'covering', where: av?.stationName };
         }).filter(r => !!r.gid);
