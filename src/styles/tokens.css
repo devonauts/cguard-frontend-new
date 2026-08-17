@@ -43,6 +43,25 @@
   --brand-h: 88;
   --brand-c: 0.16;
 
+  /* ── EL COLOR DEL LIENZO — INDEPENDIENTE DEL ACENTO ─────────────────────
+     El fondo tiene SU PROPIA pareja de colores y NO sigue al acento.
+
+     Se probó derivarlos de `--brand-h` y está mal por dos motivos. El primero
+     es de producto: el acento es la marca del cliente y aparece en botones,
+     píldoras y barras; si además tiñe el lienzo entero, deja de ser un acento y
+     pasa a ser el color de todo. El segundo es práctico: las tarjetas de
+     cristal REFRACTAN el lienzo, así que un acento saturado teñía cada tarjeta
+     de un color distinto según dónde cayera.
+
+     Índigo y cian: la pareja canónica del vidrio esmerilado. Son fríos y de
+     croma bajo, así que se leen como LUZ DE SALA y conviven con cualquier
+     acento que elija el usuario — incluido uno morado o uno azul.
+
+     Se cambian aquí y sólo aquí. */
+  --canvas-h1: 275;   /* índigo */
+  --canvas-h2: 205;   /* cian */
+  --canvas-c:  0.085; /* croma bajo a propósito: es luz, no pintura */
+
   /* ── Acento derivado — MODO CLARO ──────────────────────────────────────── */
   --brand:       oklch(0.72 var(--brand-c) var(--brand-h));
   --brand-ink:   oklch(0.16 0 0);
@@ -53,6 +72,9 @@
 
   /* ── Neutros ACROMÁTICOS — modo claro ──────────────────────────────────── */
   --canvas:      oklch(0.955 0 0);
+  /* Las dos luces del lienzo. En claro van altas para no ensuciar el blanco. */
+  --canvas-1:    oklch(0.74 var(--canvas-c) var(--canvas-h1));
+  --canvas-2:    oklch(0.76 var(--canvas-c) var(--canvas-h2));
   --ink:         oklch(0.17 0 0);
   --ink-soft:    oklch(0.47 0 0);
   --ink-faint:   oklch(0.62 0 0);
@@ -114,6 +136,10 @@
   --brand-glow:  oklch(0.78 var(--brand-c) var(--brand-h) / 0.30);
 
   --canvas:      oklch(0.09 0 0);
+  /* Sobre negro hay que subirlas: a la luminosidad del modo claro se las traga
+     el lienzo y no se ve nada. */
+  --canvas-1:    oklch(0.62 var(--canvas-c) var(--canvas-h1));
+  --canvas-2:    oklch(0.64 var(--canvas-c) var(--canvas-h2));
   --ink:         oklch(0.97 0 0);
   --ink-soft:    oklch(0.72 0 0);
   --ink-faint:   oklch(0.56 0 0);

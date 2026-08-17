@@ -133,46 +133,99 @@
 }
 
 /* ── EL LIENZO ─────────────────────────────────────────────────────────────
-   Un degradado en CAPAS, no un color plano ni dos manchas sueltas.
+   Dos manchas de color al CENTRO, desenfocadas hasta volverse vidrio.
 
-   POR QUÉ ASÍ Y NO CON `filter: blur()`. La versión anterior eran dos círculos
-   con desenfoque, y desenfocar obliga al navegador a rasterizar esa capa. Un
-   `radial-gradient` YA es suave por definición: mismo resultado, sin coste de
-   composición, y se puede apilar varios en una sola propiedad.
+   ANTES: cuatro capas con el halo del acento arriba a la derecha (82% -8%) y un
+   contrahalo abajo a la izquierda. Empujaba la vista a una esquina y dejaba el
+   centro —donde de verdad está el trabajo— apagado.
 
-   Cuatro capas, de arriba abajo:
-     1. halo del ACENTO arriba a la derecha — el foco cálido, sigue al acento
-     2. contrahalo frío abajo a la izquierda — da profundidad y evita que el
-        lienzo se lea como una sola mancha de color
-     3. vela central muy tenue — levanta el centro para que las tarjetas de
-        cristal tengan algo detrás que refractar
-     4. base plana — el color del lienzo
+   AHORA: las dos manchas nacen en el centro, apenas separadas, y se solapan. Lo
+   que se ve es UNA fuente de luz con dos temperaturas, no dos focos peleándose.
 
-   Va en `position: fixed` para que NO se desplace con la página: un fondo que
-   se mueve con el scroll delata que es una imagen; uno quieto se lee como la
-   luz de la sala.
+   ── LOS DOS COLORES: PROPIOS, NO EL ACENTO ──────────────────────────────
+   Índigo y cian, definidos en tokens.css (`--canvas-1` / `--canvas-2`) y SIN
+   relación con `--brand`.
+
+   Derivarlos del acento estaba mal por dos motivos. De producto: el acento es
+   la marca del cliente y ya vive en botones, píldoras y barras; si además tiñe
+   el lienzo entero deja de ser un acento y pasa a ser el color de todo. Y
+   práctico: las tarjetas de cristal REFRACTAN este lienzo, así que un acento
+   saturado teñía cada tarjeta de un color distinto según dónde cayera.
+
+   ── POR QUÉ AHORA SÍ SE USA `filter: blur()` ────────────────────────────
+   La versión anterior lo evitaba a propósito, y con razón: desenfocar obliga a
+   rasterizar la capa. Pero el efecto de vidrio que se pidió NO sale de un
+   `radial-gradient` —que es suave, pero se lee como un degradado— sino de
+   manchas nítidas fundidas por un desenfoque grande. Es la diferencia entre un
+   fondo degradado y un cristal esmerilado con luz detrás.
+
+   El coste está acotado porque esta capa es única, está `fixed`, y NO cambia:
+   el navegador la rasteriza UNA vez y luego sólo compone. La deriva de 40 s va
+   por `transform`, que se aplica sobre el resultado ya filtrado y no vuelve a
+   invalidar el desenfoque — por eso lleva `will-change: transform`, para que el
+   navegador la promueva a su propia capa desde el principio.
+
+   Nada de esto vale para una lista: un `blur` dentro de un `map()` sigue
+   prohibido (ver CLAUDE.md).
    ───────────────────────────────────────────────────────────────────────── */
 .app-shell { position: relative; isolation: isolate; background: var(--canvas); }
 
 .app-shell::before {
   content: "";
   position: fixed;
-  inset: 0;
+  /* El desenfoque come el borde de la capa y dejaría una orla clara pegada a
+     los cuatro lados. Se desborda lo justo para que el difuminado ocurra fuera
+     de cámara: unos 3x el radio del blur basta.
+     En px y no en vmax A PROPÓSITO — con `-25vmax` en una pantalla ancha la
+     superficie a desenfocar se va a varios miles de píxeles por lado, y eso sí
+     se nota en el primer pintado. */
+  inset: -300px;
   z-index: -1;
   pointer-events: none;
+
   background:
-    radial-gradient(60vw 55vh at 82% -8%,
-      color-mix(in oklab, var(--brand) 26%, transparent) 0%, transparent 62%),
-    radial-gradient(52vw 48vh at 12% 108%,
-      color-mix(in oklab, var(--ink) 18%, transparent) 0%, transparent 58%),
-    radial-gradient(90vw 70vh at 50% 45%,
-      color-mix(in oklab, var(--ink) 5%, transparent) 0%, transparent 70%);
-  opacity: 0.5;
+    /* Mancha 1 — índigo. Apenas arriba-izquierda del centro.
+       MISMO tamaño y MISMA opacidad que la segunda, a propósito: en la primera
+       versión ésta era más grande (38 vs 34) y más opaca (0.55 vs 0.45), y
+       aunque los dos centros promediaban justo el medio, el peso visual tiraba
+       arriba-izquierda. Dos manchas que se solapan sólo se leen como UNA fuente
+       si ninguna domina. */
+    radial-gradient(36vmax 34vmax at 46% 47%,
+      color-mix(in oklab, var(--canvas-1) 62%, transparent) 0%,
+      transparent 68%),
+    /* Mancha 2 — cian, abajo-derecha. Se solapan de sobra: en la
+       zona común nace un tercer color que ninguna de las dos tiene, y ése es el
+       que hace que parezca luz y no pintura. */
+    radial-gradient(36vmax 34vmax at 55% 54%,
+      color-mix(in oklab, var(--canvas-2) 62%, transparent) 0%,
+      transparent 68%),
+    /* Vela muy tenue por debajo, para que las tarjetas de cristal tengan algo
+       que refractar en todo el ancho y el centro no caiga a plano. */
+    radial-gradient(70vmax 55vmax at 50% 50%,
+      color-mix(in oklab, var(--ink) 4%, transparent) 0%, transparent 72%);
+
+  /* El desenfoque que lo convierte en vidrio. A este radio las dos manchas
+     dejan de tener borde y se leen como una sola fuente difusa. */
+  filter: blur(90px) saturate(1.15);
+  opacity: 0.85;
+}
+
+/* En claro el lienzo está a L 0.955: el mismo degradado que en oscuro se vería
+   como una mancha sucia sobre el blanco. Se baja la opacidad y se sube un poco
+   el desenfoque para que quede insinuado, no estampado. */
+:root:not(.dark) .app-shell::before {
+  filter: blur(110px) saturate(1.05);
+  opacity: 0.55;
 }
 
 /* En oscuro el halo tiene que empujar más: sobre un lienzo a L 0.09 un degradado
-   suave se lo traga el negro y no se ve nada. */
-.dark .app-shell::before { opacity: 0.85; }
+   suave se lo traga el negro y no se ve nada.
+   PERO NO HASTA EL TOPE. Este lienzo lo REFRACTAN las tarjetas de cristal
+   (`.glass` lleva backdrop-filter), así que un fondo muy saturado tiñe cada
+   tarjeta de un color distinto según dónde caiga: con opacidad 1 y manchas al
+   50 %, tres tarjetas en fila salían amarilla, verde y azul, y el texto
+   secundario dejaba de leerse. El fondo es la luz de la sala, no el sujeto. */
+.dark .app-shell::before { opacity: 0.9; }
 
 /* Deriva lentísima — 40 s por ciclo, unos pocos píxeles. No se «ve» moverse;
    lo que hace es que la pantalla no se sienta congelada cuando uno lleva horas
@@ -182,7 +235,13 @@
   50%      { transform: translate3d(-1.5%, 1.2%, 0) scale(1.04); }
 }
 @media (prefers-reduced-motion: no-preference) {
-  .app-shell::before { animation: cg-canvas-drift 40s ease-in-out infinite; }
+  /* `will-change` va AQUÍ y no en la regla base: promover la capa cuesta
+     memoria de GPU, y si el usuario pidió menos movimiento esta capa no se
+     anima nunca — no hay nada que promover. */
+  .app-shell::before {
+    animation: cg-canvas-drift 40s ease-in-out infinite;
+    will-change: transform;
+  }
 }
 
 /* Grano finísimo por encima del degradado. Es lo que impide el BANDING: un
