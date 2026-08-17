@@ -53,14 +53,22 @@
      cristal REFRACTAN el lienzo, así que un acento saturado teñía cada tarjeta
      de un color distinto según dónde cayera.
 
-     Índigo y cian: la pareja canónica del vidrio esmerilado. Son fríos y de
-     croma bajo, así que se leen como LUZ DE SALA y conviven con cualquier
-     acento que elija el usuario — incluido uno morado o uno azul.
+     Azules fríos de croma muy bajo: se leen como LUZ DE SALA y conviven con
+     cualquier acento que elija el usuario, incluido uno morado o uno azul.
+
+     ── POR QUÉ TAN CERCA Y NO UNA PAREJA CON MÁS CONTRASTE ────────────────
+     La primera versión era índigo 275 + cian 205: 70° de separación, y se leían
+     como DOS colores distintos. Eso es lo contrario de reservado. La referencia
+     es Apple, y su fondo no es un degradado de dos colores — es UN color que se
+     desplaza.
+
+     35° es lo que hace la diferencia: suficiente para que el ojo note que el
+     lienzo no es plano, insuficiente para nombrarlo como dos colores. Lo que se
+     percibe es profundidad, no decoración.
 
      Se cambian aquí y sólo aquí. */
-  --canvas-h1: 275;   /* índigo */
-  --canvas-h2: 205;   /* cian */
-  --canvas-c:  0.085; /* croma bajo a propósito: es luz, no pintura */
+  --canvas-h1: 262;   /* azul-violeta */
+  --canvas-h2: 227;   /* azul */
 
   /* ── Acento derivado — MODO CLARO ──────────────────────────────────────── */
   --brand:       oklch(0.72 var(--brand-c) var(--brand-h));
@@ -73,8 +81,9 @@
   /* ── Neutros ACROMÁTICOS — modo claro ──────────────────────────────────── */
   --canvas:      oklch(0.955 0 0);
   /* Las dos luces del lienzo. En claro van altas para no ensuciar el blanco. */
+  --canvas-c:    0.055;
   --canvas-1:    oklch(0.74 var(--canvas-c) var(--canvas-h1));
-  --canvas-2:    oklch(0.76 var(--canvas-c) var(--canvas-h2));
+  --canvas-2:    oklch(0.77 var(--canvas-c) var(--canvas-h2));
   --ink:         oklch(0.17 0 0);
   --ink-soft:    oklch(0.47 0 0);
   --ink-faint:   oklch(0.62 0 0);
@@ -138,8 +147,13 @@
   --canvas:      oklch(0.09 0 0);
   /* Sobre negro hay que subirlas: a la luminosidad del modo claro se las traga
      el lienzo y no se ve nada. */
+  /* EN OSCURO EL CROMA BAJA A CASI NADA. Un fondo oscuro con color visible se
+     lee como una pantalla de presentación, no como una herramienta de trabajo
+     que alguien mira ocho horas. Lo que debe percibirse es que el negro NO es
+     plano — no que hay un color. */
+  --canvas-c:    0.032;
   --canvas-1:    oklch(0.62 var(--canvas-c) var(--canvas-h1));
-  --canvas-2:    oklch(0.64 var(--canvas-c) var(--canvas-h2));
+  --canvas-2:    oklch(0.66 var(--canvas-c) var(--canvas-h2));
   --ink:         oklch(0.97 0 0);
   --ink-soft:    oklch(0.72 0 0);
   --ink-faint:   oklch(0.56 0 0);

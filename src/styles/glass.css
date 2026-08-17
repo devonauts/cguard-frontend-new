@@ -184,21 +184,24 @@
   pointer-events: none;
 
   background:
-    /* Mancha 1 — índigo. Apenas arriba-izquierda del centro.
-       MISMO tamaño y MISMA opacidad que la segunda, a propósito: en la primera
-       versión ésta era más grande (38 vs 34) y más opaca (0.55 vs 0.45), y
-       aunque los dos centros promediaban justo el medio, el peso visual tiraba
-       arriba-izquierda. Dos manchas que se solapan sólo se leen como UNA fuente
-       si ninguna domina. */
-    radial-gradient(36vmax 34vmax at 46% 47%,
-      color-mix(in oklab, var(--canvas-1) 62%, transparent) 0%,
-      transparent 68%),
+    /* Mancha 1 — azul-violeta. Apenas arriba-izquierda del centro.
+       MISMO tamaño y MISMA opacidad que la segunda, a propósito: en una versión
+       anterior ésta era más grande y más opaca, y aunque los dos centros
+       promediaban justo el medio, el peso visual tiraba arriba-izquierda. Dos
+       manchas que se solapan sólo se leen como UNA fuente si ninguna domina.
+
+       GRANDES y con caída larga (74 %): una mancha pequeña se lee como un foco
+       apuntando a algo; una que ocupa media pantalla y se apaga despacio se lee
+       como la luz de la sala. Es la diferencia entre decorar y ambientar. */
+    radial-gradient(52vmax 46vmax at 47% 46%,
+      color-mix(in oklab, var(--canvas-1) 55%, transparent) 0%,
+      transparent 74%),
     /* Mancha 2 — cian, abajo-derecha. Se solapan de sobra: en la
        zona común nace un tercer color que ninguna de las dos tiene, y ése es el
        que hace que parezca luz y no pintura. */
-    radial-gradient(36vmax 34vmax at 55% 54%,
-      color-mix(in oklab, var(--canvas-2) 62%, transparent) 0%,
-      transparent 68%),
+    radial-gradient(50vmax 44vmax at 54% 55%,
+      color-mix(in oklab, var(--canvas-2) 55%, transparent) 0%,
+      transparent 72%),
     /* Vela muy tenue por debajo, para que las tarjetas de cristal tengan algo
        que refractar en todo el ancho y el centro no caiga a plano. */
     radial-gradient(70vmax 55vmax at 50% 50%,
@@ -206,7 +209,7 @@
 
   /* El desenfoque que lo convierte en vidrio. A este radio las dos manchas
      dejan de tener borde y se leen como una sola fuente difusa. */
-  filter: blur(90px) saturate(1.15);
+  filter: blur(120px);
   opacity: 0.85;
 }
 
@@ -214,8 +217,8 @@
    como una mancha sucia sobre el blanco. Se baja la opacidad y se sube un poco
    el desenfoque para que quede insinuado, no estampado. */
 :root:not(.dark) .app-shell::before {
-  filter: blur(110px) saturate(1.05);
-  opacity: 0.55;
+  filter: blur(130px);
+  opacity: 0.6;
 }
 
 /* En oscuro el halo tiene que empujar más: sobre un lienzo a L 0.09 un degradado
@@ -225,7 +228,11 @@
    tarjeta de un color distinto según dónde caiga: con opacidad 1 y manchas al
    50 %, tres tarjetas en fila salían amarilla, verde y azul, y el texto
    secundario dejaba de leerse. El fondo es la luz de la sala, no el sujeto. */
-.dark .app-shell::before { opacity: 0.9; }
+/* La presencia en oscuro sube por LUMINOSIDAD, no por croma: el croma se queda
+   en 0.032 y lo que se levanta es la claridad de las dos luces. Así el negro
+   deja de ser plano sin que aparezca «un color» en pantalla — que es justo la
+   diferencia entre reservado y decorado. */
+.dark .app-shell::before { opacity: 0.8; }
 
 /* Deriva lentísima — 40 s por ciclo, unos pocos píxeles. No se «ve» moverse;
    lo que hace es que la pantalla no se sienta congelada cuando uno lleva horas
