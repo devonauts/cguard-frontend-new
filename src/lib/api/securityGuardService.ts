@@ -5,7 +5,7 @@ const getTenantId = (): string => {
   const t = localStorage.getItem("tenantId");
 
   if (!t) {
-    throw new Error("Tenant ID no configurado");
+    throw new Error("No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.");
   }
 
   return t;

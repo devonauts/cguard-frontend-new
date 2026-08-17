@@ -372,7 +372,7 @@ export default function ClientStaff({ client }: { client: Client }) {
 
       <TabFooter
         icon={<RefreshCw />}
-        note="Los estados se actualizan en tiempo real según el check-in de guardias."
+        note="Los estados se actualizan en tiempo real según la marcación de los vigilantes."
         updatedAt={fmtUpdated}
         onRefresh={() => load()}
       />

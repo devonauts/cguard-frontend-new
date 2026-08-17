@@ -94,7 +94,8 @@ export default function ProtectedRoute({
 
   // Sin espacio de trabajo: el usuario está autenticado pero no pertenece a
   // ningún tenant. Antes esto provocaba una pantalla en blanco (los servicios
-  // con scope de tenant lanzan "Tenant ID no configurado"). Lo interceptamos
+  // con scope de tenant lanzan «No pudimos identificar tu empresa»). Lo
+  // interceptamos
   // ANTES de montar cualquier página con scope de tenant.
   if (hasNoWorkspace(user)) {
     // Los superadmin de plataforma son tenantless a propósito: enviarlos a su

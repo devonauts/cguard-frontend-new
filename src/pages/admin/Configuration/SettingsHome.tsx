@@ -28,12 +28,17 @@ export default function SettingsHome() {
         ...sec,
         items: sec.items.filter((it) => {
           const label = t(`settings.configuracion.${it.id}`, { defaultValue: it.label }) as string;
+          // La descripción también traducida: en inglés, buscar «retention» no
+          // encontraba nada porque el heno seguía siendo el español del JSON.
+          const desc = t(`settings.configuracion.${it.id}.desc`, {
+            defaultValue: it.desc ?? "",
+          }) as string;
           // Se busca también en `keywords`, y SIN acentos en ninguno de los dos
           // lados. Antes sólo se miraba etiqueta y descripción tal cual: buscar
           // «turno» daba CERO resultados aunque cuatro páginas tienen reglas de
           // turno, y «geocerca» encontraba una habiendo tres. Un buscador que no
           // encuentra lo que existe enseña a no usarlo.
-          const heno = sinAcentos(`${label} ${it.desc ?? ""} ${it.keywords ?? ""}`);
+          const heno = sinAcentos(`${label} ${desc} ${it.desc ?? ""} ${it.keywords ?? ""}`);
           return heno.includes(sinAcentos(q));
         }),
       }))
@@ -122,7 +127,13 @@ export default function SettingsHome() {
                                   className="mt-0.5 line-clamp-2 text-xs"
                                   style={{ color: "var(--ink-soft)" }}
                                 >
-                                  {item.desc}
+                                  {/* La descripción NO pasaba por `t()`: se pintaba
+                                      el literal del JSON. Con el selector
+                                      ofreciendo inglés, media tarjeta quedaba
+                                      traducida y la otra media en español. */}
+                                  {t(`settings.configuracion.${item.id}.desc`, {
+                                    defaultValue: item.desc,
+                                  })}
                                 </p>
                               ) : null}
                             </div>

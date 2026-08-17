@@ -4,7 +4,7 @@ const API_URL = (import.meta.env.VITE_API_URL as string | undefined) || "";
 
 const getTenantId = (): string => {
   const t = localStorage.getItem("tenantId");
-  if (!t) throw new Error("Tenant ID no configurado");
+  if (!t) throw new Error("No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.");
   return t;
 };
 

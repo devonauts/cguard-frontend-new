@@ -449,7 +449,7 @@ export default function EditAdminUserPage() {
   const onSubmit = async (values: NewAdminUserValues) => {
     try {
       const tenantId = localStorage.getItem("tenantId") || "";
-      if (!tenantId) throw new Error("Tenant ID no configurado");
+      if (!tenantId) throw new Error("No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.");
 
       const payload = {
         name: values.name,

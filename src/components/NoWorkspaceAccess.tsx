@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext"
  * Full-screen, non-dismissible modal shown when a user is authenticated but has
  * NO tenant membership (no workspace). Previously this state white-screened the
  * app: the dashboard's tenant-scoped services call getTenantId(), which throws
- * "Tenant ID no configurado" when localStorage.tenantId is empty, crashing the
+ * «No pudimos identificar tu empresa» when localStorage.tenantId is empty, crashing the
  * React tree. Now we intercept the state in ProtectedRoute and render this modal
  * BEFORE any tenant-scoped page mounts, so the user gets a clear message and a
  * way out (sign out) instead of a blank screen.

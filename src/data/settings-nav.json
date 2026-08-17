@@ -20,7 +20,7 @@
             "path": "/setting/change-password",
             "icon": "KeyRound",
             "desc": "Cambia tu contraseña de acceso.",
-            "keywords": "clave seguridad acceso login sesion"
+            "keywords": "clave seguridad acceso login sesion 2fa doble factor verificacion en dos pasos"
           },
           {
             "id": "mis-avisos",
@@ -91,6 +91,14 @@
             "icon": "CreditCard",
             "desc": "Tu suscripción, tus facturas y tu método de pago.",
             "keywords": "suscripcion pago tarjeta stripe plan prueba trial factura"
+          },
+          {
+            "id": "campos-perfil",
+            "label": "Campos de la ficha",
+            "path": "/setting/campos-perfil",
+            "icon": "ListChecks",
+            "desc": "Qué datos se piden al dar de alta a una persona, y cuáles son obligatorios.",
+            "keywords": "campos ficha alta obligatorio requerido formulario perfil vigilante datos"
           }
         ]
       },
@@ -104,7 +112,7 @@
             "path": "/setting/jornada",
             "icon": "Clock",
             "desc": "Días seguidos, descanso entre turnos, tope semanal y si se puede doblar.",
-            "keywords": "jornada descanso consecutivos horas semanales doblar turno dia libre convenio laboral ley rotacion noche"
+            "keywords": "jornada descanso consecutivos horas semanales doblar turno dia libre convenio laboral ley rotacion noche vacaciones permiso libranza dias seguidos tope semanal"
           },
           {
             "id": "festivos",
@@ -120,7 +128,7 @@
             "path": "/nomina/settings",
             "icon": "Clock",
             "desc": "Tolerancias de entrada y salida, geocerca al marcar, periodo y aprobaciones.",
-            "keywords": "asistencia fichaje reloj turno horario atraso tardanza geocerca gps nomina periodo quincena aprobacion selfie extra"
+            "keywords": "asistencia fichaje reloj turno horario atraso tardanza geocerca gps nomina periodo quincena aprobacion selfie extra horas sobretiempo moneda sueldo salario pago inasistencia falta ausencia tarde retraso foto horas extra hora extra"
           },
           {
             "id": "publishing-sites",
@@ -128,7 +136,7 @@
             "path": "/setting/publishing-sites",
             "icon": "MapPinned",
             "desc": "Alertas de salida y regreso, y minutos antes de escalar un puesto sin cubrir.",
-            "keywords": "puesto estacion geocerca geovalla abandono cobertura escalar sin cubrir consignas"
+            "keywords": "puesto estacion geocerca geovalla abandono cobertura escalar sin cubrir consignas emergencia escalado puesto sin cubrir"
           },
           {
             "id": "keep-safe",
@@ -136,7 +144,7 @@
             "path": "/setting/keep-safe",
             "icon": "Shield",
             "desc": "Inactividad, recordatorios de turno y aviso de credenciales por vencer.",
-            "keywords": "guardia vigilante inactividad recordatorio credencial licencia vencimiento carnet"
+            "keywords": "guardia vigilante inactividad recordatorio credencial licencia vencimiento carnet emergencia panico vencida"
           },
           {
             "id": "rondas-config",
@@ -160,7 +168,7 @@
             "path": "/setting/tipos-licencias",
             "icon": "BadgeCheck",
             "desc": "Credenciales y certificaciones que tu personal debe tener vigentes.",
-            "keywords": "licencia credencial carnet certificacion permiso portacion vencimiento"
+            "keywords": "licencia credencial carnet certificacion permiso portacion vencimiento capacitacion curso vigencia"
           }
         ]
       },
@@ -191,6 +199,14 @@
             "icon": "Radio",
             "desc": "WhatsApp, SMS, saldo del monedero y el historial de consumo.",
             "keywords": "whatsapp sms saldo recarga monedero twilio meta mensaje consumo gasto otp"
+          },
+          {
+            "id": "sms-numeros",
+            "label": "Números y saldo de SMS",
+            "path": "/setting/sms",
+            "icon": "MessageSquare",
+            "desc": "Da de alta tu cuenta de SMS, busca un número y cómpralo.",
+            "keywords": "sms mensaje texto numero telefono comprar linea twilio saldo credito"
           }
         ]
       },
@@ -234,7 +250,7 @@
             "path": "/setting/registro-actividad",
             "icon": "FileBarChart",
             "desc": "Quién cambió qué, quién entró y qué hizo la plataforma sola.",
-            "keywords": "auditoria auditar registro log historial acceso sesion cambios trazabilidad cumplimiento"
+            "keywords": "auditoria auditar registro log historial acceso sesion cambios trazabilidad cumplimiento quien cambio quien entro respaldo copia de seguridad backup"
           },
           {
             "id": "retencion",
@@ -242,7 +258,7 @@
             "path": "/setting/retencion",
             "icon": "DatabaseZap",
             "desc": "Cuánto tiempo se guarda cada cosa antes de borrarse.",
-            "keywords": "retencion borrado purga privacidad gdpr rastro ubicacion gps bitacora auditoria mensajes historial limpieza almacenamiento"
+            "keywords": "retencion borrado purga privacidad gdpr rastro ubicacion gps bitacora auditoria mensajes historial limpieza almacenamiento borrar datos eliminar purgar cuanto tiempo se guarda"
           },
           {
             "id": "integraciones",
