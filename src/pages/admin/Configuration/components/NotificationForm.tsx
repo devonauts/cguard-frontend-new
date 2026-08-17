@@ -65,6 +65,11 @@ const NOTIFICATIONS: NotificationItem[] = [
   { id: "panic-button", label: "Botón de pánico", hint: "Siempre llega al teléfono y a esta pantalla, aunque desmarques la casilla: es una emergencia", default: { dashboard: true, email: true, sms: true } },
   { id: "coverage-uncovered", label: "Puesto sin cubrir", hint: "Nadie llegó al puesto o el vigilante lo abandonó. Llega al teléfono aunque desmarques la casilla", default: { dashboard: true, email: true } },
   { id: "dispatch-updates", label: "Actualizaciones de tickets de Incidente", default: { dashboard: true } },
+  // Fila propia y no compartida con la de arriba: «un incidente más» y «nadie ha
+  // atendido algo grave» son cosas distintas. Al principio comparte fila y una
+  // prueba lo tumbó — el correo encendido por defecto aquí habría encendido el
+  // correo de TODOS los incidentes, incluidos los rutinarios.
+  { id: "incident-unattended", label: "Incidente grave sin atender", hint: "Cuando un incidente crítico lleva rato abierto y nadie lo ha reconocido. Deja de insistir en cuanto alguien lo toma", default: { dashboard: true, email: true } },
   { id: "attendance-exceptions", label: "Novedades de asistencia", hint: "Atraso, inasistencia, salida anticipada, salida sin marcar y marcación fuera de la geocerca", default: { dashboard: true } },
   { id: "attendance-approvals", label: "Aprobaciones de asistencia", hint: "Correcciones enviadas, pendientes de aprobar, aprobadas y rechazadas", default: { dashboard: true } },
   { id: "inactive-guard-alert", label: "Alerta de inactividad para vigilantes inactivos", default: { dashboard: true } },
