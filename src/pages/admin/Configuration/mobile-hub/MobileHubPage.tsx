@@ -152,7 +152,7 @@ export default function MobileHubPage() {
 
   return (
     <AppLayout>
-      <SettingsLayout navKey="configuracion" title="Hub móvil del equipo">
+      <SettingsLayout navKey="configuracion" title="App del equipo">
         <PageContainer width="wide">
           <PageHeader
             icon={<TabletSmartphone />}

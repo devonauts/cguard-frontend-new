@@ -341,7 +341,7 @@ export default function Vehicles() {
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectItem value="empresa">Propiedad de la empresa</SelectItem>
-                                                <SelectItem value="guardia">Propiedad del vigilante</SelectItem>
+                                                <SelectItem value="vigilante">Propiedad del vigilante</SelectItem>
                                                 <SelectItem value="alquilado">Alquilado</SelectItem>
                                             </SelectContent>
                                         </Select>

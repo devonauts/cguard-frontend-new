@@ -16,8 +16,8 @@ import CustomerAppPreview, { serviceIcon, SERVICE_ICONS } from './CustomerAppPre
 /** Pre-made security-service templates: pick one to pre-fill title/description + a
  * named icon (rendered in the app + preview without an uploaded image). */
 const SERVICE_TEMPLATES: { title: string; description: string; iconName: string }[] = [
-  { title: 'Vigilancia física', description: 'Guardias de seguridad uniformados en sitio, 24/7, para disuasión y control de accesos.', iconName: 'guard' },
-  { title: 'Guardia armado', description: 'Personal de seguridad armado y certificado para entornos de alto riesgo.', iconName: 'shield' },
+  { title: 'Vigilancia física', description: 'Vigilantes uniformados en sitio, 24/7, para disuasión y control de accesos.', iconName: 'guard' },
+  { title: 'Vigilante armado', description: 'Personal de seguridad armado y certificado para entornos de alto riesgo.', iconName: 'shield' },
   { title: 'Monitoreo CCTV', description: 'Videovigilancia con cámaras y monitoreo remoto en tiempo real desde nuestra central.', iconName: 'cctv' },
   { title: 'Monitoreo de alarmas', description: 'Recepción y verificación de señales de alarma con respuesta inmediata.', iconName: 'monitoring' },
   { title: 'Botón de pánico / SOS', description: 'Alerta de emergencia con un toque y despacho prioritario de unidades.', iconName: 'panic' },
@@ -497,7 +497,7 @@ export default function MobilPage() {
 
   return (
     <AppLayout>
-      <SettingsLayout navKey="configuracion" title="MOBIL">
+      <SettingsLayout navKey="configuracion" title="App del cliente (Mi Seguridad)">
         <PageContainer width="wide">
           <PageHeader
             icon={<Smartphone />}

@@ -26,7 +26,7 @@ interface PersonnelRow {
   stationId?: string | null;
   name: string;
   code: string | null;
-  role: 'guardia' | 'supervisor' | 'patrullero' | 'operador';
+  role: 'vigilante' | 'supervisor' | 'patrullero' | 'operador';
   roleLabel: string;
   puesto: string | null;
   sede: string | null;
@@ -72,7 +72,7 @@ const ESTADO_META: Record<string, { label: string; tone: BadgeTone }> = {
    serie del acento, asignados SIEMPRE en el mismo orden. Que un filtro deje
    fuera a los supervisores no puede repintar a los guardias. */
 const ROLE_META: Record<string, { label: string; tone: BadgeTone; color: string }> = {
-  guardia:    { label: 'Guardia',    tone: 'slate',   color: seriesVar(0) },
+  guardia:    { label: 'Vigilante',    tone: 'slate',   color: seriesVar(0) },
   supervisor: { label: 'Supervisor', tone: 'blue',    color: seriesVar(1) },
   patrullero: { label: 'Patrullero', tone: 'primary', color: seriesVar(2) },
   operador:   { label: 'Operador',   tone: 'orange',  color: seriesVar(3) },
@@ -122,7 +122,7 @@ export default function ClientStaff({ client }: { client: Client }) {
   // roster. Click → the guard's Perfil › Reseñas. Keyed by securityGuard id.
   const [ratings, setRatings] = useState<Record<string, { average: number; count: number }>>({});
   useEffect(() => {
-    const ids = personal.filter((p) => p.role === 'guardia').map((p) => p.id).filter(Boolean);
+    const ids = personal.filter((p) => p.role === 'vigilante').map((p) => p.id).filter(Boolean);
     if (!ids.length) return;
     let alive = true;
     guardRatingService.summary(ids).then((m) => { if (alive) setRatings((prev) => ({ ...prev, ...m })); }).catch(() => {});
@@ -140,7 +140,7 @@ export default function ClientStaff({ client }: { client: Client }) {
   const resetPage = (fn: (v: string) => void) => (v: string) => { fn(v); setPage(1); };
 
   const openWorker = (p: PersonnelRow) => {
-    if (p.role === 'guardia') navigate(`/guards/${p.id}/resumen`);
+    if (p.role === 'vigilante') navigate(`/guards/${p.id}/resumen`);
     else navigate(`/supervisors/${p.guardId}`);
   };
 
@@ -185,7 +185,7 @@ export default function ClientStaff({ client }: { client: Client }) {
             </select>
             <select className={FIELD_CLS} value={role} onChange={(e) => resetPage(setRole)(e.target.value)}>
               <option value="todos">Rol: Todos</option>
-              <option value="guardia">Guardia</option>
+              <option value="vigilante">Guardia</option>
               <option value="supervisor">Supervisor</option>
               <option value="patrullero">Patrullero</option>
               <option value="operador">Operador</option>
@@ -233,7 +233,7 @@ export default function ClientStaff({ client }: { client: Client }) {
                             <div className="min-w-0">
                               <div className="flex items-center gap-1.5">
                                 <span className="font-medium truncate">{p.name}</span>
-                                {p.role === 'guardia' && ratings[p.id] && (
+                                {p.role === 'vigilante' && ratings[p.id] && (
                                   <GuardRatingLevel average={ratings[p.id].average} count={ratings[p.id].count} onClick={() => navigate(`/guards/${p.id}/reviews`)} />
                                 )}
                               </div>
@@ -265,12 +265,12 @@ export default function ClientStaff({ client }: { client: Client }) {
                                 <DropdownMenuItem onClick={() => openWorker(p)}>
                                   <Eye className="mr-2 h-3.5 w-3.5" /> Ver detalle
                                 </DropdownMenuItem>
-                                {p.role === 'guardia' && (
+                                {p.role === 'vigilante' && (
                                   <DropdownMenuItem onClick={() => navigate(`/security-guards/edit/${p.id}`)}>
                                     <Pencil className="mr-2 h-3.5 w-3.5" /> Editar
                                   </DropdownMenuItem>
                                 )}
-                                {p.role === 'guardia' && p.assignmentId && (
+                                {p.role === 'vigilante' && p.assignmentId && (
                                   <>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem

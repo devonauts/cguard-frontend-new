@@ -326,7 +326,7 @@ export default function UserRolesPage() {
 
   return (
     <AppLayout>
-      <SettingsLayout navKey="configuracion" title="Roles de Usuario">
+      <SettingsLayout navKey="configuracion" title="Roles y permisos">
         <PageContainer width="wide">
           <PageHeader
             icon={<ShieldCheck />}

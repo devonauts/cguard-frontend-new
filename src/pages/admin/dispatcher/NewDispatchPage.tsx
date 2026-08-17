@@ -51,7 +51,7 @@ const prioridades = [
 
 const tiposLlamador = [
   { id: "cliente", name: "Cliente" },
-  { id: "guardia", name: "Vigilante" },
+  { id: "vigilante", name: "Vigilante" },
   { id: "supervisor", name: "Supervisor" },
 ];
 
@@ -886,7 +886,7 @@ export default function NewDispatchPage() {
       // If user manually edited callerName, do not overwrite it
       if (callerNameEdited) return;
 
-      if (ct === 'guardia') {
+      if (ct === 'vigilante') {
         if (watchedGuardId) {
           const id = String(watchedGuardId);
           // Prefer the global guard list, then assigned guards returned for the site/station

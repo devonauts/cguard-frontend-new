@@ -44,7 +44,7 @@ const prioridades = [
 
 const tiposLlamador = [
   { id: "cliente", name: "Cliente" },
-  { id: "guardia", name: "Vigilante" },
+  { id: "vigilante", name: "Vigilante" },
   { id: "supervisor", name: "Supervisor" },
 ];
 

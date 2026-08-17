@@ -61,6 +61,14 @@
             "keywords": "marca color acento logo identidad corporativo correo app branding"
           },
           {
+            "id": "usuarios",
+            "label": "Usuarios",
+            "path": "/back-office",
+            "icon": "Users",
+            "desc": "Quién tiene acceso a la plataforma y con qué rol.",
+            "keywords": "usuario personal oficina equipo invitar alta acceso miembro rol asignar administrador"
+          },
+          {
             "id": "roles",
             "label": "Roles y permisos",
             "path": "/setting/roles",

@@ -5313,7 +5313,9 @@
       "sms-numeros": "SMS numbers and balance",
       "sms-numeros.desc": "Set up your SMS account, search for a number and buy it.",
       "campos-perfil": "Profile fields",
-      "campos-perfil.desc": "Which details are asked when adding a person, and which are required."
+      "campos-perfil.desc": "Which details are asked when adding a person, and which are required.",
+      "usuarios": "Users",
+      "usuarios.desc": "Who can access the platform, and with which role."
     },
     "section": {
       "mi_cuenta": "My account",

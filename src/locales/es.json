@@ -5315,7 +5315,9 @@
       "sms-numeros": "Números y saldo de SMS",
       "sms-numeros.desc": "Da de alta tu cuenta de SMS, busca un número y cómpralo.",
       "campos-perfil": "Campos de la ficha",
-      "campos-perfil.desc": "Qué datos se piden al dar de alta a una persona, y cuáles son obligatorios."
+      "campos-perfil.desc": "Qué datos se piden al dar de alta a una persona, y cuáles son obligatorios.",
+      "usuarios": "Usuarios",
+      "usuarios.desc": "Quién tiene acceso a la plataforma y con qué rol."
     },
     "section": {
       "mi_cuenta": "Mi cuenta",

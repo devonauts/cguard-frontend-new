@@ -81,15 +81,21 @@ export default function ActivityLogHubPage() {
               era verdad, pero Retención de datos ya está publicada DOS FILAS más
               arriba en este mismo índice y borra la bitácora de cambios de
               verdad. Alguien podía leer aquí que su bitácora es eterna, fijar 90
-              días en la pantalla de al lado y perder pruebas. */}
+              días en la pantalla de al lado y perder pruebas.
+
+              2026-08-17: y quedó obsoleta OTRA VEZ en cuanto el historial de
+              accesos ganó su propio plazo de retención y su exportación. Es el
+              tercer aviso de que un texto que describe lo que la plataforma
+              «todavía no hace» caduca solo — si vuelve a hacer falta uno, que
+              enlace a la pantalla en vez de afirmar lo que existe. */}
           <InfoNote tone="neutral" icon={<Info />} className="mt-5">
-            La <strong>bitácora de cambios</strong> se borra según el plazo que fijes en{' '}
+            La <strong>bitácora de cambios</strong> y el{' '}
+            <strong>historial de accesos</strong> se borran según los plazos que fijes en{' '}
             <Link to="/setting/retencion" className="underline" style={{ color: 'var(--brand-text)' }}>
               Retención de datos
             </Link>
-            ; viene sin plazo, o sea que se conserva hasta que decidas otra cosa. El{' '}
-            <strong>historial de accesos</strong> se conserva siempre. Todavía no se pueden
-            exportar desde aquí.
+            . Los dos vienen sin plazo, o sea que se conservan hasta que decidas otra cosa. Puedes
+            descargarlos en CSV desde su pantalla.
           </InfoNote>
         </PageContainer>
       </SettingsLayout>
