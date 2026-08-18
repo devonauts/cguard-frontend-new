@@ -100,7 +100,14 @@ export default function SupervisorsPage() {
         turnoStart: form.turnoStart || undefined,
         turnoEnd: form.turnoEnd || undefined,
       });
-      toast.success("Supervisor creado y enviada la invitación");
+      // Cuenta que ya existía (trabaja con otra empresa en CGuardPro): se ENLAZÓ,
+      // no se creó — decir "invitación enviada" haría esperar un correo de
+      // registro que no va a llegar (recibe uno de "te dieron acceso").
+      if ((sup as any)?.linkedExistingAccount) {
+        toast.success("Este correo ya tenía cuenta en CGuardPro: se le dio acceso a tu empresa. Entrará a la app con su contraseña actual.", { duration: 8000 });
+      } else {
+        toast.success("Supervisor creado y enviada la invitación");
+      }
       setOpen(false);
       setForm({ email: "", firstName: "", lastName: "", governmentId: "", phoneNumber: "", zone: "", assignedVehicle: "", turnoStart: "", turnoEnd: "" });
       setTurnoDays([]);

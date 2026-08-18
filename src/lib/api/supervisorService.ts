@@ -43,6 +43,9 @@ export interface Supervisor {
   dutyLateMinutes?: number;
   dutyScheduledEnd?: string | null;
   createdAt?: string | null;
+  /** Sólo en la respuesta de create: el correo ya tenía cuenta activa (trabaja
+   *  con otra empresa) y el alta la ENLAZÓ — entra con su contraseña actual. */
+  linkedExistingAccount?: boolean;
 }
 
 export interface CreateSupervisorBody {

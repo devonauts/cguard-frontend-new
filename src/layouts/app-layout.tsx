@@ -7,6 +7,7 @@ import { setTenantId as setCategoryTenantId } from "@/lib/api/categoryService";
 import { useLocation, useNavigate } from "react-router-dom";
 import TenantJoinModal from "@/components/TenantJoinModal";
 import TrialBanner from "@/components/TrialBanner";
+import DemoDataBanner from "@/components/DemoDataBanner";
 import { RadioRealtimeProvider } from "@/components/radio/RadioRealtimeProvider";
 import RadioVoiceWidget from "@/components/radio/RadioVoiceWidget";
 import OnboardingProvider from "@/components/onboarding/OnboardingProvider";
@@ -293,6 +294,7 @@ function AppLayoutShell({ children }: AppLayoutProps) {
       >
         <OnboardingProvider>
           <TrialBanner />
+          <DemoDataBanner />
           {children}
         </OnboardingProvider>
       </main>

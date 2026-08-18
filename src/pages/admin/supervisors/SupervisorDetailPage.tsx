@@ -148,6 +148,24 @@ export default function SupervisorDetailPage() {
                 </div>
               )}
 
+              {/* Cuenta compartida con otra empresa: el nombre/correo/foto son de
+                  su cuenta PERSONAL (no de esta empresa). Zona, vehículo, turno y
+                  todo lo operativo sí pertenecen a esta empresa y se editan aquí. */}
+              {(sup as any).accountSharedWithOtherCompany && (
+                <div
+                  className="rounded-xl border px-3 py-2 text-xs"
+                  style={{
+                    background: "color-mix(in oklab, var(--info, var(--brand)) 10%, transparent)",
+                    borderColor: "color-mix(in oklab, var(--info, var(--brand)) 26%, transparent)",
+                    color: "var(--ink-soft)",
+                  }}
+                >
+                  Este supervisor también presta servicios con otra empresa en CGuardPro.
+                  Su nombre, correo y foto son de su cuenta personal; lo que configures
+                  aquí (zona, vehículo, turno, rutas) aplica solo a tu empresa.
+                </div>
+              )}
+
               {/* ── BODY GRID ────────────────────────────────────────────── */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* MAIN (2/3) */}
