@@ -1,0 +1,118 @@
+/**
+ * Puente con el escritorio — y con el sistema operativo en general.
+ *
+ * El CRM corre en tres envolturas: pestaña de navegador, PWA instalada y la app
+ * de escritorio (Electron, carpeta desktop/). Este módulo es el ÚNICO sitio que
+ * sabe distinguirlas; el resto del código llama a estas funciones y cada
+ * envoltura hace lo que puede:
+ *
+ *   · notifyNative()  — aviso DEL SISTEMA (aparece aunque el CRM esté
+ *     minimizado o detrás de otra ventana). En Electron la API web Notification
+ *     ya es nativa; en navegador/PWA pide permiso una sola vez. Para una
+ *     central de monitoreo esto es la diferencia entre ver el pánico y no verlo.
+ *   · setAppBadge()   — contador en el icono (dock de macOS / barra de tareas /
+ *     icono de la PWA). Electron vía el preload; PWA vía la Badging API.
+ *   · onDeepLink()    — enlaces cguardpro:// abiertos desde fuera (el push del
+ *     teléfono del dueño abre el incidente en su escritorio).
+ *
+ * `window.cguardDesktop` lo inyecta el preload de Electron (desktop/preload.cjs).
+ * Si no existe, estamos en web y cada función degrada con elegancia.
+ */
+
+interface CguardDesktopBridge {
+  setBadge: (count: number) => void;
+  onDeepLink: (cb: (path: string) => void) => void;
+  version?: string;
+}
+
+declare global {
+  interface Window {
+    cguardDesktop?: CguardDesktopBridge;
+  }
+}
+
+/** ¿Corremos dentro de la app de escritorio? */
+export function isDesktop(): boolean {
+  return typeof window !== "undefined" && !!window.cguardDesktop;
+}
+
+/* ── Avisos del sistema ─────────────────────────────────────────────────── */
+
+let permissionAsked = false;
+
+/** Pide el permiso de avisos una sola vez, y solo tras un gesto real (llamar
+ *  esto desde un flujo de usuario, no al cargar — los navegadores penalizan el
+ *  prompt en frío). En Electron el permiso ya está concedido por el shell. */
+export function ensureNotificationPermission(): void {
+  try {
+    if (typeof Notification === "undefined") return;
+    if (Notification.permission === "default" && !permissionAsked) {
+      permissionAsked = true;
+      void Notification.requestPermission();
+    }
+  } catch { /* sin soporte */ }
+}
+
+/**
+ * Aviso nativo del sistema — SOLO cuando el CRM no está a la vista (minimizado,
+ * en otra pestaña, detrás de otra app). Con la ventana visible ya están el
+ * chime y el toast; duplicarlos en el centro de notificaciones es ruido.
+ * Al tocarlo, trae la ventana al frente y navega a `path` si se indicó.
+ */
+export function notifyNative(title: string, body?: string, path?: string): void {
+  try {
+    if (typeof Notification === "undefined") return;
+    if (Notification.permission !== "granted") return;
+    if (typeof document !== "undefined" && document.visibilityState === "visible" && document.hasFocus()) return;
+    const n = new Notification(title, {
+      body: body || undefined,
+      // El tag colapsa duplicados del mismo evento si el SO re-entrega.
+      tag: `cguard-${title}-${(body || "").slice(0, 40)}`,
+      icon: "/assets/logo/c-guard-app-logo.png",
+    });
+    n.onclick = () => {
+      try { window.focus(); } catch { /* ignore */ }
+      if (path) navigateInApp(path);
+      n.close();
+    };
+  } catch { /* best-effort — un aviso perdido no puede romper nada */ }
+}
+
+/* ── Contador en el icono ───────────────────────────────────────────────── */
+
+export function setAppBadge(count: number): void {
+  const n = Math.max(0, Math.floor(count) || 0);
+  // Electron (dock / barra de tareas) — el preload habla con el main process.
+  try { window.cguardDesktop?.setBadge(n); } catch { /* ignore */ }
+  // PWA instalada (Badging API — Chrome/Edge).
+  try {
+    const nav: any = navigator;
+    if (typeof nav?.setAppBadge === "function") {
+      if (n > 0) void nav.setAppBadge(n);
+      else void nav.clearAppBadge?.();
+    }
+  } catch { /* ignore */ }
+}
+
+/* ── Deep links (cguardpro://…) ─────────────────────────────────────────── */
+
+/** Navegar dentro de la SPA sin recargar: pushState + popstate para que
+ *  react-router (BrowserRouter) se entere. */
+export function navigateInApp(path: string): void {
+  try {
+    const clean = path.startsWith("/") ? path : `/${path}`;
+    window.history.pushState({}, "", clean);
+    window.dispatchEvent(new PopStateEvent("popstate"));
+  } catch { /* ignore */ }
+}
+
+/** Suscribirse a los enlaces cguardpro:// que abren la app desde fuera. */
+export function onDeepLink(cb: (path: string) => void): void {
+  try { window.cguardDesktop?.onDeepLink(cb); } catch { /* ignore */ }
+}
+
+// Manejo por defecto: un deep link navega dentro de la SPA. Registrado al
+// importar el módulo (main.tsx lo importa una vez).
+if (typeof window !== "undefined" && window.cguardDesktop) {
+  onDeepLink((path) => navigateInApp(path));
+}

@@ -12,6 +12,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { type Socket } from 'socket.io-client';
 import { getAuthToken } from '@/lib/api';
 import { playNotificationChime } from '@/lib/notificationSound';
+import { notifyNative, setAppBadge, ensureNotificationPermission } from '@/lib/desktop';
 import { crearSocket, cerrarSocket } from '@/lib/socket';
 
 const API_URL = (import.meta.env.VITE_API_URL as string | undefined) || '';
@@ -174,6 +175,16 @@ export function useNotificationStream(
       } catch {
         /* best-effort */
       }
+      // Aviso NATIVO del sistema cuando el CRM no está a la vista (minimizado /
+      // otra pestaña / app de escritorio en segundo plano): un pánico o un
+      // incidente debe sonar en el sistema operativo, no solo dentro de una
+      // ventana que nadie está mirando. notifyNative ya se auto-silencia con la
+      // ventana visible, así que nunca duplica el toast.
+      try {
+        notifyNative(n.title, n.body);
+      } catch {
+        /* best-effort */
+      }
       // Fire the in-CRM custom alert for the live arrival.
       try {
         onLiveRef.current(n);
@@ -191,6 +202,21 @@ export function useNotificationStream(
   }, [tenantId, addNotification]);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
+
+  // Contador en el icono (dock / barra de tareas / PWA). Solo el consumidor
+  // "vivo" (la campana del header, el que pasa onLive) lo publica — los montajes
+  // de solo-datos no compiten por el badge. Idempotente y best-effort.
+  useEffect(() => {
+    if (!onLiveRef.current) return;
+    try { setAppBadge(unreadCount); } catch { /* ignore */ }
+  }, [unreadCount]);
+
+  // El permiso de avisos se pide una vez, desde un montaje real del stream
+  // (hay sesión y hay interfaz) — no en frío al cargar la página de login.
+  useEffect(() => {
+    if (!tenantId || !onLiveRef.current) return;
+    ensureNotificationPermission();
+  }, [tenantId]);
 
   return { notifications, unreadCount, markRead, markAllRead, connected };
 }

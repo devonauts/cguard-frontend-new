@@ -24,6 +24,14 @@ import "@/styles/tokens.css";
 import "@/styles/globals.css";
 import "@/styles/glass.css";
 import { Toaster } from "sonner";
+import OfflineBanner from "@/components/OfflineBanner";
+import { startCachePersistence } from "@/lib/offline/persistCache";
+// Registra los replayers de la cola offline (efecto secundario, una vez).
+import "@/lib/offline/replayers";
+import { registerSW } from "virtual:pwa-register";
+// Puente escritorio/SO (efecto secundario: registra el manejador de deep links
+// cguardpro:// cuando corremos dentro de la app de escritorio).
+import "@/lib/desktop";
 import { ConfirmHost } from "@/components/ui/confirmDialog";
 
 // Stale-deploy recovery: after each publish the hashed chunk files change and
@@ -32,6 +40,15 @@ import { ConfirmHost } from "@/components/ui/confirmDialog";
 // emits vite:preloadError for exactly this — reload once to pick up the new
 // build. The sessionStorage stamp (10s window) prevents a reload loop if the
 // failure is something else (e.g. offline).
+// ── Modo offline ────────────────────────────────────────────────────────────
+// 1) Service worker (vite-plugin-pwa): pre-cachea el bundle → la app INSTALA
+//    desde Chrome/Edge y ABRE sin red. `immediate` + autoUpdate: cada deploy
+//    toma control sin pedirle nada al usuario.
+// 2) Persistencia del caché de datos (react-query → IndexedDB): lo que se vio
+//    online se puede volver a ver offline. Ver lib/offline/persistCache.ts.
+registerSW({ immediate: true });
+startCachePersistence();
+
 window.addEventListener("vite:preloadError", (event) => {
   const last = Number(sessionStorage.getItem("chunkReloadAt") || 0);
   if (Date.now() - last < 10_000) return; // already retried — let it surface
@@ -44,6 +61,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     {/* <BrowserRouter> */}
         <App />
+        {/* Estado de red global: solo visible sin conexión / reconectando /
+            con escrituras encoladas. */}
+        <OfflineBanner />
         {/* Platform-styled confirm() replacement (see confirmDialog.tsx). */}
         <ConfirmHost />
         {/* Notifications must sit at the very top of the stacking context so the

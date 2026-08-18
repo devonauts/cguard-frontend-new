@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosInstance } from "axios"
 import { toast } from "sonner"
+import { reportRequestOk, reportNetworkFailure } from "@/lib/offline/networkStatus"
 import { autoInvalidateForMutation } from "@/lib/queryClient"
 
 const API_URL = import.meta.env.VITE_API_URL as string | undefined
@@ -128,6 +129,8 @@ function normalizeError(error: AxiosError): ApiError {
 
 api.interceptors.response.use(
   (response) => {
+    // Señal de red viva para el modo offline (banner + flush de la cola).
+    try { reportRequestOk() } catch { /* nunca romper la respuesta */ }
     const cfg = response.config as any as MutableConfig & { toast?: any }
     if (cfg.__toastId) {
       toast.dismiss(cfg.__toastId)
@@ -147,6 +150,14 @@ api.interceptors.response.use(
         ; (cfg as MutableConfig).__toastId = undefined
     }
     const apiError = normalizeError(error as AxiosError)
+
+    // status 0 = la petición nunca llegó al servidor (red caída / DNS / timeout
+    // duro). Alimenta el estado global de red; un 4xx/5xx en cambio PRUEBA que
+    // hay red y lo reporta como OK.
+    try {
+      if (apiError.status === 0 || apiError.status === 408) reportNetworkFailure()
+      else reportRequestOk()
+    } catch { /* ignore */ }
 
     // Subscription paywall: a blocked tenant gets a 402. Nudge them to billing.
     if (apiError.status === 402 && apiError.code === 'subscription_required') {

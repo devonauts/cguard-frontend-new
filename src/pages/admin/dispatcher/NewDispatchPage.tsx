@@ -34,6 +34,7 @@ import { clientService } from "@/lib/api/clientService";
 import IncidentTypesService from "@/services/incident-types.service";
 import api from "@/lib/api";
 import { postSiteService } from "@/lib/api/postSiteService";
+import { runOrQueue } from "@/lib/offline/offlineQueue";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import securityGuardService from '@/lib/api/securityGuardService';
@@ -993,7 +994,26 @@ export default function NewDispatchPage() {
       // Debug: log final payload that will be sent to the API
       // eslint-disable-next-line no-console
 
-      const resp = await api.post(`/tenant/${tenantId}/incident`, { data: incidentPayload });
+      // Sin red, el incidente NO se pierde: entra a la cola offline y sale solo
+      // al reconectar (lib/offline). Un error DEL SERVIDOR (4xx/5xx) sigue
+      // reventando abajo como siempre — eso significa que la petición SÍ llegó.
+      const { queued, result: resp } = await runOrQueue(
+        "incident.create",
+        incidentPayload,
+        () => api.post(`/tenant/${tenantId}/incident`, { data: incidentPayload }),
+        "Incidente",
+      );
+      if (queued) {
+        toast.warning(
+          attachments && attachments.length > 0
+            ? "Sin conexión: el incidente quedó en cola y se enviará solo. Los adjuntos no viajan en la cola — agrégalos desde el detalle cuando vuelva la red."
+            : "Sin conexión: el incidente quedó en cola y se enviará solo al reconectar.",
+          { duration: 9000 },
+        );
+        setAttachments([]);
+        navigate('/dispatch-tickets');
+        return;
+      }
       const created = (resp && (resp.data && (resp.data.data || resp.data)) ) || resp;
 
       // Show success toast

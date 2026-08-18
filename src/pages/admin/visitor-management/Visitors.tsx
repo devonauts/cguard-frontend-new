@@ -59,6 +59,7 @@ import {
     Field,
 } from "@/components/kit";
 import visitorLogService from "@/lib/api/visitorLogService";
+import { runOrQueue } from "@/lib/offline/offlineQueue";
 import api from '@/lib/api';
 import { useTranslation } from 'react-i18next';
 import { clientService } from '@/lib/api/clientService';
@@ -844,7 +845,20 @@ export default function Visitors() {
                 placeType: newVisitor.placeTypeKind && newVisitor.placeTypeValue ? `${newVisitor.placeTypeKind.toUpperCase()} - ${newVisitor.placeTypeValue}` : (newVisitor.placeTypeValue || undefined),
             };
 
-            const created = await visitorLogService.create(payload);
+            // Sin red, la visita queda en cola y sale sola al reconectar; la
+            // foto del documento no viaja en la cola (se agrega luego).
+            const { queued, result: created } = await runOrQueue(
+                "visitorLog.create",
+                payload,
+                () => visitorLogService.create(payload),
+                "Visita",
+            );
+            if (queued) {
+                toast.warning("Sin conexión: la visita quedó en cola y se registrará sola al reconectar.", { duration: 9000 });
+                setOpenAddVisitor(false);
+                setNewVisitor((s) => ({ ...s, firstName: '', lastName: '', idNumber: '', mobile: '', client: '', site: '', guard: '', placeTypeKind: '', placeTypeValue: '', numPeople: 1, reason: '' }));
+                return;
+            }
             // created should include visitDate from backend
             const createdVisitDate = created?.visitDate;
             const createdDateObj = createdVisitDate ? new Date(createdVisitDate) : null;

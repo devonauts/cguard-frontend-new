@@ -3,6 +3,7 @@ import { Camera, Check, ChevronLeft, ChevronRight, Edit2, Loader2, Plus, ScanLin
 import { toast } from 'sonner';
 import { confirmDialog } from '@/components/ui/confirmDialog';
 import { visitorLogService } from '@/lib/api/visitorLogService';
+import { runOrQueue } from "@/lib/offline/offlineQueue";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -249,7 +250,12 @@ function VisitorFormModal({ open, initialData, stationId, onClose, onSaved }: {
       const payload: any = { firstName: form.firstName.trim(), lastName: form.lastName.trim(), idNumber: form.idNumber.trim() || undefined, reason: form.reason.trim() || undefined, numPeople: Number(form.numPeople) || 1, placeType, visitDate: form.visitDate ? new Date(form.visitDate).toISOString() : new Date().toISOString(), exitTime: form.exitTime ? new Date(form.exitTime).toISOString() : null, stationId };
       if (idPhotoMeta) payload.idPhoto = idPhotoMeta;
       if (isEdit) { await visitorLogService.update(initialData.id, payload); toast.success('Registro actualizado.'); }
-      else { await visitorLogService.create(payload); toast.success('Visitante registrado.'); }
+      else {
+        // Sin red: a la cola offline; se registra solo al reconectar.
+        const { queued } = await runOrQueue("visitorLog.create", payload, () => visitorLogService.create(payload), "Visita");
+        if (queued) toast.warning('Sin conexión: la visita quedó en cola y se registrará sola al reconectar.', { duration: 9000 });
+        else toast.success('Visitante registrado.');
+      }
       onSaved(); onClose();
     } catch (e: any) { toast.error(e?.message || 'Error al guardar.'); }
     finally { setSaving(false); }

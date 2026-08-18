@@ -1,4 +1,5 @@
 import { toast } from "sonner";
+import { reportRequestOk, reportNetworkFailure } from "@/lib/offline/networkStatus";
 import { autoInvalidateForMutation } from "@/lib/queryClient";
 const API_BASE_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:3001/api").replace(/\/+$/, "");
 
@@ -62,8 +63,12 @@ export class ApiService {
       try {
         // Ensure credentials (cookies) are sent so backend session auth works
         response = await fetch(url, { ...options, headers, credentials: 'include', cache: options.cache ?? 'no-store' });
+        // Señal de red viva para el modo offline (banner + flush de la cola):
+        // llegó UNA respuesta, del código que sea → hay red.
+        try { reportRequestOk(); } catch { /* ignore */ }
       } catch {
         if (idempotent && attempt < maxAttempts) { await sleep(250 * attempt); continue; }
+        try { reportNetworkFailure(); } catch { /* ignore */ }
         throw new ApiError("No se pudo conectar con el servidor.", 0, null);
       }
 

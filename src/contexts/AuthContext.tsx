@@ -6,6 +6,9 @@ import { setTenantId as setCategoryTenantId } from "@/lib/api/categoryService";
 import { setTenantId as setStationServiceTenantId } from "@/lib/api/stationService";
 import { ApiError } from "../services/api/apiService";
 import { queryClient } from "@/lib/queryClient";
+import { clearPersistedCache } from "@/lib/offline/persistCache";
+import { clearQueue } from "@/lib/offline/offlineQueue";
+import { isNetworkFailure } from "@/lib/offline/networkStatus";
 
 interface User { id?: string; email: string; permissions?: string[]; [k: string]: any }
 interface AuthResult { success: boolean; error?: string; needVerification?: boolean }
@@ -226,6 +229,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
 
       setUser(userData);
+      // Copia local del perfil para la SESIÓN OFFLINE: si el próximo arranque
+      // no alcanza al servidor (internet de la oficina caído), la app abre con
+      // esta identidad en modo lectura en vez de rebotar al login. Se borra en
+      // el cierre de sesión. El backend sigue autorizando cada petición real.
+      try { localStorage.setItem("authUserCache", JSON.stringify({ at: Date.now(), user: userData })); } catch {}
       // normalize permissions and admin flag
       const { perms, admin, tenantAdmin } = extractPermissionsFromUser(userData);
       // /auth/me is the source of truth: ALWAYS reconcile (including clearing)
@@ -255,6 +263,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } else {
         console.warn("getProfile error no tipado:", e?.message || e);
       }
+      // ── Sesión offline ────────────────────────────────────────────────────
+      // El fallo fue de RED (no un 401): hay token válido pero no hay servidor.
+      // Antes esto dejaba `user` en null → rebote al login con la oficina sin
+      // internet. Ahora se abre con el último perfil conocido (≤24 h): la
+      // navegación funciona, las listas salen del caché persistido, y las
+      // escrituras seguras se encolan. En cuanto vuelve la red, /auth/me
+      // reconcilia y manda la verdad del servidor.
+      try {
+        const is401 = e instanceof ApiError && e.status === 401;
+        if (!is401 && isNetworkFailure(e)) {
+          const raw = localStorage.getItem("authUserCache");
+          const cached = raw ? JSON.parse(raw) : null;
+          const fresh = cached && Date.now() - (cached.at || 0) < 24 * 60 * 60 * 1000;
+          if (fresh && cached.user) {
+            console.warn("[offline] sin servidor — sesión restaurada del caché local");
+            setUser(cached.user);
+            const { perms, admin, tenantAdmin } = extractPermissionsFromUser(cached.user);
+            setPermissions(perms);
+            setIsAdmin(admin);
+            setTenantAdmin(tenantAdmin);
+          }
+        }
+      } catch { /* sin caché utilizable — se queda el comportamiento previo */ }
     } finally {
       setLoading(false);
       authCheckInProgress = false;
@@ -380,6 +411,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // Flush the react-query cache so the NEXT login (an SPA nav, no page
       // reload) can't be served the previous session's cached lists.
       try { queryClient.clear(); } catch {}
+      // Modo offline: en una máquina compartida, el siguiente usuario no puede
+      // heredar ni los datos persistidos en IndexedDB, ni el perfil cacheado,
+      // ni una cola de escrituras ajena.
+      try { localStorage.removeItem("authUserCache"); } catch {}
+      try { clearQueue(); } catch {}
+      try { void clearPersistedCache(); } catch {}
       // Reset ALL in-memory auth state — previously permissions/isAdmin lingered.
       setUser(null);
       setPermissions([]);

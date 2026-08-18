@@ -10,7 +10,14 @@ import { QueryClient } from "@tanstack/react-query";
  *
  * Defaults chosen for an operations console (data changes, but not sub-second):
  *  · staleTime 30s   — re-navigating within 30s does NOT refetch.
- *  · gcTime 5m       — keep unused data around briefly for back/forward.
+ *  · gcTime 24h      — was 5m. El caché ahora se PERSISTE a IndexedDB para el
+ *                      modo offline (lib/offline/persistCache.ts), y el
+ *                      recolector borra de memoria Y del volcado: con 5m, a los
+ *                      cinco minutos de no visitar una página su copia offline
+ *                      desaparecía. 24h casa con el maxAge de la persistencia.
+ *                      Coste en memoria: unos MB por jornada — irrelevante en
+ *                      un desktop. staleTime no cambia: online se refresca igual
+ *                      que siempre; gcTime solo decide cuánto se RETIENE.
  *  · refetchOnWindowFocus false — no refetch storm when tabbing back in.
  *  · retry 1         — one quiet retry; the fetch layer already retries GETs.
  * Real-time views (live map, alarms) can opt into their own short staleTime or
@@ -20,7 +27,7 @@ export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 30_000,
-      gcTime: 5 * 60_000,
+      gcTime: 24 * 60 * 60_000,
       refetchOnWindowFocus: false,
       retry: 1,
     },

@@ -56,8 +56,9 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/logo/c-guard-app-logo.png" />
     <link rel="shortcut icon" type="image/png" href="/assets/logo/c-guard-app-logo.png" />
 
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="/manifest.json" />
+    <!-- PWA manifest: lo inyecta vite-plugin-pwa en el build (manifest.webmanifest),
+         versionado junto al service worker en vite.config.ts. El manifest.json
+         suelto de public/ quedó retirado para no servir dos manifests. -->
 
     <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Sparkles, Trash2 } from "lucide-react";
+import { MessageCircle, Sparkles, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { ApiService } from "@/services/api/apiService";
 
@@ -105,6 +105,21 @@ export default function DemoDataBanner() {
           vigilantes y novedades de muestra para que veas el sistema vivo.
         </span>
       </span>
+      {/* El traspaso a WhatsApp: los 13 registros muertos demostraron que el
+          autoservicio solo no cierra — en LATAM el B2B se conversa. El mensaje
+          va prellenado para que el primer contacto no empiece de cero. */}
+      <a
+        href={`https://wa.me/593995914128?text=${encodeURIComponent(
+          "Hola, acabo de crear mi cuenta en CGuardPro y me gustaría que me ayuden a configurarla.",
+        )}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition-[filter] hover:brightness-110"
+        style={{ background: "var(--brand)", color: "var(--brand-ink)" }}
+      >
+        <MessageCircle size={13} />
+        ¿Te lo configuramos contigo?
+      </a>
       <button
         onClick={quitar}
         disabled={removing}
