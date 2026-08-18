@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useState, type CSSProperties, type ReactNode
 import { createPortal } from "react-dom";
 import { Siren, Phone, MapPin, User, Building2, Clock } from "lucide-react";
 import { startPanicAlarm, stopPanicAlarm } from "@/lib/notificationSound";
+import { ApiService } from "@/services/api/apiService";
 import type { PlatformNotification } from "@/hooks/useNotificationStream";
 
 /**
@@ -112,6 +113,36 @@ export function PanicAlertOverlay({
 
   const phoneTel = p.phone ? String(p.phone).replace(/[^+\d]/g, "") : null;
 
+  // ── LA LISTA DE LLAMADAS ────────────────────────────────────────────────
+  // Aquí sólo había un `tel:911` escrito a mano y el teléfono del sitio. En un
+  // SOS de VIGILANTE eso deja a quien atiende sin nadie a quien llamar: los
+  // contactos de emergencia cuelgan de un panel de alarma, y en un pánico de
+  // persona no hay panel.
+  //
+  // El servidor resuelve la cadena completa (contactos del panel → cliente →
+  // representante legal → supervisor de zona → emergencias del país) y el 911
+  // deja de estar escrito en la interfaz.
+  const [contactos, setContactos] = useState<Array<{
+    nombre: string; telefono: string; rol: string; pideClave?: boolean;
+  }>>([]);
+
+  useEffect(() => {
+    if (!latest) { setContactos([]); return; }
+    let vivo = true;
+    const qs = new URLSearchParams();
+    if (p.stationId) qs.set("stationId", String(p.stationId));
+    if (p.postSiteId) qs.set("postSiteId", String(p.postSiteId));
+    if (p.clientAccountId) qs.set("clientAccountId", String(p.clientAccountId));
+
+    ApiService.get(`/tenant/${localStorage.getItem("tenantId")}/emergency/call-list?${qs}`)
+      .then((r: any) => { if (vivo) setContactos(r?.contacts || r?.data?.contacts || []); })
+      // Que falle la lista NO puede tumbar la alerta de pánico: se queda con lo
+      // que ya se muestra arriba.
+      .catch(() => { if (vivo) setContactos([]); });
+
+    return () => { vivo = false; };
+  }, [latest, p.stationId, p.postSiteId, p.clientAccountId]);
+
   const handleAck = async () => {
     if (!action.trim() || saving) return;
     setSaving(true);
@@ -205,14 +236,59 @@ export function PanicAlertOverlay({
               <Row icon={<User size={18} />} label={isClient ? "Cliente" : "Vigilante"} value={isClient ? (p.clientName || p.guardName) : p.guardName} />
               <Row icon={<Phone size={18} />} label="Teléfono del sitio" value={p.phone} />
               <Row icon={<Clock size={18} />} label="Hora" value={when} />
+              {/* La cadena de llamadas, en el orden en que se llamaría. Antes
+                  este espacio estaba vacío en todo pánico de persona. */}
+              {contactos.filter((c) => c.rol !== "Emergencias").length > 0 && (
+                <div className="pt-1">
+                  <p className="cg-eyebrow mb-1.5">A quién llamar</p>
+                  <div className="space-y-1">
+                    {contactos
+                      .filter((c) => c.rol !== "Emergencias")
+                      .map((c, i) => (
+                        <a
+                          key={`${c.telefono}-${i}`}
+                          href={`tel:${String(c.telefono).replace(/[^+\d]/g, "")}`}
+                          className="flex items-center justify-between gap-3 rounded-lg px-2.5 py-1.5 text-sm transition-colors hover:brightness-110"
+                          style={{ background: "color-mix(in oklab, var(--panic) 8%, transparent)" }}
+                        >
+                          <span className="min-w-0 flex-1 truncate">
+                            <span className="font-semibold">{c.nombre}</span>
+                            <span className="ml-2 text-xs" style={{ color: "var(--ink-faint)" }}>
+                              {c.rol}
+                            </span>
+                            {/* La clave verbal NO viaja; sólo el aviso de que hay
+                                que pedirla, que es lo que la hace útil. */}
+                            {c.pideClave && (
+                              <span className="ml-2 text-xs font-semibold" style={{ color: "var(--warn-text)" }}>
+                                pide clave
+                              </span>
+                            )}
+                          </span>
+                          <span className="shrink-0 font-mono text-xs">{c.telefono}</span>
+                        </a>
+                      ))}
+                  </div>
+                </div>
+              )}
+
               <div className="flex flex-wrap gap-2 pt-1">
-                <a
-                  href="tel:911"
-                  className="flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold transition-[filter] hover:brightness-110"
-                  style={{ background: "var(--panic-fill)", color: "var(--panic-ink)" }}
-                >
-                  <Phone size={16} /> Llamar 911
-                </a>
+                {/* El número de emergencias lo decide el SERVIDOR según el país
+                    del tenant o lo que la empresa configuró. Estaba fijo en 911
+                    —correcto en Ecuador y México, no en Colombia (123), Perú
+                    (105) ni España (112)— y no había forma de cambiarlo. */}
+                {(() => {
+                  const emerg = contactos.find((c) => c.rol === "Emergencias");
+                  const numero = emerg?.telefono || "911";
+                  return (
+                    <a
+                      href={`tel:${numero}`}
+                      className="flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold transition-[filter] hover:brightness-110"
+                      style={{ background: "var(--panic-fill)", color: "var(--panic-ink)" }}
+                    >
+                      <Phone size={16} /> Llamar {numero}
+                    </a>
+                  );
+                })()}
                 {phoneTel && (
                   <a
                     href={`tel:${phoneTel}`}
