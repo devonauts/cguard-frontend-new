@@ -20,7 +20,7 @@
  */
 
 interface CguardDesktopBridge {
-  setBadge: (count: number) => void;
+  setBadge: (count: number, overlayDataUrl?: string) => void;
   onDeepLink: (cb: (path: string) => void) => void;
   version?: string;
 }
@@ -80,10 +80,34 @@ export function notifyNative(title: string, body?: string, path?: string): void 
 
 /* ── Contador en el icono ───────────────────────────────────────────────── */
 
+/** Punto rojo con número (estilo barra de tareas de Windows), dibujado aquí
+ *  porque el main process de Electron no tiene canvas. 32×32, legible a 16px. */
+function drawBadgeOverlay(n: number): string | undefined {
+  try {
+    const c = document.createElement("canvas");
+    c.width = 32; c.height = 32;
+    const ctx = c.getContext("2d");
+    if (!ctx) return undefined;
+    ctx.beginPath();
+    ctx.arc(16, 16, 15, 0, Math.PI * 2);
+    ctx.fillStyle = "#d21f3c";
+    ctx.fill();
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 18px -apple-system, 'Segoe UI', sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(n > 99 ? "99+" : String(n), 16, 17);
+    return c.toDataURL("image/png");
+  } catch {
+    return undefined;
+  }
+}
+
 export function setAppBadge(count: number): void {
   const n = Math.max(0, Math.floor(count) || 0);
   // Electron (dock / barra de tareas) — el preload habla con el main process.
-  try { window.cguardDesktop?.setBadge(n); } catch { /* ignore */ }
+  // El overlay dibujado solo lo usa Windows; en macOS basta el número.
+  try { window.cguardDesktop?.setBadge(n, n > 0 ? drawBadgeOverlay(n) : undefined); } catch { /* ignore */ }
   // PWA instalada (Badging API — Chrome/Edge).
   try {
     const nav: any = navigator;
