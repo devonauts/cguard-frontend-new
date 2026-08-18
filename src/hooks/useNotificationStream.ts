@@ -181,7 +181,7 @@ export function useNotificationStream(
       // ventana que nadie está mirando. notifyNative ya se auto-silencia con la
       // ventana visible, así que nunca duplica el toast.
       try {
-        notifyNative(n.title, n.body);
+        notifyNative(n.title, n.body, undefined, n.id);
       } catch {
         /* best-effort */
       }

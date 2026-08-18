@@ -27,12 +27,14 @@ const tid = (sealed?: string): string => {
  *  operador los agrega después desde el detalle. Perder el adjunto es barato;
  *  perder el REGISTRO del incidente no. */
 registerReplayer("incident.create", async (payload: any, tenantId?: string) => {
-  await api.post(`/tenant/${tid(tenantId)}/incident`, { data: payload });
+  // silentError: el replay corre en segundo plano — un rechazo no debe disparar
+  // toasts sin contexto ni la redirección del interceptor 402 a facturación.
+  await api.post(`/tenant/${tid(tenantId)}/incident`, { data: payload }, { toast: { silentError: true } } as any);
   invalidateEntity("incidents");
 });
 
 /** Visita registrada sin red (bitácora de recepción). */
 registerReplayer("visitorLog.create", async (payload: any, tenantId?: string) => {
-  await api.post(`/tenant/${tid(tenantId)}/visitor-log`, { data: payload });
+  await api.post(`/tenant/${tid(tenantId)}/visitor-log`, { data: payload }, { toast: { silentError: true } } as any);
   invalidateEntity("visitors");
 });

@@ -128,6 +128,10 @@ export class ApiService {
       // session). Clear it and return to the login screen.
       if (response.status === 401 && token && !window.location.pathname.startsWith('/login')) {
         try { localStorage.removeItem('authToken'); } catch {}
+        // El perfil cacheado para la sesión offline pertenece a la sesión que
+        // acaba de morir — sin esto, el próximo arranque sin red restauraría a
+        // un usuario cuyo token ya fue invalidado (auditoría 2026-08-18).
+        try { localStorage.removeItem('authUserCache'); } catch {}
         try { window.location.replace('/login'); } catch {}
       }
       // Lanzar ApiError para que la UI decida mostrar toast

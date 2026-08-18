@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { confirmDialog } from '@/components/ui/confirmDialog';
 import { visitorLogService } from '@/lib/api/visitorLogService';
 import { runOrQueue } from "@/lib/offline/offlineQueue";
+import { isNetworkFailure } from "@/lib/offline/networkStatus";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -241,10 +242,20 @@ function VisitorFormModal({ open, initialData, stationId, onClose, onSaved }: {
     setSaving(true);
     try {
       let idPhotoMeta: any[] | undefined;
+      let photoDroppedOffline = false;
       if (photoBlob) {
         const f = photoBlob instanceof File ? photoBlob : new File([photoBlob], `visitor-${Date.now()}.jpg`, { type: 'image/jpeg' });
-        const meta = await visitorLogService.uploadPhoto(f);
-        idPhotoMeta = [meta];
+        try {
+          const meta = await visitorLogService.uploadPhoto(f);
+          idPhotoMeta = [meta];
+        } catch (e) {
+          // Sin red la subida de la foto revienta ANTES de llegar a la cola y se
+          // perdía la visita entera (auditoría 2026-08-18). El registro vale más
+          // que la foto: se sigue sin ella y se avisa. Un error del servidor
+          // (con red) sí corta el guardado, como antes.
+          if (!isNetworkFailure(e)) throw e;
+          photoDroppedOffline = true;
+        }
       }
       const placeType = form.placeTypeKind && form.placeTypeValue ? `${form.placeTypeKind} - ${form.placeTypeValue}` : form.placeTypeKind || form.placeTypeValue || undefined;
       const payload: any = { firstName: form.firstName.trim(), lastName: form.lastName.trim(), idNumber: form.idNumber.trim() || undefined, reason: form.reason.trim() || undefined, numPeople: Number(form.numPeople) || 1, placeType, visitDate: form.visitDate ? new Date(form.visitDate).toISOString() : new Date().toISOString(), exitTime: form.exitTime ? new Date(form.exitTime).toISOString() : null, stationId };
@@ -253,7 +264,9 @@ function VisitorFormModal({ open, initialData, stationId, onClose, onSaved }: {
       else {
         // Sin red: a la cola offline; se registra solo al reconectar.
         const { queued } = await runOrQueue("visitorLog.create", payload, () => visitorLogService.create(payload), "Visita");
-        if (queued) toast.warning('Sin conexión: la visita quedó en cola y se registrará sola al reconectar.', { duration: 9000 });
+        if (queued) toast.warning(photoDroppedOffline
+          ? 'Sin conexión: la visita quedó en cola y se registrará sola al reconectar. La foto del documento no se pudo adjuntar — agrégala después desde el registro.'
+          : 'Sin conexión: la visita quedó en cola y se registrará sola al reconectar.', { duration: 9000 });
         else toast.success('Visitante registrado.');
       }
       onSaved(); onClose();

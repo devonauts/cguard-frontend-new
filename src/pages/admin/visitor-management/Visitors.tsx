@@ -854,7 +854,9 @@ export default function Visitors() {
                 "Visita",
             );
             if (queued) {
-                toast.warning("Sin conexión: la visita quedó en cola y se registrará sola al reconectar.", { duration: 9000 });
+                toast.warning(idImageFile
+                    ? "Sin conexión: la visita quedó en cola y se registrará sola al reconectar. La foto del documento no viaja en la cola — agrégala después desde el registro."
+                    : "Sin conexión: la visita quedó en cola y se registrará sola al reconectar.", { duration: 9000 });
                 setOpenAddVisitor(false);
                 setNewVisitor((s) => ({ ...s, firstName: '', lastName: '', idNumber: '', mobile: '', client: '', site: '', guard: '', placeTypeKind: '', placeTypeValue: '', numPeople: 1, reason: '' }));
                 return;

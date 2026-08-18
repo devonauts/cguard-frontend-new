@@ -21,6 +21,8 @@
 
 interface CguardDesktopBridge {
   setBadge: (count: number, overlayDataUrl?: string) => void;
+  /** Des-esconde y enfoca la ventana (bandeja/minimizada). */
+  focusWindow?: () => void;
   onDeepLink: (cb: (path: string) => void) => void;
   version?: string;
 }
@@ -59,18 +61,24 @@ export function ensureNotificationPermission(): void {
  * chime y el toast; duplicarlos en el centro de notificaciones es ruido.
  * Al tocarlo, trae la ventana al frente y navega a `path` si se indicó.
  */
-export function notifyNative(title: string, body?: string, path?: string): void {
+export function notifyNative(title: string, body?: string, path?: string, eventId?: string): void {
   try {
     if (typeof Notification === "undefined") return;
     if (Notification.permission !== "granted") return;
     if (typeof document !== "undefined" && document.visibilityState === "visible" && document.hasFocus()) return;
     const n = new Notification(title, {
       body: body || undefined,
-      // El tag colapsa duplicados del mismo evento si el SO re-entrega.
-      tag: `cguard-${title}-${(body || "").slice(0, 40)}`,
+      // El tag colapsa DUPLICADOS DEL MISMO EVENTO (dos montajes del stream, o
+      // re-entrega del SO) — por eso usa el ID del evento, no el título: dos
+      // pánicos distintos con el mismo título son DOS avisos, no uno (la
+      // auditoría encontró que el tag por título tragaba el segundo pánico).
+      tag: eventId ? `cguard-${eventId}` : undefined,
       icon: "/assets/logo/c-guard-app-logo.png",
     });
     n.onclick = () => {
+      // En Electron, window.focus() no des-esconde una ventana en bandeja —
+      // hay que pedírselo al proceso principal.
+      try { window.cguardDesktop?.focusWindow?.(); } catch { /* ignore */ }
       try { window.focus(); } catch { /* ignore */ }
       if (path) navigateInApp(path);
       n.close();

@@ -9,6 +9,25 @@ import { queryClient } from "@/lib/queryClient";
 import { clearPersistedCache } from "@/lib/offline/persistCache";
 import { clearQueue } from "@/lib/offline/offlineQueue";
 import { isNetworkFailure } from "@/lib/offline/networkStatus";
+import { setAppBadge } from "@/lib/desktop";
+
+/**
+ * Higiene de máquina compartida: si el usuario que ENTRA no es el mismo que
+ * dejó datos offline (caché IDB, cola de escrituras, perfil), se limpian antes
+ * de hidratar. El signOut ya limpia — esto cubre los cierres que NO pasan por
+ * signOut (401 duro, sesión superseded, pestaña cerrada sin salir).
+ */
+function purgeOfflineDataIfDifferentUser(newUserId: string | undefined): void {
+  try {
+    const raw = localStorage.getItem("authUserCache");
+    const prevId = raw ? JSON.parse(raw)?.user?.id : null;
+    if (prevId && newUserId && prevId !== newUserId) {
+      void clearPersistedCache();
+      clearQueue();
+      localStorage.removeItem("authUserCache");
+    }
+  } catch { /* best-effort */ }
+}
 
 interface User { id?: string; email: string; permissions?: string[]; [k: string]: any }
 interface AuthResult { success: boolean; error?: string; needVerification?: boolean }
@@ -228,6 +247,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (Array.isArray(userData.tenants)) userData.tenants = [];
       }
 
+      purgeOfflineDataIfDifferentUser(userData?.id);
       setUser(userData);
       // Copia local del perfil para la SESIÓN OFFLINE: si el próximo arranque
       // no alcanza al servidor (internet de la oficina caído), la app abre con
@@ -417,6 +437,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       try { localStorage.removeItem("authUserCache"); } catch {}
       try { clearQueue(); } catch {}
       try { void clearPersistedCache(); } catch {}
+      // El contador del icono es de la sesión que se va.
+      try { setAppBadge(0); } catch {}
       // Reset ALL in-memory auth state — previously permissions/isAdmin lingered.
       setUser(null);
       setPermissions([]);

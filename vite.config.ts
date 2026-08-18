@@ -45,9 +45,12 @@ export default defineConfig({
         background_color: "#0A0E16",
         theme_color: "#0A0E16",
         lang: "es",
+        // Iconos a tamaño REAL (la auditoría encontró un solo PNG de 5354px
+        // declarado como 192 y 512 — tamaños falsos). Generados en public/icons.
         icons: [
-          { src: "/assets/logo/c-guard-app-logo.png", sizes: "192x192", type: "image/png", purpose: "any maskable" },
-          { src: "/assets/logo/c-guard-app-logo.png", sizes: "512x512", type: "image/png", purpose: "any maskable" },
+          { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+          { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
+          { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
         ],
       },
       workbox: {
@@ -66,10 +69,13 @@ export default defineConfig({
         maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
         // SPA: cualquier navegación sin archivo propio cae al index…
         navigateFallback: "/index.html",
-        // …EXCEPTO lo que NO es esta SPA y comparte origen: la API (proxied en
-        // /api/), el superadmin (app aparte servida en /superadmin/) y la
-        // documentación. Interceptarlos serviría el index del CRM en su lugar.
-        navigateFallbackDenylist: [/^\/api\//, /^\/superadmin/, /^\/documentation/],
+        // …EXCEPTO lo que NO es esta SPA y comparte origen. La lista DEBE cubrir
+        // cada location no-SPA del nginx del servidor (app.conf): la API, el
+        // superadmin, la documentación, el canal de ESCRITORIO (/desktop/ — la
+        // auditoría 2026-08-18 encontró que el SW servía el index del CRM en vez
+        // del DMG de descarga), el smart-link /guard-reset y los proxys de video.
+        // Si nginx gana una location nueva, se añade AQUÍ o el SW la secuestra.
+        navigateFallbackDenylist: [/^\/api\//, /^\/superadmin/, /^\/documentation/, /^\/desktop/, /^\/guard-reset/, /^\/go2rtc\//, /^\/mediamtx\//, /^\/rtc\//],
         // La API JAMÁS se cachea en el SW: es JSON autenticado por usuario y el
         // backend ya manda no-store. Sin runtimeCaching para /api, el SW la
         // deja pasar directo a la red (passthrough) — que es lo correcto: el

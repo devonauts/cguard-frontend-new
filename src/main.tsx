@@ -46,7 +46,10 @@ import { ConfirmHost } from "@/components/ui/confirmDialog";
 //    toma control sin pedirle nada al usuario.
 // 2) Persistencia del caché de datos (react-query → IndexedDB): lo que se vio
 //    online se puede volver a ver offline. Ver lib/offline/persistCache.ts.
-registerSW({ immediate: true });
+// En la app de ESCRITORIO no se registra: el bundle ya es local (app://) y un
+// SW solo duplicaría el caché sin aportar nada. window.cguardDesktop lo expone
+// el preload de Electron antes de que corra este módulo.
+if (!(window as any).cguardDesktop) registerSW({ immediate: true });
 startCachePersistence();
 
 window.addEventListener("vite:preloadError", (event) => {

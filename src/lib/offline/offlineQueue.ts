@@ -91,38 +91,73 @@ export function enqueue(kind: string, payload: any, label?: string): string {
 
 let flushing = false;
 
+/* ── Candado entre PESTAÑAS ──────────────────────────────────────────────────
+ * El flag `flushing` protege dentro de UNA pestaña, pero la cola vive en
+ * localStorage compartido: dos pestañas del CRM reproduciendo a la vez = el
+ * mismo incidente enviado dos veces (auditoría 2026-08-18). Candado best-effort
+ * en localStorage con token propio y vencimiento — si la pestaña dueña muere a
+ * mitad, el candado caduca solo y otra retoma. */
+const LOCK_KEY = "crm.offlineQueue.lock";
+const LOCK_TTL_MS = 60_000;
+const lockToken = `${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+
+function acquireLock(): boolean {
+  try {
+    const raw = localStorage.getItem(LOCK_KEY);
+    if (raw) {
+      const cur = JSON.parse(raw);
+      if (cur && cur.token !== lockToken && Date.now() - (cur.at || 0) < LOCK_TTL_MS) return false;
+    }
+    localStorage.setItem(LOCK_KEY, JSON.stringify({ token: lockToken, at: Date.now() }));
+    // Releer: si dos pestañas escribieron a la vez, gana la última escritura.
+    const check = JSON.parse(localStorage.getItem(LOCK_KEY) || "null");
+    return check?.token === lockToken;
+  } catch {
+    return true; // sin localStorage no hay segunda pestaña que proteger
+  }
+}
+function releaseLock(): void {
+  try {
+    const cur = JSON.parse(localStorage.getItem(LOCK_KEY) || "null");
+    if (cur?.token === lockToken) localStorage.removeItem(LOCK_KEY);
+  } catch { /* ignore */ }
+}
+
+/** Quita UN item de la cola persistida (lectura fresca, conserva lo demás). */
+function removeItem(id: string): void {
+  const cur = load();
+  save(cur.filter((it) => it.id !== id));
+}
+
 /**
  * Reproduce toda la cola una vez. Protegida contra reentradas (evento online +
- * intervalo + manual no pueden doble-enviar el mismo snapshot). Fallos de red
- * se re-encolan; rechazos del servidor se descartan.
+ * intervalo + manual) Y contra otras pestañas (candado). Fallos de red se
+ * conservan; rechazos del servidor se descartan. El progreso se PERSISTE item
+ * por item — un cierre o recarga a mitad del flush no re-envía lo ya enviado.
  */
 export async function flush(): Promise<void> {
   if (flushing) return;
   if (typeof navigator !== "undefined" && navigator.onLine === false) return;
   const q = load();
   if (!q.length) return;
+  if (!acquireLock()) return; // otra pestaña está reproduciendo
   flushing = true;
-  const failed: QueuedMutation[] = [];
   try {
     for (const it of q) {
       const fn = replayers[it.kind];
-      if (!fn) { failed.push(it); continue; } // kind desconocido (build viejo) — conservar
+      if (!fn) continue; // kind desconocido (build viejo) — conservar en cola
       try {
         await fn(it.payload, it.tenantId);
+        removeItem(it.id); // enviado → fuera YA (no al final del lote)
       } catch (e) {
-        if (isNetworkFailure(e)) failed.push(it); // sigue sin red → siguiente flush
-        // si no: el servidor lo rechazó → descartar (reintentar no arregla un inválido)
+        if (!isNetworkFailure(e)) removeItem(it.id); // rechazo del servidor → descartar
+        // fallo de red → se conserva para el siguiente flush
       }
     }
   } finally {
     flushing = false;
+    releaseLock();
   }
-  // Merge contra una lectura fresca: se quitan los procesados (los fallidos se
-  // re-encolan) y se conserva lo encolado durante el flush.
-  const processed = new Set(q.map((it) => it.id));
-  const current = load();
-  const remaining = [...failed, ...current.filter((it) => !processed.has(it.id))];
-  save(remaining);
 }
 
 /**
