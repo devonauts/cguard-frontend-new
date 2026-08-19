@@ -42,7 +42,12 @@ function guardarHilo(msgs: Msg[]) {
 /** El modelo a veces escapa el «sin markdown» del prompt: los restos de
  *  negritas y viñetas se limpian aquí para que no salgan asteriscos crudos. */
 function sinMarkdown(t: string): string {
-  return t.replace(/\*\*(.+?)\*\*/g, "$1").replace(/^#{1,4}\s+/gm, "").replace(/^\s*[-*]\s+/gm, "• ");
+  return t
+    .replace(/\*\*(.+?)\*\*/g, "$1")
+    .replace(/(^|\s)\*([^*\n]+)\*(?=\s|[.,;:!?]|$)/g, "$1$2")
+    .replace(/`([^`\n]+)`/g, "$1")
+    .replace(/^#{1,4}\s+/gm, "")
+    .replace(/^\s*[-*]\s+/gm, "• ");
 }
 
 interface Msg { role: "user" | "assistant"; content: string }
@@ -93,7 +98,10 @@ export default function VigiaWidget() {
   if (!localStorage.getItem("authToken") || !tenantId()) return null;
 
   const llamar = async (body: any): Promise<any> => {
-    const resp: any = await api.post(`/tenant/${tenantId()}/assistant/chat`, body, { toast: { silentError: true } } as any);
+    // 60s: un turno con varias consultas tarda más que los 15s globales de
+    // axios — y abortar en el cliente mientras el servidor sigue era el modo
+    // de fallo más caro (reintento = pagar el turno dos veces).
+    const resp: any = await api.post(`/tenant/${tenantId()}/assistant/chat`, body, { timeout: 60000, toast: { silentError: true } } as any);
     return resp && resp.data !== undefined ? resp.data : resp;
   };
 
@@ -103,7 +111,8 @@ export default function VigiaWidget() {
     setTexto("");
     setAviso(null);
     setPropuesta(null);
-    const historia: Msg[] = [...msgs, { role: "user", content: contenido }];
+    // El servidor solo mira los últimos 16: mandar más es ancho de banda.
+    const historia: Msg[] = [...msgs, { role: "user" as const, content: contenido }].slice(-16);
     setMsgs(historia);
     setOcupado(true);
     try {
@@ -132,9 +141,9 @@ export default function VigiaWidget() {
       // La firma viaja de vuelta: el servidor solo ejecuta propuestas que ÉL
       // emitió, frescas y una sola vez — reintentar con la misma firma devuelve
       // el mismo resultado en vez de ejecutar dos veces.
-      const d = await llamar({ messages: [], confirm: { tool: p.tool, args: p.args, firma: p.firma, exp: p.exp } });
+      const d = await llamar({ messages: msgs.slice(-16), confirm: { tool: p.tool, args: p.args, firma: p.firma, exp: p.exp } });
       if (d?.error) { setAviso(d.error); setPropuesta(null); return; }
-      setPropuesta(null);
+      setPropuesta(d?.proposal || null);
       if (d?.reply) setMsgs((m) => [...m, { role: "assistant", content: d.reply }]);
       if (d?.navigate) navigate(d.navigate);
     } catch (e: any) {
