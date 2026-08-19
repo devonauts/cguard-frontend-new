@@ -40,6 +40,7 @@ type GuardSettings = {
     inactivityAlert: boolean;
     inactivityThresholdMin: number;
     shiftRemindersEnabled: boolean;
+    shiftRemindersAdaptive: boolean;
     shiftReminderOffsets: Offset[];
     licenseExpiryAlert: boolean;
     licenseExpiryDays: number;
@@ -50,6 +51,7 @@ const DEFAULTS: GuardSettings = {
     inactivityAlert: false,
     inactivityThresholdMin: 20,
     shiftRemindersEnabled: true,
+    shiftRemindersAdaptive: false,
     // Los cinco, como hasta hoy. Poner aquí un defecto «sensato» cambiaría de
     // golpe lo que recibe gente que no lo pidió.
     shiftReminderOffsets: ["2d", "1d", "12h", "1h", "10m"],
@@ -221,6 +223,13 @@ export default function GuardsGlobalSettingsPage() {
                                     </SettingDetail>
                                 )}
                             </ToggleRow>
+                            <ToggleRow
+                                label="Recordatorios adaptativos según puntualidad"
+                                hint="El vigilante sin tardanzas ni inasistencias en 30 días recibe solo «1 día antes» y «1 hora antes»; el reincidente, todos los activos. Menos ruido para quien no lo necesita — y los avisos vuelven a significar algo."
+                                checked={cfg.shiftRemindersAdaptive}
+                                onCheckedChange={(v) => set("shiftRemindersAdaptive", v)}
+                                disabled={disabled || !cfg.shiftRemindersEnabled}
+                            />
                         </Section>
 
                         <Section title="Credenciales y licencias" icon={<IdCard />} contentClassName="divide-y">

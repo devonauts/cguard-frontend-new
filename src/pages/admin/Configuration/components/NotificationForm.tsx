@@ -69,6 +69,7 @@ const NOTIFICATIONS: NotificationItem[] = [
   // atendido algo grave» son cosas distintas. Al principio comparte fila y una
   // prueba lo tumbó — el correo encendido por defecto aquí habría encendido el
   // correo de TODOS los incidentes, incluidos los rutinarios.
+  { id: "vigia-digest", label: "Cierre del día (VigIA)", hint: "Un resumen del día redactado por el asistente, a las 9 de la noche — solo si hubo algo que contar. Marca Correo para recibirlo en tu bandeja", default: { dashboard: true } },
   { id: "incident-unattended", label: "Incidente grave sin atender", hint: "Cuando un incidente crítico lleva rato abierto y nadie lo ha reconocido. Deja de insistir en cuanto alguien lo toma", default: { dashboard: true, email: true } },
   { id: "balance-low", label: "Saldo bajo o agotado", hint: "Sin saldo se dejan de enviar SMS y WhatsApp de pago, incluidos los de emergencia. El correo llega igual porque no depende del saldo", default: { dashboard: true, email: true } },
   { id: "panel-offline", label: "Panel de alarma sin comunicar", hint: "El panel dejó de dar señal de vida en el plazo que fijaste en su ficha. También avisa cuando vuelve", default: { dashboard: true, email: true } },
