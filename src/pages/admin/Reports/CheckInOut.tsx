@@ -19,7 +19,7 @@ const guard = (r: Rec) => (typeof r.guardName === "string" ? r.guardName : r.gua
 const station = (r: Rec) => (typeof r.stationName === "string" ? r.stationName : r.stationName?.stationName) || "—";
 
 const columns: ReportColumn<Rec>[] = [
-  { key: "guard", label: "Vigilante", value: guard },
+  { key: "guard", label: "Vigilante", value: guard, privacy: "guardName" },
   { key: "station", label: "Puesto", value: station },
   { key: "in", label: "Entrada", value: (r) => formatDateTime(r.punchInTime) },
   { key: "out", label: "Salida", value: (r) => formatDateTime(r.punchOutTime) },

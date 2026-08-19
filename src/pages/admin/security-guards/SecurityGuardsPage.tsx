@@ -188,6 +188,31 @@ export default function SecurityGuardsPage() {
   const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
   const [guardToArchive, setGuardToArchive] = useState<SecurityGuard | null>(null);
   const [archiveLoading, setArchiveLoading] = useState(false);
+  // La baja se REGISTRA, no solo se aplica: fecha, motivo y equipo por devolver
+  // alimentan el expediente laboral (guardTermination) del servidor.
+  const [bajaFecha, setBajaFecha] = useState<string>(new Date().toISOString().slice(0, 10));
+  const [bajaMotivo, setBajaMotivo] = useState<string>("resignation");
+  const [bajaNota, setBajaNota] = useState<string>("");
+  const [bajaRecontratable, setBajaRecontratable] = useState<boolean>(true);
+  const [bajaEquipo, setBajaEquipo] = useState<Array<{ item: string; returned: boolean }>>([]);
+  const EQUIPO_BASE = ["Uniforme", "Credencial", "Radio", "Chaleco antibalas", "Arma y municiones", "Llaves y accesos"];
+  const MOTIVOS_BAJA: Array<[string, string]> = [
+    ["resignation", "Renuncia voluntaria"],
+    ["dismissal_with_cause", "Despido con causa"],
+    ["dismissal_without_cause", "Despido sin causa"],
+    ["end_of_contract", "Fin de contrato"],
+    ["abandonment", "Abandono del puesto"],
+    ["retirement", "Jubilación"],
+    ["death", "Fallecimiento"],
+    ["other", "Otro"],
+  ];
+  const abrirDialogoDeBaja = () => {
+    setBajaFecha(new Date().toISOString().slice(0, 10));
+    setBajaMotivo("resignation");
+    setBajaNota("");
+    setBajaRecontratable(true);
+    setBajaEquipo(EQUIPO_BASE.map((item) => ({ item, returned: false })));
+  };
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [guardToDelete, setGuardToDelete] = useState<SecurityGuard | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -539,7 +564,7 @@ export default function SecurityGuardsPage() {
       if (guard.status === 'Archivado') {
         acts.push({ label: 'Restaurar', icon: <RotateCw className="h-4 w-4" />, onClick: () => { setGuardToRestore(guard); setRestoreDialogOpen(true); } });
       } else {
-        acts.push({ label: 'Archivar', icon: <Archive className="h-4 w-4" />, onClick: () => { setGuardToArchive(guard); setArchiveDialogOpen(true); } });
+        acts.push({ label: 'Archivar', icon: <Archive className="h-4 w-4" />, onClick: () => { setGuardToArchive(guard); (abrirDialogoDeBaja(), setArchiveDialogOpen(true)); } });
       }
     }
     if (hasPermission('securityGuardDestroy')) {
@@ -1109,7 +1134,7 @@ export default function SecurityGuardsPage() {
                                       <DropdownMenuItem
                                         onClick={() => {
                                           setGuardToArchive(guard);
-                                          setArchiveDialogOpen(true);
+                                          (abrirDialogoDeBaja(), setArchiveDialogOpen(true));
                                         }}
                                       >
                                         <Archive className="mr-2 h-4 w-4" /> {t('guards.list.actions.archive','Archivar')}
@@ -1257,13 +1282,55 @@ export default function SecurityGuardsPage() {
             <DialogTitle>{t('guards.list.dialog.archive.title', 'Archivar vigilante')}</DialogTitle>
           </DialogHeader>
           <DialogDescription>
-            {t('guards.list.dialog.archive.description', '¿Estás seguro que deseas archivar este vigilante? Esta acción se puede revertir desde el filtro.')}
+            {t('guards.list.dialog.archive.description', 'La baja queda registrada en el expediente: fecha, motivo y equipo por devolver. Se puede revertir desde el filtro.')}
           </DialogDescription>
-          <div className="mt-4">
+          <div className="mt-4 space-y-3">
             <div className="text-sm text-foreground">
               <strong>{t('guards.list.labels.name', 'Nombre')}:</strong> {guardToArchive?.name ?? "-"}
+              <span className="ml-2 text-muted-foreground">{guardToArchive?.email ?? ""}</span>
             </div>
-            <div className="text-sm text-foreground">{guardToArchive?.email ?? ""}</div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-xs">{t('guards.list.dialog.archive.date', 'Último día trabajado')}</Label>
+                <Input type="date" value={bajaFecha} onChange={(e) => setBajaFecha(e.target.value)} />
+              </div>
+              <div>
+                <Label className="text-xs">{t('guards.list.dialog.archive.reason', 'Motivo')}</Label>
+                <select
+                  className="cg-input w-full"
+                  value={bajaMotivo}
+                  onChange={(e) => setBajaMotivo(e.target.value)}
+                >
+                  {MOTIVOS_BAJA.map(([v, l]) => (
+                    <option key={v} value={v}>{l}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div>
+              <Label className="text-xs">{t('guards.list.dialog.archive.note', 'Nota (opcional)')}</Label>
+              <Input value={bajaNota} onChange={(e) => setBajaNota(e.target.value)} placeholder={t('guards.list.dialog.archive.notePh', 'Detalle del motivo')} />
+            </div>
+            <div>
+              <Label className="text-xs">{t('guards.list.dialog.archive.equipment', '¿Qué equipo devolvió hoy? Lo no marcado queda pendiente.')}</Label>
+              <div className="mt-1 grid grid-cols-2 gap-1">
+                {bajaEquipo.map((eq, i) => (
+                  <label key={eq.item} className="flex items-center gap-2 text-sm">
+                    <Checkbox
+                      checked={eq.returned}
+                      onCheckedChange={(v) =>
+                        setBajaEquipo((prev) => prev.map((x, j) => (j === i ? { ...x, returned: v === true } : x)))
+                      }
+                    />
+                    {eq.item}
+                  </label>
+                ))}
+              </div>
+            </div>
+            <label className="flex items-center gap-2 text-sm">
+              <Checkbox checked={bajaRecontratable} onCheckedChange={(v) => setBajaRecontratable(v === true)} />
+              {t('guards.list.dialog.archive.rehire', 'Elegible para recontratación')}
+            </label>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setArchiveDialogOpen(false)} disabled={archiveLoading}>
@@ -1283,7 +1350,13 @@ export default function SecurityGuardsPage() {
                     setArchiveLoading(false);
                     return;
                   }
-                  await securityGuardService.archive([realId]);
+                  await securityGuardService.archive([realId], {
+                    terminationDate: bajaFecha,
+                    reason: bajaMotivo,
+                    reasonNote: bajaNota.trim() || undefined,
+                    rehireEligible: bajaRecontratable,
+                    equipmentReturn: bajaEquipo,
+                  });
                   // mark as archived in UI
                   setGuards((prev) =>
                     prev.map((g) =>

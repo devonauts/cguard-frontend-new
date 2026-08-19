@@ -20,7 +20,7 @@
             "path": "/setting/change-password",
             "icon": "KeyRound",
             "desc": "Cambia tu contraseña de acceso.",
-            "keywords": "clave seguridad acceso login sesion 2fa doble factor verificacion en dos pasos"
+            "keywords": "clave seguridad acceso login sesion"
           },
           {
             "id": "mis-avisos",
@@ -107,6 +107,14 @@
             "icon": "ListChecks",
             "desc": "Qué datos se piden al dar de alta a una persona, y cuáles son obligatorios.",
             "keywords": "campos ficha alta obligatorio requerido formulario perfil vigilante datos"
+          },
+          {
+            "id": "seguridad",
+            "label": "Seguridad",
+            "path": "/setting/seguridad",
+            "icon": "ShieldCheck",
+            "desc": "Política de contraseñas, cierre por inactividad y protecciones de la plataforma.",
+            "keywords": "seguridad contrasena contraseña password sesion inactividad cierre 2fa doble factor politica proteccion sesiones"
           }
         ]
       },
@@ -153,6 +161,14 @@
             "icon": "Shield",
             "desc": "Inactividad, recordatorios de turno y aviso de credenciales por vencer.",
             "keywords": "guardia vigilante inactividad recordatorio credencial licencia vencimiento carnet emergencia panico vencida"
+          },
+          {
+            "id": "emergencias",
+            "label": "Emergencias y pánico",
+            "path": "/setting/emergencias",
+            "icon": "Siren",
+            "desc": "Quién recibe un pánico, correos de la central y la cadencia del escalado.",
+            "keywords": "panico sos emergencia alarma central monitoreo escalado escalar destinatarios boton de panico repetir"
           },
           {
             "id": "rondas-config",

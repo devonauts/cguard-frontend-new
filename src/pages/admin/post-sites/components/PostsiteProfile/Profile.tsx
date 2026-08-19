@@ -277,9 +277,31 @@ export default function PostSiteProfile({ site }: { site?: any }) {
                         const lista = (v: any) => (Array.isArray(v) ? v.filter(Boolean) : []);
                         const equipo = lista(cfg.specialEquipment);
                         const formacion = lista(cfg.trainingRequired);
+                        // Las 12 casillas de despliegue del asistente. Eran el
+                        // último resto de sólo-escritura de serviceConfig: se
+                        // marcaban al crear la sede y no se veían nunca más.
+                        // Mostrarlas aquí es lo prometido al cliente, a la vista
+                        // de quien opera la sede.
+                        const DESPLIEGUE: Array<[string, string]> = [
+                            // MISMAS etiquetas que DEPLOY_CHECKS del asistente:
+                            // el operador reencuentra las palabras que marcó.
+                            ['armedService', 'Vigilante armado'],
+                            ['uniformRequired', 'Uniforme obligatorio'],
+                            ['periodicPatrol', 'Patrullaje perimetral'],
+                            ['k9Service', 'Canes / K9'],
+                            ['vehicleControl', 'Control acceso vehicular'],
+                            ['cctvMonitoring', 'Monitoreo CCTV'],
+                            ['visitorLog', 'Registro de visitantes'],
+                            ['incidentLog', 'Libro de novedades'],
+                            ['formalHandover', 'Entrega de turno formal'],
+                            ['keyCustody', 'Custodia de llaves'],
+                            ['alarmResponse', 'Respuesta a alarmas'],
+                            ['radioComms', 'Comunicación por radio'],
+                        ];
+                        const despliegueActivo = DESPLIEGUE.filter(([k]) => cfg[k] === true);
                         const hayAlgo =
                             cfg.postInstructions || cfg.riskLevel || cfg.stationsRequired ||
-                            equipo.length || formacion.length;
+                            equipo.length || formacion.length || despliegueActivo.length;
                         if (!hayAlgo) return null;
                         return (
                             <div className="glass-sunken mb-5 space-y-3 p-4">
@@ -293,6 +315,19 @@ export default function PostSiteProfile({ site }: { site?: any }) {
                                 ) : null}
                                 {formacion.length ? (
                                     <InfoRow label="Formación exigida" value={formacion.join(', ')} />
+                                ) : null}
+                                {despliegueActivo.length ? (
+                                    <div>
+                                        <p className="cg-eyebrow mb-1">Servicio contratado</p>
+                                        <div className="flex flex-wrap gap-1.5">
+                                            {despliegueActivo.map(([k, label]) => (
+                                                <span key={k} className="rounded-full px-2.5 py-0.5 text-xs font-medium"
+                                                    style={{ background: 'color-mix(in oklab, var(--brand) 14%, transparent)', color: 'var(--brand-text)' }}>
+                                                    {label}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
                                 ) : null}
                                 {cfg.postInstructions && (
                                     <div>

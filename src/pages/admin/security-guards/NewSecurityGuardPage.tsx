@@ -220,7 +220,10 @@ export default function NewSecurityGuardPage() {
   /* ============== TAB 3: INVITAR USANDO ENLACE (bloques) ============== */
   const linkForm = useForm<InviteByLinkFormValues>({
     resolver: zodResolver(inviteByLinkSchema),
-    defaultValues: { link: "https://gp.guardspro.com/guard-join/your-company", entries: [blankLinkEntry()] },
+    defaultValues: {
+      link: `${window.location.origin}/guard-join/${localStorage.getItem("tenantId") || ""}`,
+      entries: [blankLinkEntry()],
+    },
     mode: "onTouched",
   });
   const { control: linkCtrl, handleSubmit: submitLink, getValues: getLinkValues, formState: linkState, setError: setLinkError } = linkForm;

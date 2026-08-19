@@ -5317,7 +5317,11 @@
       "campos-perfil": "Campos de la ficha",
       "campos-perfil.desc": "Qué datos se piden al dar de alta a una persona, y cuáles son obligatorios.",
       "usuarios": "Usuarios",
-      "usuarios.desc": "Quién tiene acceso a la plataforma y con qué rol."
+      "usuarios.desc": "Quién tiene acceso a la plataforma y con qué rol.",
+      "seguridad": "Seguridad",
+      "seguridad.desc": "Política de contraseñas, cierre por inactividad y protecciones de la plataforma.",
+      "emergencias": "Emergencias y pánico",
+      "emergencias.desc": "Quién recibe un pánico, correos de la central y la cadencia del escalado."
     },
     "section": {
       "mi_cuenta": "Mi cuenta",

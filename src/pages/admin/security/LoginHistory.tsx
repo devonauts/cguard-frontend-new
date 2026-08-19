@@ -26,6 +26,7 @@ const FILTERS = [
   { key: "login_failed", label: "Fallidos", event: "login_failed" },
   { key: "logout", label: "Cierres", event: "logout" },
   { key: "device", label: "Dispositivos", event: "device_registered,device_evicted" },
+  { key: "provider", label: "Soporte", event: "provider_access" },
 ];
 
 export default function LoginHistory() {

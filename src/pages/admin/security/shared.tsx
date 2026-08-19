@@ -39,6 +39,10 @@ export const EVENT_META: Record<string, { label: string; icon: ReactNode; tone: 
   logout: { label: 'Cierre de sesión', icon: <LogOut className="size-3.5" />, tone: 'neutral' },
   device_registered: { label: 'Dispositivo registrado', icon: <Smartphone className="size-3.5" />, tone: 'info' },
   device_evicted: { label: 'Dispositivo retirado', icon: <Smartphone className="size-3.5" />, tone: 'warn' },
+  // El proveedor entrando al CRM de la empresa (soporte). En ámbar a propósito:
+  // no es un fallo, pero es exactamente lo que el dueño quiere notar de un
+  // vistazo en su historial.
+  provider_access: { label: 'Acceso de soporte (CGuardPro)', icon: <ShieldCheck className="size-3.5" />, tone: 'warn' },
 };
 
 export const metaFor = (event: string): { label: string; icon: ReactNode; tone: SeverityTone } =>

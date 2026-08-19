@@ -41,6 +41,8 @@ const PasswordChangePage = lazy(() => import("./pages/admin/Configuration/change
 const PostingGlobalPage = lazy(() => import("./pages/admin/Configuration/posting-global/PostingGlobalPage"));
 const ReportSettingsPage = lazy(() => import("./pages/admin/Configuration/report-settings/ReportSettingsPage"));
 const GuardsGlobalSettingsPage = lazy(() => import("./pages/admin/Configuration/guards-settings/GuardsGlobalSettingsPage"));
+const EmergencySettingsPage = lazy(() => import("./pages/admin/Configuration/emergency/EmergencySettingsPage"));
+const SecurityPolicyPage = lazy(() => import("./pages/admin/Configuration/security/SecurityPolicyPage"));
 const RondasSettingsPage = lazy(() => import("./pages/admin/Configuration/rondas-settings/RondasSettingsPage"));
 const JornadaPage = lazy(() => import("./pages/admin/Configuration/scheduling/JornadaPage"));
 const ActivityLogHubPage = lazy(() => import("./pages/admin/Configuration/activity-log/ActivityLogHubPage"));
@@ -1570,6 +1572,22 @@ export default function App() {
                   <ProtectedRoute>
                     <GuardsGlobalSettingsPage />
                     {/* FALTA */}
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/setting/seguridad"
+                element={
+                  <ProtectedRoute>
+                    <SecurityPolicyPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/setting/emergencias"
+                element={
+                  <ProtectedRoute>
+                    <EmergencySettingsPage />
                   </ProtectedRoute>
                 }
               />

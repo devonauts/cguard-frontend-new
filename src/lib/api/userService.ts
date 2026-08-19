@@ -152,6 +152,12 @@ export const userService = {
     });
   },
 
+  /** Cierra todas las sesiones de esa persona (todos los canales), ya. */
+  async closeSessions(id: string): Promise<void> {
+    const tenantId = getTenantId();
+    await api.post(`/tenant/${tenantId}/user/${id}/close-sessions`, {});
+  },
+
   async suspendUser(id: string): Promise<void> {
     const tenantId = getTenantId();
     await api.post(`/tenant/${tenantId}/user/${id}/suspend`);

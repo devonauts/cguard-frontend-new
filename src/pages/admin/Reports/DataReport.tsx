@@ -11,6 +11,15 @@ export interface ReportColumn<T> {
   /** Cell value as a string (used for the table, CSV and print alike). */
   value: (row: T) => string;
   align?: "left" | "right" | "center";
+  /**
+   * Marca de privacidad. `guardName` = la columna identifica al vigilante y
+   * OBEDECE al ajuste «ocultar nombre del vigilante» de Configuración ›
+   * Informes. La auditoría del 15-ago lo encontró aplicado en el servidor
+   * (informes del cliente, PDF de KPIs) y en NINGUNA de las cuatro salidas que
+   * este componente arma en el navegador — tabla, CSV, Excel/impresión y PDF
+   * salían con nombre igual. Al filtrar AQUÍ, una sola regla cubre las cuatro.
+   */
+  privacy?: "guardName";
 }
 
 interface DataReportProps<T> {
@@ -72,8 +81,27 @@ function download(filename: string, blob: Blob) {
  * shell into a functioning, exportable report.
  */
 export default function DataReport<T>({
-  title, description, icon, tone, columns, load, searchable = true, defaultDays = 30, emptyMessage, rowTone,
+  title, description, icon, tone, columns: columnsProp, load, searchable = true, defaultDays = 30, emptyMessage, rowTone,
 }: DataReportProps<T>) {
+  // «Ocultar nombre del vigilante» (Configuración › Informes) también rige lo
+  // que se arma en el navegador. Falla abierto: sin ajuste legible, se muestra
+  // todo — igual que siempre.
+  const [ocultarVigilante, setOcultarVigilante] = useState(false);
+  useEffect(() => {
+    (async () => {
+      try {
+        const tenantId = localStorage.getItem("tenantId");
+        if (!tenantId) return;
+        const api = (await import("@/lib/api")).default;
+        const { data } = await api.get(`/tenant/${tenantId}/settings`, { toast: { silentError: true } } as any);
+        setOcultarVigilante(!!data?.reportSettings?.hideGuardName);
+      } catch { /* sin ajuste → todo visible */ }
+    })();
+  }, []);
+  const columns = useMemo(
+    () => (ocultarVigilante ? columnsProp.filter((c) => c.privacy !== "guardName") : columnsProp),
+    [columnsProp, ocultarVigilante],
+  );
   const today = useMemo(() => new Date(), []);
   const [from, setFrom] = useState(() => daysAgo(defaultDays));
   const [to, setTo] = useState(() => ymd(today));

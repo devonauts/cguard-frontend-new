@@ -873,6 +873,23 @@ export default function AdminOfficeUsersPage() {
                                       {t('adminOfficeUsers.rowActions.supervisorProfile', { defaultValue: 'Perfil de supervisor' })}
                                     </DropdownMenuItem>
                                   )}
+                                  {/* «Me robaron el teléfono» sin archivar a la
+                                      persona: mata el token en todos los canales
+                                      (≤20 s en todo el clúster) y que vuelva a
+                                      entrar con su contraseña. */}
+                                  <DropdownMenuItem disabled={!hasPermission('userEdit')}
+                                    onClick={async () => {
+                                      if (!hasPermission('userEdit') || !u.id) return;
+                                      try {
+                                        await userService.closeSessions(u.id);
+                                        toast.success(t('adminOfficeUsers.toasts.sessionsClosed', { defaultValue: 'Sesiones cerradas. Tendrá que iniciar sesión de nuevo.' }));
+                                      } catch (err: any) {
+                                        toast.error(err?.response?.data?.message || t('adminOfficeUsers.toasts.sessionsCloseError', { defaultValue: 'No se pudieron cerrar las sesiones.' }));
+                                      }
+                                    }}
+                                  >
+                                    {t('adminOfficeUsers.rowActions.closeSessions', { defaultValue: 'Cerrar sesiones' })}
+                                  </DropdownMenuItem>
                                   <DropdownMenuItem disabled={!hasPermission('userEdit')}
                                     onClick={() => {
                                       if (!hasPermission('userEdit')) return;

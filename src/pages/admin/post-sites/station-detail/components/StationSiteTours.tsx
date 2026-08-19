@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Loader2, Settings, Plus, Trash2, ChevronDown, ChevronRight, MapPin, QrCode, Crosshair, Route } from 'lucide-react';
+import { Loader2, Settings, Plus, Trash2, ChevronDown, ChevronRight, ChevronUp, MapPin, QrCode, Crosshair, Route } from 'lucide-react';
 import { toast } from 'sonner';
 import { confirmDialog } from '@/components/ui/confirmDialog';
 import { ApiService } from '@/services/api/apiService';
@@ -165,6 +165,29 @@ export default function StationSiteTours({ station, stationId, postSiteId }: Pro
     } finally { setSavingCp(false); }
   };
 
+  // El ORDEN del recorrido por fin se edita. La posición en la lista es el
+  // orderIndex: subir/bajar intercambia y manda la lista entera de ids — el
+  // servidor asigna 0..n-1 y devuelve el orden vigente. Con
+  // «exigir orden de puntos» activo en /setting/rondas, esto ES la ruta.
+  const moveCheckpoint = async (tourId: string, tagId: string, dir: -1 | 1) => {
+    const list = cps[tourId] || [];
+    const i = list.findIndex((c: Checkpoint) => c.id === tagId);
+    const j = i + dir;
+    if (i < 0 || j < 0 || j >= list.length) return;
+    const nuevo = [...list];
+    [nuevo[i], nuevo[j]] = [nuevo[j], nuevo[i]];
+    setCps((prev: Record<string, Checkpoint[]>) => ({ ...prev, [tourId]: nuevo }));
+    try {
+      await ApiService.put(
+        `/tenant/${tenantId}/site-tour/${encodeURIComponent(tourId)}/tags/reorder`,
+        { ids: nuevo.map((c: Checkpoint) => c.id) },
+      );
+    } catch (e: any) {
+      toast.error(e?.message || t('station.siteTours.reorderFailed', 'No se pudo guardar el orden'));
+      loadCheckpoints(tourId);
+    }
+  };
+
   const deleteCheckpoint = async (tourId: string, tagId: string) => {
     if (!(await confirmDialog({ title: 'Eliminar punto de control', message: t('station.siteTours.confirmDeleteCp', '¿Eliminar este punto de control?'), confirmText: 'Eliminar', tone: 'danger' }))) return;
     try {
@@ -251,10 +274,11 @@ export default function StationSiteTours({ station, stationId, postSiteId }: Pro
                             <p className="text-sm text-muted-foreground">{t('station.siteTours.noPoints', 'Sin puntos de control todavía.')}</p>
                           ) : (
                             <ul className="space-y-2">
-                              {list.map((c) => (
+                              {list.map((c, ci) => (
                                 <li key={c.id} className="glass-sunken flex items-center justify-between px-3 py-2">
                                   <div className="min-w-0">
                                     <div className="flex items-center gap-2">
+                                      <span className="w-5 shrink-0 text-right font-mono text-xs text-muted-foreground">{ci + 1}.</span>
                                       <span className="font-medium text-foreground">{c.name}</span>
                                       <span className="font-mono text-xs text-muted-foreground">{c.tagIdentifier}</span>
                                     </div>
@@ -269,9 +293,19 @@ export default function StationSiteTours({ station, stationId, postSiteId }: Pro
                                       )}
                                     </div>
                                   </div>
-                                  <button onClick={() => deleteCheckpoint(id, c.id)} className="cg-focus rounded p-1.5" style={{ color: 'var(--bad-text)' }}>
-                                    <Trash2 size={15} />
-                                  </button>
+                                  <div className="flex shrink-0 items-center gap-0.5">
+                                    <button onClick={() => moveCheckpoint(id, c.id, -1)} disabled={ci === 0}
+                                      className="cg-focus rounded p-1.5 text-muted-foreground disabled:opacity-30" title={t('station.siteTours.moveUp', 'Subir')}>
+                                      <ChevronUp size={15} />
+                                    </button>
+                                    <button onClick={() => moveCheckpoint(id, c.id, 1)} disabled={ci === list.length - 1}
+                                      className="cg-focus rounded p-1.5 text-muted-foreground disabled:opacity-30" title={t('station.siteTours.moveDown', 'Bajar')}>
+                                      <ChevronDown size={15} />
+                                    </button>
+                                    <button onClick={() => deleteCheckpoint(id, c.id)} className="cg-focus rounded p-1.5" style={{ color: 'var(--bad-text)' }}>
+                                      <Trash2 size={15} />
+                                    </button>
+                                  </div>
                                 </li>
                               ))}
                             </ul>

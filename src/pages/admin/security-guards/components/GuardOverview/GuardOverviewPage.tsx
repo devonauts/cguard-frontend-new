@@ -30,6 +30,17 @@ export default function GuardResumenPage() {
   const [guard, setGuard] = useState<OverviewGuard | null>(null);
   const [loading, setLoading] = useState(false);
   const [rating, setRating] = useState<{ average: number; count: number } | null>(null);
+  // Expediente laboral: la antigüedad se calcula en el servidor POR CICLOS
+  // (quien se fue y volvió no se lleva de regalo los meses que estuvo fuera) y
+  // las bajas viajan con la etiqueta del motivo ya resuelta.
+  const [expediente, setExpediente] = useState<any | null>(null);
+  useEffect(() => {
+    if (!id) return;
+    securityGuardService.employment(id)
+      .then((d: any) => setExpediente(d))
+      .catch(() => { /* la tarjeta simplemente no se pinta */ });
+  }, [id]);
+
   useEffect(() => {
     if (!id) return;
     let alive = true;
@@ -128,6 +139,56 @@ export default function GuardResumenPage() {
 
               {/* ── REAL STATION / PERFORMANCE / SCHEDULE / ACTIVITY ───────── */}
               <GuardSummary guard={guard} />
+
+              {/* ── EXPEDIENTE LABORAL ─────────────────────────────────────── */}
+              {expediente?.seniority && (
+                <div className="glass-flat rounded-3xl p-5">
+                  <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide" style={{ color: 'var(--ink-soft)' }}>
+                    {t('guards.employment.title', 'Expediente laboral')}
+                  </h3>
+                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                    <div>
+                      <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{t('guards.employment.seniority', 'Antigüedad')}</div>
+                      <div className="text-lg font-semibold">{expediente.seniority.label || '—'}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{t('guards.employment.hiredOn', 'Fecha de ingreso')}</div>
+                      <div className="text-lg font-semibold">{expediente.guard?.hiredOn || '—'}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{t('guards.employment.cycles', 'Ciclos en la empresa')}</div>
+                      <div className="text-lg font-semibold">{expediente.seniority.cycles ?? 1}</div>
+                    </div>
+                  </div>
+                  {Array.isArray(expediente.terminations) && expediente.terminations.length > 0 && (
+                    <div className="mt-4 space-y-2">
+                      <div className="text-xs font-semibold" style={{ color: 'var(--ink-soft)' }}>
+                        {t('guards.employment.terminations', 'Historial de bajas')}
+                      </div>
+                      {expediente.terminations.map((b: any) => (
+                        <div key={b.id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl px-3 py-2 text-sm" style={{ background: 'var(--glass-raised)' }}>
+                          <span>
+                            <strong>{String(b.terminationDate).slice(0, 10)}</strong> · {b.reasonLabel}
+                            {b.reasonNote ? <span style={{ color: 'var(--ink-soft)' }}> — {b.reasonNote}</span> : null}
+                          </span>
+                          <span className="flex items-center gap-2 text-xs">
+                            {typeof b.equipmentPending === 'number' && b.equipmentPending > 0 && (
+                              <span className="rounded-full px-2 py-0.5 font-semibold" style={{ background: 'color-mix(in oklab, var(--warn) 18%, transparent)', color: 'var(--warn)' }}>
+                                {t('guards.employment.equipmentPending', '{{n}} artículos sin devolver', { n: b.equipmentPending })}
+                              </span>
+                            )}
+                            {b.rehireEligible === false && (
+                              <span className="rounded-full px-2 py-0.5 font-semibold" style={{ background: 'color-mix(in oklab, var(--bad) 15%, transparent)', color: 'var(--bad)' }}>
+                                {t('guards.employment.noRehire', 'No recontratable')}
+                              </span>
+                            )}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </>
           ) : (
             <EmptyState

@@ -5315,7 +5315,11 @@
       "campos-perfil": "Profile fields",
       "campos-perfil.desc": "Which details are asked when adding a person, and which are required.",
       "usuarios": "Users",
-      "usuarios.desc": "Who can access the platform, and with which role."
+      "usuarios.desc": "Who can access the platform, and with which role.",
+      "seguridad": "Security",
+      "seguridad.desc": "Password policy, idle session timeout and platform protections.",
+      "emergencias": "Emergencies & panic",
+      "emergencias.desc": "Who receives a panic alert, control-center emails and escalation cadence."
     },
     "section": {
       "mi_cuenta": "My account",

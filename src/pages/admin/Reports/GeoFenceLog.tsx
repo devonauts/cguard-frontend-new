@@ -17,7 +17,7 @@ interface Rec {
 
 const columns: ReportColumn<Rec>[] = [
   { key: "date", label: "Fecha", value: (r) => formatDateTime(r.punchInTime) },
-  { key: "guard", label: "Vigilante", value: (r) => r.guardName?.fullName || "—" },
+  { key: "guard", label: "Vigilante", value: (r) => r.guardName?.fullName || "—", privacy: "guardName" },
   { key: "station", label: "Puesto", value: (r) => r.stationName?.stationName || "—" },
   { key: "inDist", label: "Dist. entrada", value: (r) => formatMeters(r.punchInDistanceM), align: "right" },
   { key: "in", label: "Entrada", value: (r) => (r.punchInOutsideGeofence ? "Fuera de valla" : "OK"), align: "center" },

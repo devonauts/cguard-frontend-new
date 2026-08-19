@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { startIdleLogout, stopIdleLogout } from "@/lib/idleLogout";
 import { AuthService, LoginCredentials, SignUpData } from "../services/auth/authService";
 import { setAuthToken, clearAuthToken } from "@/lib/api";
 import { setTenantId as setClientServiceTenantId, clearTenantId as clearClientServiceTenantId } from "@/lib/api/clientService";
@@ -113,6 +114,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     checkAuth();
   }, []);
+
+  // Cierre por inactividad: la política del tenant (Configuración › Seguridad)
+  // se lee al entrar y arma el vigilante. Depender de `user` re-arma tras cada
+  // login/cambio de cuenta; con la política en 0 (defecto) no vigila nada.
+  useEffect(() => {
+    if (user && localStorage.getItem('authToken')) {
+      startIdleLogout(signOut);
+    }
+    return () => stopIdleLogout();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   // Cross-tab account sync. authToken/tenantId are single shared localStorage
   // keys, so signing into ANOTHER account (e.g. a second company) in a second

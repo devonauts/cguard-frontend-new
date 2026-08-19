@@ -78,9 +78,21 @@ export const securityGuardService = {
     return resp && resp.data !== undefined ? resp.data : resp;
   },
 
-  async archive(ids: string[]) {
+  /** Expediente laboral: antigüedad por ciclos + historial de bajas + ausencias. */
+  async employment(id: string) {
     const tenantId = getTenantId();
-    const resp = await api.post(`/tenant/${tenantId}/security-guard/archive`, { ids }, { toast: { silentError: true } });
+    const resp = await api.get(`/tenant/${tenantId}/security-guard/${id}/employment`, { toast: { silentError: true } });
+    return resp && resp.data !== undefined ? resp.data : resp;
+  },
+  async archive(ids: string[], termination?: {
+    terminationDate?: string;
+    reason?: string;
+    reasonNote?: string;
+    rehireEligible?: boolean;
+    equipmentReturn?: Array<{ item: string; returned?: boolean }>;
+  }) {
+    const tenantId = getTenantId();
+    const resp = await api.post(`/tenant/${tenantId}/security-guard/archive`, { ids, termination }, { toast: { silentError: true } });
 
     return resp && resp.data !== undefined ? resp.data : resp;
   },

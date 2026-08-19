@@ -18,7 +18,7 @@ const columns: ReportColumn<TagScan>[] = [
   { key: "scanned", label: "Fecha/Hora", value: (r) => formatDateTime(r.scannedAt) },
   { key: "tour", label: "Recorrido", value: (r) => r.tag?.siteTour?.name || "—" },
   { key: "tag", label: "Punto (etiqueta)", value: (r) => r.tag?.name || r.tag?.tagIdentifier || "—" },
-  { key: "guard", label: "Vigilante", value: (r) => r.guard?.fullName || "—" },
+  { key: "guard", label: "Vigilante", value: (r) => r.guard?.fullName || "—", privacy: "guardName" },
   { key: "station", label: "Estación", value: (r) => r.station?.stationName || "—" },
   { key: "valid", label: "Ubicación", value: (r) => (r.validLocation ? "Válida" : "Fuera de rango"), align: "center" },
   { key: "dist", label: "Distancia (m)", value: (r) => (r.distanceMeters != null ? Number(r.distanceMeters).toFixed(0) : "—"), align: "right" },
