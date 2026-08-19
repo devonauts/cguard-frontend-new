@@ -5319,7 +5319,9 @@
       "seguridad": "Security",
       "seguridad.desc": "Password policy, idle session timeout and platform protections.",
       "emergencias": "Emergencies & panic",
-      "emergencias.desc": "Who receives a panic alert, control-center emails and escalation cadence."
+      "emergencias.desc": "Who receives a panic alert, control-center emails and escalation cadence.",
+      "asistente-ia": "VigIA assistant",
+      "asistente-ia.desc": "Assistant usage: messages, cost, free quota and executed actions."
     },
     "section": {
       "mi_cuenta": "My account",

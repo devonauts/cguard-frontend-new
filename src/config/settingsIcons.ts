@@ -1,4 +1,5 @@
 import {
+  Bot,
   Siren,
   Settings,
   User,
@@ -39,6 +40,7 @@ import {
 // Shared icon registry for the settings nav + landing dashboard. Keys match the
 // `icon` field in src/data/settings-nav.json.
 export const SETTINGS_ICONS: Record<string, LucideIcon> = {
+  Bot,
   Siren,
   User, KeyRound, ShieldCheck, Building2, CreditCard, Network, ShieldHalf,
   ListChecks, MapPinned, Shield, Route, AlertTriangle, BadgeCheck, Wrench,

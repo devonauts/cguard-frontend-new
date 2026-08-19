@@ -253,6 +253,14 @@
             "icon": "Smartphone",
             "desc": "Banners, servicios y certificaciones que ve tu cliente en su app.",
             "keywords": "cliente mi seguridad portal banner servicio precio certificacion contenido"
+          },
+          {
+            "id": "asistente-ia",
+            "label": "Asistente VigIA",
+            "path": "/setting/asistente-ia",
+            "icon": "Bot",
+            "desc": "Uso del asistente: mensajes, costo, cuota gratis y acciones ejecutadas.",
+            "keywords": "asistente ia inteligencia artificial bot vigia chat uso consumo tokens recarga saldo"
           }
         ]
       },

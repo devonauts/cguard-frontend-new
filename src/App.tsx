@@ -43,6 +43,7 @@ const ReportSettingsPage = lazy(() => import("./pages/admin/Configuration/report
 const GuardsGlobalSettingsPage = lazy(() => import("./pages/admin/Configuration/guards-settings/GuardsGlobalSettingsPage"));
 const EmergencySettingsPage = lazy(() => import("./pages/admin/Configuration/emergency/EmergencySettingsPage"));
 const SecurityPolicyPage = lazy(() => import("./pages/admin/Configuration/security/SecurityPolicyPage"));
+const VigiaUsagePage = lazy(() => import("./pages/admin/Configuration/vigia/VigiaUsagePage"));
 const RondasSettingsPage = lazy(() => import("./pages/admin/Configuration/rondas-settings/RondasSettingsPage"));
 const JornadaPage = lazy(() => import("./pages/admin/Configuration/scheduling/JornadaPage"));
 const ActivityLogHubPage = lazy(() => import("./pages/admin/Configuration/activity-log/ActivityLogHubPage"));
@@ -1572,6 +1573,14 @@ export default function App() {
                   <ProtectedRoute>
                     <GuardsGlobalSettingsPage />
                     {/* FALTA */}
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/setting/asistente-ia"
+                element={
+                  <ProtectedRoute>
+                    <VigiaUsagePage />
                   </ProtectedRoute>
                 }
               />

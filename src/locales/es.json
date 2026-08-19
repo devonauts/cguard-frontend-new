@@ -5321,7 +5321,9 @@
       "seguridad": "Seguridad",
       "seguridad.desc": "Política de contraseñas, cierre por inactividad y protecciones de la plataforma.",
       "emergencias": "Emergencias y pánico",
-      "emergencias.desc": "Quién recibe un pánico, correos de la central y la cadencia del escalado."
+      "emergencias.desc": "Quién recibe un pánico, correos de la central y la cadencia del escalado.",
+      "asistente-ia": "Asistente VigIA",
+      "asistente-ia.desc": "Uso del asistente: mensajes, costo, cuota gratis y acciones ejecutadas."
     },
     "section": {
       "mi_cuenta": "Mi cuenta",

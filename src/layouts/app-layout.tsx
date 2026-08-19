@@ -10,6 +10,7 @@ import TrialBanner from "@/components/TrialBanner";
 import DemoDataBanner from "@/components/DemoDataBanner";
 import { RadioRealtimeProvider } from "@/components/radio/RadioRealtimeProvider";
 import RadioVoiceWidget from "@/components/radio/RadioVoiceWidget";
+import VigiaWidget from "@/components/vigia/VigiaWidget";
 import OnboardingProvider from "@/components/onboarding/OnboardingProvider";
 import tenantService from "@/services/tenant.service";
 import { cacheTenantLocation, cacheTenantCountry, cacheTenantTimezone } from "@/utils/tenantLocation";
@@ -307,6 +308,11 @@ function AppLayoutShell({ children }: AppLayoutProps) {
       <RadioRealtimeProvider tenantId={tenantIdNow}>
         <RadioVoiceWidget />
       </RadioRealtimeProvider>
+
+      {/* VigIA — el asistente, abajo a la derecha. Solo para el equipo (el
+          armazón del CRM ya es de staff); las acciones corren con los permisos
+          del usuario y toda escritura se confirma en el chat. */}
+      <VigiaWidget />
 
       {/* Toaster lives once globally in main.tsx — a second one here made every
           toast (notifications included) render twice. */}
