@@ -983,6 +983,10 @@ export default function NewDispatchPage() {
 
       const incidentPayload = {
         ...payload,
+        // Clave de idempotencia, generada UNA vez por envío: los reintentos de
+        // la cola offline (y el caso "timeout pero sí llegó") repiten la misma
+        // clave y el backend devuelve el incidente original en vez de duplicarlo.
+        idempotencyKey: (globalThis.crypto as any)?.randomUUID?.() || `crm_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`,
         incidentType: payload.incidentTypeId || payload.incidentType || null,
         // send the security-guard record id expected by the backend as `guardNameId` when available
         guardNameId: resolvedGuardNameId || payload.guardId || payload.guardNameId || null,
@@ -1002,6 +1006,9 @@ export default function NewDispatchPage() {
         incidentPayload,
         () => api.post(`/tenant/${tenantId}/incident`, { data: incidentPayload }),
         "Incidente",
+        // Los timeouts también se encolan: la clave de idempotencia de arriba
+        // hace que el reintento sea inocuo aunque el primero SÍ hubiera llegado.
+        { queueTimeouts: true },
       );
       if (queued) {
         toast.warning(

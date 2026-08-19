@@ -143,8 +143,29 @@ export function onDeepLink(cb: (path: string) => void): void {
   try { window.cguardDesktop?.onDeepLink(cb); } catch { /* ignore */ }
 }
 
+/**
+ * Mapa deep link → ruta REAL del CRM. El backend emite cguardpro://<entidad>/<id>
+ * (ver communicationService.ts) pero las rutas del CRM no siempre se llaman
+ * igual — sin este mapa, cada enlace caía en el 404 del router (auditoría
+ * 2026-08-18). Lo que no tiene detalle propio aterriza en su LISTA, que siempre
+ * es mejor que un 404.
+ */
+function mapDeepLink(raw: string): string {
+  const clean = raw.startsWith("/") ? raw.slice(1) : raw;
+  const [entity, id] = clean.split("/");
+  switch (entity) {
+    case "incidents": return id ? `/dispatch-tickets/${id}` : "/dispatch-tickets";
+    case "visitors": return "/visitors";           // la bitácora es la vista de detalle
+    case "tasks": return "/tasks";
+    case "messages": return "/messenger";
+    case "shifts": return "/nomina/time-clock";     // el punch vive en el reloj de nómina
+    case "rondas": return "/dashboard";             // sin detalle propio en el CRM aún
+    default: return `/${clean}`;                     // ruta ya-CRM (p.ej. /dispatch-tickets/x)
+  }
+}
+
 // Manejo por defecto: un deep link navega dentro de la SPA. Registrado al
 // importar el módulo (main.tsx lo importa una vez).
 if (typeof window !== "undefined" && window.cguardDesktop) {
-  onDeepLink((path) => navigateInApp(path));
+  onDeepLink((path) => navigateInApp(mapDeepLink(path)));
 }

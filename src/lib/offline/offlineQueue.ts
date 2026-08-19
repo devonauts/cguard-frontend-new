@@ -170,6 +170,15 @@ export async function runOrQueue<T>(
   payload: any,
   doIt: () => Promise<T>,
   label?: string,
+  opts?: {
+    /**
+     * Encolar TAMBIÉN los timeouts (status 408/ECONNABORTED). Solo es seguro
+     * cuando el payload lleva clave de idempotencia: un timeout significa
+     * "no sé si llegó", y sin clave el reintento duplicaría el registro si SÍ
+     * llegó. El incidente la lleva; las visitas todavía no.
+     */
+    queueTimeouts?: boolean;
+  },
 ): Promise<{ queued: boolean; result?: T; id?: string }> {
   if (typeof navigator !== "undefined" && navigator.onLine === false) {
     return { queued: true, id: enqueue(kind, payload, label) };
@@ -177,8 +186,9 @@ export async function runOrQueue<T>(
   try {
     const result = await doIt();
     return { queued: false, result };
-  } catch (e) {
-    if (isNetworkFailure(e)) {
+  } catch (e: any) {
+    const timeout = e?.status === 408 || e?.code === "ECONNABORTED";
+    if (isNetworkFailure(e) || (timeout && opts?.queueTimeouts)) {
       return { queued: true, id: enqueue(kind, payload, label) };
     }
     throw e;

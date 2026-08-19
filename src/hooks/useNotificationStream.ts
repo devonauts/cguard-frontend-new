@@ -39,6 +39,14 @@ interface UseNotificationStreamResult {
 
 const MAX_STORED = 50;
 
+// Sonido + aviso del SISTEMA deduplicados a nivel de MÓDULO: el hook se monta
+// en más de un consumidor a la vez (la campana del header y RadioRealtimeProvider)
+// y cada instancia mantenía su propio "ya alertado" — resultado: chime doble y
+// dos avisos nativos por el mismo evento (auditoría 2026-08-18). El callback
+// onLive de cada consumidor sigue siendo por-instancia (cada uno necesita su
+// propia reacción); lo global es solo lo que el USUARIO oye/ve una vez.
+const globallyAlerted = new Set<string>();
+
 export function useNotificationStream(
   tenantId: string | null | undefined,
   onLive?: (n: PlatformNotification) => void,
@@ -168,22 +176,31 @@ export function useNotificationStream(
       if (alertedRef.current.size > 1000) {
         alertedRef.current = new Set(Array.from(alertedRef.current).slice(-500));
       }
-      // Audible cue for live events only — the REST backlog seed above stays
-      // silent so we don't chime on every page load.
-      try {
-        playNotificationChime();
-      } catch {
-        /* best-effort */
-      }
-      // Aviso NATIVO del sistema cuando el CRM no está a la vista (minimizado /
-      // otra pestaña / app de escritorio en segundo plano): un pánico o un
-      // incidente debe sonar en el sistema operativo, no solo dentro de una
-      // ventana que nadie está mirando. notifyNative ya se auto-silencia con la
-      // ventana visible, así que nunca duplica el toast.
-      try {
-        notifyNative(n.title, n.body, undefined, n.id);
-      } catch {
-        /* best-effort */
+      // Chime + aviso nativo UNA sola vez por evento en toda la app (ver
+      // globallyAlerted arriba) — sin importar cuántos consumidores del stream
+      // estén montados.
+      if (!globallyAlerted.has(n.id)) {
+        globallyAlerted.add(n.id);
+        if (globallyAlerted.size > 1000) {
+          const keep = Array.from(globallyAlerted).slice(-500);
+          globallyAlerted.clear();
+          keep.forEach((id) => globallyAlerted.add(id));
+        }
+        // Audible cue for live events only — the REST backlog seed above stays
+        // silent so we don't chime on every page load.
+        try {
+          playNotificationChime();
+        } catch {
+          /* best-effort */
+        }
+        // Aviso NATIVO del sistema cuando el CRM no está a la vista (minimizado /
+        // otra pestaña / app de escritorio en segundo plano). notifyNative ya se
+        // auto-silencia con la ventana visible, así que nunca duplica el toast.
+        try {
+          notifyNative(n.title, n.body, undefined, n.id);
+        } catch {
+          /* best-effort */
+        }
       }
       // Fire the in-CRM custom alert for the live arrival.
       try {
