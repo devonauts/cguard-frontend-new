@@ -5337,5 +5337,20 @@
       "datos_y_conexiones": "Data and connections",
       "datos_y_conexiones.hint": "What goes out, what comes in and what gets logged"
     }
+  },
+  "vigia": {
+    "placeholder": "Message VigIA…",
+    "inputAria": "Message for VigIA",
+    "openAria": "Open VigIA, the assistant",
+    "dialogAria": "VigIA, operations assistant",
+    "tagline": "Your operation's lookout",
+    "emptyTitle": "How can I help?",
+    "emptyHint": "For example, I can:",
+    "emptyNote": "Every action is shown first and only runs if you confirm.",
+    "proposalTitle": "Action awaiting confirmation",
+    "working": "VigIA is working…",
+    "cancelled": "Understood, I won't do it. Anything else?",
+    "netError": "Couldn't reach VigIA. Try again.",
+    "confirmError": "Couldn't confirm (connection lost?). Press Confirm again: it's safe."
   }
 }

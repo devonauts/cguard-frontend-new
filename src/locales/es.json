@@ -5339,5 +5339,20 @@
       "datos_y_conexiones": "Datos y conexiones",
       "datos_y_conexiones.hint": "Lo que sale, lo que entra y lo que queda registrado"
     }
+  },
+  "vigia": {
+    "placeholder": "Escríbele a VigIA…",
+    "inputAria": "Mensaje para VigIA",
+    "openAria": "Abrir VigIA, el asistente",
+    "dialogAria": "VigIA, asistente de la operación",
+    "tagline": "El vigía de tu operación",
+    "emptyTitle": "¿En qué te ayudo?",
+    "emptyHint": "Puedo, por ejemplo:",
+    "emptyNote": "Toda acción te la muestro antes y la ejecuto solo si confirmas.",
+    "proposalTitle": "Acción por confirmar",
+    "working": "VigIA está trabajando…",
+    "cancelled": "Entendido, no lo hago. ¿Algo más?",
+    "netError": "No pudimos hablar con VigIA. Inténtalo de nuevo.",
+    "confirmError": "No se pudo confirmar (¿se cortó la señal?). Vuelve a pulsar Confirmar: es seguro."
   }
 }
