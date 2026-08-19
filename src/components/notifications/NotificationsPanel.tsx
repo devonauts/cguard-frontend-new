@@ -186,6 +186,23 @@ function NotificationItem({
           >
             {n.title}
           </p>
+          {["coverage.post_uncovered", "coverage.uncovered", "attendance.no_show", "guard.inactive"].includes(String(n.eventType || "")) && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                try {
+                  window.dispatchEvent(new CustomEvent("vigia:abrir", { detail: {
+                    mensaje: `Aviso recibido: ${n.title}. Puedo mostrarte la cobertura en vivo y sugerir reemplazos — dime «muéstrame» y lo hago.`,
+                    escribir: "Muéstrame la cobertura y sugiere reemplazos para lo que esté sin cubrir",
+                  } }));
+                } catch { /* sin widget */ }
+              }}
+              className="cg-focus mb-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
+              style={{ background: "color-mix(in oklab, var(--brand) 15%, transparent)", color: "var(--brand-text)" }}
+            >
+              Resolver con VigIA
+            </button>
+          )}
           {n.body && (
             <p className="mt-0.5 line-clamp-2 text-xs" style={{ color: 'var(--ink-soft)' }}>
               {n.body}

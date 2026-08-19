@@ -89,13 +89,36 @@ export default function VigiaWidget() {
     guardarHilo(msgs);
   }, [msgs, propuesta, ocupado, open]);
 
+  // El parte matutino: la PRIMERA apertura del día trae el estado de la
+  // operación sin gastar un token — el retrato ya lo sabe todo.
+  useEffect(() => {
+    if (!open) return;
+    const hoy = new Date().toISOString().slice(0, 10);
+    if (localStorage.getItem("vigia_parte") === hoy) return;
+    localStorage.setItem("vigia_parte", hoy);
+    (async () => {
+      try {
+        const resp: any = await api.get(`/tenant/${tenantId()}/assistant/brief`, { toast: { silentError: true } } as any);
+        const d = resp && resp.data !== undefined ? resp.data : resp;
+        if (d?.lineas?.length) {
+          setMsgs((m) => [...m, { role: "assistant", content: `${d.titulo}\n${d.lineas.map((l: string) => `• ${l}`).join("\n")}` }]);
+        }
+      } catch { /* sin parte no pasa nada */ }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
   // Cualquier parte del CRM puede abrir a VigIA con un primer mensaje sembrado:
   // window.dispatchEvent(new CustomEvent('vigia:abrir', { detail: { mensaje } }))
   useEffect(() => {
     const abrir = (e: any) => {
       setOpen(true);
       const mensaje = e?.detail?.mensaje;
-      if (mensaje) setMsgs((m) => (m.length ? m : [{ role: "assistant", content: String(mensaje) }]));
+      // Se siembra AUNQUE haya hilo: una alerta conversable llega en mitad del
+      // día, no solo en el estreno del chat.
+      if (mensaje) setMsgs((m) => [...m, { role: "assistant", content: String(mensaje) }]);
+      const escribir = e?.detail?.escribir;
+      if (escribir) setTexto(String(escribir));
     };
     window.addEventListener("vigia:abrir", abrir as any);
     return () => window.removeEventListener("vigia:abrir", abrir as any);
