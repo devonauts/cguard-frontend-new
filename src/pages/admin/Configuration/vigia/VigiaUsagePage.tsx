@@ -53,7 +53,7 @@ export default function VigiaUsagePage() {
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <StatCard label="Mensajes este mes" value={String(datos.mes?.mensajes ?? 0)} icon={<MessageSquare />} />
-            <StatCard label="Cuota gratis restante" value={dolares(datos.mes?.gratisRestanteCents ?? 0)} accent={(datos.mes?.gratisRestanteCents ?? 0) > 0 ? "ok" : "neutral"} icon={<Bot />} />
+            <StatCard label={`Cuota gratis restante (de ${dolares(datos.mes?.cuotaGratisCents ?? 100)})`} value={dolares(datos.mes?.gratisRestanteCents ?? 0)} accent={(datos.mes?.gratisRestanteCents ?? 0) > 0 ? "ok" : "neutral"} icon={<Bot />} />
             <StatCard label="Cobrado del saldo (mes)" value={dolares(datos.mes?.cobradoCents ?? 0)} icon={<Wallet />} />
             <StatCard label="Saldo disponible" value={dolares(datos.saldoCents ?? 0)} accent={(datos.saldoCents ?? 0) > 0 ? "ok" : "warn"} icon={<Wallet />} />
           </div>
@@ -105,7 +105,7 @@ export default function VigiaUsagePage() {
           </section>
 
           <p className="text-[11px]" style={{ color: "var(--ink-faint)" }}>
-            Costo real del mes: {dolaresDesdeCenti((datos.serie || []).reduce((s: number, d: any) => s + (d.costCentiCents || 0), 0))} en el proveedor de IA.
+            Costo real del mes: {dolaresDesdeCenti(datos.mes?.costCentiCents ?? 0)} en el proveedor de IA.
             La cuota gratis se renueva cada mes.
           </p>
         </div>

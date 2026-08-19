@@ -21,7 +21,7 @@ import api from "@/lib/api";
 const tenantId = () => localStorage.getItem("tenantId") || "";
 
 interface Msg { role: "user" | "assistant"; content: string }
-interface Propuesta { tool: string; args: any; resumen: string }
+interface Propuesta { tool: string; args: any; resumen: string; firma: string; exp: number }
 
 /** El logo: un escudo con el pulso del vigía. Inline para no cargar assets. */
 function LogoVigia({ size = 18 }: { size?: number }) {
@@ -42,6 +42,16 @@ export default function VigiaWidget() {
   const [propuesta, setPropuesta] = useState<Propuesta | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
   const fondo = useRef<HTMLDivElement | null>(null);
+  const entrada = useRef<HTMLInputElement | null>(null);
+  const botonConfirmar = useRef<HTMLButtonElement | null>(null);
+
+  // El foco vuelve al campo al abrir y tras cada respuesta; cuando aparece una
+  // propuesta, va al botón Confirmar — es LA decisión del feature.
+  useEffect(() => {
+    if (!open) return;
+    if (propuesta) botonConfirmar.current?.focus();
+    else if (!ocupado) entrada.current?.focus();
+  }, [open, ocupado, propuesta]);
 
   useEffect(() => {
     fondo.current?.scrollTo({ top: fondo.current.scrollHeight });
@@ -74,9 +84,9 @@ export default function VigiaWidget() {
       if (d?.error) { setAviso(d.error); return; }
       if (d?.reply) setMsgs((m) => [...m, { role: "assistant", content: d.reply }]);
       if (d?.proposal) setPropuesta(d.proposal);
-      if (d?.navigate) navigate(d.navigate);
+      if (d?.navigate) { navigate(d.navigate); if (!d?.proposal) setOpen(false); }
     } catch (e: any) {
-      setAviso(e?.response?.data?.message || "No pudimos hablar con VigIA. Inténtalo de nuevo.");
+      setAviso(e?.message || "No pudimos hablar con VigIA. Inténtalo de nuevo.");
     } finally {
       setOcupado(false);
     }
@@ -85,19 +95,25 @@ export default function VigiaWidget() {
   const confirmar = async (si: boolean) => {
     if (!propuesta || ocupado) return;
     const p = propuesta;
-    setPropuesta(null);
     if (!si) {
+      setPropuesta(null);
       setMsgs((m) => [...m, { role: "assistant", content: "Entendido, no lo hago. ¿Algo más?" }]);
       return;
     }
     setOcupado(true);
     try {
-      const d = await llamar({ messages: [], confirm: { tool: p.tool, args: p.args } });
-      if (d?.error) { setAviso(d.error); return; }
+      // La firma viaja de vuelta: el servidor solo ejecuta propuestas que ÉL
+      // emitió, frescas y una sola vez — reintentar con la misma firma devuelve
+      // el mismo resultado en vez de ejecutar dos veces.
+      const d = await llamar({ messages: [], confirm: { tool: p.tool, args: p.args, firma: p.firma, exp: p.exp } });
+      if (d?.error) { setAviso(d.error); setPropuesta(null); return; }
+      setPropuesta(null);
       if (d?.reply) setMsgs((m) => [...m, { role: "assistant", content: d.reply }]);
       if (d?.navigate) navigate(d.navigate);
     } catch (e: any) {
-      setAviso(e?.response?.data?.message || "No se pudo ejecutar. Inténtalo de nuevo.");
+      // La tarjeta SIGUE AHÍ: si fue un corte de red, reintentar con la misma
+      // firma es seguro (idempotente en el servidor).
+      setAviso(e?.message || "No se pudo confirmar (¿se cortó la señal?). Vuelve a pulsar Confirmar: es seguro.");
     } finally {
       setOcupado(false);
     }
@@ -111,8 +127,12 @@ export default function VigiaWidget() {
           onClick={() => setOpen(true)}
           aria-label="Abrir VigIA, el asistente"
           className="cg-focus flex items-center gap-2 rounded-full px-4 py-3 text-sm font-bold shadow-lg transition-[filter] hover:brightness-110"
+          aria-expanded={open}
           style={{
-            position: "fixed", right: "1rem", bottom: "1rem", zIndex: 80,
+            // z-45: los diálogos del sistema (z-50) tapan la burbuja, no al
+            // revés. La botonera de guardar de algunas páginas vive en
+            // bottom-6 right-6 — la burbuja se levanta por encima de ella.
+            position: "fixed", right: "1rem", bottom: "calc(4.5rem + env(safe-area-inset-bottom, 0px))", zIndex: 45,
             background: "var(--brand)", color: "var(--brand-ink)",
           }}
         >
@@ -128,8 +148,10 @@ export default function VigiaWidget() {
           aria-label="VigIA, asistente de la operación"
           className="flex flex-col overflow-hidden rounded-2xl border shadow-2xl"
           style={{
-            position: "fixed", right: "1rem", bottom: "1rem", zIndex: 80,
-            width: "min(24rem, calc(100vw - 2rem))", height: "min(34rem, calc(100vh - 6rem))",
+            position: "fixed", right: "1rem", bottom: "calc(1rem + env(safe-area-inset-bottom, 0px))", zIndex: 45,
+            // 100dvh y no 100vh: con la barra de Safari desplegada, la fila de
+            // entrada quedaba fuera de pantalla.
+            width: "min(24rem, calc(100vw - 2rem))", height: "min(34rem, calc(100dvh - 6rem))",
             background: "var(--float)", borderColor: "var(--hairline)",
           }}
         >
@@ -148,17 +170,28 @@ export default function VigiaWidget() {
           </div>
 
           {/* Mensajes */}
-          <div ref={fondo} className="flex-1 space-y-3 overflow-y-auto px-3 py-3">
+          <div ref={fondo} role="log" aria-live="polite" className="flex-1 space-y-3 overflow-y-auto px-3 py-3">
             {msgs.length === 0 && (
               <div className="px-2 py-4 text-sm" style={{ color: "var(--ink-soft)" }}>
                 <p className="mb-2 font-semibold" style={{ color: "var(--ink)" }}>¿En qué te ayudo?</p>
                 <p>Puedo, por ejemplo:</p>
-                <ul className="mt-1 list-disc pl-4">
-                  <li>«Agrega al vigilante Juan Pérez, juan@correo.com»</li>
-                  <li>«¿Cómo va la cobertura ahora?»</li>
-                  <li>«¿Qué incidentes hubo hoy?»</li>
-                  <li>«Llévame al horario»</li>
-                </ul>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {[
+                    "¿Cómo va la cobertura ahora?",
+                    "¿Qué incidentes hubo hoy?",
+                    "Agrega un vigilante nuevo",
+                    "Llévame al horario",
+                  ].map((ej) => (
+                    <button
+                      key={ej}
+                      onClick={() => { setTexto(ej); setTimeout(() => entrada.current?.focus(), 0); }}
+                      className="cg-focus rounded-full border px-2.5 py-1 text-xs transition-[filter] hover:brightness-110"
+                      style={{ borderColor: "var(--hairline)", color: "var(--ink)" }}
+                    >
+                      {ej}
+                    </button>
+                  ))}
+                </div>
                 <p className="mt-2 text-xs" style={{ color: "var(--ink-faint)" }}>
                   Toda acción te la muestro antes y la ejecuto solo si confirmas.
                 </p>
@@ -186,6 +219,7 @@ export default function VigiaWidget() {
                 <p className="mb-3 text-sm">{propuesta.resumen}</p>
                 <div className="flex gap-2">
                   <button
+                    ref={botonConfirmar}
                     onClick={() => confirmar(true)}
                     disabled={ocupado}
                     className="cg-focus flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2 text-sm font-bold transition-[filter] hover:brightness-110 disabled:opacity-50"
@@ -206,7 +240,7 @@ export default function VigiaWidget() {
             )}
 
             {ocupado && (
-              <div className="flex items-center gap-2 px-2 text-xs" style={{ color: "var(--ink-soft)" }}>
+              <div role="status" className="flex items-center gap-2 px-2 text-xs" style={{ color: "var(--ink-soft)" }}>
                 <Loader2 size={13} className="animate-spin" /> VigIA está trabajando…
               </div>
             )}
@@ -220,6 +254,7 @@ export default function VigiaWidget() {
           {/* Entrada */}
           <div className="flex items-center gap-2 border-t px-3 py-2" style={{ borderColor: "var(--hairline)" }}>
             <input
+              ref={entrada}
               className="cg-input flex-1 text-sm"
               placeholder="Escríbele a VigIA…"
               value={texto}

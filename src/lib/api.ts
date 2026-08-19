@@ -61,7 +61,10 @@ api.interceptors.request.use((config) => {
   }
   // Ensure backend can localize messages by sending the current UI language.
   try {
-    const lang = localStorage.getItem('i18nextLng') || (typeof navigator !== 'undefined' && navigator.language) || 'en'
+    // 'app_language' es la clave que escribe el selector de idioma
+    // (LanguageContext). 'i18nextLng' no la escribía nadie: el backend
+    // localizaba con el idioma del NAVEGADOR, no con el elegido.
+    const lang = localStorage.getItem('app_language') || localStorage.getItem('language') || localStorage.getItem('i18nextLng') || (typeof navigator !== 'undefined' && navigator.language) || 'es'
     if (!config.headers) config.headers = {} as any
     (config.headers as any)['Accept-Language'] = lang
   } catch (e) {
