@@ -52,6 +52,7 @@ export default function EditSecurityGuardPage() {
     bloodType: "",
     academicInstruction: "",
     hiringContractDate: "",
+    hourlyRate: "",
     gender: "",
     governmentId: "",
     guardCredentials: "",
@@ -80,6 +81,7 @@ export default function EditSecurityGuardPage() {
           bloodType: data.bloodType ?? "",
           academicInstruction: data.academicInstruction ?? "",
           hiringContractDate: data.hiringContractDate ?? "",
+          hourlyRate: data.hourlyRateCents != null ? String(data.hourlyRateCents / 100) : "",
           gender: data.gender ?? "",
           governmentId: data.governmentId ?? "",
           guardCredentials: data.guardCredentials ?? "",
@@ -105,6 +107,7 @@ export default function EditSecurityGuardPage() {
             bloodType: "",
             academicInstruction: "",
             hiringContractDate: "",
+    hourlyRate: "",
             gender: "",
             governmentId: "",
             guardCredentials: "",
@@ -175,6 +178,10 @@ export default function EditSecurityGuardPage() {
         // Dates: only send when present (avoid clearing with empty string).
         if (form.birthDate) payload.birthDate = form.birthDate;
         if (form.hiringContractDate) payload.hiringContractDate = form.hiringContractDate;
+        // Tarifa/hora: dólares en pantalla, centavos en la base. Vacío = null
+        // (sin tarifa), jamás un cero mentiroso.
+        payload.hourlyRateCents = form.hourlyRate !== "" && !Number.isNaN(Number(form.hourlyRate))
+          ? Math.round(Number(form.hourlyRate) * 100) : null;
 
         await securityGuardService.update(id!, payload);
         navigate("/security-guards");
@@ -308,6 +315,11 @@ export default function EditSecurityGuardPage() {
                 <div>
                   <label className="block text-sm font-medium mb-1">Contrato</label>
                   <Input name="hiringContractDate" value={form.hiringContractDate} onChange={handleChange} type="date" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Tarifa por hora (US$)</label>
+                  <Input name="hourlyRate" value={form.hourlyRate} onChange={handleChange} type="number" step="0.01" min="0" placeholder="3.50" />
+                  <p className="mt-1 text-xs" style={{ color: "var(--ink-faint)" }}>Con esto, el resumen de nómina calcula el costo en dólares (extra ×1.5, festivos con su recargo).</p>
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium mb-1">Credenciales del vigilante</label>
