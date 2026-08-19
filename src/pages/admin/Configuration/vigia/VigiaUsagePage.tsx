@@ -53,7 +53,19 @@ export default function VigiaUsagePage() {
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <StatCard label="Mensajes este mes" value={String(datos.mes?.mensajes ?? 0)} icon={<MessageSquare />} />
-            <StatCard label={`Cuota gratis restante (de ${dolares(datos.mes?.cuotaGratisCents ?? 100)})`} value={dolares(datos.mes?.gratisRestanteCents ?? 0)} accent={(datos.mes?.gratisRestanteCents ?? 0) > 0 ? "ok" : "neutral"} icon={<Bot />} />
+            <StatCard
+              label="Mensajes gratis restantes (aprox.)"
+              value={`≈${(() => {
+                const resto = datos.mes?.gratisRestanteCents ?? 0;
+                const msgs = datos.mes?.mensajes || 0;
+                const gastado = (datos.mes?.cuotaGratisCents ?? 100) - resto;
+                // costo promedio observado; sin historial, 0.44¢ el turno típico
+                const prom = msgs > 0 && gastado > 0 ? gastado / msgs : 0.44;
+                return Math.max(0, Math.floor(resto / Math.max(0.05, prom))).toLocaleString();
+              })()}`}
+              accent={(datos.mes?.gratisRestanteCents ?? 0) > 0 ? "ok" : "neutral"}
+              icon={<Bot />}
+            />
             <StatCard label="Cobrado del saldo (mes)" value={dolares(datos.mes?.cobradoCents ?? 0)} icon={<Wallet />} />
             <StatCard label="Saldo disponible" value={dolares(datos.saldoCents ?? 0)} accent={(datos.saldoCents ?? 0) > 0 ? "ok" : "warn"} icon={<Wallet />} />
           </div>

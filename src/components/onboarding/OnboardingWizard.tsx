@@ -270,6 +270,15 @@ export default function OnboardingWizard({
       invalidateTenantBranding();
       await onRefresh();
       toast.success("¡Configuración completada! Bienvenido a CGuardPro.");
+      // El momento de máxima intención: recién configurado, CRM vacío. VigIA
+      // toma la mano — los 13 registros muertos en dashboards vacíos son el
+      // porqué de esta línea.
+      setTimeout(() => {
+        try {
+          window.dispatchEvent(new CustomEvent("vigia:abrir", { detail: { mensaje:
+            "¡Bienvenido! Soy VigIA, tu asistente. Ya quedó configurada tu empresa — el siguiente paso es tu primer cliente. Dime su nombre y su dirección y te lo creo aquí mismo." } }));
+        } catch { /* sin asistente no se rompe el cierre */ }
+      }, 600);
       onOpenChange(false);
     } catch (e: any) {
       toast.error(e?.message || "No se pudo guardar la configuración.");

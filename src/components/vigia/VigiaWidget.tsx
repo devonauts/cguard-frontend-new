@@ -89,6 +89,18 @@ export default function VigiaWidget() {
     guardarHilo(msgs);
   }, [msgs, propuesta, ocupado, open]);
 
+  // Cualquier parte del CRM puede abrir a VigIA con un primer mensaje sembrado:
+  // window.dispatchEvent(new CustomEvent('vigia:abrir', { detail: { mensaje } }))
+  useEffect(() => {
+    const abrir = (e: any) => {
+      setOpen(true);
+      const mensaje = e?.detail?.mensaje;
+      if (mensaje) setMsgs((m) => (m.length ? m : [{ role: "assistant", content: String(mensaje) }]));
+    };
+    window.addEventListener("vigia:abrir", abrir as any);
+    return () => window.removeEventListener("vigia:abrir", abrir as any);
+  }, []);
+
   useEffect(() => {
     const esc = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
     window.addEventListener("keydown", esc);

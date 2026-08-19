@@ -121,6 +121,14 @@ export default function DemoDataBanner() {
         ¿Te lo configuramos contigo?
       </a>
       <button
+        onClick={() => { try { window.dispatchEvent(new CustomEvent("vigia:abrir", { detail: { mensaje: "Soy VigIA. Puedo crear clientes, sedes y puestos, e invitar vigilantes por ti — dime qué necesitas." } })); } catch { /* sin widget */ } }}
+        className="flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold transition-[filter] hover:brightness-110"
+        style={{ borderColor: "var(--hairline)", background: "var(--float)", color: "var(--ink)" }}
+      >
+        <Sparkles size={13} />
+        o pídeselo a VigIA
+      </button>
+      <button
         onClick={quitar}
         disabled={removing}
         className="flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold transition-[filter] hover:brightness-110 disabled:opacity-60"
