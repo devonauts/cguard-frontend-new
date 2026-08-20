@@ -5354,6 +5354,15 @@
     "cancelled": "Entendido, no lo hago. ¿Algo más?",
     "netError": "No pudimos hablar con VigIA. Inténtalo de nuevo.",
     "confirmError": "No se pudo confirmar (¿se cortó la señal?). Vuelve a pulsar Confirmar: es seguro.",
-    "newChat": "Conversación nueva"
+    "newChat": "Conversación nueva",
+    "history": "Conversaciones pasadas",
+    "confirmClose": "¿Cerrar esta conversación?",
+    "confirmCloseHint": "Se guarda en tu historial y puedes reabrirla desde el menú.",
+    "closeConvo": "Cerrar y guardar",
+    "minimize": "Solo minimizar",
+    "historyEmpty": "Aún no hay conversaciones guardadas. Al cerrar una con la X, queda aquí 7 días.",
+    "untitled": "Conversación",
+    "messages": "mensajes",
+    "deleteConvo": "Borrar conversación"
   }
 }

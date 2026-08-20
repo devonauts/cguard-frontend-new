@@ -16,7 +16,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Send, X, Loader2, Check, Ban, Hand, MessageSquarePlus } from "lucide-react";
+import { Send, X, Loader2, Check, Ban, Hand, MessageSquarePlus, History, ArrowLeft, Trash2 } from "lucide-react";
 import api from "@/lib/api";
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
@@ -37,6 +37,30 @@ function cargarHilo(): Msg[] {
 }
 function guardarHilo(msgs: Msg[]) {
   try { sessionStorage.setItem(HILO_KEY, JSON.stringify({ ts: Date.now(), tid: tenantId(), msgs: msgs.slice(-24) })); } catch { /* privado */ }
+}
+
+/** El historial de conversaciones cerradas: hasta 10, viven 7 días, por
+ *  empresa. En localStorage — reabrir una conversación de ayer es el punto. */
+const CONVOS_KEY = "vigia_convos";
+const CONVOS_MAX = 10;
+const CONVOS_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+interface Convo { id: string; titulo: string; ts: number; msgs: Msg[] }
+
+function cargarConvos(): Convo[] {
+  try {
+    const raw = localStorage.getItem(CONVOS_KEY);
+    if (!raw) return [];
+    const { tid, lista } = JSON.parse(raw);
+    if (tid !== tenantId() || !Array.isArray(lista)) return [];
+    return lista.filter((c: Convo) => Date.now() - c.ts < CONVOS_TTL_MS).slice(0, CONVOS_MAX);
+  } catch { return []; }
+}
+function guardarConvos(lista: Convo[]) {
+  try { localStorage.setItem(CONVOS_KEY, JSON.stringify({ tid: tenantId(), lista: lista.slice(0, CONVOS_MAX) })); } catch { /* privado */ }
+}
+function tituloDeConvo(msgs: Msg[]): string {
+  const primero = msgs.find((m) => m.role === "user")?.content || "";
+  return primero.slice(0, 60) || "";
 }
 
 /** El modelo a veces escapa el «sin markdown» del prompt: los restos de
@@ -72,15 +96,67 @@ export default function VigiaWidget() {
   const [ocupado, setOcupado] = useState(false);
   const [propuesta, setPropuesta] = useState<Propuesta | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
+  const [vista, setVista] = useState<"chat" | "historial">("chat");
+  const [confirmarCierre, setConfirmarCierre] = useState(false);
+  const [convos, setConvos] = useState<Convo[]>(() => cargarConvos());
 
-  /** Cierra este hilo y abre uno en limpio (el historial no viaja al modelo). */
-  const nuevaConversacion = () => {
+  /** La conversación actual se guarda en el historial (si tiene algo). */
+  const archivarActual = (mensajes: Msg[]): Convo[] => {
+    if (!mensajes.length) return convos;
+    const lista = [
+      { id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, titulo: tituloDeConvo(mensajes), ts: Date.now(), msgs: mensajes.slice(-24) },
+      ...convos,
+    ].slice(0, CONVOS_MAX);
+    setConvos(lista);
+    guardarConvos(lista);
+    return lista;
+  };
+
+  const limpiarHilo = () => {
     setMsgs([]);
     setPropuesta(null);
     setAviso(null);
     setTexto("");
     try { sessionStorage.removeItem(HILO_KEY); } catch { /* privado */ }
+  };
+
+  /** Guarda la actual en el historial y abre una en limpio. */
+  const nuevaConversacion = () => {
+    archivarActual(msgs);
+    limpiarHilo();
+    setVista("chat");
     setTimeout(() => entrada.current?.focus(), 0);
+  };
+
+  /** La X: con conversación viva, primero pregunta. */
+  const pedirCierre = () => {
+    if (!msgs.length) { setOpen(false); setVista("chat"); return; }
+    setConfirmarCierre(true);
+  };
+  const cerrarConversacion = () => {
+    archivarActual(msgs);
+    limpiarHilo();
+    setConfirmarCierre(false);
+    setVista("chat");
+    setOpen(false);
+  };
+  const soloMinimizar = () => { setConfirmarCierre(false); setOpen(false); };
+
+  /** Reabre una conversación pasada (la actual, si hay, se guarda antes). */
+  const reabrirConvo = (c: Convo) => {
+    const lista = archivarActual(msgs).filter((x) => x.id !== c.id);
+    setConvos(lista);
+    guardarConvos(lista);
+    setMsgs(c.msgs);
+    setPropuesta(null);
+    setAviso(null);
+    setVista("chat");
+    setTimeout(() => entrada.current?.focus(), 0);
+  };
+  const borrarConvo = (id: string) => {
+    const lista = convos.filter((x) => x.id !== id);
+    setConvos(lista);
+    guardarConvos(lista);
   };
   const fondo = useRef<HTMLDivElement | null>(null);
   const entrada = useRef<HTMLTextAreaElement | null>(null);
@@ -275,10 +351,20 @@ export default function VigiaWidget() {
           {/* Cabecera */}
           <div className="flex items-center justify-between px-4 py-3" style={{ background: "var(--brand)", color: "var(--brand-ink)" }}>
             <div className="flex items-center gap-2">
+              <button
+                onClick={() => setVista(vista === "historial" ? "chat" : "historial")}
+                aria-label={t("vigia.history", "Conversaciones pasadas")}
+                title={t("vigia.history", "Conversaciones pasadas")}
+                className="cg-focus rounded p-1 opacity-80 hover:opacity-100"
+              >
+                {vista === "historial" ? <ArrowLeft size={16} /> : <History size={16} />}
+              </button>
               <LogoVigia />
               <div>
                 <p className="text-sm font-bold leading-none" style={{ fontFamily: "Saira, Inter, sans-serif" }}>VigIA</p>
-                <p className="text-[11px] opacity-80">{t("vigia.tagline", "El vigía de tu operación")}</p>
+                <p className="text-[11px] opacity-80">
+                  {vista === "historial" ? t("vigia.history", "Conversaciones pasadas") : t("vigia.tagline", "El vigía de tu operación")}
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-1">
@@ -290,13 +376,61 @@ export default function VigiaWidget() {
               >
                 <MessageSquarePlus size={16} />
               </button>
-              <button onClick={() => setOpen(false)} aria-label={t("actions.close", "Cerrar")} className="cg-focus rounded p-1 opacity-80 hover:opacity-100">
+              <button onClick={pedirCierre} aria-label={t("actions.close", "Cerrar")} className="cg-focus rounded p-1 opacity-80 hover:opacity-100">
                 <X size={16} />
               </button>
             </div>
           </div>
 
+          {/* ¿Cerrar la conversación? La X pregunta antes de tirar el hilo. */}
+          {confirmarCierre && (
+            <div className="border-b px-4 py-3" style={{ borderColor: "var(--hairline)", background: "color-mix(in oklab, var(--brand) 10%, transparent)" }}>
+              <p className="mb-2 text-sm font-semibold">{t("vigia.confirmClose", "¿Cerrar esta conversación?")}</p>
+              <p className="mb-3 text-xs" style={{ color: "var(--ink-soft)" }}>
+                {t("vigia.confirmCloseHint", "Se guarda en tu historial y puedes reabrirla desde el menú.")}
+              </p>
+              <div className="flex gap-2">
+                <button onClick={cerrarConversacion} className="cg-focus flex-1 rounded-xl py-1.5 text-sm font-bold transition-[filter] hover:brightness-110" style={{ background: "var(--brand)", color: "var(--brand-ink)" }}>
+                  {t("vigia.closeConvo", "Cerrar y guardar")}
+                </button>
+                <button onClick={soloMinimizar} className="cg-focus flex-1 rounded-xl border py-1.5 text-sm font-semibold" style={{ borderColor: "var(--hairline)" }}>
+                  {t("vigia.minimize", "Solo minimizar")}
+                </button>
+                <button onClick={() => setConfirmarCierre(false)} aria-label={t("actions.cancel", "Cancelar")} className="cg-focus rounded p-1 opacity-70 hover:opacity-100">
+                  <X size={14} />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* El historial: conversaciones cerradas, listas para reabrir. */}
+          {vista === "historial" && (
+            <div className="flex-1 space-y-2 overflow-y-auto px-3 py-3">
+              {convos.length === 0 && (
+                <p className="px-2 py-6 text-center text-sm" style={{ color: "var(--ink-soft)" }}>
+                  {t("vigia.historyEmpty", "Aún no hay conversaciones guardadas. Al cerrar una con la X, queda aquí 7 días.")}
+                </p>
+              )}
+              {convos.map((c) => (
+                <div key={c.id} className="flex items-center gap-2 rounded-xl border px-3 py-2" style={{ borderColor: "var(--hairline)", background: "var(--glass-raised)" }}>
+                  <button onClick={() => reabrirConvo(c)} className="cg-focus min-w-0 flex-1 text-left">
+                    <p className="truncate text-sm" style={{ color: "var(--ink)" }}>
+                      {c.titulo || t("vigia.untitled", "Conversación")}
+                    </p>
+                    <p className="text-[11px]" style={{ color: "var(--ink-faint)" }}>
+                      {new Date(c.ts).toLocaleString(undefined, { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })} · {c.msgs.length} {t("vigia.messages", "mensajes")}
+                    </p>
+                  </button>
+                  <button onClick={() => borrarConvo(c.id)} aria-label={t("vigia.deleteConvo", "Borrar conversación")} title={t("vigia.deleteConvo", "Borrar conversación")} className="cg-focus rounded p-1 opacity-60 hover:opacity-100">
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
           {/* Mensajes */}
+          {vista === "chat" && (
           <div ref={fondo} role="log" aria-live="polite" className="flex-1 space-y-3 overflow-y-auto px-3 py-3">
             {msgs.length === 0 && (
               <div className="px-2 py-4 text-sm" style={{ color: "var(--ink-soft)" }}>
@@ -377,8 +511,10 @@ export default function VigiaWidget() {
               </div>
             )}
           </div>
+          )}
 
           {/* Entrada */}
+          {vista === "chat" && (
           <div className="flex items-center gap-2 border-t px-4 pb-3 pt-2" style={{ borderColor: "var(--hairline)" }}>
             <textarea
               ref={entrada}
@@ -405,6 +541,7 @@ export default function VigiaWidget() {
               <Send size={16} />
             </button>
           </div>
+          )}
         </div>
         {/* La punta del escudo: remata la silueta bajo el panel. El relleno es
             un div recortado (clip-path) para poder llevar el MISMO blur del
