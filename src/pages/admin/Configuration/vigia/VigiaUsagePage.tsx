@@ -17,9 +17,10 @@ import api from "@/lib/api";
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
 
-const dolares = (cents: number) => `$${(Math.max(0, cents) / 100).toFixed(2)}`;
-/** El costo viaja en centésimas de centavo (entero); aquí se vuelve legible. */
-const dolaresDesdeCenti = (centi: number) => `$${(Math.max(0, centi) / 10000).toFixed(3)}`;
+/** El gasto se MUESTRA en la moneda del tenant (tasa del día desde el
+ *  backend); el cobro real sigue en USD. Sin tasa, USD honesto. */
+const formatearDinero = (moneda: { codigo: string; tasa: number }, usd: number, decimales = 2) =>
+  `${(usd * moneda.tasa).toLocaleString(undefined, { minimumFractionDigits: decimales, maximumFractionDigits: decimales })} ${moneda.codigo}`;
 
 export default function VigiaUsagePage() {
   const [datos, setDatos] = useState<any | null>(null);
@@ -42,12 +43,17 @@ export default function VigiaUsagePage() {
   // activos se pintaban como dos barras gigantes al 100% — un bloque azul sin
   // dibujo. La ventana completa de 30 días es la que cuenta la historia.
   const serieCruda: Array<{ dia: string; mensajes: number }> = datos?.serie || [];
-  const usoPorDia = new Map(serieCruda.map((d) => [d.dia, d.mensajes]));
+  const usoPorDia = new Map(serieCruda.map((d: any) => [d.dia, d]));
   const serie = Array.from({ length: 30 }, (_, i) => {
     const dia = new Date(Date.now() - (29 - i) * 86400000).toISOString().slice(0, 10);
-    return { dia, mensajes: usoPorDia.get(dia) || 0 };
+    const v: any = usoPorDia.get(dia);
+    return { dia, mensajes: v?.mensajes || 0, costCentiCents: Number(v?.costCentiCents) || 0 };
   });
   const hayUso = serieCruda.some((d) => d.mensajes > 0);
+  const moneda: { codigo: string; tasa: number; aproximada: boolean } = datos?.moneda || { codigo: "USD", tasa: 1, aproximada: false };
+  const dinero = (cents: number, dec = 2) => formatearDinero(moneda, Math.max(0, cents) / 100, dec);
+  const dineroDesdeCenti = (centi: number) => formatearDinero(moneda, Math.max(0, centi) / 10000, 3);
+  const costo30dCenti = serieCruda.reduce((acc, d: any) => acc + (Number(d.costCentiCents) || 0), 0);
   const maxMensajes = Math.max(1, ...serie.map((d) => d.mensajes));
   const etiqueta = (dia: string) => new Date(`${dia}T12:00:00Z`).toLocaleDateString(undefined, { day: "2-digit", month: "short" });
 
@@ -76,8 +82,8 @@ export default function VigiaUsagePage() {
               accent={(datos.mes?.gratisRestanteCents ?? 0) > 0 ? "ok" : "neutral"}
               icon={<Bot />}
             />
-            <StatCard label="Cobrado del saldo (mes)" value={dolares(datos.mes?.cobradoCents ?? 0)} icon={<Wallet />} />
-            <StatCard label="Saldo disponible" value={dolares(datos.saldoCents ?? 0)} accent={(datos.saldoCents ?? 0) > 0 ? "ok" : "warn"} icon={<Wallet />} />
+            <StatCard label="Cobrado del saldo (mes)" value={dinero(datos.mes?.cobradoCents ?? 0)} icon={<Wallet />} />
+            <StatCard label="Saldo disponible" value={dinero(datos.saldoCents ?? 0)} accent={(datos.saldoCents ?? 0) > 0 ? "ok" : "warn"} icon={<Wallet />} />
           </div>
 
           <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
@@ -96,7 +102,7 @@ export default function VigiaUsagePage() {
               <>
                 <div className="flex items-end gap-[3px]" style={{ height: 90 }}>
                   {serie.map((d) => (
-                    <div key={d.dia} title={`${etiqueta(d.dia)}: ${d.mensajes} ${d.mensajes === 1 ? "mensaje" : "mensajes"}`} className="flex-1 rounded-t"
+                    <div key={d.dia} title={`${etiqueta(d.dia)}: ${d.mensajes} ${d.mensajes === 1 ? "mensaje" : "mensajes"}${d.costCentiCents > 0 ? ` · ≈ ${dineroDesdeCenti(d.costCentiCents)}` : ""}`} className="flex-1 rounded-t"
                       style={d.mensajes > 0
                         ? { height: `${Math.max(10, (d.mensajes / maxMensajes) * 100)}%`, background: "color-mix(in oklab, var(--brand) 60%, transparent)" }
                         // Un día sin uso es un tic en la base, no una barra.
@@ -112,7 +118,7 @@ export default function VigiaUsagePage() {
             )}
             {typeof datos.tokens30d === "number" && datos.tokens30d > 0 && (
               <p className="mt-2 text-xs" style={{ color: "var(--ink-faint)" }}>
-                {datos.tokens30d.toLocaleString()} tokens procesados en 30 días.
+                {datos.tokens30d.toLocaleString()} tokens procesados en 30 días · gasto ≈ {dineroDesdeCenti(costo30dCenti)}.
               </p>
             )}
           </section>
@@ -137,8 +143,9 @@ export default function VigiaUsagePage() {
           </section>
 
           <p className="text-[11px]" style={{ color: "var(--ink-faint)" }}>
-            Costo real del mes: {dolaresDesdeCenti(datos.mes?.costCentiCents ?? 0)} en el proveedor de IA.
+            Costo real del mes: {dineroDesdeCenti(datos.mes?.costCentiCents ?? 0)} en el proveedor de IA.
             La cuota gratis se renueva cada mes.
+            {moneda.aproximada && " Montos convertidos de USD al tipo de cambio del día."}
           </p>
         </div>
       )}
