@@ -38,8 +38,18 @@ export default function VigiaUsagePage() {
     })();
   }, []);
 
-  const serie: Array<{ dia: string; mensajes: number }> = datos?.serie || [];
+  // El backend manda SOLO los días con uso: sin rellenar los huecos, dos días
+  // activos se pintaban como dos barras gigantes al 100% — un bloque azul sin
+  // dibujo. La ventana completa de 30 días es la que cuenta la historia.
+  const serieCruda: Array<{ dia: string; mensajes: number }> = datos?.serie || [];
+  const usoPorDia = new Map(serieCruda.map((d) => [d.dia, d.mensajes]));
+  const serie = Array.from({ length: 30 }, (_, i) => {
+    const dia = new Date(Date.now() - (29 - i) * 86400000).toISOString().slice(0, 10);
+    return { dia, mensajes: usoPorDia.get(dia) || 0 };
+  });
+  const hayUso = serieCruda.some((d) => d.mensajes > 0);
   const maxMensajes = Math.max(1, ...serie.map((d) => d.mensajes));
+  const etiqueta = (dia: string) => new Date(`${dia}T12:00:00Z`).toLocaleDateString(undefined, { day: "2-digit", month: "short" });
 
   return (
     <SettingsPageShell
@@ -80,15 +90,25 @@ export default function VigiaUsagePage() {
           {/* Actividad de los últimos 30 días */}
           <section className="glass-flat rounded-2xl p-5">
             <h3 className="mb-3 text-sm font-semibold">Actividad · últimos 30 días</h3>
-            {serie.length === 0 ? (
+            {!hayUso ? (
               <p className="text-sm" style={{ color: "var(--ink-soft)" }}>Aún sin uso. El asistente vive abajo a la derecha del CRM.</p>
             ) : (
-              <div className="flex items-end gap-1" style={{ height: 90 }}>
-                {serie.map((d) => (
-                  <div key={d.dia} title={`${d.dia}: ${d.mensajes} mensajes`} className="flex-1 rounded-t"
-                    style={{ height: `${Math.max(6, (d.mensajes / maxMensajes) * 100)}%`, background: "color-mix(in oklab, var(--brand) 55%, transparent)" }} />
-                ))}
-              </div>
+              <>
+                <div className="flex items-end gap-[3px]" style={{ height: 90 }}>
+                  {serie.map((d) => (
+                    <div key={d.dia} title={`${etiqueta(d.dia)}: ${d.mensajes} ${d.mensajes === 1 ? "mensaje" : "mensajes"}`} className="flex-1 rounded-t"
+                      style={d.mensajes > 0
+                        ? { height: `${Math.max(10, (d.mensajes / maxMensajes) * 100)}%`, background: "color-mix(in oklab, var(--brand) 60%, transparent)" }
+                        // Un día sin uso es un tic en la base, no una barra.
+                        : { height: 3, background: "var(--hairline)" }} />
+                  ))}
+                </div>
+                <div className="mt-1 flex justify-between text-[10px]" style={{ color: "var(--ink-faint)" }}>
+                  <span>{etiqueta(serie[0].dia)}</span>
+                  <span>{etiqueta(serie[15].dia)}</span>
+                  <span>{etiqueta(serie[29].dia)}</span>
+                </div>
+              </>
             )}
             {typeof datos.tokens30d === "number" && datos.tokens30d > 0 && (
               <p className="mt-2 text-xs" style={{ color: "var(--ink-faint)" }}>
