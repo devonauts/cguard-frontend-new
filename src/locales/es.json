@@ -5353,6 +5353,7 @@
     "working": "VigIA está trabajando…",
     "cancelled": "Entendido, no lo hago. ¿Algo más?",
     "netError": "No pudimos hablar con VigIA. Inténtalo de nuevo.",
-    "confirmError": "No se pudo confirmar (¿se cortó la señal?). Vuelve a pulsar Confirmar: es seguro."
+    "confirmError": "No se pudo confirmar (¿se cortó la señal?). Vuelve a pulsar Confirmar: es seguro.",
+    "newChat": "Conversación nueva"
   }
 }

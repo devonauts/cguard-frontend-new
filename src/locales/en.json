@@ -5351,6 +5351,7 @@
     "working": "VigIA is working…",
     "cancelled": "Understood, I won't do it. Anything else?",
     "netError": "Couldn't reach VigIA. Try again.",
-    "confirmError": "Couldn't confirm (connection lost?). Press Confirm again: it's safe."
+    "confirmError": "Couldn't confirm (connection lost?). Press Confirm again: it's safe.",
+    "newChat": "New conversation"
   }
 }

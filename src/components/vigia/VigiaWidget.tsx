@@ -16,7 +16,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Send, X, Loader2, Check, Ban, Hand } from "lucide-react";
+import { Send, X, Loader2, Check, Ban, Hand, MessageSquarePlus } from "lucide-react";
 import api from "@/lib/api";
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
@@ -72,6 +72,16 @@ export default function VigiaWidget() {
   const [ocupado, setOcupado] = useState(false);
   const [propuesta, setPropuesta] = useState<Propuesta | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
+
+  /** Cierra este hilo y abre uno en limpio (el historial no viaja al modelo). */
+  const nuevaConversacion = () => {
+    setMsgs([]);
+    setPropuesta(null);
+    setAviso(null);
+    setTexto("");
+    try { sessionStorage.removeItem(HILO_KEY); } catch { /* privado */ }
+    setTimeout(() => entrada.current?.focus(), 0);
+  };
   const fondo = useRef<HTMLDivElement | null>(null);
   const entrada = useRef<HTMLTextAreaElement | null>(null);
   const botonConfirmar = useRef<HTMLButtonElement | null>(null);
@@ -271,9 +281,19 @@ export default function VigiaWidget() {
                 <p className="text-[11px] opacity-80">{t("vigia.tagline", "El vigía de tu operación")}</p>
               </div>
             </div>
-            <button onClick={() => setOpen(false)} aria-label={t("actions.close", "Cerrar")} className="cg-focus rounded p-1 opacity-80 hover:opacity-100">
-              <X size={16} />
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={nuevaConversacion}
+                aria-label={t("vigia.newChat", "Conversación nueva")}
+                title={t("vigia.newChat", "Conversación nueva")}
+                className="cg-focus rounded p-1 opacity-80 hover:opacity-100"
+              >
+                <MessageSquarePlus size={16} />
+              </button>
+              <button onClick={() => setOpen(false)} aria-label={t("actions.close", "Cerrar")} className="cg-focus rounded p-1 opacity-80 hover:opacity-100">
+                <X size={16} />
+              </button>
+            </div>
           </div>
 
           {/* Mensajes */}
