@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { setAppLanguage } from '@/i18n';
+import api from '@/lib/api';
 
 type Language = 'es' | 'en' | 'pt';
 
@@ -48,6 +49,17 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
             setLanguageState(chosen);
             void setAppLanguage(chosen);
+
+            // Sin preferencia guardada: el primer idioma lo sugiere la
+            // ubicación (geoIP offline del backend). Una elección manual o un
+            // arranque previo ya dejaron huella y este camino no corre.
+            if (!app && !legacy) {
+                api.get('/website/locale').then((resp: any) => {
+                    const d = resp && resp.data !== undefined ? resp.data : resp;
+                    const sug = String(d?.idioma || '') as Language;
+                    if (sug === 'en' || sug === 'pt') setLanguage(sug);
+                }).catch(() => { /* español, como siempre */ });
+            }
         } catch (e) {
             // ignore
         }
