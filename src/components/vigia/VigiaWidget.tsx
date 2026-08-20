@@ -203,7 +203,7 @@ export default function VigiaWidget() {
             // z-45: los diálogos del sistema (z-50) tapan la burbuja, no al
             // revés. La botonera de guardar de algunas páginas vive en
             // bottom-6 right-6 — la burbuja se levanta por encima de ella.
-            position: "fixed", right: "1rem", bottom: "calc(4.5rem + env(safe-area-inset-bottom, 0px))", zIndex: 45,
+            position: "fixed", right: "clamp(1rem, 4vw, 1.75rem)", bottom: "calc(4.75rem + env(safe-area-inset-bottom, 0px))", zIndex: 45,
             background: "var(--brand)", color: "var(--brand-ink)",
           }}
         >
@@ -219,10 +219,10 @@ export default function VigiaWidget() {
           aria-label={t("vigia.dialogAria", "VigIA, asistente de la operación")}
           className="flex flex-col overflow-hidden rounded-2xl border shadow-2xl"
           style={{
-            position: "fixed", right: "1rem", bottom: "calc(1rem + env(safe-area-inset-bottom, 0px))", zIndex: 45,
+            position: "fixed", right: "clamp(1rem, 4vw, 1.75rem)", bottom: "calc(clamp(1rem, 3vh, 1.5rem) + env(safe-area-inset-bottom, 0px))", zIndex: 45,
             // 100dvh y no 100vh: con la barra de Safari desplegada, la fila de
             // entrada quedaba fuera de pantalla.
-            width: "min(24rem, calc(100vw - 2rem))", height: "min(34rem, calc(100dvh - 6rem))",
+            width: "min(24rem, calc(100vw - 2 * clamp(1rem, 4vw, 1.75rem)))", height: "min(34rem, calc(100dvh - 6.5rem))",
             background: "var(--float)", borderColor: "var(--hairline)",
           }}
         >
