@@ -236,6 +236,10 @@ export default function VigiaWidget() {
             // se afila hacia la punta central (el tip vive justo debajo).
             borderRadius: "1.25rem 1.25rem 2.75rem 2.75rem",
             background: "var(--float)", borderColor: "var(--hairline)",
+            // La receta de .glass-raised: --float sin blur transparenta el
+            // dashboard de atrás (números fantasma dentro del chat).
+            backdropFilter: "blur(calc(var(--blur) * 1.4)) saturate(200%)",
+            WebkitBackdropFilter: "blur(calc(var(--blur) * 1.4)) saturate(200%)",
           }}
         >
           {/* Cabecera */}
@@ -362,11 +366,23 @@ export default function VigiaWidget() {
             </button>
           </div>
         </div>
-        {/* La punta del escudo: remata la silueta bajo el panel. */}
-        <svg width={48} height={14} viewBox="0 0 48 14" aria-hidden className="mx-auto shrink-0" style={{ marginTop: -1.5 }}>
-          <path d="M1 0 C10 2 19 5 24 13 C29 5 38 2 47 0 Z" fill="var(--float)" />
-          <path d="M1 0 C10 2 19 5 24 13 C29 5 38 2 47 0" stroke="var(--hairline)" strokeWidth="1" fill="none" />
-        </svg>
+        {/* La punta del escudo: remata la silueta bajo el panel. El relleno es
+            un div recortado (clip-path) para poder llevar el MISMO blur del
+            panel — un fill de SVG no desenfoca lo que tiene detrás. */}
+        <div aria-hidden className="relative mx-auto shrink-0" style={{ width: 48, height: 14, marginTop: -1.5 }}>
+          <div
+            className="absolute inset-0"
+            style={{
+              clipPath: 'path("M1 0 C10 2 19 5 24 13 C29 5 38 2 47 0 Z")',
+              background: "var(--float)",
+              backdropFilter: "blur(calc(var(--blur) * 1.4)) saturate(200%)",
+              WebkitBackdropFilter: "blur(calc(var(--blur) * 1.4)) saturate(200%)",
+            }}
+          />
+          <svg width={48} height={14} viewBox="0 0 48 14" className="absolute inset-0">
+            <path d="M1 0 C10 2 19 5 24 13 C29 5 38 2 47 0" stroke="var(--hairline)" strokeWidth="1" fill="none" />
+          </svg>
+        </div>
         </div>
       )}
     </>
