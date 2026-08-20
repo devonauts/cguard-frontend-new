@@ -16,7 +16,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Send, X, Loader2, Check, Ban } from "lucide-react";
+import { Send, X, Loader2, Check, Ban, Hand } from "lucide-react";
 import api from "@/lib/api";
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
@@ -208,11 +208,31 @@ export default function VigiaWidget() {
             background: "transparent", filter: "drop-shadow(0 6px 14px rgba(0,0,0,0.30))",
           }}
         >
-          <svg width={58} height={64} viewBox="0 0 48 54" aria-hidden>
-            <path d="M24 2 6 8.5v11.5c0 10.8 7.2 20 18 23 10.8-3 18-12.2 18-23V8.5L24 2z" fill="var(--brand)" />
-            <text x="24" y="22" textAnchor="middle" fontSize="10.5" fontWeight="800" fill="var(--brand-ink)" style={{ fontFamily: "Saira, Inter, sans-serif" }}>VigIA</text>
-            <path d="M13 32h5l3-6 4 12 3-6h7" stroke="var(--brand-ink)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-          </svg>
+          {/* La animación vive aquí y no en glass.css: es exclusiva del widget. */}
+          <style>{`
+            @keyframes vigia-wave { 0%, 55%, 100% { transform: rotate(0) } 10% { transform: rotate(-20deg) } 22% { transform: rotate(14deg) } 34% { transform: rotate(-9deg) } 44% { transform: rotate(5deg) } }
+            .vigia-wave { animation: vigia-wave 2.8s ease-in-out infinite; transform-origin: 72% 82%; }
+            @keyframes vigia-online { 0% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--ok) 60%, transparent) } 70% { box-shadow: 0 0 0 9px transparent } 100% { box-shadow: 0 0 0 0 transparent } }
+            .vigia-online { animation: vigia-online 2.8s ease-out infinite; }
+            @media (prefers-reduced-motion: reduce) { .vigia-wave, .vigia-online { animation: none } }
+          `}</style>
+          <span className="relative block">
+            <svg width={74} height={83} viewBox="0 0 48 54" aria-hidden>
+              <path d="M24 2 6 8.5v11.5c0 10.8 7.2 20 18 23 10.8-3 18-12.2 18-23V8.5L24 2z" fill="var(--brand)" />
+              <text x="24" y="23" textAnchor="middle" fontSize="11" fontWeight="800" fill="var(--brand-ink)" style={{ fontFamily: "Saira, Inter, sans-serif" }}>VigIA</text>
+              <path d="M13 33h5l3-6 4 12 3-6h7" stroke="var(--brand-ink)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+            </svg>
+            {/* En línea y listo: la manita saluda dentro de un anillo de presencia. */}
+            <span
+              className="vigia-online absolute grid place-items-center rounded-full border"
+              style={{
+                top: -4, right: -6, width: 28, height: 28,
+                background: "var(--float)", borderColor: "var(--hairline)",
+              }}
+            >
+              <Hand size={15} className="vigia-wave" style={{ color: "var(--brand-text)" }} />
+            </span>
+          </span>
         </button>
       )}
 
