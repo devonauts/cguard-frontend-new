@@ -13,6 +13,7 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   TabletSmartphone, Palette, LayoutGrid, Mic, Save, RotateCcw,
   GraduationCap, TrendingUp, Users, CalendarOff, LifeBuoy, Map as MapIcon,
+  RadioTower,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '@/lib/api';
@@ -47,7 +48,7 @@ interface MobileAppSettings {
   modules: Record<ModuleKey, boolean>;
 }
 
-type ModuleKey = 'training' | 'performance' | 'visitors' | 'timeOff' | 'backup' | 'map';
+type ModuleKey = 'training' | 'performance' | 'visitors' | 'timeOff' | 'backup' | 'map' | 'radioNativa';
 
 const MODULE_META: { key: ModuleKey; label: string; desc: string; icon: React.ReactNode }[] = [
   { key: 'training', label: 'Entrenamiento', desc: 'Cursos, evaluaciones y certificados.', icon: <GraduationCap size={16} /> },
@@ -55,6 +56,7 @@ const MODULE_META: { key: ModuleKey; label: string; desc: string; icon: React.Re
   { key: 'visitors', label: 'Control de visitas', desc: 'Registro de visitantes en el puesto.', icon: <Users size={16} /> },
   { key: 'timeOff', label: 'Permisos y vacaciones', desc: 'Solicitudes de días libres.', icon: <CalendarOff size={16} /> },
   { key: 'backup', label: 'Respaldo', desc: 'Solicitud de refuerzo/backup.', icon: <LifeBuoy size={16} /> },
+  { key: 'radioNativa', label: 'Radio nativa (piloto)', desc: 'La radio corre fuera del navegador de la app: sigue sonando con la pantalla apagada o usando otras apps, sin acaparar el micrófono. Requiere la versión más reciente de las apps.', icon: <RadioTower size={16} /> },
   { key: 'map', label: 'Mapa', desc: 'Mapa del sitio y ubicaciones.', icon: <MapIcon size={16} /> },
 ];
 
@@ -64,7 +66,7 @@ const DEFAULTS: MobileAppSettings = {
   tagline: '',
   useTenantLogo: true,
   defaultTheme: 'dark',
-  modules: { training: true, performance: true, visitors: true, timeOff: true, backup: true, map: true },
+  modules: { training: true, performance: true, visitors: true, timeOff: true, backup: true, map: true, radioNativa: false },
 };
 
 // Partial view of the tenant settings blob (GET/PUT /settings). Only the fields
