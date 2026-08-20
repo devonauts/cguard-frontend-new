@@ -197,32 +197,44 @@ export default function VigiaWidget() {
         <button
           onClick={() => setOpen(true)}
           aria-label={t("vigia.openAria", "Abrir VigIA, el asistente")}
-          className="cg-focus flex items-center gap-2 rounded-full px-4 py-3 text-sm font-bold shadow-lg transition-[filter] hover:brightness-110"
+          className="cg-focus transition-transform hover:scale-105"
           aria-expanded={open}
           style={{
             // z-45: los diálogos del sistema (z-50) tapan la burbuja, no al
             // revés. La botonera de guardar de algunas páginas vive en
             // bottom-6 right-6 — la burbuja se levanta por encima de ella.
             position: "fixed", right: "clamp(1rem, 4vw, 1.75rem)", bottom: "calc(4.75rem + env(safe-area-inset-bottom, 0px))", zIndex: 45,
-            background: "var(--brand)", color: "var(--brand-ink)",
+            // drop-shadow y no box-shadow: la sombra sigue la silueta del escudo.
+            background: "transparent", filter: "drop-shadow(0 6px 14px rgba(0,0,0,0.30))",
           }}
         >
-          <LogoVigia />
-          VigIA
+          <svg width={58} height={64} viewBox="0 0 48 54" aria-hidden>
+            <path d="M24 2 6 8.5v11.5c0 10.8 7.2 20 18 23 10.8-3 18-12.2 18-23V8.5L24 2z" fill="var(--brand)" />
+            <text x="24" y="22" textAnchor="middle" fontSize="10.5" fontWeight="800" fill="var(--brand-ink)" style={{ fontFamily: "Saira, Inter, sans-serif" }}>VigIA</text>
+            <path d="M13 32h5l3-6 4 12 3-6h7" stroke="var(--brand-ink)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+          </svg>
         </button>
       )}
 
       {/* ── El panel ───────────────────────────────────────────────────── */}
       {open && (
         <div
-          role="dialog"
-          aria-label={t("vigia.dialogAria", "VigIA, asistente de la operación")}
-          className="flex flex-col overflow-hidden rounded-2xl border shadow-2xl"
+          className="flex flex-col"
           style={{
             position: "fixed", right: "clamp(1rem, 4vw, 1.75rem)", bottom: "calc(clamp(1rem, 3vh, 1.5rem) + env(safe-area-inset-bottom, 0px))", zIndex: 45,
             // 100dvh y no 100vh: con la barra de Safari desplegada, la fila de
             // entrada quedaba fuera de pantalla.
             width: "min(24rem, calc(100vw - 2 * clamp(1rem, 4vw, 1.75rem)))", height: "min(34rem, calc(100dvh - 6.5rem))",
+          }}
+        >
+        <div
+          role="dialog"
+          aria-label={t("vigia.dialogAria", "VigIA, asistente de la operación")}
+          className="flex min-h-0 flex-1 flex-col overflow-hidden border shadow-2xl"
+          style={{
+            // La silueta del escudo: esquinas superiores de tarjeta, base que
+            // se afila hacia la punta central (el tip vive justo debajo).
+            borderRadius: "1.25rem 1.25rem 2.75rem 2.75rem",
             background: "var(--float)", borderColor: "var(--hairline)",
           }}
         >
@@ -323,11 +335,11 @@ export default function VigiaWidget() {
           </div>
 
           {/* Entrada */}
-          <div className="flex items-center gap-2 border-t px-3 py-2" style={{ borderColor: "var(--hairline)" }}>
+          <div className="flex items-center gap-2 border-t px-4 pb-3 pt-2" style={{ borderColor: "var(--hairline)" }}>
             <textarea
               ref={entrada}
               rows={1}
-              className="cg-input max-h-28 flex-1 resize-none text-sm"
+              className="cg-input max-h-28 flex-1 resize-none px-3 py-2 text-sm"
               placeholder={t("vigia.placeholder", "Escríbele a VigIA…")}
               value={texto}
               onChange={(e) => {
@@ -349,6 +361,12 @@ export default function VigiaWidget() {
               <Send size={16} />
             </button>
           </div>
+        </div>
+        {/* La punta del escudo: remata la silueta bajo el panel. */}
+        <svg width={48} height={14} viewBox="0 0 48 14" aria-hidden className="mx-auto shrink-0" style={{ marginTop: -1.5 }}>
+          <path d="M1 0 C10 2 19 5 24 13 C29 5 38 2 47 0 Z" fill="var(--float)" />
+          <path d="M1 0 C10 2 19 5 24 13 C29 5 38 2 47 0" stroke="var(--hairline)" strokeWidth="1" fill="none" />
+        </svg>
         </div>
       )}
     </>
