@@ -88,7 +88,7 @@ export default function VigiaUsagePage() {
 
           <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
             VigIA comparte el monedero de Comunicaciones: la misma recarga sirve para SMS, WhatsApp y el asistente.{" "}
-            <Link to="/setting/comunicaciones" className="font-semibold underline" style={{ color: "var(--brand-text)" }}>
+            <Link to="/setting/comunicaciones?tab=saldo" className="font-semibold underline" style={{ color: "var(--brand-text)" }}>
               Recargar saldo
             </Link>
           </p>

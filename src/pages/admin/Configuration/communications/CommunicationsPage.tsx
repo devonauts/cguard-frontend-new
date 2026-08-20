@@ -181,6 +181,15 @@ export default function CommunicationsPage() {
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
 
+  // La pestaña activa: ?tab=saldo es la puerta directa a la recarga (VigIA,
+  // avisos de saldo bajo y el retorno de Stripe aterrizan aquí).
+  const [tab, setTab] = useState<string>(() => {
+    try {
+      const p = new URLSearchParams(window.location.search).get("tab") || "";
+      return ["whatsapp", "sms", "saldo", "preferencias", "historial"].includes(p) ? p : "whatsapp";
+    } catch { return "whatsapp"; }
+  });
+
   // Wallet recharge (Stripe Checkout)
   const [rechargeAmount, setRechargeAmount] = useState<number>(25);
   const [recharging, setRecharging] = useState(false);
@@ -401,10 +410,13 @@ export default function CommunicationsPage() {
           {loading ? (
             <SkeletonCards count={4} />
           ) : (
-            <Tabs defaultValue="whatsapp" className="space-y-6">
+            <Tabs value={tab} onValueChange={setTab} className="space-y-6">
               <TabsList className="w-full justify-start">
                 <TabsTrigger value="whatsapp">WhatsApp</TabsTrigger>
                 <TabsTrigger value="sms">SMS</TabsTrigger>
+                <TabsTrigger value="saldo">
+                  {t("comms.tabWallet", { defaultValue: "Saldo y recargas" })}
+                </TabsTrigger>
                 <TabsTrigger value="preferencias">
                   {t("comms.tabPrefs", { defaultValue: "Preferencias" })}
                 </TabsTrigger>
@@ -413,15 +425,14 @@ export default function CommunicationsPage() {
                 </TabsTrigger>
               </TabsList>
 
-              {/* ── SMS: saldo prepago Twilio + recarga + alertas ─────────── */}
-              <TabsContent value="sms" className="space-y-6">
-              {/* Wallet */}
+              {/* ── Saldo: el monedero que paga SMS, plantillas de WhatsApp y VigIA ── */}
+              <TabsContent value="saldo" className="space-y-6">
               <MetricTile
-                label={t("comms.walletTitle", { defaultValue: "Saldo de comunicaciones" })}
+                label={t("comms.walletTitle2", { defaultValue: "Saldo de comunicaciones e IA" })}
                 value={money(wallet?.balanceCents || 0, currency)}
                 icon={<Wallet />}
-                hint={t("comms.walletHint", {
-                  defaultValue: "Saldo prepago para SMS. WhatsApp se factura directo a tu cuenta de Meta al conectarla.",
+                hint={t("comms.walletHint2", {
+                  defaultValue: "Un solo saldo prepago para SMS (Twilio), plantillas de WhatsApp y el asistente VigIA.",
                 })}
               />
               {wallet?.belowThreshold && (
@@ -438,7 +449,6 @@ export default function CommunicationsPage() {
                 </Aviso>
               )}
 
-              {/* Recharge */}
               <Section title={t("comms.rechargeTitle", { defaultValue: "Recargar saldo" })} icon={<Wallet />}>
                 <div className="space-y-4">
                   <Segmented
@@ -470,6 +480,10 @@ export default function CommunicationsPage() {
                   </p>
                 </div>
               </Section>
+              </TabsContent>
+
+              {/* ── SMS: Twilio + alertas (el saldo vive en su pestaña) ───── */}
+              <TabsContent value="sms" className="space-y-6">
 
               {/* SMS toggles */}
               {settings && (
