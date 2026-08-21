@@ -26,17 +26,24 @@ const tenantId = () => localStorage.getItem("tenantId") || "";
 const HILO_KEY = "vigia_hilo";
 const HILO_TTL_MS = 2 * 60 * 60 * 1000;
 
-function cargarHilo(): Msg[] {
+/** El id del hilo: viaja con cada mensaje para que el servidor guarde la
+ *  conversación ENTERA junta y no un hilo suelto por mensaje. Es una clave
+ *  opaca acotada a esta empresa y a esta persona en el servidor. */
+function nuevoHiloId(): string {
+  return `h${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function cargarHilo(): { msgs: Msg[]; id: string } {
   try {
     const raw = sessionStorage.getItem(HILO_KEY);
-    if (!raw) return [];
-    const { ts, tid, msgs } = JSON.parse(raw);
-    if (Date.now() - ts > HILO_TTL_MS || tid !== tenantId()) return [];
-    return Array.isArray(msgs) ? msgs.slice(-24) : [];
-  } catch { return []; }
+    if (!raw) return { msgs: [], id: nuevoHiloId() };
+    const { ts, tid, msgs, hid } = JSON.parse(raw);
+    if (Date.now() - ts > HILO_TTL_MS || tid !== tenantId()) return { msgs: [], id: nuevoHiloId() };
+    return { msgs: Array.isArray(msgs) ? msgs.slice(-24) : [], id: hid || nuevoHiloId() };
+  } catch { return { msgs: [], id: nuevoHiloId() }; }
 }
-function guardarHilo(msgs: Msg[]) {
-  try { sessionStorage.setItem(HILO_KEY, JSON.stringify({ ts: Date.now(), tid: tenantId(), msgs: msgs.slice(-24) })); } catch { /* privado */ }
+function guardarHilo(msgs: Msg[], hid: string) {
+  try { sessionStorage.setItem(HILO_KEY, JSON.stringify({ ts: Date.now(), tid: tenantId(), hid, msgs: msgs.slice(-24) })); } catch { /* privado */ }
 }
 
 /** El historial de conversaciones cerradas: hasta 10, viven 7 días, por
@@ -91,7 +98,10 @@ export default function VigiaWidget() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
-  const [msgs, setMsgs] = useState<Msg[]>(() => cargarHilo());
+  const hiloGuardado = useRef(cargarHilo());
+  const [msgs, setMsgs] = useState<Msg[]>(() => hiloGuardado.current.msgs);
+  // El id del hilo abierto: acompaña cada mensaje al servidor.
+  const [hiloId, setHiloId] = useState<string>(() => hiloGuardado.current.id);
   const [texto, setTexto] = useState("");
   const [ocupado, setOcupado] = useState(false);
   const [propuesta, setPropuesta] = useState<Propuesta | null>(null);
@@ -104,7 +114,7 @@ export default function VigiaWidget() {
   const archivarActual = (mensajes: Msg[]): Convo[] => {
     if (!mensajes.length) return convos;
     const lista = [
-      { id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, titulo: tituloDeConvo(mensajes), ts: Date.now(), msgs: mensajes.slice(-24) },
+      { id: hiloId, titulo: tituloDeConvo(mensajes), ts: Date.now(), msgs: mensajes.slice(-24) },
       ...convos,
     ].slice(0, CONVOS_MAX);
     setConvos(lista);
@@ -114,6 +124,9 @@ export default function VigiaWidget() {
 
   const limpiarHilo = () => {
     setMsgs([]);
+    // Hilo nuevo, id nuevo: en la transcripción del servidor son dos
+    // conversaciones distintas, que es lo que acaba de pedir el usuario.
+    setHiloId(nuevoHiloId());
     setPropuesta(null);
     setAviso(null);
     setTexto("");
@@ -148,6 +161,9 @@ export default function VigiaWidget() {
     setConvos(lista);
     guardarConvos(lista);
     setMsgs(c.msgs);
+    // Reabrir es CONTINUAR: el id vuelve con la conversación para que el
+    // servidor siga escribiendo en el mismo hilo y no en uno nuevo.
+    setHiloId(c.id);
     setPropuesta(null);
     setAviso(null);
     setVista("chat");
@@ -172,8 +188,8 @@ export default function VigiaWidget() {
 
   useEffect(() => {
     fondo.current?.scrollTo({ top: fondo.current.scrollHeight });
-    guardarHilo(msgs);
-  }, [msgs, propuesta, ocupado, open]);
+    guardarHilo(msgs, hiloId);
+  }, [msgs, hiloId, propuesta, ocupado, open]);
 
   // El parte matutino: la PRIMERA apertura del día trae el estado de la
   // operación sin gastar un token — el retrato ya lo sabe todo.
@@ -237,7 +253,7 @@ export default function VigiaWidget() {
     setMsgs(historia);
     setOcupado(true);
     try {
-      const d = await llamar({ messages: historia });
+      const d = await llamar({ messages: historia, conversationId: hiloId });
       if (d?.error) { setAviso(d.error); return; }
       if (d?.reply) setMsgs((m) => [...m, { role: "assistant", content: d.reply }]);
       if (d?.proposal) setPropuesta(d.proposal);
@@ -262,7 +278,7 @@ export default function VigiaWidget() {
       // La firma viaja de vuelta: el servidor solo ejecuta propuestas que ÉL
       // emitió, frescas y una sola vez — reintentar con la misma firma devuelve
       // el mismo resultado en vez de ejecutar dos veces.
-      const d = await llamar({ messages: msgs.slice(-16), confirm: { tool: p.tool, args: p.args, firma: p.firma, exp: p.exp } });
+      const d = await llamar({ messages: msgs.slice(-16), conversationId: hiloId, confirm: { tool: p.tool, args: p.args, firma: p.firma, exp: p.exp } });
       if (d?.error) { setAviso(d.error); setPropuesta(null); return; }
       setPropuesta(d?.proposal || null);
       if (d?.reply) setMsgs((m) => [...m, { role: "assistant", content: d.reply }]);

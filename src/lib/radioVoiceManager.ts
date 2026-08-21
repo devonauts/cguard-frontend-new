@@ -64,6 +64,55 @@ function installGestureResume() {
   };
 }
 
+// ── Centralista de escritorio: que la PC no se duerma con la radio encendida ──
+// Un despacho pierde la radio cuando la máquina entra en reposo (o el monitor se
+// apaga) y la conexión WebRTC muere. El Screen Wake Lock lo evita mientras la
+// radio está ON; el navegador lo suelta al ocultar la pestaña, así que se
+// re-pide al volver. API estándar; si el navegador no la soporta, no pasa nada.
+let wakeLock: any = null;
+async function pedirWakeLock() {
+  try {
+    if (wakeLock || typeof navigator === "undefined" || !(navigator as any).wakeLock) return;
+    wakeLock = await (navigator as any).wakeLock.request("screen");
+    wakeLock.addEventListener?.("release", () => { wakeLock = null; });
+  } catch { wakeLock = null; }
+}
+function soltarWakeLock() {
+  try { wakeLock?.release?.(); } catch { /* ignore */ }
+  wakeLock = null;
+}
+function onVisibilidadRadio() {
+  if (document.visibilityState === "visible" && snap.on) void pedirWakeLock();
+}
+
+// ── Aviso cuando alguien transmite y el CRM NO está enfocado ──────────────────
+// El despachador puede tener el CRM en otra pestaña o detrás de otra ventana.
+// Un aviso del navegador (con permiso) lo alerta de una transmisión entrante.
+let ultimoHablante: string | null = null;
+function pedirPermisoNotif() {
+  try {
+    if (typeof Notification !== "undefined" && Notification.permission === "default") {
+      void Notification.requestPermission();
+    }
+  } catch { /* ignore */ }
+}
+function avisarTransmision(sp: { userId: string; name: string } | null) {
+  try {
+    const id = sp?.userId || null;
+    // Solo en el flanco (nuevo hablante), no self, y solo si el CRM no está a la vista.
+    if (id && id !== ultimoHablante && id !== selfId && document.hidden) {
+      if (typeof Notification !== "undefined" && Notification.permission === "granted") {
+        const n = new Notification("Radio · transmisión entrante", {
+          body: `${sp?.name || "Un vigilante"} está hablando en el canal.`,
+          tag: "radio-tx", renotify: false, silent: false,
+        } as any);
+        n.onclick = () => { try { window.focus(); } catch { /* ignore */ } n.close(); };
+      }
+    }
+    ultimoHablante = id;
+  } catch { /* ignore */ }
+}
+
 let snap: RadioVoiceSnapshot = {
   open: false,
   on: false,
@@ -149,12 +198,17 @@ async function doConnect() {
     {
       onState: (s) => set({ state: s }),
       onPresence: (r) => set({ roster: r }),
-      onSpeaker: (sp) => set({ speaker: sp }),
+      onSpeaker: (sp) => { set({ speaker: sp }); avisarTransmision(sp); },
       onError: (m) => set({ hint: m }),
     },
   );
   v.resume();
   installGestureResume();
+  // Protecciones del centralista de escritorio (web-only; las apps móviles usan
+  // el servicio nativo). Sin rebuild: es el navegador.
+  void pedirWakeLock();
+  pedirPermisoNotif();
+  document.addEventListener("visibilitychange", onVisibilidadRadio);
   // Keep the snapshot's `joined` reconciled with the engine. The LiveKit engine
   // flips `joined` on the Connected event itself (connect == join), so the old
   // "connected && !joined → call join()" gate NEVER fired — the room was live but
@@ -182,6 +236,9 @@ function doDisconnect() {
   connectPending = false;
   if (joinTimer) { clearInterval(joinTimer); joinTimer = null; }
   gestureCleanup?.();
+  soltarWakeLock();
+  document.removeEventListener("visibilitychange", onVisibilidadRadio);
+  ultimoHablante = null;
   try { vc?.disconnect(); } catch { /* ignore */ }
   vc = null;
   set({ state: "idle", joined: false, roster: [], speaker: null, talking: false, hint: null });
