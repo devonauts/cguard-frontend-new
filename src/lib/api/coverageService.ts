@@ -163,6 +163,20 @@ export const coverageService = {
     allowRestDay?: boolean;
   }) => api.post(`/tenant/${getTenantId()}/coverage/transfer`, body).then((r) => r.data?.data ?? r.data),
 
+  /** Reemplazo por vacaciones/permiso: X sale por un rango, Y cubre todo el
+   *  periodo en una acción. El servidor marca la ausencia, deja a Y con los
+   *  turnos del puesto y lo hace figurar en la estación. */
+  replacement: (body: {
+    absentGuardId: string;
+    replacementGuardId: string;
+    dateFrom: string;
+    dateTo: string;
+    reason?: CoverageReason;
+    stationId?: string;
+    reasonNote?: string;
+    allowDoubleShift?: boolean;
+  }) => api.post(`/tenant/${getTenantId()}/coverage/replacement`, body).then((r) => r.data?.data ?? r.data),
+
   /** `flags` carries the operator's confirmations (descanso, doblar turno). */
   cover: (
     eventId: string,

@@ -11,9 +11,9 @@ import {
   StatusBadge, Segmented, GlassPanel, IconTile,
 } from "@/components/kit";
 import {
-  ShieldAlert, ShieldCheck, Clock, UserPlus, ArrowRightLeft, RefreshCw, Undo2,
-} from "lucide-react";
+  ShieldAlert, ShieldCheck, Clock, UserPlus, ArrowRightLeft, RefreshCw, Undo2, CalendarRange } from "lucide-react";
 import { toast } from "sonner";
+import GuardTypeahead, { GuardPick } from "./GuardTypeahead";
 import coverageService, {
   COVERAGE_REASONS, REASON_LABEL, STATUS_LABEL, coverageErrorCode,
   stationLabel,
@@ -67,6 +67,14 @@ export default function Coverage() {
   const [toStationId, setToStationId] = useState("");
   const [transferMode, setTransferMode] = useState<"shift" | "range">("shift");
   const [transferUntil, setTransferUntil] = useState("");
+
+  // Reemplazo por vacaciones/permiso
+  const [repOpen, setRepOpen] = useState(false);
+  const [repOut, setRepOut] = useState<GuardPick | null>(null);
+  const [repIn, setRepIn] = useState<GuardPick | null>(null);
+  const [repFrom, setRepFrom] = useState("");
+  const [repTo, setRepTo] = useState("");
+  const [repReason, setRepReason] = useState<CoverageReason>("vacaciones");
 
   const load = useCallback(async () => {
     try {
@@ -155,6 +163,27 @@ export default function Coverage() {
       "Novedad registrada",
     );
     if (ok) { setAbsenceFor(null); setNote(""); }
+  };
+
+  const submitReplacement = async () => {
+    if (!repOut || !repIn || !repFrom || !repTo) return;
+    const ok = await runWithConfirm(
+      (flags) => coverageService.replacement({
+        absentGuardId: repOut.guardId,
+        replacementGuardId: repIn.guardId,
+        dateFrom: repFrom, dateTo: repTo,
+        reason: repReason,
+        allowDoubleShift: flags.allowDoubleShift,
+      }),
+      "Reemplazo aplicado",
+    );
+    if (ok) { setRepOpen(false); setRepOut(null); setRepIn(null); setRepFrom(""); setRepTo(""); setRepReason("vacaciones"); }
+  };
+
+  const openReplacement = () => {
+    setRepFrom(tenantToday());
+    setRepTo(tenantToday());
+    setRepOpen(true);
   };
 
   const openCover = async (ev: any) => {
@@ -319,9 +348,14 @@ export default function Coverage() {
           }
           icon={<ShieldCheck />}
           actions={
-            <Button variant="outline" onClick={load} disabled={busy}>
-              <RefreshCw className="mr-1.5 size-4" /> Actualizar
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button onClick={openReplacement}>
+                <UserPlus className="mr-1.5 size-4" /> Reemplazo por vacaciones
+              </Button>
+              <Button variant="outline" onClick={load} disabled={busy}>
+                <RefreshCw className="mr-1.5 size-4" /> Actualizar
+              </Button>
+            </div>
           }
         />
 
@@ -441,6 +475,75 @@ export default function Coverage() {
         )}
 
         {/* ── Report a novedad ─────────────────────────────────────────────── */}
+        {/* ── Reemplazo por vacaciones/permiso ─────────────────────────────── */}
+        <Modal
+          open={repOpen}
+          onOpenChange={(o) => { if (!o) setRepOpen(false); }}
+          title="Reemplazo por vacaciones o permiso"
+          description="El titular sale por un rango; el reemplazo cubre todo el periodo, figura en la estación y puede usar la app."
+          icon={<CalendarRange />}
+          footer={
+            <>
+              <Button variant="outline" onClick={() => setRepOpen(false)}>Cancelar</Button>
+              <Button onClick={submitReplacement} disabled={busy || !repOut || !repIn || !repFrom || !repTo}>
+                <UserPlus className="mr-1.5 size-4" /> Aplicar reemplazo
+              </Button>
+            </>
+          }
+        >
+          <div className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label className="cg-eyebrow mb-1.5 block">Vigilante que sale</label>
+                <GuardTypeahead value={repOut} onSelect={setRepOut}
+                  excludeGuardId={repIn?.guardId} placeholder="Quién toma vacaciones/permiso" />
+              </div>
+              <div>
+                <label className="cg-eyebrow mb-1.5 block">Reemplazo</label>
+                <GuardTypeahead value={repIn} onSelect={setRepIn}
+                  excludeGuardId={repOut?.guardId} placeholder="Quién lo cubre" />
+              </div>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div>
+                <label className="cg-eyebrow mb-1.5 block">Desde</label>
+                <input type="date" value={repFrom} max={repTo || undefined}
+                  onChange={(e) => setRepFrom(e.target.value)}
+                  className="w-full rounded-xl border border-[var(--hairline)] bg-[var(--glass-sunken)] px-3 py-2 text-sm text-[var(--ink)] outline-none" />
+              </div>
+              <div>
+                <label className="cg-eyebrow mb-1.5 block">Hasta</label>
+                <input type="date" value={repTo} min={repFrom || undefined}
+                  onChange={(e) => setRepTo(e.target.value)}
+                  className="w-full rounded-xl border border-[var(--hairline)] bg-[var(--glass-sunken)] px-3 py-2 text-sm text-[var(--ink)] outline-none" />
+              </div>
+              <div>
+                <label className="cg-eyebrow mb-1.5 block">Motivo</label>
+                <Select value={repReason} onValueChange={(v) => setRepReason(v as CoverageReason)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {["vacaciones", "permiso_con_sueldo", "permiso_sin_sueldo"].map((r) => (
+                      <SelectItem key={r} value={r}>{REASON_LABEL[r] || r}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Resumen en vivo: lo que va a pasar, en una frase clara. */}
+            {repOut && repIn && repFrom && repTo && (
+              <GlassPanel className="p-3 text-sm" style={{ color: "var(--ink-soft)" }}>
+                <span className="font-semibold text-[var(--ink)]">{repIn.label}</span> reemplaza a{" "}
+                <span className="font-semibold text-[var(--ink)]">{repOut.label}</span> del{" "}
+                <span className="font-semibold text-[var(--ink)]">{repFrom}</span> al{" "}
+                <span className="font-semibold text-[var(--ink)]">{repTo}</span>. Toma sus turnos del puesto,
+                figura en la estación y puede fichar. Al terminar, la rotación del titular regresa sola.
+              </GlassPanel>
+            )}
+          </div>
+        </Modal>
+
         <Modal
           open={!!absenceFor}
           onOpenChange={(o) => !o && setAbsenceFor(null)}
