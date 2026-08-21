@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { ClipboardCheck, Inbox } from "lucide-react";
 import { PageContainer, PageHeader, Section, StatusBadge, SkeletonCards, EmptyState } from "@/components/kit";
 import taskService, { type TaskRow } from "@/lib/api/taskService";
+import { promptDialog } from "@/components/ui/promptDialog";
 
 function fmtDate(s?: string | null): string {
   if (!s) return "—";
@@ -48,7 +49,7 @@ export default function TaskApprovals() {
   };
 
   const reject = async (r: TaskRow) => {
-    const notes = window.prompt("Motivo del rechazo (opcional):") ?? undefined;
+    const notes = (await promptDialog({ title: "Motivo del rechazo", message: "Opcional", placeholder: "Ej.: falta la foto de evidencia" })) ?? undefined;
     setBusy(true);
     try {
       await taskService.reject(r.id, notes);

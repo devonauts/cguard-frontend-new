@@ -13,6 +13,7 @@ import { useFileUrl } from "@/lib/fileUrl";
 import { StatusBadge, ApprovalBadge, STATUS_META, approvalLabel, fmtDateTime, fmtTime, fmtHours } from "./shared";
 import { PageContainer, PageHeader, Section, EmptyState, SkeletonCards, Segmented, Toolbar, StatusBadge as ToneBadge, Field } from "@/components/kit";
 import { MapPin, ImageOff, ClipboardCheck, ClipboardList, Filter, Download, ChevronLeft, ChevronRight, LogIn, LogOut } from "lucide-react";
+import { promptDialog } from "@/components/ui/promptDialog";
 
 const STATUS_OPTIONS = [
   "", "on_time", "late", "early_departure", "missed_clockout",
@@ -610,10 +611,10 @@ export default function NominaRecords() {
                       <Button
                         disabled={busy}
                         variant="outline"
-                        onClick={() => {
-                          const reason = window.prompt("Motivo de la corrección:");
+                        onClick={async () => {
+                          const reason = await promptDialog({ title: "Motivo de la corrección", placeholder: "Ej.: marcó tarde por el tráfico" });
                           if (!reason) return;
-                          const value = window.prompt("Nueva hora de entrada (ISO, ej. 2026-06-06T13:00:00Z):", selected.punchInTime);
+                          const value = await promptDialog({ title: "Nueva hora de entrada", message: "Formato ISO, ej. 2026-06-06T13:00:00Z", defaultValue: selected.punchInTime });
                           if (!value) return;
                           act(
                             () => attendanceService.correct(selected.id, { field: "punchInTime", correctedValue: value, reason }),

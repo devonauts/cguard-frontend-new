@@ -33,6 +33,7 @@ import { registerSW } from "virtual:pwa-register";
 // cguardpro:// cuando corremos dentro de la app de escritorio).
 import "@/lib/desktop";
 import { ConfirmHost } from "@/components/ui/confirmDialog";
+import { PromptHost } from "@/components/ui/promptDialog";
 
 // Stale-deploy recovery: after each publish the hashed chunk files change and
 // the old ones are deleted, so a tab loaded BEFORE the deploy 404s on its next
@@ -69,6 +70,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <OfflineBanner />
         {/* Platform-styled confirm() replacement (see confirmDialog.tsx). */}
         <ConfirmHost />
+        <PromptHost />
         {/* Notifications must sit at the very top of the stacking context so the
             live alert is never hidden behind a dialog/overlay. */}
         {/* Sin `richColors`: pintaba la caja entera de verde/rojo con la paleta
