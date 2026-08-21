@@ -82,7 +82,7 @@ export default function CompanyDocumentsSection({ documents, onUpload, onDelete,
                 )}
               </div>
               {canEdit && (
-                <button
+                <button aria-label="Eliminar"
                   type="button"
                   onClick={() => onDelete(doc.id)}
                   className="cg-focus inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-semibold"

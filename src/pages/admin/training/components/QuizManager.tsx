@@ -166,7 +166,7 @@ export default function QuizManager({ courseId, quiz, passingScore, readOnly, on
               <div className="flex items-start justify-between gap-2">
                 <Label className="pt-2">Pregunta {qi + 1}</Label>
                 {questions.length > 1 && (
-                  <button className="p-1.5" style={{ color: 'var(--bad-text)' }} onClick={() => removeQuestion(qi)}><Trash2 className="h-4 w-4" /></button>
+                  <button aria-label="Eliminar" className="p-1.5" style={{ color: 'var(--bad-text)' }} onClick={() => removeQuestion(qi)}><Trash2 className="h-4 w-4" /></button>
                 )}
               </div>
               <Input placeholder="Enunciado de la pregunta" value={q.prompt} onChange={(e) => setQ(qi, { prompt: e.target.value })} />
@@ -182,7 +182,7 @@ export default function QuizManager({ courseId, quiz, passingScore, readOnly, on
                     />
                     <Input placeholder={`Opción ${oi + 1}`} value={o} onChange={(e) => setOption(qi, oi, e.target.value)} />
                     {q.options.length > 2 && (
-                      <button className="p-1.5" style={{ color: 'var(--bad-text)' }} onClick={() => removeOption(qi, oi)}><Trash2 className="h-4 w-4" /></button>
+                      <button aria-label="Eliminar" className="p-1.5" style={{ color: 'var(--bad-text)' }} onClick={() => removeOption(qi, oi)}><Trash2 className="h-4 w-4" /></button>
                     )}
                   </div>
                 ))}

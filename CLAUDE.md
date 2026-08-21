@@ -133,6 +133,4 @@ decora**:
 ## Pendiente
 
 - Encapar `glass.css` en `@layer components` (arriba).
-- Tres páginas públicas sin migrar: `pages/guard/GuardInviteLayout.tsx`,
-  `pages/client/registration.tsx`, `pages/supervisor/registration.tsx`.
 - El paquete principal ronda los 247 kB comprimidos; partir por rutas.

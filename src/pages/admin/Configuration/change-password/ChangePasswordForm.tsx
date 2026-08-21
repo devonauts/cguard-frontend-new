@@ -100,7 +100,7 @@ export default function ChangePasswordForm({ defaultValues, onSubmit, showOldFie
                       {...field}
                     />
 
-                    <button
+                    <button aria-label="Mostrar contraseña"
                       type="button"
                       onClick={() => setShowOldPassword(!showOldPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
@@ -134,7 +134,7 @@ export default function ChangePasswordForm({ defaultValues, onSubmit, showOldFie
                     {...field}
                   />
 
-                  <button
+                  <button aria-label="Mostrar contraseña"
                     type="button"
                     onClick={() => setShowNewPassword(!showNewPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
@@ -184,7 +184,7 @@ export default function ChangePasswordForm({ defaultValues, onSubmit, showOldFie
                     {...field}
                   />
 
-                  <button
+                  <button aria-label="Mostrar contraseña"
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"

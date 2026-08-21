@@ -229,8 +229,8 @@ function HCollection({ title, sub, arrow, children }: { title: string; sub: stri
       <div className="mb-1.5 flex items-center justify-between">
         <div className={`text-[10px] font-semibold uppercase tracking-wider ${sub}`}>{title}</div>
         <div className="flex gap-1">
-          <button onClick={() => page(-1)} className={`grid size-5 place-items-center rounded-full ${arrow}`}><ChevronLeft className="size-3" /></button>
-          <button onClick={() => page(1)} className={`grid size-5 place-items-center rounded-full ${arrow}`}><ChevronRight className="size-3" /></button>
+          <button aria-label="Anterior" onClick={() => page(-1)} className={`grid size-5 place-items-center rounded-full ${arrow}`}><ChevronLeft className="size-3" /></button>
+          <button aria-label="Siguiente" onClick={() => page(1)} className={`grid size-5 place-items-center rounded-full ${arrow}`}><ChevronRight className="size-3" /></button>
         </div>
       </div>
       <div ref={ref} className="flex snap-x snap-mandatory gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
