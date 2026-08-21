@@ -16,6 +16,7 @@ import {
   History, StickyNote, Gauge, Timer, ClipboardCheck, Wifi,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { confirmDialog } from "@/components/ui/confirmDialog";
 
 // ── Shape of GET /client-account/:id/contract (clientAccountContract.ts) ──
 interface ContractTerms {
@@ -183,7 +184,7 @@ export default function ClientContract({ client }: { client: Client }) {
     } catch { toast.error('No se pudo guardar el servicio'); } finally { setSaving(false); }
   };
   const delSvc = async (s: ContractServiceRow) => {
-    if (!window.confirm(`¿Eliminar el servicio "${s.name}"?`)) return;
+    if (!await confirmDialog({ message: `¿Eliminar el servicio "${s.name}"?`, tone: 'danger' })) return;
     try { await clientService.deleteContractService(client.id, s.id); await load(); }
     catch { toast.error('No se pudo eliminar'); }
   };
@@ -203,7 +204,7 @@ export default function ClientContract({ client }: { client: Client }) {
     } catch { toast.error('No se pudo guardar'); } finally { setSaving(false); }
   };
   const delRen = async (r: ContractRenewalRow) => {
-    if (!window.confirm('¿Eliminar este periodo del historial?')) return;
+    if (!await confirmDialog({ message: '¿Eliminar este periodo del historial?', tone: 'danger' })) return;
     try { await clientService.deleteContractRenewal(client.id, r.id); await load(); }
     catch { toast.error('No se pudo eliminar'); }
   };

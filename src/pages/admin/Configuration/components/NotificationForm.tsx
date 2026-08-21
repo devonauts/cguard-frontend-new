@@ -10,6 +10,7 @@ import { notificationSettingsService } from "@/lib/api/notificationSettingsServi
 import { communicationService } from "@/lib/api/communicationService";
 import { Link } from "react-router-dom";
 import { Section, SkeletonCards } from "@/components/kit";
+import { confirmDialog } from "@/components/ui/confirmDialog";
 
 type ChannelKey = "dashboard" | "email" | "sms";
 
@@ -157,13 +158,13 @@ export default function NotificationMatrix() {
   const someCheckedByColumn = (col: ChannelKey) =>
     NOTIFICATIONS.some((n) => state[n.id]?.[col]);
 
-  const toggleColumn = (col: ChannelKey, value: boolean) => {
+  const toggleColumn = async (col: ChannelKey, value: boolean) => {
     // Encender la columna de SMS de un clic arma un canal DE PAGO en todos los
     // avisos a la vez. Se pide confirmación diciendo cuántos son: el gasto lo
     // paga el tenant por mensaje y por destinatario, y hasta ahora no había
     // ningún aviso antes de comprometerlo.
     if (col === "sms" && value) {
-      const ok = window.confirm(
+      const ok = await confirmDialog(
         `Vas a activar el envío por SMS en los ${NOTIFICATIONS.length} avisos.\n\n` +
           `El SMS se cobra por mensaje y por destinatario, y se descuenta de tu saldo. ` +
           `Un aviso frecuente —como las entradas y salidas de turno— puede consumirlo rápido.\n\n` +

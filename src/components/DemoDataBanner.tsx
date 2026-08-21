@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { MessageCircle, Sparkles, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { ApiService } from "@/services/api/apiService";
+import { confirmDialog } from "@/components/ui/confirmDialog";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -68,10 +69,14 @@ export default function DemoDataBanner() {
   const quitar = async () => {
     if (removing) return;
     // Confirmación en el idioma del producto: dice qué pasa y qué no.
-    const ok = window.confirm(
-      "Se quitarán los datos de ejemplo (la sede, los puestos y los vigilantes de muestra). " +
-        "Lo que tú hayas creado se conserva. ¿Continuar?",
-    );
+    const ok = await confirmDialog({
+      title: "Quitar datos de ejemplo",
+      message:
+        "Se quitarán los datos de ejemplo (la sede, los puestos y los vigilantes de muestra). " +
+        "Lo que tú hayas creado se conserva.",
+      confirmText: "Quitar",
+      tone: "danger",
+    });
     if (!ok) return;
 
     setRemoving(true);

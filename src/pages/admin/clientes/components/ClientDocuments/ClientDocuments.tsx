@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Search, FileText, FileSpreadsheet, FileImage, FileArchive, File as FileIcon, Files, HardDrive, FolderOpen, CalendarPlus, Upload, Download, Trash2, X, Clock } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { confirmDialog } from "@/components/ui/confirmDialog";
 
 // ── Shape of GET /client-account/:id/documents (clientAccountDocuments.ts) ──
 interface DocRow {
@@ -143,7 +144,7 @@ export default function ClientDocuments({ client }: { client: Client }) {
   };
 
   const doDelete = async (d: DocRow) => {
-    if (!window.confirm(`¿Eliminar "${d.name}"?`)) return;
+    if (!await confirmDialog({ message: `¿Eliminar "${d.name}"?`, tone: 'danger' })) return;
     try { await clientService.deleteClientDocument(d.id); toast.success('Documento eliminado'); await load(true); }
     catch { toast.error('No se pudo eliminar'); }
   };

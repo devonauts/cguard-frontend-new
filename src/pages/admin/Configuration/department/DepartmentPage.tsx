@@ -10,6 +10,7 @@ import departmentService, { Department } from "@/lib/api/departmentService";
 import { userService } from "@/lib/api/userService";
 import DepartmentsTable, { DepartmentRow } from "./DepartmentTable";
 import DepartmentDialog, { DepartmentDialogValues } from "./DepartmentDialog";
+import { confirmDialog } from "@/components/ui/confirmDialog";
 
 const errMsg = (e: unknown, fallback: string): string => {
   const err = e as { response?: { data?: { message?: string } | string }; message?: string } | undefined;
@@ -134,7 +135,7 @@ export default function DepartmentPage() {
   };
 
   const handleDelete = async (row: DepartmentRow) => {
-    if (!window.confirm(`¿Eliminar el departamento "${row.name}"?`)) return;
+    if (!await confirmDialog({ message: `¿Eliminar el departamento "${row.name}"?`, tone: 'danger' })) return;
     try {
       await departmentService.destroy(row.id);
       toast.success("Departamento eliminado");
@@ -147,7 +148,7 @@ export default function DepartmentPage() {
 
   const handleBulkDelete = async (ids: string[]) => {
     if (ids.length === 0) return;
-    if (!window.confirm(`¿Eliminar ${ids.length} departamento(s)?`)) return;
+    if (!await confirmDialog({ message: `¿Eliminar ${ids.length} departamento(s)?`, tone: 'danger' })) return;
     let ok = 0;
     for (const id of ids) {
       try {

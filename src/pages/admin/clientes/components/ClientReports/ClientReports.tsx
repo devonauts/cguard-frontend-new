@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { confirmDialog } from "@/components/ui/confirmDialog";
 
 // ── Shape of GET /client-account/:id/reports (clientAccountReports.ts) ──
 interface ReportKpi {
@@ -155,7 +156,7 @@ export default function ClientReports({ client }: { client: Client & { companyNa
     try { await clientService.createReportSchedule(client.id, schedForm); toast.success('Reporte programado'); setSchedOpen(false); setSchedForm({ name: '', type: 'incidents', frequency: 'weekly' }); await load(true); }
     catch { toast.error('No se pudo programar'); } finally { setSaving(false); }
   };
-  const delSchedule = async (s: ProgramadoRow) => { if (!window.confirm(`¿Eliminar "${s.name}"?`)) return; try { await clientService.deleteReportSchedule(client.id, s.id); await load(true); } catch { toast.error('No se pudo eliminar'); } };
+  const delSchedule = async (s: ProgramadoRow) => { if (!await confirmDialog({ message: `¿Eliminar "${s.name}"?`, tone: 'danger' })) return; try { await clientService.deleteReportSchedule(client.id, s.id); await load(true); } catch { toast.error('No se pudo eliminar'); } };
 
   if (loading && !data) return <TabLoading />;
 

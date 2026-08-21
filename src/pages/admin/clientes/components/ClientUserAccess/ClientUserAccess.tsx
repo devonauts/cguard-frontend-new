@@ -7,6 +7,7 @@ import { Section, EmptyState, StatusBadge, Modal } from '@/components/kit';
 import { FIELD_CLS, LabeledField, RowAction, TabLoading, Avatar } from '../_shared/tab-kit';
 import { Button } from '@/components/ui/button';
 import type { Client } from '@/types/client';
+import { confirmDialog } from "@/components/ui/confirmDialog";
 
 type Props = { client: Client };
 // Row from GET /client-account/:id/access-users (clientAccountAccessUsers.ts).
@@ -50,7 +51,7 @@ export default function ClientUserAccess({ client }: Props) {
 
   const revoke = async (u: AccessUser) => {
     if (u.isTitular || !u.pivotId) { toast.error('El acceso del titular se gestiona editando el cliente.'); return; }
-    if (!window.confirm(`¿Revocar el acceso de ${u.name}?`)) return;
+    if (!await confirmDialog({ message: `¿Revocar el acceso de ${u.name}?`, tone: 'danger' })) return;
     try { await clientService.revokeClientAccess(client.id, u.pivotId); toast.success('Acceso revocado'); await load(); }
     catch { toast.error('No se pudo revocar'); }
   };

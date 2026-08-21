@@ -8,6 +8,7 @@ import { Modal, Segmented } from "@/components/kit";
 import { ArrowRightLeft } from "lucide-react";
 import { toast } from "sonner";
 import coverageService, { coverageErrorCode, stationLabel } from "@/lib/api/coverageService";
+import { confirmDialog } from "@/components/ui/confirmDialog";
 
 /**
  * "Trasladar a otra estación" straight from the Horario.
@@ -83,13 +84,13 @@ export default function TransferShiftModal({
           const code = coverageErrorCode(e);
           if (code === "rest_day" && !asked.rest_day) {
             asked.rest_day = true;
-            if (!window.confirm("Ese vigilante está en descanso ese día. ¿Asignarlo de todos modos?")) return;
+            if (!await confirmDialog("Ese vigilante está en descanso ese día. ¿Asignarlo de todos modos?")) return;
             flags.allowRestDay = true;
             continue;
           }
           if (code === "double_booking" && !asked.double_booking) {
             asked.double_booking = true;
-            if (!window.confirm("Ya tiene otro turno que se cruza con ese horario. ¿Doblar turno?")) return;
+            if (!await confirmDialog("Ya tiene otro turno que se cruza con ese horario. ¿Doblar turno?")) return;
             flags.allowDoubleShift = true;
             continue;
           }

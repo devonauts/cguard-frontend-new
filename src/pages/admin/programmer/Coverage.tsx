@@ -14,6 +14,7 @@ import {
   ShieldAlert, ShieldCheck, Clock, UserPlus, ArrowRightLeft, RefreshCw, Undo2, CalendarRange } from "lucide-react";
 import { toast } from "sonner";
 import GuardTypeahead, { GuardPick } from "./GuardTypeahead";
+import { confirmDialog } from "@/components/ui/confirmDialog";
 import coverageService, {
   COVERAGE_REASONS, REASON_LABEL, STATUS_LABEL, coverageErrorCode,
   stationLabel,
@@ -121,13 +122,13 @@ export default function Coverage() {
           const code = coverageErrorCode(e);
           if (code === "rest_day" && !asked.rest_day) {
             asked.rest_day = true;
-            if (!window.confirm("Ese vigilante está en descanso ese día. ¿Asignarlo de todos modos?")) return;
+            if (!await confirmDialog("Ese vigilante está en descanso ese día. ¿Asignarlo de todos modos?")) return;
             flags.allowRestDay = true;
             continue;
           }
           if (code === "double_booking" && !asked.double_booking) {
             asked.double_booking = true;
-            if (!window.confirm("Ya tiene otro turno que se cruza con ese horario. ¿Doblar turno?")) return;
+            if (!await confirmDialog("Ya tiene otro turno que se cruza con ese horario. ¿Doblar turno?")) return;
             flags.allowDoubleShift = true;
             continue;
           }

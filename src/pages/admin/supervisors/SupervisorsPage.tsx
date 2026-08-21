@@ -18,6 +18,7 @@ import {
   GlassPanel, EmptyState, Segmented, Toolbar,
 } from "@/components/kit";
 import { supervisorService, type Supervisor } from "@/lib/api/supervisorService";
+import { confirmDialog } from "@/components/ui/confirmDialog";
 
 type StatFilter = "todos" | "enTurno" | "fuera" | "conVehiculo";
 
@@ -144,7 +145,7 @@ export default function SupervisorsPage() {
   // Remove a supervisor from this business (revokes access; account may live in other tenants).
   const removeSupervisor = async (s: Supervisor) => {
     const name = s.fullName || s.email || "este supervisor";
-    if (!window.confirm(`¿Eliminar a ${name}? Perderá el acceso a este negocio. Esta acción no se puede deshacer.`)) return;
+    if (!await confirmDialog({ message: `¿Eliminar a ${name}? Perderá el acceso a este negocio. Esta acción no se puede deshacer.`, tone: 'danger' })) return;
     try {
       await supervisorService.remove(s.id);
       toast.success("Supervisor eliminado");
