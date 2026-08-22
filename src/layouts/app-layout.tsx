@@ -8,6 +8,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import TenantJoinModal from "@/components/TenantJoinModal";
 import TrialBanner from "@/components/TrialBanner";
 import DemoDataBanner from "@/components/DemoDataBanner";
+import PlatformAnnouncements from "@/components/PlatformAnnouncements";
 import { RadioRealtimeProvider } from "@/components/radio/RadioRealtimeProvider";
 import RadioVoiceWidget from "@/components/radio/RadioVoiceWidget";
 import VigiaWidget from "@/components/vigia/VigiaWidget";
@@ -296,6 +297,8 @@ function AppLayoutShell({ children }: AppLayoutProps) {
         <OnboardingProvider>
           <TrialBanner />
           <DemoDataBanner />
+          {/* Lo que la plataforma quiere decirle a ESTA empresa. */}
+          <PlatformAnnouncements />
           {children}
         </OnboardingProvider>
       </main>
