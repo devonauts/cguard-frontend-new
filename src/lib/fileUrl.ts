@@ -130,7 +130,13 @@ export function useFileUrl(source: FileLike | string): string | null {
     immediate = fileUrlFromPrivate(source.privateUrl);
   }
 
-  const [resolved, setResolved] = useState<string | null>(immediate);
+  // Si hay que resolver un token, NO se arranca con la URL cruda: tras el
+  // blindaje IDOR una `?privateUrl=` sin sesión da 403 → imagen rota que parpadea
+  // antes de cambiar al token. Se arranca en `null` (el consumidor muestra su
+  // placeholder) y se pasa a la URL real cuando el token está listo. Si ya
+  // teníamos un token cacheado, se usa de una.
+  const startWith = rawPrivateUrl ? (tokenUrlCache.get(rawPrivateUrl) ?? null) : immediate;
+  const [resolved, setResolved] = useState<string | null>(startWith);
 
   useEffect(() => {
     let active = true;
@@ -143,8 +149,8 @@ export function useFileUrl(source: FileLike | string): string | null {
       setResolved(cached);
       return;
     }
-    // Transitional fallback while the token is fetched.
-    setResolved(immediate);
+    // Sin token todavía: placeholder (null), no la URL cruda que da 403.
+    setResolved(null);
     fetchTokenUrl(rawPrivateUrl).then((url) => {
       if (active && url) setResolved(url);
     });

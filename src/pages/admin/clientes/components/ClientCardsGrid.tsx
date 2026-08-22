@@ -14,7 +14,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { StatusBadge, SkeletonCards, EmptyState, GlassPanel } from "@/components/kit";
+import { StatusBadge, SkeletonCards, EmptyState, GlassPanel, SmartImage } from "@/components/kit";
 import type { Client } from "@/types/client";
 
 export type ClientCardMeta = { logoUrl: string | null; sites: number; stations: number };
@@ -86,26 +86,21 @@ export default function ClientCardsGrid({
                         style={{ animationDelay: `${Math.min(i, 12) * 30}ms`, animationFillMode: "backwards" }}
                     >
                         <div className="flex items-start gap-3">
-                            {m?.logoUrl ? (
-                                <img
-                                    src={m.logoUrl}
-                                    alt=""
-                                    className="h-12 w-12 shrink-0 rounded-xl border object-cover"
-                                    style={{ background: "var(--glass-sunken)", borderColor: "var(--hairline)" }}
-                                    loading="lazy"
-                                />
-                            ) : (
-                                <div
-                                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border text-lg font-bold"
-                                    style={{
-                                        background: "var(--brand-wash)",
-                                        borderColor: "var(--brand-line)",
-                                        color: "var(--brand-text)",
-                                    }}
-                                >
-                                    {(name || "?").charAt(0).toUpperCase()}
-                                </div>
-                            )}
+                            <SmartImage
+                                src={m?.logoUrl}
+                                alt=""
+                                rounded="rounded-xl"
+                                className="h-12 w-12 shrink-0 border"
+                                style={{ borderColor: "var(--hairline)" }}
+                                fallback={
+                                    <span
+                                        className="grid h-full w-full place-items-center text-lg font-bold"
+                                        style={{ background: "var(--brand-wash)", color: "var(--brand-text)" }}
+                                    >
+                                        {(name || "?").charAt(0).toUpperCase()}
+                                    </span>
+                                }
+                            />
                             <div className="min-w-0 flex-1">
                                 <p className="truncate font-semibold leading-tight">{name}</p>
                                 <div className="mt-1 flex flex-wrap items-center gap-1.5">

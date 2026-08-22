@@ -32,7 +32,7 @@
 import * as React from 'react';
 import { RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { GlassPanel, IconTile, SkeletonCards } from '@/components/kit';
+import { GlassPanel, IconTile, SkeletonCards, SmartImage } from '@/components/kit';
 import { MeterBar } from '@/components/charts';
 
 // ── Campos ──────────────────────────────────────────────────────────────────
@@ -300,16 +300,26 @@ export function Avatar({ url, name, solid, className }: {
   url?: string | null; name: string; solid?: boolean; className?: string;
 }) {
   const dim = cn('h-9 w-9 shrink-0 rounded-full', className);
-  if (url) return <img src={url} alt={name} className={cn(dim, 'object-cover')} />;
   const initials = (name || '?').split(' ').filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase() || '?';
-  return (
+  // Las iniciales son el fallback: se ven mientras no hay foto Y si la carga
+  // falla — nunca el icono de imagen rota. Con foto: esqueleto → fundido.
+  const inicialesFallback = (
     <span
-      className={cn(dim, 'grid place-items-center border text-xs font-semibold')}
+      className={cn('grid h-full w-full place-items-center text-xs font-semibold')}
       style={solid
-        ? { background: 'var(--brand)', borderColor: 'transparent', color: 'var(--brand-ink)' }
-        : { background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }}
+        ? { background: 'var(--brand)', color: 'var(--brand-ink)' }
+        : { background: 'var(--brand-wash)', color: 'var(--brand-text)' }}
     >
       {initials}
     </span>
+  );
+  return (
+    <SmartImage
+      src={url}
+      alt={name}
+      rounded="rounded-full"
+      className={cn(dim, !url && 'border', solid ? 'border-transparent' : '')}
+      fallback={inicialesFallback}
+    />
   );
 }

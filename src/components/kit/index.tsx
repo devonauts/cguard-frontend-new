@@ -905,3 +905,4 @@ export { default as Stepper, type StepIndicatorStep as StepperStep } from '@/com
 
 // ── Movimiento (piezas que necesitan saber que un valor CAMBIÓ) ─────────────
 export { Cifra, AlCambiar, ProgresoDeRuta } from './movimiento';
+export { SmartImage } from './SmartImage';
