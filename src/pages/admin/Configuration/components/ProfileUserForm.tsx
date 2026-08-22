@@ -462,6 +462,9 @@ export default function ProfileUserForm() {
               value={language}
               onValueChange={(value) => {
                 setLanguage(value as "es" | "en" | "pt");
+                // Persistir en el backend: sin esto el idioma vive solo en este
+                // navegador y los correos/notificaciones no pueden localizarse.
+                AccountService.updateProfile({ language: value }).catch(() => { /* el cambio local ya aplicó */ });
                 toast.success(t('profile.languageSaved'));
               }}
             >

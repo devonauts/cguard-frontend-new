@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { MessageSquareText } from "lucide-react";
 
 /**
@@ -32,6 +33,7 @@ export function promptDialog(opts: PromptOptions | string): Promise<string | nul
 }
 
 export function PromptHost() {
+  const { t } = useTranslation();
   const [state, setState] = useState<State | null>(null);
   const [val, setVal] = useState("");
 
@@ -71,7 +73,7 @@ export function PromptHost() {
             <MessageSquareText size={20} />
           </div>
           <div className="min-w-0 flex-1 pt-0.5">
-            <h3 className="text-base font-semibold tracking-[-0.01em] text-[color:var(--ink)]">{state.title || "Escribe un valor"}</h3>
+            <h3 className="text-base font-semibold tracking-[-0.01em] text-[color:var(--ink)]">{state.title || t('kit.dialog.promptTitle', { defaultValue: 'Escribe un valor' })}</h3>
             {state.message && <p className="mt-1 whitespace-pre-line text-sm text-[color:var(--ink-soft)]">{state.message}</p>}
           </div>
         </div>
@@ -87,13 +89,13 @@ export function PromptHost() {
             onClick={() => close(null)}
             className="cg-btn-glass cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200 motion-reduce:transition-none"
           >
-            {state.cancelText || "Cancelar"}
+            {state.cancelText || t('kit.dialog.cancel', { defaultValue: 'Cancelar' })}
           </button>
           <button
             onClick={() => close(val)}
             className="cg-btn-brand cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200 active:scale-[0.97] motion-reduce:transition-none"
           >
-            {state.confirmText || "Aceptar"}
+            {state.confirmText || t('kit.dialog.accept', { defaultValue: 'Aceptar' })}
           </button>
         </div>
       </div>

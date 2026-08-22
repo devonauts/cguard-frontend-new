@@ -20,6 +20,7 @@
 import * as React from 'react';
 import { motion, type HTMLMotionProps } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Search, X } from 'lucide-react';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
@@ -748,9 +749,10 @@ export const FIELD_CLS_LG = 'cg-input w-full px-3 py-2 text-sm';
  * Lleva `type="search"` para que el teclado del móvil traiga la tecla «buscar»,
  * y el aspa de limpiar sólo existe cuando hay algo que limpiar.
  */
-export function SearchInput({ value, onChange, placeholder = 'Buscar…', className, ...rest }: {
+export function SearchInput({ value, onChange, placeholder, className, ...rest }: {
   value: string; onChange: (v: string) => void; placeholder?: string; className?: string;
 } & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'className'>) {
+  const { t } = useTranslation();
   return (
     <div className={cn('relative', className)}>
       <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} aria-hidden />
@@ -758,7 +760,7 @@ export function SearchInput({ value, onChange, placeholder = 'Buscar…', classN
         type="search"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
+        placeholder={placeholder ?? t('kit.search.placeholder', { defaultValue: 'Buscar…' })}
         className="cg-input h-9 w-full pl-9 pr-9 text-sm [&::-webkit-search-cancel-button]:appearance-none"
         {...rest}
       />
@@ -766,7 +768,7 @@ export function SearchInput({ value, onChange, placeholder = 'Buscar…', classN
         <button
           type="button"
           onClick={() => onChange('')}
-          aria-label="Limpiar búsqueda"
+          aria-label={t('kit.search.clear', { defaultValue: 'Limpiar búsqueda' })}
           className="cg-focus absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1"
           style={{ color: 'var(--ink-faint)' }}
         >
@@ -837,6 +839,7 @@ export function Pagination({
   noun?: string;
   className?: string;
 }) {
+  const { t } = useTranslation();
   const ultima = Math.max(1, Math.ceil(total / Math.max(1, pageSize)));
   const desde = total === 0 ? 0 : (page - 1) * pageSize + 1;
   const hasta = Math.min(total, page * pageSize);
@@ -853,7 +856,7 @@ export function Pagination({
     <div className={cn('flex flex-wrap items-center justify-end gap-x-6 gap-y-3 text-sm', className)} style={{ color: 'var(--ink-soft)' }}>
       {onPageSizeChange && (
         <div className="flex items-center gap-2">
-          <span>Elementos por página</span>
+          <span>{t('kit.pagination.perPage', { defaultValue: 'Elementos por página' })}</span>
           <Select value={String(pageSize)} onValueChange={(v) => onPageSizeChange(Number(v))}>
             <SelectTrigger className="h-8 w-[80px]"><SelectValue /></SelectTrigger>
             <SelectContent>
@@ -864,11 +867,16 @@ export function Pagination({
       )}
 
       <div className="tabular-nums">
-        {total === 0 ? `0 de 0${noun ? ` ${noun}` : ''}` : `${desde} – ${hasta} de ${total}${noun ? ` ${noun}` : ''}`}
+        {(() => {
+          const of = t('kit.pagination.of', { defaultValue: 'de' });
+          return total === 0
+            ? `0 ${of} 0${noun ? ` ${noun}` : ''}`
+            : `${desde} – ${hasta} ${of} ${total}${noun ? ` ${noun}` : ''}`;
+        })()}
       </div>
 
       <div className="flex items-center gap-1.5">
-        <button type="button" className={flecha} disabled={page <= 1} onClick={() => onPageChange(page - 1)}>Anterior</button>
+        <button type="button" className={flecha} disabled={page <= 1} onClick={() => onPageChange(page - 1)}>{t('kit.pagination.prev', { defaultValue: 'Anterior' })}</button>
         {numbered && numeros.map((n) => (
           <button
             key={n}
@@ -883,7 +891,7 @@ export function Pagination({
             {n}
           </button>
         ))}
-        <button type="button" className={flecha} disabled={page >= ultima} onClick={() => onPageChange(page + 1)}>Siguiente</button>
+        <button type="button" className={flecha} disabled={page >= ultima} onClick={() => onPageChange(page + 1)}>{t('kit.pagination.next', { defaultValue: 'Siguiente' })}</button>
       </div>
     </div>
   );

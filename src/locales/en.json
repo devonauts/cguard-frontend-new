@@ -1,42 +1,42 @@
 {
   "activity": {
-    "live": "En vivo",
-    "loadError": "No se pudo cargar la actividad",
-    "markAllRead": "Marcar todo como leído",
-    "offline": "Sin conexión en vivo",
-    "refresh": "Actualizar",
-    "search": "Buscar en la actividad...",
-    "subtitle": "Registro de actividad de tu operación en tiempo real",
+    "live": "Live",
+    "loadError": "Could not load activity",
+    "markAllRead": "Mark all as read",
+    "offline": "No live connection",
+    "refresh": "Refresh",
+    "search": "Search activity...",
+    "subtitle": "Real-time activity log of your operation",
     "title": "Activity",
-    "unreadCount_one": "{{count}} sin leer",
-    "unreadCount_other": "{{count}} sin leer",
-    "unreadOnly": "Solo no leídos",
+    "unreadCount_one": "{{count}} unread",
+    "unreadCount_other": "{{count}} unread",
+    "unreadOnly": "Unread only",
     "empty": {
       "description": "No recent activity to show",
       "title": "No activity"
     },
     "filters": {
-      "all": "Todo",
-      "checkin": "Entradas y salidas",
-      "incident": "Incidentes",
-      "other": "Otros",
-      "patrol": "Rondas",
-      "shift": "Turnos",
-      "visitor": "Visitantes"
+      "all": "All",
+      "checkin": "Check-ins & check-outs",
+      "incident": "Incidents",
+      "other": "Other",
+      "patrol": "Patrols",
+      "shift": "Shifts",
+      "visitor": "Visitors"
     },
     "group": {
-      "today": "Hoy",
-      "yesterday": "Ayer"
+      "today": "Today",
+      "yesterday": "Yesterday"
     },
     "noResults": {
-      "description": "Ajusta los filtros o el término de búsqueda.",
-      "title": "Sin resultados"
+      "description": "Adjust the filters or the search term.",
+      "title": "No results"
     },
     "time": {
-      "daysAgo": "hace {{n}} d",
-      "hoursAgo": "hace {{n}} h",
-      "minsAgo": "hace {{n}} min",
-      "now": "ahora"
+      "daysAgo": "{{n}}d ago",
+      "hoursAgo": "{{n}}h ago",
+      "minsAgo": "{{n}}min ago",
+      "now": "now"
     }
   },
   "actions": {
@@ -216,8 +216,8 @@
         "assignClientsPlaceholder": "Assign Clients",
         "assignSitesLabel": "Assign Post Sites",
         "assignSitesPlaceholder": "Assign Post Sites",
-        "assignStationsLabel": "Asignar Estaciones",
-        "assignStationsPlaceholder": "Asignar Estaciones",
+        "assignStationsLabel": "Assign Stations",
+        "assignStationsPlaceholder": "Assign Stations",
         "create": "Create",
         "creating": "Creating...",
         "deselectAll": "Deselect all",
@@ -419,29 +419,29 @@
   },
   "clientPostSites": {
     "action": "Action",
-    "archive": "Archivar",
-    "archiveError": "Error al archivar los sitios",
-    "archivePartialError": "Algunos elementos no se pudieron archivar",
-    "archivedAll": "Todos los sitios seleccionados archivados",
-    "archivedPartial": "{{count}} sitio(s) archivados",
+    "archive": "Archive",
+    "archiveError": "Error archiving the sites",
+    "archivePartialError": "Some items could not be archived",
+    "archivedAll": "All selected sites archived",
+    "archivedPartial": "{{count}} site(s) archived",
     "archiving": "Archiving...",
     "cannotArchiveLinkedGuards": "Cannot archive {{count}} site(s) because they have guards assigned. Unassign guards first.",
-    "confirmArchiveDescription": "¿Estás seguro de archivar {{count}} sitio(s)?",
-    "confirmArchiveTitle": "¿Archivar {{count}} sitio(s)?",
-    "newPostSite": "Nuevo sitio",
-    "searchPlaceholder": "Buscar sitios de servicio...",
+    "confirmArchiveDescription": "Are you sure you want to archive {{count}} site(s)?",
+    "confirmArchiveTitle": "Archive {{count}} site(s)?",
+    "newPostSite": "New site",
+    "searchPlaceholder": "Search service sites...",
     "selectAtLeastOne": "Select at least one post site",
-    "viewDetails": "Ver detalles",
+    "viewDetails": "View details",
     "headers": {
-      "client": "Cliente",
-      "email": "Correo",
-      "phoneNumber": "Teléfono",
-      "postSite": "Sitio de servicio",
-      "status": "Estado"
+      "client": "Client",
+      "email": "Email",
+      "phoneNumber": "Phone",
+      "postSite": "Service site",
+      "status": "Status"
     },
     "noResult": {
-      "description": "No pudimos encontrar ningún elemento que coincida con tu búsqueda",
-      "title": "No se encontraron resultados"
+      "description": "We couldn't find any items matching your search",
+      "title": "No results found"
     }
   },
   "clients": {
@@ -570,35 +570,35 @@
       "status": "Status"
     },
     "contacts": {
-      "addcontact": "Agregar contacto",
-      "confirmDeleteMessage": "¿Estás seguro de que deseas eliminar permanentemente el(los) contacto(s) seleccionado(s)? Esta acción no se puede deshacer.",
-      "confirmDeleteTitle": "¿Eliminar contacto(s)?",
-      "contactCreateFailed": "No se pudo crear el contacto",
-      "contactCreated": "Contacto creado exitosamente",
-      "contactDeleteFailed": "No se pudo eliminar el contacto",
-      "contactDeleted": "Contacto eliminado exitosamente",
-      "contactEmail": "Correo electrónico",
-      "contactName": "Nombre",
-      "contactPhone": "Número móvil",
-      "contactPostSites": "Puestos vigilados",
-      "contactUpdated": "Contacto actualizado exitosamente",
-      "editcontact": "Editar contacto",
-      "searchcontact": "Buscar contactos",
+      "addcontact": "Add contact",
+      "confirmDeleteMessage": "Are you sure you want to permanently delete the selected contact(s)? This action cannot be undone.",
+      "confirmDeleteTitle": "Delete contact(s)?",
+      "contactCreateFailed": "Could not create contact",
+      "contactCreated": "Contact created successfully",
+      "contactDeleteFailed": "Could not delete contact",
+      "contactDeleted": "Contact deleted successfully",
+      "contactEmail": "Email",
+      "contactName": "Name",
+      "contactPhone": "Mobile number",
+      "contactPostSites": "Guarded posts",
+      "contactUpdated": "Contact updated successfully",
+      "editcontact": "Edit contact",
+      "searchcontact": "Search contacts",
       "errors": {
-        "invalidEmail": "Correo inválido",
-        "invalidPhone": "Número inválido",
-        "requiredName": "Nombre requerido"
+        "invalidEmail": "Invalid email",
+        "invalidPhone": "Invalid number",
+        "requiredName": "Name required"
       },
       "form": {
-        "AddClientContact": "Agregar contacto",
-        "Addcontact": "AGREGAR",
-        "AssignPostSite": "Indicar el Puesto de Seguridad",
-        "Description": "Descripción",
-        "Email": "Correo electrónico *",
-        "Mobile Number": "Número móvil *",
-        "Name": "Nombre *",
+        "AddClientContact": "Add contact",
+        "Addcontact": "ADD",
+        "AssignPostSite": "Specify the security post",
+        "Description": "Description",
+        "Email": "Email *",
+        "Mobile Number": "Mobile number *",
+        "Name": "Name *",
         "checkbox": "Permitir que el guardia vea el contacto",
-        "descriptioninput": "Ingresa la descripción del contacto"
+        "descriptioninput": "Enter the contact description"
       }
     },
     "empty": {
@@ -631,7 +631,7 @@
       "city": "City *",
       "country": "Country *",
       "email": "Email Address *",
-      "fax": "Teléfono fijo",
+      "fax": "Landline",
       "lastName": "Last name *",
       "latitude": "Latitude *",
       "locationSet": "Location set",
@@ -644,7 +644,7 @@
       "website": "Website"
     },
     "nav": {
-      "clientPortal": "Portal del cliente",
+      "clientPortal": "Client portal",
       "contrato": "Contract & services",
       "coverage": "Stations & coverage",
       "staff": "Assigned staff",
@@ -653,16 +653,16 @@
       "reports": "Reports",
       "documents": "Documents",
       "billing": "Billing",
-      "contacts": "Contactos",
-      "emailReports": "Reportes por correo",
-      "files": "Archivos",
-      "notes": "Notas",
-      "overview": "Resumen",
+      "contacts": "Contacts",
+      "emailReports": "Email reports",
+      "files": "Files",
+      "notes": "Notes",
+      "overview": "Overview",
       "postSites": "Locations",
-      "profile": "Perfil",
-      "projects": "Proyectos",
-      "title": "Clientes",
-      "userAccess": "Acceso de usuarios"
+      "profile": "Profile",
+      "projects": "Projects",
+      "title": "Clients",
+      "userAccess": "User access"
     },
     "notes": {
       "Added By": "Added By",
@@ -741,8 +741,8 @@
       "pending": "Pending"
     },
     "validation": {
-      "cedula_invalid": "Cédula inválida",
-      "ruc_invalid": "RUC inválido (debe terminar en 001 y contener cédula válida)"
+      "cedula_invalid": "Invalid ID",
+      "ruc_invalid": "Invalid RUC (must end in 001 and contain a valid ID)"
     },
     "alerts": {
       "archiveClients": {
@@ -779,25 +779,25 @@
     "overview": {
       "cards": {
         "guardsAssigned": "Guardias asignados",
-        "hoursWorked": "Horas trabajadas (últimos 7 días)",
-        "incidents": "Informes de Incidentes (últimos 7 días)",
+        "hoursWorked": "Hours worked (last 7 days)",
+        "incidents": "Incident reports (last 7 days)",
         "postSites": "Active locations",
-        "tasksCompleted": "Tareas completadas (últimos 7 días)",
-        "toursCompleted": "Recorridos completados (últimos 7 días)"
+        "tasksCompleted": "Tasks completed (last 7 days)",
+        "toursCompleted": "Tours completed (last 7 days)"
       },
       "contactDetails": {
-        "email": "Correo electrónico",
-        "fax": "Teléfono fijo",
-        "phoneNumber": "Teléfono",
-        "title": "Detalles de contacto",
-        "website": "Sitio web"
+        "email": "Email",
+        "fax": "Landline",
+        "phoneNumber": "Phone",
+        "title": "Contact details",
+        "website": "Website"
       },
       "generalInfo": {
-        "addedOn": "Añadido el",
-        "address": "Dirección",
-        "clientName": "Nombre del cliente",
-        "notfoundclient": "No se encontró el cliente",
-        "title": "Información general"
+        "addedOn": "Added on",
+        "address": "Address",
+        "clientName": "Client name",
+        "notfoundclient": "Client not found",
+        "title": "General information"
       }
     }
   },
@@ -977,21 +977,21 @@
     }
   },
   "guards": {
-    "created": "KPI creado correctamente",
-    "deleteError": "Error al eliminar KPI(s)",
-    "deleteNoneSelected": "No hay elementos seleccionados",
-    "deleted": "KPI eliminado",
-    "deletedMultiple": "KPIs eliminados",
-    "excelDownloaded": "Excel descargado",
-    "excelError": "No se pudo generar/obtener el Excel",
-    "excelExportError": "Error al exportar Excel",
-    "pdfError": "No se pudo generar/obtener el PDF",
-    "pdfGenerated": "PDF generado",
-    "pdfOpenError": "Error al abrir el PDF",
-    "pdfOpened": "PDF abierto",
-    "saveError": "Error al guardar el KPI",
-    "selectAtLeastOne": "Debes seleccionar al menos un KPI",
-    "updated": "KPI actualizado correctamente",
+    "created": "KPI created successfully",
+    "deleteError": "Error deleting KPI(s)",
+    "deleteNoneSelected": "No items selected",
+    "deleted": "KPI deleted",
+    "deletedMultiple": "KPIs deleted",
+    "excelDownloaded": "Excel downloaded",
+    "excelError": "Could not generate/retrieve the Excel",
+    "excelExportError": "Error exporting Excel",
+    "pdfError": "Could not generate/retrieve the PDF",
+    "pdfGenerated": "PDF generated",
+    "pdfOpenError": "Error opening the PDF",
+    "pdfOpened": "PDF opened",
+    "saveError": "Error saving the KPI",
+    "selectAtLeastOne": "You must select at least one KPI",
+    "updated": "KPI updated successfully",
     "KPI": {
       "emailNotImplemented": "Email report not implemented",
       "menu": {
@@ -1029,70 +1029,70 @@
       "new": {
         "title": "Nuevo Guardia",
         "actions": {
-          "copy": "Copiar",
-          "create": "Crear",
-          "hide_confirm_password": "Ocultar contraseña",
-          "hide_password": "Ocultar contraseña",
-          "regenerate": "Regenerar",
-          "show_confirm_password": "Mostrar contraseña",
-          "show_password": "Mostrar contraseña"
+          "copy": "Copy",
+          "create": "Create",
+          "hide_confirm_password": "Hide password",
+          "hide_password": "Hide password",
+          "regenerate": "Regenerate",
+          "show_confirm_password": "Show password",
+          "show_password": "Show password"
         },
         "breadcrumb": {
-          "dashboard": "Panel de control"
+          "dashboard": "Dashboard"
         },
         "create": {
           "description": "Cree manualmente el perfil del guardia. Deberá validar su correo y número móvil antes de iniciar sesión."
         },
         "errors": {
-          "error_create_profile": "Error al crear perfil",
+          "error_create_profile": "Error creating profile",
           "no_permission_create": "No tienes permiso para crear guardias"
         },
         "form": {
-          "assignPostSite": "Asignar puesto de vigilancia",
-          "assignStation": "Asignar estación",
-          "confirmPassword": "Confirmar Contraseña *",
-          "confirmPasswordPlaceholder": "Confirmar Contraseña *",
-          "contactEmail": "Correo Electrónico *",
-          "contactPhEmail": "e.g. persona@correo.com",
+          "assignPostSite": "Assign guard post",
+          "assignStation": "Assign station",
+          "confirmPassword": "Confirm Password *",
+          "confirmPasswordPlaceholder": "Confirm Password *",
+          "contactEmail": "Email *",
+          "contactPhEmail": "e.g. person@email.com",
           "contactPhSms": "e.g. +12015550123",
-          "contactSms": "Número de Móvil *",
-          "create_and_send": "Crear y Enviar",
-          "firstName": "Nombre*",
-          "firstNamePlaceholder": "Nombre *",
-          "inviteBy": "Invitar Por*",
-          "lastName": "Apellido*",
-          "lastNamePlaceholder": "Apellido *",
-          "password": "Contraseña *",
-          "passwordPlaceholder": "Contraseña *",
-          "selectClient": "Seleccionar Cliente",
-          "selectMethodPlaceholder": "Seleccionar método",
-          "send": "Enviar"
+          "contactSms": "Mobile Number *",
+          "create_and_send": "Create and Send",
+          "firstName": "First Name*",
+          "firstNamePlaceholder": "First Name *",
+          "inviteBy": "Invite By*",
+          "lastName": "Last Name*",
+          "lastNamePlaceholder": "Last Name *",
+          "password": "Password *",
+          "passwordPlaceholder": "Password *",
+          "selectClient": "Select Client",
+          "selectMethodPlaceholder": "Select method",
+          "send": "Send"
         },
         "invite": {
           "description": "Ingrese el nombre, correo electrónico/número de móvil del guardia. Se enviará un mensaje con un enlace."
         },
         "join_code": {
-          "copied": "Código copiado",
-          "description": "Comparta el código único de la compañía junto con el enlace para descargar la aplicación.",
-          "invite_error": "Error al enviar invitación por código",
-          "invite_sent": "Invitación enviada por código"
+          "copied": "Code copied",
+          "description": "Share the company's unique code along with the link to download the app.",
+          "invite_error": "Error sending invitation by code",
+          "invite_sent": "Invitation sent by code"
         },
         "link": {
-          "description": "Comparta este enlace para unirse a la empresa.",
-          "invite_error": "Error al enviar invitación por enlace",
-          "invite_sent": "Invitación por enlace enviada"
+          "description": "Share this link to join the company.",
+          "invite_error": "Error sending invitation by link",
+          "invite_sent": "Link invitation sent"
         },
         "toasts": {
-          "clients_sites_load_error": "No se pudieron cargar clientes o sitios",
-          "invite_error": "Error al enviar invitaciones",
-          "invites_sent": "Invitaciones enviadas",
-          "profile_created": "Perfil creado",
-          "profile_created_sent": "Perfil creado y enviado"
+          "clients_sites_load_error": "Could not load clients or sites",
+          "invite_error": "Error sending invitations",
+          "invites_sent": "Invitations sent",
+          "profile_created": "Profile created",
+          "profile_created_sent": "Profile created and sent"
         }
       },
       "tabs": {
-        "create_profile": "Crear perfil",
-        "invite": "Invitar usando SMS o correo electrónico"
+        "create_profile": "Create profile",
+        "invite": "Invite using SMS or email"
       }
     },
     "assignSites": {
@@ -1100,9 +1100,9 @@
       "loadError": "Could not load guard",
       "loading": "Loading...",
       "noPostSites": "No post sites found",
-      "noStations": "No se encontraron estaciones",
-      "postSiteLoadError": "No se pudo cargar el puesto",
-      "postSiteLoading": "Cargando información del puesto...",
+      "noStations": "No stations found",
+      "postSiteLoadError": "Could not load the post",
+      "postSiteLoading": "Loading post information...",
       "searchPlaceholder": "Search Post Sites",
       "action": {
         "default": "Action"
@@ -1115,8 +1115,8 @@
         "postSite": "Post Site",
         "selectClient": "Select client",
         "selectPostSite": "Select post site",
-        "selectStation": "Seleccionar estación",
-        "station": "Estación"
+        "selectStation": "Select station",
+        "station": "Station"
       },
       "modal": {
         "assign": "Assign",
@@ -1126,7 +1126,7 @@
       "table": {
         "client": "Client",
         "postSites": "Post Sites",
-        "station": "Estación"
+        "station": "Station"
       }
     },
     "availability": {
@@ -1509,18 +1509,18 @@
     "profile": {
       "noLicense": "No license found",
       "access": {
-        "inviteError": "Error enviando la invitación",
-        "inviteSent": "Invitación enviada correctamente",
-        "lastLogin": "Último acceso",
-        "resendInvite": "Reenviar Invitación",
-        "sendInvite": "Enviar Acceso a la App",
-        "sendTo": "Se enviará a",
-        "statusActive": "Cuenta activa",
-        "statusExpired": "Invitación expirada",
-        "statusNoAccess": "Sin acceso configurado",
-        "statusPending": "Invitación pendiente",
-        "tokenExpired": "El enlace de invitación ha expirado",
-        "tokenExpires": "Invitación válida hasta"
+        "inviteError": "Error sending the invitation",
+        "inviteSent": "Invitation sent successfully",
+        "lastLogin": "Last login",
+        "resendInvite": "Resend Invitation",
+        "sendInvite": "Send App Access",
+        "sendTo": "Will be sent to",
+        "statusActive": "Active account",
+        "statusExpired": "Invitation expired",
+        "statusNoAccess": "No access configured",
+        "statusPending": "Invitation pending",
+        "tokenExpired": "The invitation link has expired",
+        "tokenExpires": "Invitation valid until"
       },
       "actions": {
         "cancel": "Cancel",
@@ -1529,8 +1529,8 @@
         "saving": "Saving..."
       },
       "cards": {
-        "appAccess": "Acceso a la Aplicación",
-        "attendance": "Asistencia",
+        "appAccess": "App Access",
+        "attendance": "Attendance",
         "contact": "Contact Details",
         "deviceInfo": "Device Information",
         "devicePermissions": "Device Permissions",
@@ -1559,7 +1559,7 @@
         "gender": "Gender",
         "governmentId": "Government ID",
         "gpsPermission": "GPS Permission",
-        "guardCredentials": "Credencial",
+        "guardCredentials": "Credential",
         "id1": "ID #1",
         "id2": "ID #2",
         "issueDate": "Issue Date",
@@ -1569,7 +1569,7 @@
         "licenseType": "License Type",
         "maritalStatus": "Marital Status",
         "microphone": "Microphone",
-        "middleName": "Segundo Nombre",
+        "middleName": "Middle Name",
         "mobile": "Mobile Number",
         "osVersion": "OS Version",
         "pushNotifications": "Push Notifications",
@@ -1773,71 +1773,71 @@
     "system_logs": "System logs"
   },
   "incidents": {
-    "actionsLabel": "Acciones",
-    "actionsPlaceholder": "Acciones",
-    "allClients": "Todos los clientes",
-    "allStations": "Todas las estaciones",
-    "allStatuses": "Todos",
-    "apply": "Aplicar",
-    "applyFilters": "Aplicar filtros",
-    "cancel": "Cancelar",
-    "clearFilters": "Limpiar filtros",
-    "create": "Crear",
-    "createDispatch": "Crear Incidente",
-    "created": "Incidente creado",
-    "creating": "Creando...",
-    "description": "Descripción",
+    "actionsLabel": "Actions",
+    "actionsPlaceholder": "Actions",
+    "allClients": "All clients",
+    "allStations": "All posts",
+    "allStatuses": "All",
+    "apply": "Apply",
+    "applyFilters": "Apply filters",
+    "cancel": "Cancel",
+    "clearFilters": "Clear filters",
+    "create": "Create",
+    "createDispatch": "Create Incident",
+    "created": "Incident created",
+    "creating": "Creating...",
+    "description": "Description",
     "email": "Email",
-    "emptyMessage": "Intenta ajustar los filtros o crear un nuevo incidente.",
-    "emptyTitle": "No se encontraron incidentes para este puesto.",
-    "export": "Exportar",
-    "filters": "Filtros",
-    "filtersPlaceholder": "Opciones de filtro no implementadas — UI de marcador de posición.",
-    "loading": "Cargando...",
-    "moreActions": "Más acciones",
-    "newIncident": "Nuevo incidente",
-    "next": "Siguiente",
-    "noStations": "Sin estaciones",
-    "of": "de",
-    "prev": "Anterior",
-    "searchPlaceholder": "Buscar incidentes...",
-    "selectClient": "Seleccionar cliente",
-    "selectStation": "Seleccionar estación",
-    "selectStatus": "Seleccionar estado",
-    "subject": "Asunto",
+    "emptyMessage": "Try adjusting the filters or creating a new incident.",
+    "emptyTitle": "No incidents found for this post.",
+    "export": "Export",
+    "filters": "Filters",
+    "filtersPlaceholder": "Filter options not implemented — placeholder UI.",
+    "loading": "Loading...",
+    "moreActions": "More actions",
+    "newIncident": "New incident",
+    "next": "Next",
+    "noStations": "No posts",
+    "of": "of",
+    "prev": "Previous",
+    "searchPlaceholder": "Search incidents...",
+    "selectClient": "Select client",
+    "selectStation": "Select post",
+    "selectStatus": "Select status",
+    "subject": "Subject",
     "actions": {
-      "createDispatch": "Crear Incidente",
-      "delete": "Eliminar",
-      "open": "Abrir",
-      "view": "Ver"
+      "createDispatch": "Create Incident",
+      "delete": "Delete",
+      "open": "Open",
+      "view": "View"
     },
     "columns": {
-      "caller": "Informador",
-      "client": "Cliente",
-      "date": "Fecha",
-      "incidentType": "Tipo",
-      "postSite": "Puesto",
-      "status": "Estado",
+      "caller": "Reporter",
+      "client": "Client",
+      "date": "Date",
+      "incidentType": "Type",
+      "postSite": "Post",
+      "status": "Status",
       "ticket": "Ticket"
     },
     "filterFields": {
-      "client": "Cliente",
-      "createdFrom": "Fecha de creación desde",
-      "createdTo": "Fecha de creación hasta",
-      "incidentFrom": "Fecha del incidente desde",
-      "incidentTo": "Fecha del incidente hasta",
-      "showArchived": "Mostrar archivados",
-      "station": "Puesto de seguridad",
-      "status": "Estado"
+      "client": "Client",
+      "createdFrom": "Created date from",
+      "createdTo": "Created date to",
+      "incidentFrom": "Incident date from",
+      "incidentTo": "Incident date to",
+      "showArchived": "Show archived",
+      "station": "Security post",
+      "status": "Status"
     },
     "labels": {
-      "description": "Descripción",
-      "station": "Estación",
-      "subject": "Asunto"
+      "description": "Description",
+      "station": "Post",
+      "subject": "Subject"
     },
     "status": {
-      "closed": "Cerrado",
-      "open": "Abierto"
+      "closed": "Closed",
+      "open": "Open"
     }
   },
   "postSites": {
@@ -2015,7 +2015,7 @@
       "description": "Description *",
       "descriptionPlaceholder": "Site description",
       "email": "Email Address *",
-      "fax": "Teléfono fijo",
+      "fax": "Landline",
       "geolocationNotSupported": "Geolocation not supported in this browser",
       "latitude": "Latitude *",
       "locationSet": "Location set",
@@ -2141,7 +2141,7 @@
       "title": "Post Site Profile",
       "ContactDetails": {
         "email": "Email",
-        "fax": "Teléfono fijo",
+        "fax": "Landline",
         "phoneNumber": "Phone Number",
         "title": "Contact Details",
         "website": "Website"
@@ -2179,26 +2179,26 @@
       "add": "Add Station",
       "assignedGuardsTitle": "Guardias asignados",
       "cancel": "Cancel",
-      "company": "Empresa",
-      "confirmRemovalBlockedDesc": "Una o más estaciones seleccionadas tienen registros relacionados y no se pueden eliminar.",
-      "confirmRemovalBlockedTitle": "No se puede eliminar la estación",
-      "confirmRemovalMultipleDesc": "¿Estás seguro de que deseas eliminar las estaciones seleccionadas? Esta acción no se puede deshacer.",
-      "confirmRemovalMultipleTitle": "Confirmar eliminación de estaciones seleccionadas",
+      "company": "Company",
+      "confirmRemovalBlockedDesc": "One or more selected stations have related records and cannot be deleted.",
+      "confirmRemovalBlockedTitle": "Cannot delete station",
+      "confirmRemovalMultipleDesc": "Are you sure you want to delete the selected stations? This action cannot be undone.",
+      "confirmRemovalMultipleTitle": "Confirm deletion of selected stations",
       "create": "Create",
       "createFailed": "Failed creating station",
       "createTitle": "Create Station",
       "created": "Station created",
       "deleteSelected": "Delete selected",
       "detailsTitle": "Station details",
-      "endTime": "Fin",
+      "endTime": "End",
       "guardsCount": "Guards",
       "hShort": "h",
-      "hours": "horas",
+      "hours": "hours",
       "lat": "Latitude",
       "lng": "Longitude",
       "loading": "Loading...",
       "mShort": "m",
-      "manageAssignments": "Asignar",
+      "manageAssignments": "Assign",
       "noAssignedGuards": "No hay guardias asignados",
       "noDetails": "No details available",
       "noStations": "No stations added yet.",
@@ -2207,15 +2207,15 @@
       "remove": "Remove",
       "removeFailed": "Failed to remove station",
       "removed": "Station removed",
-      "removedMultiple": "Estaciones eliminadas",
+      "removedMultiple": "Stations deleted",
       "schedule": "Schedule",
       "searchPlaceholder": "Search stations...",
-      "selectOneToDelete": "Por favor selecciona al menos una estación para eliminar",
+      "selectOneToDelete": "Please select at least one station to delete",
       "selectPrompt": "Select a station to view details",
-      "siteTours": "recorridos",
-      "startTime": "Inicio",
+      "siteTours": "tours",
+      "startTime": "Start",
       "tableActions": "Actions",
-      "tags": "etiquetas",
+      "tags": "tags",
       "tenantId": "Tenant ID",
       "view": "View details",
       "form": {
@@ -2256,7 +2256,7 @@
         "assignGuard": "Assign Guard*",
         "maxDuration": "Max Duration",
         "newSubTask": "New sub task",
-        "selectStationFirst": "Selecciona primero una estación",
+        "selectStationFirst": "Select a station first",
         "taskDescriptionPlaceholder": "Task Description",
         "taskNamePlaceholder": "Task Name*"
       },
@@ -2294,100 +2294,100 @@
     "verifyNumberTitle": "Verify number"
   },
   "projects": {
-    "clientNav": "Proyectos",
-    "created": "Proyecto creado",
-    "deleteConfirm": "¿Eliminar este proyecto?",
-    "deleted": "Proyecto eliminado",
-    "editProject": "Editar proyecto",
-    "nav": "Proyectos",
-    "newProject": "Nuevo proyecto",
-    "noResults": "No se encontraron proyectos",
-    "searchPlaceholder": "Buscar proyectos",
-    "title": "Proyectos",
-    "updated": "Proyecto actualizado",
+    "clientNav": "Projects",
+    "created": "Project created",
+    "deleteConfirm": "Delete this project?",
+    "deleted": "Project deleted",
+    "editProject": "Edit project",
+    "nav": "Projects",
+    "newProject": "New project",
+    "noResults": "No projects found",
+    "searchPlaceholder": "Search projects",
+    "title": "Projects",
+    "updated": "Project updated",
     "actions": {
-      "complete": "Marcar completado",
-      "delete": "Eliminar",
-      "edit": "Editar",
-      "view": "Ver detalle"
+      "complete": "Mark complete",
+      "delete": "Delete",
+      "edit": "Edit",
+      "view": "View detail"
     },
     "fields": {
-      "client": "Cliente *",
-      "description": "Descripción",
-      "endDate": "Fecha de fin",
-      "estimatedHours": "Horas estimadas",
-      "location": "Lugar / ubicación",
-      "name": "Nombre del proyecto *",
-      "notes": "Notas internas",
-      "startDate": "Fecha de inicio",
-      "status": "Estado",
-      "type": "Tipo de proyecto *"
+      "client": "Client *",
+      "description": "Description",
+      "endDate": "End date",
+      "estimatedHours": "Estimated hours",
+      "location": "Place / location",
+      "name": "Project name *",
+      "notes": "Internal notes",
+      "startDate": "Start date",
+      "status": "Status",
+      "type": "Project type *"
     },
     "filters": {
-      "active": "Activo",
-      "all": "Todos",
-      "applyFilters": "Aplicar filtros",
-      "cancelled": "Cancelado",
-      "clearFilters": "Limpiar filtros",
-      "completed": "Completado",
-      "on_hold": "En pausa",
-      "status": "Estado",
-      "type": "Tipo"
+      "active": "Active",
+      "all": "All",
+      "applyFilters": "Apply filters",
+      "cancelled": "Cancelled",
+      "clearFilters": "Clear filters",
+      "completed": "Completed",
+      "on_hold": "On hold",
+      "status": "Status",
+      "type": "Type"
     },
     "form": {
-      "cancel": "Cancelar",
-      "submit": "Guardar"
+      "cancel": "Cancel",
+      "submit": "Save"
     },
     "statuses": {
-      "active": "Activo",
-      "cancelled": "Cancelado",
-      "completed": "Completado",
-      "on_hold": "En pausa"
+      "active": "Active",
+      "cancelled": "Cancelled",
+      "completed": "Completed",
+      "on_hold": "On hold"
     },
     "types": {
-      "alarm_response": "Respuesta a alarma",
-      "consulting": "Consultoría",
-      "event": "Evento de seguridad",
-      "investigation": "Investigación",
-      "other": "Otro servicio"
+      "alarm_response": "Alarm response",
+      "consulting": "Consulting",
+      "event": "Security event",
+      "investigation": "Investigation",
+      "other": "Other service"
     }
   },
   "section": {
-    "acceso_de_desarrollador": "ACCESO DE DESARROLLADOR",
-    "configuracion_global": "CONFIGURACIÓN GLOBAL",
-    "seguridad": "SEGURIDAD"
+    "acceso_de_desarrollador": "DEVELOPER ACCESS",
+    "configuracion_global": "GLOBAL CONFIGURATION",
+    "seguridad": "SECURITY"
   },
   "sidebar": {
-    "access-token": "Token de acceso",
+    "access-token": "Access token",
     "actividad": "Activity",
-    "cambiar-contrasena": "Cambiar contraseña",
-    "campos-perfil": "Campos de perfil",
-    "clientes": "Clientes",
-    "conjunto-habilidades": "Conjuntos de habilidades",
-    "custom-reports": "Informes personalizados",
-    "departamentos": "Departamentos",
+    "cambiar-contrasena": "Change password",
+    "campos-perfil": "Profile fields",
+    "clientes": "Clients",
+    "conjunto-habilidades": "Skill sets",
+    "custom-reports": "Custom reports",
+    "departamentos": "Departments",
     "despachador": "Dispatcher",
-    "impuestos": "Impuestos",
+    "impuestos": "Taxes",
     "informes": "Reports",
-    "integraciones": "Integraciones",
+    "integraciones": "Integrations",
     "keep-safe": "security-guards",
     "mensajero": "Messenger",
-    "notificaciones": "Notificaciones",
-    "other-settings": "Otras configuraciones",
+    "notificaciones": "Notifications",
+    "other-settings": "Other settings",
     "panel": "Dashboard",
-    "payroll-setup": "Configuración de nómina",
-    "perfil-empresa": "Perfil de la empresa",
-    "perfil-usuario": "Perfil de usuario",
-    "politicas": "Políticas y documentos",
-    "projects": "Proyectos",
-    "publishing-sites": "Puestos vigilados",
-    "report-configuration": "Configuración de informes",
-    "request-records": "Solicitar registros",
-    "roles": "Roles de usuario",
-    "sitios-publicacion": "Sitios de Servicio",
-    "tipos-incidentes": "Tipos de incidentes",
-    "tipos-licencias": "Tipos de licencias",
-    "title": "Configuración",
+    "payroll-setup": "Payroll setup",
+    "perfil-empresa": "Company profile",
+    "perfil-usuario": "User profile",
+    "politicas": "Policies and documents",
+    "projects": "Projects",
+    "publishing-sites": "Guarded posts",
+    "report-configuration": "Report configuration",
+    "request-records": "Request records",
+    "roles": "User roles",
+    "sitios-publicacion": "Service sites",
+    "tipos-incidentes": "Incident types",
+    "tipos-licencias": "License types",
+    "title": "Settings",
     "actions": {
       "action": "Action",
       "activate": "Activate",
@@ -4568,7 +4568,7 @@
       "filters": "Filters",
       "guard": "Guard",
       "importVisitors": "Import visitors",
-      "label": "Gestión de visitantes",
+      "label": "Visitor management",
       "loading": "Loading...",
       "logDetails": "Log Details",
       "markExit": "Mark Exit",
@@ -4599,9 +4599,9 @@
       "tagLabel": "Tag",
       "title": "Visitors",
       "updated": "Visitor updated",
-      "vehiculos": "Vehículos",
-      "visitantes": "Visitantes",
-      "visitas": "Visitas",
+      "vehiculos": "Vehicles",
+      "visitantes": "Visitors",
+      "visitas": "Visits",
       "action": {
         "activate": "Activate",
         "deactivate": "Deactivate",
@@ -4686,7 +4686,7 @@
       },
       "contactDetails": {
         "email": "Email",
-        "fax": "Teléfono fijo",
+        "fax": "Landline",
         "phoneNumber": "Phone Number",
         "title": "Contact Details",
         "website": "Website"
@@ -4725,7 +4725,8 @@
         "roles": "User Roles",
         "tipos-incidentes": "Incident Types",
         "tipos-licencias": "License Types",
-        "title": "Configuration"
+        "title": "Configuration",
+        "mfa": "Two-factor authentication"
       },
       "section": {
         "acceso_de_desarrollador": "DEVELOPER ACCESS",
@@ -4739,175 +4740,176 @@
         "modulos": "Modules",
         "title": "Subscription"
       }
-    }
+    },
+    "mfa": "Two-factor authentication"
   },
   "siteTour": {
-    "newTour": "Nuevo Recorrido",
-    "searchPlaceholder": "Buscar Recorridos",
+    "newTour": "New Tour",
+    "searchPlaceholder": "Search Tours",
     "actions": {
-      "archiveError": "Error al archivar los recorridos seleccionados",
-      "archived": "Recorridos archivados",
-      "confirmArchiveMessage": "¿Está seguro de que desea archivar los recorridos seleccionados? Esta acción puede deshacerse editando el recorrido.",
-      "confirmArchiveTitle": "Confirmar archivado",
-      "confirmDeleteMessage": "¿Está seguro de que desea eliminar permanentemente los recorridos seleccionados? Esta acción no se puede deshacer y eliminará todos los datos asociados.",
-      "confirmDeleteTitle": "Confirmar eliminación",
-      "delete": "Eliminar",
-      "deleteError": "Error al eliminar los recorridos seleccionados",
-      "deleted": "Recorridos eliminados",
-      "edit": "Editar",
-      "missingTenant": "Tenant faltante",
-      "noSelection": "No hay elementos seleccionados",
-      "view": "Ver detalles"
+      "archiveError": "Error archiving the selected tours",
+      "archived": "Tours archived",
+      "confirmArchiveMessage": "Are you sure you want to archive the selected tours? This action can be undone by editing the tour.",
+      "confirmArchiveTitle": "Confirm archive",
+      "confirmDeleteMessage": "Are you sure you want to permanently delete the selected tours? This action cannot be undone and will delete all associated data.",
+      "confirmDeleteTitle": "Confirm deletion",
+      "delete": "Delete",
+      "deleteError": "Error deleting the selected tours",
+      "deleted": "Tours deleted",
+      "edit": "Edit",
+      "missingTenant": "Missing tenant",
+      "noSelection": "No items selected",
+      "view": "View details"
     },
     "buttons": {
-      "cancel": "Cancelar",
-      "saveDraft": "Guardar como borrador",
-      "submit": "Enviar"
+      "cancel": "Cancel",
+      "saveDraft": "Save as draft",
+      "submit": "Submit"
     },
     "empty": {
-      "message": "No pudimos encontrar elementos que coincidan con tu búsqueda",
-      "title": "No se encontraron resultados"
+      "message": "We couldn't find items matching your search",
+      "title": "No results found"
     },
     "form": {
       "assignGuard": "Asignar Guardia*",
-      "continuous": "Continuo",
-      "createAndAttach": "Crear recorrido y etiqueta",
-      "createTitle": "Crear recorrido",
-      "enableNotes": "Permitir notas en el recorrido",
-      "forceMedia": "Forzar adjuntar varios archivos multimedia",
-      "name": "Nombre del recorrido",
-      "scheduledDays": "Días Programados*",
+      "continuous": "Continuous",
+      "createAndAttach": "Create tour and tag",
+      "createTitle": "Create tour",
+      "enableNotes": "Allow notes on the tour",
+      "forceMedia": "Force attaching multiple media files",
+      "name": "Tour name",
+      "scheduledDays": "Scheduled Days*",
       "selectGuard": "Seleccionar guardia",
-      "selectStation": "Seleccionar estación",
-      "selectTime": "Seleccionar hora",
-      "station": "Estación (opcional)",
-      "tagType": "Seleccionar tipo de etiqueta*",
-      "tagTypeOptionA": "Tipo A",
-      "tags": "Seleccionar etiquetas*",
-      "tagsOption1": "Etiqueta 1",
-      "tourDescription": "Descripción del Recorrido",
-      "tourName": "Nombre del Recorrido*",
+      "selectStation": "Select station",
+      "selectTime": "Select time",
+      "station": "Station (optional)",
+      "tagType": "Select tag type*",
+      "tagTypeOptionA": "Type A",
+      "tags": "Select tags*",
+      "tagsOption1": "Tag 1",
+      "tourDescription": "Tour Description",
+      "tourName": "Tour Name*",
       "maxDuration": {
         "15": "15 min",
         "30": "30 min",
-        "placeholder": "Duración máxima"
+        "placeholder": "Maximum duration"
       },
       "options": {
-        "monFri": "Lun - Vie",
-        "sat": "Sáb"
+        "monFri": "Mon - Fri",
+        "sat": "Sat"
       },
       "timeMode": {
-        "any": "Cualquier hora",
-        "specific": "Hora específica"
+        "any": "Any time",
+        "specific": "Specific time"
       }
     },
     "menu": {
-      "action": "Acción",
-      "archive": "Archivar",
-      "archiveSelected": "Archivar",
-      "delete": "Eliminar",
-      "export": "Exportar"
+      "action": "Action",
+      "archive": "Archive",
+      "archiveSelected": "Archive",
+      "delete": "Delete",
+      "export": "Export"
     },
     "modal": {
-      "refresh": "Recargar",
-      "title": "Nuevo Recorrido"
+      "refresh": "Refresh",
+      "title": "New Tour"
     },
     "notifications": {
-      "created": "Recorrido creado",
-      "updated": "Recorrido actualizado"
+      "created": "Tour created",
+      "updated": "Tour updated"
     },
     "options": {
-      "monFri": "Lun - Vie",
-      "weekend": "Fin de semana"
+      "monFri": "Mon - Fri",
+      "weekend": "Weekend"
     },
     "placeholders": {
-      "tourNameFallback": "Nombre del recorrido"
+      "tourNameFallback": "Tour name"
     },
     "table": {
-      "duration": "Duración",
-      "name": "Nombre del Recorrido",
-      "type": "Tipo"
+      "duration": "Duration",
+      "name": "Tour Name",
+      "type": "Type"
     }
   },
   "siteTourTag": {
-    "action": "Acción",
-    "loading": "Cargando...",
+    "action": "Action",
+    "loading": "Loading...",
     "loadingGuards": "Cargando guardias...",
-    "newTagButton": "Nueva etiqueta",
+    "newTagButton": "New tag",
     "noGuardsForStation": "No se encontraron guardias para este puesto",
     "noGuardsFound": "No se encontraron guardias",
-    "noTags": "No hay etiquetas",
+    "noTags": "No tags",
     "qrButton": "QR",
-    "searchPlaceholder": "Buscar...",
+    "searchPlaceholder": "Search...",
     "actions": {
-      "delete": "Eliminar",
-      "download": "Descargar QR",
-      "print": "Imprimir"
+      "delete": "Delete",
+      "download": "Download QR",
+      "print": "Print"
     },
     "buttons": {
-      "saveDraft": "Guardar como borrador",
-      "submit": "Enviar"
+      "saveDraft": "Save as draft",
+      "submit": "Submit"
     },
     "empty": {
-      "message": "No se encontraron etiquetas para este puesto.",
-      "title": "Sin etiquetas"
+      "message": "No tags found for this post.",
+      "title": "No tags"
     },
     "form": {
       "askQuestionsLabel": "Pedir preguntas al guardia tras escanear",
-      "attachToShift": "Adjuntar a turno (opcional)",
+      "attachToShift": "Attach to shift (optional)",
       "coordsPlaceholder": "Lat, Lng",
-      "createTourAndTag": "Crear recorrido y etiqueta",
+      "createTourAndTag": "Create tour and tag",
       "instructions": "Instrucciones para los guardias",
-      "latitude": "Latitud*",
-      "loadingStations": "Cargando estaciones...",
-      "loadingTours": "Cargando recorridos...",
-      "location": "Ubicación",
-      "longitude": "Longitud*",
-      "mapLocation": "Ubicar en mapa",
-      "mapToStationLabel": "Relacionar con estación (rápido)",
-      "name": "Nombre*",
-      "noCoordinates": "No se seleccionaron coordenadas",
-      "noShifts": "No hay turnos",
-      "selectStationOptional": "Seleccionar estación (opcional)",
-      "selectTour": "Seleccione una estación",
-      "showGeoFence": "Mostrar Geo-cerca",
-      "siteTour": "Recorrido",
-      "tagId": "ID de Etiqueta*"
+      "latitude": "Latitude*",
+      "loadingStations": "Loading stations...",
+      "loadingTours": "Loading tours...",
+      "location": "Location",
+      "longitude": "Longitude*",
+      "mapLocation": "Locate on map",
+      "mapToStationLabel": "Link to station (quick)",
+      "name": "Name*",
+      "noCoordinates": "No coordinates selected",
+      "noShifts": "No shifts",
+      "selectStationOptional": "Select station (optional)",
+      "selectTour": "Select a station",
+      "showGeoFence": "Show Geofence",
+      "siteTour": "Tour",
+      "tagId": "Tag ID*"
     },
     "modal": {
-      "existingTitle": "Etiquetas existentes",
-      "refresh": "Recargar",
-      "saveDraft": "Guardar borrador",
-      "submit": "Enviar",
-      "title": "Nueva Etiqueta"
+      "existingTitle": "Existing tags",
+      "refresh": "Refresh",
+      "saveDraft": "Save draft",
+      "submit": "Submit",
+      "title": "New Tag"
     },
     "placeholders": {
-      "tagName": "Nombre de la etiqueta"
+      "tagName": "Tag name"
     },
     "qrModal": {
-      "copiedToast": "Copiado",
-      "copy": "Copiar",
-      "print": "Imprimir",
+      "copiedToast": "Copied",
+      "copy": "Copy",
+      "print": "Print",
       "title": "QR"
     },
     "table": {
-      "geofenceRadius": "Radio (m)",
-      "name": "Nombre",
-      "tagId": "ID de Etiqueta"
+      "geofenceRadius": "Radius (m)",
+      "name": "Name",
+      "tagId": "Tag ID"
     },
     "tabs": {
-      "ble": "Beacons BLE",
-      "nfc": "Etiquetas NFC",
-      "qr": "Etiquetas QR",
-      "virtual": "Etiquetas Virtuales"
+      "ble": "BLE Beacons",
+      "nfc": "NFC Tags",
+      "qr": "QR Tags",
+      "virtual": "Virtual Tags"
     }
   },
   "suscripcion": {
-    "detalle": "Detalles de la suscripción",
-    "facturas": "Facturas",
-    "metodos-pago": "Métodos de pago",
-    "modulos": "Módulos",
-    "title": "Suscripción"
+    "detalle": "Subscription details",
+    "facturas": "Invoices",
+    "metodos-pago": "Payment methods",
+    "modulos": "Modules",
+    "title": "Subscription"
   },
   "tenantJoinModal": {
     "businessLogo": "Business Logo",
@@ -5060,62 +5062,62 @@
     },
     "overview": {
       "loadError": "No se pudo cargar el guardia",
-      "loading": "Cargando..."
+      "loading": "Loading..."
     },
     "profile": {
-      "noLicense": "No se encontró licencia",
+      "noLicense": "No license found",
       "actions": {
-        "cancel": "Cancelar",
-        "edit": "Editar",
-        "save": "Guardar",
-        "saving": "Guardando..."
+        "cancel": "Cancel",
+        "edit": "Edit",
+        "save": "Save",
+        "saving": "Saving..."
       },
       "cards": {
-        "contact": "Detalles de contacto",
-        "deviceInfo": "Información del dispositivo",
-        "devicePermissions": "Permisos del dispositivo",
-        "emergency": "Contacto de emergencia",
-        "general": "Información general",
-        "languagesSkills": "Idiomas y habilidades",
-        "licenseDetails": "Detalles de la licencia",
-        "personal": "Información personal"
+        "contact": "Contact details",
+        "deviceInfo": "Device information",
+        "devicePermissions": "Device permissions",
+        "emergency": "Emergency contact",
+        "general": "General information",
+        "languagesSkills": "Languages and skills",
+        "licenseDetails": "License details",
+        "personal": "Personal information"
       },
       "fields": {
-        "address": "Dirección",
-        "appVersion": "Versión App",
-        "birthDate": "Fecha de Nacimiento",
-        "birthPlace": "Lugar de nacimiento",
-        "bloodType": "Tipo de sangre",
-        "camera": "Cámara",
-        "deviceModel": "Modelo del dispositivo",
-        "deviceType": "Tipo de dispositivo",
-        "education": "Educación",
-        "email": "Correo electrónico",
-        "emergencyContact": "Contacto de emergencia",
-        "emergencyContactNumber": "Número contacto emergencia",
-        "emergencyRelation": "Relación",
-        "expiryDate": "Fecha de expiración",
-        "firstName": "Nombre",
-        "gender": "Género",
-        "governmentId": "ID gubernamental",
-        "gpsPermission": "Permiso GPS",
+        "address": "Address",
+        "appVersion": "App version",
+        "birthDate": "Date of birth",
+        "birthPlace": "Place of birth",
+        "bloodType": "Blood type",
+        "camera": "Camera",
+        "deviceModel": "Device model",
+        "deviceType": "Device type",
+        "education": "Education",
+        "email": "Email",
+        "emergencyContact": "Emergency contact",
+        "emergencyContactNumber": "Emergency contact number",
+        "emergencyRelation": "Relationship",
+        "expiryDate": "Expiry date",
+        "firstName": "First name",
+        "gender": "Gender",
+        "governmentId": "Government ID",
+        "gpsPermission": "GPS permission",
         "id1": "ID #1",
         "id2": "ID #2",
-        "issueDate": "Fecha de emisión",
-        "languages": "Idiomas",
-        "lastName": "Apellido",
-        "licenseNumber": "Número",
-        "licenseType": "Tipo de licencia",
-        "maritalStatus": "Estado civil",
-        "microphone": "Micrófono",
-        "mobile": "Número móvil",
-        "osVersion": "Versión OS",
-        "pushNotifications": "Notificaciones Push",
-        "skills": "Habilidades"
+        "issueDate": "Issue date",
+        "languages": "Languages",
+        "lastName": "Last name",
+        "licenseNumber": "Number",
+        "licenseType": "License type",
+        "maritalStatus": "Marital status",
+        "microphone": "Microphone",
+        "mobile": "Mobile number",
+        "osVersion": "OS version",
+        "pushNotifications": "Push notifications",
+        "skills": "Skills"
       },
       "placeholders": {
-        "languages": "Ej: Español, Inglés",
-        "skills": "Ej: Primeros auxilios, Defensa personal"
+        "languages": "E.g. Spanish, English",
+        "skills": "E.g. First aid, Self-defense"
       },
       "toasts": {
         "updateError": "Error al actualizar el guardia",
@@ -5123,8 +5125,8 @@
       },
       "values": {
         "background": "Background",
-        "disabled": "Deshabilitado",
-        "enabled": "Habilitado"
+        "disabled": "Disabled",
+        "enabled": "Enabled"
       }
     },
     "submitBar": {
@@ -5132,41 +5134,41 @@
       "sending": "Sending..."
     },
     "summary": {
-      "previous": "Anterior",
+      "previous": "Previous",
       "roleDefault": "Guardia de Seguridad",
       "badge": {
         "joined": "Guardia unido"
       },
       "header": {
-        "about": "Acerca de",
-        "addedOn": "Añadido el",
+        "about": "About",
+        "addedOn": "Added on",
         "guardNumber": "Número del Guardia",
-        "lastShift": "Última Jornada"
+        "lastShift": "Last shift"
       },
       "recentActivity": {
-        "filter": "Filtro",
-        "title": "Última Actividad"
+        "filter": "Filter",
+        "title": "Latest activity"
       },
       "sampleActivity": {
-        "message": "Este mensaje notifica que 'José Alejo Pinos' ha aceptado la solicitud de la empresa y pasó a la lista activa"
+        "message": "This message notifies that 'José Alejo Pinos' has accepted the company's request and moved to the active list"
       },
       "stats": {
-        "compareWith": "Comparar con",
-        "last7Days": "Últimos 7 días",
-        "title": "Estadísticas",
+        "compareWith": "Compare with",
+        "last7Days": "Last 7 days",
+        "title": "Statistics",
         "compareOptions": {
-          "none": "Ninguno",
-          "previous": "Período anterior"
+          "none": "None",
+          "previous": "Previous period"
         },
         "metrics": {
-          "assignedSites": "Sitios Asignados",
-          "completedRoutes": "Recorridos Completados",
-          "hoursWorked": "Horas Trabajadas",
-          "inactivityAlerts": "Alertas de Inactividad",
-          "lateArrivals": "Llegada Tardía",
-          "noShows": "No asistió",
-          "reportsSent": "Informes Enviados",
-          "tasksCompleted": "Tareas Completadas"
+          "assignedSites": "Assigned sites",
+          "completedRoutes": "Completed patrols",
+          "hoursWorked": "Hours worked",
+          "inactivityAlerts": "Inactivity alerts",
+          "lateArrivals": "Late arrivals",
+          "noShows": "No-shows",
+          "reportsSent": "Reports sent",
+          "tasksCompleted": "Tasks completed"
         }
       }
     }
@@ -5362,5 +5364,25 @@
     "untitled": "Conversation",
     "messages": "messages",
     "deleteConvo": "Delete conversation"
+  },
+  "kit": {
+    "pagination": {
+      "perPage": "Items per page",
+      "of": "of",
+      "prev": "Previous",
+      "next": "Next"
+    },
+    "search": {
+      "placeholder": "Search…",
+      "clear": "Clear search"
+    },
+    "dialog": {
+      "confirmTitle": "Confirm action",
+      "sureTitle": "Are you sure?",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "promptTitle": "Enter a value",
+      "accept": "OK"
+    }
   }
 }

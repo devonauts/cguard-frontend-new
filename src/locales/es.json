@@ -5364,5 +5364,25 @@
     "untitled": "Conversación",
     "messages": "mensajes",
     "deleteConvo": "Borrar conversación"
+  },
+  "kit": {
+    "pagination": {
+      "perPage": "Elementos por página",
+      "of": "de",
+      "prev": "Anterior",
+      "next": "Siguiente"
+    },
+    "search": {
+      "placeholder": "Buscar…",
+      "clear": "Limpiar búsqueda"
+    },
+    "dialog": {
+      "confirmTitle": "Confirmar acción",
+      "sureTitle": "¿Estás seguro?",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar",
+      "promptTitle": "Escribe un valor",
+      "accept": "Aceptar"
+    }
   }
 }

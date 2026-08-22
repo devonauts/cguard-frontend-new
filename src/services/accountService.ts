@@ -9,6 +9,10 @@ export type ProfilePayload = {
   skype?: string;
   email?: string;
   avatars?: any[];
+  // Idioma elegido (es|en|pt). Persistirlo en el backend es lo que hace que los
+  // correos y notificaciones lleguen en el idioma del usuario — no basta con
+  // localStorage. Ver LanguageContext + backend resolveRecipientLanguage.
+  language?: string;
 };
 
 export type ChangeEmailPayload = {

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AlertTriangle, HelpCircle } from 'lucide-react';
 
 /**
@@ -39,6 +40,7 @@ export function confirmDialog(opts: ConfirmOptions | string): Promise<boolean> {
 }
 
 export function ConfirmHost() {
+  const { t } = useTranslation();
   const [state, setState] = useState<DialogState | null>(null);
 
   useEffect(() => {
@@ -91,7 +93,9 @@ export function ConfirmHost() {
           </div>
           <div className="min-w-0 flex-1 pt-0.5">
             <h3 className="text-base font-semibold tracking-[-0.01em] text-[color:var(--ink)]">
-              {state.title || (danger ? 'Confirmar acción' : '¿Estás seguro?')}
+              {state.title || (danger
+                ? t('kit.dialog.confirmTitle', { defaultValue: 'Confirmar acción' })
+                : t('kit.dialog.sureTitle', { defaultValue: '¿Estás seguro?' }))}
             </h3>
             <p className="mt-1 whitespace-pre-line text-sm text-[color:var(--ink-soft)]">
               {state.message}
@@ -103,7 +107,7 @@ export function ConfirmHost() {
             onClick={() => close(false)}
             className="cg-btn-glass cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200 motion-reduce:transition-none"
           >
-            {state.cancelText || 'Cancelar'}
+            {state.cancelText || t('kit.dialog.cancel', { defaultValue: 'Cancelar' })}
           </button>
           <button
             autoFocus
@@ -112,7 +116,7 @@ export function ConfirmHost() {
               danger ? 'cg-btn-bad' : 'cg-btn-brand'
             }`}
           >
-            {state.confirmText || 'Confirmar'}
+            {state.confirmText || t('kit.dialog.confirm', { defaultValue: 'Confirmar' })}
           </button>
         </div>
       </div>

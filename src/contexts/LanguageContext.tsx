@@ -50,9 +50,23 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
             setLanguageState(chosen);
             void setAppLanguage(chosen);
 
-            // Sin preferencia guardada: el primer idioma lo sugiere la
-            // ubicación (geoIP offline del backend). Una elección manual o un
-            // arranque previo ya dejaron huella y este camino no corre.
+            // FUENTE DE VERDAD: el idioma que la persona guardó en su perfil vive
+            // en el backend. En un navegador nuevo (localStorage vacío) o si el
+            // servidor conoce una elección más reciente, se siembra desde /auth/me
+            // — así el idioma viaja con la cuenta, no con el dispositivo. Solo lee
+            // si la sesión está autenticada; en el login (401) cae al geoIP de abajo.
+            const norm = (x: any): Language | null => {
+                const s = String(x || '').slice(0, 2).toLowerCase();
+                return s === 'es' || s === 'en' || s === 'pt' ? (s as Language) : null;
+            };
+            api.get('/auth/me').then((resp: any) => {
+                const d = resp && resp.data !== undefined ? resp.data : resp;
+                const backendLang = norm(d?.language);
+                if (backendLang && backendLang !== chosen) setLanguage(backendLang);
+            }).catch(() => { /* sin sesión: seguimos con lo local / geoIP */ });
+
+            // Sin NINGUNA preferencia (ni local ni en backend): el primer idioma lo
+            // sugiere la ubicación (geoIP offline del backend).
             if (!app && !legacy) {
                 api.get('/website/locale').then((resp: any) => {
                     const d = resp && resp.data !== undefined ? resp.data : resp;
