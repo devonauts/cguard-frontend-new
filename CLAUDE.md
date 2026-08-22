@@ -50,12 +50,16 @@ amarillo con letra blanca.
   fijos. Un pánico es rojo aunque el acento sea rojo, y no se vuelve verde porque
   alguien eligiera verde.
 
-- **`glass.css` va sin `@layer` y gana a Tailwind.** Sobre un elemento con
-  `.glass*` o `.cg-input` **no** se pueden pisar `position`, `border-radius`,
-  `background`, `border` ni `box-shadow` con clases de utilidad: hay que usar
-  `style={{…}}` en línea. Un diálogo con `.glass-raised fixed` se queda en
-  `relative` y cae en el flujo del documento. Encapar en `@layer components` es
-  el arreglo correcto y está **pendiente**, pero con QA visual delante.
+- **Dos regímenes de cascada en `glass.css`.** Las superficies `.glass*`
+  (`.glass`, `-flat`, `-raised`, `-sunken`, `-hover`, `-brand`) viven en
+  `@layer components`, así que una utilidad de Tailwind **sí** las pisa:
+  `glass-raised fixed rounded-full` ya se posiciona y redondea como esperas, sin
+  `style={{…}}`. Todo lo demás del archivo (tipografía Saira, `.cg-input`,
+  overrides de terceros) va **sin** `@layer` y sigue ganando a las utilidades —
+  es lo que mantiene la armadura tipográfica y el borde de los campos. Regla al
+  mover una regla: superficie que deba ceder → dentro de `@layer components`;
+  armadura que deba ganar → fuera. Quedan algunos `style` en línea sobre
+  `.glass*` que ya son defensivos, no obligatorios.
 
 - **`backdrop-filter` nunca dentro de un `map()`.** Obliga al navegador a
   rasterizar el fondo en cada fotograma; en una lista de 500 filas el
@@ -132,5 +136,4 @@ decora**:
 
 ## Pendiente
 
-- Encapar `glass.css` en `@layer components` (arriba).
 - El paquete principal ronda los 247 kB comprimidos; partir por rutas.

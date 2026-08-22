@@ -21,27 +21,27 @@
    muchas veces o que se desplazan.
    ════════════════════════════════════════════════════════════════════════════ */
 
-/* ── ESTE ARCHIVO GANA A LAS UTILIDADES DE TAILWIND ────────────────────────
-   glass.css NO lleva `@layer` y se carga después de globals.css. En CSS lo no
-   encapado gana a lo encapado, así que estas clases ganan a `rounded-lg`,
-   `bg-*`, `border-*`, `shadow-*` y `fixed` de Tailwind.
+/* ── CÓMO COMPITE ESTE ARCHIVO CON TAILWIND ────────────────────────────────
+   Dos regímenes conviven aquí a propósito:
 
-   Fue deliberado —es lo que hizo que Poppins ganara al preflight— pero tiene
-   una consecuencia que hay que conocer: sobre un elemento con `.glass*` o
-   `.cg-input` NO se pueden pisar con utilidades `position`, `border-radius`,
-   `background`, `border` ni `box-shadow`. Se pisan con `style={{…}}` en línea,
-   que gana a todo.
+   1. LAS SUPERFICIES `.glass*` (`.glass`, `-flat`, `-raised`, `-sunken`,
+      `-hover`, `-brand`) van dentro de `@layer components`. Como las utilidades
+      de Tailwind viven en una capa POSTERIOR, ahora una utilidad SÍ pisa a la
+      superficie: `<div class="glass-raised fixed rounded-full">` computa
+      `position: fixed` y radio de píldora, sin necesidad de `style={{…}}`.
+      Antes esto no se podía —un diálogo con `.glass-raised fixed` se quedaba en
+      `relative` y caía en el flujo— y por eso quedan `style` en línea sueltos
+      en algún componente: ya son defensivos, no obligatorios.
 
-   Comprobado: `<div class="glass-raised fixed rounded-md bg-red-500">` computa
-   `position: relative`, radio 24px y el fondo de cristal. Un diálogo con
-   `.glass-raised fixed` se quedaba en `relative` y caía en el flujo del
-   documento en vez de centrarse.
-
-   Encapar las superficies en `@layer components` devolvería la prioridad a las
-   utilidades y sería lo correcto a largo plazo. Está pendiente de hacerse con
-   QA visual delante, no a ciegas.
+   2. TODO LO DEMÁS de este archivo va SIN `@layer` y se carga después de
+      globals.css, así que sigue ganando a las utilidades. Eso es lo que hace
+      que la tipografía Saira gane al preflight y que `.cg-input` fije su borde.
+      Si mueves una regla aquí, decide en qué régimen la pones: una superficie
+      que deba ceder a las utilidades va DENTRO de `@layer components`; una
+      armadura que deba ganar (tipografía, `.cg-input`, terceros) va fuera.
    ───────────────────────────────────────────────────────────────────────── */
 
+@layer components {
 /* ── LA SUPERFICIE ─────────────────────────────────────────────────────────── */
 .glass {
   position: relative;
@@ -115,6 +115,7 @@
   background: var(--brand-wash);
   box-shadow: var(--lift-2), inset 0 1px 0 0 var(--hairline-lit), 0 0 28px -10px var(--brand-glow);
 }
+} /* @layer components — superficies .glass* (yield a utilidades) */
 
 /* ── BRILLO ────────────────────────────────────────────────────────────────── */
 .brand-glow    { box-shadow: 0 0 32px -6px var(--brand-glow); }

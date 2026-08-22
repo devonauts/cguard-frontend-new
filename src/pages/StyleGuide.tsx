@@ -367,7 +367,7 @@ export default function StyleGuide() {
           titulo="Radios"
           uso="La escala de esquinas. Cuanto más grande la superficie, más grande el radio."
           api={['--r-sm', '--r-md', '--r-lg', '--r-xl', '--r-2xl']}
-          nota="Las piezas del kit ya los llevan: `Section` y `GlassPanel` van a --r-xl, `glass-flat` a --r-lg, los campos a --r-md. Escribir un `rounded-*` de Tailwind encima de una superficie de cristal no funciona — glass.css va sin capa y gana al utilitario."
+          nota="Las piezas del kit ya los llevan: `Section` y `GlassPanel` van a --r-xl, `glass-flat` a --r-lg, los campos a --r-md. Las superficies `.glass*` viven en `@layer components`, así que un `rounded-*` de Tailwind por encima SÍ manda cuando de verdad hace falta salirse de la escala."
         >
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
             {(['--r-sm', '--r-md', '--r-lg', '--r-xl', '--r-2xl'] as const).map((r) => (
