@@ -106,19 +106,28 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
         // Sincronizar con la CUENTA para que los correos/notificaciones (que salen
         // del servidor, sin acceso al navegador) usen el mismo idioma que ves.
-        api.get('/auth/me').then((resp: any) => {
-            const d = resp && resp.data !== undefined ? resp.data : resp;
-            const acct = norm(d?.language);
-            if (manual) {
-                // Elección deliberada: que la cuenta la refleje (auto-reparación si
-                // el guardado del selector falló en su momento).
-                if (acct !== effective) saveAccountLanguage(effective);
-            } else if (!acct) {
-                // Auto-detectado: solo RELLENA una cuenta vacía; nunca pisa una
-                // elección manual hecha en otro dispositivo.
-                saveAccountLanguage(effective);
-            }
-        }).catch(() => { /* sin sesión (login): nada que sincronizar */ });
+        //
+        // SOLO si hay sesión: en la pantalla de login no hay token, y pegarle a
+        // /auth/me ahí devolvía 403 —y encima mostraba el aviso «Prohibido» y
+        // gastaba una petición—. `silentError` es cinturón y tirantes por si el
+        // token está vencido.
+        let tieneSesion = false;
+        try { tieneSesion = !!localStorage.getItem('authToken'); } catch { /* sin storage */ }
+        if (tieneSesion) {
+            api.get('/auth/me', { toast: { silentError: true } } as any).then((resp: any) => {
+                const d = resp && resp.data !== undefined ? resp.data : resp;
+                const acct = norm(d?.language);
+                if (manual) {
+                    // Elección deliberada: que la cuenta la refleje (auto-reparación si
+                    // el guardado del selector falló en su momento).
+                    if (acct !== effective) saveAccountLanguage(effective);
+                } else if (!acct) {
+                    // Auto-detectado: solo RELLENA una cuenta vacía; nunca pisa una
+                    // elección manual hecha en otro dispositivo.
+                    saveAccountLanguage(effective);
+                }
+            }).catch(() => { /* token vencido u otro: sin ruido */ });
+        }
     }, []);
 
     return (
@@ -130,7 +139,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
 /** Persiste el idioma en la cuenta. Silencioso: nunca puede romper la UI. */
 function saveAccountLanguage(lang: Language) {
-    api.put('/auth/profile', { data: { language: lang } }).catch(() => { /* mejor esfuerzo */ });
+    api.put('/auth/profile', { data: { language: lang }, toast: { silentError: true } } as any).catch(() => { /* mejor esfuerzo */ });
 }
 
 export function useLanguage() {
