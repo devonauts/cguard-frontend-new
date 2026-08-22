@@ -5323,7 +5323,9 @@
       "emergencias": "Emergencies & panic",
       "emergencias.desc": "Who receives a panic alert, control-center emails and escalation cadence.",
       "asistente-ia": "VigIA assistant",
-      "asistente-ia.desc": "Assistant usage: messages, cost, free quota and executed actions."
+      "asistente-ia.desc": "Assistant usage: messages, cost, free quota and executed actions.",
+      "central": "Operations Center",
+      "central.desc": "If you run a 24/7 console: which post it is, whether its operators cover shifts, and who gets the alerts."
     },
     "section": {
       "mi_cuenta": "My account",

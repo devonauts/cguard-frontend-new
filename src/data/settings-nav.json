@@ -155,6 +155,12 @@
             "keywords": "puesto estacion geocerca geovalla abandono cobertura escalar sin cubrir consignas emergencia escalado puesto sin cubrir"
           },
           {
+            "id": "central",
+            "label": "Central de Operaciones",
+            "path": "/setting/central",
+            "icon": "Headphones"
+          },
+          {
             "id": "keep-safe",
             "label": "Vigilantes en turno",
             "path": "/setting/keep-safe",

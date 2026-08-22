@@ -13,9 +13,18 @@ type Mode = "guard" | "staff" | "none";
 /**
  * Web Time Clock — kiosk-style punch for the logged-in user.
  *  - Field guards → station-scoped guard punch (/guard/me, server geofence).
- *  - Administrative/office staff (no securityGuard row) → self-punch
- *    (/staff/me), with an optional per-user office geofence.
- * Both land in Nómina › Registros de Asistencia.
+ *  - Administrative/office staff → self-punch (/staff/me), con geocerca de
+ *    oficina opcional.
+ *
+ * LOS DOS SOMBREROS. Hay gente que es las dos cosas: el operador de la central
+ * que algunas noches sale a cubrir un puesto. Antes esta pantalla elegía sola
+ * —«¿tiene ficha de vigilante? entonces modo puesto»— y en cuanto se le daba
+ * la ficha para poder cubrir, sus horas de consola se quedaban sin dónde
+ * marcarse. Ahora, si puede fichar de las dos formas, ELIGE ÉL. El servidor
+ * sigue validando cada camino por separado; esto solo deja de decidir por el
+ * usuario algo que el usuario sabe mejor.
+ *
+ * Ambos caminos acaban en Nómina › Registros de Asistencia.
  */
 export default function NominaTimeClock() {
   const [loading, setLoading] = useState(true);
@@ -24,37 +33,60 @@ export default function NominaTimeClock() {
   const [stations, setStations] = useState<Station[]>([]);
   const [stationId, setStationId] = useState("");
   const [mode, setMode] = useState<Mode>("none");
+  /** Los modos que ESTA persona tiene disponibles hoy. Dos = puede elegir. */
+  const [modosDisponibles, setModosDisponibles] = useState<Mode[]>([]);
   const [office, setOffice] = useState<{ radiusM: number; address: string | null } | null>(null);
 
-  const tryStaff = async () => {
+  /** El estado del fichaje de oficina. Devuelve si ese camino está disponible. */
+  const cargarStaff = async (aplicar: boolean) => {
     try {
       const s: { isClockedIn?: boolean; office?: { radiusM: number; address: string | null } | null } = await attendanceService.staffStatus();
-      setIsClockedIn(!!s?.isClockedIn);
       setOffice(s?.office ? { radiusM: s.office.radiusM, address: s.office.address } : null);
-      setMode("staff");
+      if (aplicar) {
+        setIsClockedIn(!!s?.isClockedIn);
+        setMode("staff");
+      } else if (s?.isClockedIn) {
+        // Ya está fichado por oficina: ése es su modo actual, aunque además
+        // tenga ficha de vigilante. Marcar salida por el camino equivocado
+        // dejaría el turno abierto para siempre.
+        setIsClockedIn(true);
+        setMode("staff");
+      }
+      return true;
     } catch {
-      setMode("none");
+      return false;
     }
   };
 
   const refresh = () => {
     setLoading(true);
+    let comoVigilante = false;
     attendanceService
       .myStatus()
       .then(async (d: { guard?: unknown; stations?: Station[]; isClockedIn?: boolean }) => {
         if (d?.guard) {
-          // Field guard → station-scoped guard punch.
+          comoVigilante = true;
           const sts: Station[] = d?.stations || [];
           setStations(sts);
           setIsClockedIn(!!d?.isClockedIn);
           if (sts[0]) setStationId((prev) => prev || sts[0].id);
           setMode("guard");
-        } else {
-          // Not a guard → try the administrative/office self-punch.
-          await tryStaff();
         }
+        // Se pregunta SIEMPRE por el camino de oficina: es lo que descubre a
+        // quien tiene los dos sombreros. Solo se aplica como modo si no es
+        // vigilante (o si ya está fichado por oficina).
+        const hayStaff = await cargarStaff(!comoVigilante);
+        const modos: Mode[] = [];
+        if (comoVigilante) modos.push("guard");
+        if (hayStaff) modos.push("staff");
+        setModosDisponibles(modos);
+        if (!modos.length) setMode("none");
       })
-      .catch(tryStaff)
+      .catch(async () => {
+        const hayStaff = await cargarStaff(true);
+        setModosDisponibles(hayStaff ? ["staff"] : []);
+        if (!hayStaff) setMode("none");
+      })
       .finally(() => setLoading(false));
   };
   useEffect(refresh, []);
@@ -205,6 +237,41 @@ export default function NominaTimeClock() {
                   {isClockedIn ? "En servicio" : "Fuera de servicio"}
                 </StatusBadge>
               </div>
+
+              {/* LOS DOS SOMBREROS: quien puede fichar de las dos formas elige.
+                  Con el turno ya abierto no se ofrece — cambiar de camino a
+                  media jornada dejaría el turno anterior sin cerrar. */}
+              {modosDisponibles.length > 1 && !isClockedIn && (
+                <div className="mt-5 text-left">
+                  <label className="cg-eyebrow">¿Dónde vas a trabajar?</label>
+                  <div className="mt-1.5 grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setMode("guard")}
+                      className="cg-focus rounded-xl border px-3 py-2 text-sm transition"
+                      style={{
+                        borderColor: mode === "guard" ? "var(--brand)" : "var(--hairline)",
+                        background: mode === "guard" ? "color-mix(in oklab, var(--brand) 10%, transparent)" : "transparent",
+                        fontWeight: mode === "guard" ? 700 : 500,
+                      }}
+                    >
+                      En un puesto
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMode("staff")}
+                      className="cg-focus rounded-xl border px-3 py-2 text-sm transition"
+                      style={{
+                        borderColor: mode === "staff" ? "var(--brand)" : "var(--hairline)",
+                        background: mode === "staff" ? "color-mix(in oklab, var(--brand) 10%, transparent)" : "transparent",
+                        fontWeight: mode === "staff" ? 700 : 500,
+                      }}
+                    >
+                      En la oficina
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {mode === "guard" && !isClockedIn && (
                 <div className="mt-5 text-left">

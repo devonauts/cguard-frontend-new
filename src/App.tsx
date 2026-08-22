@@ -39,6 +39,7 @@ const IntegrationsList = lazy(() => import("./pages/admin/Configuration/integrat
 const ProfileFieldsPage = lazy(() => import("./pages/admin/Configuration/profile-fields/ProfileFieldsPage"));
 const PasswordChangePage = lazy(() => import("./pages/admin/Configuration/change-password/ChangePasswordPage"));
 const PostingGlobalPage = lazy(() => import("./pages/admin/Configuration/posting-global/PostingGlobalPage"));
+const CentralPage = lazy(() => import("./pages/admin/Configuration/central/CentralPage"));
 const ReportSettingsPage = lazy(() => import("./pages/admin/Configuration/report-settings/ReportSettingsPage"));
 const GuardsGlobalSettingsPage = lazy(() => import("./pages/admin/Configuration/guards-settings/GuardsGlobalSettingsPage"));
 const EmergencySettingsPage = lazy(() => import("./pages/admin/Configuration/emergency/EmergencySettingsPage"));
@@ -1564,6 +1565,15 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <PostingGlobalPage />
+                  </ProtectedRoute>
+                }
+              />
+              {/* La consola 24/7: si existe, dónde está y a quién avisa. */}
+              <Route
+                path="/setting/central"
+                element={
+                  <ProtectedRoute>
+                    <CentralPage />
                   </ProtectedRoute>
                 }
               />
