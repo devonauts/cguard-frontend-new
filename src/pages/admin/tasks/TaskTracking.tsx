@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { CheckSquare, Plus, ListChecks } from "lucide-react";
-import { PageContainer, PageHeader, Section, SkeletonCards, StatusBadge, Segmented, EmptyState } from "@/components/kit";
+import { PageContainer, PageHeader, Section, SkeletonCards, StatusBadge, Segmented, EmptyState, SmartImage } from "@/components/kit";
 import taskService, { type TaskRow, type TaskStatus, type TaskImage } from "@/lib/api/taskService";
 
 function fmtDate(s?: string | null): string {
@@ -273,11 +273,11 @@ function TaskImages({ label, images }: { label: string; images?: TaskImage[] | n
       <div className="flex flex-wrap gap-2">
         {items.map((src, i) => (
           <a key={i} href={src} target="_blank" rel="noreferrer" className="glass-flat block h-24 w-24 overflow-hidden">
-            <img
+            <SmartImage
               src={src}
               alt={label}
-              loading="lazy"
-              className="h-full w-full object-cover transition-opacity hover:opacity-80"
+              fit="cover"
+              className="h-full w-full transition-opacity hover:opacity-80"
             />
           </a>
         ))}

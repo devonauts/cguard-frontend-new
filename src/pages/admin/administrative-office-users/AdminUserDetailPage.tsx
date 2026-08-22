@@ -10,7 +10,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import AppLayout from '@/layouts/app-layout';
 import userService from '@/lib/api/userService';
 import { Button } from '@/components/ui/button';
-import { Section, EmptyState, Field, GlassPanel, StatusBadge, SkeletonCards } from '@/components/kit';
+import { Section, EmptyState, Field, GlassPanel, StatusBadge, SkeletonCards, SmartImage } from '@/components/kit';
 import {
   ChevronRight, Pencil, Mail, Phone, MapPin, ShieldCheck, IdCard,
   UserCog, KeyRound, CheckCircle2, XCircle,
@@ -101,21 +101,21 @@ export default function AdminUserDetailPage() {
         <GlassPanel className="p-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="flex min-w-0 items-start gap-4">
-              {photo ? (
-                <img
-                  src={photo}
-                  alt=""
-                  className="h-16 w-16 shrink-0 rounded-2xl border object-cover"
-                  style={{ background: 'var(--glass-sunken)', borderColor: 'var(--hairline)' }}
-                />
-              ) : (
-                <div
-                  className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border text-2xl font-bold"
-                  style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }}
-                >
-                  {nm.charAt(0).toUpperCase()}
-                </div>
-              )}
+              <SmartImage
+                src={photo}
+                alt=""
+                rounded="rounded-2xl"
+                className="h-16 w-16 shrink-0 border"
+                style={{ borderColor: 'var(--hairline)' }}
+                fallback={
+                  <span
+                    className="grid h-full w-full place-items-center text-2xl font-bold"
+                    style={{ background: 'var(--brand-wash)', color: 'var(--brand-text)' }}
+                  >
+                    {nm.charAt(0).toUpperCase()}
+                  </span>
+                }
+              />
               <div className="min-w-0">
                 <h1 className="font-display truncate text-2xl font-bold tracking-tight text-foreground">{name}</h1>
                 <div className="mt-1.5 flex flex-wrap items-center gap-2">

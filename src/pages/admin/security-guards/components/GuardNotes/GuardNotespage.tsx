@@ -6,7 +6,7 @@ import AppLayout from '@/layouts/app-layout';
 import { useParams } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Modal, Section, EmptyState, StatusBadge, PageContainer } from '@/components/kit';
+import { Modal, Section, EmptyState, StatusBadge, PageContainer, SmartImage } from '@/components/kit';
 import { MeterBar } from '@/components/charts';
 import securityGuardService from '@/lib/api/securityGuardService';
 import { toast } from 'sonner';
@@ -359,7 +359,7 @@ export default function GuardNotes({ guard, entityId, navKey = 'keep-safe', titl
                                                                             title={att?.name || ''}
                                                                             className="block h-16 w-16 overflow-hidden rounded-lg border [background:var(--glass-sunken)]"
                                                                         >
-                                                                            <img src={href} alt={att?.name || ''} className="h-full w-full object-cover" loading="lazy" />
+                                                                            <SmartImage src={href} alt={att?.name || ''} rounded="rounded-lg" className="h-full w-full" />
                                                                         </a>
                                                                     );
                                                                 }

@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
-import { StatusBadge } from '@/components/kit';
+import { StatusBadge, SmartImage } from '@/components/kit';
 import AppLayout from '@/layouts/app-layout';
 import { Link, useLocation, useParams, useNavigate } from 'react-router-dom';
 import {
@@ -87,18 +87,23 @@ export default function PostSiteLayout({ title, children, site }: Props) {
         <div className="glass p-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="flex min-w-0 items-start gap-4">
-              {logo ? (
-                // Fondo claro FIJO bajo el logo del cliente: imagen ajena, muchas
-                // con transparencia pensada para papel blanco. No es color de UI.
-                <img src={logo} alt="" className="h-16 w-16 shrink-0 rounded-2xl border object-cover" style={{ background: 'oklch(1 0 0)', borderColor: 'var(--hairline)' }} />
-              ) : (
-                <div
-                  className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border text-2xl font-bold"
-                  style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }}
-                >
-                  {nm.charAt(0).toUpperCase()}
-                </div>
-              )}
+              {/* Fondo claro FIJO bajo el logo del cliente: imagen ajena, muchas
+                  con transparencia pensada para papel blanco. No es color de UI. */}
+              <SmartImage
+                src={logo}
+                alt=""
+                rounded="rounded-2xl"
+                className="h-16 w-16 shrink-0 border"
+                style={{ background: 'oklch(1 0 0)', borderColor: 'var(--hairline)' }}
+                fallback={
+                  <span
+                    className="grid h-full w-full place-items-center text-2xl font-bold"
+                    style={{ background: 'var(--brand-wash)', color: 'var(--brand-text)' }}
+                  >
+                    {nm.charAt(0).toUpperCase()}
+                  </span>
+                }
+              />
               <div className="min-w-0">
                 <h1 className="font-display truncate text-2xl font-bold tracking-tight" style={{ color: 'var(--ink)' }}>{displayName}</h1>
                 <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">

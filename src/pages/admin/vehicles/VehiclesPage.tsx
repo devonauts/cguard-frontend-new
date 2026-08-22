@@ -28,7 +28,7 @@ import {
 } from "lucide-react";
 import {
     PageContainer, PageHeader, Section, Stagger, StatCard, StatusBadge, EmptyState,
-    Toolbar, Segmented, GlassPanel, IconTile, Field, SkeletonCards,
+    Toolbar, Segmented, GlassPanel, IconTile, Field, SkeletonCards, SmartImage,
 } from '@/components/kit';
 import { TableSearch } from '@/components/table/TableToolbar';
 import { RowActionsMenu } from '@/components/table/RowActionsMenu';
@@ -443,13 +443,16 @@ export default function VehiclesPage() {
                                             style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}
                                             aria-label={`Ver detalles de ${r.licensePlate || 'vehículo'}`}
                                         >
-                                            {foto ? (
-                                                <img src={foto} alt="" className="h-full w-full object-cover" />
-                                            ) : (
-                                                <span className="flex h-full w-full items-center justify-center" style={{ color: 'var(--ink-faint)' }}>
-                                                    <ImageOff className="h-6 w-6" />
-                                                </span>
-                                            )}
+                                            <SmartImage
+                                                src={foto}
+                                                alt=""
+                                                className="h-full w-full"
+                                                fallback={(
+                                                    <span className="grid h-full w-full place-items-center" style={{ color: 'var(--ink-faint)' }}>
+                                                        <ImageOff className="h-6 w-6" />
+                                                    </span>
+                                                )}
+                                            />
                                         </button>
 
                                         <div className="flex flex-wrap items-center gap-2">

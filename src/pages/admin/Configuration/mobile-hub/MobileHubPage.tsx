@@ -19,7 +19,7 @@ import { toast } from 'sonner';
 import api from '@/lib/api';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/SettingsLayout';
-import { PageContainer, PageHeader, Section, SkeletonCards, Segmented, StatusBadge, IconTile } from '@/components/kit';
+import { PageContainer, PageHeader, Section, SkeletonCards, Segmented, StatusBadge, IconTile, SmartImage } from '@/components/kit';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
@@ -245,16 +245,14 @@ export default function MobileHubPage() {
 
                     <div className="glass-flat flex items-center justify-between gap-4 p-4">
                       <div className="flex min-w-0 items-center gap-3">
-                        {logoUrl ? (
-                          <img
-                            src={logoUrl}
-                            alt="Logo de la empresa"
-                            className="h-11 w-11 rounded-xl border object-contain p-1"
-                            style={{ background: 'var(--glass-sunken)', borderColor: 'var(--hairline)' }}
-                          />
-                        ) : (
-                          <IconTile tone="neutral"><Palette /></IconTile>
-                        )}
+                        <SmartImage
+                          src={logoUrl}
+                          alt="Logo de la empresa"
+                          rounded="rounded-xl"
+                          fit="contain"
+                          className="h-11 w-11 border border-[color:var(--hairline)] bg-[var(--glass-sunken)] p-1"
+                          fallback={<IconTile tone="neutral"><Palette /></IconTile>}
+                        />
                         <div className="min-w-0">
                           <p className="text-sm font-medium">Usar el logo de la empresa</p>
                           <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>

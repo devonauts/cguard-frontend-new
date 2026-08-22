@@ -14,6 +14,7 @@ import {
   Modal,
   Field,
   Segmented,
+  SmartImage,
 } from "@/components/kit";
 import passdownService, {
   type Passdown,
@@ -230,11 +231,16 @@ export default function PassdownsPage() {
                         rel="noreferrer"
                         className="glass-flat block h-24 w-24 overflow-hidden"
                       >
-                        <img
+                        <SmartImage
                           src={src}
                           alt={`Imagen del pase ${i + 1}`}
-                          className="h-full w-full object-cover"
-                          loading="lazy"
+                          fit="cover"
+                          className="h-full w-full"
+                          fallback={
+                            <span className="grid h-full w-full place-items-center [&_svg]:size-6" style={{ color: "var(--ink-faint)" }}>
+                              <ImageOff />
+                            </span>
+                          }
                         />
                       </a>
                     ) : (

@@ -42,7 +42,7 @@ import {
   Lock,
   Wand2,
 } from "lucide-react";
-import { Section, Stagger, IconTile, EmptyState } from "@/components/kit";
+import { Section, Stagger, IconTile, EmptyState, SmartImage } from "@/components/kit";
 import { useAuth } from "@/contexts/AuthContext";
 import tenantService from '@/services/tenant.service';
 import { invalidateTenantBranding } from '@/lib/tenantBranding';
@@ -492,11 +492,13 @@ export default function ProfileCompanyForm() {
                 className="glass-sunken grid h-24 w-24 place-items-center overflow-hidden"
                 style={{ borderStyle: 'dashed', borderColor: 'var(--hairline)', borderRadius: 'var(--r-lg)' }}
               >
-                {logo ? (
-                  <img src={logo} alt="Logo de la empresa" className="h-full w-full object-cover" />
-                ) : (
-                  <Building2 className="h-9 w-9" style={{ color: 'var(--ink-faint)' }} />
-                )}
+                <SmartImage
+                  src={logo}
+                  alt="Logo de la empresa"
+                  rounded="rounded-none"
+                  className="h-full w-full"
+                  fallback={<Building2 className="h-9 w-9" style={{ color: 'var(--ink-faint)' }} />}
+                />
               </div>
               <label
                 htmlFor="logo"

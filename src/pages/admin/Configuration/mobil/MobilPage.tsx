@@ -48,7 +48,7 @@ const SERVICE_TEMPLATES: { title: string; description: string; iconName: string 
   { title: 'Asesoría en seguridad', description: 'Consultoría y diseño de esquemas de seguridad a la medida.', iconName: 'advisory' },
 ];
 import { toast } from 'sonner';
-import { PageContainer, PageHeader, Section, EmptyState, StatusBadge, SkeletonBlock } from '@/components/kit';
+import { PageContainer, PageHeader, Section, EmptyState, StatusBadge, SkeletonBlock, SmartImage } from '@/components/kit';
 import {
   createBanner,
   createCertification,
@@ -585,11 +585,11 @@ export default function MobilPage() {
                             onClick={() => openBannerPreview(resolveBannerImageUrl(item))}
                             className="glass-flat glass-hover cg-focus group inline-flex items-center justify-center overflow-hidden p-0"
                           >
-                            <img
+                            <SmartImage
                               src={resolveBannerImageUrl(item)}
                               alt={item.title || 'Banner'}
-                              className="h-16 w-32 object-cover transition duration-200 group-hover:scale-105"
-                              decoding="async"
+                              rounded="rounded-none"
+                              className="h-16 w-32 transition duration-200 group-hover:scale-105"
                               crossOrigin="anonymous"
                             />
                           </button>
@@ -689,7 +689,7 @@ export default function MobilPage() {
                         <div className="flex flex-wrap gap-2">
                           {serviceForm.images.map((img: UploadedFile, i: number) => (
                             <div key={`ex-${i}`} className="glass-flat relative size-16 overflow-hidden">
-                              <img src={resolveFileUrl(img)} alt="" className="size-full object-cover" />
+                              <SmartImage src={resolveFileUrl(img)} alt="" rounded="rounded-none" className="size-full" />
                               <button
                                 type="button"
                                 aria-label="Quitar imagen"
@@ -913,11 +913,12 @@ export default function MobilPage() {
                           onClick={() => openBannerPreview(resolveCertificationImageUrl(item))}
                           className="glass-flat glass-hover cg-focus group inline-flex items-center justify-center overflow-hidden p-0"
                         >
-                          <img
+                          <SmartImage
                             src={resolveCertificationImageUrl(item)}
                             alt={item.title || 'Imagen certificación'}
-                            className="h-16 w-32 object-contain transition duration-200 group-hover:scale-105"
-                            decoding="async"
+                            rounded="rounded-none"
+                            fit="contain"
+                            className="h-16 w-32 transition duration-200 group-hover:scale-105"
                             crossOrigin="anonymous"
                           />
                         </button>
@@ -932,11 +933,12 @@ export default function MobilPage() {
                           onClick={() => openBannerPreview(resolveCertificationIconUrl(item))}
                           className="glass-flat glass-hover cg-focus group inline-flex items-center justify-center overflow-hidden p-0"
                         >
-                          <img
+                          <SmartImage
                             src={resolveCertificationIconUrl(item)}
                             alt={item.title || 'Icono certificación'}
-                            className="h-16 w-16 object-contain transition duration-200 group-hover:scale-105"
-                            decoding="async"
+                            rounded="rounded-none"
+                            fit="contain"
+                            className="h-16 w-16 transition duration-200 group-hover:scale-105"
                             crossOrigin="anonymous"
                           />
                         </button>

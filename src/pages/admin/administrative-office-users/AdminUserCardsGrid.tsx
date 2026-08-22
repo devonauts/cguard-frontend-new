@@ -13,7 +13,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { StatusBadge, SkeletonCards, EmptyState, GlassPanel } from "@/components/kit";
+import { StatusBadge, SkeletonCards, EmptyState, GlassPanel, SmartImage } from "@/components/kit";
 
 export type AdminUserCardAction = {
     label: string;
@@ -120,22 +120,21 @@ export default function AdminUserCardsGrid({
                             <div onClick={(e) => e.stopPropagation()} className="pt-0.5">
                                 <Checkbox disabled={!canSelect(u)} checked={selectedIds.includes(id)} onCheckedChange={(v) => onSelect(id, Boolean(v))} aria-label={`Seleccionar ${name}`} />
                             </div>
-                            {photo ? (
-                                <img
-                                    src={photo}
-                                    alt={name}
-                                    loading="lazy"
-                                    className="h-12 w-12 shrink-0 rounded-full border object-cover"
-                                    style={{ background: "var(--glass-sunken)", borderColor: "var(--hairline)" }}
-                                />
-                            ) : (
-                                <div
-                                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border text-lg font-bold"
-                                    style={{ background: "var(--brand-wash)", borderColor: "var(--brand-line)", color: "var(--brand-text)" }}
-                                >
-                                    {name.charAt(0).toUpperCase()}
-                                </div>
-                            )}
+                            <SmartImage
+                                src={photo}
+                                alt={name}
+                                rounded="rounded-full"
+                                className="h-12 w-12 shrink-0 border"
+                                style={{ borderColor: "var(--hairline)" }}
+                                fallback={
+                                    <span
+                                        className="grid h-full w-full place-items-center text-lg font-bold"
+                                        style={{ background: "var(--brand-wash)", color: "var(--brand-text)" }}
+                                    >
+                                        {name.charAt(0).toUpperCase()}
+                                    </span>
+                                }
+                            />
                             <div className="min-w-0 flex-1">
                                 <p className="truncate font-semibold leading-tight">{name}</p>
                                 <div className="mt-1"><StatusBadge tone={st.tone}>{st.label}</StatusBadge></div>

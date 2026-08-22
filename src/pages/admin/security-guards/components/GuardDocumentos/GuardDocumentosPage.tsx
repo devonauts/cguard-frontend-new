@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { UploadCloud, FileText, Trash2, Download, FileImage, X } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import GuardsLayout from '@/layouts/GuardsLayout';
-import { Section, EmptyState, SkeletonCards, Modal, IconTile } from "@/components/kit";
+import { Section, EmptyState, SkeletonCards, Modal, IconTile, SmartImage } from "@/components/kit";
 import securityGuardService from '@/lib/api/securityGuardService';
 import type { FileDescriptor } from '../../guardDetailTypes';
 
@@ -216,13 +216,15 @@ export default function GuardDocumentosPage() {
                       >
                         {/* Thumbnail / icon */}
                         <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-muted">
-                          {img ? (
-                            <img src={doc.downloadUrl as string} alt={doc.name || ''} className="h-full w-full object-cover" loading="lazy" />
-                          ) : isImage(doc.name) ? (
-                            <FileImage className="h-6 w-6 text-muted-foreground" />
-                          ) : (
-                            <FileText className="h-6 w-6 text-muted-foreground" />
-                          )}
+                          <SmartImage
+                            src={img ? doc.downloadUrl : null}
+                            alt={doc.name || ''}
+                            rounded="rounded-lg"
+                            className="h-full w-full"
+                            fallback={isImage(doc.name)
+                              ? <FileImage className="h-6 w-6 text-muted-foreground" />
+                              : <FileText className="h-6 w-6 text-muted-foreground" />}
+                          />
                         </div>
 
                         {/* Meta */}

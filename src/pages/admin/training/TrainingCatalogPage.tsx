@@ -9,7 +9,7 @@ import { usePermissions } from '@/hooks/usePermissions';
 import { trainingCourseService, type TrainingCourse } from '@/lib/api/trainingCourseService';
 import { categoryLabel, levelLabel } from './trainingConstants';
 import {
-  PageContainer, PageHeader, EmptyState, SkeletonCards, GlassPanel, StatusBadge,
+  PageContainer, PageHeader, EmptyState, SkeletonCards, GlassPanel, StatusBadge, SmartImage,
 } from '@/components/kit';
 
 export default function TrainingCatalogPage() {
@@ -88,7 +88,7 @@ export default function TrainingCatalogPage() {
             <GlassPanel key={c.id} flat hover className="flex flex-col overflow-hidden">
               {c.coverUrl && (
                 <div className="h-32 w-full overflow-hidden" style={{ background: 'var(--glass-sunken)' }}>
-                  <img src={c.coverUrl} alt={c.title} className="h-full w-full object-cover" />
+                  <SmartImage src={c.coverUrl} alt={c.title} fit="cover" rounded="rounded-none" className="h-full w-full" />
                 </div>
               )}
               <div className="flex flex-1 flex-col p-5">

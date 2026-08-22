@@ -9,7 +9,7 @@ import {
 import AppLayout from "@/layouts/app-layout";
 import Breadcrumb from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import { PageContainer, PageHeader, StatusBadge, GlassPanel, IconTile, EmptyState, Toolbar, Segmented } from "@/components/kit";
+import { PageContainer, PageHeader, StatusBadge, GlassPanel, IconTile, EmptyState, Toolbar, Segmented, SmartImage } from "@/components/kit";
 import api from "@/lib/api";
 import { fileUrlFromPrivate } from "@/lib/fileUrl";
 import { useNotificationStream } from "@/hooks/useNotificationStream";
@@ -348,13 +348,13 @@ export default function ActivitiesPage() {
                           </p>
                           {e.body && <p className="mt-0.5 line-clamp-2 text-xs" style={{ color: "var(--ink-soft)" }}>{e.body}</p>}
                           {photoUrl && (
-                            <img
+                            <SmartImage
                               src={photoUrl}
                               alt=""
-                              loading="lazy"
-                              className="mt-2 h-24 w-24 rounded-xl object-cover"
+                              fit="cover"
+                              rounded="rounded-xl"
+                              className="mt-2 h-24 w-24"
                               style={{ border: "1px solid var(--hairline)" }}
-                              onError={(ev) => ((ev.currentTarget.style.display = "none"))}
                             />
                           )}
                         </div>

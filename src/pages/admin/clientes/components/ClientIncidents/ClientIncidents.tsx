@@ -3,7 +3,7 @@ import type { Client } from '@/types/client';
 import useScrollToTopOnMount from '@/hooks/useScrollToTopOnMount';
 import { clientService } from '@/lib/api/clientService';
 import GoogleMapEmbed from '@/components/GoogleMap/GoogleMapEmbed';
-import { Section, EmptyState, StatusBadge, GlassPanel } from '@/components/kit';
+import { Section, EmptyState, StatusBadge, GlassPanel, SmartImage } from '@/components/kit';
 import { FIELD_CLS, TabTable, THead, Th, Tr, Pager, TabFooter, TabLoading, KpiTile } from '../_shared/tab-kit';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -307,7 +307,7 @@ export default function ClientIncidents({ client }: { client: Client }) {
                         >
                           {e.isVideo
                             ? <div className="flex h-full w-full items-center justify-center" style={{ background: 'var(--glass-sunken)', color: 'var(--ink)' }}><Play className="h-6 w-6" /></div>
-                            : <img src={e.url} alt={e.name} className="h-full w-full object-cover" />}
+                            : <SmartImage src={e.url} alt={e.name} className="h-full w-full" />}
                         </a>
                       ))}
                     </div>

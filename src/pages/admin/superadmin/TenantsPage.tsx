@@ -10,6 +10,7 @@ import { Search, Eye, Trash, ChevronLeft, ChevronRight } from "lucide-react";
 import { DataTable, type Column } from "@/components/table/DataTable";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import MobileCardList from '@/components/responsive/MobileCardList';
+import { SmartImage } from "@/components/kit";
 import tenantService from "@/services/tenant.service";
 import { usePermissions } from "@/hooks/usePermissions";
 
@@ -181,11 +182,14 @@ export default function TenantsPage() {
             <DialogHeader>
               <div className="flex items-center gap-4">
                 <div className="flex-shrink-0">
-                  {selectedTenant && (selectedTenant?.settings?.logos?.[0]?.publicUrl || selectedTenant?.logoUrl || selectedTenant?.logo?.publicUrl || (selectedTenant?.logoId ? `/uploads/${selectedTenant.logoId}` : undefined)) ? (
-                    <img src={selectedTenant?.settings?.logos?.[0]?.publicUrl || selectedTenant?.logoUrl || selectedTenant?.logo?.publicUrl || (selectedTenant?.logoId ? `/uploads/${selectedTenant.logoId}` : undefined)} alt={selectedTenant?.name || 'logo'} className="h-12 w-12 object-contain rounded" />
-                  ) : (
-                    <div className="h-12 w-12 bg-muted rounded" />
-                  )}
+                  <SmartImage
+                    src={selectedTenant?.settings?.logos?.[0]?.publicUrl || selectedTenant?.logoUrl || selectedTenant?.logo?.publicUrl || (selectedTenant?.logoId ? `/uploads/${selectedTenant.logoId}` : undefined)}
+                    alt={selectedTenant?.name || 'logo'}
+                    fit="contain"
+                    rounded="rounded"
+                    className="h-12 w-12"
+                    fallback={<span className="h-full w-full bg-muted" />}
+                  />
                 </div>
 
                 <div className="flex-1 text-center">

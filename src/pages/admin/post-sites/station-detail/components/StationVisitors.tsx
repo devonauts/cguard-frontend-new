@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Section, EmptyState, SkeletonCards, FadeIn } from '@/components/kit';
+import { Section, EmptyState, SkeletonCards, FadeIn, SmartImage } from '@/components/kit';
 import type { Station } from '@/types';
 
 type Props = { station: Station; stationId: string; postSiteId: string };
@@ -434,9 +434,16 @@ export default function StationVisitors({ stationId }: Props) {
                   return (
                     <tr key={r.id || i} style={{ borderBottom: '1px solid var(--hairline)' }}>
                       <td className="px-2 py-2.5">
-                        {photo
-                          ? <img src={photo} alt={name} className="h-8 w-8 rounded-full border object-cover" style={{ borderColor: 'var(--hairline)' }} />
-                          : <div className="flex h-8 w-8 items-center justify-center rounded-full border text-xs font-bold" style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }}>{(fn[0] || ln[0] || '?').toUpperCase()}</div>}
+                        <SmartImage
+                          src={photo}
+                          alt={name}
+                          rounded="rounded-full"
+                          className="h-8 w-8 border"
+                          style={{ borderColor: 'var(--hairline)' }}
+                          fallback={
+                            <span className="grid h-full w-full place-items-center text-xs font-bold" style={{ background: 'var(--brand-wash)', color: 'var(--brand-text)' }}>{(fn[0] || ln[0] || '?').toUpperCase()}</span>
+                          }
+                        />
                       </td>
                       <td className="px-2 py-2.5 font-medium">{name}</td>
                       <td className="px-2 py-2.5">{r.idNumber || '-'}</td>

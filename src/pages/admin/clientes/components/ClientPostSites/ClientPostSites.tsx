@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { clientService } from '@/lib/api/clientService';
 import { postSiteService } from '@/lib/api/postSiteService';
 import GoogleMapEmbed from '@/components/GoogleMap/GoogleMapEmbed';
-import { Section, EmptyState, StatusBadge, IconTile, SkeletonCards } from '@/components/kit';
+import { Section, EmptyState, StatusBadge, SmartImage, SkeletonCards } from '@/components/kit';
 import { FIELD_CLS, TabTable, THead, Th, Tr } from '../_shared/tab-kit';
 import { MeterBar } from '@/components/charts';
 import type { ChartTone } from '@/lib/chartColors';
@@ -198,11 +198,14 @@ export default function ClientPostSites({ client }: { client: Client }) {
                             title="Ver en el mapa"
                             className="cg-focus flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold transition-transform hover:scale-110"
                             style={{ background: markerFill(markerRole(s)), color: 'oklch(1 0 0)' }}>{i + 1}</button>
-                          {s.thumb ? (
-                            <img src={s.thumb} alt="" className="h-8 w-8 shrink-0 rounded-lg border object-cover" style={{ borderColor: 'var(--hairline)' }} />
-                          ) : (
-                            <IconTile tone="neutral" size="sm"><Building2 /></IconTile>
-                          )}
+                          <SmartImage
+                            src={s.thumb}
+                            alt=""
+                            rounded="rounded-lg"
+                            className="h-8 w-8 shrink-0 border"
+                            style={{ borderColor: 'var(--hairline)' }}
+                            fallback={<span className="grid h-full w-full place-items-center" style={{ background: 'var(--glass-sunken)', color: 'var(--ink-soft)' }}><Building2 className="h-4 w-4" /></span>}
+                          />
                           <div className="min-w-0">
                             <p className="truncate font-medium text-foreground">{s.name}</p>
                             <p className="text-[11px]" style={{ color: 'var(--ink-faint)' }}>{s.city || ""}</p>
@@ -304,11 +307,14 @@ export default function ClientPostSites({ client }: { client: Client }) {
           ) : (
             <div className="space-y-4">
               <div className="flex items-start gap-3">
-                {selected.thumb ? (
-                  <img src={selected.thumb} alt="" className="h-16 w-16 shrink-0 rounded-xl border object-cover" style={{ borderColor: 'var(--hairline)' }} />
-                ) : (
-                  <IconTile tone="neutral" size="lg"><Building2 /></IconTile>
-                )}
+                <SmartImage
+                  src={selected.thumb}
+                  alt=""
+                  rounded="rounded-xl"
+                  className="h-16 w-16 shrink-0 border"
+                  style={{ borderColor: 'var(--hairline)' }}
+                  fallback={<span className="grid h-full w-full place-items-center" style={{ background: 'var(--glass-sunken)', color: 'var(--ink-soft)' }}><Building2 className="h-7 w-7" /></span>}
+                />
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="truncate text-base font-semibold text-foreground">{selected.name}</p>

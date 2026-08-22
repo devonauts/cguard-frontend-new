@@ -27,6 +27,9 @@ export function SmartImage({
   className,
   fallback,
   rounded = 'rounded-lg',
+  fit = 'cover',
+  style,
+  onClick,
   ...rest
 }: {
   src?: string | null;
@@ -36,7 +39,14 @@ export function SmartImage({
   fallback?: React.ReactNode;
   /** Clase de redondeo del marco (para que el esqueleto la comparta). */
   rounded?: string;
-} & Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src' | 'className'>) {
+  /** `cover` recorta para llenar (avatares/thumbnails); `contain` no recorta
+   *  (logos que deben verse enteros). */
+  fit?: 'cover' | 'contain';
+  /** Estilo del MARCO (borde, fondo…). Va al recuadro, no al `<img>` interno. */
+  style?: React.CSSProperties;
+  /** Click sobre TODA la caja (también sobre el fallback), no solo la imagen. */
+  onClick?: React.MouseEventHandler<HTMLSpanElement>;
+} & Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src' | 'className' | 'style' | 'onClick'>) {
   const [loaded, setLoaded] = React.useState(false);
   const [errored, setErrored] = React.useState(false);
 
@@ -48,8 +58,15 @@ export function SmartImage({
 
   const showFallback = !src || errored;
 
+  // El `style` (borde/fondo) y el `onClick` van al MARCO — que es lo que quien
+  // llama entiende por «la caja de la imagen». `...rest` (crossOrigin, etc.) sí
+  // va al `<img>` interno.
   return (
-    <span className={cn('relative block overflow-hidden', rounded, className)}>
+    <span
+      className={cn('relative block overflow-hidden', rounded, className)}
+      style={style}
+      onClick={onClick}
+    >
       {/* Esqueleto: visible hasta que la imagen carga. */}
       {!showFallback && !loaded && (
         <span
@@ -71,7 +88,7 @@ export function SmartImage({
           decoding="async"
           onLoad={() => setLoaded(true)}
           onError={() => setErrored(true)}
-          className={cn('h-full w-full object-cover transition-opacity duration-300 motion-reduce:transition-none', loaded ? 'opacity-100' : 'opacity-0')}
+          className={cn('h-full w-full transition-opacity duration-300 motion-reduce:transition-none', fit === 'contain' ? 'object-contain' : 'object-cover', loaded ? 'opacity-100' : 'opacity-0')}
           {...rest}
         />
       )}

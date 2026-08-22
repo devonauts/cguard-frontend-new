@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import {
   PageContainer, PageHeader, Section, Stagger, StatCard, StatusBadge, EmptyState,
-  Modal, Toolbar, Segmented, GlassPanel, IconTile, Field, SkeletonCards,
+  Modal, Toolbar, Segmented, GlassPanel, IconTile, Field, SkeletonCards, SmartImage,
 } from '@/components/kit';
 import { TableSearch } from '@/components/table/TableToolbar';
 import { RowActionsMenu } from '@/components/table/RowActionsMenu';
@@ -399,7 +399,7 @@ export default function GlobalInventoryPage() {
                           style={{ borderColor: 'var(--hairline)' }}
                           aria-label={`Ver foto de ${item.name}`}
                         >
-                          <img src={portada} alt="" className="h-full w-full object-cover" />
+                          <SmartImage src={portada} alt="" className="h-full w-full" />
                         </button>
                       ) : (
                         <IconTile size="lg" tone="neutral"><Package /></IconTile>
@@ -545,7 +545,7 @@ export default function GlobalInventoryPage() {
                                             onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--brand)'; }}
                                             onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--hairline)'; }}
                                           >
-                                            <img src={src} alt="" className="h-full w-full object-cover" />
+                                            <SmartImage src={src} alt="" className="h-full w-full" />
                                           </button>
                                         ) : null;
                                       })}
@@ -782,13 +782,16 @@ export default function GlobalInventoryPage() {
                           className="group relative aspect-square overflow-hidden rounded-lg border"
                           style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}
                         >
-                          {src ? (
-                            <img src={src} alt="" className="h-full w-full object-cover" />
-                          ) : (
-                            <div className="flex h-full w-full items-center justify-center" style={{ color: 'var(--ink-faint)' }}>
-                              <Package className="h-6 w-6" />
-                            </div>
-                          )}
+                          <SmartImage
+                            src={src}
+                            alt=""
+                            className="h-full w-full"
+                            fallback={(
+                              <span className="grid h-full w-full place-items-center" style={{ color: 'var(--ink-faint)' }}>
+                                <Package className="h-6 w-6" />
+                              </span>
+                            )}
+                          />
                           <button
                             type="button"
                             onClick={() => removePhoto(idx)}

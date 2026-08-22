@@ -5,7 +5,7 @@ import {
   User, Clock, CheckCircle2, Flag, Building2, XCircle, X,
 } from 'lucide-react';
 import { ApiService } from '@/services/api/apiService';
-import { Section, EmptyState, SkeletonCards, StatusBadge, Modal, IconTile } from '@/components/kit';
+import { Section, EmptyState, SkeletonCards, StatusBadge, Modal, IconTile, SmartImage } from '@/components/kit';
 import { fileUrlFromPrivate } from '@/lib/fileUrl';
 import type { Station } from '@/types';
 
@@ -254,10 +254,11 @@ function RondaDetailModal({ open, onOpenChange, tenantId, assignmentId, fallback
                                   className="cg-focus block overflow-hidden rounded-lg border"
                                   style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}
                                 >
-                                  <img
+                                  <SmartImage
                                     src={url}
                                     alt={`Foto de ${c.name}`}
-                                    className="h-28 w-40 object-cover"
+                                    rounded="rounded-none"
+                                    className="h-28 w-40"
                                     onError={(e) => {
                                       const b = e.currentTarget.closest('[data-photo-block]') as HTMLElement | null;
                                       if (b) b.style.display = 'none';
@@ -304,10 +305,11 @@ function RondaDetailModal({ open, onOpenChange, tenantId, assignmentId, fallback
                                 className="cg-focus mt-2 block overflow-hidden rounded-lg border"
                                 style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}
                               >
-                                <img
+                                <SmartImage
                                   src={url}
                                   alt="Foto del escaneo"
-                                  className="h-28 w-40 object-cover"
+                                  rounded="rounded-none"
+                                  className="h-28 w-40"
                                   onError={(e) => {
                                     const b = e.currentTarget.closest('[data-photo-block]') as HTMLElement | null;
                                     if (b) b.style.display = 'none';

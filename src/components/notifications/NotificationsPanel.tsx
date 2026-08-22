@@ -6,6 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useFileUrl } from '@/lib/fileUrl';
+import { SmartImage } from '@/components/kit';
 import type { PlatformNotification } from '@/hooks/useNotificationStream';
 import { targetForNotification } from './notificationToast';
 
@@ -170,13 +171,11 @@ function NotificationItem({
     >
       <div className="flex items-start justify-between gap-2">
         {photoUrl && (
-          <img
+          <SmartImage
             src={photoUrl}
             alt=""
-            loading="lazy"
-            className="h-11 w-11 shrink-0 rounded-md object-cover"
-            style={{ border: '1px solid var(--hairline)' }}
-            onError={(e) => ((e.currentTarget.style.display = 'none'))}
+            rounded="rounded-md"
+            className="h-11 w-11 shrink-0 border border-[color:var(--hairline)]"
           />
         )}
         <div className="flex-1 min-w-0">

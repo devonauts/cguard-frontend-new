@@ -10,7 +10,7 @@ import { ServiceTypeBadge } from '@/components/post-sites/ServiceTypeBadge';
 import { postSiteService } from '@/lib/api/postSiteService';
 import { stationService } from '@/lib/api/stationService';
 import { toast } from 'sonner';
-import { StatusBadge, EmptyState, SkeletonCards } from '@/components/kit';
+import { StatusBadge, EmptyState, SkeletonCards, SmartImage } from '@/components/kit';
 import { MapPin, Phone, Mail, Building2, Globe, Tag, Pencil, Check, X, Shield, ShieldCheck, ShieldOff, Clock, UserCircle2 } from 'lucide-react';
 
 function formatDate(d?: string) {
@@ -216,13 +216,17 @@ export default function PostSiteProfile({ site }: { site?: any }) {
 
                 {/* ── Cover photo ─────────────────────────────────────────── */}
                 <div className="relative h-64 overflow-hidden md:h-80" style={{ background: 'var(--glass-sunken)' }}>
-                    {placePicImgUrl ? (
-                        <img src={placePicImgUrl} alt={siteName} className="w-full h-full object-cover" />
-                    ) : (
-                        <div className="flex h-full w-full items-center justify-center" style={{ color: 'var(--ink-faint)' }}>
-                            <Building2 size={64} />
-                        </div>
-                    )}
+                    <SmartImage
+                        src={placePicImgUrl}
+                        alt={siteName}
+                        rounded="rounded-none"
+                        className="h-full w-full"
+                        fallback={
+                            <div className="flex h-full w-full items-center justify-center" style={{ color: 'var(--ink-faint)' }}>
+                                <Building2 size={64} />
+                            </div>
+                        }
+                    />
                     {id && (
                         <Link
                             to={`/post-sites/${id}/edit`}
@@ -242,13 +246,18 @@ export default function PostSiteProfile({ site }: { site?: any }) {
                             className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl border-4"
                             style={{ borderColor: 'var(--glass-solid)', background: 'var(--glass-sunken)', boxShadow: 'var(--lift-2)' }}
                         >
-                            {logoImgUrl ? (
-                                <img src={logoImgUrl} alt={clientName} className="w-full h-full object-contain p-1" />
-                            ) : (
-                                <div className="flex h-full w-full items-center justify-center" style={{ color: 'var(--ink-faint)' }}>
-                                    <Building2 size={26} />
-                                </div>
-                            )}
+                            <SmartImage
+                                src={logoImgUrl}
+                                alt={clientName}
+                                fit="contain"
+                                rounded="rounded-none"
+                                className="h-full w-full p-1"
+                                fallback={
+                                    <div className="flex h-full w-full items-center justify-center" style={{ color: 'var(--ink-faint)' }}>
+                                        <Building2 size={26} />
+                                    </div>
+                                }
+                            />
                         </div>
                         <div className="min-w-0">
                             <div className="flex flex-wrap items-center gap-2">
@@ -499,21 +508,21 @@ export default function PostSiteProfile({ site }: { site?: any }) {
                                                     borderColor: 'color-mix(in oklab, var(--ok) 26%, transparent)',
                                                 }}
                                             >
-                                                {guard.photoUrl ? (
-                                                    <img
-                                                        src={guard.photoUrl}
-                                                        alt={guard.fullName}
-                                                        className="h-12 w-12 rounded-full border-2 object-cover"
-                                                        style={{ borderColor: 'color-mix(in oklab, var(--ok) 40%, transparent)' }}
-                                                    />
-                                                ) : (
-                                                    <div
-                                                        className="flex h-12 w-12 items-center justify-center rounded-full"
-                                                        style={{ background: 'color-mix(in oklab, var(--ok) 18%, transparent)', color: 'var(--ok-text)' }}
-                                                    >
-                                                        <UserCircle2 size={26} />
-                                                    </div>
-                                                )}
+                                                <SmartImage
+                                                    src={guard.photoUrl}
+                                                    alt={guard.fullName}
+                                                    rounded="rounded-full"
+                                                    className="h-12 w-12 border-2"
+                                                    style={{ borderColor: 'color-mix(in oklab, var(--ok) 40%, transparent)' }}
+                                                    fallback={
+                                                        <span
+                                                            className="grid h-full w-full place-items-center"
+                                                            style={{ background: 'color-mix(in oklab, var(--ok) 18%, transparent)', color: 'var(--ok-text)' }}
+                                                        >
+                                                            <UserCircle2 size={26} />
+                                                        </span>
+                                                    }
+                                                />
                                                 <span className="text-center text-xs font-semibold leading-tight">{guard.fullName}</span>
                                                 <span
                                                     className="inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[10px] font-medium"

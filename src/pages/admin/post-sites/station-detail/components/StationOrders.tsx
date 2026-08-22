@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { confirmDialog } from '@/components/ui/confirmDialog';
 import { Plus, Clock, Pencil, Trash2, X, ClipboardList, Loader2, Repeat, CalendarDays, AlertCircle, Bell, Video, Mic, User, CheckCircle2, FileText } from 'lucide-react';
 import { stationOrderService } from '@/lib/api/stationOrderService';
-import { Section, EmptyState, SkeletonCards, StatusBadge, Segmented } from '@/components/kit';
+import { Section, EmptyState, SkeletonCards, StatusBadge, Segmented, SmartImage } from '@/components/kit';
 import { FIELD_CLS_LG, LabeledField } from '@/pages/admin/clientes/components/_shared/tab-kit';
 import { Button } from '@/components/ui/button';
 import type { Station } from '@/types';
@@ -343,7 +343,7 @@ function ActivityLog({ stationId, t }: { stationId: string; t: (key: string, def
             <div className="mt-3 flex flex-wrap items-center gap-2">
               {(c.photos || []).map((ph: CompletionPhoto, i: number) => fileUrl(ph.downloadUrl) && (
                 <a key={i} href={fileUrl(ph.downloadUrl)!} target="_blank" rel="noreferrer" className="block h-16 w-16 overflow-hidden rounded-lg border border-border">
-                  <img src={fileUrl(ph.downloadUrl)!} alt="" className="h-full w-full object-cover" />
+                  <SmartImage src={fileUrl(ph.downloadUrl)!} alt="" rounded="rounded-none" className="h-full w-full" />
                 </a>
               ))}
               {c.videoDownloadUrl && (

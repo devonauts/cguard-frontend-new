@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback, useMemo, type ReactNode } fro
 import AppLayout from "@/layouts/app-layout";
 import Breadcrumb from "@/components/ui/breadcrumb";
 import { MessageSquareText, Send, Plus, Search, Loader2, X, Check, CheckCheck, Paperclip, Play, Trash2, Users, Mic, UserPlus, RefreshCw, UserCircle2 } from "lucide-react";
-import { PageHeader, Modal, EmptyState, SkeletonCards, Segmented, StatusBadge } from "@/components/kit";
+import { PageHeader, Modal, EmptyState, SkeletonCards, Segmented, StatusBadge, SmartImage } from "@/components/kit";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { messageService, type MessageAttachment, type GroupMember } from "@/lib/api/messageService";
@@ -46,7 +46,7 @@ function MessageAttachmentView({ att }: { att: MessageAttachment }) {
 /** Thumbnail for a pending (just-uploaded) image attachment; same token logic. */
 function PendingThumb({ att }: { att: MessageAttachment }) {
   const url = useFileUrl(att.url);
-  return <img src={url || undefined} alt="" className="h-full w-full object-cover" />;
+  return <SmartImage src={url} alt="" className="h-full w-full" />;
 }
 
 type Conversation = {

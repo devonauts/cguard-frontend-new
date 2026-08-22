@@ -1,6 +1,7 @@
 import { toast } from 'sonner';
 import { LogIn, LogOut, AlertTriangle, Route, CalendarClock, UserCheck, Siren, Bell, X, MessageSquare, ClipboardList } from 'lucide-react';
 import { fileUrlFromPrivate } from '@/lib/fileUrl';
+import { SmartImage } from '@/components/kit';
 import type { PlatformNotification } from '@/hooks/useNotificationStream';
 
 /**
@@ -176,26 +177,23 @@ export function showNotificationToast(
         }}
         className="glass-raised glass-hover flex w-[360px] max-w-[88vw] cursor-pointer items-start gap-3 p-3"
       >
-        {photoUrl ? (
-          <img
-            src={photoUrl}
-            alt=""
-            className="h-12 w-12 shrink-0 rounded-lg border object-cover"
-            style={{ borderColor: 'var(--hairline)' }}
-            onError={(e) => ((e.currentTarget.style.display = 'none'))}
-          />
-        ) : (
-          <span
-            className="grid h-12 w-12 shrink-0 place-items-center rounded-lg border"
-            style={{
-              background: `color-mix(in oklab, ${fill} 14%, transparent)`,
-              borderColor: `color-mix(in oklab, ${fill} 30%, transparent)`,
-              color: ink,
-            }}
-          >
-            <Icon size={20} />
-          </span>
-        )}
+        <SmartImage
+          src={photoUrl}
+          alt=""
+          rounded="rounded-lg"
+          className="h-12 w-12 shrink-0 border border-[color:var(--hairline)]"
+          fallback={
+            <span
+              className="grid h-full w-full place-items-center"
+              style={{
+                background: `color-mix(in oklab, ${fill} 14%, transparent)`,
+                color: ink,
+              }}
+            >
+              <Icon size={20} />
+            </span>
+          }
+        />
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold leading-snug" style={{ color: 'var(--ink)' }}>{n.title}</p>
           {n.body && (
