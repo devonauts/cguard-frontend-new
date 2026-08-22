@@ -43,5 +43,11 @@ jobs:
       - name: Typecheck
         run: npx tsc --noEmit
 
+      # Paridad de idiomas: en y pt deben cubrir TODA la superficie viva de es.
+      # Sin esto el portugués derivó a un 12% sin que nadie se enterara (el
+      # patrón t('k',{defaultValue:'ES'}) tapa el hueco cayendo a español).
+      - name: Paridad i18n (es/en/pt)
+        run: npm run i18n:parity
+
       - name: Compilar
         run: npm run build
