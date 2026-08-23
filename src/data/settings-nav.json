@@ -3,6 +3,7 @@
     "title": "Configuración",
     "sections": [
       {
+        "id": "mi_cuenta",
         "label": "Mi cuenta",
         "hint": "Sólo te afecta a ti",
         "items": [
@@ -41,6 +42,7 @@
         ]
       },
       {
+        "id": "empresa",
         "label": "Empresa",
         "hint": "Quiénes somos y quién manda",
         "items": [
@@ -119,6 +121,7 @@
         ]
       },
       {
+        "id": "operacion",
         "label": "Operación",
         "hint": "Las reglas del trabajo en campo",
         "items": [
@@ -203,6 +206,7 @@
         ]
       },
       {
+        "id": "avisos_y_mensajes",
         "label": "Avisos y mensajes",
         "hint": "Qué se avisa, a quién y por dónde",
         "items": [
@@ -241,6 +245,7 @@
         ]
       },
       {
+        "id": "apps_y_portales",
         "label": "Apps y portales",
         "hint": "Lo que ven quienes nunca entran al CRM",
         "items": [
@@ -271,6 +276,7 @@
         ]
       },
       {
+        "id": "datos_y_conexiones",
         "label": "Datos y conexiones",
         "hint": "Lo que sale, lo que entra y lo que queda registrado",
         "items": [

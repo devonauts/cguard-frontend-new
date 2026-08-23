@@ -320,7 +320,8 @@
       "tag_realtime": "Seguimiento en tiempo real",
       "title_part1": "Lleva tus operaciones de seguridad",
       "title_part2": "al siguiente nivel"
-    }
+    },
+    "change_password_subtitle": "Actualiza tu contraseña de acceso."
   },
   "billing": {
     "title": "Estado de la suscripción",
@@ -5325,7 +5326,8 @@
       "asistente-ia": "Asistente VigIA",
       "asistente-ia.desc": "Uso del asistente: mensajes, costo, cuota gratis y acciones ejecutadas.",
       "central": "Central de Operaciones",
-      "central.desc": "Si tienes consola 24/7: qué puesto es, si sus operadores salen a cubrir y a quién llegan las alertas."
+      "central.desc": "Si tienes consola 24/7: qué puesto es, si sus operadores salen a cubrir y a quién llegan las alertas.",
+      "sms": "Saldo SMS"
     },
     "section": {
       "mi_cuenta": "Mi cuenta",
@@ -5340,7 +5342,13 @@
       "apps_y_portales.hint": "Lo que ven quienes nunca entran al CRM",
       "datos_y_conexiones": "Datos y conexiones",
       "datos_y_conexiones.hint": "Lo que sale, lo que entra y lo que queda registrado"
-    }
+    },
+    "home": {
+      "heroTitle": "Configuración",
+      "heroSubtitle": "Administra tu cuenta, tu empresa y cómo opera la plataforma. Elige una categoría para empezar.",
+      "searchPlaceholder": "Buscar un ajuste..."
+    },
+    "noResults": "Sin resultados"
   },
   "vigia": {
     "placeholder": "Escríbele a VigIA…",
@@ -5386,5 +5394,202 @@
       "promptTitle": "Escribe un valor",
       "accept": "Aceptar"
     }
+  },
+  "sms": {
+    "loadError": "No se pudo cargar la cuenta SMS",
+    "provisioned": "Subcuenta SMS creada",
+    "provisionError": "No se pudo crear la subcuenta",
+    "noNumbers": "No se encontraron números con esos criterios",
+    "searchError": "No se pudo buscar números",
+    "numberBought": "Número adquirido y asignado",
+    "buyError": "No se pudo adquirir el número",
+    "balanceTitle": "Saldo de mensajería SMS",
+    "badgeReady": "Listo para enviar",
+    "badgeNoSender": "Falta el número remitente",
+    "badgeOff": "Sin activar",
+    "refresh": "Actualizar",
+    "balanceMovedTitle": "El saldo de SMS ahora se gestiona en Comunicaciones",
+    "balanceMovedHint": "Recarga tu saldo y revisa el consumo de SMS en la pestaña SMS de Comunicaciones.",
+    "goToComms": "Ir a Comunicaciones",
+    "accountTitle": "Cuenta de envío (Twilio)",
+    "notConfigured": "La mensajería SMS aún no está habilitada en la plataforma. El envío se activará en cuanto la plataforma habilite Twilio.",
+    "subaccount": "Subcuenta dedicada",
+    "notProvisioned": "No creada",
+    "sender": "Número remitente",
+    "noSender": "Pendiente",
+    "createSubaccount": "Crear subcuenta SMS",
+    "buyNumber": "Comprar número",
+    "txHistory": "Historial de transacciones",
+    "noHistory": "Sin movimientos todavía",
+    "noHistoryDesc": "Aquí aparecerán las recargas y el consumo de tus mensajes.",
+    "buyNumberTitle": "Comprar número de envío",
+    "country": "País",
+    "areaCode": "Código de área",
+    "searchPrompt": "Busca números disponibles para comprar.",
+    "buy": "Comprar",
+    "buyNumberHint": "El número se adquiere dentro de tu subcuenta y queda como remitente para tus SMS. Algunos países requieren documentación regulatoria de Twilio."
+  },
+  "licenseTypes": {
+    "dialog": {
+      "description": "Formulario para crear o editar un tipo de licencia.",
+      "form": {
+        "nameLabel": "Nombre del Tipo de Licencia",
+        "namePlaceholder": "Escribe un nombre"
+      },
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "title": {
+        "edit": "Editar Tipo de Licencia",
+        "create": "Nuevo Tipo de Licencia"
+      }
+    },
+    "table": {
+      "column": {
+        "name": "Tipo de licencia",
+        "status": "Estado"
+      },
+      "status": {
+        "active": "Activo",
+        "inactive": "Inactivo"
+      },
+      "searchPlaceholder": "Buscar tipo de licencia",
+      "actions": {
+        "edit": "Editar",
+        "deactivate": "Desactivar",
+        "activate": "Activar"
+      },
+      "bulkDelete": "Eliminar",
+      "noResults": "No se encontraron resultados",
+      "create": "Nuevo Tipo de Licencia"
+    },
+    "page": {
+      "title": "Tipos de Licencia"
+    }
+  },
+  "emailPreferences": {
+    "loadError": "No se pudieron cargar las preferencias",
+    "saved": "Preferencias guardadas",
+    "saveError": "Error al guardar",
+    "intro": "Personaliza el color de tus correos y activa o desactiva cada notificación. Los correos marcados como \\",
+    "save": "Guardar",
+    "branding": "Personalización de marca",
+    "brandColor": "Color de la marca",
+    "brandColorHint": "Colorea el acento, la línea superior y el botón de acción de tus correos.",
+    "headerColor": "Color del encabezado",
+    "headerColorHint": "Fondo de la cabecera (con tu logo). Se recomienda un tono oscuro para que el texto blanco se lea bien.",
+    "reset": "Restaurar colores originales",
+    "logoHint": "El logo de tus correos es el de tu empresa. Cámbialo en Configuración › Perfil de la empresa.",
+    "preview": "Vista previa",
+    "previewHint": "Así verá tu cliente un correo de la empresa."
+  },
+  "comms": {
+    "wa": {
+      "statusError": "No se pudo cargar el estado de WhatsApp Business",
+      "qualityHigh": "Alta",
+      "qualityMedium": "Media",
+      "qualityLow": "Baja",
+      "notConfigured": "La plataforma aún no tiene configurada la app de Meta (contacta a soporte).",
+      "cancelled": "Conexión cancelada. Si no viste la ventana de Meta, permite ventanas emergentes para este sitio.",
+      "connected": "WhatsApp conectado",
+      "connectError": "No se pudo conectar WhatsApp. Inténtalo de nuevo.",
+      "disconnected": "WhatsApp desconectado",
+      "disconnectError": "No se pudo desconectar WhatsApp",
+      "title": "WhatsApp Business",
+      "error": "Con problemas",
+      "connectedBadge": "Conectado",
+      "notConnectedBadge": "Sin conectar",
+      "pendingBadge": "Pendiente de habilitar",
+      "subtitle": "Integración oficial de Meta",
+      "pitch": "Conecta el WhatsApp de tu empresa. Tus clientes siguen escribiendo a tu número actual — no hay que cambiar de número.",
+      "connecting": "Conectando…",
+      "connect": "Conectar WhatsApp",
+      "state": "Estado",
+      "business": "Empresa",
+      "phone": "Teléfono",
+      "quality": "Calidad",
+      "messagingLimit": "Mensajes por día",
+      "connectedAt": "Conectado el",
+      "reconnect": "Reconectar",
+      "disconnect": "Desconectar",
+      "disconnectTitle": "¿Desconectar WhatsApp Business?",
+      "cancel": "Cancelar",
+      "disconnectConfirm": "Desconectar",
+      "disconnectDesc": "La plataforma dejará de enviar mensajes de WhatsApp con tu número. Puedes volver a conectarlo cuando quieras — tu número y tu cuenta de Meta no se ven afectados."
+    },
+    "loadError": "No se pudo cargar la configuración de comunicaciones",
+    "logsError": "No se pudo cargar el historial",
+    "rechargeSuccess": "Pago recibido. Tu saldo se actualizará en unos segundos.",
+    "rechargeCancel": "Recarga cancelada",
+    "amountError": "Ingresa un monto entre $5 y $1000",
+    "rechargeError": "No se pudo iniciar la recarga",
+    "saved": "Configuración guardada",
+    "saveError": "No se pudo guardar la configuración",
+    "unsaved": "Cambios sin guardar",
+    "save": "Guardar cambios",
+    "walletHint": "Saldo prepago para SMS. WhatsApp se factura directo a tu cuenta de Meta al conectarla.",
+    "walletBadge": "Saldo",
+    "refresh": "Actualizar",
+    "tabWallet": "Saldo y recargas",
+    "tabPrefs": "Preferencias",
+    "tabHistory": "Historial",
+    "walletTitle2": "Saldo de comunicaciones e IA",
+    "walletHint2": "Un solo saldo prepago para SMS (Twilio), plantillas de WhatsApp y el asistente VigIA.",
+    "noBalance": "Te has quedado sin saldo. Los mensajes con costo no saldrán hasta que recargues.",
+    "lowBalance": "Saldo bajo: por debajo del umbral configurado. Los canales con costo podrían bloquearse.",
+    "rechargeTitle": "Recargar saldo",
+    "customAmount": "Monto (USD)",
+    "recharge": "Recargar",
+    "rechargeHint": "Pago seguro con tarjeta vía Stripe. El saldo se acredita automáticamente al confirmarse el pago y cubre los SMS enviados por la plataforma.",
+    "smsTitle": "SMS (Twilio)",
+    "smsFallback": "SMS como respaldo",
+    "smsFallbackDesc": "Usa SMS (Twilio) cuando push y WhatsApp no estén disponibles.",
+    "smsCritical": "SMS para alertas críticas",
+    "smsCriticalDesc": "Envía SMS en avisos de visitas y rondas. El botón de pánico manda SMS siempre, no depende de esto.",
+    "criticalSmsFallback": "Respaldo SMS en alertas críticas",
+    "criticalSmsFallbackDesc": "Permite SMS de respaldo cuando una alerta crítica no se entrega.",
+    "walletRequired": "Requerir saldo para canales con costo",
+    "walletRequiredDesc": "Bloquea el envío de SMS cuando no hay saldo suficiente.",
+    "lowThreshold": "Umbral de saldo bajo (USD)",
+    "waTogglesTitle": "Alertas por WhatsApp",
+    "whatsappEnabled": "Habilitar WhatsApp",
+    "whatsappEnabledDesc": "Envía mensajes desde tu propio WhatsApp Business (facturado por Meta a tu empresa).",
+    "whatsappShiftReminders": "Recordatorios de turno por WhatsApp",
+    "whatsappShiftRemindersDesc": "Notifica turnos por WhatsApp si el vigilante no tiene push.",
+    "whatsappIncidents": "Incidentes por WhatsApp",
+    "whatsappIncidentsDesc": "Alerta a supervisores y administradores por WhatsApp.",
+    "orderTitle": "Orden de aviso",
+    "orderHint": "Cada aviso intenta el canal más barato primero y sólo baja al siguiente si no llega.",
+    "orderPush": "Sin costo",
+    "orderWa": "Lo factura Meta",
+    "orderSms": "Consume saldo",
+    "orderMail": "Sin costo",
+    "routingTitle": "Preferencias de enrutamiento",
+    "otpChannel": "Canal preferido para el código de acceso",
+    "defaultCountry": "Código de país por defecto",
+    "usageTitle": "Historial de uso",
+    "sumMessages": "Mensajes (página)",
+    "sumPaid": "Con costo",
+    "sumBilled": "Facturado",
+    "sumFailed": "Fallidos",
+    "fChannel": "Canal",
+    "all": "Todos",
+    "fProvider": "Proveedor",
+    "fStatus": "Estado",
+    "fType": "Tipo",
+    "fFrom": "Desde",
+    "fTo": "Hasta",
+    "applyFilters": "Filtrar",
+    "clearFilters": "Limpiar",
+    "noLogs": "Sin registros para los filtros aplicados.",
+    "noLogsDesc": "Cambia o limpia los filtros para ver más envíos.",
+    "colDate": "Fecha",
+    "colChannel": "Canal",
+    "colType": "Tipo",
+    "colRecipient": "Destinatario",
+    "colStatus": "Estado",
+    "colCost": "Costo",
+    "pageOf": "Página {{page}} de {{total}} · {{count}} registros",
+    "prev": "Anterior",
+    "next": "Siguiente"
   }
 }

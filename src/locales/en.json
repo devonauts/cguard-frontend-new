@@ -320,7 +320,8 @@
       "tag_realtime": "Real-time tracking",
       "title_part1": "Take your security operations",
       "title_part2": "to the next level"
-    }
+    },
+    "change_password_subtitle": "Update your login password."
   },
   "billing": {
     "title": "Subscription status",
@@ -5325,7 +5326,8 @@
       "asistente-ia": "VigIA assistant",
       "asistente-ia.desc": "Assistant usage: messages, cost, free quota and executed actions.",
       "central": "Operations Center",
-      "central.desc": "If you run a 24/7 console: which post it is, whether its operators cover shifts, and who gets the alerts."
+      "central.desc": "If you run a 24/7 console: which post it is, whether its operators cover shifts, and who gets the alerts.",
+      "sms": "SMS balance"
     },
     "section": {
       "mi_cuenta": "My account",
@@ -5340,7 +5342,13 @@
       "apps_y_portales.hint": "What the people who never open the CRM see",
       "datos_y_conexiones": "Data and connections",
       "datos_y_conexiones.hint": "What goes out, what comes in and what gets logged"
-    }
+    },
+    "home": {
+      "heroTitle": "Settings",
+      "heroSubtitle": "Manage your account, your company, and how the platform operates. Choose a category to get started.",
+      "searchPlaceholder": "Search for a setting..."
+    },
+    "noResults": "No results"
   },
   "vigia": {
     "placeholder": "Message VigIA…",
@@ -5386,5 +5394,202 @@
       "promptTitle": "Enter a value",
       "accept": "OK"
     }
+  },
+  "sms": {
+    "loadError": "Couldn't load the SMS account",
+    "provisioned": "SMS subaccount created",
+    "provisionError": "Couldn't create the subaccount",
+    "noNumbers": "No numbers found matching those criteria",
+    "searchError": "Couldn't search for numbers",
+    "numberBought": "Number purchased and assigned",
+    "buyError": "Couldn't purchase the number",
+    "balanceTitle": "SMS messaging balance",
+    "badgeReady": "Ready to send",
+    "badgeNoSender": "Sender number missing",
+    "badgeOff": "Not activated",
+    "refresh": "Refresh",
+    "balanceMovedTitle": "SMS balance is now managed in Communications",
+    "balanceMovedHint": "Top up your balance and review SMS usage in the SMS tab of Communications.",
+    "goToComms": "Go to Communications",
+    "accountTitle": "Sending account (Twilio)",
+    "notConfigured": "SMS messaging isn't enabled on the platform yet. Sending will activate as soon as the platform enables Twilio.",
+    "subaccount": "Dedicated subaccount",
+    "notProvisioned": "Not created",
+    "sender": "Sender number",
+    "noSender": "Pending",
+    "createSubaccount": "Create SMS subaccount",
+    "buyNumber": "Buy number",
+    "txHistory": "Transaction history",
+    "noHistory": "No activity yet",
+    "noHistoryDesc": "Your top-ups and message usage will appear here.",
+    "buyNumberTitle": "Buy sender number",
+    "country": "Country",
+    "areaCode": "Area code",
+    "searchPrompt": "Search for available numbers to buy.",
+    "buy": "Buy",
+    "buyNumberHint": "The number is purchased within your subaccount and becomes the sender for your SMS. Some countries require regulatory documentation from Twilio."
+  },
+  "licenseTypes": {
+    "dialog": {
+      "description": "Form to create or edit a license type.",
+      "form": {
+        "nameLabel": "License Type Name",
+        "namePlaceholder": "Enter a name"
+      },
+      "cancel": "Cancel",
+      "save": "Save",
+      "title": {
+        "edit": "Edit License Type",
+        "create": "New License Type"
+      }
+    },
+    "table": {
+      "column": {
+        "name": "License type",
+        "status": "Status"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "searchPlaceholder": "Search license type",
+      "actions": {
+        "edit": "Edit",
+        "deactivate": "Deactivate",
+        "activate": "Activate"
+      },
+      "bulkDelete": "Delete",
+      "noResults": "No results found",
+      "create": "New License Type"
+    },
+    "page": {
+      "title": "License Types"
+    }
+  },
+  "emailPreferences": {
+    "loadError": "Couldn't load preferences",
+    "saved": "Preferences saved",
+    "saveError": "Error saving",
+    "intro": "Customize the color of your emails and turn each notification on or off. Emails marked as \\",
+    "save": "Save",
+    "branding": "Brand customization",
+    "brandColor": "Brand color",
+    "brandColorHint": "Colors the accent, the top line, and the action button of your emails.",
+    "headerColor": "Header color",
+    "headerColorHint": "Header background (with your logo). A dark tone is recommended so white text reads well.",
+    "reset": "Restore original colors",
+    "logoHint": "The logo on your emails is your company's. Change it in Settings › Company profile.",
+    "preview": "Preview",
+    "previewHint": "This is how your client will see a company email."
+  },
+  "comms": {
+    "wa": {
+      "statusError": "Couldn't load WhatsApp Business status",
+      "qualityHigh": "High",
+      "qualityMedium": "Medium",
+      "qualityLow": "Low",
+      "notConfigured": "The platform doesn't have the Meta app configured yet (contact support).",
+      "cancelled": "Connection cancelled. If you didn't see the Meta window, allow pop-ups for this site.",
+      "connected": "WhatsApp connected",
+      "connectError": "Couldn't connect WhatsApp. Please try again.",
+      "disconnected": "WhatsApp disconnected",
+      "disconnectError": "Couldn't disconnect WhatsApp",
+      "title": "WhatsApp Business",
+      "error": "Having issues",
+      "connectedBadge": "Connected",
+      "notConnectedBadge": "Not connected",
+      "pendingBadge": "Pending activation",
+      "subtitle": "Official Meta integration",
+      "pitch": "Connect your company's WhatsApp. Your clients keep messaging your current number — there's no need to change numbers.",
+      "connecting": "Connecting…",
+      "connect": "Connect WhatsApp",
+      "state": "Status",
+      "business": "Company",
+      "phone": "Phone",
+      "quality": "Quality",
+      "messagingLimit": "Messages per day",
+      "connectedAt": "Connected on",
+      "reconnect": "Reconnect",
+      "disconnect": "Disconnect",
+      "disconnectTitle": "Disconnect WhatsApp Business?",
+      "cancel": "Cancel",
+      "disconnectConfirm": "Disconnect",
+      "disconnectDesc": "The platform will stop sending WhatsApp messages with your number. You can reconnect it whenever you want — your number and your Meta account aren't affected."
+    },
+    "loadError": "Couldn't load communications settings",
+    "logsError": "Couldn't load the history",
+    "rechargeSuccess": "Payment received. Your balance will update in a few seconds.",
+    "rechargeCancel": "Top-up cancelled",
+    "amountError": "Enter an amount between $5 and $1000",
+    "rechargeError": "Couldn't start the top-up",
+    "saved": "Settings saved",
+    "saveError": "Couldn't save settings",
+    "unsaved": "Unsaved changes",
+    "save": "Save changes",
+    "walletHint": "Prepaid balance for SMS. WhatsApp is billed directly to your Meta account when you connect it.",
+    "walletBadge": "Balance",
+    "refresh": "Refresh",
+    "tabWallet": "Balance and top-ups",
+    "tabPrefs": "Preferences",
+    "tabHistory": "History",
+    "walletTitle2": "Communications and AI balance",
+    "walletHint2": "A single prepaid balance for SMS (Twilio), WhatsApp templates, and the VigIA assistant.",
+    "noBalance": "You've run out of balance. Messages with a cost won't go out until you top up.",
+    "lowBalance": "Low balance: below the configured threshold. Channels with a cost may be blocked.",
+    "rechargeTitle": "Top up balance",
+    "customAmount": "Amount (USD)",
+    "recharge": "Top up",
+    "rechargeHint": "Secure card payment via Stripe. The balance is credited automatically once the payment is confirmed and covers the SMS sent by the platform.",
+    "smsTitle": "SMS (Twilio)",
+    "smsFallback": "SMS as backup",
+    "smsFallbackDesc": "Use SMS (Twilio) when push and WhatsApp aren't available.",
+    "smsCritical": "SMS for critical alerts",
+    "smsCriticalDesc": "Sends SMS for visitor and patrol alerts. The panic button always sends SMS, independent of this.",
+    "criticalSmsFallback": "SMS backup for critical alerts",
+    "criticalSmsFallbackDesc": "Allows backup SMS when a critical alert isn't delivered.",
+    "walletRequired": "Require balance for channels with a cost",
+    "walletRequiredDesc": "Blocks SMS sending when there isn't enough balance.",
+    "lowThreshold": "Low balance threshold (USD)",
+    "waTogglesTitle": "WhatsApp alerts",
+    "whatsappEnabled": "Enable WhatsApp",
+    "whatsappEnabledDesc": "Sends messages from your own WhatsApp Business (billed by Meta to your company).",
+    "whatsappShiftReminders": "Shift reminders by WhatsApp",
+    "whatsappShiftRemindersDesc": "Notifies shifts by WhatsApp if the guard doesn't have push.",
+    "whatsappIncidents": "Incidents by WhatsApp",
+    "whatsappIncidentsDesc": "Alerts supervisors and administrators by WhatsApp.",
+    "orderTitle": "Notification order",
+    "orderHint": "Each notification tries the cheapest channel first and only moves to the next if it doesn't arrive.",
+    "orderPush": "No cost",
+    "orderWa": "Billed by Meta",
+    "orderSms": "Uses balance",
+    "orderMail": "No cost",
+    "routingTitle": "Routing preferences",
+    "otpChannel": "Preferred channel for the access code",
+    "defaultCountry": "Default country code",
+    "usageTitle": "Usage history",
+    "sumMessages": "Messages (page)",
+    "sumPaid": "With cost",
+    "sumBilled": "Billed",
+    "sumFailed": "Failed",
+    "fChannel": "Channel",
+    "all": "All",
+    "fProvider": "Provider",
+    "fStatus": "Status",
+    "fType": "Type",
+    "fFrom": "From",
+    "fTo": "To",
+    "applyFilters": "Filter",
+    "clearFilters": "Clear",
+    "noLogs": "No records for the applied filters.",
+    "noLogsDesc": "Change or clear the filters to see more sends.",
+    "colDate": "Date",
+    "colChannel": "Channel",
+    "colType": "Type",
+    "colRecipient": "Recipient",
+    "colStatus": "Status",
+    "colCost": "Cost",
+    "pageOf": "Page {{page}} of {{total}} · {{count}} records",
+    "prev": "Previous",
+    "next": "Next"
   }
 }

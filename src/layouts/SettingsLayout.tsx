@@ -27,7 +27,7 @@ import { settingsIcon } from "@/config/settingsIcons";
  */
 
 type SubItem = { id: string; label: string; path: string; icon?: string };
-type Section = { label?: string; items: SubItem[] };
+type Section = { id?: string; label?: string; items: SubItem[] };
 
 export default function SettingsLayout({
   navKey: _navKey,
@@ -60,8 +60,8 @@ export default function SettingsLayout({
         </Link>
 
         {secciones.map((sec) => (
-          <div key={sec.label} className="mb-4">
-            <p className="cg-eyebrow px-2 pb-1.5">{sec.label}</p>
+          <div key={sec.id || sec.label} className="mb-4">
+            <p className="cg-eyebrow px-2 pb-1.5">{sec.id ? t(`settings.section.${sec.id}`, { defaultValue: sec.label }) : sec.label}</p>
             <ul className="space-y-0.5">
               {sec.items.map((item) => {
                 // `startsWith` y no igualdad: varias páginas de ajustes tienen
