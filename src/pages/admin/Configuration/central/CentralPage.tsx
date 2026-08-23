@@ -162,7 +162,7 @@ export default function CentralPage() {
               <Section title="Quién la atiende" icon={<Users />} contentClassName="divide-y">
                 <ToggleRow
                   label="Mis operadores pueden salir a cubrir puestos"
-                  hint="Enciéndelo si tu centralista a veces cubre un puesto de servicio: se le habilita ficha para recibir turnos y fichar en la calle, y el reloj le deja elegir entre la central y el puesto. Apagado, la consola es su único sitio."
+                  hint="Enciéndelo si tu centralista a veces cubre un puesto de servicio: podrás asignarlo a puestos de clientes y el reloj le dejará elegir entre la central y el puesto. Apagado, la consola es su único sitio. (En ambos casos el operador necesita rol de vigilante para poder fichar en la central: es lo que permite saber quién tiene la consola.)"
                   checked={cfg.operadoresCubrenPuestos}
                   onCheckedChange={(v: boolean) => set("operadoresCubrenPuestos", v)}
                   disabled={!canEdit}
