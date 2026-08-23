@@ -13,6 +13,7 @@
  * no guardaba nada.
  */
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { EyeOff, LayoutPanelTop, FileText } from "lucide-react";
 import { Label } from "@/components/ui/label";
@@ -75,6 +76,7 @@ const merge = (saved: Partial<ReportSettings> | undefined): ReportSettings => ({
 });
 
 export default function ReportSettingsForm() {
+  const { t } = useTranslation();
   const { hasPermission } = usePermissions();
   const canEdit = hasPermission("settingsEdit");
 
@@ -91,7 +93,7 @@ export default function ReportSettingsForm() {
         setTheme(row.theme || "default");
         setCfg(merge(row.reportSettings));
       } catch {
-        toast.error("No se pudo cargar la configuración de informes.");
+        toast.error(t('settings.reportSettings.loadError', { defaultValue: "No se pudo cargar la configuración de informes." }));
       } finally {
         setLoading(false);
       }
@@ -110,9 +112,9 @@ export default function ReportSettingsForm() {
       await api.put(`/tenant/${tenantId()}/settings`, {
         settings: { theme, reportSettings: cfg },
       });
-      toast.success("Configuración de informes guardada. Aplica al próximo informe.");
+      toast.success(t('settings.reportSettings.saveSuccess', { defaultValue: "Configuración de informes guardada. Aplica al próximo informe." }));
     } catch (e: any) {
-      toast.error(e?.response?.data?.message || "No se pudo guardar la configuración.");
+      toast.error(e?.response?.data?.message || t('settings.reportSettings.saveError', { defaultValue: "No se pudo guardar la configuración." }));
     } finally {
       setSaving(false);
     }
@@ -124,87 +126,86 @@ export default function ReportSettingsForm() {
 
   return (
     <Stagger className="space-y-6">
-      <Section title="Privacidad" icon={<EyeOff />} contentClassName="divide-y">
+      <Section title={t('settings.reportSettings.privacyTitle', { defaultValue: "Privacidad" })} icon={<EyeOff />} contentClassName="divide-y">
         <ToggleRow
-          label="Ocultar el nombre del cliente"
-          hint="Se sustituye por «Cliente 1», «Cliente 2»… en los informes exportados, enviados por correo o impresos."
+          label={t('settings.reportSettings.hideClientNameLabel', { defaultValue: "Ocultar el nombre del cliente" })}
+          hint={t('settings.reportSettings.hideClientNameHint', { defaultValue: "Se sustituye por «Cliente 1», «Cliente 2»… en los informes exportados, enviados por correo o impresos." })}
           checked={cfg.hideClientName}
           onCheckedChange={(v) => set("hideClientName", v)}
           disabled={disabled}
         />
         <ToggleRow
-          label="Ocultar el nombre del puesto de vigilancia"
-          hint="El informe sigue distinguiendo un puesto de otro, pero no imprime su nombre."
+          label={t('settings.reportSettings.hideStationNameLabel', { defaultValue: "Ocultar el nombre del puesto de vigilancia" })}
+          hint={t('settings.reportSettings.hideStationNameHint', { defaultValue: "El informe sigue distinguiendo un puesto de otro, pero no imprime su nombre." })}
           checked={cfg.hideStationName}
           onCheckedChange={(v) => set("hideStationName", v)}
           disabled={disabled}
         />
         <ToggleRow
-          label="Ocultar el nombre del vigilante"
-          hint="Lo habitual en los informes que se comparten con el cliente."
+          label={t('settings.reportSettings.hideGuardNameLabel', { defaultValue: "Ocultar el nombre del vigilante" })}
+          hint={t('settings.reportSettings.hideGuardNameHint', { defaultValue: "Lo habitual en los informes que se comparten con el cliente." })}
           checked={cfg.hideGuardName}
           onCheckedChange={(v) => set("hideGuardName", v)}
           disabled={disabled}
         />
         <ToggleRow
-          label="Incluir los puntos de control del recorrido"
-          hint="Añade la columna «Punto de control» al informe de rondas, con el punto escaneado."
+          label={t('settings.reportSettings.includeCheckpointsLabel', { defaultValue: "Incluir los puntos de control del recorrido" })}
+          hint={t('settings.reportSettings.includeCheckpointsHint', { defaultValue: "Añade la columna «Punto de control» al informe de rondas, con el punto escaneado." })}
           checked={cfg.includeCheckpoints}
           onCheckedChange={(v) => set("includeCheckpoints", v)}
           disabled={disabled}
         />
       </Section>
 
-      <Section title="Encabezado del informe" icon={<LayoutPanelTop />} contentClassName="divide-y">
+      <Section title={t('settings.reportSettings.headerTitle', { defaultValue: "Encabezado del informe" })} icon={<LayoutPanelTop />} contentClassName="divide-y">
         <ToggleRow
-          label="Nombre de la empresa"
+          label={t('settings.reportSettings.headerCompanyName', { defaultValue: "Nombre de la empresa" })}
           checked={cfg.header.companyName}
           onCheckedChange={(v) => setHeader("companyName", v)}
           disabled={disabled}
         />
         <ToggleRow
-          label="Correo electrónico de la empresa"
+          label={t('settings.reportSettings.headerEmail', { defaultValue: "Correo electrónico de la empresa" })}
           checked={cfg.header.email}
           onCheckedChange={(v) => setHeader("email", v)}
           disabled={disabled}
         />
         <ToggleRow
-          label="Dirección de la empresa"
+          label={t('settings.reportSettings.headerAddress', { defaultValue: "Dirección de la empresa" })}
           checked={cfg.header.address}
           onCheckedChange={(v) => setHeader("address", v)}
           disabled={disabled}
         />
         <ToggleRow
-          label="Número de licencia"
+          label={t('settings.reportSettings.headerLicenseNumber', { defaultValue: "Número de licencia" })}
           checked={cfg.header.licenseNumber}
           onCheckedChange={(v) => setHeader("licenseNumber", v)}
           disabled={disabled}
         />
         <ToggleRow
-          label="Sitio web"
+          label={t('settings.reportSettings.headerWebsite', { defaultValue: "Sitio web" })}
           checked={cfg.header.website}
           onCheckedChange={(v) => setHeader("website", v)}
           disabled={disabled}
         />
         <ToggleRow
-          label="Teléfono"
+          label={t('settings.reportSettings.headerPhone', { defaultValue: "Teléfono" })}
           checked={cfg.header.phone}
           onCheckedChange={(v) => setHeader("phone", v)}
           disabled={disabled}
         />
         <div className="pt-4">
           <InfoNote tone="info">
-            Estos datos salen del Perfil de la Empresa. Si alguno está vacío ahí, no se imprime
-            aunque esté activado aquí.
+            {t('settings.reportSettings.headerInfoNote', { defaultValue: "Estos datos salen del Perfil de la Empresa. Si alguno está vacío ahí, no se imprime aunque esté activado aquí." })}
           </InfoNote>
         </div>
       </Section>
 
-      <Section title="Pie de página" icon={<FileText />} contentClassName="space-y-2">
-        <Label htmlFor="report-footer">Texto que aparece al final de cada informe</Label>
+      <Section title={t('settings.reportSettings.footerTitle', { defaultValue: "Pie de página" })} icon={<FileText />} contentClassName="space-y-2">
+        <Label htmlFor="report-footer">{t('settings.reportSettings.footerLabel', { defaultValue: "Texto que aparece al final de cada informe" })}</Label>
         <Textarea
           id="report-footer"
-          placeholder="Escribe aquí…"
+          placeholder={t('settings.reportSettings.footerPlaceholder', { defaultValue: "Escribe aquí…" })}
           rows={5}
           maxLength={FOOTER_MAX}
           value={cfg.footerText}
@@ -213,7 +214,7 @@ export default function ReportSettingsForm() {
         />
         <div className="flex items-center justify-between gap-3">
           <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
-            Suele usarse para una nota de confidencialidad o los datos de contacto.
+            {t('settings.reportSettings.footerHint', { defaultValue: "Suele usarse para una nota de confidencialidad o los datos de contacto." })}
           </p>
           <span className="shrink-0 text-xs tabular-nums" style={{ color: "var(--ink-faint)" }}>
             {cfg.footerText.length}/{FOOTER_MAX}

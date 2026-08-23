@@ -41,7 +41,7 @@ export default function UserRolesPage() {
   // Built-in role names/descriptions come from the backend as raw English
   // identifiers; render them via roleLabels in the chosen language and
   // re-render when it changes.
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const lang = i18n.language;
   const [query, setQuery] = useState("");
   const [pageSize, setPageSize] = useState("25");
@@ -103,7 +103,7 @@ export default function UserRolesPage() {
         setRows(mapped);
       } catch (err) {
         console.error('Error cargando roles:', err);
-        toast.error('No se pudieron cargar los roles');
+        toast.error(t('settings.userRoles.loadError', { defaultValue: 'No se pudieron cargar los roles' }));
       }
     })();
     return () => { mounted = false; };
@@ -210,7 +210,7 @@ export default function UserRolesPage() {
     try {
       const role = rows.find((r) => r.id === id);
       if (role && role.fullyLocked) {
-        toast.error('Los permisos de este rol no se pueden modificar');
+        toast.error(t('settings.userRoles.permsLockedError', { defaultValue: 'Los permisos de este rol no se pueden modificar' }));
         return;
       }
       const tenantId = localStorage.getItem("tenantId") || "";
@@ -222,12 +222,12 @@ export default function UserRolesPage() {
         toSave = Array.from(new Set([...perms, ...ADMIN_FLOOR_PERMISSIONS]));
       }
       await ApiService.put(`/tenant/${tenantId}/role/${id}`, { permissions: toSave });
-      toast.success('Permisos actualizados');
+      toast.success(t('settings.userRoles.permsUpdated', { defaultValue: 'Permisos actualizados' }));
       // close expanded
       setExpandedRoleId(null);
       setExpandedRolePerms([]);
     } catch (err) {
-      toast.error('Error guardando permisos');
+      toast.error(t('settings.userRoles.permsSaveError', { defaultValue: 'Error guardando permisos' }));
     }
   };
 
@@ -238,9 +238,9 @@ export default function UserRolesPage() {
       const res = await ApiService.post(`/tenant/${tenantId}/role/${id}/reset`, {});
       const perms = res && Array.isArray(res.permissions) ? res.permissions : (res?.data?.permissions ?? []);
       setExpandedRolePerms(perms);
-      toast.success('Rol restablecido a sus valores predeterminados');
+      toast.success(t('settings.userRoles.roleResetSuccess', { defaultValue: 'Rol restablecido a sus valores predeterminados' }));
     } catch (err) {
-      toast.error('Error al restablecer el rol');
+      toast.error(t('settings.userRoles.roleResetError', { defaultValue: 'Error al restablecer el rol' }));
     }
   };
 
@@ -257,20 +257,20 @@ export default function UserRolesPage() {
         // update
         const res = await ApiService.put(`/tenant/${tenantId}/role/${edit.id}`, data);
         setRows((s) => s.map((r) => (r.id === edit.id ? { ...r, name: res.name ?? data.name, description: res.description ?? data.description } : r)));
-        toast.success('Rol actualizado');
+        toast.success(t('settings.userRoles.roleUpdated', { defaultValue: 'Rol actualizado' }));
       } else {
         // create
         const res = await ApiService.post(`/tenant/${tenantId}/role`, data);
         const newRow: UserRoleRow = { id: res.id || String(Math.random()), name: res.name ?? data.name, description: res.description ?? data.description };
         setRows((s) => [newRow, ...s]);
-        toast.success('Rol creado');
+        toast.success(t('settings.userRoles.roleCreated', { defaultValue: 'Rol creado' }));
       }
 
       setOpen(false);
       setEdit(null);
       setDialogDefaults(null);
     } catch (err) {
-      toast.error('Error guardando rol');
+      toast.error(t('settings.userRoles.roleSaveError', { defaultValue: 'Error guardando rol' }));
     }
   };
 
@@ -289,7 +289,7 @@ export default function UserRolesPage() {
       return role ? !role.isDefault : true;
     });
     if (idsToDelete.length === 0) {
-      toast.error('No se pueden eliminar roles bloqueados');
+      toast.error(t('settings.userRoles.lockedRolesDeleteError', { defaultValue: 'No se pueden eliminar roles bloqueados' }));
       setDeleteDialogOpen(false);
       setPendingDeleteIds([]);
       return;
@@ -302,9 +302,9 @@ export default function UserRolesPage() {
       }
       setRows((s) => s.filter((r) => !idsToDelete.includes(r.id)));
       setChecked({});
-      toast.success('Roles eliminados');
+      toast.success(t('settings.userRoles.rolesDeleted', { defaultValue: 'Roles eliminados' }));
     } catch (err: any) {
-      let message = 'Error eliminando roles';
+      let message = t('settings.userRoles.rolesDeleteError', { defaultValue: 'Error eliminando roles' });
       if (err instanceof ApiError) {
         // Prefer the ApiError.message, otherwise try structured data
         message = err.message || message;
@@ -326,21 +326,21 @@ export default function UserRolesPage() {
 
   return (
     <AppLayout>
-      <SettingsLayout navKey="configuracion" title="Roles y permisos">
+      <SettingsLayout navKey="configuracion" title={t('settings.userRoles.navTitle', { defaultValue: 'Roles y permisos' })}>
         <PageContainer width="wide">
           <PageHeader
             icon={<ShieldCheck />}
-            title="Roles de Usuario"
-            subtitle="Define roles y administra los permisos de acceso para cada uno."
+            title={t('settings.userRoles.pageTitle', { defaultValue: 'Roles de Usuario' })}
+            subtitle={t('settings.userRoles.pageSubtitle', { defaultValue: 'Define roles y administra los permisos de acceso para cada uno.' })}
             badges={
               rows.length > 0 ? (
-                <StatusBadge tone="neutral">{rows.length} {rows.length === 1 ? "rol" : "roles"}</StatusBadge>
+                <StatusBadge tone="neutral">{rows.length} {rows.length === 1 ? t('settings.userRoles.roleSingular', { defaultValue: 'rol' }) : t('settings.userRoles.rolePlural', { defaultValue: 'roles' })}</StatusBadge>
               ) : undefined
             }
             actions={
               <PermissionedButton permission="settingsEdit" variant="brand" onClick={onNew}>
                 <Plus className="mr-2 h-4 w-4" />
-                Nuevo rol
+                {t('settings.userRoles.newRoleBtn', { defaultValue: 'Nuevo rol' })}
               </PermissionedButton>
             }
           />
@@ -365,7 +365,7 @@ export default function UserRolesPage() {
               <div>
                 <div className="relative mb-3">
                   <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: 'var(--ink-faint)' }} />
-                  <Input className="pl-9" placeholder="Buscar permisos…" value={permQuery} onChange={(e) => setPermQuery(e.target.value)} />
+                  <Input className="pl-9" placeholder={t('settings.userRoles.permSearchPlaceholder', { defaultValue: 'Buscar permisos…' })} value={permQuery} onChange={(e) => setPermQuery(e.target.value)} />
                 </div>
                 <PermissionsEditor value={expandedRolePerms} onChange={setExpandedRolePerms} query={permQuery} readOnly={expandedRoleIsLocked} lockedPermissions={expandedLockedPerms} />
                 {expandedRoleIsLocked ? (
@@ -378,17 +378,17 @@ export default function UserRolesPage() {
                     }}
                   >
                     <Lock className="mt-0.5 h-4 w-4 shrink-0" />
-                    <span>Este rol está bloqueado. No se pueden modificar los permisos predeterminados.</span>
+                    <span>{t('settings.userRoles.lockedRoleNote', { defaultValue: 'Este rol está bloqueado. No se pueden modificar los permisos predeterminados.' })}</span>
                   </div>
                 ) : (
                   <div className="flex gap-2 justify-end mt-3">
                     {expandedRole?.isSystem && (
                       <Button variant="outline" className="mr-auto" onClick={() => resetRoleToDefault(expandedRoleId as string)}>
-                        Restaurar valores predeterminados
+                        {t('settings.userRoles.restoreDefaultsBtn', { defaultValue: 'Restaurar valores predeterminados' })}
                       </Button>
                     )}
-                    <Button variant="outline" onClick={() => { setExpandedRoleId(null); setExpandedRolePerms([]); setPermQuery(""); }}>Cancelar</Button>
-                    <Button variant="brand" onClick={() => saveExpandedPermissions(expandedRoleId as string, expandedRolePerms)}>Guardar</Button>
+                    <Button variant="outline" onClick={() => { setExpandedRoleId(null); setExpandedRolePerms([]); setPermQuery(""); }}>{t('settings.userRoles.cancelBtn', { defaultValue: 'Cancelar' })}</Button>
+                    <Button variant="brand" onClick={() => saveExpandedPermissions(expandedRoleId as string, expandedRolePerms)}>{t('settings.userRoles.saveBtn', { defaultValue: 'Guardar' })}</Button>
                   </div>
                 )}
               </div>
@@ -402,15 +402,15 @@ export default function UserRolesPage() {
         <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Eliminar roles</AlertDialogTitle>
+              <AlertDialogTitle>{t('settings.userRoles.deleteDialogTitle', { defaultValue: 'Eliminar roles' })}</AlertDialogTitle>
             </AlertDialogHeader>
             <AlertDialogDescription>
-              ¿Estás seguro que deseas eliminar {pendingDeleteIds.length} rol(es)? Esta acción no se puede deshacer.
+              {t('settings.userRoles.deleteDialogDescription', { defaultValue: '¿Estás seguro que deseas eliminar {{count}} rol(es)? Esta acción no se puede deshacer.', count: pendingDeleteIds.length })}
             </AlertDialogDescription>
             <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => { setDeleteDialogOpen(false); setPendingDeleteIds([]); }}>Cancelar</AlertDialogCancel>
+              <AlertDialogCancel onClick={() => { setDeleteDialogOpen(false); setPendingDeleteIds([]); }}>{t('settings.userRoles.cancelBtn', { defaultValue: 'Cancelar' })}</AlertDialogCancel>
               <AlertDialogAction className="cg-btn-bad" onClick={handleConfirmDelete}>
-                Eliminar
+                {t('settings.userRoles.deleteAction', { defaultValue: 'Eliminar' })}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -419,7 +419,7 @@ export default function UserRolesPage() {
         <UserRoleDialog
           open={open}
           onOpenChange={setOpen}
-          title={edit ? "Editar Rol" : "Nuevo Rol"}
+          title={edit ? t('settings.userRoles.dialogEditTitle', { defaultValue: 'Editar Rol' }) : t('settings.userRoles.dialogNewTitle', { defaultValue: 'Nuevo Rol' })}
           defaultValues={dialogDefaults}
           onSubmit={submit}
         />

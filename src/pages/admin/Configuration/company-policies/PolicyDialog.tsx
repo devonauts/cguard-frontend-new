@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { X, Bold, Italic, Underline, Quote, List, ListOrdered, Type } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -40,6 +41,7 @@ export default function PolicyDialog({
   onSubmit: (data: PolicyForm) => void;
   onDraft: (data: PolicyForm) => void;
 }) {
+  const { t } = useTranslation();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [dept, setDept] = useState<string | undefined>();
@@ -61,7 +63,7 @@ export default function PolicyDialog({
         const filas = Array.isArray(r) ? r : r?.rows || [];
         if (vivo) setListaVigilantes(filas.map((g: any) => ({
           id: String(g.id),
-          name: g.fullName || [g.firstName, g.lastName].filter(Boolean).join(' ') || g.name || 'Sin nombre',
+          name: g.fullName || [g.firstName, g.lastName].filter(Boolean).join(' ') || g.name || t('settings.companyPolicies.guardNoNameFallback', { defaultValue: 'Sin nombre' }),
         })));
       } catch { if (vivo) setListaVigilantes([]); }
       try {
@@ -92,23 +94,23 @@ export default function PolicyDialog({
       }}
       size="lg"
       icon={<FileText />}
-      title="Agregar Política de Empresa"
+      title={t('settings.companyPolicies.dialogTitle', { defaultValue: "Agregar Política de Empresa" })}
       footer={
         <>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
-            <X className="mr-2 h-4 w-4" /> Cerrar
+            <X className="mr-2 h-4 w-4" /> {t('settings.companyPolicies.closeBtn', { defaultValue: 'Cerrar' })}
           </Button>
           <Button type="button" variant="outline" onClick={() => onDraft(payload)}>
-            Guardar como borrador
+            {t('settings.companyPolicies.saveDraftBtn', { defaultValue: 'Guardar como borrador' })}
           </Button>
           <Button onClick={() => onSubmit(payload)} disabled={!title.trim()} variant="brand" className="px-8">
-            Guardar
+            {t('settings.companyPolicies.saveBtn', { defaultValue: 'Guardar' })}
           </Button>
         </>
       }
     >
         <div className="space-y-5">
-          <Input placeholder="Título*" value={title} onChange={(e) => setTitle(e.target.value)} />
+          <Input placeholder={t('settings.companyPolicies.titlePlaceholder', { defaultValue: "Título*" })} value={title} onChange={(e) => setTitle(e.target.value)} />
 
           <div className="rounded-xl border" style={{ borderColor: "var(--hairline)" }}>
             <div
@@ -125,7 +127,7 @@ export default function PolicyDialog({
             </div>
             <Textarea
               className="min-h-[220px] border-0 bg-transparent focus-visible:ring-0"
-              placeholder="Escribir aquí"
+              placeholder={t('settings.companyPolicies.contentPlaceholder', { defaultValue: "Escribir aquí" })}
               value={content}
               onChange={(e) => setContent(e.target.value)}
             />
@@ -133,10 +135,10 @@ export default function PolicyDialog({
 
           <div className="space-y-3">
             <div>
-              <Label className="mb-1 block">Departamento</Label>
+              <Label className="mb-1 block">{t('settings.companyPolicies.departmentLabel', { defaultValue: "Departamento" })}</Label>
               <Select value={dept} onValueChange={setDept}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Departamento" />
+                  <SelectValue placeholder={t('settings.companyPolicies.departmentPlaceholder', { defaultValue: "Departamento" })} />
                 </SelectTrigger>
                 <SelectContent>
                   {listaDepartamentos.map((d) => (
@@ -150,7 +152,7 @@ export default function PolicyDialog({
 
 
             <div>
-              <Label className="mb-1 block">Seleccionar Vigilantes Específicos</Label>
+              <Label className="mb-1 block">{t('settings.companyPolicies.selectGuardsLabel', { defaultValue: "Seleccionar Vigilantes Específicos" })}</Label>
               <GuardMultiSelect value={guards} onChange={setGuards} options={listaVigilantes} />
               {selectedGuards.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-2">
@@ -179,6 +181,7 @@ function GuardMultiSelect({
   onChange: (ids: string[]) => void;
   options: Guard[];
 }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const picked = options.filter((g) => value.includes(g.id));
 
@@ -189,13 +192,13 @@ function GuardMultiSelect({
           {picked.length ? (
             <span className="truncate">{picked.map((g) => g.name).join(", ")}</span>
           ) : (
-            <span style={{ color: "var(--ink-faint)" }}>Seleccionar vigilantes…</span>
+            <span style={{ color: "var(--ink-faint)" }}>{t('settings.companyPolicies.selectGuardsPlaceholder', { defaultValue: "Seleccionar vigilantes…" })}</span>
           )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="p-0 w-[360px]">
         <Command>
-          <CommandInput placeholder="Buscar vigilante…" />
+          <CommandInput placeholder={t('settings.companyPolicies.searchGuardPlaceholder', { defaultValue: "Buscar vigilante…" })} />
           <CommandList>
             <CommandGroup>
               {options.map((g) => {

@@ -17,6 +17,7 @@
  */
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { ShieldCheck, KeyRound, TimerOff, ToggleLeft } from "lucide-react";
 import { SkeletonCards, StatusBadge } from "@/components/kit";
 import SettingsPageShell from "../components/SettingsPageShell";
@@ -50,6 +51,7 @@ const IDLE_OPCIONES: Array<[number, string]> = [
 ];
 
 export default function SecurityPolicyPage() {
+  const { t } = useTranslation();
   const { hasPermission } = usePermissions();
   const canEdit = hasPermission("settingsEdit");
   const [password, setPassword] = useState<PasswordPolicy | null>(null);
@@ -68,7 +70,7 @@ export default function SecurityPolicyPage() {
         setPlatform(data.platform || []);
         setLimites(data.limites || {});
       } catch {
-        toast.error("No se pudo cargar la política de seguridad.");
+        toast.error(t('settings.security.loadError', { defaultValue: 'No se pudo cargar la política de seguridad.' }));
       } finally {
         setLoading(false);
       }
@@ -81,9 +83,9 @@ export default function SecurityPolicyPage() {
       const { data } = await api.put(`/tenant/${tenantId()}/settings/security`, { password, session });
       if (data?.password) setPassword(data.password);
       if (data?.session) setSession(data.session);
-      toast.success("Política guardada. Las contraseñas nuevas ya la exigen; la sesión aplica al recargar.");
+      toast.success(t('settings.security.savedOk', { defaultValue: 'Política guardada. Las contraseñas nuevas ya la exigen; la sesión aplica al recargar.' }));
     } catch (e: any) {
-      toast.error(e?.response?.data?.message || "No se pudo guardar.");
+      toast.error(e?.response?.data?.message || t('settings.security.saveError', { defaultValue: 'No se pudo guardar.' }));
     } finally {
       setSaving(false);
     }
@@ -94,21 +96,20 @@ export default function SecurityPolicyPage() {
   return (
     <SettingsPageShell
       icon={<ShieldCheck />}
-      title="Seguridad"
-      subtitle="Contraseñas, cierre por inactividad y las protecciones de la plataforma."
+      title={t('settings.security.pageTitle', { defaultValue: 'Seguridad' })}
+      subtitle={t('settings.security.pageSubtitle', { defaultValue: 'Contraseñas, cierre por inactividad y las protecciones de la plataforma.' })}
     >
       {loading || !password || !session ? (
         <SkeletonCards count={3} className="sm:grid-cols-1" />
       ) : (
         <div className="space-y-6">
           <section className="glass-flat rounded-2xl p-5">
-            <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold"><KeyRound size={15} /> Contraseñas</h3>
+            <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold"><KeyRound size={15} /> {t('settings.security.passwordsHeading', { defaultValue: 'Contraseñas' })}</h3>
             <p className="mb-3 text-xs" style={{ color: "var(--ink-soft)" }}>
-              Aplica a contraseñas nuevas y cambios. La plataforma ya exige un mínimo que no se puede aflojar
-              — aquí solo se puede endurecer.
+              {t('settings.security.passwordsHint', { defaultValue: 'Aplica a contraseñas nuevas y cambios. La plataforma ya exige un mínimo que no se puede aflojar — aquí solo se puede endurecer.' })}
             </p>
             <div className="mb-3 max-w-xs">
-              <Label className="text-xs">Longitud mínima (piso: {limites.passwordMinLength ?? 8})</Label>
+              <Label className="text-xs">{t('settings.security.minLengthLabel', { defaultValue: 'Longitud mínima (piso: {{floor}})', floor: limites.passwordMinLength ?? 8 })}</Label>
               <Input
                 type="number"
                 min={limites.passwordMinLength ?? 8}
@@ -119,25 +120,24 @@ export default function SecurityPolicyPage() {
               />
             </div>
             <div className="space-y-1">
-              <ToggleRow label="Exigir mayúsculas" checked={password.requireUppercase} disabled={disabled}
+              <ToggleRow label={t('settings.security.requireUppercase', { defaultValue: 'Exigir mayúsculas' })} checked={password.requireUppercase} disabled={disabled}
                 onCheckedChange={(v: boolean) => setPassword((p) => p && { ...p, requireUppercase: v })} />
-              <ToggleRow label="Exigir minúsculas" checked={password.requireLowercase} disabled={disabled}
+              <ToggleRow label={t('settings.security.requireLowercase', { defaultValue: 'Exigir minúsculas' })} checked={password.requireLowercase} disabled={disabled}
                 onCheckedChange={(v: boolean) => setPassword((p) => p && { ...p, requireLowercase: v })} />
-              <ToggleRow label="Exigir números" checked={password.requireNumber} disabled={disabled}
+              <ToggleRow label={t('settings.security.requireNumber', { defaultValue: 'Exigir números' })} checked={password.requireNumber} disabled={disabled}
                 onCheckedChange={(v: boolean) => setPassword((p) => p && { ...p, requireNumber: v })} />
-              <ToggleRow label="Exigir símbolos" checked={password.requireSymbol} disabled={disabled}
+              <ToggleRow label={t('settings.security.requireSymbol', { defaultValue: 'Exigir símbolos' })} checked={password.requireSymbol} disabled={disabled}
                 onCheckedChange={(v: boolean) => setPassword((p) => p && { ...p, requireSymbol: v })} />
             </div>
           </section>
 
           <section className="glass-flat rounded-2xl p-5">
-            <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold"><TimerOff size={15} /> Cierre por inactividad</h3>
+            <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold"><TimerOff size={15} /> {t('settings.security.idleHeading', { defaultValue: 'Cierre por inactividad' })}</h3>
             <p className="mb-3 text-xs" style={{ color: "var(--ink-soft)" }}>
-              Cierra la sesión del CRM cuando nadie lo usa — el navegador de una recepción no se queda
-              abierto un mes. Las apps de los vigilantes no se ven afectadas.
+              {t('settings.security.idleHint', { defaultValue: 'Cierra la sesión del CRM cuando nadie lo usa — el navegador de una recepción no se queda abierto un mes. Las apps de los vigilantes no se ven afectadas.' })}
             </p>
             <div className="mb-2 max-w-xs">
-              <Label className="text-xs">Cerrar tras</Label>
+              <Label className="text-xs">{t('settings.security.closeAfterLabel', { defaultValue: 'Cerrar tras' })}</Label>
               <select
                 className="cg-input w-full"
                 value={session.idleTimeoutMinutes}
@@ -145,18 +145,18 @@ export default function SecurityPolicyPage() {
                 disabled={disabled}
               >
                 {IDLE_OPCIONES.map(([v, l]) => (
-                  <option key={v} value={v}>{l}</option>
+                  <option key={v} value={v}>{t(`settings.security.idleOption_${v}`, { defaultValue: l })}</option>
                 ))}
               </select>
             </div>
-            <ToggleRow label="Avisar 2 minutos antes de cerrar" checked={session.warnBeforeLogout} disabled={disabled || session.idleTimeoutMinutes === 0}
+            <ToggleRow label={t('settings.security.warnBeforeLogout', { defaultValue: 'Avisar 2 minutos antes de cerrar' })} checked={session.warnBeforeLogout} disabled={disabled || session.idleTimeoutMinutes === 0}
               onCheckedChange={(v: boolean) => setSession((s) => s && { ...s, warnBeforeLogout: v })} />
           </section>
 
           <section className="glass-flat rounded-2xl p-5">
-            <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold"><ToggleLeft size={15} /> Protecciones de la plataforma</h3>
+            <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold"><ToggleLeft size={15} /> {t('settings.security.platformHeading', { defaultValue: 'Protecciones de la plataforma' })}</h3>
             <p className="mb-3 text-xs" style={{ color: "var(--ink-soft)" }}>
-              Las administra CGuardPro para todas las empresas. Aquí puedes ver si están activas.
+              {t('settings.security.platformHint', { defaultValue: 'Las administra CGuardPro para todas las empresas. Aquí puedes ver si están activas.' })}
             </p>
             <div className="space-y-3">
               {platform.map((sw) => (
@@ -165,7 +165,7 @@ export default function SecurityPolicyPage() {
                     <p className="text-sm font-medium">{sw.nombre}</p>
                     <p className="text-xs" style={{ color: "var(--ink-soft)" }}>{sw.descripcion}</p>
                   </div>
-                  <StatusBadge tone={sw.activo ? "ok" : "neutral"}>{sw.activo ? "Activa" : "Inactiva"}</StatusBadge>
+                  <StatusBadge tone={sw.activo ? "ok" : "neutral"}>{sw.activo ? t('settings.security.statusActive', { defaultValue: 'Activa' }) : t('settings.security.statusInactive', { defaultValue: 'Inactiva' })}</StatusBadge>
                 </div>
               ))}
             </div>

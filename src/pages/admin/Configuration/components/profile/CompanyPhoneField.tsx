@@ -4,6 +4,7 @@ import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 import './PhoneField.css';
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   value: string;
@@ -12,6 +13,7 @@ type Props = {
 };
 
 export default function CompanyPhoneField({ value, onChange, disabled }: Props) {
+  const { t } = useTranslation();
   const country = value ? parsePhoneNumberFromString(value)?.country : undefined;
 
   const handleChange = (val: string | undefined) => {
@@ -29,7 +31,7 @@ export default function CompanyPhoneField({ value, onChange, disabled }: Props) 
         country={country}
         value={value || undefined}
         onChange={handleChange}
-        placeholder="Ingresa número de teléfono"
+        placeholder={t('settings.phoneField.enterPhonePlaceholder', { defaultValue: 'Ingresa número de teléfono' })}
         disabled={disabled}
       />
     </div>

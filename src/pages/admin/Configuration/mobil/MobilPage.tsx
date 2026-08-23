@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/SettingsLayout';
 import { Button } from '@/components/ui/button';
@@ -162,6 +163,7 @@ const defaultCertificationForm = {
 };
 
 export default function MobilPage() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [bannerDialogOpen, setBannerDialogOpen] = useState(false);
   const [certDialogOpen, setCertDialogOpen] = useState(false);
@@ -248,7 +250,7 @@ export default function MobilPage() {
       return;
     }
     if (file.size > IMAGE_MAX_SIZE_BYTES) {
-      toast.error(`El archivo supera el límite de ${IMAGE_MAX_SIZE_MB} MB.`);
+      toast.error(t('settings.mobil.fileTooLarge', { defaultValue: 'El archivo supera el límite de {{mb}} MB.', mb: IMAGE_MAX_SIZE_MB }));
       return;
     }
     setBannerForm({ ...bannerForm, imageFile: file });
@@ -260,7 +262,7 @@ export default function MobilPage() {
       return;
     }
     if (file.size > IMAGE_MAX_SIZE_BYTES) {
-      toast.error(`El archivo supera el límite de ${IMAGE_MAX_SIZE_MB} MB.`);
+      toast.error(t('settings.mobil.fileTooLarge', { defaultValue: 'El archivo supera el límite de {{mb}} MB.', mb: IMAGE_MAX_SIZE_MB }));
       return;
     }
     setCertForm({ ...certForm, imageFile: file });
@@ -272,7 +274,7 @@ export default function MobilPage() {
       return;
     }
     if (file.size > ICON_MAX_SIZE_BYTES) {
-      toast.error(`El archivo supera el límite de ${ICON_MAX_SIZE_MB} MB.`);
+      toast.error(t('settings.mobil.fileTooLarge', { defaultValue: 'El archivo supera el límite de {{mb}} MB.', mb: ICON_MAX_SIZE_MB }));
       return;
     }
     setCertForm({ ...certForm, iconFile: file });
@@ -295,7 +297,7 @@ export default function MobilPage() {
       setServices(services);
     } catch (err) {
       console.error(err);
-      toast.error('No se pudo cargar la información de Mobil.');
+      toast.error(t('settings.mobil.loadError', { defaultValue: 'No se pudo cargar la información de Mobil.' }));
     } finally {
       setLoading(false);
     }
@@ -347,7 +349,7 @@ export default function MobilPage() {
 
   const handleSaveBanner = async () => {
     if (!bannerForm.title.trim()) {
-      toast.error('El título del banner es obligatorio.');
+      toast.error(t('settings.mobil.bannerTitleRequired', { defaultValue: 'El título del banner es obligatorio.' }));
       return;
     }
 
@@ -372,16 +374,16 @@ export default function MobilPage() {
 
       if (editingBannerId) {
         await updateBanner(editingBannerId, payload);
-        toast.success('Banner actualizado.');
+        toast.success(t('settings.mobil.bannerUpdated', { defaultValue: 'Banner actualizado.' }));
       } else {
         await createBanner(payload);
-        toast.success('Banner creado.');
+        toast.success(t('settings.mobil.bannerCreated', { defaultValue: 'Banner creado.' }));
       }
       setBannerDialogOpen(false);
       loadData();
     } catch (error) {
       console.error(error);
-      toast.error('Error al guardar el banner.');
+      toast.error(t('settings.mobil.bannerSaveError', { defaultValue: 'Error al guardar el banner.' }));
     } finally {
       setLoading(false);
     }
@@ -389,7 +391,7 @@ export default function MobilPage() {
 
   const handleSaveCertification = async () => {
     if (!certForm.title.trim() || !certForm.code.trim() || !certForm.description.trim()) {
-      toast.error('Título, código y descripción son obligatorios.');
+      toast.error(t('settings.mobil.certFieldsRequired', { defaultValue: 'Título, código y descripción son obligatorios.' }));
       return;
     }
 
@@ -421,16 +423,16 @@ export default function MobilPage() {
 
       if (editingCertificateId) {
         await updateCertification(editingCertificateId, payload);
-        toast.success('Certificación actualizada.');
+        toast.success(t('settings.mobil.certUpdated', { defaultValue: 'Certificación actualizada.' }));
       } else {
         await createCertification(payload);
-        toast.success('Certificación creada.');
+        toast.success(t('settings.mobil.certCreated', { defaultValue: 'Certificación creada.' }));
       }
       setCertDialogOpen(false);
       loadData();
     } catch (error) {
       console.error(error);
-      toast.error('Error al guardar la certificación.');
+      toast.error(t('settings.mobil.certSaveError', { defaultValue: 'Error al guardar la certificación.' }));
     } finally {
       setLoading(false);
     }
@@ -453,23 +455,23 @@ export default function MobilPage() {
     try {
       if (confirmDeleteItem.type === 'banner') {
         await deleteBanner(confirmDeleteItem.id);
-        toast.success('Banner eliminado.');
+        toast.success(t('settings.mobil.bannerDeleted', { defaultValue: 'Banner eliminado.' }));
       } else if (confirmDeleteItem.type === 'certification') {
         await deleteCertification(confirmDeleteItem.id);
-        toast.success('Certificación eliminada.');
+        toast.success(t('settings.mobil.certDeleted', { defaultValue: 'Certificación eliminada.' }));
       } else if (confirmDeleteItem.type === 'service') {
         await deleteService(confirmDeleteItem.id);
-        toast.success('Servicio eliminado.');
+        toast.success(t('settings.mobil.serviceDeleted', { defaultValue: 'Servicio eliminado.' }));
       }
       loadData();
     } catch (error) {
       console.error(error);
       toast.error(
         confirmDeleteItem.type === 'banner'
-          ? 'No se pudo eliminar el banner.'
+          ? t('settings.mobil.bannerDeleteError', { defaultValue: 'No se pudo eliminar el banner.' })
           : confirmDeleteItem.type === 'certification'
-          ? 'No se pudo eliminar la certificación.'
-          : 'No se pudo eliminar el servicio.',
+          ? t('settings.mobil.certDeleteError', { defaultValue: 'No se pudo eliminar la certificación.' })
+          : t('settings.mobil.serviceDeleteError', { defaultValue: 'No se pudo eliminar el servicio.' }),
       );
     } finally {
       setLoading(false);
@@ -477,8 +479,12 @@ export default function MobilPage() {
     }
   };
 
-  const bannerTitle = editingBannerId ? 'Editar Banner Superior' : 'Nuevo Banner Superior';
-  const certTitle = editingCertificateId ? 'Editar Certificación' : 'Nueva Certificación';
+  const bannerTitle = editingBannerId
+    ? t('settings.mobil.editBannerTitle', { defaultValue: 'Editar Banner Superior' })
+    : t('settings.mobil.newBannerTitle', { defaultValue: 'Nuevo Banner Superior' });
+  const certTitle = editingCertificateId
+    ? t('settings.mobil.editCertTitle', { defaultValue: 'Editar Certificación' })
+    : t('settings.mobil.newCertTitle', { defaultValue: 'Nueva Certificación' });
 
   const [services, setServices] = useState<MobileService[]>([]);
   const [serviceDialogOpen, setServiceDialogOpen] = useState(false);
@@ -497,22 +503,22 @@ export default function MobilPage() {
 
   return (
     <AppLayout>
-      <SettingsLayout navKey="configuracion" title="App del cliente (Mi Seguridad)">
+      <SettingsLayout navKey="configuracion" title={t('settings.mobil.layoutTitle', { defaultValue: 'App del cliente (Mi Seguridad)' })}>
         <PageContainer width="wide">
           <PageHeader
             icon={<Smartphone />}
-            title="App móvil del cliente (Mi Seguridad)"
-            subtitle="Configura los banners, servicios y certificaciones. La vista previa muestra cómo se verá en el teléfono mientras editas."
+            title={t('settings.mobil.pageTitle', { defaultValue: 'App móvil del cliente (Mi Seguridad)' })}
+            subtitle={t('settings.mobil.pageSubtitle', { defaultValue: 'Configura los banners, servicios y certificaciones. La vista previa muestra cómo se verá en el teléfono mientras editas.' })}
             badges={
               <>
                 <StatusBadge tone={bannerItems.length ? 'ok' : 'neutral'}>
-                  {bannerItems.length} banner{bannerItems.length === 1 ? '' : 's'}
+                  {t('settings.mobil.bannersBadge', { defaultValue: '{{count}} banner{{plural}}', count: bannerItems.length, plural: bannerItems.length === 1 ? '' : 's' })}
                 </StatusBadge>
                 <StatusBadge tone={publishedServices ? 'ok' : 'neutral'}>
-                  {publishedServices} servicio{publishedServices === 1 ? '' : 's'} publicado{publishedServices === 1 ? '' : 's'}
+                  {t('settings.mobil.publishedServicesBadge', { defaultValue: '{{count}} servicio{{plural}} publicado{{plural}}', count: publishedServices, plural: publishedServices === 1 ? '' : 's' })}
                 </StatusBadge>
                 <StatusBadge tone={certItems.length ? 'ok' : 'neutral'}>
-                  {certItems.length} certificación{certItems.length === 1 ? '' : 'es'}
+                  {t('settings.mobil.certsBadge', { defaultValue: '{{count}} certificación{{plural}}', count: certItems.length, plural: certItems.length === 1 ? '' : 'es' })}
                 </StatusBadge>
               </>
             }
@@ -521,17 +527,17 @@ export default function MobilPage() {
             <div className="min-w-0 space-y-6">
 
           <Section
-            title="Banner Superior"
+            title={t('settings.mobil.bannerSectionTitle', { defaultValue: 'Banner Superior' })}
             icon={<ImageIcon />}
             contentClassName="space-y-4"
             action={
               <Button onClick={openCreateBanner} variant="brand" size="sm" className="inline-flex items-center gap-2">
-                <Plus className="h-4 w-4" /> Nuevo banner
+                <Plus className="h-4 w-4" /> {t('settings.mobil.newBannerBtn', { defaultValue: 'Nuevo banner' })}
               </Button>
             }
           >
             <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
-              Las imágenes que giran en la portada de la app del cliente.
+              {t('settings.mobil.bannerSectionDesc', { defaultValue: 'Las imágenes que giran en la portada de la app del cliente.' })}
             </p>
 
             <Table className="table-fixed">
@@ -543,10 +549,10 @@ export default function MobilPage() {
               </colgroup>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Título</TableHead>
-                  <TableHead>Descripción</TableHead>
-                  <TableHead className="text-center">Imagen</TableHead>
-                  <TableHead className="text-right">Acciones</TableHead>
+                  <TableHead>{t('settings.mobil.colTitle', { defaultValue: 'Título' })}</TableHead>
+                  <TableHead>{t('settings.mobil.descriptionLabel', { defaultValue: 'Descripción' })}</TableHead>
+                  <TableHead className="text-center">{t('settings.mobil.imageLabel', { defaultValue: 'Imagen' })}</TableHead>
+                  <TableHead className="text-right">{t('settings.mobil.colActions', { defaultValue: 'Acciones' })}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -562,11 +568,11 @@ export default function MobilPage() {
                         <EmptyState
                           className="border-0 py-4"
                           icon={<ImageIcon />}
-                          title="Todavía no hay banners"
-                          description="Añade uno para destacar tus servicios en la portada de la app."
+                          title={t('settings.mobil.noBannersTitle', { defaultValue: 'Todavía no hay banners' })}
+                          description={t('settings.mobil.noBannersDesc', { defaultValue: 'Añade uno para destacar tus servicios en la portada de la app.' })}
                           action={
                             <Button onClick={openCreateBanner} variant="brand" size="sm" className="gap-2">
-                              <Plus className="h-4 w-4" /> Nuevo banner
+                              <Plus className="h-4 w-4" /> {t('settings.mobil.newBannerBtn', { defaultValue: 'Nuevo banner' })}
                             </Button>
                           }
                         />
@@ -587,21 +593,21 @@ export default function MobilPage() {
                           >
                             <SmartImage
                               src={resolveBannerImageUrl(item)}
-                              alt={item.title || 'Banner'}
+                              alt={item.title || t('settings.mobil.bannerAlt', { defaultValue: 'Banner' })}
                               rounded="rounded-none"
                               className="h-16 w-32 transition duration-200 group-hover:scale-105"
                               crossOrigin="anonymous"
                             />
                           </button>
                         ) : (
-                          <StatusBadge tone="neutral" dot={false}>Sin imagen</StatusBadge>
+                          <StatusBadge tone="neutral" dot={false}>{t('settings.mobil.noImage', { defaultValue: 'Sin imagen' })}</StatusBadge>
                         )}
                       </TableCell>
                       <TableCell className="text-right space-x-2">
-                        <Button size="icon-sm" variant="outline" aria-label="Editar" onClick={() => openEditBanner(item)}>
+                        <Button size="icon-sm" variant="outline" aria-label={t('settings.mobil.editAction', { defaultValue: 'Editar' })} onClick={() => openEditBanner(item)}>
                           <Pencil className="h-4 w-4" />
                         </Button>
-                        <Button size="icon-sm" variant="destructive" aria-label="Eliminar" onClick={() => openDeleteConfirmation(item.id, item.title || 'este banner', 'banner')}>
+                        <Button size="icon-sm" variant="destructive" aria-label={t('settings.mobil.deleteAction', { defaultValue: 'Eliminar' })} onClick={() => openDeleteConfirmation(item.id, item.title || t('settings.mobil.thisBanner', { defaultValue: 'este banner' }), 'banner')}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </TableCell>
@@ -612,7 +618,7 @@ export default function MobilPage() {
           </Section>
 
           <Section
-            title="Pricebook (Servicios)"
+            title={t('settings.mobil.serviceSectionTitle', { defaultValue: 'Pricebook (Servicios)' })}
             icon={<Tag />}
             contentClassName="space-y-4"
             action={
@@ -620,18 +626,18 @@ export default function MobilPage() {
                 <Dialog open={serviceDialogOpen} onOpenChange={setServiceDialogOpen}>
                     <DialogTrigger asChild>
                     <Button onClick={() => { setEditingServiceId(null); setServiceForm(defaultServiceForm); setServiceDialogOpen(true); }} variant="brand" size="sm" className="inline-flex items-center gap-2">
-                      <Plus className="h-4 w-4" /> Nuevo servicio
+                      <Plus className="h-4 w-4" /> {t('settings.mobil.newServiceBtn', { defaultValue: 'Nuevo servicio' })}
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="max-w-lg">
                     <DialogHeader>
-                      <DialogTitle>{editingServiceId ? 'Editar Servicio' : 'Nuevo Servicio'}</DialogTitle>
-                      <DialogDescription>Configura un servicio para la app móvil.</DialogDescription>
+                      <DialogTitle>{editingServiceId ? t('settings.mobil.editServiceTitle', { defaultValue: 'Editar Servicio' }) : t('settings.mobil.newServiceTitle', { defaultValue: 'Nuevo Servicio' })}</DialogTitle>
+                      <DialogDescription>{t('settings.mobil.serviceDialogDesc', { defaultValue: 'Configura un servicio para la app móvil.' })}</DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4 mt-4">
                       {/* Plantillas de servicios de seguridad — pre-llenan título, descripción e ícono */}
                       <div>
-                        <Label>Plantillas de seguridad</Label>
+                        <Label>{t('settings.mobil.securityTemplatesLabel', { defaultValue: 'Plantillas de seguridad' })}</Label>
                         <div className="mt-1.5 flex max-h-24 flex-wrap gap-1.5 overflow-y-auto">
                           {SERVICE_TEMPLATES.map((tpl) => {
                             const Ic = serviceIcon(tpl.iconName);
@@ -655,15 +661,15 @@ export default function MobilPage() {
                         </div>
                       </div>
                       <div>
-                        <Label>Título*</Label>
-                        <Input value={serviceForm.title} onChange={(e) => setServiceForm({ ...serviceForm, title: e.target.value })} placeholder="Título del servicio" />
+                        <Label>{t('settings.mobil.titleRequiredLabel', { defaultValue: 'Título*' })}</Label>
+                        <Input value={serviceForm.title} onChange={(e) => setServiceForm({ ...serviceForm, title: e.target.value })} placeholder={t('settings.mobil.serviceTitlePlaceholder', { defaultValue: 'Título del servicio' })} />
                       </div>
                       <div>
-                        <Label>Descripción</Label>
+                        <Label>{t('settings.mobil.descriptionLabel', { defaultValue: 'Descripción' })}</Label>
                         <Textarea value={serviceForm.description} onChange={(e) => setServiceForm({ ...serviceForm, description: e.target.value })} rows={4} />
                       </div>
                       <div>
-                        <Label>Ícono (se envía a la app)</Label>
+                        <Label>{t('settings.mobil.iconSentLabel', { defaultValue: 'Ícono (se envía a la app)' })}</Label>
                         <div className="mt-1.5 flex flex-wrap gap-1.5">
                           {Object.entries(SERVICE_ICONS).map(([key, Ic]) => (
                             <button
@@ -684,15 +690,15 @@ export default function MobilPage() {
                         </div>
                       </div>
                       <div>
-                        <Label>Imágenes del servicio</Label>
-                        <p className="mb-1.5 text-xs" style={{ color: 'var(--ink-soft)' }}>Se muestran en la pantalla de detalle del servicio en la app. Puedes agregar varias.</p>
+                        <Label>{t('settings.mobil.serviceImagesLabel', { defaultValue: 'Imágenes del servicio' })}</Label>
+                        <p className="mb-1.5 text-xs" style={{ color: 'var(--ink-soft)' }}>{t('settings.mobil.serviceImagesHint', { defaultValue: 'Se muestran en la pantalla de detalle del servicio en la app. Puedes agregar varias.' })}</p>
                         <div className="flex flex-wrap gap-2">
                           {serviceForm.images.map((img: UploadedFile, i: number) => (
                             <div key={`ex-${i}`} className="glass-flat relative size-16 overflow-hidden">
                               <SmartImage src={resolveFileUrl(img)} alt="" rounded="rounded-none" className="size-full" />
                               <button
                                 type="button"
-                                aria-label="Quitar imagen"
+                                aria-label={t('settings.mobil.removeImage', { defaultValue: 'Quitar imagen' })}
                                 onClick={() => setServiceForm((p) => ({ ...p, images: p.images.filter((_: UploadedFile, j: number) => j !== i) }))}
                                 className="cg-btn-bad cg-focus absolute right-0.5 top-0.5 grid size-4 place-items-center rounded-full"
                               >
@@ -705,7 +711,7 @@ export default function MobilPage() {
                               <img src={URL.createObjectURL(file)} alt="" className="size-full object-cover" />
                               <button
                                 type="button"
-                                aria-label="Quitar imagen"
+                                aria-label={t('settings.mobil.removeImage', { defaultValue: 'Quitar imagen' })}
                                 onClick={() => setServiceForm((p) => ({ ...p, newImageFiles: p.newImageFiles.filter((_: File, j: number) => j !== i) }))}
                                 className="cg-btn-bad cg-focus absolute right-0.5 top-0.5 grid size-4 place-items-center rounded-full"
                               >
@@ -733,16 +739,16 @@ export default function MobilPage() {
                         </div>
                       </div>
                       <div>
-                        <Label>Precio</Label>
+                        <Label>{t('settings.mobil.priceLabel', { defaultValue: 'Precio' })}</Label>
                         <Input value={serviceForm.price} onChange={(e) => setServiceForm({ ...serviceForm, price: e.target.value })} placeholder="0.00" />
                       </div>
                       <div className="flex items-center gap-2">
-                        <Label>Publicado en App</Label>
+                        <Label>{t('settings.mobil.publishedInAppLabel', { defaultValue: 'Publicado en App' })}</Label>
                         <Switch checked={Boolean(serviceForm.publishedOnMobile)} onCheckedChange={(val) => setServiceForm({ ...serviceForm, publishedOnMobile: !!val })} />
                       </div>
                     </div>
                     <DialogFooter className="mt-6 flex justify-end gap-2">
-                      <Button variant="outline" onClick={() => setServiceDialogOpen(false)}>Cancelar</Button>
+                      <Button variant="outline" onClick={() => setServiceDialogOpen(false)}>{t('settings.mobil.cancelBtn', { defaultValue: 'Cancelar' })}</Button>
                       <Button variant="brand" onClick={async () => {
                         try {
                           // Upload any newly selected images, then keep existing + new.
@@ -761,25 +767,25 @@ export default function MobilPage() {
                           };
                           if (editingServiceId) {
                             await updateService(editingServiceId, payload);
-                            toast.success('Servicio actualizado.');
+                            toast.success(t('settings.mobil.serviceUpdated', { defaultValue: 'Servicio actualizado.' }));
                           } else {
                             await createService(payload);
-                            toast.success('Servicio creado.');
+                            toast.success(t('settings.mobil.serviceCreated', { defaultValue: 'Servicio creado.' }));
                           }
                           setServiceDialogOpen(false);
                           loadData();
                         } catch (err) {
                           console.error(err);
-                          toast.error('No se pudo guardar el servicio.');
+                          toast.error(t('settings.mobil.serviceSaveError', { defaultValue: 'No se pudo guardar el servicio.' }));
                         }
-                      }}>Guardar</Button>
+                      }}>{t('settings.mobil.saveBtn', { defaultValue: 'Guardar' })}</Button>
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
               </div>
             }
           >
-            <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>Lista de servicios de tu empresa. Sólo los publicados se ven en la app.</p>
+            <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t('settings.mobil.serviceSectionDesc', { defaultValue: 'Lista de servicios de tu empresa. Sólo los publicados se ven en la app.' })}</p>
 
             <div>
               <Table className="table-fixed">
@@ -792,11 +798,11 @@ export default function MobilPage() {
                 </colgroup>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Título</TableHead>
-                    <TableHead>Descripción</TableHead>
-                    <TableHead>Precio</TableHead>
-                    <TableHead className="text-center">En la app</TableHead>
-                    <TableHead className="text-right">Acciones</TableHead>
+                    <TableHead>{t('settings.mobil.colTitle', { defaultValue: 'Título' })}</TableHead>
+                    <TableHead>{t('settings.mobil.descriptionLabel', { defaultValue: 'Descripción' })}</TableHead>
+                    <TableHead>{t('settings.mobil.priceLabel', { defaultValue: 'Precio' })}</TableHead>
+                    <TableHead className="text-center">{t('settings.mobil.colInApp', { defaultValue: 'En la app' })}</TableHead>
+                    <TableHead className="text-right">{t('settings.mobil.colActions', { defaultValue: 'Acciones' })}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -812,8 +818,8 @@ export default function MobilPage() {
                           <EmptyState
                             className="border-0 py-4"
                             icon={<Tag />}
-                            title="Todavía no hay servicios"
-                            description="Crea uno desde una plantilla y publícalo para que aparezca en la app del cliente."
+                            title={t('settings.mobil.noServicesTitle', { defaultValue: 'Todavía no hay servicios' })}
+                            description={t('settings.mobil.noServicesDesc', { defaultValue: 'Crea uno desde una plantilla y publícalo para que aparezca en la app del cliente.' })}
                           />
                         )}
                       </TableCell>
@@ -826,14 +832,14 @@ export default function MobilPage() {
                       <TableCell className="tabular-nums">{s.price ?? '-'}</TableCell>
                       <TableCell className="text-center">
                         <StatusBadge tone={s.publishedOnMobile ? 'ok' : 'neutral'}>
-                          {s.publishedOnMobile ? 'Publicado' : 'Oculto'}
+                          {s.publishedOnMobile ? t('settings.mobil.published', { defaultValue: 'Publicado' }) : t('settings.mobil.hidden', { defaultValue: 'Oculto' })}
                         </StatusBadge>
                       </TableCell>
                       <TableCell className="text-right space-x-2">
-                        <Button size="icon-sm" variant="outline" aria-label="Editar" onClick={() => { setEditingServiceId(s.id); setServiceForm({ title: s.title || '', description: s.description || '', price: s.price ?? '', publishedOnMobile: !!s.publishedOnMobile, iconName: s.iconName || '', images: s.serviceImages || [], newImageFiles: [] }); setServiceDialogOpen(true); }}>
+                        <Button size="icon-sm" variant="outline" aria-label={t('settings.mobil.editAction', { defaultValue: 'Editar' })} onClick={() => { setEditingServiceId(s.id); setServiceForm({ title: s.title || '', description: s.description || '', price: s.price ?? '', publishedOnMobile: !!s.publishedOnMobile, iconName: s.iconName || '', images: s.serviceImages || [], newImageFiles: [] }); setServiceDialogOpen(true); }}>
                           <Pencil className="h-4 w-4" />
                         </Button>
-                        <Button size="icon-sm" variant="destructive" aria-label="Eliminar" onClick={() => openDeleteConfirmation(s.id, s.title || 'este servicio', 'service')}>
+                        <Button size="icon-sm" variant="destructive" aria-label={t('settings.mobil.deleteAction', { defaultValue: 'Eliminar' })} onClick={() => openDeleteConfirmation(s.id, s.title || t('settings.mobil.thisService', { defaultValue: 'este servicio' }), 'service')}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </TableCell>
@@ -845,16 +851,16 @@ export default function MobilPage() {
           </Section>
 
           <Section
-            title="Certificaciones"
+            title={t('settings.mobil.certSectionTitle', { defaultValue: 'Certificaciones' })}
             icon={<BadgeCheck />}
             contentClassName="space-y-4"
             action={
               <Button onClick={openCreateCertification} variant="brand" size="sm" className="inline-flex items-center gap-2">
-                <Plus className="h-4 w-4" /> Nueva certificación
+                <Plus className="h-4 w-4" /> {t('settings.mobil.newCertBtn', { defaultValue: 'Nueva certificación' })}
               </Button>
             }
           >
-            <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>Los sellos y acreditaciones de tu empresa, con sus fechas y archivos.</p>
+            <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t('settings.mobil.certSectionDesc', { defaultValue: 'Los sellos y acreditaciones de tu empresa, con sus fechas y archivos.' })}</p>
 
             <Table className="table-fixed">
               <colgroup>
@@ -868,13 +874,13 @@ export default function MobilPage() {
               </colgroup>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Título</TableHead>
-                  <TableHead>Código</TableHead>
-                  <TableHead className="text-center">Imagen</TableHead>
-                  <TableHead className="text-center">Icono</TableHead>
-                  <TableHead className="text-center">Adquisición</TableHead>
-                  <TableHead className="text-center">Vencimiento</TableHead>
-                  <TableHead className="text-right">Acciones</TableHead>
+                  <TableHead>{t('settings.mobil.colTitle', { defaultValue: 'Título' })}</TableHead>
+                  <TableHead>{t('settings.mobil.colCode', { defaultValue: 'Código' })}</TableHead>
+                  <TableHead className="text-center">{t('settings.mobil.imageLabel', { defaultValue: 'Imagen' })}</TableHead>
+                  <TableHead className="text-center">{t('settings.mobil.iconLabel', { defaultValue: 'Icono' })}</TableHead>
+                  <TableHead className="text-center">{t('settings.mobil.colAcquisition', { defaultValue: 'Adquisición' })}</TableHead>
+                  <TableHead className="text-center">{t('settings.mobil.colExpiration', { defaultValue: 'Vencimiento' })}</TableHead>
+                  <TableHead className="text-right">{t('settings.mobil.colActions', { defaultValue: 'Acciones' })}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -890,11 +896,11 @@ export default function MobilPage() {
                         <EmptyState
                           className="border-0 py-4"
                           icon={<BadgeCheck />}
-                          title="Todavía no hay certificaciones"
-                          description="Añade tus acreditaciones para que el cliente las vea en la app."
+                          title={t('settings.mobil.noCertsTitle', { defaultValue: 'Todavía no hay certificaciones' })}
+                          description={t('settings.mobil.noCertsDesc', { defaultValue: 'Añade tus acreditaciones para que el cliente las vea en la app.' })}
                           action={
                             <Button onClick={openCreateCertification} variant="brand" size="sm" className="gap-2">
-                              <Plus className="h-4 w-4" /> Nueva certificación
+                              <Plus className="h-4 w-4" /> {t('settings.mobil.newCertBtn', { defaultValue: 'Nueva certificación' })}
                             </Button>
                           }
                         />
@@ -915,7 +921,7 @@ export default function MobilPage() {
                         >
                           <SmartImage
                             src={resolveCertificationImageUrl(item)}
-                            alt={item.title || 'Imagen certificación'}
+                            alt={item.title || t('settings.mobil.certImageAlt', { defaultValue: 'Imagen certificación' })}
                             rounded="rounded-none"
                             fit="contain"
                             className="h-16 w-32 transition duration-200 group-hover:scale-105"
@@ -923,7 +929,7 @@ export default function MobilPage() {
                           />
                         </button>
                       ) : (
-                        <StatusBadge tone="neutral" dot={false}>Sin imagen</StatusBadge>
+                        <StatusBadge tone="neutral" dot={false}>{t('settings.mobil.noImage', { defaultValue: 'Sin imagen' })}</StatusBadge>
                       )}
                     </TableCell>
                     <TableCell className="text-center">
@@ -935,7 +941,7 @@ export default function MobilPage() {
                         >
                           <SmartImage
                             src={resolveCertificationIconUrl(item)}
-                            alt={item.title || 'Icono certificación'}
+                            alt={item.title || t('settings.mobil.certIconAlt', { defaultValue: 'Icono certificación' })}
                             rounded="rounded-none"
                             fit="contain"
                             className="h-16 w-16 transition duration-200 group-hover:scale-105"
@@ -943,16 +949,16 @@ export default function MobilPage() {
                           />
                         </button>
                       ) : (
-                        <StatusBadge tone="neutral" dot={false}>Sin icono</StatusBadge>
+                        <StatusBadge tone="neutral" dot={false}>{t('settings.mobil.noIcon', { defaultValue: 'Sin icono' })}</StatusBadge>
                       )}
                     </TableCell>
                     <TableCell>{item.acquisitionDate || '-'}</TableCell>
                     <TableCell>{item.expirationDate || '-'}</TableCell>
                     <TableCell className="text-right space-x-2">
-                      <Button size="icon-sm" variant="outline" aria-label="Editar" onClick={() => openEditCertification(item)}>
+                      <Button size="icon-sm" variant="outline" aria-label={t('settings.mobil.editAction', { defaultValue: 'Editar' })} onClick={() => openEditCertification(item)}>
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button size="icon-sm" variant="destructive" aria-label="Eliminar" onClick={() => openDeleteConfirmation(item.id, item.title || 'esta certificación', 'certification')}>
+                      <Button size="icon-sm" variant="destructive" aria-label={t('settings.mobil.deleteAction', { defaultValue: 'Eliminar' })} onClick={() => openDeleteConfirmation(item.id, item.title || t('settings.mobil.thisCert', { defaultValue: 'esta certificación' }), 'certification')}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </TableCell>
@@ -992,29 +998,29 @@ export default function MobilPage() {
           <DialogContent className="max-w-2xl">
             <DialogHeader className="text-center">
               <DialogTitle className="mx-auto">{bannerTitle}</DialogTitle>
-              <DialogDescription>Configura el banner que se mostrará en el módulo MOBIL.</DialogDescription>
+              <DialogDescription>{t('settings.mobil.bannerDialogDesc', { defaultValue: 'Configura el banner que se mostrará en el módulo MOBIL.' })}</DialogDescription>
             </DialogHeader>
             <div className="space-y-4 mt-4">
               <div>
-                <Label>Título*</Label>
+                <Label>{t('settings.mobil.titleRequiredLabel', { defaultValue: 'Título*' })}</Label>
                 <Input
                   value={bannerForm.title}
                   onChange={(e) => setBannerForm({ ...bannerForm, title: e.target.value })}
-                  placeholder="Título del banner"
+                  placeholder={t('settings.mobil.bannerTitlePlaceholder', { defaultValue: 'Título del banner' })}
                   required
                 />
               </div>
               <div>
-                <Label>Descripción</Label>
+                <Label>{t('settings.mobil.descriptionLabel', { defaultValue: 'Descripción' })}</Label>
                 <Textarea
                   value={bannerForm.description}
                   onChange={(e) => setBannerForm({ ...bannerForm, description: e.target.value })}
-                  placeholder="Descripción del banner"
+                  placeholder={t('settings.mobil.bannerDescPlaceholder', { defaultValue: 'Descripción del banner' })}
                   rows={3}
                 />
               </div>
               <div>
-                <Label>Imagen</Label>
+                <Label>{t('settings.mobil.imageLabel', { defaultValue: 'Imagen' })}</Label>
                 <div className="grid gap-2">
                   <div className="flex justify-center">
                     <TooltipProvider>
@@ -1024,10 +1030,10 @@ export default function MobilPage() {
                             htmlFor="bannerImage"
                             className="cg-btn-brand cg-focus inline-flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
                           >
-                            <Upload className="h-4 w-4" /> Seleccionar archivo
+                            <Upload className="h-4 w-4" /> {t('settings.mobil.selectFileBtn', { defaultValue: 'Seleccionar archivo' })}
                           </label>
                         </TooltipTrigger>
-                        <TooltipContent>Límite de archivo: {IMAGE_MAX_SIZE_MB} MB.</TooltipContent>
+                        <TooltipContent>{t('settings.mobil.fileLimitTooltip', { defaultValue: 'Límite de archivo: {{mb}} MB.', mb: IMAGE_MAX_SIZE_MB })}</TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
                     <input
@@ -1038,17 +1044,17 @@ export default function MobilPage() {
                       onChange={(e) => setBannerImageFile(e.target.files?.[0] || null)}
                     />
                   </div>
-                  <p className="mt-1 text-center text-xs" style={{ color: 'var(--ink-faint)' }}>Límite de tamaño por imagen: {IMAGE_MAX_SIZE_MB} MB.</p>
+                  <p className="mt-1 text-center text-xs" style={{ color: 'var(--ink-faint)' }}>{t('settings.mobil.imageSizeLimit', { defaultValue: 'Límite de tamaño por imagen: {{mb}} MB.', mb: IMAGE_MAX_SIZE_MB })}</p>
                   <div className="glass-sunken flex min-h-[54px] items-center justify-center px-4 py-3 text-center text-sm" style={{ color: 'var(--ink-soft)' }}>
-                    {bannerForm.imageFile ? bannerForm.imageFile.name : bannerForm.imageUrl?.[0]?.name || 'No se ha seleccionado archivo'}
+                    {bannerForm.imageFile ? bannerForm.imageFile.name : bannerForm.imageUrl?.[0]?.name || t('settings.mobil.noFileSelected', { defaultValue: 'No se ha seleccionado archivo' })}
                   </div>
                 </div>
               </div>
             </div>
             <DialogFooter className="mt-6 flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setBannerDialogOpen(false)}>Cancelar</Button>
+              <Button variant="outline" onClick={() => setBannerDialogOpen(false)}>{t('settings.mobil.cancelBtn', { defaultValue: 'Cancelar' })}</Button>
               <Button variant="brand" onClick={handleSaveBanner} disabled={loading}>
-                Guardar
+                {t('settings.mobil.saveBtn', { defaultValue: 'Guardar' })}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -1058,39 +1064,39 @@ export default function MobilPage() {
           <DialogContent className="max-w-2xl">
             <DialogHeader className="text-center">
               <DialogTitle className="mx-auto">{certTitle}</DialogTitle>
-              <DialogDescription>Configura los datos de la certificación y sus archivos.</DialogDescription>
+              <DialogDescription>{t('settings.mobil.certDialogDesc', { defaultValue: 'Configura los datos de la certificación y sus archivos.' })}</DialogDescription>
             </DialogHeader>
             <div className="space-y-4 mt-4">
               <div>
-                <Label>Título*</Label>
+                <Label>{t('settings.mobil.titleRequiredLabel', { defaultValue: 'Título*' })}</Label>
                 <Input
                   value={certForm.title}
                   onChange={(e) => setCertForm({ ...certForm, title: e.target.value })}
-                  placeholder="Título de la certificación"
+                  placeholder={t('settings.mobil.certTitlePlaceholder', { defaultValue: 'Título de la certificación' })}
                   required
                 />
               </div>
               <div>
-                <Label>Código*</Label>
+                <Label>{t('settings.mobil.codeRequiredLabel', { defaultValue: 'Código*' })}</Label>
                 <Input
                   value={certForm.code}
                   onChange={(e) => setCertForm({ ...certForm, code: e.target.value })}
-                  placeholder="Código interno"
+                  placeholder={t('settings.mobil.codePlaceholder', { defaultValue: 'Código interno' })}
                   required
                 />
               </div>
               <div>
-                <Label>Descripción*</Label>
+                <Label>{t('settings.mobil.descriptionRequiredLabel', { defaultValue: 'Descripción*' })}</Label>
                 <Textarea
                   value={certForm.description}
                   onChange={(e) => setCertForm({ ...certForm, description: e.target.value })}
-                  placeholder="Descripción de la certificación"
+                  placeholder={t('settings.mobil.certDescPlaceholder', { defaultValue: 'Descripción de la certificación' })}
                   required
                 />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label>Fecha de adquisición</Label>
+                  <Label>{t('settings.mobil.acquisitionDateLabel', { defaultValue: 'Fecha de adquisición' })}</Label>
                   <Input
                     type="date"
                     value={certForm.acquisitionDate}
@@ -1098,7 +1104,7 @@ export default function MobilPage() {
                   />
                 </div>
                 <div>
-                  <Label>Fecha de expiración</Label>
+                  <Label>{t('settings.mobil.expirationDateLabel', { defaultValue: 'Fecha de expiración' })}</Label>
                   <Input
                     type="date"
                     value={certForm.expirationDate}
@@ -1108,7 +1114,7 @@ export default function MobilPage() {
               </div>
               <Separator />
               <div>
-                <Label>Imagen</Label>
+                <Label>{t('settings.mobil.imageLabel', { defaultValue: 'Imagen' })}</Label>
                 <div className="grid gap-2">
                   <div className="flex justify-center">
                     <TooltipProvider>
@@ -1118,10 +1124,10 @@ export default function MobilPage() {
                             htmlFor="certImage"
                             className="cg-btn-brand cg-focus inline-flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
                           >
-                            <Upload className="h-4 w-4" /> Seleccionar archivo
+                            <Upload className="h-4 w-4" /> {t('settings.mobil.selectFileBtn', { defaultValue: 'Seleccionar archivo' })}
                           </label>
                         </TooltipTrigger>
-                        <TooltipContent>Límite de archivo: {IMAGE_MAX_SIZE_MB} MB.</TooltipContent>
+                        <TooltipContent>{t('settings.mobil.fileLimitTooltip', { defaultValue: 'Límite de archivo: {{mb}} MB.', mb: IMAGE_MAX_SIZE_MB })}</TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
                     <input
@@ -1132,14 +1138,14 @@ export default function MobilPage() {
                       onChange={(e) => setCertImageFile(e.target.files?.[0] || null)}
                     />
                   </div>
-                  <p className="mt-1 text-center text-xs" style={{ color: 'var(--ink-faint)' }}>Límite de tamaño por imagen: {IMAGE_MAX_SIZE_MB} MB.</p>
+                  <p className="mt-1 text-center text-xs" style={{ color: 'var(--ink-faint)' }}>{t('settings.mobil.imageSizeLimit', { defaultValue: 'Límite de tamaño por imagen: {{mb}} MB.', mb: IMAGE_MAX_SIZE_MB })}</p>
                   <div className="glass-sunken flex min-h-[54px] items-center justify-center px-4 py-3 text-center text-sm" style={{ color: 'var(--ink-soft)' }}>
-                    {certForm.imageFile ? certForm.imageFile.name : certForm.image?.[0]?.name || 'No se ha seleccionado archivo'}
+                    {certForm.imageFile ? certForm.imageFile.name : certForm.image?.[0]?.name || t('settings.mobil.noFileSelected', { defaultValue: 'No se ha seleccionado archivo' })}
                   </div>
                 </div>
               </div>
               <div>
-                <Label>Icono</Label>
+                <Label>{t('settings.mobil.iconLabel', { defaultValue: 'Icono' })}</Label>
                 <div className="grid gap-2">
                   <div className="flex justify-center">
                     <TooltipProvider>
@@ -1149,10 +1155,10 @@ export default function MobilPage() {
                             htmlFor="certIcon"
                             className="cg-btn-brand cg-focus inline-flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
                           >
-                            <Upload className="h-4 w-4" /> Seleccionar archivo
+                            <Upload className="h-4 w-4" /> {t('settings.mobil.selectFileBtn', { defaultValue: 'Seleccionar archivo' })}
                           </label>
                         </TooltipTrigger>
-                        <TooltipContent>Límite de icono: {ICON_MAX_SIZE_MB} MB.</TooltipContent>
+                        <TooltipContent>{t('settings.mobil.iconLimitTooltip', { defaultValue: 'Límite de icono: {{mb}} MB.', mb: ICON_MAX_SIZE_MB })}</TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
                     <input
@@ -1163,17 +1169,17 @@ export default function MobilPage() {
                       onChange={(e) => setCertIconFile(e.target.files?.[0] || null)}
                     />
                   </div>
-                  <p className="mt-1 text-center text-xs" style={{ color: 'var(--ink-faint)' }}>Límite de tamaño del icono: {ICON_MAX_SIZE_MB} MB.</p>
+                  <p className="mt-1 text-center text-xs" style={{ color: 'var(--ink-faint)' }}>{t('settings.mobil.iconSizeLimit', { defaultValue: 'Límite de tamaño del icono: {{mb}} MB.', mb: ICON_MAX_SIZE_MB })}</p>
                   <div className="glass-sunken flex min-h-[54px] items-center justify-center px-4 py-3 text-center text-sm" style={{ color: 'var(--ink-soft)' }}>
-                    {certForm.iconFile ? certForm.iconFile.name : certForm.icon?.[0]?.name || 'No se ha seleccionado archivo'}
+                    {certForm.iconFile ? certForm.iconFile.name : certForm.icon?.[0]?.name || t('settings.mobil.noFileSelected', { defaultValue: 'No se ha seleccionado archivo' })}
                   </div>
                 </div>
               </div>
             </div>
             <DialogFooter className="mt-6 flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setCertDialogOpen(false)}>Cancelar</Button>
+              <Button variant="outline" onClick={() => setCertDialogOpen(false)}>{t('settings.mobil.cancelBtn', { defaultValue: 'Cancelar' })}</Button>
               <Button variant="brand" onClick={handleSaveCertification} disabled={loading}>
-                Guardar
+                {t('settings.mobil.saveBtn', { defaultValue: 'Guardar' })}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -1188,7 +1194,7 @@ export default function MobilPage() {
               className="flex items-center justify-center gap-4 border-b px-4 py-4"
               style={{ borderColor: 'var(--hairline)' }}
             >
-              <DialogTitle className="text-lg font-semibold">Vista previa</DialogTitle>
+              <DialogTitle className="text-lg font-semibold">{t('settings.mobil.previewTitle', { defaultValue: 'Vista previa' })}</DialogTitle>
             </DialogHeader>
             <div
               className="flex min-h-[60vh] items-center justify-center overflow-hidden p-4"
@@ -1197,14 +1203,14 @@ export default function MobilPage() {
               {imagePreviewUrl ? (
                 <img
                   src={imagePreviewUrl}
-                  alt="Vista previa de la imagen"
+                  alt={t('settings.mobil.previewAlt', { defaultValue: 'Vista previa de la imagen' })}
                   className="max-h-[82vh] max-w-full rounded-3xl border object-contain"
                   style={{ borderColor: 'var(--hairline)', background: 'var(--glass-raised)' }}
                   decoding="async"
                   crossOrigin="anonymous"
                 />
               ) : (
-                <div className="text-sm" style={{ color: 'var(--ink-soft)' }}>No hay imagen para previsualizar.</div>
+                <div className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t('settings.mobil.noImageToPreview', { defaultValue: 'No hay imagen para previsualizar.' })}</div>
               )}
             </div>
           </DialogContent>
@@ -1213,20 +1219,20 @@ export default function MobilPage() {
         <Dialog open={confirmDeleteOpen} onOpenChange={setConfirmDeleteOpen}>
           <DialogContent className="max-w-md">
             <DialogHeader className="text-center">
-              <DialogTitle>Confirmar eliminación</DialogTitle>
+              <DialogTitle>{t('settings.mobil.confirmDeleteTitle', { defaultValue: 'Confirmar eliminación' })}</DialogTitle>
               <DialogDescription>
-                ¿Estás seguro que quieres eliminar {confirmDeleteItem?.label}?
+                {t('settings.mobil.confirmDeleteQuestion', { defaultValue: '¿Estás seguro que quieres eliminar {{label}}?', label: confirmDeleteItem?.label })}
               </DialogDescription>
             </DialogHeader>
             <div className="mt-4 text-sm text-foreground">
-              Esta acción no se puede deshacer.
+              {t('settings.mobil.cannotUndo', { defaultValue: 'Esta acción no se puede deshacer.' })}
             </div>
             <DialogFooter className="mt-6 flex justify-end gap-2">
               <Button variant="outline" onClick={closeDeleteConfirmation}>
-                Cancelar
+                {t('settings.mobil.cancelBtn', { defaultValue: 'Cancelar' })}
               </Button>
               <Button variant="destructive" onClick={handleDeleteConfirmed}>
-                Eliminar
+                {t('settings.mobil.deleteAction', { defaultValue: 'Eliminar' })}
               </Button>
             </DialogFooter>
           </DialogContent>

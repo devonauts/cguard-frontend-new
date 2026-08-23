@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import { Info, Loader2, Bell, MonitorSmartphone, Mail, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -61,38 +62,43 @@ type MatrixState = Record<
    Al añadir una fila nueva aquí, añade su evento allí. Y comprueba que alguien
    lo DESPACHA: un mapeo sin emisor es una casilla que miente.
    ──────────────────────────────────────────────────────────────────────────── */
-const NOTIFICATIONS: NotificationItem[] = [
-  { id: "check-in-out", label: "Vigilante registrado/salida", hint: "Check-in/out del vigilante", default: { dashboard: true, email: true } },
-  { id: "panic-button", label: "Botón de pánico", hint: "Siempre llega al teléfono y a esta pantalla, aunque desmarques la casilla: es una emergencia", default: { dashboard: true, email: true, sms: true } },
-  { id: "coverage-uncovered", label: "Puesto sin cubrir", hint: "Nadie llegó al puesto o el vigilante lo abandonó. Llega al teléfono aunque desmarques la casilla", default: { dashboard: true, email: true } },
-  { id: "dispatch-updates", label: "Actualizaciones de tickets de Incidente", default: { dashboard: true } },
-  // Fila propia y no compartida con la de arriba: «un incidente más» y «nadie ha
-  // atendido algo grave» son cosas distintas. Al principio comparte fila y una
-  // prueba lo tumbó — el correo encendido por defecto aquí habría encendido el
-  // correo de TODOS los incidentes, incluidos los rutinarios.
-  { id: "vigia-digest", label: "Cierre del día (VigIA)", hint: "Un resumen del día redactado por el asistente, a las 9 de la noche — solo si hubo algo que contar. Marca Correo para recibirlo en tu bandeja", default: { dashboard: true } },
-  { id: "incident-unattended", label: "Incidente grave sin atender", hint: "Cuando un incidente crítico lleva rato abierto y nadie lo ha reconocido. Deja de insistir en cuanto alguien lo toma", default: { dashboard: true, email: true } },
-  { id: "balance-low", label: "Saldo bajo o agotado", hint: "Sin saldo se dejan de enviar SMS y WhatsApp de pago, incluidos los de emergencia. El correo llega igual porque no depende del saldo", default: { dashboard: true, email: true } },
-  { id: "panel-offline", label: "Panel de alarma sin comunicar", hint: "El panel dejó de dar señal de vida en el plazo que fijaste en su ficha. También avisa cuando vuelve", default: { dashboard: true, email: true } },
-  { id: "attendance-exceptions", label: "Novedades de asistencia", hint: "Atraso, inasistencia, salida anticipada, salida sin marcar y marcación fuera de la geocerca", default: { dashboard: true } },
-  { id: "attendance-approvals", label: "Aprobaciones de asistencia", hint: "Correcciones enviadas, pendientes de aprobar, aprobadas y rechazadas", default: { dashboard: true } },
-  { id: "inactive-guard-alert", label: "Alerta de inactividad para vigilantes inactivos", default: { dashboard: true } },
-  { id: "geofence-alert", label: "Alertas de geovalla al entrar/salir", default: { dashboard: true } },
-  { id: "task-completed", label: "Tarea completada", default: { dashboard: true } },
-  { id: "pto-request", label: "Solicitud de tiempo libre", default: { dashboard: true } },
-  { id: "license-expiry", label: "Expiración de Licencia", default: { dashboard: true } },
-  { id: "contract-expiry", label: "Contrato de cliente por vencer", hint: "Aviso semanal antes de que caduque el contrato de un cliente, con la antelación que fijes en su ficha", default: { dashboard: true, email: true } },
-];
-
-const columns: { key: ChannelKey; label: string; icon: React.ReactNode }[] = [
-  { key: "dashboard", label: "Panel de control", icon: <MonitorSmartphone className="h-3.5 w-3.5" /> },
-  { key: "email", label: "Correo electrónico", icon: <Mail className="h-3.5 w-3.5" /> },
-  { key: "sms", label: "SMS", icon: <MessageSquare className="h-3.5 w-3.5" /> },
-];
+// NOTIFICATIONS y columns se construyen dentro del componente para que sus
+// etiquetas y pistas pasen por el traductor (i18n).
 
 // =============================================================================
 
 export default function NotificationMatrix() {
+  const { t } = useTranslation();
+
+  const NOTIFICATIONS: NotificationItem[] = React.useMemo<NotificationItem[]>(() => [
+    { id: "check-in-out", label: t('settings.notificationForm.checkInOutLabel', { defaultValue: "Vigilante registrado/salida" }), hint: t('settings.notificationForm.checkInOutHint', { defaultValue: "Check-in/out del vigilante" }), default: { dashboard: true, email: true } },
+    { id: "panic-button", label: t('settings.notificationForm.panicButtonLabel', { defaultValue: "Botón de pánico" }), hint: t('settings.notificationForm.panicButtonHint', { defaultValue: "Siempre llega al teléfono y a esta pantalla, aunque desmarques la casilla: es una emergencia" }), default: { dashboard: true, email: true, sms: true } },
+    { id: "coverage-uncovered", label: t('settings.notificationForm.coverageUncoveredLabel', { defaultValue: "Puesto sin cubrir" }), hint: t('settings.notificationForm.coverageUncoveredHint', { defaultValue: "Nadie llegó al puesto o el vigilante lo abandonó. Llega al teléfono aunque desmarques la casilla" }), default: { dashboard: true, email: true } },
+    { id: "dispatch-updates", label: t('settings.notificationForm.dispatchUpdatesLabel', { defaultValue: "Actualizaciones de tickets de Incidente" }), default: { dashboard: true } },
+    // Fila propia y no compartida con la de arriba: «un incidente más» y «nadie ha
+    // atendido algo grave» son cosas distintas. Al principio comparte fila y una
+    // prueba lo tumbó — el correo encendido por defecto aquí habría encendido el
+    // correo de TODOS los incidentes, incluidos los rutinarios.
+    { id: "vigia-digest", label: t('settings.notificationForm.vigiaDigestLabel', { defaultValue: "Cierre del día (VigIA)" }), hint: t('settings.notificationForm.vigiaDigestHint', { defaultValue: "Un resumen del día redactado por el asistente, a las 9 de la noche — solo si hubo algo que contar. Marca Correo para recibirlo en tu bandeja" }), default: { dashboard: true } },
+    { id: "incident-unattended", label: t('settings.notificationForm.incidentUnattendedLabel', { defaultValue: "Incidente grave sin atender" }), hint: t('settings.notificationForm.incidentUnattendedHint', { defaultValue: "Cuando un incidente crítico lleva rato abierto y nadie lo ha reconocido. Deja de insistir en cuanto alguien lo toma" }), default: { dashboard: true, email: true } },
+    { id: "balance-low", label: t('settings.notificationForm.balanceLowLabel', { defaultValue: "Saldo bajo o agotado" }), hint: t('settings.notificationForm.balanceLowHint', { defaultValue: "Sin saldo se dejan de enviar SMS y WhatsApp de pago, incluidos los de emergencia. El correo llega igual porque no depende del saldo" }), default: { dashboard: true, email: true } },
+    { id: "panel-offline", label: t('settings.notificationForm.panelOfflineLabel', { defaultValue: "Panel de alarma sin comunicar" }), hint: t('settings.notificationForm.panelOfflineHint', { defaultValue: "El panel dejó de dar señal de vida en el plazo que fijaste en su ficha. También avisa cuando vuelve" }), default: { dashboard: true, email: true } },
+    { id: "attendance-exceptions", label: t('settings.notificationForm.attendanceExceptionsLabel', { defaultValue: "Novedades de asistencia" }), hint: t('settings.notificationForm.attendanceExceptionsHint', { defaultValue: "Atraso, inasistencia, salida anticipada, salida sin marcar y marcación fuera de la geocerca" }), default: { dashboard: true } },
+    { id: "attendance-approvals", label: t('settings.notificationForm.attendanceApprovalsLabel', { defaultValue: "Aprobaciones de asistencia" }), hint: t('settings.notificationForm.attendanceApprovalsHint', { defaultValue: "Correcciones enviadas, pendientes de aprobar, aprobadas y rechazadas" }), default: { dashboard: true } },
+    { id: "inactive-guard-alert", label: t('settings.notificationForm.inactiveGuardAlertLabel', { defaultValue: "Alerta de inactividad para vigilantes inactivos" }), default: { dashboard: true } },
+    { id: "geofence-alert", label: t('settings.notificationForm.geofenceAlertLabel', { defaultValue: "Alertas de geovalla al entrar/salir" }), default: { dashboard: true } },
+    { id: "task-completed", label: t('settings.notificationForm.taskCompletedLabel', { defaultValue: "Tarea completada" }), default: { dashboard: true } },
+    { id: "pto-request", label: t('settings.notificationForm.ptoRequestLabel', { defaultValue: "Solicitud de tiempo libre" }), default: { dashboard: true } },
+    { id: "license-expiry", label: t('settings.notificationForm.licenseExpiryLabel', { defaultValue: "Expiración de Licencia" }), default: { dashboard: true } },
+    { id: "contract-expiry", label: t('settings.notificationForm.contractExpiryLabel', { defaultValue: "Contrato de cliente por vencer" }), hint: t('settings.notificationForm.contractExpiryHint', { defaultValue: "Aviso semanal antes de que caduque el contrato de un cliente, con la antelación que fijes en su ficha" }), default: { dashboard: true, email: true } },
+  ], [t]);
+
+  const columns: { key: ChannelKey; label: string; icon: React.ReactNode }[] = React.useMemo<{ key: ChannelKey; label: string; icon: React.ReactNode }[]>(() => [
+    { key: "dashboard", label: t('settings.notificationForm.columnDashboard', { defaultValue: "Panel de control" }), icon: <MonitorSmartphone className="h-3.5 w-3.5" /> },
+    { key: "email", label: t('settings.notificationForm.columnEmail', { defaultValue: "Correo electrónico" }), icon: <Mail className="h-3.5 w-3.5" /> },
+    { key: "sms", label: "SMS", icon: <MessageSquare className="h-3.5 w-3.5" /> },
+  ], [t]);
+
   const buildDefaults = (): MatrixState => {
     const initial: MatrixState = {};
     NOTIFICATIONS.forEach((n) => {
@@ -165,10 +171,11 @@ export default function NotificationMatrix() {
     // ningún aviso antes de comprometerlo.
     if (col === "sms" && value) {
       const ok = await confirmDialog(
-        `Vas a activar el envío por SMS en los ${NOTIFICATIONS.length} avisos.\n\n` +
-          `El SMS se cobra por mensaje y por destinatario, y se descuenta de tu saldo. ` +
-          `Un aviso frecuente —como las entradas y salidas de turno— puede consumirlo rápido.\n\n` +
-          `¿Continuar?`,
+        t('settings.notificationForm.smsConfirm', {
+          defaultValue:
+            'Vas a activar el envío por SMS en los {{n}} avisos.\n\nEl SMS se cobra por mensaje y por destinatario, y se descuenta de tu saldo. Un aviso frecuente —como las entradas y salidas de turno— puede consumirlo rápido.\n\n¿Continuar?',
+          n: NOTIFICATIONS.length,
+        }),
       );
       if (!ok) return;
     }
@@ -207,9 +214,9 @@ export default function NotificationMatrix() {
       // canal, no de la matriz), pero se edita AQUÍ porque es donde alguien lo
       // busca cuando piensa «que dejen de despertarme».
       await communicationService.updateSettings({ quiet_hours: silencio });
-      toast.success("Preferencias de notificación guardadas");
+      toast.success(t('settings.notificationForm.saveSuccess', { defaultValue: "Preferencias de notificación guardadas" }));
     } catch (e: any) {
-      toast.error(e?.message || "No se pudieron guardar las preferencias");
+      toast.error(e?.message || t('settings.notificationForm.saveError', { defaultValue: "No se pudieron guardar las preferencias" }));
     } finally {
       setSaving(false);
     }
@@ -231,25 +238,25 @@ export default function NotificationMatrix() {
           lo crítico nunca calla. Si el usuario no lo supiera, poner «de 22:00 a
           07:00» apagaría sin querer las alertas de emergencia de su turno
           nocturno — el turno donde más pasan cosas. */}
-      <Section title="Horario de silencio" icon={<Bell />} contentClassName="space-y-3">
+      <Section title={t('settings.notificationForm.quietHoursTitle', { defaultValue: "Horario de silencio" })} icon={<Bell />} contentClassName="space-y-3">
         <label className="flex cursor-pointer items-center gap-2.5">
           <Checkbox
             checked={silencio.enabled}
             onCheckedChange={(v) => setSilencio((q) => ({ ...q, enabled: Boolean(v) }))}
           />
-          <span className="text-sm font-medium">No enviar avisos al teléfono de noche</span>
+          <span className="text-sm font-medium">{t('settings.notificationForm.quietHoursToggle', { defaultValue: "No enviar avisos al teléfono de noche" })}</span>
         </label>
 
         {silencio.enabled && (
           <div className="flex flex-wrap items-center gap-2 pl-7">
-            <span className="text-sm" style={{ color: "var(--ink-soft)" }}>Desde las</span>
+            <span className="text-sm" style={{ color: "var(--ink-soft)" }}>{t('settings.notificationForm.quietHoursFrom', { defaultValue: "Desde las" })}</span>
             <input
               type="number" min={0} max={23}
               value={silencio.startHour}
               onChange={(e) => setSilencio((q) => ({ ...q, startHour: Number(e.target.value) }))}
               className="cg-input cg-focus w-20 px-3 py-1.5 text-sm"
             />
-            <span className="text-sm" style={{ color: "var(--ink-soft)" }}>hasta las</span>
+            <span className="text-sm" style={{ color: "var(--ink-soft)" }}>{t('settings.notificationForm.quietHoursTo', { defaultValue: "hasta las" })}</span>
             <input
               type="number" min={0} max={23}
               value={silencio.endHour}
@@ -257,36 +264,31 @@ export default function NotificationMatrix() {
               className="cg-input cg-focus w-20 px-3 py-1.5 text-sm"
             />
             <span className="text-sm" style={{ color: "var(--ink-soft)" }}>
-              (hora local de tu empresa)
+              {t('settings.notificationForm.quietHoursLocalTime', { defaultValue: "(hora local de tu empresa)" })}
             </span>
           </div>
         )}
 
         <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
-          <strong>Lo urgente sigue sonando siempre:</strong> botón de pánico, inasistencia,
-          puesto abandonado, vigilante inactivo y escalados. El silencio es para el ruido —
-          tareas, recordatorios y avisos informativos. Y sólo afecta al teléfono: el panel y
-          el correo los recibes igual, para que estén ahí cuando te despiertes.
+          <strong>{t('settings.notificationForm.quietHoursUrgentStrong', { defaultValue: "Lo urgente sigue sonando siempre:" })}</strong> {t('settings.notificationForm.quietHoursUrgentText', { defaultValue: "botón de pánico, inasistencia, puesto abandonado, vigilante inactivo y escalados. El silencio es para el ruido — tareas, recordatorios y avisos informativos. Y sólo afecta al teléfono: el panel y el correo los recibes igual, para que estén ahí cuando te despiertes." })}
         </p>
       </Section>
 
       <Section
-        title="Avisos y por dónde llegan"
+        title={t('settings.notificationForm.channelsTitle', { defaultValue: "Avisos y por dónde llegan" })}
         icon={<Bell />}
         contentClassName="space-y-3"
       >
         <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
-          Marca por qué vía quieres recibir cada aviso. La casilla de la cabecera activa o
-          desactiva una vía completa; la de cada fila, todas las vías de ese aviso.
+          {t('settings.notificationForm.channelsIntro', { defaultValue: "Marca por qué vía quieres recibir cada aviso. La casilla de la cabecera activa o desactiva una vía completa; la de cada fila, todas las vías de ese aviso." })}
         </p>
 
         <p className="text-xs" style={{ color: 'var(--ink-faint)' }}>
-          Los avisos de <strong>rondas</strong> —completada, perdida, iniciada— no se
-          controlan aquí, sino en{' '}
+          {t('settings.notificationForm.rondasBefore', { defaultValue: "Los avisos de" })} <strong>{t('settings.notificationForm.rondasWord', { defaultValue: "rondas" })}</strong> {t('settings.notificationForm.rondasMiddle', { defaultValue: "—completada, perdida, iniciada— no se controlan aquí, sino en" })}{' '}
           <Link to="/setting/rondas" className="underline" style={{ color: 'var(--brand-text)' }}>
-            Configuración › Rondas
+            {t('settings.notificationForm.rondasLink', { defaultValue: "Configuración › Rondas" })}
           </Link>
-          , junto al resto de reglas de patrullaje.
+          {t('settings.notificationForm.rondasAfter', { defaultValue: ", junto al resto de reglas de patrullaje." })}
         </p>
 
         <div className="overflow-x-auto">
@@ -296,7 +298,7 @@ export default function NotificationMatrix() {
               className="glass-sunken grid grid-cols-[1fr_repeat(3,150px)] items-center gap-2 px-4 py-3"
               style={{ borderRadius: 'var(--r-md) var(--r-md) 0 0' }}
             >
-              <div className="cg-eyebrow">Tipo de aviso</div>
+              <div className="cg-eyebrow">{t('settings.notificationForm.columnTypeHeader', { defaultValue: "Tipo de aviso" })}</div>
               {columns.map((c) => {
                 const all = allCheckedByColumn(c.key);
                 const some = someCheckedByColumn(c.key);
@@ -305,7 +307,7 @@ export default function NotificationMatrix() {
                     <Checkbox
                       checked={all}
                       onCheckedChange={(v) => toggleColumn(c.key, Boolean(v))}
-                      aria-label={`Seleccionar todo ${c.label}`}
+                      aria-label={t('settings.notificationForm.selectAllAria', { defaultValue: 'Seleccionar todo {{label}}', label: c.label })}
                       className={cn(some && !all && "data-[state=indeterminate]:opacity-100")}
                     />
                     <span className="flex items-center gap-1.5 text-[13px] font-semibold">
@@ -334,7 +336,7 @@ export default function NotificationMatrix() {
                         <Checkbox
                           checked={allRow}
                           onCheckedChange={(v) => toggleRow(n.id, Boolean(v))}
-                          aria-label={`Todas las vías de ${n.label}`}
+                          aria-label={t('settings.notificationForm.allChannelsAria', { defaultValue: 'Todas las vías de {{label}}', label: n.label })}
                           className={cn(someRow && "data-[state=indeterminate]:opacity-100")}
                         />
                         <div className="flex items-center gap-1.5">
@@ -373,7 +375,7 @@ export default function NotificationMatrix() {
       <div className="flex justify-end">
         <Button variant="brand" className="px-6" onClick={onSave} disabled={saving || loading}>
           {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Guardar
+          {t('settings.notificationForm.saveBtn', { defaultValue: 'Guardar' })}
         </Button>
       </div>
     </div>

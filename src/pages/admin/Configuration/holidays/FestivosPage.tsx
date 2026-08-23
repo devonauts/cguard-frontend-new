@@ -11,6 +11,7 @@
  * con sus tablas de constantes por año editadas a mano en el repositorio.
  */
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { CalendarDays, Plus, Trash2, Loader2, Info } from "lucide-react";
 
@@ -44,6 +45,7 @@ function legible(ymd: string, recurrente: boolean) {
 }
 
 export default function FestivosPage() {
+  const { t } = useTranslation();
   const { hasPermission } = usePermissions();
   const canEdit = hasPermission("settingsEdit");
 
@@ -57,7 +59,7 @@ export default function FestivosPage() {
       const { data } = await api.get(`/tenant/${tenantId()}/holiday`);
       setLista(data?.rows || []);
     } catch {
-      toast.error("No se pudieron cargar los festivos.");
+      toast.error(t('settings.festivos.loadError', { defaultValue: 'No se pudieron cargar los festivos.' }));
     } finally {
       setLoading(false);
     }
@@ -66,7 +68,7 @@ export default function FestivosPage() {
 
   const agregar = async () => {
     if (!nuevo.date || !nuevo.name.trim()) {
-      toast.error("Pon la fecha y el nombre del festivo.");
+      toast.error(t('settings.festivos.missingFieldsError', { defaultValue: 'Pon la fecha y el nombre del festivo.' }));
       return;
     }
     setGuardando(true);
@@ -79,13 +81,13 @@ export default function FestivosPage() {
       });
       setNuevo({ date: "", name: "", kind: "national", recurring: true, payMultiplier: "" });
       await cargar();
-      toast.success("Festivo agregado.");
+      toast.success(t('settings.festivos.addSuccess', { defaultValue: 'Festivo agregado.' }));
     } catch (e: any) {
       // El índice único por (tenant, fecha) es lo que impide contar el recargo
       // dos veces; el mensaje del servidor no lo explicaría.
       const msg = e?.response?.status === 500 || e?.response?.status === 409
-        ? "Ya hay un festivo en esa fecha."
-        : e?.response?.data?.message || "No se pudo agregar.";
+        ? t('settings.festivos.duplicateError', { defaultValue: 'Ya hay un festivo en esa fecha.' })
+        : e?.response?.data?.message || t('settings.festivos.addError', { defaultValue: 'No se pudo agregar.' });
       toast.error(msg);
     } finally {
       setGuardando(false);
@@ -97,30 +99,29 @@ export default function FestivosPage() {
       await api.delete(`/tenant/${tenantId()}/holiday/${id}`);
       setLista((l) => l.filter((x) => x.id !== id));
     } catch {
-      toast.error("No se pudo borrar.");
+      toast.error(t('settings.festivos.deleteError', { defaultValue: 'No se pudo borrar.' }));
     }
   };
 
   return (
     <AppLayout>
-      <SettingsLayout navKey="configuracion" title="Festivos">
+      <SettingsLayout navKey="configuracion" title={t('settings.festivos.pageTitle', { defaultValue: 'Festivos' })}>
         <PageContainer width="narrow">
           <PageHeader
             icon={<CalendarDays />}
-            title="Festivos"
-            subtitle="Los días que tu empresa trata distinto: feriados de ley y días propios."
+            title={t('settings.festivos.pageTitle', { defaultValue: 'Festivos' })}
+            subtitle={t('settings.festivos.pageSubtitle', { defaultValue: 'Los días que tu empresa trata distinto: feriados de ley y días propios.' })}
           />
 
           <InfoNote tone="info" icon={<Info />} className="mb-5">
-            El calendario decide qué turnos caen en feriado. Sin él, el 1 de enero
-            se programa y se cuenta como un martes cualquiera.
+            {t('settings.festivos.infoNote', { defaultValue: 'El calendario decide qué turnos caen en feriado. Sin él, el 1 de enero se programa y se cuenta como un martes cualquiera.' })}
           </InfoNote>
 
           {canEdit && (
-            <Section title="Agregar un festivo" icon={<Plus />} className="mb-5">
+            <Section title={t('settings.festivos.addSectionTitle', { defaultValue: 'Agregar un festivo' })} icon={<Plus />} className="mb-5">
               <div className="grid gap-3 sm:grid-cols-2">
                 <label className="block">
-                  <span className="cg-eyebrow">Fecha</span>
+                  <span className="cg-eyebrow">{t('settings.festivos.dateLabel', { defaultValue: 'Fecha' })}</span>
                   <input
                     type="date"
                     value={nuevo.date}
@@ -129,32 +130,32 @@ export default function FestivosPage() {
                   />
                 </label>
                 <label className="block">
-                  <span className="cg-eyebrow">Nombre</span>
+                  <span className="cg-eyebrow">{t('settings.festivos.nameLabel', { defaultValue: 'Nombre' })}</span>
                   <input
                     type="text"
                     maxLength={120}
-                    placeholder="Navidad, Día del Trabajo…"
+                    placeholder={t('settings.festivos.namePlaceholder', { defaultValue: 'Navidad, Día del Trabajo…' })}
                     value={nuevo.name}
                     onChange={(e) => setNuevo((n) => ({ ...n, name: e.target.value }))}
                     className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm"
                   />
                 </label>
                 <label className="block">
-                  <span className="cg-eyebrow">Tipo</span>
+                  <span className="cg-eyebrow">{t('settings.festivos.typeLabel', { defaultValue: 'Tipo' })}</span>
                   <select
                     value={nuevo.kind}
                     onChange={(e) => setNuevo((n) => ({ ...n, kind: e.target.value }))}
                     className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm"
                   >
-                    <option value="national">Feriado de ley</option>
-                    <option value="company">Día propio de la empresa</option>
+                    <option value="national">{t('settings.festivos.typeNationalOption', { defaultValue: 'Feriado de ley' })}</option>
+                    <option value="company">{t('settings.festivos.typeCompanyOption', { defaultValue: 'Día propio de la empresa' })}</option>
                   </select>
                 </label>
                 <label className="block">
-                  <span className="cg-eyebrow">Recargo (opcional)</span>
+                  <span className="cg-eyebrow">{t('settings.festivos.payMultiplierLabel', { defaultValue: 'Recargo (opcional)' })}</span>
                   <input
                     type="number" step="0.25" min={1} max={5}
-                    placeholder="1.5 = tiempo y medio"
+                    placeholder={t('settings.festivos.payMultiplierPlaceholder', { defaultValue: '1.5 = tiempo y medio' })}
                     value={nuevo.payMultiplier}
                     onChange={(e) => setNuevo((n) => ({ ...n, payMultiplier: e.target.value }))}
                     className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm"
@@ -168,29 +169,29 @@ export default function FestivosPage() {
                   checked={nuevo.recurring}
                   onChange={(e) => setNuevo((n) => ({ ...n, recurring: e.target.checked }))}
                 />
-                Se repite cada año
+                {t('settings.festivos.recurringLabel', { defaultValue: 'Se repite cada año' })}
                 <span className="text-xs" style={{ color: "var(--ink-faint)" }}>
-                  — para Navidad o Año Nuevo, así no hay que volver a teclearlos
+                  {t('settings.festivos.recurringHint', { defaultValue: '— para Navidad o Año Nuevo, así no hay que volver a teclearlos' })}
                 </span>
               </label>
 
               <div className="mt-4 flex justify-end">
                 <Button variant="brand" onClick={agregar} disabled={guardando}>
                   {guardando ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />}
-                  Agregar
+                  {t('settings.festivos.addBtn', { defaultValue: 'Agregar' })}
                 </Button>
               </div>
             </Section>
           )}
 
-          <Section title={`Calendario (${lista.length})`} icon={<CalendarDays />}>
+          <Section title={t('settings.festivos.calendarSectionTitle', { defaultValue: 'Calendario ({{count}})', count: lista.length })} icon={<CalendarDays />}>
             {loading ? (
               <SkeletonCards count={3} />
             ) : lista.length === 0 ? (
               <EmptyState
                 icon={<CalendarDays />}
-                title="Todavía no hay festivos"
-                description="Agrega los feriados de tu país y los días propios de tu empresa."
+                title={t('settings.festivos.emptyTitle', { defaultValue: 'Todavía no hay festivos' })}
+                description={t('settings.festivos.emptyDescription', { defaultValue: 'Agrega los feriados de tu país y los días propios de tu empresa.' })}
               />
             ) : (
               <div className="divide-y" style={{ borderColor: "var(--hairline)" }}>
@@ -200,7 +201,7 @@ export default function FestivosPage() {
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="text-sm font-medium">{f.name}</span>
                         <StatusBadge tone={f.kind === "national" ? "info" : "neutral"} dot={false} className="px-2 py-0.5 text-[10px]">
-                          {f.kind === "national" ? "De ley" : "De la empresa"}
+                          {f.kind === "national" ? t('settings.festivos.kindNationalBadge', { defaultValue: 'De ley' }) : t('settings.festivos.kindCompanyBadge', { defaultValue: 'De la empresa' })}
                         </StatusBadge>
                         {f.payMultiplier ? (
                           <StatusBadge tone="warn" dot={false} className="px-2 py-0.5 text-[10px]">
@@ -216,7 +217,7 @@ export default function FestivosPage() {
                       <button
                         type="button"
                         onClick={() => borrar(f.id)}
-                        aria-label={`Borrar ${f.name}`}
+                        aria-label={t('settings.festivos.deleteAriaLabel', { defaultValue: 'Borrar {{name}}', name: f.name })}
                         className="cg-focus rounded-lg p-2 transition-colors"
                         style={{ color: "var(--ink-faint)" }}
                       >

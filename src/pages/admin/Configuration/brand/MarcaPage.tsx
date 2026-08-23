@@ -17,6 +17,7 @@
  * está, para que nadie lo busque en dos sitios.
  */
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Palette, Loader2, Save, Info, Mail, Smartphone } from "lucide-react";
 
@@ -37,6 +38,7 @@ const PRESETS = ["#C8860A", "#1E63C8", "#0E9F6E", "#DC2626", "#7C3AED", "#0891B2
 const tenantId = () => localStorage.getItem("tenantId") || "";
 
 export default function MarcaPage() {
+  const { t } = useTranslation();
   const { hasPermission } = usePermissions();
   const canEdit = hasPermission("settingsEdit");
 
@@ -58,7 +60,7 @@ export default function MarcaPage() {
         setColor(eb.brandColor || ma.accentColor || ORO_CORREO);
         setCabecera(eb.headerColor || CABECERA);
       } catch {
-        toast.error("No se pudo cargar la marca.");
+        toast.error(t('settings.marca.loadError', { defaultValue: 'No se pudo cargar la marca.' }));
       } finally {
         setLoading(false);
       }
@@ -80,9 +82,9 @@ export default function MarcaPage() {
           mobileAppSettings: { ...(row?.mobileAppSettings || {}), accentColor: color },
         },
       });
-      toast.success("Marca guardada. Se aplica a los correos y a las apps del equipo.");
+      toast.success(t('settings.marca.saveSuccess', { defaultValue: 'Marca guardada. Se aplica a los correos y a las apps del equipo.' }));
     } catch (e: any) {
-      toast.error(e?.response?.data?.message || "No se pudo guardar.");
+      toast.error(e?.response?.data?.message || t('settings.marca.saveError', { defaultValue: 'No se pudo guardar.' }));
     } finally {
       setSaving(false);
     }
@@ -96,7 +98,7 @@ export default function MarcaPage() {
           type="button"
           disabled={!canEdit}
           onClick={() => onPick(c)}
-          aria-label={`Color ${c}`}
+          aria-label={t('settings.marca.colorAria', { defaultValue: 'Color {{c}}', c })}
           aria-pressed={valor.toLowerCase() === c.toLowerCase()}
           className={`cg-focus h-9 w-9 rounded-full border-2 transition-transform hover:scale-110 ${
             valor.toLowerCase() === c.toLowerCase() ? "scale-110" : ""
@@ -112,19 +114,19 @@ export default function MarcaPage() {
           onChange={(e) => onPick(e.target.value)}
           className="h-6 w-8 cursor-pointer border-0 bg-transparent p-0"
         />
-        Personalizado
+        {t('settings.marca.customLabel', { defaultValue: 'Personalizado' })}
       </label>
     </div>
   );
 
   return (
     <AppLayout>
-      <SettingsLayout navKey="configuracion" title="Marca">
+      <SettingsLayout navKey="configuracion" title={t('settings.marca.layoutTitle', { defaultValue: 'Marca' })}>
         <PageContainer width="narrow">
           <PageHeader
             icon={<Palette />}
-            title="Marca"
-            subtitle="El color con el que tu empresa se presenta a tus clientes y a tu equipo."
+            title={t('settings.marca.pageTitle', { defaultValue: 'Marca' })}
+            subtitle={t('settings.marca.pageSubtitle', { defaultValue: 'El color con el que tu empresa se presenta a tus clientes y a tu equipo.' })}
           />
 
           {loading ? (
@@ -132,51 +134,45 @@ export default function MarcaPage() {
           ) : (
             <div className="space-y-5">
               <InfoNote tone="info" icon={<Info />}>
-                Este color se elegía en <strong>dos pantallas distintas</strong> y con
-                dorados diferentes, así que el correo y la app no coincidían. Ahora se
-                elige una vez y se aplica a los dos.
+                {t('settings.marca.infoBefore', { defaultValue: 'Este color se elegía en ' })}<strong>{t('settings.marca.infoStrong', { defaultValue: 'dos pantallas distintas' })}</strong>{t('settings.marca.infoAfter', { defaultValue: ' y con dorados diferentes, así que el correo y la app no coincidían. Ahora se elige una vez y se aplica a los dos.' })}
               </InfoNote>
 
-              <Section title="Color de la empresa" icon={<Palette />}>
+              <Section title={t('settings.marca.companyColorSection', { defaultValue: 'Color de la empresa' })} icon={<Palette />}>
                 <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-                  Se usa en el botón principal y la línea superior de tus correos, y como
-                  acento de las apps del vigilante y del supervisor.
+                  {t('settings.marca.companyColorDesc', { defaultValue: 'Se usa en el botón principal y la línea superior de tus correos, y como acento de las apps del vigilante y del supervisor.' })}
                 </p>
                 <Swatches valor={color} onPick={setColor} />
 
                 <div className="mt-5 flex flex-wrap gap-3">
                   <div className="glass-flat flex items-center gap-2.5 px-3 py-2">
                     <Mail className="h-4 w-4" style={{ color: "var(--ink-faint)" }} />
-                    <span className="text-xs" style={{ color: "var(--ink-soft)" }}>Correos</span>
+                    <span className="text-xs" style={{ color: "var(--ink-soft)" }}>{t('settings.marca.emailsLabel', { defaultValue: 'Correos' })}</span>
                     <span className="h-5 w-10 rounded" style={{ background: color }} />
                   </div>
                   <div className="glass-flat flex items-center gap-2.5 px-3 py-2">
                     <Smartphone className="h-4 w-4" style={{ color: "var(--ink-faint)" }} />
-                    <span className="text-xs" style={{ color: "var(--ink-soft)" }}>Apps del equipo</span>
+                    <span className="text-xs" style={{ color: "var(--ink-soft)" }}>{t('settings.marca.teamAppsLabel', { defaultValue: 'Apps del equipo' })}</span>
                     <span className="h-5 w-10 rounded" style={{ background: color }} />
                   </div>
                 </div>
               </Section>
 
-              <Section title="Cabecera de los correos" icon={<Mail />}>
+              <Section title={t('settings.marca.emailHeaderSection', { defaultValue: 'Cabecera de los correos' })} icon={<Mail />}>
                 <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-                  Fondo de la franja donde va tu logotipo. Conviene un tono oscuro para
-                  que el texto blanco se lea.
+                  {t('settings.marca.emailHeaderDesc', { defaultValue: 'Fondo de la franja donde va tu logotipo. Conviene un tono oscuro para que el texto blanco se lea.' })}
                 </p>
                 <Swatches valor={cabecera} onPick={setCabecera} />
               </Section>
 
               <InfoNote tone="neutral">
-                ¿El color del panel? Ése es tuyo, no de la empresa: se elige en{" "}
-                <strong>Mi cuenta › Apariencia</strong> y se guarda en tu navegador, como
-                el modo oscuro. El administrador no decide con qué colores trabaja su
-                equipo ocho horas al día.
+                {t('settings.marca.panelInfoBefore', { defaultValue: '¿El color del panel? Ése es tuyo, no de la empresa: se elige en' })}{" "}
+                <strong>{t('settings.marca.panelInfoStrong', { defaultValue: 'Mi cuenta › Apariencia' })}</strong>{t('settings.marca.panelInfoAfter', { defaultValue: ' y se guarda en tu navegador, como el modo oscuro. El administrador no decide con qué colores trabaja su equipo ocho horas al día.' })}
               </InfoNote>
 
               <div className="flex justify-end">
                 <Button variant="brand" onClick={save} disabled={!canEdit || saving}>
                   {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                  Guardar marca
+                  {t('settings.marca.saveBtn', { defaultValue: 'Guardar marca' })}
                 </Button>
               </div>
             </div>

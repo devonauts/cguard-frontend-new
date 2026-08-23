@@ -4,6 +4,7 @@ import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 import './PhoneField.css';
 import { parsePhoneNumberFromString, getCountries, getCountryCallingCode } from 'libphonenumber-js';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   code: string;
@@ -18,6 +19,7 @@ export default function PhoneField({
   onCodeChange,
   onNumberChange,
 }: Props) {
+  const { t } = useTranslation();
   // Combinar código y número para el valor completo
   const fullNumber = `${code}${number}`;
 
@@ -75,7 +77,7 @@ export default function PhoneField({
         defaultCountry="EC"
         value={fullNumber}
         onChange={handleChange}
-        placeholder="Ingresa número de teléfono"
+        placeholder={t('settings.phoneField.enterPhonePlaceholder', { defaultValue: 'Ingresa número de teléfono' })}
       />
     </div>
   );

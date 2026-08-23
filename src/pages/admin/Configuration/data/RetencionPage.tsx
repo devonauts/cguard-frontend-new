@@ -25,6 +25,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import {
   DatabaseZap,
   Loader2,
@@ -136,6 +137,7 @@ function FilaDato({
   calculando: boolean;
   disabled?: boolean;
 }) {
+  const { t } = useTranslation();
   const paraSiempre = valor === 0;
   const bajoElSuelo = valor > 0 && valor < SUELO[dato.clave];
   const desde = fecha(est?.masAntigua ?? null);
@@ -150,20 +152,20 @@ function FilaDato({
           {dato.icono}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium">{dato.titulo}</p>
+          <p className="text-sm font-medium">{t(`settings.retencion.${dato.clave}_titulo`, { defaultValue: dato.titulo })}</p>
           <p className="mt-0.5 text-xs" style={{ color: "var(--ink-faint)" }}>
-            {dato.queEs}
+            {t(`settings.retencion.${dato.clave}_queEs`, { defaultValue: dato.queEs })}
           </p>
 
           {/* Lo que hay guardado HOY. Sin esto, el plazo se elige a ciegas. */}
           {est && (
             <p className="mt-1.5 text-xs" style={{ color: "var(--ink-soft)" }}>
               {est.total === 0 ? (
-                <>Ahora mismo no hay nada guardado.</>
+                <>{t('settings.retencion.nothingSaved', { defaultValue: 'Ahora mismo no hay nada guardado.' })}</>
               ) : (
                 <>
-                  Guardados hoy: <strong>{nf.format(est.total)}</strong> registros
-                  {desde ? <> · el más antiguo, del {desde}</> : null}
+                  {t('settings.retencion.savedTodayPrefix', { defaultValue: 'Guardados hoy: ' })}<strong>{nf.format(est.total)}</strong>{t('settings.retencion.recordsSuffix', { defaultValue: ' registros' })}
+                  {desde ? t('settings.retencion.oldestFrom', { defaultValue: ' · el más antiguo, del {{date}}', date: desde }) : null}
                 </>
               )}
             </p>
@@ -180,19 +182,18 @@ function FilaDato({
               className="cg-input cg-focus w-28 px-3 py-2 text-sm"
             />
             <span className="text-sm" style={{ color: "var(--ink-soft)" }}>
-              días
+              {t('settings.retencion.daysUnit', { defaultValue: 'días' })}
             </span>
             {paraSiempre && (
               <span className="text-xs" style={{ color: "var(--ink-faint)" }}>
-                · se conserva para siempre
+                {t('settings.retencion.keptForever', { defaultValue: '· se conserva para siempre' })}
               </span>
             )}
           </div>
 
           {bajoElSuelo && (
             <p className="mt-2 text-xs" style={{ color: "var(--warn)" }}>
-              El mínimo para este dato son {SUELO[dato.clave]} días. Al guardar se
-              ajustará solo.
+              {t('settings.retencion.belowFloor', { defaultValue: 'El mínimo para este dato son {{floor}} días. Al guardar se ajustará solo.', floor: SUELO[dato.clave] })}
             </p>
           )}
 
@@ -204,15 +205,15 @@ function FilaDato({
             >
               {calculando ? (
                 <span className="inline-flex items-center gap-1.5">
-                  <Loader2 className="h-3 w-3 animate-spin" /> calculando…
+                  <Loader2 className="h-3 w-3 animate-spin" /> {t('settings.retencion.calculating', { defaultValue: 'calculando…' })}
                 </span>
               ) : est && est.aBorrar > 0 ? (
                 <>
-                  Con este plazo se borrarán <strong>{nf.format(est.aBorrar)}</strong>{" "}
-                  registros en el próximo barrido. {dato.quePierdes}
+                  {t('settings.retencion.willDeletePrefix', { defaultValue: 'Con este plazo se borrarán ' })}<strong>{nf.format(est.aBorrar)}</strong>{" "}
+                  {t('settings.retencion.willDeleteSuffix', { defaultValue: 'registros en el próximo barrido. ' })}{t(`settings.retencion.${dato.clave}_quePierdes`, { defaultValue: dato.quePierdes })}
                 </>
               ) : (
-                <>Con este plazo no se borraría nada todavía.</>
+                <>{t('settings.retencion.nothingDeletedYet', { defaultValue: 'Con este plazo no se borraría nada todavía.' })}</>
               )}
             </p>
           )}
@@ -223,6 +224,7 @@ function FilaDato({
 }
 
 export default function RetencionPage() {
+  const { t } = useTranslation();
   const { hasPermission } = usePermissions();
   const canEdit = hasPermission("settingsEdit");
 
@@ -241,7 +243,7 @@ export default function RetencionPage() {
         setRow(data || {});
         setR({ ...DEFAULTS, ...((data && data.dataRetention) || {}) });
       } catch {
-        toast.error("No se pudo cargar la política de retención.");
+        toast.error(t('settings.retencion.loadError', { defaultValue: 'No se pudo cargar la política de retención.' }));
       } finally {
         setLoading(false);
       }
@@ -296,10 +298,10 @@ export default function RetencionPage() {
           dataRetention: r,
         },
       });
-      toast.success("Política de retención guardada.");
+      toast.success(t('settings.retencion.savedOk', { defaultValue: 'Política de retención guardada.' }));
       estimar(r);
     } catch (e: any) {
-      toast.error(e?.response?.data?.message || "No se pudo guardar.");
+      toast.error(e?.response?.data?.message || t('settings.retencion.saveError', { defaultValue: 'No se pudo guardar.' }));
     } finally {
       setSaving(false);
     }
@@ -314,26 +316,23 @@ export default function RetencionPage() {
 
   return (
     <AppLayout>
-      <SettingsLayout navKey="configuracion" title="Retención de datos">
+      <SettingsLayout navKey="configuracion" title={t('settings.retencion.pageTitle', { defaultValue: 'Retención de datos' })}>
         <PageContainer width="narrow">
           <PageHeader
             icon={<DatabaseZap />}
-            title="Retención de datos"
-            subtitle="Cuánto tiempo se guarda cada cosa antes de borrarse para siempre."
+            title={t('settings.retencion.pageTitle', { defaultValue: 'Retención de datos' })}
+            subtitle={t('settings.retencion.pageSubtitle', { defaultValue: 'Cuánto tiempo se guarda cada cosa antes de borrarse para siempre.' })}
           />
 
           {loading ? (
             <SkeletonCards count={2} />
           ) : (
             <div className="space-y-5">
-              <InfoNote tone="warn" title="Esto borra datos, y no se puede deshacer">
-                Lo que se borra no se recupera, ni desde una copia de seguridad
-                antigua. Pon <strong>0</strong> en cualquier plazo para conservar ese
-                dato indefinidamente, que es como está todo salvo el rastro de
-                ubicación.
+              <InfoNote tone="warn" title={t('settings.retencion.warnTitle', { defaultValue: 'Esto borra datos, y no se puede deshacer' })}>
+                {t('settings.retencion.warnBodyPrefix', { defaultValue: 'Lo que se borra no se recupera, ni desde una copia de seguridad antigua. Pon ' })}<strong>0</strong>{t('settings.retencion.warnBodySuffix', { defaultValue: ' en cualquier plazo para conservar ese dato indefinidamente, que es como está todo salvo el rastro de ubicación.' })}
               </InfoNote>
 
-              <Section title="Plazos" icon={<DatabaseZap />}>
+              <Section title={t('settings.retencion.termsSection', { defaultValue: 'Plazos' })} icon={<DatabaseZap />}>
                 <div className="divide-y" style={{ borderColor: "var(--hairline)" }}>
                   {DATOS.map((d) => (
                     <FilaDato
@@ -350,8 +349,7 @@ export default function RetencionPage() {
               </Section>
 
               <InfoNote tone="info">
-                El barrido corre solo cada tres horas. No hace falta que dejes esta
-                pantalla abierta.
+                {t('settings.retencion.sweepInfo', { defaultValue: 'El barrido corre solo cada tres horas. No hace falta que dejes esta pantalla abierta.' })}
               </InfoNote>
 
               <div className="flex justify-end">
@@ -361,7 +359,7 @@ export default function RetencionPage() {
                   ) : (
                     <Save className="mr-2 h-4 w-4" />
                   )}
-                  Guardar plazos
+                  {t('settings.retencion.saveTermsBtn', { defaultValue: 'Guardar plazos' })}
                 </Button>
               </div>
             </div>
@@ -371,15 +369,15 @@ export default function RetencionPage() {
             open={confirmar}
             onOpenChange={setConfirmar}
             icon={<Trash2 />}
-            title="Se van a borrar registros"
-            description="El próximo barrido, dentro de menos de tres horas, eliminará estos datos. No se pueden recuperar."
+            title={t('settings.retencion.modalTitle', { defaultValue: 'Se van a borrar registros' })}
+            description={t('settings.retencion.modalDesc', { defaultValue: 'El próximo barrido, dentro de menos de tres horas, eliminará estos datos. No se pueden recuperar.' })}
             footer={
               <>
                 <Button variant="outline" onClick={() => setConfirmar(false)}>
-                  Cancelar
+                  {t('settings.retencion.cancelBtn', { defaultValue: 'Cancelar' })}
                 </Button>
                 <Button variant="brand" onClick={guardar}>
-                  Guardar y borrar
+                  {t('settings.retencion.saveAndDeleteBtn', { defaultValue: 'Guardar y borrar' })}
                 </Button>
               </>
             }
@@ -387,9 +385,9 @@ export default function RetencionPage() {
             <ul className="space-y-2 text-sm">
               {DATOS.filter((d) => r[d.clave] > 0 && (est[d.clave]?.aBorrar || 0) > 0).map((d) => (
                 <li key={d.clave} className="flex items-start justify-between gap-3">
-                  <span style={{ color: "var(--ink-soft)" }}>{d.titulo}</span>
+                  <span style={{ color: "var(--ink-soft)" }}>{t(`settings.retencion.${d.clave}_titulo`, { defaultValue: d.titulo })}</span>
                   <strong className="shrink-0" style={{ color: "var(--bad)" }}>
-                    {nf.format(est[d.clave]!.aBorrar)} registros
+                    {t('settings.retencion.recordsCountLabel', { defaultValue: '{{count}} registros', count: nf.format(est[d.clave]!.aBorrar) })}
                   </strong>
                 </li>
               ))}

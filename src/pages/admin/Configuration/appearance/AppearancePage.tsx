@@ -12,6 +12,7 @@
  * ════════════════════════════════════════════════════════════════════════════
  */
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Palette, Check, Sun, Moon, RotateCcw, Shield, Users, AlertTriangle,
   Download, Plus, Eye,
@@ -77,6 +78,7 @@ const CSS_DESLIZADOR = `
 `;
 
 export default function AppearancePage() {
+  const { t } = useTranslation();
   const { accent, setAccent, resetAccent } = useAccent();
   const { theme, setTheme } = useThemeContext();
   const oscuro = theme === "dark";
@@ -96,32 +98,30 @@ export default function AppearancePage() {
 
   return (
     <AppLayout>
-      <SettingsLayout navKey="configuracion" title="Apariencia">
+      <SettingsLayout navKey="configuracion" title={t('settings.appearance.layoutTitle', { defaultValue: 'Apariencia' })}>
         <style>{CSS_DESLIZADOR}</style>
         <PageContainer width="wide">
           <PageHeader
             icon={<Palette />}
-            title="Apariencia"
-            subtitle="Elige el color con el que se pinta tu C-Guard Pro y si trabajas en claro u oscuro. El cambio se aplica al instante y se guarda en tu cuenta, así que lo verás igual desde cualquier computadora o navegador."
+            title={t('settings.appearance.pageTitle', { defaultValue: 'Apariencia' })}
+            subtitle={t('settings.appearance.pageSubtitle', { defaultValue: 'Elige el color con el que se pinta tu C-Guard Pro y si trabajas en claro u oscuro. El cambio se aplica al instante y se guarda en tu cuenta, así que lo verás igual desde cualquier computadora o navegador.' })}
             badges={
               <>
-                <StatusBadge tone="brand">{preset ? preset.label : "Color a medida"}</StatusBadge>
-                <StatusBadge tone="neutral" dot={false}>{oscuro ? "Modo oscuro" : "Modo claro"}</StatusBadge>
+                <StatusBadge tone="brand">{preset ? preset.label : t('settings.appearance.customColorBadge', { defaultValue: 'Color a medida' })}</StatusBadge>
+                <StatusBadge tone="neutral" dot={false}>{oscuro ? t('settings.appearance.darkModeBadge', { defaultValue: 'Modo oscuro' }) : t('settings.appearance.lightModeBadge', { defaultValue: 'Modo claro' })}</StatusBadge>
               </>
             }
             actions={
               <Button variant="outline" onClick={resetAccent} disabled={esPredeterminado}>
-                <RotateCcw /> Volver al mostaza oro
+                <RotateCcw /> {t('settings.appearance.resetAccentBtn', { defaultValue: 'Volver al mostaza oro' })}
               </Button>
             }
           />
 
           {/* ── COLOR DEL SISTEMA ─────────────────────────────────────────── */}
-          <Section title="El color de tu empresa" icon={<Palette />}>
+          <Section title={t('settings.appearance.companyColorSection', { defaultValue: 'El color de tu empresa' })} icon={<Palette />}>
             <p className="mb-5 text-xs leading-relaxed" style={{ color: "var(--ink-soft)" }}>
-              Toca un color y mira la pantalla entera: botones, gráficas, avisos y menús se
-              repintan solos. Es el mismo color en toda la plataforma, así que basta con
-              elegirlo una vez.
+              {t('settings.appearance.companyColorIntro', { defaultValue: 'Toca un color y mira la pantalla entera: botones, gráficas, avisos y menús se repintan solos. Es el mismo color en toda la plataforma, así que basta con elegirlo una vez.' })}
             </p>
 
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
@@ -163,11 +163,11 @@ export default function AppearancePage() {
           </Section>
 
           {/* ── AJUSTE FINO ───────────────────────────────────────────────── */}
-          <Section title="Ajústalo a tu gusto" icon={<Eye />}>
+          <Section title={t('settings.appearance.fineTuneSection', { defaultValue: 'Ajústalo a tu gusto' })} icon={<Eye />}>
             <div className="grid gap-6 sm:grid-cols-2">
               <label className="block">
                 <div className="mb-2 flex items-baseline justify-between">
-                  <span className="cg-eyebrow">Tono</span>
+                  <span className="cg-eyebrow">{t('settings.appearance.hueLabel', { defaultValue: 'Tono' })}</span>
                   <span className="text-xs font-semibold tabular-nums" style={{ color: "var(--ink-soft)" }}>
                     {Math.round(accent.h)}°
                   </span>
@@ -179,18 +179,18 @@ export default function AppearancePage() {
                   step={1}
                   value={accent.h}
                   onChange={(e) => setAccent({ ...accent, h: Number(e.target.value) })}
-                  aria-label="Tono del color"
+                  aria-label={t('settings.appearance.hueAria', { defaultValue: 'Tono del color' })}
                   className="ap-slider"
                   style={{ background: degradadoTono }}
                 />
                 <p className="mt-2 text-xs" style={{ color: "var(--ink-faint)" }}>
-                  De qué color es: del rojo al verde, al azul y de vuelta.
+                  {t('settings.appearance.hueHint', { defaultValue: 'De qué color es: del rojo al verde, al azul y de vuelta.' })}
                 </p>
               </label>
 
               <label className="block">
                 <div className="mb-2 flex items-baseline justify-between">
-                  <span className="cg-eyebrow">Intensidad</span>
+                  <span className="cg-eyebrow">{t('settings.appearance.intensityLabel', { defaultValue: 'Intensidad' })}</span>
                   <span className="text-xs font-semibold tabular-nums" style={{ color: "var(--ink-soft)" }}>
                     {Math.round((accent.c / 0.2) * 100)} %
                   </span>
@@ -202,12 +202,12 @@ export default function AppearancePage() {
                   step={0.005}
                   value={accent.c}
                   onChange={(e) => setAccent({ ...accent, c: Number(e.target.value) })}
-                  aria-label="Intensidad del color"
+                  aria-label={t('settings.appearance.intensityAria', { defaultValue: 'Intensidad del color' })}
                   className="ap-slider"
                   style={{ background: degradadoIntensidad }}
                 />
                 <p className="mt-2 text-xs" style={{ color: "var(--ink-faint)" }}>
-                  Cuánto color tiene: de gris apagado a pleno.
+                  {t('settings.appearance.intensityHint', { defaultValue: 'Cuánto color tiene: de gris apagado a pleno.' })}
                 </p>
               </label>
             </div>
@@ -219,23 +219,20 @@ export default function AppearancePage() {
             >
               <IconTile tone="brand" size="sm"><Shield /></IconTile>
               <p className="text-xs leading-relaxed" style={{ color: "var(--ink-soft)" }}>
-                <strong style={{ color: "var(--ink)" }}>Lo claro u oscuro que sale el color lo decidimos nosotros</strong>, y no es
-                un olvido: es lo que mantiene los textos legibles encima del color, elijas el que elijas.
-                Tú pones el tono y la intensidad; del contraste nos encargamos.
+                <strong style={{ color: "var(--ink)" }}>{t('settings.appearance.contrastStrong', { defaultValue: 'Lo claro u oscuro que sale el color lo decidimos nosotros' })}</strong>{t('settings.appearance.contrastRest', { defaultValue: ', y no es un olvido: es lo que mantiene los textos legibles encima del color, elijas el que elijas. Tú pones el tono y la intensidad; del contraste nos encargamos.' })}
               </p>
             </div>
           </Section>
 
           {/* ── CLARO / OSCURO ────────────────────────────────────────────── */}
-          <Section title="Claro u oscuro" icon={oscuro ? <Moon /> : <Sun />}>
+          <Section title={t('settings.appearance.lightDarkSection', { defaultValue: 'Claro u oscuro' })} icon={oscuro ? <Moon /> : <Sun />}>
             <p className="mb-4 text-xs leading-relaxed" style={{ color: "var(--ink-soft)" }}>
-              El mismo color funciona en los dos. Elige con cuál trabajas mejor — de día en
-              una garita con sol, el claro; en una central de monitoreo a oscuras, el oscuro.
+              {t('settings.appearance.lightDarkIntro', { defaultValue: 'El mismo color funciona en los dos. Elige con cuál trabajas mejor — de día en una garita con sol, el claro; en una central de monitoreo a oscuras, el oscuro.' })}
             </p>
             <div className="grid gap-3 sm:grid-cols-2">
               {([
-                { id: "light", titulo: "Claro", pie: "Fondo blanco, para oficinas con luz", icono: <Sun /> },
-                { id: "dark", titulo: "Oscuro", pie: "Fondo negro, descansa la vista de noche", icono: <Moon /> },
+                { id: "light", titulo: t('settings.appearance.lightTitle', { defaultValue: 'Claro' }), pie: t('settings.appearance.lightDesc', { defaultValue: 'Fondo blanco, para oficinas con luz' }), icono: <Sun /> },
+                { id: "dark", titulo: t('settings.appearance.darkTitle', { defaultValue: 'Oscuro' }), pie: t('settings.appearance.darkDesc', { defaultValue: 'Fondo negro, descansa la vista de noche' }), icono: <Moon /> },
               ] as const).map((m) => {
                 const activo = (m.id === "dark") === oscuro;
                 return (
@@ -264,49 +261,47 @@ export default function AppearancePage() {
           </Section>
 
           {/* ── VISTA PREVIA ──────────────────────────────────────────────── */}
-          <Section title="Así se verá" icon={<Eye />}>
+          <Section title={t('settings.appearance.previewSection', { defaultValue: 'Así se verá' })} icon={<Eye />}>
             <p className="mb-4 text-xs leading-relaxed" style={{ color: "var(--ink-soft)" }}>
-              Piezas reales de la plataforma con el color que acabas de elegir. Los avisos de
-              peligro, advertencia y todo correcto no cambian nunca de color: una alerta roja
-              tiene que seguir siendo roja aunque elijas el rojo como color de tu empresa.
+              {t('settings.appearance.previewIntro', { defaultValue: 'Piezas reales de la plataforma con el color que acabas de elegir. Los avisos de peligro, advertencia y todo correcto no cambian nunca de color: una alerta roja tiene que seguir siendo roja aunque elijas el rojo como color de tu empresa.' })}
             </p>
 
             <FadeIn className="space-y-5">
               <div className="flex flex-wrap items-center gap-3">
-                <Button><Plus /> Acción principal</Button>
-                <Button variant="outline"><Download /> Secundaria</Button>
-                <Button variant="ghost">Sin relieve</Button>
-                <Button variant="destructive"><AlertTriangle /> Peligro</Button>
+                <Button><Plus /> {t('settings.appearance.btnPrimary', { defaultValue: 'Acción principal' })}</Button>
+                <Button variant="outline"><Download /> {t('settings.appearance.btnSecondary', { defaultValue: 'Secundaria' })}</Button>
+                <Button variant="ghost">{t('settings.appearance.btnGhost', { defaultValue: 'Sin relieve' })}</Button>
+                <Button variant="destructive"><AlertTriangle /> {t('settings.appearance.btnDanger', { defaultValue: 'Peligro' })}</Button>
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
-                <StatusBadge tone="brand">Destacado</StatusBadge>
-                <StatusBadge tone="ok">En servicio</StatusBadge>
-                <StatusBadge tone="warn">Por confirmar</StatusBadge>
-                <StatusBadge tone="bad">Sin cubrir</StatusBadge>
-                <StatusBadge tone="info">Programado</StatusBadge>
+                <StatusBadge tone="brand">{t('settings.appearance.badgeFeatured', { defaultValue: 'Destacado' })}</StatusBadge>
+                <StatusBadge tone="ok">{t('settings.appearance.badgeOnDuty', { defaultValue: 'En servicio' })}</StatusBadge>
+                <StatusBadge tone="warn">{t('settings.appearance.badgePending', { defaultValue: 'Por confirmar' })}</StatusBadge>
+                <StatusBadge tone="bad">{t('settings.appearance.badgeUncovered', { defaultValue: 'Sin cubrir' })}</StatusBadge>
+                <StatusBadge tone="info">{t('settings.appearance.badgeScheduled', { defaultValue: 'Programado' })}</StatusBadge>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <MetricTile
-                  label="Cumplimiento de rondas"
+                  label={t('settings.appearance.metricRoundsLabel', { defaultValue: 'Cumplimiento de rondas' })}
                   value="94 %"
                   icon={<Shield />}
                   delta={{ value: "3,2 %", direction: "up" }}
-                  hint="Últimos 7 días"
+                  hint={t('settings.appearance.metricRoundsHint', { defaultValue: 'Últimos 7 días' })}
                 />
-                <StatCard icon={<Users />} label="Vigilantes en servicio" value="128" hint="+12 desde ayer" />
+                <StatCard icon={<Users />} label={t('settings.appearance.statGuardsLabel', { defaultValue: 'Vigilantes en servicio' })} value="128" hint={t('settings.appearance.statGuardsHint', { defaultValue: '+12 desde ayer' })} />
                 <GlassPanel hover className="p-5">
-                  <div className="cg-eyebrow mb-2">Turno de hoy</div>
+                  <div className="cg-eyebrow mb-2">{t('settings.appearance.todayShiftEyebrow', { defaultValue: 'Turno de hoy' })}</div>
                   <div className="mb-3 text-sm font-semibold" style={{ color: "var(--ink)" }}>
-                    Torre Norte — Acceso principal
+                    {t('settings.appearance.sampleSite', { defaultValue: 'Torre Norte — Acceso principal' })}
                   </div>
                   {/* Barra de progreso: el relleno es el acento. */}
                   <div className="h-2 w-full overflow-hidden rounded-full" style={{ background: "var(--glass-sunken)" }}>
                     <div className="h-full rounded-full" style={{ width: "72%", background: "var(--brand)" }} />
                   </div>
                   <div className="mt-2 text-xs" style={{ color: "var(--ink-faint)" }}>
-                    72 % del turno completado
+                    {t('settings.appearance.shiftProgress', { defaultValue: '72 % del turno completado' })}
                   </div>
                 </GlassPanel>
               </div>
@@ -314,8 +309,7 @@ export default function AppearancePage() {
           </Section>
 
           <p className="px-1 pb-2 text-xs" style={{ color: "var(--ink-faint)" }}>
-            Tu elección se guarda en este equipo. Si entras desde otro computador o navegador,
-            vuelve a elegirla allí.
+            {t('settings.appearance.footerNote', { defaultValue: 'Tu elección se guarda en este equipo. Si entras desde otro computador o navegador, vuelve a elegirla allí.' })}
           </p>
         </PageContainer>
       </SettingsLayout>

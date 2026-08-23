@@ -10,6 +10,7 @@
  * de 25 toggles falsos (4 tabs, botón Guardar sin handler).
  */
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
     ShieldCheck, SatelliteDish, BellRing, IdCard,
@@ -74,6 +75,7 @@ type SettingsRow = {
 const tenantId = () => localStorage.getItem("tenantId") || "";
 
 export default function GuardsGlobalSettingsPage() {
+    const { t } = useTranslation();
     const { hasPermission } = usePermissions();
     const canEdit = hasPermission("settingsEdit");
 
@@ -89,7 +91,7 @@ export default function GuardsGlobalSettingsPage() {
                 setRow(data || {});
                 setCfg({ ...DEFAULTS, ...((data && data.guardSettings) || {}) });
             } catch {
-                toast.error("No se pudo cargar la configuración.");
+                toast.error(t('settings.guardsGlobal.loadError', { defaultValue: 'No se pudo cargar la configuración.' }));
             } finally {
                 setLoading(false);
             }
@@ -112,9 +114,9 @@ export default function GuardsGlobalSettingsPage() {
                     guardSettings: cfg,
                 },
             });
-            toast.success("Configuración de vigilantes guardada. Aplica de inmediato.");
+            toast.success(t('settings.guardsGlobal.saveSuccess', { defaultValue: 'Configuración de vigilantes guardada. Aplica de inmediato.' }));
         } catch (e: any) {
-            toast.error(e?.response?.data?.message || "No se pudo guardar.");
+            toast.error(e?.response?.data?.message || t('settings.guardsGlobal.saveError', { defaultValue: 'No se pudo guardar.' }));
         } finally {
             setSaving(false);
         }
@@ -125,24 +127,24 @@ export default function GuardsGlobalSettingsPage() {
     return (
         <SettingsPageShell
             icon={<ShieldCheck />}
-            title="Configuración Global de Vigilantes"
-            subtitle="Estas preferencias aplican a todos los vigilantes de tu empresa."
+            title={t('settings.guardsGlobal.pageTitle', { defaultValue: 'Configuración Global de Vigilantes' })}
+            subtitle={t('settings.guardsGlobal.pageSubtitle', { defaultValue: 'Estas preferencias aplican a todos los vigilantes de tu empresa.' })}
         >
                     {loading ? (
                         <SkeletonCards count={4} className="sm:grid-cols-1" />
                     ) : (
                     <Stagger className="space-y-6">
-                        <Section title="Supervisión en tiempo real" icon={<SatelliteDish />} contentClassName="divide-y">
+                        <Section title={t('settings.guardsGlobal.sectionSupervision', { defaultValue: 'Supervisión en tiempo real' })} icon={<SatelliteDish />} contentClassName="divide-y">
                             <ToggleRow
-                                label="Alerta de inactividad en turno"
-                                hint="Avisa a los supervisores cuando un vigilante o supervisor de servicio deja de reportar ubicación (teléfono apagado, sin señal o app cerrada). La alerta llega al panel, a las apps y por correo/SMS según tus canales de notificación."
+                                label={t('settings.guardsGlobal.inactivityLabel', { defaultValue: 'Alerta de inactividad en turno' })}
+                                hint={t('settings.guardsGlobal.inactivityHint', { defaultValue: 'Avisa a los supervisores cuando un vigilante o supervisor de servicio deja de reportar ubicación (teléfono apagado, sin señal o app cerrada). La alerta llega al panel, a las apps y por correo/SMS según tus canales de notificación.' })}
                                 checked={cfg.inactivityAlert}
                                 onCheckedChange={(v) => set("inactivityAlert", v)}
                                 disabled={disabled}
                             >
                                 {cfg.inactivityAlert && (
                                     <SettingDetail>
-                                        <span className="text-sm" style={{ color: "var(--ink-soft)" }}>Alertar tras</span>
+                                        <span className="text-sm" style={{ color: "var(--ink-soft)" }}>{t('settings.guardsGlobal.alertAfter', { defaultValue: 'Alertar tras' })}</span>
                                         <Select
                                             value={String(cfg.inactivityThresholdMin)}
                                             onValueChange={(v) => set("inactivityThresholdMin", Number(v))}
@@ -152,34 +154,32 @@ export default function GuardsGlobalSettingsPage() {
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="10">10 minutos</SelectItem>
-                                                <SelectItem value="15">15 minutos</SelectItem>
-                                                <SelectItem value="20">20 minutos</SelectItem>
-                                                <SelectItem value="30">30 minutos</SelectItem>
-                                                <SelectItem value="60">1 hora</SelectItem>
+                                                <SelectItem value="10">{t('settings.guardsGlobal.min10', { defaultValue: '10 minutos' })}</SelectItem>
+                                                <SelectItem value="15">{t('settings.guardsGlobal.min15', { defaultValue: '15 minutos' })}</SelectItem>
+                                                <SelectItem value="20">{t('settings.guardsGlobal.min20', { defaultValue: '20 minutos' })}</SelectItem>
+                                                <SelectItem value="30">{t('settings.guardsGlobal.min30', { defaultValue: '30 minutos' })}</SelectItem>
+                                                <SelectItem value="60">{t('settings.guardsGlobal.hour1', { defaultValue: '1 hora' })}</SelectItem>
                                             </SelectContent>
                                         </Select>
-                                        <span className="text-sm" style={{ color: "var(--ink-soft)" }}>sin señal</span>
+                                        <span className="text-sm" style={{ color: "var(--ink-soft)" }}>{t('settings.guardsGlobal.noSignal', { defaultValue: 'sin señal' })}</span>
                                     </SettingDetail>
                                 )}
                             </ToggleRow>
                         </Section>
 
-                        <Section title="Recordatorios de turno" icon={<CalendarClock />} contentClassName="divide-y">
+                        <Section title={t('settings.guardsGlobal.sectionReminders', { defaultValue: 'Recordatorios de turno' })} icon={<CalendarClock />} contentClassName="divide-y">
                             <ToggleRow
-                                label="Recordar a los vigilantes sus próximos turnos"
-                                hint="Avisos automáticos antes de cada turno, para que nadie falte después de sus días de descanso."
+                                label={t('settings.guardsGlobal.remindersLabel', { defaultValue: 'Recordar a los vigilantes sus próximos turnos' })}
+                                hint={t('settings.guardsGlobal.remindersHint', { defaultValue: 'Avisos automáticos antes de cada turno, para que nadie falte después de sus días de descanso.' })}
                                 checked={cfg.shiftRemindersEnabled}
                                 onCheckedChange={(v) => set("shiftRemindersEnabled", v)}
                                 disabled={disabled}
                             >
                                 {cfg.shiftRemindersEnabled && (
                                     <SettingDetail className="flex-col items-stretch gap-0">
-                                        <p className="mb-1 text-sm font-medium">¿Cuáles se envían?</p>
+                                        <p className="mb-1 text-sm font-medium">{t('settings.guardsGlobal.whichSent', { defaultValue: '¿Cuáles se envían?' })}</p>
                                         <p className="mb-2 text-xs" style={{ color: "var(--ink-faint)" }}>
-                                            Cada uno marcado es un mensaje por turno y por vigilante.
-                                            Con veinte turnos al mes, los cinco son cien mensajes a
-                                            cada persona.
+                                            {t('settings.guardsGlobal.remindersExplain', { defaultValue: 'Cada uno marcado es un mensaje por turno y por vigilante. Con veinte turnos al mes, los cinco son cien mensajes a cada persona.' })}
                                         </p>
                                         <div className="flex flex-col gap-1">
                                             {AVISOS.map((a) => {
@@ -205,10 +205,10 @@ export default function GuardsGlobalSettingsPage() {
                                                                 )
                                                             }
                                                         />
-                                                        <span className="text-sm">{a.label}</span>
+                                                        <span className="text-sm">{t(`settings.guardsGlobal.aviso_${a.key}_label`, { defaultValue: a.label })}</span>
                                                         {a.hint && (
                                                             <span className="text-xs" style={{ color: "var(--ink-faint)" }}>
-                                                                {a.hint}
+                                                                {t(`settings.guardsGlobal.aviso_${a.key}_hint`, { defaultValue: a.hint })}
                                                             </span>
                                                         )}
                                                     </label>
@@ -217,32 +217,32 @@ export default function GuardsGlobalSettingsPage() {
                                         </div>
                                         <p className="mt-2 text-xs" style={{ color: "var(--ink-faint)" }}>
                                             {cfg.shiftReminderOffsets.length === 0
-                                                ? "Sin ninguno marcado no se envía ningún recordatorio."
-                                                : `${cfg.shiftReminderOffsets.length} mensaje${cfg.shiftReminderOffsets.length === 1 ? "" : "s"} por turno y por vigilante.`}
+                                                ? t('settings.guardsGlobal.noneSelected', { defaultValue: 'Sin ninguno marcado no se envía ningún recordatorio.' })
+                                                : t('settings.guardsGlobal.messagesPerShift', { defaultValue: '{{n}} mensaje{{plural}} por turno y por vigilante.', n: cfg.shiftReminderOffsets.length, plural: cfg.shiftReminderOffsets.length === 1 ? "" : "s" })}
                                         </p>
                                     </SettingDetail>
                                 )}
                             </ToggleRow>
                             <ToggleRow
-                                label="Recordatorios adaptativos según puntualidad"
-                                hint="El vigilante sin tardanzas ni inasistencias en 30 días recibe solo «1 día antes» y «1 hora antes»; el reincidente, todos los activos. Menos ruido para quien no lo necesita — y los avisos vuelven a significar algo."
+                                label={t('settings.guardsGlobal.adaptiveLabel', { defaultValue: 'Recordatorios adaptativos según puntualidad' })}
+                                hint={t('settings.guardsGlobal.adaptiveHint', { defaultValue: 'El vigilante sin tardanzas ni inasistencias en 30 días recibe solo «1 día antes» y «1 hora antes»; el reincidente, todos los activos. Menos ruido para quien no lo necesita — y los avisos vuelven a significar algo.' })}
                                 checked={cfg.shiftRemindersAdaptive}
                                 onCheckedChange={(v) => set("shiftRemindersAdaptive", v)}
                                 disabled={disabled || !cfg.shiftRemindersEnabled}
                             />
                         </Section>
 
-                        <Section title="Credenciales y licencias" icon={<IdCard />} contentClassName="divide-y">
+                        <Section title={t('settings.guardsGlobal.sectionCredenciales', { defaultValue: 'Credenciales y licencias' })} icon={<IdCard />} contentClassName="divide-y">
                             <ToggleRow
-                                label="Avisar cuando una credencial esté por vencer"
-                                hint="RR.HH. recibe un aviso semanal por cada credencial o licencia próxima a vencer (o ya vencida) hasta que se renueve. Las credenciales se registran en el perfil de cada vigilante."
+                                label={t('settings.guardsGlobal.licenseAlertLabel', { defaultValue: 'Avisar cuando una credencial esté por vencer' })}
+                                hint={t('settings.guardsGlobal.licenseAlertHint', { defaultValue: 'RR.HH. recibe un aviso semanal por cada credencial o licencia próxima a vencer (o ya vencida) hasta que se renueve. Las credenciales se registran en el perfil de cada vigilante.' })}
                                 checked={cfg.licenseExpiryAlert}
                                 onCheckedChange={(v) => set("licenseExpiryAlert", v)}
                                 disabled={disabled}
                             >
                                 {cfg.licenseExpiryAlert && (
                                     <SettingDetail>
-                                        <span className="text-sm" style={{ color: "var(--ink-soft)" }}>Empezar a avisar</span>
+                                        <span className="text-sm" style={{ color: "var(--ink-soft)" }}>{t('settings.guardsGlobal.startWarning', { defaultValue: 'Empezar a avisar' })}</span>
                                         <Input
                                             type="number"
                                             min={7}
@@ -252,13 +252,13 @@ export default function GuardsGlobalSettingsPage() {
                                             onChange={(e) => set("licenseExpiryDays", Number(e.target.value) || 30)}
                                             disabled={disabled}
                                         />
-                                        <span className="text-sm" style={{ color: "var(--ink-soft)" }}>días antes del vencimiento</span>
+                                        <span className="text-sm" style={{ color: "var(--ink-soft)" }}>{t('settings.guardsGlobal.daysBeforeExpiry', { defaultValue: 'días antes del vencimiento' })}</span>
                                     </SettingDetail>
                                 )}
                             </ToggleRow>
                             <ToggleRow
-                                label="Impedir marcar entrada con la credencial vencida"
-                                hint="Hasta ahora una credencial caducada sólo generaba un aviso: el vigilante fichaba igual, se le asignaba un puesto y salía en el informe al cliente. Actívalo sólo cuando las fechas de tus credenciales estén al día — si no, alguien puede quedarse sin poder empezar su turno."
+                                label={t('settings.guardsGlobal.blockClockInLabel', { defaultValue: 'Impedir marcar entrada con la credencial vencida' })}
+                                hint={t('settings.guardsGlobal.blockClockInHint', { defaultValue: 'Hasta ahora una credencial caducada sólo generaba un aviso: el vigilante fichaba igual, se le asignaba un puesto y salía en el informe al cliente. Actívalo sólo cuando las fechas de tus credenciales estén al día — si no, alguien puede quedarse sin poder empezar su turno.' })}
                                 checked={cfg.blockClockInOnExpiredLicense}
                                 onCheckedChange={(v) => set("blockClockInOnExpiredLicense", v)}
                                 disabled={disabled}

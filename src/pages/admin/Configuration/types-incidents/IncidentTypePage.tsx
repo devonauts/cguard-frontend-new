@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import IncidentTypesTable, { IncidentTypeRow } from "./IncidentTypesTable";
 import IncidentTypeDialog, { IncidentTypeDialogValues } from "./IncidentTypeDialog";
 import IncidentTypesService from "@/services/incident-types.service";
@@ -10,6 +11,7 @@ import SettingsPageShell from "../components/SettingsPageShell";
 import { AlertTriangle, Plus, Siren } from "lucide-react";
 
 export default function IncidentTypePage() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState<IncidentTypeRow | null>(null);
   const [query, setQuery] = useState("");
@@ -42,17 +44,17 @@ export default function IncidentTypePage() {
     <SettingsPageShell
       kind="table"
       icon={<Siren />}
-      title="Tipos de Incidentes"
-      subtitle="El catálogo con el que tu equipo clasifica lo que ocurre en cada puesto."
+      title={t('settings.incidentTypes.pageTitle', { defaultValue: 'Tipos de Incidentes' })}
+      subtitle={t('settings.incidentTypes.pageSubtitle', { defaultValue: 'El catálogo con el que tu equipo clasifica lo que ocurre en cada puesto.' })}
       badges={
         !loading && total > 0 ? (
-          <StatusBadge tone="neutral">{total} {total === 1 ? "tipo" : "tipos"}</StatusBadge>
+          <StatusBadge tone="neutral">{total} {total === 1 ? t('settings.incidentTypes.typeSingular', { defaultValue: 'tipo' }) : t('settings.incidentTypes.typePlural', { defaultValue: 'tipos' })}</StatusBadge>
         ) : undefined
       }
       actions={
         <Button variant="brand" onClick={() => { setEdit(null); setOpen(true); }}>
           <Plus className="mr-2 h-4 w-4" />
-          Nuevo tipo
+          {t('settings.incidentTypes.newTypeBtn', { defaultValue: 'Nuevo tipo' })}
         </Button>
       }
     >
@@ -70,10 +72,10 @@ export default function IncidentTypePage() {
           onToggleStatus={async (id: string) => {
             try {
               await IncidentTypesService.toggle(id);
-              toast.success('Estado actualizado');
+              toast.success(t('settings.incidentTypes.statusUpdated', { defaultValue: 'Estado actualizado' }));
               await fetchData();
             } catch (e: any) {
-              toast.error(e?.message || 'Error al actualizar estado');
+              toast.error(e?.message || t('settings.incidentTypes.statusUpdateError', { defaultValue: 'Error al actualizar estado' }));
             }
           }}
           onBulkDelete={(ids: string[]) => {
@@ -84,20 +86,20 @@ export default function IncidentTypePage() {
         <IncidentTypeDialog
           open={open}
           onOpenChange={setOpen}
-          title={edit ? "Editar Tipo de Incidente" : "Nuevo Tipo de Incidente"}
+          title={edit ? t('settings.incidentTypes.dialogEditTitle', { defaultValue: 'Editar Tipo de Incidente' }) : t('settings.incidentTypes.dialogNewTitle', { defaultValue: 'Nuevo Tipo de Incidente' })}
           defaultValues={edit ? { name: edit.name } : null}
           onSubmit={async (values: IncidentTypeDialogValues) => {
             try {
               if (edit) {
                 await IncidentTypesService.update(edit.id, { name: values.name });
-                toast.success("Tipo de incidente actualizado");
+                toast.success(t('settings.incidentTypes.typeUpdated', { defaultValue: 'Tipo de incidente actualizado' }));
               } else {
                 await IncidentTypesService.create({ name: values.name });
-                toast.success("Tipo de incidente creado");
+                toast.success(t('settings.incidentTypes.typeCreated', { defaultValue: 'Tipo de incidente creado' }));
               }
               await fetchData();
             } catch (e: any) {
-              const msg = e?.message || "Error al guardar";
+              const msg = e?.message || t('settings.incidentTypes.saveError', { defaultValue: 'Error al guardar' });
               try { toast.error(msg); } catch {}
             } finally {
               setOpen(false);
@@ -110,27 +112,27 @@ export default function IncidentTypePage() {
           onOpenChange={setConfirmOpen}
           size="sm"
           icon={<AlertTriangle />}
-          title="Confirmar eliminación"
+          title={t('settings.incidentTypes.confirmDeleteTitle', { defaultValue: 'Confirmar eliminación' })}
           footer={
             <>
-              <Button variant="outline" onClick={() => setConfirmOpen(false)}>Cancelar</Button>
+              <Button variant="outline" onClick={() => setConfirmOpen(false)}>{t('settings.incidentTypes.cancelBtn', { defaultValue: 'Cancelar' })}</Button>
               <Button variant="destructive" onClick={async () => {
                 try {
                   await IncidentTypesService.destroyAll(deleteIds);
-                  toast.success('Tipos de incidente eliminados');
+                  toast.success(t('settings.incidentTypes.typesDeleted', { defaultValue: 'Tipos de incidente eliminados' }));
                   await fetchData();
                 } catch (e: any) {
-                  toast.error(e?.message || 'Error al eliminar');
+                  toast.error(e?.message || t('settings.incidentTypes.deleteError', { defaultValue: 'Error al eliminar' }));
                 } finally {
                   setConfirmOpen(false);
                   setDeleteIds([]);
                 }
-              }}>Eliminar</Button>
+              }}>{t('settings.incidentTypes.deleteAction', { defaultValue: 'Eliminar' })}</Button>
             </>
           }
         >
           <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
-            ¿Estás seguro que deseas eliminar {deleteIds.length} tipo(s) de incidente? Esta acción no se puede deshacer.
+            {t('settings.incidentTypes.confirmDeleteText', { defaultValue: '¿Estás seguro que deseas eliminar {{count}} tipo(s) de incidente? Esta acción no se puede deshacer.', count: deleteIds.length })}
           </p>
         </Modal>
     </SettingsPageShell>

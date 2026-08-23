@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { MoreVertical, Search, ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePermissions } from '@/hooks/usePermissions';
@@ -81,6 +82,7 @@ export default function UserRolesTable({
   const anyDeletableSelected = rows.some((r) => !r.isDefault && checked[r.id]);
 
   const { hasPermission } = usePermissions();
+  const { t } = useTranslation();
 
   return (
     <div className="space-y-4">
@@ -88,12 +90,12 @@ export default function UserRolesTable({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="min-w-[130px] justify-between">
-              Acción <ChevronDown className="ml-2 h-4 w-4" />
+              {t('settings.userRoles.actionBtn', { defaultValue: 'Acción' })} <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">
             <DropdownMenuItem onClick={onBulkDelete} disabled={!anyDeletableSelected}>
-              Eliminar
+              {t('settings.userRoles.deleteAction', { defaultValue: 'Eliminar' })}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -102,7 +104,7 @@ export default function UserRolesTable({
           <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: 'var(--ink-faint)' }} />
           <Input
             className="pl-9"
-            placeholder="Buscar rol de usuario"
+            placeholder={t('settings.userRoles.searchPlaceholder', { defaultValue: 'Buscar rol de usuario' })}
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}
           />
@@ -116,8 +118,8 @@ export default function UserRolesTable({
               <TableHead className="w-[44px]">
                 <Checkbox checked={allChecked} onCheckedChange={(v) => onCheckAll(Boolean(v))} />
               </TableHead>
-              <TableHead>Rol</TableHead>
-              <TableHead>Descripción</TableHead>
+              <TableHead>{t('settings.userRoles.colRole', { defaultValue: 'Rol' })}</TableHead>
+              <TableHead>{t('settings.userRoles.colDescription', { defaultValue: 'Descripción' })}</TableHead>
               <TableHead className="w-[56px]" />
             </TableRow>
           </TableHeader>
@@ -127,8 +129,8 @@ export default function UserRolesTable({
                 <TableCell colSpan={4}>
                   <EmptyState
                     icon={<Search />}
-                    title="No se encontraron resultados"
-                    description="Sin datos para mostrar"
+                    title={t('settings.userRoles.emptyTitle', { defaultValue: 'No se encontraron resultados' })}
+                    description={t('settings.userRoles.emptyDescription', { defaultValue: 'Sin datos para mostrar' })}
                     className="border-0 py-12"
                   />
                 </TableCell>
@@ -161,7 +163,7 @@ export default function UserRolesTable({
                           <ChevronRight className="h-4 w-4" style={{ color: 'var(--ink-faint)' }} />
                         )}
                         <span>{r.name}</span>
-                        {r.isDefault && <StatusBadge tone="brand">Predeterminado</StatusBadge>}
+                        {r.isDefault && <StatusBadge tone="brand">{t('settings.userRoles.defaultBadge', { defaultValue: 'Predeterminado' })}</StatusBadge>}
                       </span>
                     </TableCell>
                     <TableCell style={{ color: 'var(--ink-soft)' }}>{r.description}</TableCell>
@@ -173,13 +175,13 @@ export default function UserRolesTable({
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-40">
-                          <DropdownMenuItem disabled={!hasPermission('settingsEdit') || !!r.isDefault} onClick={() => { if (!hasPermission('settingsEdit') || !!r.isDefault) return; onEdit(r); }}>Editar</DropdownMenuItem>
+                          <DropdownMenuItem disabled={!hasPermission('settingsEdit') || !!r.isDefault} onClick={() => { if (!hasPermission('settingsEdit') || !!r.isDefault) return; onEdit(r); }}>{t('settings.userRoles.editAction', { defaultValue: 'Editar' })}</DropdownMenuItem>
                           <DropdownMenuItem
                             className="text-destructive focus:text-destructive"
                             disabled={!hasPermission('settingsEdit') || !!r.isDefault}
                             onClick={() => { if (!hasPermission('settingsEdit') || !!r.isDefault) return; onDelete(r); }}
                           >
-                            Eliminar
+                            {t('settings.userRoles.deleteAction', { defaultValue: 'Eliminar' })}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -200,7 +202,7 @@ export default function UserRolesTable({
       </GlassPanel>
 
       <div className="flex items-center justify-end gap-4 text-sm" style={{ color: 'var(--ink-soft)' }}>
-        <div>Elementos por página</div>
+        <div>{t('settings.userRoles.perPageLabel', { defaultValue: 'Elementos por página' })}</div>
         <Select value={pageSize} onValueChange={onPageSize}>
           <SelectTrigger className="w-[90px]">
             <SelectValue />

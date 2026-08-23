@@ -16,6 +16,7 @@ import {
   RadioTower,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import api from '@/lib/api';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/SettingsLayout';
@@ -83,6 +84,7 @@ type SettingsRow = {
 const tenantId = () => localStorage.getItem('tenantId') || '';
 
 export default function MobileHubPage() {
+  const { t } = useTranslation();
   const { hasPermission } = usePermissions();
   const canEdit = hasPermission('settingsEdit');
 
@@ -104,7 +106,7 @@ export default function MobileHubPage() {
           modules: { ...DEFAULTS.modules, ...(stored.modules || {}) },
         });
       } catch {
-        toast.error('No se pudo cargar la configuración.');
+        toast.error(t('settings.mobileHub.loadError', { defaultValue: 'No se pudo cargar la configuración.' }));
       } finally {
         setLoading(false);
       }
@@ -129,9 +131,9 @@ export default function MobileHubPage() {
           mobileAppSettings: cfg,
         },
       });
-      toast.success('Hub móvil guardado. Las apps lo aplican en el próximo inicio de sesión.');
+      toast.success(t('settings.mobileHub.saveSuccess', { defaultValue: 'Hub móvil guardado. Las apps lo aplican en el próximo inicio de sesión.' }));
     } catch (e: any) {
-      toast.error(e?.message || 'No se pudo guardar.');
+      toast.error(e?.message || t('settings.mobileHub.saveError', { defaultValue: 'No se pudo guardar.' }));
     } finally {
       setSaving(false);
     }
@@ -154,23 +156,23 @@ export default function MobileHubPage() {
 
   return (
     <AppLayout>
-      <SettingsLayout navKey="configuracion" title="App del equipo">
+      <SettingsLayout navKey="configuracion" title={t('settings.mobileHub.layoutTitle', { defaultValue: 'App del equipo' })}>
         <PageContainer width="wide">
           <PageHeader
             icon={<TabletSmartphone />}
-            title="Hub móvil del equipo"
-            subtitle="Personaliza las apps del vigilante y del supervisor con la identidad de tu empresa."
+            title={t('settings.mobileHub.pageTitle', { defaultValue: 'Hub móvil del equipo' })}
+            subtitle={t('settings.mobileHub.pageSubtitle', { defaultValue: 'Personaliza las apps del vigilante y del supervisor con la identidad de tu empresa.' })}
             badges={
               !loading ? (
                 <StatusBadge tone={modulosActivos === MODULE_META.length ? 'ok' : 'neutral'}>
-                  {modulosActivos} de {MODULE_META.length} módulos visibles
+                  {t('settings.mobileHub.modulesVisibleBadge', { defaultValue: '{{active}} de {{total}} módulos visibles', active: modulosActivos, total: MODULE_META.length })}
                 </StatusBadge>
               ) : undefined
             }
             actions={
               <Button variant="brand" onClick={save} disabled={!canEdit || saving || loading}>
                 <Save size={16} className="mr-2" />
-                {saving ? 'Guardando…' : 'Guardar cambios'}
+                {saving ? t('settings.mobileHub.saving', { defaultValue: 'Guardando…' }) : t('settings.mobileHub.saveChanges', { defaultValue: 'Guardar cambios' })}
               </Button>
             }
           />
@@ -181,17 +183,17 @@ export default function MobileHubPage() {
             <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
               <div className="space-y-6">
                 {/* ── Marca ─────────────────────────────────────────────── */}
-                <Section title="Marca" icon={<Palette size={18} />}>
+                <Section title={t('settings.mobileHub.brandSectionTitle', { defaultValue: 'Marca' })} icon={<Palette size={18} />}>
                   <div className="space-y-6">
                     <div>
-                      <Label className="mb-2 block">Color de acento</Label>
+                      <Label className="mb-2 block">{t('settings.mobileHub.accentColorLabel', { defaultValue: 'Color de acento' })}</Label>
                       <div className="flex flex-wrap items-center gap-2">
                         {PRESET_ACCENTS.map((c) => (
                           <button
                             key={c}
                             type="button"
                             onClick={() => set('accentColor', c === DEFAULT_ACCENT ? '' : c)}
-                            aria-label={`Color ${c}`}
+                            aria-label={t('settings.mobileHub.colorAria', { defaultValue: 'Color {{c}}', c })}
                             aria-pressed={accent === c}
                             className={`cg-focus h-9 w-9 rounded-full border-2 transition-transform hover:scale-110 ${accent === c ? 'scale-110' : ''}`}
                             style={{ background: c, borderColor: accent === c ? 'var(--ink)' : 'transparent' }}
@@ -207,22 +209,22 @@ export default function MobileHubPage() {
                             onChange={(e) => set('accentColor', e.target.value)}
                             className="h-6 w-8 cursor-pointer border-0 bg-transparent p-0"
                           />
-                          Personalizado
+                          {t('settings.mobileHub.customLabel', { defaultValue: 'Personalizado' })}
                         </label>
                         {cfg.accentColor && (
                           <Button variant="ghost" size="sm" onClick={() => set('accentColor', '')}>
-                            <RotateCcw size={14} className="mr-1" /> Dorado original
+                            <RotateCcw size={14} className="mr-1" /> {t('settings.mobileHub.goldOriginal', { defaultValue: 'Dorado original' })}
                           </Button>
                         )}
                       </div>
                       <p className="mt-2 text-xs" style={{ color: 'var(--ink-soft)' }}>
-                        Recolorea botones, el botón de hablar de la radio, pestañas y acentos en ambas apps.
+                        {t('settings.mobileHub.accentHint', { defaultValue: 'Recolorea botones, el botón de hablar de la radio, pestañas y acentos en ambas apps.' })}
                       </p>
                     </div>
 
                     <div className="grid gap-4 sm:grid-cols-2">
                       <div>
-                        <Label htmlFor="mh-name" className="mb-2 block">Nombre a mostrar</Label>
+                        <Label htmlFor="mh-name" className="mb-2 block">{t('settings.mobileHub.displayNameLabel', { defaultValue: 'Nombre a mostrar' })}</Label>
                         <Input
                           id="mh-name"
                           value={cfg.displayName}
@@ -232,7 +234,7 @@ export default function MobileHubPage() {
                         />
                       </div>
                       <div>
-                        <Label htmlFor="mh-tagline" className="mb-2 block">Lema</Label>
+                        <Label htmlFor="mh-tagline" className="mb-2 block">{t('settings.mobileHub.taglineLabel', { defaultValue: 'Lema' })}</Label>
                         <Input
                           id="mh-tagline"
                           value={cfg.tagline}
@@ -247,18 +249,18 @@ export default function MobileHubPage() {
                       <div className="flex min-w-0 items-center gap-3">
                         <SmartImage
                           src={logoUrl}
-                          alt="Logo de la empresa"
+                          alt={t('settings.mobileHub.companyLogoAlt', { defaultValue: 'Logo de la empresa' })}
                           rounded="rounded-xl"
                           fit="contain"
                           className="h-11 w-11 border border-[color:var(--hairline)] bg-[var(--glass-sunken)] p-1"
                           fallback={<IconTile tone="neutral"><Palette /></IconTile>}
                         />
                         <div className="min-w-0">
-                          <p className="text-sm font-medium">Usar el logo de la empresa</p>
+                          <p className="text-sm font-medium">{t('settings.mobileHub.useCompanyLogo', { defaultValue: 'Usar el logo de la empresa' })}</p>
                           <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>
                             {logoUrl
-                              ? 'Se muestra en el inicio de sesión y la pantalla de arranque.'
-                              : 'Sube tu logo en Configuración › Perfil de la empresa para activarlo.'}
+                              ? t('settings.mobileHub.logoOnSignIn', { defaultValue: 'Se muestra en el inicio de sesión y la pantalla de arranque.' })
+                              : t('settings.mobileHub.uploadLogoHint', { defaultValue: 'Sube tu logo en Configuración › Perfil de la empresa para activarlo.' })}
                           </p>
                         </div>
                       </div>
@@ -270,33 +272,33 @@ export default function MobileHubPage() {
                     </div>
 
                     <div>
-                      <Label className="mb-2 block">Tema por defecto</Label>
+                      <Label className="mb-2 block">{t('settings.mobileHub.defaultThemeLabel', { defaultValue: 'Tema por defecto' })}</Label>
                       <Segmented
                         value={cfg.defaultTheme}
                         onChange={(v) => set('defaultTheme', v)}
                         options={[
-                          { value: 'dark', label: 'Oscuro' },
-                          { value: 'light', label: 'Claro' },
-                          { value: 'user', label: 'Según el dispositivo' },
+                          { value: 'dark', label: t('settings.mobileHub.themeDark', { defaultValue: 'Oscuro' }) },
+                          { value: 'light', label: t('settings.mobileHub.themeLight', { defaultValue: 'Claro' }) },
+                          { value: 'user', label: t('settings.mobileHub.themeDevice', { defaultValue: 'Según el dispositivo' }) },
                         ]}
                       />
                       <p className="mt-2 text-xs" style={{ color: 'var(--ink-soft)' }}>
-                        El vigilante siempre puede cambiarlo desde su perfil; esto define el arranque.
+                        {t('settings.mobileHub.themeHint', { defaultValue: 'El vigilante siempre puede cambiarlo desde su perfil; esto define el arranque.' })}
                       </p>
                     </div>
                   </div>
                 </Section>
 
                 {/* ── Módulos ───────────────────────────────────────────── */}
-                <Section title="Módulos de la app del vigilante" icon={<LayoutGrid size={18} />}>
+                <Section title={t('settings.mobileHub.modulesSectionTitle', { defaultValue: 'Módulos de la app del vigilante' })} icon={<LayoutGrid size={18} />}>
                   <div className="grid gap-3 sm:grid-cols-2">
                     {MODULE_META.map((m) => (
                       <div key={m.key} className="glass-flat flex items-center justify-between gap-3 p-3.5">
                         <div className="flex min-w-0 items-start gap-3">
                           <IconTile tone={cfg.modules[m.key] ? 'brand' : 'neutral'} size="sm">{m.icon}</IconTile>
                           <div className="min-w-0">
-                            <p className="text-sm font-medium">{m.label}</p>
-                            <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>{m.desc}</p>
+                            <p className="text-sm font-medium">{t(`settings.mobileHub.module_${m.key}_label`, { defaultValue: m.label })}</p>
+                            <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>{t(`settings.mobileHub.module_${m.key}_desc`, { defaultValue: m.desc })}</p>
                           </div>
                         </div>
                         <Switch
@@ -309,18 +311,18 @@ export default function MobileHubPage() {
                   </div>
                   <p className="mt-4 flex items-center gap-2 text-xs" style={{ color: 'var(--ink-faint)' }}>
                     <Mic size={13} />
-                    Los módulos operativos — radio, botón de pánico, rondas, incidentes, horario, mensajes y perfil — no se pueden ocultar.
+                    {t('settings.mobileHub.operationalModulesNote', { defaultValue: 'Los módulos operativos — radio, botón de pánico, rondas, incidentes, horario, mensajes y perfil — no se pueden ocultar.' })}
                   </p>
                 </Section>
               </div>
 
               {/* ── Vista previa ─────────────────────────────────────────── */}
               <div className="lg:sticky lg:top-24 lg:self-start">
-                <Section title="Vista previa" icon={<TabletSmartphone size={18} />} contentClassName="flex justify-center">
+                <Section title={t('settings.mobileHub.previewSectionTitle', { defaultValue: 'Vista previa' })} icon={<TabletSmartphone size={18} />} contentClassName="flex justify-center">
                   {preview}
                 </Section>
                 <p className="mt-3 text-center text-xs" style={{ color: 'var(--ink-faint)' }}>
-                  Los cambios se aplican en las apps al iniciar sesión.
+                  {t('settings.mobileHub.previewApplyNote', { defaultValue: 'Los cambios se aplican en las apps al iniciar sesión.' })}
                 </p>
               </div>
             </div>
@@ -342,6 +344,7 @@ export default function MobileHubPage() {
 function PhonePreview({ accent, name, tagline, logoUrl, light }: {
   accent: string; name: string; tagline: string; logoUrl: string | null; light: boolean;
 }) {
+  const { t } = useTranslation();
   const bg = light ? '#f5f5f4' : '#0a0e16';
   const card = light ? '#ffffff' : '#141a24';
   const text = light ? '#111827' : '#f3f4f6';
@@ -375,15 +378,15 @@ function PhonePreview({ accent, name, tagline, logoUrl, light }: {
 
           <div className="rounded-xl border p-3" style={{ borderColor: `${accent}55`, background: card }}>
             <div className="flex items-center justify-between">
-              <span className="text-[8px] font-bold uppercase tracking-wider" style={{ color: muted }}>Turno actual</span>
-              <span className="rounded-full px-1.5 py-0.5 text-[7px] font-bold" style={{ background: '#16a34a22', color: '#16a34a' }}>● En servicio</span>
+              <span className="text-[8px] font-bold uppercase tracking-wider" style={{ color: muted }}>{t('settings.mobileHub.previewCurrentShift', { defaultValue: 'Turno actual' })}</span>
+              <span className="rounded-full px-1.5 py-0.5 text-[7px] font-bold" style={{ background: '#16a34a22', color: '#16a34a' }}>{t('settings.mobileHub.previewOnDuty', { defaultValue: '● En servicio' })}</span>
             </div>
             <p className="mt-1 font-mono text-xl font-bold" style={{ color: accent }}>04:00:06</p>
-            <p className="text-[9px]" style={{ color: muted }}>Turno 20:00 – 08:00</p>
+            <p className="text-[9px]" style={{ color: muted }}>{t('settings.mobileHub.previewShiftHours', { defaultValue: 'Turno 20:00 – 08:00' })}</p>
           </div>
 
           <div className="flex items-center justify-between rounded-xl border p-2.5" style={{ borderColor: border, background: card }}>
-            <span className="text-[10px] font-semibold">Tareas del turno</span>
+            <span className="text-[10px] font-semibold">{t('settings.mobileHub.previewShiftTasks', { defaultValue: 'Tareas del turno' })}</span>
             <span className="grid h-4 w-4 place-items-center rounded-full text-[8px] font-bold" style={{ background: accent, color: inkOnAccent }}>3</span>
           </div>
 
@@ -394,8 +397,13 @@ function PhonePreview({ accent, name, tagline, logoUrl, light }: {
           </div>
 
           <div className="flex items-center justify-between rounded-xl px-3 py-2" style={{ background: card, border: `1px solid ${border}` }}>
-            {['Inicio', 'Rondas', 'Horario', 'Perfil'].map((t, i) => (
-              <span key={t} className="text-[8px] font-semibold" style={{ color: i === 0 ? accent : muted }}>{t}</span>
+            {[
+              t('settings.mobileHub.navHome', { defaultValue: 'Inicio' }),
+              t('settings.mobileHub.navRounds', { defaultValue: 'Rondas' }),
+              t('settings.mobileHub.navSchedule', { defaultValue: 'Horario' }),
+              t('settings.mobileHub.navProfile', { defaultValue: 'Perfil' }),
+            ].map((label, i) => (
+              <span key={label} className="text-[8px] font-semibold" style={{ color: i === 0 ? accent : muted }}>{label}</span>
             ))}
           </div>
         </div>
