@@ -18,6 +18,7 @@ import {
   type MandoGlobo, type Rastro,
 } from "./OperationsMapPopup";
 import "@/styles/map.css";
+import { guardarBloqueDeEmpresa, leerBloqueDeEmpresa } from "@/lib/appearanceSync";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -87,6 +88,8 @@ const CAPA_ICONO: Record<EntityKind, typeof Shield> = {
 type Capas = Record<EntityKind, boolean>;
 const CAPAS_TODAS: Capas = { station: true, guard: true, supervisor: true, client: true, incident: true, tenant: true };
 
+// Caché de pintado; la verdad son las capas guardadas en la cuenta
+// (`users.appearance.mapLayers[tenantId]`), que te siguen a otro navegador.
 const CLAVE_CAPAS = () => `cc.mapaCapas.${localStorage.getItem("tenantId") || "default"}`;
 
 function leerCapas(): Capas {
@@ -256,10 +259,21 @@ export function OperationsMap({
     };
   }, [entities, cobertura, porTipo]);
 
+  // Las capas guardadas en la cuenta ganan a la caché de este navegador.
+  useEffect(() => {
+    let vivo = true;
+    void leerBloqueDeEmpresa("mapLayers").then((guardadas) => {
+      if (!vivo || !guardadas) return;
+      setCapas({ ...CAPAS_TODAS, ...(guardadas as Partial<Capas>) });
+    });
+    return () => { vivo = false; };
+  }, []);
+
   const alternarCapa = useCallback((k: EntityKind) => {
     setCapas((prev) => {
       const next = { ...prev, [k]: !prev[k] };
       try { localStorage.setItem(CLAVE_CAPAS(), JSON.stringify(next)); } catch { /* almacenamiento lleno */ }
+      void guardarBloqueDeEmpresa("mapLayers", next);
       return next;
     });
   }, []);

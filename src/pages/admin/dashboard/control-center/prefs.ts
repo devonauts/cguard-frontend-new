@@ -1,12 +1,16 @@
-/** Dashboard customization preferences.
+/** Preferencias de personalización del centro de mando.
  *
- * BACKEND GAP: there is no per-tenant dashboard/map customization store. The
- * `settings` model only persists theme/logo. Until a JSON prefs column or a
- * `/tenant/:id/dashboard-prefs` endpoint exists, these persist to localStorage
- * (per tenant). `loadPrefs`/`savePrefs` are the single seam to swap for a real
- * backend later — see README in this folder. */
+ * ANTES vivían SOLO en localStorage (el "BACKEND GAP" que documentaba este
+ * archivo): se perdían al cambiar de navegador o de computadora. AHORA la fuente
+ * de verdad es la CUENTA — `users.appearance.dashboards[tenantId]`, guardada con
+ * el mismo PUT /auth/profile que el acento y el tema.
+ *
+ * localStorage se queda como CACHÉ DE PINTADO: `loadPrefs()` es síncrono porque
+ * el tablero necesita pintar en el primer render; `hidratarDesdeLaCuenta()` llega
+ * un instante después con lo que diga la cuenta y gana. */
 
 import type { EntityKind, LiveStatus } from "./types";
+import { guardarBloqueDeEmpresa, leerBloqueDeEmpresa } from "@/lib/appearanceSync";
 
 export interface DashboardPrefs {
   accent: string;                                   // dashboard accent (hex)
@@ -89,6 +93,32 @@ export function savePrefs(p: DashboardPrefs) {
   try {
     localStorage.setItem(keyFor(), JSON.stringify(p));
   } catch {
-    /* storage full / disabled — ignore */
+    /* almacenamiento lleno o deshabilitado — la cuenta sigue siendo la verdad */
+  }
+  // …y a la cuenta, que es lo que hace que te siga a otra computadora.
+  void guardarBloqueDeEmpresa("dashboards", p);
+}
+
+/**
+ * Lo que la CUENTA tenga guardado para esta empresa, ya fusionado con los
+ * valores por defecto. `null` si no hay sesión o nunca se personalizó nada:
+ * en ese caso se queda lo que ya está pintado desde la caché.
+ */
+export async function hidratarDesdeLaCuenta(): Promise<DashboardPrefs | null> {
+  try {
+    const guardado: any = await leerBloqueDeEmpresa("dashboards");
+    if (!guardado) return null;
+    const fusionado: DashboardPrefs = {
+      ...DEFAULT_PREFS,
+      ...guardado,
+      pinColors: { ...DEFAULT_PREFS.pinColors, ...(guardado.pinColors || {}) },
+      pinIcons: { ...DEFAULT_PREFS.pinIcons, ...(guardado.pinIcons || {}) },
+      statusColors: { ...DEFAULT_PREFS.statusColors, ...(guardado.statusColors || {}) },
+    };
+    // Que la caché de este navegador quede al día para el próximo arranque.
+    try { localStorage.setItem(keyFor(), JSON.stringify(fusionado)); } catch { /* nada */ }
+    return fusionado;
+  } catch {
+    return null;
   }
 }

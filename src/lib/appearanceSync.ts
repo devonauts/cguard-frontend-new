@@ -20,7 +20,20 @@ import api from '@/lib/api';
 
 export type UiTheme = 'light' | 'dark';
 export interface UiAccent { h: number; c: number }
-export interface UiAppearance { theme?: UiTheme; accent?: UiAccent | null }
+export interface UiAppearance {
+  theme?: UiTheme;
+  accent?: UiAccent | null;
+  /** Personalización del centro de mando por empresa: `{ [tenantId]: prefs }`. */
+  dashboards?: Record<string, any>;
+  /** Capas visibles del mapa, por empresa. */
+  mapLayers?: Record<string, any>;
+}
+
+/** La empresa activa. Las preferencias del tablero se guardan por empresa: la
+ *  misma persona puede llevar dos y no querer el mismo tablero en ambas. */
+export function empresaActiva(): string {
+  try { return localStorage.getItem('tenantId') || 'default'; } catch { return 'default'; }
+}
 
 /** Sesión iniciada = hay token. En el login no hay a quién preguntarle. */
 export function haySesion(): boolean {
@@ -64,7 +77,14 @@ const RETARDO_MS = 800;
 
 /** Guarda en la cuenta, agrupando ráfagas. Silencioso: jamás rompe la interfaz. */
 export function guardarApariencia(parcial: UiAppearance) {
-  acumulado = { ...acumulado, ...parcial };
+  acumulado = {
+    ...acumulado,
+    ...parcial,
+    // Los mapas por empresa se FUSIONAN: mandar sólo la empresa activa borraría
+    // del servidor la personalización que la persona tenga en las otras.
+    ...(parcial.dashboards ? { dashboards: { ...acumulado.dashboards, ...parcial.dashboards } } : {}),
+    ...(parcial.mapLayers ? { mapLayers: { ...acumulado.mapLayers, ...parcial.mapLayers } } : {}),
+  };
   if (!haySesion()) return;
 
   if (temporizador) clearTimeout(temporizador);
@@ -78,4 +98,33 @@ export function guardarApariencia(parcial: UiAppearance) {
   }, RETARDO_MS);
 }
 
-export default { leerAparienciaDeLaCuenta, guardarApariencia, olvidarApariencia, haySesion };
+/**
+ * Guarda un bloque de la EMPRESA ACTIVA (tablero o capas) sin pisar el de las
+ * demás: primero se lee lo que la cuenta ya tiene y se fusiona.
+ */
+export async function guardarBloqueDeEmpresa(
+  campo: 'dashboards' | 'mapLayers',
+  bloque: any,
+): Promise<void> {
+  if (!haySesion()) return;
+  const actual = (await leerAparienciaDeLaCuenta()) || {};
+  const previos = (actual as any)[campo] || {};
+  const fusionado = { ...previos, [empresaActiva()]: bloque };
+  // La caché memorizada tiene que reflejarlo ya: si el usuario cambia dos veces
+  // seguidas, la segunda debe fusionar sobre la primera, no sobre lo viejo.
+  pendiente = Promise.resolve({ ...(actual as UiAppearance), [campo]: fusionado });
+  guardarApariencia({ [campo]: fusionado } as UiAppearance);
+}
+
+/** El bloque de la empresa activa guardado en la cuenta, o null. */
+export async function leerBloqueDeEmpresa(campo: 'dashboards' | 'mapLayers'): Promise<any | null> {
+  const a = await leerAparienciaDeLaCuenta();
+  const mapa = a && (a as any)[campo];
+  const b = mapa && mapa[empresaActiva()];
+  return b && typeof b === 'object' ? b : null;
+}
+
+export default {
+  leerAparienciaDeLaCuenta, guardarApariencia, olvidarApariencia, haySesion,
+  guardarBloqueDeEmpresa, leerBloqueDeEmpresa, empresaActiva,
+};

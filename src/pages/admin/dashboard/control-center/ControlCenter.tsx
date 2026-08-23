@@ -31,7 +31,7 @@
  * maquinaria.
  * ════════════════════════════════════════════════════════════════════════════
  */
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   User, Shield, UserCog, AlertTriangle, Building2, Timer, Route, ShieldCheck,
   LayoutDashboard, Boxes, type LucideIcon,
@@ -43,7 +43,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import "./control-center.css";
 import { useControlCenter } from "./useControlCenter";
 import { useDemoData } from "./demoData";
-import { loadPrefs, savePrefs, type DashboardPrefs } from "./prefs";
+import { loadPrefs, savePrefs, hidratarDesdeLaCuenta, type DashboardPrefs } from "./prefs";
 import { KPI_ROUTES } from "./navigation";
 import type { Kpi } from "./types";
 import { CommandBar } from "./components/CommandBar";
@@ -83,7 +83,16 @@ export default function ControlCenter() {
   usePageTitle("Panel de control");
   const { user } = useAuth();
   const esMovil = useEsMovil();
+  // Se pinta con la caché del navegador y, en cuanto responde la cuenta, manda
+  // lo guardado ahí: así el tablero se ve igual desde cualquier computadora.
   const [prefs, setPrefs] = useState<DashboardPrefs>(() => loadPrefs());
+  useEffect(() => {
+    let vivo = true;
+    void hidratarDesdeLaCuenta().then((deLaCuenta) => {
+      if (vivo && deLaCuenta) setPrefs(deLaCuenta);
+    });
+    return () => { vivo = false; };
+  }, []);
   const [customizeOpen, setCustomizeOpen] = useState(false);
   const [demo, setDemo] = useState<boolean>(() => {
     try { return localStorage.getItem("cc_demo") === "1"; } catch { return false; }
