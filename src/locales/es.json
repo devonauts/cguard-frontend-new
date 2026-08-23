@@ -2619,7 +2619,8 @@
       "label": "Analíticas",
       "login": "Iniciar sesión",
       "login_prompt": "Inicia sesión en tu cuenta",
-      "register_prompt": "Crea tu cuenta"
+      "register_prompt": "Crea tu cuenta",
+      "sitios-publicacion": "Sitios de Servicio"
     },
     "app": {
       "title": "App"
@@ -3950,7 +3951,14 @@
       "ejecutar": "Generar nómina",
       "horas-extras": "Multiplicador de horas extra",
       "label": "Nómina",
-      "pasadas": "Nóminas pasadas"
+      "pasadas": "Nóminas pasadas",
+      "nomina-dashboard": "Dashboard",
+      "nomina-time-clock": "Reloj de Asistencia",
+      "nomina-records": "Registros de Asistencia",
+      "nomina-exceptions": "Excepciones",
+      "nomina-approvals": "Aprobaciones",
+      "nomina-payroll-summary": "Resumen de Horas",
+      "nomina-settings": "Configuración de Asistencia"
     },
     "parking": {
       "areas": "Área de parking",
@@ -3964,7 +3972,10 @@
     "patrulla": {
       "label": "Patrulla vehicular",
       "rutas": "Rutas",
-      "vehiculo": "Vehículo"
+      "vehiculo": "Vehículo",
+      "patrulla-board": "Patrulla vehicular",
+      "patrulla-rutas": "Rutas de supervisión",
+      "patrulla-live": "Seguimiento en vivo"
     },
     "postSites": {
       "action": "Acción",
@@ -4527,7 +4538,8 @@
       "label": "Programador",
       "plantillas": "Plantillas de turno",
       "tiempo-libre": "Tiempo libre",
-      "turnos-abiertos": "Turnos abiertos"
+      "turnos-abiertos": "Turnos abiertos",
+      "cobertura": "Cobertura en vivo"
     },
     "rastreador": {
       "historial": "Historial de seguimiento",
@@ -4743,7 +4755,65 @@
         "title": "Suscripción"
       }
     },
-    "estaciones": "Estaciones"
+    "estaciones": "Estaciones",
+    "group": {
+      "resumen": "Resumen",
+      "operacion": "Operación",
+      "personal": "Personal",
+      "clientes": "Clientes",
+      "analisis": "Análisis",
+      "sistema": "Sistema",
+      "otros": "Otros"
+    },
+    "commandCenter": "Centro de mando",
+    "searchPlaceholder": "Buscar en el menú…",
+    "clearSearch": "Limpiar búsqueda",
+    "mainNav": "Navegación principal",
+    "noResults": "Sin coincidencias",
+    "inventario": "Inventario",
+    "entrenamiento": {
+      "label": "Entrenamiento",
+      "training-courses": "Cursos",
+      "training-catalog": "Catálogo de la plataforma"
+    },
+    "superadmin": {
+      "label": "Superadmin",
+      "tenants": "Tenants"
+    },
+    "videovigilancia": {
+      "label": "Videovigilancia",
+      "video-monitoreo": "Monitoreo",
+      "video-dispositivos": "Dispositivos",
+      "video-relays": "Sitios remotos",
+      "video-eventos": "Eventos"
+    },
+    "monitoreo-alarmas": {
+      "label": "Central de Monitoreo",
+      "alarm-queue": "Cola de Alarmas",
+      "alarm-panels": "Paneles",
+      "alarm-signals": "Señales",
+      "alarm-reports": "Reportes",
+      "alarm-analitica": "Análisis"
+    },
+    "mensajeria": {
+      "label": "Mensajería",
+      "msg-operativos": "Mensajes Operativos",
+      "msg-clientes": "Mensajes de Clientes"
+    },
+    "radio": {
+      "label": "Radio",
+      "radio-despacho": "Despacho",
+      "radio-dispositivos": "Radios IP"
+    },
+    "tareas": {
+      "label": "Tareas",
+      "tareas-seguimiento": "Seguimiento",
+      "tareas-aprobaciones": "Aprobaciones",
+      "pases-de-turno": "Pases de turno"
+    },
+    "solicitudes-clientes": "Solicitudes de clientes",
+    "control-de-calidad": "Control de Calidad",
+    "seguridad-auditoria": "Registro de Seguridad"
   },
   "siteTour": {
     "newTour": "Nuevo Recorrido",

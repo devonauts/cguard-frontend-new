@@ -2618,7 +2618,8 @@
       "label": "Analytics",
       "login": "Sign in",
       "login_prompt": "Sign in to your account",
-      "register_prompt": "Create your account"
+      "register_prompt": "Create your account",
+      "sitios-publicacion": "Service sites"
     },
     "app": {
       "title": "App"
@@ -3949,7 +3950,14 @@
       "ejecutar": "Generate Payroll",
       "horas-extras": "Overtime Multiplier",
       "label": "Payroll",
-      "pasadas": "Past Payroll"
+      "pasadas": "Past Payroll",
+      "nomina-dashboard": "Dashboard",
+      "nomina-time-clock": "Time clock",
+      "nomina-records": "Attendance records",
+      "nomina-exceptions": "Exceptions",
+      "nomina-approvals": "Approvals",
+      "nomina-payroll-summary": "Hours summary",
+      "nomina-settings": "Attendance settings"
     },
     "parking": {
       "areas": "Parking Area",
@@ -3963,7 +3971,10 @@
     "patrulla": {
       "label": "Vehicle Patrol",
       "rutas": "Routes",
-      "vehiculo": "Vehicle"
+      "vehiculo": "Vehicle",
+      "patrulla-board": "Vehicle patrol",
+      "patrulla-rutas": "Supervision routes",
+      "patrulla-live": "Live tracking"
     },
     "postSites": {
       "action": "Action",
@@ -4526,7 +4537,8 @@
       "label": "Scheduler",
       "plantillas": "Shift Templates",
       "tiempo-libre": "Time Off",
-      "turnos-abiertos": "Open Shifts"
+      "turnos-abiertos": "Open Shifts",
+      "cobertura": "Live coverage"
     },
     "rastreador": {
       "historial": "Tracking History",
@@ -4743,7 +4755,65 @@
       }
     },
     "mfa": "Two-factor authentication",
-    "estaciones": "Stations"
+    "estaciones": "Stations",
+    "group": {
+      "resumen": "Overview",
+      "operacion": "Operations",
+      "personal": "Staff",
+      "clientes": "Clients",
+      "analisis": "Analytics",
+      "sistema": "System",
+      "otros": "Other"
+    },
+    "commandCenter": "Command center",
+    "searchPlaceholder": "Search the menu…",
+    "clearSearch": "Clear search",
+    "mainNav": "Main navigation",
+    "noResults": "No matches",
+    "inventario": "Inventory",
+    "entrenamiento": {
+      "label": "Training",
+      "training-courses": "Courses",
+      "training-catalog": "Platform catalog"
+    },
+    "superadmin": {
+      "label": "Superadmin",
+      "tenants": "Tenants"
+    },
+    "videovigilancia": {
+      "label": "Video surveillance",
+      "video-monitoreo": "Monitoring",
+      "video-dispositivos": "Devices",
+      "video-relays": "Remote sites",
+      "video-eventos": "Events"
+    },
+    "monitoreo-alarmas": {
+      "label": "Monitoring center",
+      "alarm-queue": "Alarm queue",
+      "alarm-panels": "Panels",
+      "alarm-signals": "Signals",
+      "alarm-reports": "Reports",
+      "alarm-analitica": "Analytics"
+    },
+    "mensajeria": {
+      "label": "Messaging",
+      "msg-operativos": "Operational messages",
+      "msg-clientes": "Client messages"
+    },
+    "radio": {
+      "label": "Radio",
+      "radio-despacho": "Dispatch",
+      "radio-dispositivos": "IP radios"
+    },
+    "tareas": {
+      "label": "Tasks",
+      "tareas-seguimiento": "Tracking",
+      "tareas-aprobaciones": "Approvals",
+      "pases-de-turno": "Shift handovers"
+    },
+    "solicitudes-clientes": "Client requests",
+    "control-de-calidad": "Quality control",
+    "seguridad-auditoria": "Security log"
   },
   "siteTour": {
     "newTour": "New Tour",

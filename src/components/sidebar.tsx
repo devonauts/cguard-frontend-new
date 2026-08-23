@@ -745,7 +745,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps)
             <span className="block truncate text-[13.5px] font-semibold leading-tight" style={{ color: 'var(--ink)' }}>
               {tenantName || 'CGuard'}
             </span>
-            <span className="cg-eyebrow mt-1 block truncate" style={{ fontSize: 9.5 }}>Centro de mando</span>
+            <span className="cg-eyebrow mt-1 block truncate" style={{ fontSize: 9.5 }}>{t('sidebar.commandCenter', { defaultValue: 'Centro de mando' })}</span>
           </span>
         </button>
       </div>
@@ -760,8 +760,8 @@ export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps)
             if (e.key === 'Escape') { setQuery(''); return; }
             if (e.key === 'Enter' && firstResultPath) { setQuery(''); go(firstResultPath); }
           }}
-          placeholder="Buscar en el menú…"
-          aria-label="Buscar en el menú"
+          placeholder={t('sidebar.searchPlaceholder', { defaultValue: 'Buscar en el menú…' })}
+          aria-label={t('sidebar.searchPlaceholder', { defaultValue: 'Buscar en el menú…' })}
           autoComplete="off"
           spellCheck={false}
         />
@@ -771,7 +771,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps)
             onClick={() => setQuery('')}
             className="cg-focus shrink-0 rounded-full"
             style={{ color: 'var(--ink-faint)' }}
-            aria-label="Limpiar búsqueda"
+            aria-label={t('sidebar.clearSearch', { defaultValue: 'Limpiar búsqueda' })}
           >
             <X className="h-3.5 w-3.5" />
           </button>
@@ -779,15 +779,15 @@ export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps)
       </div>
 
       {/* Los seis grupos, uno detrás de otro: UN solo menú */}
-      <nav className="cgsb-scroll" ref={scrollRef} aria-label="Navegación principal">
+      <nav className="cgsb-scroll" ref={scrollRef} aria-label={t('sidebar.mainNav', { defaultValue: 'Navegación principal' })}>
         {q && renderGroups.length === 0 ? (
           <p className="px-1 py-6 text-center text-xs" style={{ color: 'var(--ink-faint)' }}>
-            Sin coincidencias
+            {t('sidebar.noResults', { defaultValue: 'Sin coincidencias' })}
           </p>
         ) : (
           renderGroups.map(group => (
             <div key={group.id} className="cgsb-group">
-              <div className="cg-eyebrow cgsb-group-label">{group.label}</div>
+              <div className="cg-eyebrow cgsb-group-label">{t(`sidebar.group.${group.id}`, { defaultValue: group.label })}</div>
               {group.entries.map(({ item, forcedSubs }) =>
                 renderItem(item, forcedSubs?.length ? { forcedSubs } : undefined)
               )}
