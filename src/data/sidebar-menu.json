@@ -13,16 +13,16 @@
     "path": "/activities"
   },
   {
-    "id": "clientes",
-    "name": "Clientes",
-    "icon": "Users",
-    "path": "/clients"
-  },
-  {
     "id": "estaciones",
     "name": "Estaciones",
     "icon": "Radio",
     "path": "/stations"
+  },
+  {
+    "id": "clientes",
+    "name": "Clientes",
+    "icon": "Users",
+    "path": "/clients"
   },
   {
     "id": "inventario",
