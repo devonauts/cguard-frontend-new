@@ -50,7 +50,23 @@ import { PromptHost } from "@/components/ui/promptDialog";
 // En la app de ESCRITORIO no se registra: el bundle ya es local (app://) y un
 // SW solo duplicaría el caché sin aportar nada. window.cguardDesktop lo expone
 // el preload de Electron antes de que corra este módulo.
-if (!(window as any).cguardDesktop) registerSW({ immediate: true });
+if (!(window as any).cguardDesktop) {
+  registerSW({
+    immediate: true,
+    // Con `autoUpdate`, en cuanto el SW nuevo toma control la página se recarga
+    // sola. Pero por defecto solo se busca actualización al CARGAR — si dejas la
+    // pestaña abierta, un deploy nuevo no llega hasta que recargas a mano. Aquí
+    // se busca cada 60 s y al volver el foco a la pestaña, para que una versión
+    // nueva aparezca sola en ~1 min sin tener que cerrar nada.
+    onRegisteredSW(_swUrl, r) {
+      if (!r) return;
+      const check = () => { r.update().catch(() => { /* sin red: se reintenta luego */ }); };
+      setInterval(check, 60_000);
+      window.addEventListener("focus", check);
+      document.addEventListener("visibilitychange", () => { if (!document.hidden) check(); });
+    },
+  });
+}
 startCachePersistence();
 
 window.addEventListener("vite:preloadError", (event) => {
