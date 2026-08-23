@@ -10,7 +10,7 @@
  * un instante después con lo que diga la cuenta y gana. */
 
 import type { EntityKind, LiveStatus } from "./types";
-import { guardarBloqueDeEmpresa, leerBloqueDeEmpresa } from "@/lib/appearanceSync";
+import { guardarBloqueDeEmpresa, leerBloqueDeEmpresa, cambioLocalReciente } from "@/lib/appearanceSync";
 
 export interface DashboardPrefs {
   accent: string;                                   // dashboard accent (hex)
@@ -106,6 +106,8 @@ export function savePrefs(p: DashboardPrefs) {
  */
 export async function hidratarDesdeLaCuenta(): Promise<DashboardPrefs | null> {
   try {
+    // Cambio recién hecho aquí: la cuenta puede ir atrasada (ver appearanceSync).
+    if (cambioLocalReciente()) return null;
     const guardado: any = await leerBloqueDeEmpresa("dashboards");
     if (!guardado) return null;
     const fusionado: DashboardPrefs = {

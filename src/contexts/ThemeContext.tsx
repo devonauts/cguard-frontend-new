@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { leerAparienciaDeLaCuenta, guardarApariencia } from "@/lib/appearanceSync";
+import { leerAparienciaDeLaCuenta, guardarApariencia, cambioLocalReciente } from "@/lib/appearanceSync";
 
 /**
  * Claro u oscuro, guardado en la CUENTA (`users.appearance.theme`) para que te
@@ -71,6 +71,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     let vivo = true;
     leerAparienciaDeLaCuenta().then((a) => {
       if (!vivo) return;
+      if (cambioLocalReciente()) return; // la cuenta puede ir atrasada — ver appearanceSync
       if (a?.theme === "light" || a?.theme === "dark") {
         setThemeState(a.theme);
         try { localStorage.setItem("cguard-theme", a.theme); } catch {}

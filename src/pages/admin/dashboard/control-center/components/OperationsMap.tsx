@@ -18,7 +18,7 @@ import {
   type MandoGlobo, type Rastro,
 } from "./OperationsMapPopup";
 import "@/styles/map.css";
-import { guardarBloqueDeEmpresa, leerBloqueDeEmpresa } from "@/lib/appearanceSync";
+import { guardarBloqueDeEmpresa, leerBloqueDeEmpresa, cambioLocalReciente } from "@/lib/appearanceSync";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -262,6 +262,7 @@ export function OperationsMap({
   // Las capas guardadas en la cuenta ganan a la caché de este navegador.
   useEffect(() => {
     let vivo = true;
+    if (cambioLocalReciente()) return; // ver appearanceSync
     void leerBloqueDeEmpresa("mapLayers").then((guardadas) => {
       if (!vivo || !guardadas) return;
       setCapas({ ...CAPAS_TODAS, ...(guardadas as Partial<Capas>) });

@@ -35,6 +35,35 @@ export function empresaActiva(): string {
   try { return localStorage.getItem('tenantId') || 'default'; } catch { return 'default'; }
 }
 
+/**
+ * ⚠ LA VENTANA DE ECO. `/auth/me` se sirve desde una caché de identidad EN
+ * MEMORIA DE CADA INSTANCIA (20 s, y en producción hay 4 procesos). Guardar
+ * invalida la del proceso que atendió el PUT, pero otra instancia puede seguir
+ * devolviendo la identidad vieja unos segundos.
+ *
+ * Sin protección eso se ve exactamente como el bug que veníamos a arreglar:
+ * cambias el color, recargas para comprobar que se guardó, la cuenta te
+ * responde con el valor ANTERIOR y el color se revierte solo.
+ *
+ * Por eso se marca la hora del último cambio hecho en este navegador: mientras
+ * esté fresco, lo local gana y se vuelve a empujar a la cuenta. La ventana es
+ * más ancha que el TTL, con margen.
+ */
+const CLAVE_SELLO = 'cguard-appearance-ts';
+const VENTANA_ECO_MS = 45_000;
+
+function marcarCambioLocal() {
+  try { localStorage.setItem(CLAVE_SELLO, String(Date.now())); } catch { /* nada */ }
+}
+
+/** ¿Cambió algo en este navegador hace tan poco que la cuenta puede ir atrasada? */
+export function cambioLocalReciente(): boolean {
+  try {
+    const t = Number(localStorage.getItem(CLAVE_SELLO) || 0);
+    return Number.isFinite(t) && t > 0 && Date.now() - t < VENTANA_ECO_MS;
+  } catch { return false; }
+}
+
 /** Sesión iniciada = hay token. En el login no hay a quién preguntarle. */
 export function haySesion(): boolean {
   try { return !!localStorage.getItem('authToken'); } catch { return false; }
@@ -77,6 +106,7 @@ const RETARDO_MS = 800;
 
 /** Guarda en la cuenta, agrupando ráfagas. Silencioso: jamás rompe la interfaz. */
 export function guardarApariencia(parcial: UiAppearance) {
+  marcarCambioLocal();
   acumulado = {
     ...acumulado,
     ...parcial,

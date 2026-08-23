@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
-import { leerAparienciaDeLaCuenta, guardarApariencia } from "@/lib/appearanceSync";
+import { leerAparienciaDeLaCuenta, guardarApariencia, cambioLocalReciente } from "@/lib/appearanceSync";
 
 /**
  * El acento configurable del CRM.
@@ -100,6 +100,9 @@ export function AccentProvider({ children }: { children: React.ReactNode }) {
     leerAparienciaDeLaCuenta().then((a) => {
       if (!vivo) return;
       cuentaLeida.current = true;
+      // Si acabas de cambiarlo aquí, la cuenta puede ir hasta 20 s atrasada
+      // (caché de identidad por instancia): no dejes que revierta tu cambio.
+      if (cambioLocalReciente()) return;
       const g = a?.accent;
       if (g && typeof g.h === "number" && typeof g.c === "number") {
         const seguro = { h: acota(g.h, 0, 360), c: acota(g.c, 0, CROMA_MAX) };
