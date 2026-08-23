@@ -1,4 +1,12 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { leerAparienciaDeLaCuenta, guardarApariencia } from "@/lib/appearanceSync";
+
+/**
+ * Claro u oscuro, guardado en la CUENTA (`users.appearance.theme`) para que te
+ * siga entre navegadores y máquinas. `localStorage` se queda como caché del
+ * primer pintado: sin ella arrancarías en claro y saltarías a oscuro cuando
+ * responda el servidor. Al llegar la cuenta, la cuenta manda.
+ */
 
 type Theme = "light" | "dark";
 
@@ -58,9 +66,23 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     try { localStorage.removeItem("heroui-theme"); } catch {}
   }, []);
 
+  // Al arrancar: el modo guardado en la cuenta gana sobre el de este navegador.
+  useEffect(() => {
+    let vivo = true;
+    leerAparienciaDeLaCuenta().then((a) => {
+      if (!vivo) return;
+      if (a?.theme === "light" || a?.theme === "dark") {
+        setThemeState(a.theme);
+        try { localStorage.setItem("cguard-theme", a.theme); } catch {}
+      }
+    });
+    return () => { vivo = false; };
+  }, []);
+
   const setTheme = (t: Theme) => {
     setThemeState(t);
     try { localStorage.setItem("cguard-theme", t); } catch {}
+    guardarApariencia({ theme: t });
   };
 
   const toggleTheme = () => setTheme(theme === "light" ? "dark" : "light");

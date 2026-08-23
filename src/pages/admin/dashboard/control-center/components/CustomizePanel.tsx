@@ -174,7 +174,8 @@ export function CustomizePanel({
         </Group>
 
         <p className="mb-20 text-[11px]" style={{ color: "var(--ink-faint)" }}>
-          Estas preferencias se guardan en este navegador y sólo afectan a tu vista del panel.
+          El color de acento se guarda en tu cuenta y te sigue a cualquier dispositivo. El resto de
+          estas preferencias se guardan en este navegador y sólo afectan a tu vista del panel.
         </p>
 
         <div

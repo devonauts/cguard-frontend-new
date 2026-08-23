@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { olvidarApariencia } from "@/lib/appearanceSync";
 import { startIdleLogout, stopIdleLogout } from "@/lib/idleLogout";
 import { AuthService, LoginCredentials, SignUpData } from "../services/auth/authService";
 import { setAuthToken, clearAuthToken } from "@/lib/api";
@@ -26,6 +27,11 @@ function purgeOfflineDataIfDifferentUser(newUserId: string | undefined): void {
       void clearPersistedCache();
       clearQueue();
       localStorage.removeItem("authUserCache");
+      // …ni la apariencia. Es caché de pintado: si se queda, el que entra ve un
+      // instante el acento del anterior antes de que responda su propia cuenta.
+      localStorage.removeItem("cguard-accent");
+      localStorage.removeItem("cguard-theme");
+      olvidarApariencia();
     }
   } catch { /* best-effort */ }
 }
@@ -447,6 +453,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // heredar ni los datos persistidos en IndexedDB, ni el perfil cacheado,
       // ni una cola de escrituras ajena.
       try { localStorage.removeItem("authUserCache"); } catch {}
+      // La apariencia leída de la cuenta es de la sesión que se va: la próxima
+      // debe volver a preguntar. La caché local se conserva a propósito — si
+      // vuelve a entrar la MISMA persona, no parpadea; si entra otra, la borra
+      // purgeOfflineDataIfDifferentUser.
+      try { olvidarApariencia(); } catch {}
       try { clearQueue(); } catch {}
       try { void clearPersistedCache(); } catch {}
       // El contador del icono es de la sesión que se va.

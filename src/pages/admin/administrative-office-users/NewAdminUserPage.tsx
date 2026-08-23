@@ -41,6 +41,7 @@ import {
 } from "@/components/ui/dialog";
 import { Copy, UserPlus, Ticket } from "lucide-react";
 import { PageContainer, PageHeader, Section } from "@/components/kit";
+import { roleDisplayDescription } from "@/config/roleLabels";
 
 function ClientMultiSelect({
   value,
@@ -201,6 +202,15 @@ export default function NewAdminUserPage() {
     });
   }, []);
   const [loading, setLoading] = useState(false);
+  /**
+   * ¿Se le acota lo que ve, o ve toda la operación?
+   *
+   * El contrato del servidor (lib/postSiteScope) es «sin sedes asignadas = sin
+   * restricción», y eso era invisible: la pantalla enseñaba dos multiselectores
+   * vacíos sin decir que dejarlos vacíos significa VER TODO. Ahora es una
+   * elección explícita, y «toda la operación» es lo que sale marcado.
+   */
+  const [acotado, setAcotado] = useState(false);
   const [currentUser, setCurrentUser] = useState<AdminUser | null>(null);
   const [aclAllowedClientIds, setAclAllowedClientIds] = useState<string[] | null>(null);
   const [aclAllowedPostSiteIds, setAclAllowedPostSiteIds] = useState<string[] | null>(null);
@@ -212,6 +222,21 @@ export default function NewAdminUserPage() {
   const watchedClientIds = useWatch({ control: form.control, name: 'clientIds' }) as string[] | undefined;
   const watchedPostSiteIds = useWatch({ control: form.control, name: 'postSiteIds' }) as string[] | undefined;
   const watchedStationIds = useWatch({ control: form.control, name: 'stationIds' }) as string[] | undefined;
+
+  /**
+   * Admin y Gerente de Operaciones IGNORAN el alcance: el servidor devuelve
+   * «sin restricción» para ellos pase lo que pase (lib/postSiteScope). Pedir
+   * que se acoten era pedirle al usuario que configurara algo que se descarta.
+   */
+  const veTodoPorRol = ['admin', 'operationsmanager'].includes(
+    String(accessLevelValue || '').toLowerCase(),
+  );
+
+  // Si la persona ya venía acotada (edición), la pantalla abre en ese modo.
+  useEffect(() => {
+    const conSedes = (watchedPostSiteIds || []).length > 0 || (watchedClientIds || []).length > 0;
+    if (conSedes) setAcotado(true);
+  }, [watchedPostSiteIds, watchedClientIds]);
 
   useEffect(() => {
     // load clients and sites via the tenant endpoints requested
@@ -550,7 +575,10 @@ export default function NewAdminUserPage() {
         role: values.accessLevel,
         clientIds: values.clientIds,
         postSiteIds: values.postSiteIds || [],
-        stationIds: values.stationIds || [],
+        // `stationIds` NO se manda: escribía en `tenant_user_post_sites.station_id`,
+        // una columna que ya no existe (el propio código la esquivaba con un
+        // `hasStationColumn`). Era un selector que no restringía nada y hacía
+        // creer lo contrario. El alcance real son las SEDES.
         invited: invitedPending,
         pending: invitedPending,
       } as any;
@@ -654,131 +682,185 @@ export default function NewAdminUserPage() {
         <Section title={t('adminOfficeUsers.newUser.sectionTitle', { defaultValue: 'Datos del usuario' })} icon={<UserPlus />}>
         <Form {...form}>
           <form onSubmit={handleSubmit(onSubmit)} className="grid gap-6">
-            {/* Fila 1 */}
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <FormField
-                control={control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('adminOfficeUsers.newUser.form.nameLabel', { defaultValue: 'Nombre*' })}</FormLabel>
-                    <FormControl>
-                      <Input placeholder={t('adminOfficeUsers.newUser.form.namePlaceholder', { defaultValue: 'Nombre*' })} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('adminOfficeUsers.newUser.form.emailLabel', { defaultValue: 'Correo Electrónico*' })}</FormLabel>
-                    <FormControl>
-                      <Input placeholder={t('adminOfficeUsers.newUser.form.emailPlaceholder', { defaultValue: 'Correo Electrónico*' })} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            {/* Fila 2 */}
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <FormField
-                control={control}
-                name="accessLevel"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('adminOfficeUsers.newUser.form.accessLevelLabel', { defaultValue: 'Nivel de Acceso*' })}</FormLabel>
-                    <Select
-                      value={field.value}
-                      onValueChange={field.onChange}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder={t('adminOfficeUsers.newUser.form.accessLevelPlaceholder', { defaultValue: 'Nivel de Acceso*' })} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {roleOptions.map((r) => (
-                          <SelectItem key={r.id} value={r.id}>
-                            {getRoleDisplayName(r)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={control}
-                name="clientIds"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('adminOfficeUsers.newUser.form.assignClientsLabel', { defaultValue: 'Asignar Clientes' })}</FormLabel>
-                    <FormControl>
-                      <ClientMultiSelect
-                        value={(field.value as string[]) || []}
-                        onChange={(ids: string[]) => field.onChange(ids)}
-                        options={clientOptions}
-                        placeholder={t('adminOfficeUsers.newUser.form.assignClientsPlaceholder', { defaultValue: 'Asignar Clientes' })}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            {/* Fila 3 (col-span-2) */}
-            <div className="grid grid-cols-1 md:grid-cols-2">
-              <FormField
-                control={control}
-                name="postSiteIds"
-                render={({ field }) => (
-                  <FormItem className="md:col-span-2">
-                    <FormLabel>{t('adminOfficeUsers.newUser.form.assignSitesLabel', { defaultValue: 'Asignar Puestos de Vigilancia' })}</FormLabel>
-                    <FormControl>
-                      <ClientMultiSelect
-                        value={(field.value as string[]) || []}
-                        onChange={(ids: string[]) => field.onChange(ids)}
-                        options={siteOptions}
-                        placeholder={t('adminOfficeUsers.newUser.form.assignSitesPlaceholder', { defaultValue: 'Asignar Puestos de Vigilancia' })}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            {/* Stations (estaciones) - linked to selected postSite(s) */}
-            {watchedPostSiteIds && watchedPostSiteIds.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2">
+            {/* ── QUIÉN ES ─────────────────────────────────────────── */}
+            <div>
+              <p className="cg-eyebrow mb-2">1 · Quién es</p>
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <FormField
                   control={control}
-                  name="stationIds"
+                  name="name"
                   render={({ field }) => (
-                    <FormItem className="md:col-span-2">
-                      <FormLabel>{t('adminOfficeUsers.newUser.form.assignStationsLabel', { defaultValue: 'Asignar Estaciones' })}</FormLabel>
+                    <FormItem>
+                      <FormLabel>{t('adminOfficeUsers.newUser.form.nameLabel', { defaultValue: 'Nombre*' })}</FormLabel>
                       <FormControl>
-                        <ClientMultiSelect
-                          value={(field.value as string[]) || []}
-                          onChange={(ids: string[]) => field.onChange(ids)}
-                          options={stationOptions}
-                          placeholder={t('adminOfficeUsers.newUser.form.assignStationsPlaceholder', { defaultValue: 'Asignar Estaciones' })}
-                        />
+                        <Input placeholder="Nombre y apellido" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+
+                <FormField
+                  control={control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('adminOfficeUsers.newUser.form.emailLabel', { defaultValue: 'Correo Electrónico*' })}</FormLabel>
+                      <FormControl>
+                        <Input placeholder="nombre@empresa.com" {...field} />
+                      </FormControl>
+                      <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>
+                        Aquí le llega la invitación para crear su contraseña.
+                      </p>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
-            )}
+            </div>
+
+            {/* ── QUÉ PUEDE HACER ──────────────────────────────────── */}
+            <div>
+              <p className="cg-eyebrow mb-2">2 · Qué puede hacer</p>
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <FormField
+                  control={control}
+                  name="accessLevel"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Rol*</FormLabel>
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Elige un rol" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {roleOptions.map((r) => (
+                            <SelectItem key={r.id} value={r.id}>
+                              {getRoleDisplayName(r)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {/* El rol decide lo que puede HACER. Antes se llamaba
+                          «Nivel de Acceso», que sugería una escalera de
+                          privilegios que no existe, y no explicaba nada. */}
+                      {field.value && (
+                        <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>
+                          {roleDisplayDescription(field.value)}
+                        </p>
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* ── QUÉ PUEDE VER ────────────────────────────────────── */}
+            <div>
+              <p className="cg-eyebrow mb-2">3 · Qué puede ver</p>
+
+              {veTodoPorRol ? (
+                /* Admin y Gerente de Operaciones ignoran el alcance por diseño
+                   (lib/postSiteScope): enseñar los selectores aquí era pedirle
+                   al usuario que configurara algo que el servidor descarta. */
+                <div className="rounded-xl border px-4 py-3 text-sm"
+                     style={{ borderColor: 'var(--hairline)', background: 'var(--float)' }}>
+                  Este rol ve <strong>toda la operación</strong> por definición: no se puede acotar.
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    <button
+                      type="button"
+                      onClick={() => { setAcotado(false); setValue('clientIds', []); setValue('postSiteIds', []); }}
+                      className="cg-focus rounded-xl border px-4 py-3 text-left transition"
+                      style={{
+                        borderColor: !acotado ? 'var(--brand)' : 'var(--hairline)',
+                        background: !acotado ? 'color-mix(in oklab, var(--brand) 8%, transparent)' : 'transparent',
+                      }}
+                    >
+                      <span className="block text-sm font-semibold">Toda la operación</span>
+                      <span className="block text-xs" style={{ color: 'var(--ink-soft)' }}>
+                        Ve todos los clientes y todas las sedes. Es lo normal para la oficina.
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setAcotado(true)}
+                      className="cg-focus rounded-xl border px-4 py-3 text-left transition"
+                      style={{
+                        borderColor: acotado ? 'var(--brand)' : 'var(--hairline)',
+                        background: acotado ? 'color-mix(in oklab, var(--brand) 8%, transparent)' : 'transparent',
+                      }}
+                    >
+                      <span className="block text-sm font-semibold">Solo lo que yo elija</span>
+                      <span className="block text-xs" style={{ color: 'var(--ink-soft)' }}>
+                        Para quien lleva unas cuentas concretas y no debe ver el resto.
+                      </span>
+                    </button>
+                  </div>
+
+                  {acotado && (
+                    <div className="space-y-5 rounded-xl border p-4" style={{ borderColor: 'var(--hairline)' }}>
+                      <FormField
+                        control={control}
+                        name="postSiteIds"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Sedes</FormLabel>
+                            <p className="mb-1.5 text-xs" style={{ color: 'var(--ink-soft)' }}>
+                              Es el alcance de verdad: limita los turnos, la nómina, la cobertura,
+                              las visitas y los puestos que esta persona puede ver y tocar.
+                            </p>
+                            <FormControl>
+                              <ClientMultiSelect
+                                value={(field.value as string[]) || []}
+                                onChange={(ids: string[]) => field.onChange(ids)}
+                                options={siteOptions}
+                                placeholder="Elegir sedes…"
+                              />
+                            </FormControl>
+                            {(!field.value || (field.value as string[]).length === 0) && (
+                              <p className="text-xs" style={{ color: 'var(--warn-text, var(--ink-soft))' }}>
+                                Sin ninguna sede marcada seguirá viendo TODO. Marca al menos una.
+                              </p>
+                            )}
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={control}
+                        name="clientIds"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Clientes <span className="font-normal" style={{ color: 'var(--ink-soft)' }}>(opcional)</span></FormLabel>
+                            <p className="mb-1.5 text-xs" style={{ color: 'var(--ink-soft)' }}>
+                              Atajo: al elegir un cliente se marcan sus sedes. Por sí solo,
+                              hoy únicamente limita qué <strong>incidentes</strong> ve.
+                            </p>
+                            <FormControl>
+                              <ClientMultiSelect
+                                value={(field.value as string[]) || []}
+                                onChange={(ids: string[]) => field.onChange(ids)}
+                                options={clientOptions}
+                                placeholder="Elegir clientes…"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
             <div className="flex justify-between items-center">
               <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
                 <DialogTrigger asChild>

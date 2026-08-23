@@ -29,6 +29,7 @@ import { Command, CommandInput, CommandList, CommandGroup, CommandItem } from "@
 import { usePermissions } from "@/hooks/usePermissions";
 import UserPermissionOverrides, { Overrides } from "./UserPermissionOverrides";
 import { PageContainer, PageHeader, Section, GlassPanel, IconTile } from "@/components/kit";
+import { roleDisplayDescription } from "@/config/roleLabels";
 import { UserCog, ShieldCheck, ChevronDown, ChevronRight, MapPin } from "lucide-react";
 
 function ClientMultiSelect({
@@ -131,6 +132,10 @@ export default function EditAdminUserPage() {
   });
 
   const { handleSubmit, control, formState, setValue, setError } = form;
+
+  /** Ver todo (por defecto) o acotar a unas sedes. El servidor entiende «sin
+   *  sedes = sin restricción», y eso no se veía en ningún sitio. */
+  const [acotado, setAcotado] = useState(false);
   const [clientOptions, setClientOptions] = useState<Array<{ id: string; name: string }>>(CLIENT_OPTIONS_PLACEHOLDER);
   const [siteOptions, setSiteOptions] = useState<Array<{ id: string; name: string; clientIds?: string[] }>>([]);
   const [roleOptions, setRoleOptions] = useState<Array<{ id: string; name?: string; label?: string; slug?: string }>>([]);
@@ -148,6 +153,10 @@ export default function EditAdminUserPage() {
   const [permsOpen, setPermsOpen] = useState(false);
   const [permQuery, setPermQuery] = useState("");
   const watchedAccessLevel = useWatch({ control: form.control, name: 'accessLevel' }) as string | undefined;
+
+  /** Admin y Gerente de Operaciones ignoran el alcance (lib/postSiteScope):
+   *  enseñarles los selectores era pedirles configurar algo que se descarta. */
+  const veTodoPorRol = ['admin', 'operationsmanager'].includes(String(watchedAccessLevel || '').toLowerCase());
   const selectedRoleSlug = (roleOptions.find((r) => String(r.id) === String(watchedAccessLevel))?.slug || '').toLowerCase();
 
   // Load the inherited permissions of the selected role so the override panel can
@@ -334,7 +343,12 @@ export default function EditAdminUserPage() {
           prevClientIdsRef.current = clientIds;
           setValue('clientIds', clientIds);
         }
-        if (postSiteIds && postSiteIds.length) setValue('postSiteIds', postSiteIds);
+        if (postSiteIds && postSiteIds.length) {
+          setValue('postSiteIds', postSiteIds);
+          // Ya venía acotado: la pantalla abre en ese modo en vez de decirle
+          // «ve todo» a alguien que lleva meses restringido.
+          setAcotado(true);
+        }
         } catch (err) {
         toast.error(t('adminOfficeUsers.editUser.errors.loadError', { defaultValue: 'No se pudo cargar la información del usuario' }));
       }
@@ -557,74 +571,138 @@ export default function EditAdminUserPage() {
               />
             </div>
 
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <FormField
-                control={control}
-                name="accessLevel"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('adminOfficeUsers.editUser.form.accessLevelLabel', { defaultValue: 'Nivel de Acceso*' })}</FormLabel>
-                    <Select
-                      value={field.value}
-                      onValueChange={field.onChange}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder={t('adminOfficeUsers.editUser.form.accessLevelPlaceholder', { defaultValue: 'Nivel de Acceso*' })} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {roleOptions.map((r) => (
-                          <SelectItem key={r.id} value={r.id}>
-                            {getRoleDisplayName(r)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={control}
-                name="clientIds"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('adminOfficeUsers.editUser.form.assignClientsLabel', { defaultValue: 'Asignar Clientes*' })}</FormLabel>
-                    <FormControl>
-                      <ClientMultiSelect
-                        value={(field.value as string[]) || []}
-                        onChange={(ids: string[]) => field.onChange(ids)}
-                        options={clientOptions}
-                        placeholder={t('adminOfficeUsers.editUser.form.assignClientsPlaceholder', { defaultValue: 'Asignar Clientes*' })}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            {/* ── QUÉ PUEDE HACER ──────────────────────────────────── */}
+            <div>
+              <p className="cg-eyebrow mb-2">Qué puede hacer</p>
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <FormField
+                  control={control}
+                  name="accessLevel"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Rol*</FormLabel>
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Elige un rol" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {roleOptions.map((r) => (
+                            <SelectItem key={r.id} value={r.id}>
+                              {getRoleDisplayName(r)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {field.value && (
+                        <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>
+                          {roleDisplayDescription(field.value)}
+                        </p>
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2">
-              <FormField
-                control={control}
-                name="postSiteIds"
-                render={({ field }) => (
-                  <FormItem className="md:col-span-2">
-                    <FormLabel>{t('adminOfficeUsers.editUser.form.assignSitesLabel', { defaultValue: 'Asignar Puestos de Vigilancia' })}</FormLabel>
-                    <FormControl>
-                      <ClientMultiSelect
-                        value={(field.value as string[]) || []}
-                        onChange={(ids: string[]) => field.onChange(ids)}
-                        options={siteOptions}
-                        placeholder={t('adminOfficeUsers.editUser.form.assignSitesPlaceholder', { defaultValue: 'Asignar Puestos de Vigilancia' })}
+            {/* ── QUÉ PUEDE VER ────────────────────────────────────── */}
+            <div>
+              <p className="cg-eyebrow mb-2">Qué puede ver</p>
+              {veTodoPorRol ? (
+                <div className="rounded-xl border px-4 py-3 text-sm"
+                     style={{ borderColor: 'var(--hairline)', background: 'var(--float)' }}>
+                  Este rol ve <strong>toda la operación</strong> por definición: no se puede acotar.
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    <button
+                      type="button"
+                      onClick={() => { setAcotado(false); setValue('clientIds', []); setValue('postSiteIds', []); }}
+                      className="cg-focus rounded-xl border px-4 py-3 text-left transition"
+                      style={{
+                        borderColor: !acotado ? 'var(--brand)' : 'var(--hairline)',
+                        background: !acotado ? 'color-mix(in oklab, var(--brand) 8%, transparent)' : 'transparent',
+                      }}
+                    >
+                      <span className="block text-sm font-semibold">Toda la operación</span>
+                      <span className="block text-xs" style={{ color: 'var(--ink-soft)' }}>
+                        Todos los clientes y todas las sedes.
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setAcotado(true)}
+                      className="cg-focus rounded-xl border px-4 py-3 text-left transition"
+                      style={{
+                        borderColor: acotado ? 'var(--brand)' : 'var(--hairline)',
+                        background: acotado ? 'color-mix(in oklab, var(--brand) 8%, transparent)' : 'transparent',
+                      }}
+                    >
+                      <span className="block text-sm font-semibold">Solo lo que yo elija</span>
+                      <span className="block text-xs" style={{ color: 'var(--ink-soft)' }}>
+                        Para quien lleva unas cuentas concretas.
+                      </span>
+                    </button>
+                  </div>
+
+                  {acotado && (
+                    <div className="space-y-5 rounded-xl border p-4" style={{ borderColor: 'var(--hairline)' }}>
+                      <FormField
+                        control={control}
+                        name="postSiteIds"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Sedes</FormLabel>
+                            <p className="mb-1.5 text-xs" style={{ color: 'var(--ink-soft)' }}>
+                              El alcance de verdad: limita turnos, nómina, cobertura, visitas y puestos.
+                            </p>
+                            <FormControl>
+                              <ClientMultiSelect
+                                value={(field.value as string[]) || []}
+                                onChange={(ids: string[]) => field.onChange(ids)}
+                                options={siteOptions}
+                                placeholder="Elegir sedes…"
+                              />
+                            </FormControl>
+                            {(!field.value || (field.value as string[]).length === 0) && (
+                              <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>
+                                Sin ninguna sede marcada seguirá viendo TODO.
+                              </p>
+                            )}
+                            <FormMessage />
+                          </FormItem>
+                        )}
                       />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+
+                      <FormField
+                        control={control}
+                        name="clientIds"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Clientes <span className="font-normal" style={{ color: 'var(--ink-soft)' }}>(opcional)</span></FormLabel>
+                            <p className="mb-1.5 text-xs" style={{ color: 'var(--ink-soft)' }}>
+                              Atajo: al elegir un cliente se marcan sus sedes. Por sí solo, hoy únicamente
+                              limita qué <strong>incidentes</strong> ve.
+                            </p>
+                            <FormControl>
+                              <ClientMultiSelect
+                                value={(field.value as string[]) || []}
+                                onChange={(ids: string[]) => field.onChange(ids)}
+                                options={clientOptions}
+                                placeholder="Elegir clientes…"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {canEditPerms && id && (

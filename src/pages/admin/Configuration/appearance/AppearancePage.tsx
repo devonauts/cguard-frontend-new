@@ -102,7 +102,7 @@ export default function AppearancePage() {
           <PageHeader
             icon={<Palette />}
             title="Apariencia"
-            subtitle="Elige el color con el que se pinta tu C-Guard Pro y si trabajas en claro u oscuro. El cambio se aplica al instante y sólo afecta a este navegador."
+            subtitle="Elige el color con el que se pinta tu C-Guard Pro y si trabajas en claro u oscuro. El cambio se aplica al instante y se guarda en tu cuenta, así que lo verás igual desde cualquier computadora o navegador."
             badges={
               <>
                 <StatusBadge tone="brand">{preset ? preset.label : "Color a medida"}</StatusBadge>
