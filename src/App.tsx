@@ -58,6 +58,7 @@ const CommunicationsPage = lazy(() => import("./pages/admin/Configuration/commun
 const BillingPage = lazy(() => import("./pages/admin/Configuration/billing/BillingPage"));
 const ActivitiesPage = lazy(() => import("./pages/admin/actividades/ActivitiesPage"));
 const ClientesPage = lazy(() => import("./pages/admin/clientes/ClientsPage"));
+const StationsPage = lazy(() => import("./pages/admin/stations/StationsPage"));
 const NewOrEditClientPage = lazy(() => import("./pages/admin/clientes/NewOrEditClientPage"));
 const ClientsDetails = lazy(() => import("./pages/admin/clientes/ClientsDetails"));
 const NewOrEditPostSitePage = lazy(() => import("./pages/admin/post-sites/NewOrEditPostSitePage"));
@@ -408,6 +409,15 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <ClientesPage />
+                  </ProtectedRoute>
+                }
+              />
+              {/* ESTACIONES */}
+              <Route
+                path="/stations"
+                element={
+                  <ProtectedRoute>
+                    <StationsPage />
                   </ProtectedRoute>
                 }
               />

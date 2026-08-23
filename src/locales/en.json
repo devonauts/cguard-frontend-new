@@ -4742,7 +4742,8 @@
         "title": "Subscription"
       }
     },
-    "mfa": "Two-factor authentication"
+    "mfa": "Two-factor authentication",
+    "estaciones": "Stations"
   },
   "siteTour": {
     "newTour": "New Tour",
@@ -6370,5 +6371,18 @@
     "pageOf": "Page {{page}} of {{total}} · {{count}} records",
     "prev": "Previous",
     "next": "Next"
+  },
+  "stations": {
+    "title": "Stations",
+    "subtitle": "All your stations, with their client and guards.",
+    "count": "{{n}} station(s)",
+    "searchPlaceholder": "Search by call-sign, post or client…",
+    "empty": {
+      "title": "No stations",
+      "description": "Stations are created inside each post."
+    },
+    "covered": "Covered",
+    "uncovered": "No guards",
+    "guardsLabel": "guard(s)"
   }
 }

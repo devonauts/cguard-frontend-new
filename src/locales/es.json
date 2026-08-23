@@ -4742,7 +4742,8 @@
         "modulos": "Módulos",
         "title": "Suscripción"
       }
-    }
+    },
+    "estaciones": "Estaciones"
   },
   "siteTour": {
     "newTour": "Nuevo Recorrido",
@@ -6370,5 +6371,18 @@
     "pageOf": "Página {{page}} de {{total}} · {{count}} registros",
     "prev": "Anterior",
     "next": "Siguiente"
+  },
+  "stations": {
+    "title": "Estaciones",
+    "subtitle": "Todas tus estaciones, con su cliente y sus vigilantes.",
+    "count": "{{n}} estación(es)",
+    "searchPlaceholder": "Buscar por nominativo, puesto o cliente…",
+    "empty": {
+      "title": "Sin estaciones",
+      "description": "Las estaciones se crean dentro de cada puesto."
+    },
+    "covered": "Con cobertura",
+    "uncovered": "Sin vigilantes",
+    "guardsLabel": "vigilante(s)"
   }
 }

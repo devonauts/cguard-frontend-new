@@ -19,6 +19,12 @@
     "path": "/clients"
   },
   {
+    "id": "estaciones",
+    "name": "Estaciones",
+    "icon": "Radio",
+    "path": "/stations"
+  },
+  {
     "id": "inventario",
     "name": "Inventario",
     "icon": "Package",

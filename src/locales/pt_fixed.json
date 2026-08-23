@@ -362,7 +362,8 @@
     },
     "tipos-incidentes": "Tipos de incidentes",
     "tipos-licencias": "Tipos de licenças",
-    "title": "Configurações"
+    "title": "Configurações",
+    "estaciones": "Estações"
   },
   "settings": {
     "configuracion": {
@@ -4326,5 +4327,18 @@
     "pageOf": "Página {{page}} de {{total}} · {{count}} registros",
     "prev": "Anterior",
     "next": "Próximo"
+  },
+  "stations": {
+    "title": "Estações",
+    "subtitle": "Todas as suas estações, com seu cliente e vigilantes.",
+    "count": "{{n}} estação(ões)",
+    "searchPlaceholder": "Buscar por nominativo, posto ou cliente…",
+    "empty": {
+      "title": "Sem estações",
+      "description": "As estações são criadas dentro de cada posto."
+    },
+    "covered": "Com cobertura",
+    "uncovered": "Sem vigilantes",
+    "guardsLabel": "vigilante(s)"
   }
 }

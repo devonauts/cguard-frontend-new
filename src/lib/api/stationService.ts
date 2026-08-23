@@ -140,7 +140,29 @@ const getTenantId = (): string => {
   throw new Error('El usuario debe estar vinculado a una empresa para continuar.');
 };
 
+export interface StationCard {
+  id: string;
+  nickname: string | null;      // el «nominativo» — título de la tarjeta
+  stationName: string;
+  postSiteId: string | null;
+  postSiteName: string | null;
+  clientId: string | null;
+  clientName: string | null;
+  clientLogoUrl: string | null;
+  guardCount: number;
+}
+
 const stationService = {
+  /** Tarjetas de estación para la vista general (logo del cliente, nominativo, vigilantes). */
+  async getStationCards(): Promise<StationCard[]> {
+    const tenantId = getTenantId();
+    const { data } = await api.get<StationCard[] | { data?: StationCard[] }>(
+      `/tenant/${tenantId}/station/cards`,
+      { toast: { silentError: true } },
+    );
+    return Array.isArray(data) ? data : (data?.data ?? []);
+  },
+
   async list(filters: PostSiteFilters = {}, options: PaginationOptions = { limit: 25, offset: 0 }): Promise<PostSiteListResponse> {
     const tenantId = getTenantId();
     // Read-through cache shared by the ~10 pages that list post-sites/stations.

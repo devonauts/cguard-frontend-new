@@ -1,0 +1,89 @@
+/**
+ * Página de ESTACIONES — la vista general que pidió el dueño, como la de clientes
+ * pero por estación: tarjetas con el logo del cliente, el «nominativo» de título,
+ * el puesto y los vigilantes asignados. Para que una empresa de seguridad
+ * encuentre y abra una estación de un vistazo.
+ */
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { RadioTower } from "lucide-react";
+import AppLayout from "@/layouts/app-layout";
+import { usePageTitle } from "@/hooks/usePageTitle";
+import { PageContainer, PageHeader, Toolbar, SearchInput, IconTile } from "@/components/kit";
+import { stationService, type StationCard } from "@/lib/api/stationService";
+import StationCardsGrid from "./StationCardsGrid";
+
+/** Normaliza para búsqueda: sin acentos. */
+const sinAcentos = (v: string) => v.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+export default function StationsPage() {
+  const { t } = useTranslation();
+  usePageTitle(t("stations.title", { defaultValue: "Estaciones" }));
+  const navigate = useNavigate();
+
+  const [stations, setStations] = useState<StationCard[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState("");
+
+  useEffect(() => {
+    let alive = true;
+    setLoading(true);
+    stationService
+      .getStationCards()
+      .then((rows) => { if (alive) setStations(rows); })
+      .catch(() => { if (alive) setStations([]); })
+      .finally(() => { if (alive) setLoading(false); });
+    return () => { alive = false; };
+  }, []);
+
+  const filtered = useMemo(() => {
+    const q = sinAcentos(query.trim().toLowerCase());
+    if (!q) return stations;
+    return stations.filter((s) => {
+      const hay = sinAcentos(
+        `${s.nickname ?? ""} ${s.stationName ?? ""} ${s.clientName ?? ""} ${s.postSiteName ?? ""}`.toLowerCase(),
+      );
+      return hay.includes(q);
+    });
+  }, [stations, query]);
+
+  const openStation = (s: StationCard) => {
+    // El detalle vive bajo el puesto. Sin puesto, no hay ruta de detalle todavía.
+    if (s.postSiteId) navigate(`/post-sites/${s.postSiteId}/stations/${s.id}/overview`);
+  };
+
+  return (
+    <AppLayout>
+      <PageContainer width="wide">
+        <PageHeader
+          icon={<IconTile><RadioTower /></IconTile>}
+          title={t("stations.title", { defaultValue: "Estaciones" })}
+          subtitle={t("stations.subtitle", {
+            defaultValue: "Todas tus estaciones, con su cliente y sus vigilantes.",
+          })}
+          badges={
+            !loading ? (
+              <span className="text-sm" style={{ color: "var(--ink-soft)" }}>
+                {t("stations.count", { defaultValue: "{{n}} estación(es)", n: filtered.length })}
+              </span>
+            ) : undefined
+          }
+        />
+
+        <Toolbar>
+          <SearchInput
+            value={query}
+            onChange={setQuery}
+            placeholder={t("stations.searchPlaceholder", {
+              defaultValue: "Buscar por nominativo, puesto o cliente…",
+            })}
+            className="w-full sm:max-w-md"
+          />
+        </Toolbar>
+
+        <StationCardsGrid stations={filtered} loading={loading} onOpen={openStation} />
+      </PageContainer>
+    </AppLayout>
+  );
+}
