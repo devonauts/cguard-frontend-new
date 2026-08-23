@@ -68,7 +68,7 @@ const iconMap: Record<string, LucideIcon> = {
    NO se pierde: cae en el grupo «Otros». */
 type GroupDef = { id: string; label: string; icon: LucideIcon; ids: string[] };
 const GROUPS: GroupDef[] = [
-  { id: "resumen",   label: "Resumen",   icon: Gauge,      ids: ["panel", "actividad"] },
+  { id: "resumen",   label: "Resumen",   icon: Gauge,      ids: ["panel", "actividad", "estaciones"] },
   { id: "operacion", label: "Operación", icon: Siren,      ids: ["despachador", "monitoreo-alarmas", "videovigilancia", "patrulla", "radio", "inventario"] },
   { id: "personal",  label: "Personal",  icon: Users,      ids: ["equipo", "programador", "nomina", "tareas", "entrenamiento"] },
   { id: "clientes",  label: "Clientes",  icon: Briefcase,  ids: ["clientes", "solicitudes-clientes", "control-de-calidad", "mensajeria"] },
