@@ -99,7 +99,20 @@ export default function ClientsLayout({ navKey, title, children, client }: Props
     : (client?.name || client?.firstName)
       ? `${client?.name || client?.firstName}${(client?.lastName || client?.surname) ? ' ' + (client?.lastName || client?.surname) : ''}`
       : t(cfg?.title ?? title ?? 'clients.nav.title');
-  const logo = Array.isArray(client?.logoUrl) ? client.logoUrl[0]?.downloadUrl : null;
+  /**
+   * El logotipo llega en más de una forma: la ficha lo trae como lista de
+   * archivos, pero el tipo `Client` admite además una cadena (así lo devuelve
+   * `card-meta`, que alimenta las tarjetas del listado). Esto sólo leía la
+   * lista, y sólo su `downloadUrl`: con cualquier otra forma —una cadena, o un
+   * archivo con `publicUrl` pero sin firmar— no pintaba nada y sin decir por
+   * qué. Se resuelve como en la cabecera de sedes, que ya lo hacía bien.
+   */
+  const logo = (() => {
+    const cand: any = client?.logoUrl;
+    if (Array.isArray(cand)) return cand[0]?.downloadUrl || cand[0]?.publicUrl || null;
+    if (typeof cand === 'string') return cand || null;
+    return (cand && (cand.downloadUrl || cand.publicUrl)) || null;
+  })();
   const nm = String(displayName || '?');
 
   const risk = String(client?.riskLevel || '').toLowerCase();
@@ -209,7 +222,7 @@ export default function ClientsLayout({ navKey, title, children, client }: Props
           {client?.id && (
             <div className="flex shrink-0 flex-wrap items-center gap-2">
               <Button variant="outline" size="sm" onClick={() => navigate(`/clients/edit/${client.id}`)}><Pencil className="mr-1 h-4 w-4" /> {t('clients.editClient', 'Editar cliente')}</Button>
-              <Button variant="outline" size="sm" onClick={() => navigate('/post-sites/new')}><Plus className="mr-1 h-4 w-4" /> {t('clients.hero.newSite', 'Crear sede')}</Button>
+              <Button variant="outline" size="sm" onClick={() => navigate(`/post-sites/new?clientId=${client.id}`, { state: { clientName: displayName } })}><Plus className="mr-1 h-4 w-4" /> {t('clients.hero.newSite', 'Crear sede')}</Button>
               <Button variant="outline" size="sm" onClick={() => navigate('/dispatch-tickets/new')}><AlertTriangle className="mr-1 h-4 w-4" /> {t('clients.newIncident', 'Crear incidente')}</Button>
               <Button variant="brand" size="sm" onClick={() => navigate(`${base}/reports`)}><FileText className="mr-1 h-4 w-4" /> {t('clients.generateReport', 'Generar reporte')}</Button>
             </div>

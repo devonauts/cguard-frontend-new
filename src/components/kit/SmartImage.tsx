@@ -1,6 +1,10 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 
+/** `useLayoutEffect` avisa en un render de servidor; ahí `useEffect` basta. */
+const useIsomorphicLayoutEffect =
+  typeof window !== 'undefined' ? React.useLayoutEffect : React.useEffect;
+
 /**
  * ────────────────────────────────────────────────────────────────────────────
  * Imagen con carga elegante — el reemplazo de los `<img>` crudos.
@@ -49,11 +53,36 @@ export function SmartImage({
 } & Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src' | 'className' | 'style' | 'onClick'>) {
   const [loaded, setLoaded] = React.useState(false);
   const [errored, setErrored] = React.useState(false);
+  const imgRef = React.useRef<HTMLImageElement | null>(null);
 
-  // Si cambia la URL, se reinicia el estado (una lista que recicla nodos).
-  React.useEffect(() => {
+  /**
+   * Si cambia la URL, se reinicia el estado (una lista que recicla nodos) — y
+   * acto seguido se PREGUNTA AL DOM si la imagen ya está.
+   *
+   * Por qué hace falta preguntar: la única forma de volverse visible era el
+   * evento `load`. Una imagen que ya está en caché puede estar completa ANTES de
+   * que React monte el manejador, así que ese evento no llega nunca y el `<img>`
+   * se queda a opacidad 0 — un recuadro vacío donde debería estar el logotipo.
+   * No es hipotético: desde que las descargas se sirven con `Cache-Control:
+   * immutable` sobre una URL de token estable (2026-08-22), la SEGUNDA vista de
+   * cualquier imagen sale del disco y entra justo por ese hueco.
+   *
+   * `complete` con `naturalWidth > 0` = cargada de verdad; `complete` con ancho
+   * 0 y un `currentSrc` = intentó y falló (el `error` se perdió igual que el
+   * `load`), así que se enseña el respaldo en vez de un hueco.
+   *
+   * Es `useLayoutEffect` para que la corrección entre en el mismo fotograma y no
+   * se vea el parpadeo del esqueleto sobre algo que ya estaba en memoria.
+   */
+  useIsomorphicLayoutEffect(() => {
     setLoaded(false);
     setErrored(false);
+    const el = imgRef.current;
+    if (!el || !src) return;
+    if (el.complete) {
+      if (el.naturalWidth > 0) setLoaded(true);
+      else if (el.currentSrc) setErrored(true);
+    }
   }, [src]);
 
   const showFallback = !src || errored;
@@ -82,6 +111,7 @@ export function SmartImage({
         </span>
       ) : (
         <img
+          ref={imgRef}
           src={src as string}
           alt={alt}
           loading="lazy"
