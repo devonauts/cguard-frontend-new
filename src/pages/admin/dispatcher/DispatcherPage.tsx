@@ -1,6 +1,7 @@
 import { loadXlsx } from '../../../lib/lazyXlsx';
 import { useMemo, useState, useEffect, useRef, type MouseEvent as ReactMouseEvent } from "react";
 import { clientDisplayName } from '@/lib/clientName';
+import { getStoredTenantBranding } from '@/lib/tenantBranding';
 import { Link, useNavigate } from "react-router-dom";
 import AppLayout from "@/layouts/app-layout";
 import Breadcrumb from "@/components/ui/breadcrumb";
@@ -93,6 +94,13 @@ import type { DispatchRow, DirectoryOption, DispatchApiError } from "./types";
 // this would warrant true server-side pagination.)
 const DISPATCH_FETCH_LIMIT = 5000;
 
+
+/** Asunto por defecto del envío de despachos, con el nombre de LA empresa en sesión. */
+function asuntoPorDefecto(): string {
+  const empresa = getStoredTenantBranding().name;
+  return empresa ? `Despachos | ${empresa}` : 'Despachos';
+}
+
 export default function DispatcherPage() {
   const { t } = useTranslation();
   const resolveServerMessage = (msg: unknown) => {
@@ -147,9 +155,16 @@ export default function DispatcherPage() {
   // Send-email dialog state
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
   const [emailFormat, setEmailFormat] = useState<'pdf' | 'xlsx'>('pdf');
-  const [emailFrom, setEmailFrom] = useState('');
+  // El REMITENTE ya no lo elige el navegador: lo pone el servidor con la
+  // identidad de la empresa (nombre visible + dirección verificada). Lo que
+  // queda editable es a dónde van las RESPUESTAS, que sí se puede cambiar sin
+  // romper la autenticación del correo.
+  const [emailReplyTo, setEmailReplyTo] = useState('');
   const [emailTo, setEmailTo] = useState('');
-  const [emailSubject, setEmailSubject] = useState('Dispatcher Report | Seguridad BAS');
+  // El asunto por defecto llevaba pegado el nombre de OTRA empresa
+  // («Seguridad BAS»), así que cada tenant mandaba despachos rotulados con un
+  // cliente que no era el suyo. Sale del nombre real de la empresa en sesión.
+  const [emailSubject, setEmailSubject] = useState(() => asuntoPorDefecto());
   const [emailMessage, setEmailMessage] = useState('');
   const [sendingEmail, setSendingEmail] = useState(false);
 
@@ -955,12 +970,13 @@ export default function DispatcherPage() {
         toast.error(t('dispatcher.select_at_least_one_send'));
         return;
       }
-      // Optionally prefill from address from local storage or user info
-      const storedFrom = localStorage.getItem('userEmail') || localStorage.getItem('email') || '';
-      setEmailFrom(storedFrom);
+      // Se propone el correo del propio operador como «responder a»: quien
+      // conteste el despacho llega a quien lo mandó. Se puede borrar o cambiar.
+      const suyo = localStorage.getItem('userEmail') || localStorage.getItem('email') || '';
+      setEmailReplyTo(suyo);
       // default To empty
       setEmailTo('');
-      setEmailSubject('Dispatcher Report | Seguridad BAS');
+      setEmailSubject(asuntoPorDefecto());
       setEmailMessage('');
       setSendDialogOpen(true);
     };
@@ -985,7 +1001,7 @@ export default function DispatcherPage() {
             data: {
               ids: selectedIds,
               format: emailFormat,
-              from: emailFrom,
+              replyTo: emailReplyTo,
               to: toList,
               subject: emailSubject,
               message: emailMessage,
@@ -1706,8 +1722,8 @@ export default function DispatcherPage() {
               </div>
 
               <div>
-                <Label>Remitente</Label>
-                <Input value={emailFrom} onChange={(e) => setEmailFrom(e.target.value)} placeholder="remitente@empresa.com" />
+                <Label>Responder a (opcional)</Label>
+                <Input value={emailReplyTo} onChange={(e) => setEmailReplyTo(e.target.value)} placeholder="Por defecto, el correo de tu empresa" />
               </div>
 
               <div>
