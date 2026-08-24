@@ -72,7 +72,19 @@ export default function NominaRecords() {
   const [departmentId, setDepartmentId] = useState("");
   const [departments, setDepartments] = useState<Department[]>([]);
   const [period, setPeriod] = useState<Period>("week");
-  const [anchor, setAnchor] = useState<Date>(() => new Date());
+  // El aviso trae también `?date=<AAAA-MM-DD>`: el día del fichaje. Sin usarlo, la
+  // lista abría SIEMPRE la semana actual, y un enlace a una entrada de hace ocho
+  // días caía fuera del rango — la ficha no se abría nunca y el enlace parecía
+  // roto. Se ancla el periodo en ese día.
+  const [anchor, setAnchor] = useState<Date>(() => {
+    const d = searchParams.get("date");
+    if (d && /^\d{4}-\d{2}-\d{2}$/.test(d)) {
+      const [y, m, day] = d.split("-").map(Number);
+      const parsed = new Date(y, m - 1, day);
+      if (!isNaN(parsed.getTime())) return parsed;
+    }
+    return new Date();
+  });
   const [selected, setSelected] = useState<AttendanceRecord | null>(null);
   const [busy, setBusy] = useState(false);
 

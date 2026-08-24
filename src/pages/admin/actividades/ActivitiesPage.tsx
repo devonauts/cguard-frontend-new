@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   AlertTriangle, LogIn, LogOut, UserCheck, Route, CalendarClock, CalendarDays,
@@ -11,8 +12,9 @@ import Breadcrumb from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { PageContainer, PageHeader, StatusBadge, GlassPanel, IconTile, EmptyState, Toolbar, Segmented, SmartImage } from "@/components/kit";
 import api from "@/lib/api";
-import { fileUrlFromPrivate } from "@/lib/fileUrl";
+import { useFileUrl } from "@/lib/fileUrl";
 import { useNotificationStream } from "@/hooks/useNotificationStream";
+import { targetForNotification } from "@/components/notifications/notificationToast";
 
 /* ─────────────────────────────────────────────────────────────────────────
    The activity log is powered by the platform Events API:
@@ -33,6 +35,10 @@ interface ActivityEvent {
   createdAt: string;
   read: boolean;
   payload?: any;
+  /** La entidad que originó el evento (turno, incidente, tarea…). Es lo que
+   *  convierte una fila en un enlace: sin ella sólo se puede llegar a la lista. */
+  sourceEntityType?: string;
+  sourceEntityId?: string;
 }
 
 /**
@@ -63,6 +69,17 @@ function visualFor(eventType: string): { Icon: typeof ActivityIcon; tone: Tone; 
 
 const FILTERS: Category[] = ["incident", "checkin", "visitor", "patrol", "shift", "other"];
 
+/**
+ * El `payload` del evento llega como objeto por el canal en vivo (el servidor ya
+ * lo interpreta), pero la lista histórica lo devuelve tal cual sale de la base de
+ * datos y según el conector puede venir como texto. Si llega como texto,
+ * `payload.photoUrl` es `undefined` y la foto desaparece sin dar ni un error.
+ */
+function parsePayload(raw: any): any {
+  if (typeof raw !== "string") return raw;
+  try { return JSON.parse(raw); } catch { return undefined; }
+}
+
 export default function ActivitiesPage() {
   const { t, i18n } = useTranslation();
   const tenantId = localStorage.getItem("tenantId") || "";
@@ -77,6 +94,13 @@ export default function ActivitiesPage() {
   const [query, setQuery] = useState("");
   const [cat, setCat] = useState<Category | "all">("all");
   const [unreadOnly, setUnreadOnly] = useState(false);
+
+  const navigate = useNavigate();
+  // Un aviso cuyo destino es esta misma página llega como `/activities?focus=<id>`
+  // (el respaldo de targetForNotification). Sin leer el parámetro, ese enlace
+  // dejaba al usuario en lo alto de una lista de 50 filas buscando la suya.
+  const [searchParams] = useSearchParams();
+  const focusId = searchParams.get("focus");
 
   const load = useCallback(async () => {
     if (!tenantId) { setLoading(false); return; }
@@ -95,7 +119,9 @@ export default function ActivitiesPage() {
         body: e.body,
         createdAt: e.createdAt,
         read: e.deliveryStatus === "read",
-        payload: e.payload,
+        payload: parsePayload(e.payload),
+        sourceEntityType: e.sourceEntityType,
+        sourceEntityId: e.sourceEntityId,
       })));
     } catch {
       setError(true);
@@ -117,7 +143,9 @@ export default function ActivitiesPage() {
       body: n.body,
       createdAt: n.createdAt,
       read: !!n.read,
-      payload: (n as any).payload,
+      payload: parsePayload((n as any).payload),
+      sourceEntityType: n.sourceEntityType,
+      sourceEntityId: n.sourceEntityId,
     }));
     return Array.from(map.values()).sort(
       (a, b) => +new Date(b.createdAt) - +new Date(a.createdAt),
@@ -137,6 +165,32 @@ export default function ActivitiesPage() {
     setReadIds((s) => { const n = new Set(s); unread.forEach((id) => n.add(id)); return n; });
     unread.forEach((id) => persistRead(id));
   }, [events, isRead, persistRead]);
+
+  /**
+   * Una fila NO es un checkbox de «leído»: es el evento. Antes el clic sólo lo
+   * marcaba como leído y ahí terminaba — para ver la entrada de turno, el
+   * incidente o la ronda había que adivinar en qué pantalla vivía. Ahora lleva
+   * al mismo sitio al que lleva el aviso emergente y la campana, con el mismo
+   * mapa de destinos (`targetForNotification`), y de paso lo marca leído.
+   */
+  const openEvent = useCallback((e: ActivityEvent) => {
+    if (!isRead(e)) markRead(e.id);
+    const destino = targetForNotification({
+      id: e.id,
+      eventType: e.eventType,
+      title: e.title,
+      body: e.body || "",
+      payload: e.payload,
+      sourceEntityType: e.sourceEntityType,
+      sourceEntityId: e.sourceEntityId,
+      createdAt: e.createdAt,
+    });
+    // El respaldo de ese mapa es esta misma página: navegar a ella recargaría la
+    // lista para dejarte donde ya estás. En ese caso basta con quedarse y que el
+    // resaltado de `?focus=` haga su trabajo.
+    if (destino.startsWith("/activities")) return;
+    navigate(destino);
+  }, [isRead, markRead, navigate]);
 
   const unreadCount = useMemo(() => events.filter((e) => !isRead(e)).length, [events, isRead]);
 
@@ -314,56 +368,17 @@ export default function ActivitiesPage() {
                   >
                     {g.label}
                   </div>
-                  {g.items.map((e) => {
-                    const { Icon, tone } = visualFor(e.eventType);
-                    const read = isRead(e);
-                    // NOTE (token migration): inside a .map() callback, so the
-                    // useFileUrl hook can't be used (hooks rules), and the event
-                    // payload only carries a raw photoUrl privateUrl string (no
-                    // companion downloadUrl). Left on fileUrlFromPrivate as a
-                    // documented transitional fallback; when the backend adds a
-                    // token downloadUrl to the activity payload, switch to it.
-                    const photoUrl = fileUrlFromPrivate(e.payload?.photoUrl);
-                    return (
-                      <button
-                        key={e.id}
-                        onClick={() => !read && markRead(e.id)}
-                        className="cg-focus group flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-[var(--glass-sunken)]!"
-                        style={read ? undefined : { background: "var(--brand-wash)" }}
-                      >
-                        {/* punto de «sin leer» */}
-                        <span
-                          className="mt-1.5 h-2 w-2 shrink-0 rounded-full"
-                          style={read ? undefined : { background: "var(--brand)", boxShadow: "0 0 10px 0 var(--brand-glow)" }}
-                        />
-                        <IconTile tone={tone} size="sm" className="mt-0.5">
-                          <Icon />
-                        </IconTile>
-                        <div className="min-w-0 flex-1">
-                          <p
-                            className={["truncate text-sm", read ? "" : "font-semibold"].join(" ")}
-                            style={{ color: read ? "var(--ink-soft)" : "var(--ink)" }}
-                          >
-                            {e.title}
-                          </p>
-                          {e.body && <p className="mt-0.5 line-clamp-2 text-xs" style={{ color: "var(--ink-soft)" }}>{e.body}</p>}
-                          {photoUrl && (
-                            <SmartImage
-                              src={photoUrl}
-                              alt=""
-                              fit="cover"
-                              rounded="rounded-xl"
-                              className="mt-2 h-24 w-24"
-                              style={{ border: "1px solid var(--hairline)" }}
-                            />
-                          )}
-                        </div>
-                        <span className="shrink-0 text-[11px] tabular-nums" style={{ color: "var(--ink-faint)" }} title={absoluteTime(e.createdAt)}>
-                          {timeAgo(e.createdAt)}
-                        </span>
-                      </button>
-                    );
-                  })}
+                  {g.items.map((e) => (
+                    <ActivityRow
+                      key={e.id}
+                      event={e}
+                      read={isRead(e)}
+                      focused={e.id === focusId}
+                      onOpen={openEvent}
+                      timeAgo={timeAgo}
+                      absoluteTime={absoluteTime}
+                    />
+                  ))}
                 </div>
               ))}
             </div>
@@ -376,6 +391,90 @@ export default function ActivitiesPage() {
 }
 
 /* ── small presentational helpers ─────────────────────────────────────────── */
+
+/**
+ * Una fila del registro.
+ *
+ * Es un COMPONENTE, y no el JSX suelto dentro del `map()` que había antes, por
+ * la foto: el selfie del fichaje viaja en el evento como una `privateUrl` cruda,
+ * y desde el blindaje del IDOR el backend responde 403 a un
+ * `/file/download?privateUrl=…` sin sesión — que es exactamente lo que es un
+ * `<img>` del navegador, porque no lleva la cabecera de autorización. Resultado:
+ * el vigilante fichaba con foto y en Actividad no se veía nada. `useFileUrl`
+ * canjea esa ruta por un enlace con testigo firmado, pero es un hook y dentro de
+ * un `map()` no se puede llamar. De ahí el componente.
+ */
+function ActivityRow({
+  event: e,
+  read,
+  focused,
+  onOpen,
+  timeAgo,
+  absoluteTime,
+}: {
+  event: ActivityEvent;
+  read: boolean;
+  focused: boolean;
+  onOpen: (e: ActivityEvent) => void;
+  timeAgo: (iso: string) => string;
+  absoluteTime: (iso: string) => string;
+}) {
+  const { Icon, tone } = visualFor(e.eventType);
+  // Los eventos con foto la traen en `photoUrl` (fichaje, incidente, tarea,
+  // visita); el aviso al cliente la llama `selfieUrl`. Se aceptan las dos.
+  const photoUrl = useFileUrl(e.payload?.photoUrl || e.payload?.selfieUrl || "");
+
+  // Llegar desde un aviso a la fila correcta: se desplaza hasta ella al montar.
+  const ref = useRef<HTMLButtonElement | null>(null);
+  useEffect(() => {
+    if (focused && ref.current) {
+      ref.current.scrollIntoView({ block: "center", behavior: "smooth" });
+    }
+  }, [focused]);
+
+  return (
+    <button
+      ref={ref}
+      onClick={() => onOpen(e)}
+      className="cg-focus group flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-[var(--glass-sunken)]!"
+      style={{
+        ...(read ? {} : { background: "var(--brand-wash)" }),
+        ...(focused ? { boxShadow: "inset 0 0 0 2px var(--brand)" } : {}),
+      }}
+    >
+      {/* punto de «sin leer» */}
+      <span
+        className="mt-1.5 h-2 w-2 shrink-0 rounded-full"
+        style={read ? undefined : { background: "var(--brand)", boxShadow: "0 0 10px 0 var(--brand-glow)" }}
+      />
+      <IconTile tone={tone} size="sm" className="mt-0.5">
+        <Icon />
+      </IconTile>
+      <div className="min-w-0 flex-1">
+        <p
+          className={["truncate text-sm", read ? "" : "font-semibold"].join(" ")}
+          style={{ color: read ? "var(--ink-soft)" : "var(--ink)" }}
+        >
+          {e.title}
+        </p>
+        {e.body && <p className="mt-0.5 line-clamp-2 text-xs" style={{ color: "var(--ink-soft)" }}>{e.body}</p>}
+        {photoUrl && (
+          <SmartImage
+            src={photoUrl}
+            alt=""
+            fit="cover"
+            rounded="rounded-xl"
+            className="mt-2 h-24 w-24"
+            style={{ border: "1px solid var(--hairline)" }}
+          />
+        )}
+      </div>
+      <span className="shrink-0 text-[11px] tabular-nums" style={{ color: "var(--ink-faint)" }} title={absoluteTime(e.createdAt)}>
+        {timeAgo(e.createdAt)}
+      </span>
+    </button>
+  );
+}
 
 /* Conmutador de DOS estados (encendido/apagado), que no es lo mismo que elegir
    uno de varios: por eso no es `Segmented`. Las medidas sí son las suyas, para

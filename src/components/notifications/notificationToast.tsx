@@ -1,6 +1,6 @@
 import { toast } from 'sonner';
 import { LogIn, LogOut, AlertTriangle, Route, CalendarClock, UserCheck, Siren, Bell, X, MessageSquare, ClipboardList } from 'lucide-react';
-import { fileUrlFromPrivate } from '@/lib/fileUrl';
+import { useFileUrl } from '@/lib/fileUrl';
 import { SmartImage } from '@/components/kit';
 import type { PlatformNotification } from '@/hooks/useNotificationStream';
 
@@ -156,14 +156,6 @@ export function showNotificationToast(
 ) {
   const { Icon, tone } = iconFor(n.eventType);
   const { fill, ink } = TONE_INK[tone];
-  // NOTE (token migration): this is a plain imperative function (not a React
-  // component), so the `useFileUrl` hook can't be used here, and the live
-  // notification payload carries only a raw `photoUrl` privateUrl string (no
-  // companion `downloadUrl`). Left on `fileUrlFromPrivate` as a documented
-  // transitional fallback. If FILE_DOWNLOAD_REQUIRE_TOKEN is enabled, the
-  // backend should start emitting a token `downloadUrl` in the notification
-  // payload instead — switch to that field here when it's available.
-  const photoUrl = fileUrlFromPrivate(n.payload?.photoUrl);
   const target = targetForNotification(n);
 
   toast.custom(
@@ -177,23 +169,7 @@ export function showNotificationToast(
         }}
         className="glass-raised glass-hover flex w-[360px] max-w-[88vw] cursor-pointer items-start gap-3 p-3"
       >
-        <SmartImage
-          src={photoUrl}
-          alt=""
-          rounded="rounded-lg"
-          className="h-12 w-12 shrink-0 border border-[color:var(--hairline)]"
-          fallback={
-            <span
-              className="grid h-full w-full place-items-center"
-              style={{
-                background: `color-mix(in oklab, ${fill} 14%, transparent)`,
-                color: ink,
-              }}
-            >
-              <Icon size={20} />
-            </span>
-          }
-        />
+        <NotifPhoto n={n} fill={fill} ink={ink} Icon={Icon} />
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold leading-snug" style={{ color: 'var(--ink)' }}>{n.title}</p>
           {n.body && (
@@ -215,5 +191,47 @@ export function showNotificationToast(
       </div>
     ),
     { duration: 8000 },
+  );
+}
+
+/**
+ * La foto del aviso (el selfie del fichaje, la del incidente…).
+ *
+ * Va en un componente propio porque `showNotificationToast` es una función
+ * imperativa y `useFileUrl` es un hook. Y hace falta el hook: la notificación
+ * trae una `privateUrl` cruda, y un `<img>` pidiéndola sin sesión recibe un 403
+ * desde el blindaje del IDOR — se veía el aviso, pero nunca la cara. El hook la
+ * canjea por un enlace con testigo firmado; mientras tanto manda el icono.
+ */
+function NotifPhoto({
+  n,
+  fill,
+  ink,
+  Icon,
+}: {
+  n: PlatformNotification;
+  fill: string;
+  ink: string;
+  Icon: typeof Bell;
+}) {
+  const photoUrl = useFileUrl(n.payload?.photoUrl || n.payload?.selfieUrl || '');
+  return (
+    <SmartImage
+      src={photoUrl}
+      alt=""
+      rounded="rounded-lg"
+      className="h-12 w-12 shrink-0 border border-[color:var(--hairline)]"
+      fallback={
+        <span
+          className="grid h-full w-full place-items-center"
+          style={{
+            background: `color-mix(in oklab, ${fill} 14%, transparent)`,
+            color: ink,
+          }}
+        >
+          <Icon size={20} />
+        </span>
+      }
+    />
   );
 }
