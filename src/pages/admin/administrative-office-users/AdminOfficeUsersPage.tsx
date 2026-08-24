@@ -677,7 +677,7 @@ export default function AdminOfficeUsersPage() {
             {/* Menú superior (export/import) */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label="Más acciones">
+                <Button variant="ghost" size="icon" aria-label={t("ui.AdminOfficeUsers.masAcciones", "Más acciones")}>
                   <EllipsisVertical className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>

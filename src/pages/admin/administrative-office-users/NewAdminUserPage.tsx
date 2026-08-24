@@ -684,7 +684,7 @@ export default function NewAdminUserPage() {
           <form onSubmit={handleSubmit(onSubmit)} className="grid gap-6">
             {/* ── QUIÉN ES ─────────────────────────────────────────── */}
             <div>
-              <p className="cg-eyebrow mb-2">1 · Quién es</p>
+              <p className="cg-eyebrow mb-2">{t("ui.NewAdminUser.1QuienEs", "1 · Quién es")}</p>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <FormField
                   control={control}
@@ -721,7 +721,7 @@ export default function NewAdminUserPage() {
 
             {/* ── QUÉ PUEDE HACER ──────────────────────────────────── */}
             <div>
-              <p className="cg-eyebrow mb-2">2 · Qué puede hacer</p>
+              <p className="cg-eyebrow mb-2">{t("ui.NewAdminUser.2QuePuedeHacer", "2 · Qué puede hacer")}</p>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <FormField
                   control={control}
@@ -760,7 +760,7 @@ export default function NewAdminUserPage() {
 
             {/* ── QUÉ PUEDE VER ────────────────────────────────────── */}
             <div>
-              <p className="cg-eyebrow mb-2">3 · Qué puede ver</p>
+              <p className="cg-eyebrow mb-2">{t("ui.NewAdminUser.3QuePuedeVer", "3 · Qué puede ver")}</p>
 
               {veTodoPorRol ? (
                 /* Admin y Gerente de Operaciones ignoran el alcance por diseño
@@ -768,7 +768,7 @@ export default function NewAdminUserPage() {
                    al usuario que configurara algo que el servidor descarta. */
                 <div className="rounded-xl border px-4 py-3 text-sm"
                      style={{ borderColor: 'var(--hairline)', background: 'var(--float)' }}>
-                  Este rol ve <strong>toda la operación</strong> por definición: no se puede acotar.
+                  Este rol ve <strong>{t("ui.NewAdminUser.todaLaOperacion", "toda la operación")}</strong> por definición: no se puede acotar.
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -782,7 +782,7 @@ export default function NewAdminUserPage() {
                         background: !acotado ? 'color-mix(in oklab, var(--brand) 8%, transparent)' : 'transparent',
                       }}
                     >
-                      <span className="block text-sm font-semibold">Toda la operación</span>
+                      <span className="block text-sm font-semibold">{t("ui.NewAdminUser.todaLaOperacion2", "Toda la operación")}</span>
                       <span className="block text-xs" style={{ color: 'var(--ink-soft)' }}>
                         Ve todos los clientes y todas las sedes. Es lo normal para la oficina.
                       </span>

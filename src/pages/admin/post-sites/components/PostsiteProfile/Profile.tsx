@@ -542,7 +542,7 @@ export default function PostSiteProfile({ site }: { site?: any }) {
                                         <Clock size={15} className="mt-0.5 flex-shrink-0" style={{ color: 'var(--ink-faint)' }} />
                                         {station.nextShift ? (
                                             <div className="text-sm">
-                                                <span className="cg-eyebrow mb-0.5 block">Próximo turno</span>
+                                                <span className="cg-eyebrow mb-0.5 block">{t("ui.Profile.proximoTurno", "Próximo turno")}</span>
                                                 <span className="font-semibold">
                                                     {new Date(station.nextShift.startTime).toLocaleString('es', { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: getTenantTimezone() })}
                                                 </span>
@@ -554,7 +554,7 @@ export default function PostSiteProfile({ site }: { site?: any }) {
                                                 </span>
                                             </div>
                                         ) : (
-                                            <span className="text-sm" style={{ color: 'var(--ink-soft)' }}>Sin turnos programados en los próximos 7 días.</span>
+                                            <span className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t("ui.Profile.sinTurnosProgramadosEnLos", "Sin turnos programados en los próximos 7 días.")}</span>
                                         )}
                                     </div>
                                 )}

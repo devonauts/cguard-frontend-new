@@ -742,12 +742,12 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
                                     <Input value={form.name} onChange={(e) => setForm((s: any) => ({ ...s, name: e.target.value }))} />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium mb-1">Teléfono fijo</label>
+                                    <label className="block text-sm font-medium mb-1">{t("ui.TenantJoinModal.telefonoFijo", "Teléfono fijo")}</label>
                                     <PhoneInput
                                         value={form.landline}
                                         onChange={(v) => setForm((s: any) => ({ ...s, landline: v }))}
                                         onCountryChange={(c: any) => setLandlineCountry(c?.code || c?.name || '')}
-                                        placeholder="Número fijo"
+                                        placeholder={t("ui.TenantJoinModal.numeroFijo", "Número fijo")}
                                     />
                                     {landlineError && <div className="text-xs mt-1" style={{ color: "var(--bad-text)" }}>{landlineError}</div>}
                                 </div>
@@ -757,7 +757,7 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
                                         value={form.phone}
                                         onChange={(v) => setForm((s: any) => ({ ...s, phone: v }))}
                                         onCountryChange={(c: any) => setForm((s: any) => ({ ...s, phoneCountry: c?.code || c?.name || '' }))}
-                                        placeholder="Número móvil"
+                                        placeholder={t("ui.TenantJoinModal.numeroMovil", "Número móvil")}
                                     />
                                     {phoneError && <p className="text-sm mt-1" style={{ color: "var(--bad-text)" }}>{phoneError}</p>}
                                 </div>
@@ -836,7 +836,7 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
                                             initialLat={form.latitude && form.latitude !== '' ? parseFloat(form.latitude) : undefined}
                                             initialLng={form.longitude && form.longitude !== '' ? parseFloat(form.longitude) : undefined}
                                             openWithQuery={autocompleteOpenQuery}
-                                            placeholder="Buscar dirección..."
+                                            placeholder={t("ui.TenantJoinModal.buscarDireccion", "Buscar dirección...")}
                                             onAddressSelect={(data: AddressComponents) => {
                                                 // Si la dirección sugerida es la de Madrid, no la pongas automáticamente
                                                 const forbidden = 'reloj de la puerta del sol, 7, puerta del sol, barrio delos austrias, sol, centro, madrid, comunidad de madrid, 28013, españa';
@@ -870,8 +870,8 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
 
                                 {!showAddressAutocomplete && (
                                     <div>
-                                        <label className="text-sm">Dirección<span className="ml-1" style={{ color: "var(--bad-text)" }}>*</span></label>
-                                        <Input value={form.address} onChange={(e) => setForm((s: any) => ({ ...s, address: e.target.value }))} placeholder="Ingrese la dirección completa" />
+                                        <label className="text-sm">{t("ui.TenantJoinModal.direccion", "Dirección")}<span className="ml-1" style={{ color: "var(--bad-text)" }}>*</span></label>
+                                        <Input value={form.address} onChange={(e) => setForm((s: any) => ({ ...s, address: e.target.value }))} placeholder={t("ui.TenantJoinModal.ingreseLaDireccionCompleta", "Ingrese la dirección completa")} />
                                     </div>
                                 )}
 
@@ -879,11 +879,11 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="text-sm">Dirección Complementaria</label>
+                                        <label className="text-sm">{t("ui.TenantJoinModal.direccionComplementaria", "Dirección Complementaria")}</label>
                                         <Input value={form.addressLine2} onChange={(e) => setForm((s: any) => ({ ...s, addressLine2: e.target.value }))} disabled={false} />
                                     </div>
                                     <div>
-                                        <label className="text-sm">Código Postal</label>
+                                        <label className="text-sm">{t("ui.TenantJoinModal.codigoPostal", "Código Postal")}</label>
                                         <Input value={form.postalCode} onChange={(e) => setForm((s: any) => ({ ...s, postalCode: e.target.value }))} disabled={showAddressAutocomplete} />
                                     </div>
                                 </div>
@@ -894,7 +894,7 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
                                         <Input value={form.city} onChange={(e) => setForm((s: any) => ({ ...s, city: e.target.value }))} disabled={showAddressAutocomplete} />
                                     </div>
                                     <div>
-                                        <label className="text-sm">País</label>
+                                        <label className="text-sm">{t("ui.TenantJoinModal.pais", "País")}</label>
                                         <Input value={form.country} onChange={(e) => setForm((s: any) => ({ ...s, country: e.target.value }))} disabled={showAddressAutocomplete} />
                                     </div>
                                 </div>

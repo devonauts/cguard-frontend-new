@@ -628,15 +628,15 @@ export default function GuardRegistration() {
             <div className="flex items-start gap-3 rounded-xl border border-border bg-muted/30 p-3.5">
               <Clock className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
               <div>
-                <p className="text-sm font-semibold text-foreground">Espera la confirmación</p>
-                <p className="text-xs text-muted-foreground">Tu empresa activará tu cuenta y te asignará a un puesto.</p>
+                <p className="text-sm font-semibold text-foreground">{t("ui.registration.esperaLaConfirmacion", "Espera la confirmación")}</p>
+                <p className="text-xs text-muted-foreground">{t("ui.registration.tuEmpresaActivaraTuCuenta", "Tu empresa activará tu cuenta y te asignará a un puesto.")}</p>
               </div>
             </div>
             <div className="flex items-start gap-3 rounded-xl border border-border bg-muted/30 p-3.5">
               <Smartphone className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
               <div>
                 <p className="text-sm font-semibold text-foreground">Descarga la app de vigilante</p>
-                <p className="text-xs text-muted-foreground">Google Play · App Store. Inicia sesión cuando tu cuenta esté activa.</p>
+                <p className="text-xs text-muted-foreground">{t("ui.registration.googlePlayAppStoreInicia", "Google Play · App Store. Inicia sesión cuando tu cuenta esté activa.")}</p>
               </div>
             </div>
           </div>
@@ -689,8 +689,8 @@ export default function GuardRegistration() {
               {errors.lastName && <div className="mt-1 text-sm" style={{ color: 'var(--bad-text)' }}>{errors.lastName}</div>}
             </div>
             <div className="md:col-span-2">
-              <label className={labelClass}>Correo electrónico<span style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
-              <Input className={formControl} style={errorStyle('email')} type="email" value={email} onChange={(e: any) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: undefined })); }} placeholder="Correo electrónico*" disabled={isLoading || lockedEmail} />
+              <label className={labelClass}>{t("ui.registration.correoElectronico", "Correo electrónico")}<span style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
+              <Input className={formControl} style={errorStyle('email')} type="email" value={email} onChange={(e: any) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: undefined })); }} placeholder={t("ui.registration.correoElectronico2", "Correo electrónico*")} disabled={isLoading || lockedEmail} />
               {errors.email && <div className="mt-1 text-sm" style={{ color: 'var(--bad-text)' }}>{errors.email}</div>}
             </div>
           </div>
@@ -713,7 +713,7 @@ export default function GuardRegistration() {
               <Input className={formControl} style={errorStyle('birthPlace')} value={birthPlace} onChange={(e: any) => setBirthPlace(e.target.value)} placeholder="Lugar de nacimiento" disabled={isLoading} />
             </div>
             <div>
-              <label className={labelClass}>Género<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
+              <label className={labelClass}>{t("ui.registration.genero", "Género")}<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
               <select value={gender} onChange={(e) => setGender(e.target.value)} className={formControl} style={errorStyle('gender')} disabled={isLoading}>
                 <option value="">Seleccione</option>
                 <option value="Masculino">Masculino</option>
@@ -731,7 +731,7 @@ export default function GuardRegistration() {
               </select>
             </div>
             <div>
-              <label className={labelClass}>Formación académica<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
+              <label className={labelClass}>{t("ui.registration.formacionAcademica", "Formación académica")}<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
               <select value={academicInstruction} onChange={(e) => setAcademicInstruction(e.target.value)} className={formControl} style={errorStyle('academicInstruction')} disabled={isLoading}>
                 <option value="">Seleccione</option>
                 <option>Primaria</option>
@@ -745,11 +745,11 @@ export default function GuardRegistration() {
         {step === 3 && (
           <div className="grid grid-cols-1 gap-x-4 gap-y-4 md:grid-cols-2">
             <div>
-              <label className={labelClass}>Fecha de contratación<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
+              <label className={labelClass}>{t("ui.registration.fechaDeContratacion", "Fecha de contratación")}<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
               <Input className={formControl} style={errorStyle('hiringContractDate')} type="date" value={hiringContractDate} onChange={(e: any) => setHiringContractDate(e.target.value)} disabled={isLoading} />
             </div>
             <div>
-              <label className={labelClass}>Grupo sanguíneo<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
+              <label className={labelClass}>{t("ui.registration.grupoSanguineo", "Grupo sanguíneo")}<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
               <select value={bloodType} onChange={(e) => setBloodType(e.target.value)} className={formControl} style={errorStyle('bloodType')} disabled={isLoading}>
                 <option value="">Seleccione</option>
                 <option>O+</option><option>O-</option>
@@ -763,7 +763,7 @@ export default function GuardRegistration() {
               <Input className={formControl} style={errorStyle('guardCredentials')} value={guardCredentials} onChange={(e: any) => setGuardCredentials(e.target.value)} placeholder="Credenciales" disabled={isLoading} />
             </div>
             <div>
-              <label className={labelClass}>Teléfono móvil<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
+              <label className={labelClass}>{t("ui.registration.telefonoMovil", "Teléfono móvil")}<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
               <PhoneInput
                 value={phone || ""}
                 onChange={(val: string) => setPhone(val)}
@@ -773,16 +773,16 @@ export default function GuardRegistration() {
             </div>
 
             <div className="md:col-span-2">
-              <label className={labelClass}>Dirección<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
-              <textarea value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Dirección" className={textareaControl} style={errorStyle('address')} disabled={isLoading} />
+              <label className={labelClass}>{t("ui.registration.direccion", "Dirección")}<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
+              <textarea value={address} onChange={(e) => setAddress(e.target.value)} placeholder={t("ui.registration.direccion2", "Dirección")} className={textareaControl} style={errorStyle('address')} disabled={isLoading} />
             </div>
 
             <div>
-              <label className={labelClass}>Contraseña<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
+              <label className={labelClass}>{t("ui.registration.contrasena", "Contraseña")}<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
               <div className="relative">
                 <input
                   type={showPwd ? "text" : "password"}
-                  placeholder="Contraseña*"
+                  placeholder={t("ui.registration.contrasena2", "Contraseña*")}
                   value={password}
                   onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: undefined })); }}
                   disabled={isLoading}
@@ -794,12 +794,12 @@ export default function GuardRegistration() {
             </div>
 
             <div>
-              <label htmlFor="confirm-password" className={labelClass}>Confirmar contraseña<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
+              <label htmlFor="confirm-password" className={labelClass}>{t("ui.registration.confirmarContrasena", "Confirmar contraseña")}<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
               <div className="relative">
                 <input
                   id="confirm-password"
                   type={showConfirm ? "text" : "password"}
-                  placeholder="Confirmar contraseña*"
+                  placeholder={t("ui.registration.confirmarContrasena2", "Confirmar contraseña*")}
                   value={confirm}
                   onChange={(e) => { setConfirm(e.target.value); setErrors((p) => ({ ...p, confirm: undefined })); }}
                   disabled={isLoading}

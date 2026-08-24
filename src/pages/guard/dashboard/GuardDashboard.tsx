@@ -188,7 +188,7 @@ export default function GuardDashboard() {
           </div>
         ) : nextShift ? (
           <div className="rounded-xl border p-3.5" style={{ borderColor: 'color-mix(in oklab, var(--info) 34%, transparent)', background: 'color-mix(in oklab, var(--info) 10%, transparent)' }}>
-            <StatusBadge tone="blue">Próximo turno</StatusBadge>
+            <StatusBadge tone="blue">{t("ui.GuardDashboard.proximoTurno", "Próximo turno")}</StatusBadge>
             <p className="mt-2 text-sm font-semibold text-foreground">{nextShift.station?.stationName || '-'}</p>
             <p className="text-xs text-muted-foreground">{fmtTime(nextShift.startTime)} — {fmtTime(nextShift.endTime)}</p>
           </div>

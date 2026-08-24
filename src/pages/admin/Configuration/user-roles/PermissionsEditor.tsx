@@ -45,7 +45,7 @@ const ESTADOS = {
 export default function PermissionsEditor({ value, onChange, query = "", readOnly = false, lockedPermissions = [] }: Props) {
   // Re-render (and re-filter) when the chosen language changes: labels come
   // from locale-aware helpers, not static maps.
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const lang = i18n.language;
   const lockedSet = React.useMemo(() => new Set(lockedPermissions), [lockedPermissions]);
   const isLocked = (p: string) => lockedSet.has(p);
@@ -90,7 +90,7 @@ export default function PermissionsEditor({ value, onChange, query = "", readOnl
           }}
         >
           <Lock className="mt-0.5 h-4 w-4 shrink-0" />
-          <span>Este rol está bloqueado. No se pueden modificar los permisos predeterminados.</span>
+          <span>{t("ui.PermissionsEditor.esteRolEstaBloqueadoNo", "Este rol está bloqueado. No se pueden modificar los permisos predeterminados.")}</span>
         </div>
       )}
 

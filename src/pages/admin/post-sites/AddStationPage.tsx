@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { ChevronLeft, Loader2, Sun, Moon, Clock, SlidersHorizontal, ShieldPlus } from 'lucide-react';
 import PostSiteLayout from '@/layouts/PostSiteLayout';
 import { postSiteService, setTenantId as setGlobalTenantId } from '@/lib/api/postSiteService';
+import OperationSetupAlert from './components/OperationSetup/OperationSetupAlert';
 import { ApiService } from '@/services/api/apiService';
 import { Button } from '@/components/ui/button';
 import StationGeofencePolygon, { type PolyPoint } from '@/components/GoogleMap/StationGeofencePolygon';
@@ -301,6 +302,12 @@ export default function AddStationPage() {
           subtitle={t('postSites.stations.createSubtitle', 'Define el turno, horario y la geocerca del puesto.')}
         />
 
+        {/* Aquí es donde el hueco hace daño: se está creando un puesto sobre una
+            sede que no dice qué servicio presta. AVISA y deja seguir — hay
+            operaciones vivas montadas sobre sedes sin configurar, y un candado
+            las pararía hoy por una regla que llega tarde. */}
+        <OperationSetupAlert site={site} siteId={id} context="station" className="mb-4" />
+
         {loadingSite && !site ? (
           <div className="flex items-center justify-center py-16">
             <Loader2 className="h-6 w-6 animate-spin" style={{ color: 'var(--brand-text)' }} />
@@ -442,7 +449,7 @@ export default function AddStationPage() {
                     : { background: 'color-mix(in oklab, var(--bad) 12%, transparent)', color: 'var(--bad-text)' }}
                 >
                   {alternateOk
-                    ? <>Patrón <strong>{rotWork}-{rotCycle - rotWork}</strong>: cada bloque lo comparten <strong>{guardsPerBlock} fijos alternando</strong> (uno trabaja mientras el otro descansa) — <strong>sin sacafranco</strong>. Total: {requiredGuards} fijo{requiredGuards > 1 ? 's' : ''}.</>
+                    ? <>{t("ui.AddStation.patron", "Patrón")}{" "}<strong>{rotWork}-{rotCycle - rotWork}</strong>: cada bloque lo comparten <strong>{guardsPerBlock} fijos alternando</strong> (uno trabaja mientras el otro descansa) — <strong>sin sacafranco</strong>. Total: {requiredGuards} fijo{requiredGuards > 1 ? 's' : ''}.</>
                     : <>El patrón {rotWork}-{rotCycle - rotWork} no permite alternancia exacta: el ciclo ({rotCycle}) debe ser múltiplo de los días de trabajo ({rotWork}). Usa 1-1, 2-2, 3-3…</>}
                 </p>
               )}

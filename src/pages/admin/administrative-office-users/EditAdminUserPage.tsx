@@ -573,7 +573,7 @@ export default function EditAdminUserPage() {
 
             {/* ── QUÉ PUEDE HACER ──────────────────────────────────── */}
             <div>
-              <p className="cg-eyebrow mb-2">Qué puede hacer</p>
+              <p className="cg-eyebrow mb-2">{t("ui.EditAdminUser.quePuedeHacer", "Qué puede hacer")}</p>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <FormField
                   control={control}
@@ -609,11 +609,11 @@ export default function EditAdminUserPage() {
 
             {/* ── QUÉ PUEDE VER ────────────────────────────────────── */}
             <div>
-              <p className="cg-eyebrow mb-2">Qué puede ver</p>
+              <p className="cg-eyebrow mb-2">{t("ui.EditAdminUser.quePuedeVer", "Qué puede ver")}</p>
               {veTodoPorRol ? (
                 <div className="rounded-xl border px-4 py-3 text-sm"
                      style={{ borderColor: 'var(--hairline)', background: 'var(--float)' }}>
-                  Este rol ve <strong>toda la operación</strong> por definición: no se puede acotar.
+                  Este rol ve <strong>{t("ui.EditAdminUser.todaLaOperacion", "toda la operación")}</strong> por definición: no se puede acotar.
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -627,7 +627,7 @@ export default function EditAdminUserPage() {
                         background: !acotado ? 'color-mix(in oklab, var(--brand) 8%, transparent)' : 'transparent',
                       }}
                     >
-                      <span className="block text-sm font-semibold">Toda la operación</span>
+                      <span className="block text-sm font-semibold">{t("ui.EditAdminUser.todaLaOperacion2", "Toda la operación")}</span>
                       <span className="block text-xs" style={{ color: 'var(--ink-soft)' }}>
                         Todos los clientes y todas las sedes.
                       </span>
@@ -765,7 +765,7 @@ export default function EditAdminUserPage() {
                   <div className="flex items-center gap-3 min-w-0">
                     <IconTile size="sm"><MapPin /></IconTile>
                     <div className="min-w-0">
-                      <div className="text-sm font-semibold">Ubicación de oficina (asistencia)</div>
+                      <div className="text-sm font-semibold">{t("ui.EditAdminUser.ubicacionDeOficinaAsistencia", "Ubicación de oficina (asistencia)")}</div>
                       <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>
                         Opcional. Si la defines, el reloj de asistencia valida que el usuario marque desde su oficina.
                       </div>
@@ -776,7 +776,7 @@ export default function EditAdminUserPage() {
                 {officeOpen && (
                   <div className="mt-4 space-y-3">
                     <div>
-                      <label className="cg-eyebrow">Dirección (referencia)</label>
+                      <label className="cg-eyebrow">{t("ui.EditAdminUser.direccionReferencia", "Dirección (referencia)")}</label>
                       <Input value={office.address} onChange={(e) => setOffice((o) => ({ ...o, address: e.target.value }))} placeholder="Ej. Oficina central, Av. Amazonas 123" />
                     </div>
                     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -794,7 +794,7 @@ export default function EditAdminUserPage() {
                       </div>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <Button type="button" variant="outline" size="sm" onClick={useCurrentLocationAsOffice}>Usar mi ubicación actual</Button>
+                      <Button type="button" variant="outline" size="sm" onClick={useCurrentLocationAsOffice}>{t("ui.EditAdminUser.usarMiUbicacionActual", "Usar mi ubicación actual")}</Button>
                       <Button type="button" variant="brand" size="sm" disabled={officeSaving} onClick={() => saveOfficeLocation(false)}>
                         {officeSaving ? "Guardando..." : "Guardar ubicación"}
                       </Button>

@@ -1279,11 +1279,11 @@ export default function ClientesPage() {
                         color: 'var(--warn-text)',
                       }}
                     >
-                      <p className="font-medium">¿Cómo funciona?</p>
+                      <p className="font-medium">{t("ui.Clients.comoFunciona", "¿Cómo funciona?")}</p>
                       <ul className="list-disc list-inside space-y-0.5">
                         <li>El cliente recibe un correo con un enlace de acceso</li>
-                        <li>Hace clic en el enlace y establece su contraseña</li>
-                        <li>Inicia sesión en la app con su correo y contraseña</li>
+                        <li>{t("ui.Clients.haceClicEnElEnlace", "Hace clic en el enlace y establece su contraseña")}</li>
+                        <li>{t("ui.Clients.iniciaSesionEnLaApp", "Inicia sesión en la app con su correo y contraseña")}</li>
                       </ul>
                     </div>
                   </>
@@ -1296,8 +1296,8 @@ export default function ClientesPage() {
                       color: 'var(--bad-text)',
                     }}
                   >
-                    <p className="font-medium">Este cliente no tiene correo electrónico configurado.</p>
-                    <p className="mt-1">Edita el cliente, agrega un correo electrónico y vuelve a intentarlo.</p>
+                    <p className="font-medium">{t("ui.Clients.esteClienteNoTieneCorreo", "Este cliente no tiene correo electrónico configurado.")}</p>
+                    <p className="mt-1">{t("ui.Clients.editaElClienteAgregaUn", "Edita el cliente, agrega un correo electrónico y vuelve a intentarlo.")}</p>
                   </div>
                 )}
               </div>
@@ -1365,11 +1365,11 @@ export default function ClientesPage() {
                         color: 'var(--info-text)',
                       }}
                     >
-                      <p className="font-medium">¿Qué incluye?</p>
+                      <p className="font-medium">{t("ui.Clients.queIncluye", "¿Qué incluye?")}</p>
                       <ul className="list-disc list-inside space-y-0.5">
-                        <li>Presentación de la app Mi Seguridad</li>
+                        <li>{t("ui.Clients.presentacionDeLaAppMi", "Presentación de la app Mi Seguridad")}</li>
                         <li>Enlaces a Google Play y App Store</li>
-                        <li>Enlace para activar su cuenta y crear contraseña</li>
+                        <li>{t("ui.Clients.enlaceParaActivarSuCuenta", "Enlace para activar su cuenta y crear contraseña")}</li>
                       </ul>
                     </div>
                   </>

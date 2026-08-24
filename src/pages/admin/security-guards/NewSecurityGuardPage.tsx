@@ -570,7 +570,7 @@ export default function NewSecurityGuardPage() {
                 <form className="mt-6 space-y-6" onSubmit={submitCreate(onSubmitCreate)}>
 
                   {/* ── Section 1: Personal Information ─────────────────────── */}
-                  <Section title="Información Personal" icon={<User />}>
+                  <Section title={t("ui.NewSecurityGuard.informacionPersonal", "Información Personal")} icon={<User />}>
 
                     {/* Profile photo centred at top */}
                     <div className="mb-6 flex justify-center">
@@ -599,7 +599,7 @@ export default function NewSecurityGuardPage() {
                       <FormField control={createCtrl} name="lastName" render={({ field }) => (
                         <FormItem>
                           <FormLabel>Apellidos <span className="text-destructive">*</span></FormLabel>
-                          <FormControl><Input placeholder="Ej. García López" {...field} /></FormControl>
+                          <FormControl><Input placeholder={t("ui.NewSecurityGuard.ejGarciaLopez", "Ej. García López")} {...field} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )} />
@@ -608,11 +608,11 @@ export default function NewSecurityGuardPage() {
                     <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
                       <FormField control={createCtrl} name="gender" render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Género <span className="text-destructive">*</span></FormLabel>
+                          <FormLabel>{t("ui.NewSecurityGuard.genero", "Género")}{" "}<span className="text-destructive">*</span></FormLabel>
                           <Select onValueChange={field.onChange} value={field.value ?? ""}>
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="Seleccionar género" />
+                                <SelectValue placeholder={t("ui.NewSecurityGuard.seleccionarGenero", "Seleccionar género")} />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -679,11 +679,11 @@ export default function NewSecurityGuardPage() {
                       )} />
                       <FormField control={createCtrl} name="academicInstruction" render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Instrucción Académica <span className="text-destructive">*</span></FormLabel>
+                          <FormLabel>{t("ui.NewSecurityGuard.instruccionAcademica", "Instrucción Académica")}{" "}<span className="text-destructive">*</span></FormLabel>
                           <Select onValueChange={field.onChange} value={field.value ?? ""}>
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="Seleccionar nivel académico" />
+                                <SelectValue placeholder={t("ui.NewSecurityGuard.seleccionarNivelAcademico", "Seleccionar nivel académico")} />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -704,14 +704,14 @@ export default function NewSecurityGuardPage() {
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                       <FormField control={createCtrl} name="email" render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Correo Electrónico <span className="text-destructive">*</span></FormLabel>
+                          <FormLabel>{t("ui.NewSecurityGuard.correoElectronico", "Correo Electrónico")}{" "}<span className="text-destructive">*</span></FormLabel>
                           <FormControl><Input type="email" placeholder="vigilante@ejemplo.com" {...field} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )} />
                       <FormField control={createCtrl} name="phone" render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Teléfono / Celular</FormLabel>
+                          <FormLabel>{t("ui.NewSecurityGuard.telefonoCelular", "Teléfono / Celular")}</FormLabel>
                           <FormControl>
                             <PhoneInput
                               value={field.value || ""}
@@ -737,10 +737,10 @@ export default function NewSecurityGuardPage() {
                                 setCreateValue("homeAddressLng", result.longitude ?? undefined);
                               }}
                               showMap={true}
-                              placeholder="Buscar dirección del vigilante..."
+                              placeholder={t("ui.NewSecurityGuard.buscarDireccionDelVigilante", "Buscar dirección del vigilante...")}
                             />
                           </FormControl>
-                          <FormDescription>Indique la ubicación exacta moviendo el pin en el mapa.</FormDescription>
+                          <FormDescription>{t("ui.NewSecurityGuard.indiqueLaUbicacionExactaMoviendo", "Indique la ubicación exacta moviendo el pin en el mapa.")}</FormDescription>
                           <FormMessage />
                         </FormItem>
                       )} />
@@ -748,13 +748,13 @@ export default function NewSecurityGuardPage() {
                   </Section>
 
                   {/* ── Section 3: Identification ─────────────────────────────── */}
-                  <Section title="Identificación y Contrato" icon={<FileCheck />}>
+                  <Section title={t("ui.NewSecurityGuard.identificacionYContrato", "Identificación y Contrato")} icon={<FileCheck />}>
 
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                       <FormField control={createCtrl} name="identificationNumber" render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Número de Identificación <span className="text-destructive">*</span></FormLabel>
-                          <FormControl><Input placeholder="DUI, Cédula, Pasaporte…" {...field} /></FormControl>
+                          <FormLabel>{t("ui.NewSecurityGuard.numeroDeIdentificacion", "Número de Identificación")}{" "}<span className="text-destructive">*</span></FormLabel>
+                          <FormControl><Input placeholder={t("ui.NewSecurityGuard.duiCedulaPasaporte", "DUI, Cédula, Pasaporte…")} {...field} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )} />
@@ -772,7 +772,7 @@ export default function NewSecurityGuardPage() {
                     <div className="mt-4 grid grid-cols-1 gap-6 md:grid-cols-2">
                       <FormField control={createCtrl} name="hiringContractDate" render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Fecha de Contratación</FormLabel>
+                          <FormLabel>{t("ui.NewSecurityGuard.fechaDeContratacion", "Fecha de Contratación")}</FormLabel>
                           <FormControl><Input type="date" {...field} /></FormControl>
                           <FormMessage />
                         </FormItem>
@@ -780,7 +780,7 @@ export default function NewSecurityGuardPage() {
                       <FormField control={createCtrl} name="guardCredentials" render={({ field }) => (
                         <FormItem>
                           <FormLabel>Credenciales / Licencias</FormLabel>
-                          <FormControl><Input placeholder="Ej. Licencia Armas, Certificación AFIS…" {...field} /></FormControl>
+                          <FormControl><Input placeholder={t("ui.NewSecurityGuard.ejLicenciaArmasCertificacionAfis", "Ej. Licencia Armas, Certificación AFIS…")} {...field} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )} />

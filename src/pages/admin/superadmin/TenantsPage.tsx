@@ -288,7 +288,7 @@ export default function TenantsPage() {
 
                           {v.settings && Object.keys(v.settings || {}).length > 0 && (
                             <div className="sm:col-span-2">
-                              <div className="w-40 text-xs text-muted-foreground">Configuración</div>
+                              <div className="w-40 text-xs text-muted-foreground">{t("ui.Tenants.configuracion", "Configuración")}</div>
                               <pre className="mt-2 p-2 bg-muted/30 rounded text-xs overflow-auto">{JSON.stringify(v.settings, null, 2)}</pre>
                             </div>
                           )}

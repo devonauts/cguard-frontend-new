@@ -7017,5 +7017,198 @@
     "business_max": "El nombre de la empresa es demasiado largo",
     "name_length": "El nombre debe tener al menos 2 caracteres",
     "required_fields": "Completa los campos obligatorios"
+  },
+  "ui": {
+    "AddStation": {
+      "patron": "Patrón"
+    },
+    "AdminOfficeUsers": {
+      "masAcciones": "Más acciones"
+    },
+    "ChangePasswordForm": {
+      "mostrarContrasena": "Mostrar contraseña"
+    },
+    "ClientForm": {
+      "sinPersonasAdicionalesSoloEl": "Sin personas adicionales. Solo el contacto principal tendrá acceso."
+    },
+    "Clients": {
+      "comoFunciona": "¿Cómo funciona?",
+      "editaElClienteAgregaUn": "Edita el cliente, agrega un correo electrónico y vuelve a intentarlo.",
+      "enlaceParaActivarSuCuenta": "Enlace para activar su cuenta y crear contraseña",
+      "esteClienteNoTieneCorreo": "Este cliente no tiene correo electrónico configurado.",
+      "haceClicEnElEnlace": "Hace clic en el enlace y establece su contraseña",
+      "iniciaSesionEnLaApp": "Inicia sesión en la app con su correo y contraseña",
+      "presentacionDeLaAppMi": "Presentación de la app Mi Seguridad",
+      "queIncluye": "¿Qué incluye?"
+    },
+    "DispatchDetails": {
+      "noHayComentariosAun": "No hay comentarios aún"
+    },
+    "Dispatcher": {
+      "7Dias": "7 días",
+      "confirmarEliminacion": "Confirmar eliminación",
+      "masAcciones": "Más acciones"
+    },
+    "EditAdminUser": {
+      "direccionReferencia": "Dirección (referencia)",
+      "quePuedeHacer": "Qué puede hacer",
+      "quePuedeVer": "Qué puede ver",
+      "todaLaOperacion": "toda la operación",
+      "todaLaOperacion2": "Toda la operación",
+      "ubicacionDeOficinaAsistencia": "Ubicación de oficina (asistencia)",
+      "usarMiUbicacionActual": "Usar mi ubicación actual"
+    },
+    "GuardDashboard": {
+      "proximoTurno": "Próximo turno"
+    },
+    "GuardSchedule": {
+      "noTienesDiasLibresAprobados": "No tienes días libres aprobados próximos."
+    },
+    "GuardSummary": {
+      "calculandoDesempeno": "Calculando desempeño…",
+      "cargandoAsignacion": "Cargando asignación…",
+      "desempenoUltimos30Dias": "Desempeño (últimos 30 días)",
+      "puestoYEstacion": "Puesto y estación",
+      "sinAsignacion": "Sin asignación",
+      "sinDatosDeDesempeno": "Sin datos de desempeño",
+      "sinRotacionConfigurada": "Sin rotación configurada"
+    },
+    "GuardTimeOff": {
+      "calamidadDomestica": "Calamidad doméstica"
+    },
+    "Incidents": {
+      "masAcciones": "Más acciones"
+    },
+    "Inventory": {
+      "accion": "Acción",
+      "articulo": "Artículo",
+      "articuloDelInventario": "Artículo del inventario",
+      "asignarArticuloAlPuesto": "Asignar artículo al puesto",
+      "buscarArticuloDisponible": "Buscar artículo disponible...",
+      "condicion": "Condición",
+      "condicionAlDevolver": "Condición al devolver",
+      "condicionAlEntregar": "Condición al entregar",
+      "devolverArticulo": "Devolver artículo",
+      "sinArticulosDisponibles": "Sin artículos disponibles"
+    },
+    "NewAdminUser": {
+      "1QuienEs": "1 · Quién es",
+      "2QuePuedeHacer": "2 · Qué puede hacer",
+      "3QuePuedeVer": "3 · Qué puede ver",
+      "todaLaOperacion": "toda la operación",
+      "todaLaOperacion2": "Toda la operación"
+    },
+    "NewSecurityGuard": {
+      "buscarDireccionDelVigilante": "Buscar dirección del vigilante...",
+      "correoElectronico": "Correo Electrónico",
+      "duiCedulaPasaporte": "DUI, Cédula, Pasaporte…",
+      "ejGarciaLopez": "Ej. García López",
+      "ejLicenciaArmasCertificacionAfis": "Ej. Licencia Armas, Certificación AFIS…",
+      "fechaDeContratacion": "Fecha de Contratación",
+      "genero": "Género",
+      "identificacionYContrato": "Identificación y Contrato",
+      "indiqueLaUbicacionExactaMoviendo": "Indique la ubicación exacta moviendo el pin en el mapa.",
+      "informacionPersonal": "Información Personal",
+      "instruccionAcademica": "Instrucción Académica",
+      "numeroDeIdentificacion": "Número de Identificación",
+      "seleccionarGenero": "Seleccionar género",
+      "seleccionarNivelAcademico": "Seleccionar nivel académico",
+      "telefonoCelular": "Teléfono / Celular"
+    },
+    "PermissionsEditor": {
+      "esteRolEstaBloqueadoNo": "Este rol está bloqueado. No se pueden modificar los permisos predeterminados."
+    },
+    "Profile": {
+      "proximoTurno": "Próximo turno",
+      "sinTurnosProgramadosEnLos": "Sin turnos programados en los próximos 7 días."
+    },
+    "ProfileUserForm": {
+      "espanol": "🇪🇸 Español"
+    },
+    "Routes": {
+      "turnoDia": "Turno día",
+      "vehiculo": "Vehículo"
+    },
+    "SecurityGuards": {
+      "asignarAEstacion": "Asignar a estación",
+      "estacion": "Estación",
+      "paginaAnterior": "Página anterior",
+      "paginaSiguiente": "Página siguiente",
+      "seleccionarEstacion": "Seleccionar estación",
+      "telefono": "Teléfono"
+    },
+    "StationGuards": {
+      "proximas4Semanas": "Próximas 4 semanas:"
+    },
+    "StationOverview": {
+      "cambiarElHorarioReconfiguraLos": "Cambiar el horario reconfigura los puestos; los vigilantes asignados deberán reasignarse.",
+      "editarHorarioToleranciasYUbicacion": "Editar horario, tolerancias y ubicación",
+      "noHayInformacionDelPuesto": "No hay información del puesto",
+      "toleranciaDeEntradaTardiaMin": "Tolerancia de entrada tardía (min)",
+      "toleranciaDeMarcacionDeEntrada": "Tolerancia de marcación de entrada",
+      "turnoUbicacionYToleranciaDe": "Turno, ubicación y tolerancia de marcación. «Guardar» aplica la tolerancia.",
+      "ubicacionYGeocerca": "Ubicación y geocerca",
+      "ubicacionYGeocerca2": "Ubicación y geocerca"
+    },
+    "StationShifts": {
+      "dia": "Día",
+      "diaLibre": "Día libre",
+      "diaLibreSinHorarioProgramado": "Día libre – sin horario programado",
+      "lineaDeTiempo24H": "Línea de tiempo · 24 h",
+      "seleccionaUnDia": "Selecciona un día"
+    },
+    "Stations": {
+      "masAcciones": "Más acciones"
+    },
+    "TenantJoinModal": {
+      "buscarDireccion": "Buscar dirección...",
+      "codigoPostal": "Código Postal",
+      "direccion": "Dirección",
+      "direccionComplementaria": "Dirección Complementaria",
+      "ingreseLaDireccionCompleta": "Ingrese la dirección completa",
+      "numeroFijo": "Número fijo",
+      "numeroMovil": "Número móvil",
+      "pais": "País",
+      "telefonoFijo": "Teléfono fijo"
+    },
+    "Tenants": {
+      "configuracion": "Configuración"
+    },
+    "acceptinvitation": {
+      "confirmarContrasena": "Confirmar contraseña",
+      "contrasena": "Contraseña",
+      "correoElectronico": "Correo electrónico",
+      "creaUnaContrasenaSegura": "Crea una contraseña segura",
+      "invitacionNoValida": "Invitación no válida",
+      "lasContrasenasNoCoinciden": "Las contraseñas no coinciden.",
+      "repiteLaContrasena": "Repite la contraseña"
+    },
+    "header": {
+      "comoPodemosAyudar": "¿Cómo podemos ayudar?",
+      "encuentraArticulosVideosYSoporte": "Encuentra artículos, videos y soporte para resolver tus dudas."
+    },
+    "registration": {
+      "confirmarContrasena": "Confirmar contraseña",
+      "confirmarContrasena2": "Confirmar contraseña*",
+      "confirmarContrasena3": "Confirmar contraseña",
+      "contrasena": "Contraseña",
+      "contrasena2": "Contraseña*",
+      "contrasena3": "Contraseña",
+      "correoElectronico": "Correo electrónico",
+      "correoElectronico2": "Correo electrónico*",
+      "correoElectronico3": "Correo electrónico",
+      "direccion": "Dirección",
+      "direccion2": "Dirección",
+      "esperaLaConfirmacion": "Espera la confirmación",
+      "fechaDeContratacion": "Fecha de contratación",
+      "formacionAcademica": "Formación académica",
+      "genero": "Género",
+      "googlePlayAppStoreInicia": "Google Play · App Store. Inicia sesión cuando tu cuenta esté activa.",
+      "grupoSanguineo": "Grupo sanguíneo",
+      "minimo8Caracteres": "Mínimo 8 caracteres",
+      "repiteLaContrasena": "Repite la contraseña",
+      "telefonoMovil": "Teléfono móvil",
+      "tuEmpresaActivaraTuCuenta": "Tu empresa activará tu cuenta y te asignará a un puesto."
+    }
   }
 }

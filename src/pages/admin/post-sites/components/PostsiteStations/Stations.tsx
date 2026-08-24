@@ -803,7 +803,7 @@ export default function Stations({ site }: { site?: SiteProp }) {
                               <td className="relative w-24 px-2 py-2.5 text-right align-middle text-sm">
                                 <div className="inline-flex items-center gap-2">
                                   <div className="relative">
-                                    <button onClick={(e) => { e.stopPropagation(); setOpenMenuId(openMenuId === id ? null : id); }} aria-label="Más acciones" className="cg-btn-ghost cg-focus rounded p-1">
+                                    <button onClick={(e) => { e.stopPropagation(); setOpenMenuId(openMenuId === id ? null : id); }} aria-label={t("ui.Stations.masAcciones", "Más acciones")} className="cg-btn-ghost cg-focus rounded p-1">
                                       <MoreVertical size={18} />
                                     </button>
                                     {openMenuId === id && (

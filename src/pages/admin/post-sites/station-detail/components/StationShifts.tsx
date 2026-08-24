@@ -759,14 +759,14 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
                   {/* Empty state */}
                   {selectedDayEvents.length === 0 && (!selectedDayCoverage || selectedDayCoverage.slots.length === 0) && (
                     <div className="py-8 text-center">
-                      <p className="text-xs" style={{ color: 'var(--ink-faint)' }}>Día libre – sin horario programado</p>
+                      <p className="text-xs" style={{ color: 'var(--ink-faint)' }}>{t("ui.StationShifts.diaLibreSinHorarioProgramado", "Día libre – sin horario programado")}</p>
                     </div>
                   )}
                 </div>
               ) : (
                 <div className="flex h-full flex-col items-center justify-center px-4 py-16 text-center">
                   <div className="mb-3"><IconTile tone="neutral"><Calendar /></IconTile></div>
-                  <p className="text-[11px]" style={{ color: 'var(--ink-faint)' }}>Selecciona un día</p>
+                  <p className="text-[11px]" style={{ color: 'var(--ink-faint)' }}>{t("ui.StationShifts.seleccionaUnDia", "Selecciona un día")}</p>
                 </div>
               )}
             </div>
@@ -997,6 +997,7 @@ function DayView({ date, coverage, dayEvents, guardColorMap, onAssign }: {
   guardColorMap: Record<string, GuardColor>;
   onAssign: (d: string) => void;
 }) {
+  const { t } = useTranslation();
   const ROW = 30;          // px per hour
   const H = 24 * ROW;      // full-day height
   const dayK = dateKey(date);
@@ -1035,17 +1036,17 @@ function DayView({ date, coverage, dayEvents, guardColorMap, onAssign }: {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold">{covered === slots.length ? 'Cobertura completa' : `${slots.length - covered} turno(s) sin cubrir`}</p>
-            <p className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>Línea de tiempo · 24 h</p>
+            <p className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>{t("ui.StationShifts.lineaDeTiempo24H", "Línea de tiempo · 24 h")}</p>
           </div>
           <div className="hidden items-center gap-3 text-[10px] sm:flex" style={{ color: 'var(--ink-soft)' }}>
-            <span className="inline-flex items-center gap-1"><Sun size={11} style={{ color: 'var(--warn-text)' }} /> Día</span>
+            <span className="inline-flex items-center gap-1"><Sun size={11} style={{ color: 'var(--warn-text)' }} />{" "}{t("ui.StationShifts.dia", "Día")}</span>
             <span className="inline-flex items-center gap-1"><Moon size={11} style={{ color: 'var(--info-text)' }} /> Noche</span>
           </div>
         </div>
       )}
 
       {slots.length === 0 && dayEvents.length === 0 ? (
-        <EmptyState icon={<Calendar />} title="Día libre" description="Sin horario programado para esta fecha." />
+        <EmptyState icon={<Calendar />} title={t("ui.StationShifts.diaLibre", "Día libre")} description="Sin horario programado para esta fecha." />
       ) : (
         <div className="max-h-[600px] overflow-y-auto pr-1">
           <div className="relative flex" style={{ height: H }}>

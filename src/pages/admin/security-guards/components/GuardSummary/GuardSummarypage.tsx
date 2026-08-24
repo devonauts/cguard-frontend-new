@@ -245,13 +245,13 @@ export default function GuardSummary({ guard }: Props) {
   return (
     <div className="space-y-6">
       {/* ── STATION / POST ASSIGNMENT ─────────────────────────────────────── */}
-      <Section title="Puesto y estación" icon={<MapPin className="h-4 w-4" />}>
+      <Section title={t("ui.GuardSummary.puestoYEstacion", "Puesto y estación")} icon={<MapPin className="h-4 w-4" />}>
         {assignmentsLoading && assignments === null ? (
-          <div className="py-6 text-center text-sm" style={{ color: 'var(--ink-soft)' }}>Cargando asignación…</div>
+          <div className="py-6 text-center text-sm" style={{ color: 'var(--ink-soft)' }}>{t("ui.GuardSummary.cargandoAsignacion", "Cargando asignación…")}</div>
         ) : stations.length === 0 ? (
           <EmptyState
             icon={<MapPin className="h-5 w-5" />}
-            title="Sin asignación"
+            title={t("ui.GuardSummary.sinAsignacion", "Sin asignación")}
             description="Este vigilante todavía no tiene una estación o puesto asignado. Asígnalo desde la pestaña “Puesto y estaciones”."
           />
         ) : (
@@ -284,11 +284,11 @@ export default function GuardSummary({ guard }: Props) {
 
       {/* ── PERFORMANCE SUMMARY ───────────────────────────────────────────── */}
       <Section
-        title="Desempeño (últimos 30 días)"
+        title={t("ui.GuardSummary.desempenoUltimos30Dias", "Desempeño (últimos 30 días)")}
         icon={<Gauge className="h-4 w-4" />}
       >
         {perfLoading && perf === null ? (
-          <div className="py-6 text-center text-sm" style={{ color: 'var(--ink-soft)' }}>Calculando desempeño…</div>
+          <div className="py-6 text-center text-sm" style={{ color: 'var(--ink-soft)' }}>{t("ui.GuardSummary.calculandoDesempeno", "Calculando desempeño…")}</div>
         ) : perf?.enabled === false ? (
           /* Apagada la medición no hay nota, y decir «faltan datos» convertiría
              una decisión de la empresa en un vacío que se llenaría solo. */
@@ -308,7 +308,7 @@ export default function GuardSummary({ guard }: Props) {
         ) : !perf?.hasData ? (
           <EmptyState
             icon={<Gauge />}
-            title="Sin datos de desempeño"
+            title={t("ui.GuardSummary.sinDatosDeDesempeno", "Sin datos de desempeño")}
             description="Aún no hay datos suficientes para calcular el desempeño de este vigilante."
           />
         ) : (
@@ -354,7 +354,7 @@ export default function GuardSummary({ guard }: Props) {
         ) : scheduleRows.length === 0 ? (
           <EmptyState
             icon={<CalendarDays className="h-5 w-5" />}
-            title="Sin rotación configurada"
+            title={t("ui.GuardSummary.sinRotacionConfigurada", "Sin rotación configurada")}
             description="Este vigilante no tiene una rotación de turnos configurada en su estación."
           />
         ) : (

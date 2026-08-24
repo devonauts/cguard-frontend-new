@@ -175,7 +175,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
   }, [station]);
 
   if (!station) {
-    return <div className="text-muted-foreground text-sm">No hay información del puesto</div>;
+    return <div className="text-muted-foreground text-sm">{t("ui.StationOverview.noHayInformacionDelPuesto", "No hay información del puesto")}</div>;
   }
 
   const name = station.name || station.stationName || '-';
@@ -344,7 +344,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
               <button
                 onClick={() => setEditing(true)}
                 className="cg-btn-glass cg-focus inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-all"
-                title="Editar horario, tolerancias y ubicación"
+                title={t("ui.StationOverview.editarHorarioToleranciasYUbicacion", "Editar horario, tolerancias y ubicación")}
               >
                 <Pencil size={14} /> Editar puesto
               </button>
@@ -389,7 +389,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
           </Section>
 
           {/* Ubicación + geocerca (solo lectura; editar via Editar puesto) */}
-          <Section icon={<MapPin />} title="Ubicación y geocerca">
+          <Section icon={<MapPin />} title={t("ui.StationOverview.ubicacionYGeocerca", "Ubicación y geocerca")}>
             {(lat || lng) ? (
               <>
                 <div className="mb-3 overflow-hidden rounded-2xl border">
@@ -459,7 +459,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
         <div className="flex items-center justify-between border-b px-6 py-4" style={{ borderColor: 'var(--hairline)', background: 'var(--brand-wash)' }}>
           <div>
             <h3 className="text-sm font-semibold">Configurar puesto</h3>
-            <p className="mt-0.5 text-xs" style={{ color: 'var(--ink-soft)' }}>Turno, ubicación y tolerancia de marcación. «Guardar» aplica la tolerancia.</p>
+            <p className="mt-0.5 text-xs" style={{ color: 'var(--ink-soft)' }}>{t("ui.StationOverview.turnoUbicacionYToleranciaDe", "Turno, ubicación y tolerancia de marcación. «Guardar» aplica la tolerancia.")}</p>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -554,7 +554,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
             <RotationStyleSelect scheduleType={turnoToScheduleType(turno)} value={rotationStyleId} onChange={setRotationStyleId} onStyleChange={setRotStyle} />
           )}
           <div className="flex items-center justify-between gap-3">
-            <p className="text-[11px]" style={{ color: 'var(--warn-text)' }}>Cambiar el horario reconfigura los puestos; los vigilantes asignados deberán reasignarse.</p>
+            <p className="text-[11px]" style={{ color: 'var(--warn-text)' }}>{t("ui.StationOverview.cambiarElHorarioReconfiguraLos", "Cambiar el horario reconfigura los puestos; los vigilantes asignados deberán reasignarse.")}</p>
             <button
               onClick={updateHorario}
               disabled={savingHorario}
@@ -572,7 +572,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <MapPin size={16} style={{ color: 'var(--brand-text)' }} />
-              <h3 className="text-sm font-semibold text-foreground">Ubicación y geocerca</h3>
+              <h3 className="text-sm font-semibold text-foreground">{t("ui.StationOverview.ubicacionYGeocerca2", "Ubicación y geocerca")}</h3>
             </div>
             <button
               onClick={saveLocation}
@@ -601,7 +601,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
         <div className="space-y-3 border-t p-6" style={{ borderColor: 'var(--hairline)' }}>
           <div className="flex items-center gap-2">
             <Clock size={16} style={{ color: 'var(--brand-text)' }} />
-            <h3 className="text-sm font-semibold text-foreground">Tolerancia de marcación de entrada</h3>
+            <h3 className="text-sm font-semibold text-foreground">{t("ui.StationOverview.toleranciaDeMarcacionDeEntrada", "Tolerancia de marcación de entrada")}</h3>
           </div>
           <p className="text-xs text-muted-foreground">
             Minutos antes/después de la hora de inicio en que el vigilante puede marcar entrada. Vacío = usar el valor por defecto de la empresa.
@@ -620,7 +620,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
               />
             </div>
             <div>
-              <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Tolerancia de entrada tardía (min)</label>
+              <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">{t("ui.StationOverview.toleranciaDeEntradaTardiaMin", "Tolerancia de entrada tardía (min)")}</label>
               <input
                 type="number"
                 min="0"

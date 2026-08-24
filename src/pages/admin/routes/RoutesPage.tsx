@@ -262,7 +262,7 @@ export default function RoutesPage() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="default">Default</SelectItem>
-                        <SelectItem value="turno-dia">Turno día</SelectItem>
+                        <SelectItem value="turno-dia">{t("ui.Routes.turnoDia", "Turno día")}</SelectItem>
                         <SelectItem value="turno-noche">Turno noche</SelectItem>
                       </SelectContent>
                     </Select>
@@ -316,7 +316,7 @@ export default function RoutesPage() {
                 <th className="px-4 py-3 font-semibold">Nombre</th>
                 <th className="px-4 py-3 font-semibold">Puesto de seguridad</th>
                 <th className="px-4 py-3 font-semibold">Supervisor</th>
-                <th className="px-4 py-3 font-semibold">Vehículo</th>
+                <th className="px-4 py-3 font-semibold">{t("ui.Routes.vehiculo", "Vehículo")}</th>
                 <th className="px-4 py-3 font-semibold">Tipo</th>
                 <th className="px-4 py-3 font-semibold">Estado</th>
                 <th className="px-4 py-3" />

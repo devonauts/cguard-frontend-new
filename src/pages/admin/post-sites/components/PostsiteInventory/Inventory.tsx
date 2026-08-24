@@ -70,6 +70,7 @@ function getGuardName(guard: any): string {
 interface AssignModalProps { postSiteId: string; onClose: () => void; onDone: () => void; }
 
 function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
+  const { t } = useTranslation();
   const [itemSearch, setItemSearch] = useState('');
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [loadingItems, setLoadingItems] = useState(false);
@@ -124,7 +125,7 @@ function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
     <Modal
       open
       onOpenChange={(o) => { if (!o) onClose(); }}
-      title="Asignar artículo al puesto"
+      title={t("ui.Inventory.asignarArticuloAlPuesto", "Asignar artículo al puesto")}
       icon={<Package className="h-5 w-5" />}
       size="md"
       footer={(
@@ -137,7 +138,7 @@ function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
       <div className="space-y-5">
           {/* Item */}
           <div className="space-y-2">
-            <Label>Artículo del inventario <span style={{ color: 'var(--bad-text)' }}>*</span></Label>
+            <Label>{t("ui.Inventory.articuloDelInventario", "Artículo del inventario")}{" "}<span style={{ color: 'var(--bad-text)' }}>*</span></Label>
             {selectedItem ? (
               <div className="flex items-center justify-between rounded-lg border px-3 py-2" style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)' }}>
                 <div>
@@ -150,12 +151,12 @@ function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
               <div className="space-y-2">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input className="pl-9" placeholder="Buscar artículo disponible..." value={itemSearch} onChange={(e) => setItemSearch(e.target.value)} autoFocus />
+                  <Input className="pl-9" placeholder={t("ui.Inventory.buscarArticuloDisponible", "Buscar artículo disponible...")} value={itemSearch} onChange={(e) => setItemSearch(e.target.value)} autoFocus />
                 </div>
                 <div className="border border-border rounded-lg max-h-40 overflow-y-auto">
                   {loadingItems ? <div className="text-center text-xs text-muted-foreground py-4">Buscando...</div>
                   : items.length === 0 ? (
-                    <div className="text-center text-xs text-muted-foreground py-4 flex flex-col items-center gap-1"><Package className="w-6 h-6 text-muted-foreground/60" />Sin artículos disponibles</div>
+                    <div className="text-center text-xs text-muted-foreground py-4 flex flex-col items-center gap-1"><Package className="w-6 h-6 text-muted-foreground/60" />{t("ui.Inventory.sinArticulosDisponibles", "Sin artículos disponibles")}</div>
                   ) : items.map((item) => (
                     <button key={item.id} className="w-full text-left px-3 py-2 hover:bg-muted/30 border-b border-border last:border-0 transition-colors" onClick={() => setSelectedItem(item)}>
                       <div className="text-sm font-medium text-foreground">{item.name}</div>
@@ -200,7 +201,7 @@ function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
 
           {/* Condition */}
           <div className="space-y-1">
-            <Label>Condición al entregar</Label>
+            <Label>{t("ui.Inventory.condicionAlEntregar", "Condición al entregar")}</Label>
             <Select value={condKey} onValueChange={(v) => setCondKey(v as ConditionKey)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>{CONDITIONS.map((c) => <SelectItem key={c} value={c}>{CONDITION_DISPLAY[c]}</SelectItem>)}</SelectContent>
@@ -223,6 +224,7 @@ function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
 interface ReturnModalProps { assignment: InventoryAssignment; onClose: () => void; onDone: () => void; }
 
 function ReturnModal({ assignment, onClose, onDone }: ReturnModalProps) {
+  const { t } = useTranslation();
   const [condKey, setCondKey] = useState<ConditionKey>('bueno');
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
@@ -247,7 +249,7 @@ function ReturnModal({ assignment, onClose, onDone }: ReturnModalProps) {
     <Modal
       open
       onOpenChange={(o) => { if (!o) onClose(); }}
-      title="Devolver artículo"
+      title={t("ui.Inventory.devolverArticulo", "Devolver artículo")}
       icon={<RotateCcw className="h-5 w-5" />}
       size="sm"
       footer={(
@@ -260,7 +262,7 @@ function ReturnModal({ assignment, onClose, onDone }: ReturnModalProps) {
       <div className="space-y-4">
         <p className="text-sm text-foreground/70">Devolviendo: <span className="font-medium text-foreground">{itemName}</span></p>
         <div className="space-y-1">
-          <Label>Condición al devolver</Label>
+          <Label>{t("ui.Inventory.condicionAlDevolver", "Condición al devolver")}</Label>
           <Select value={condKey} onValueChange={(v) => setCondKey(v as ConditionKey)}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>{CONDITIONS.map((c) => <SelectItem key={c} value={c}>{CONDITION_DISPLAY[c]}</SelectItem>)}</SelectContent>
@@ -375,12 +377,12 @@ export default function Inventory({ site }: { site?: PostSite }) {
             <table className="w-full text-sm">
               <thead className="border-b border-border">
                 <tr>
-                  <th className="cg-eyebrow px-2 py-2">Artículo</th>
+                  <th className="cg-eyebrow px-2 py-2">{t("ui.Inventory.articulo", "Artículo")}</th>
                   <th className="cg-eyebrow px-2 py-2 hidden sm:table-cell">Tipo</th>
-                  <th className="cg-eyebrow px-2 py-2 hidden md:table-cell">Condición</th>
+                  <th className="cg-eyebrow px-2 py-2 hidden md:table-cell">{t("ui.Inventory.condicion", "Condición")}</th>
                   <th className="cg-eyebrow px-2 py-2">Responsable</th>
                   <th className="cg-eyebrow px-2 py-2 hidden lg:table-cell">Asignado</th>
-                  <th className="cg-eyebrow px-2 py-2 text-right">Acción</th>
+                  <th className="cg-eyebrow px-2 py-2 text-right">{t("ui.Inventory.accion", "Acción")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">

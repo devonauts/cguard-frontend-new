@@ -536,7 +536,7 @@ export function DispatchDetailsContent({ requestId, resourceTypeProp }: { reques
           <div className="bg-muted/40 border-b px-4 py-2.5 text-sm font-semibold">{t('dispatcher.ticket_summary')}</div>
           <div className="p-4">
             {comments.length === 0 ? (
-              <div className="text-sm text-muted-foreground">No hay comentarios aún</div>
+              <div className="text-sm text-muted-foreground">{t("ui.DispatchDetails.noHayComentariosAun", "No hay comentarios aún")}</div>
             ) : (
               <div className="space-y-4">
                 {comments.map((c) => (

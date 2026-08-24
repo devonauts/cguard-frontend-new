@@ -369,7 +369,18 @@ export default function ClientForm({
                     .map((a) => ({ name: a.name.trim(), email: a.email.trim(), phone: a.phone.trim() || null, relationship: a.relationship.trim() || null }));
                 if (additionalContacts.length) (basePayload as any).additionalContacts = additionalContacts;
                 const data = await clientService.createClient(basePayload as ClientInput);
-                toast.success(t('clients.clientCreated') || "Cliente creado exitosamente");
+                // El alta crea TAMBIÉN la primera sede del cliente, con estos
+                // mismos datos. Lo que no crea es su operación —qué servicio se
+                // presta, con qué equipamiento y capacitación— porque aquí no se
+                // pregunta. Se dice ahora, que es cuando la persona todavía está
+                // en contexto, y no cuando ya montó puestos encima.
+                toast.success(t('clients.clientCreated') || "Cliente creado exitosamente", {
+                    description: t('clients.clientCreatedSiteHint', {
+                        defaultValue:
+                            'Se creó también su primera sede con estos datos. Falta configurar su operación antes de crear puestos y asignar vigilantes.',
+                    }) as string,
+                    duration: 9000,
+                });
                 onSaved?.({ id: data.id, data: values as unknown as ClientInput });
                 form.reset();
                 if (!keepOnSave) navigate("/clients");
@@ -911,7 +922,7 @@ export default function ClientForm({
                               : 'Opcional. Otras personas que también tendrán acceso a la app (ej: hijo, cónyuge).'}
                           </p>
                           {accessPeople.length === 0 && (
-                            <p className="text-xs text-muted-foreground italic">Sin personas adicionales. Solo el contacto principal tendrá acceso.</p>
+                            <p className="text-xs text-muted-foreground italic">{t("ui.ClientForm.sinPersonasAdicionalesSoloEl", "Sin personas adicionales. Solo el contacto principal tendrá acceso.")}</p>
                           )}
                           {accessPeople.map((p, i) => (
                             <div key={i} className="glass-sunken grid grid-cols-1 gap-2 p-3 sm:grid-cols-12">

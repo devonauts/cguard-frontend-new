@@ -344,7 +344,7 @@ export default function StationGuards({ station, stationId, postSiteId }: Props)
           </p>
           {rows.length > 0 && (
             <div className="mt-1.5 flex flex-wrap items-center gap-3 text-[11px] text-muted-foreground">
-              <span className="font-medium">Próximas 4 semanas:</span>
+              <span className="font-medium">{t("ui.StationGuards.proximas4Semanas", "Próximas 4 semanas:")}</span>
               <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded bg-primary" /> Fijo trabaja</span>
               <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded" style={{ background: 'var(--info)' }} /> Sacafranco cubre</span>
               <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded bg-muted/40" /> Descanso</span>

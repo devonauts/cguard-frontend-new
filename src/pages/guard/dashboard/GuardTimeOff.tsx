@@ -109,7 +109,7 @@ export default function GuardTimeOff() {
                   <option value="vacaciones">Vacaciones</option>
                   <option value="enfermedad">Enfermedad</option>
                   <option value="personal">Personal</option>
-                  <option value="calamidad">Calamidad doméstica</option>
+                  <option value="calamidad">{t("ui.GuardTimeOff.calamidadDomestica", "Calamidad doméstica")}</option>
                   <option value="otro">Otro</option>
                 </select>
               </div>

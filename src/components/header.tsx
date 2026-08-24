@@ -733,8 +733,8 @@ export default function Header({
       <Dialog open={helpOpen} onOpenChange={setHelpOpen}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
-            <DialogTitle className="text-center text-lg font-semibold">¿Cómo podemos ayudar?</DialogTitle>
-            <DialogDescription className="text-center">Encuentra artículos, videos y soporte para resolver tus dudas.</DialogDescription>
+            <DialogTitle className="text-center text-lg font-semibold">{t("ui.header.comoPodemosAyudar", "¿Cómo podemos ayudar?")}</DialogTitle>
+            <DialogDescription className="text-center">{t("ui.header.encuentraArticulosVideosYSoporte", "Encuentra artículos, videos y soporte para resolver tus dudas.")}</DialogDescription>
           </DialogHeader>
 
           <div className="grid grid-cols-2 gap-4 py-6">

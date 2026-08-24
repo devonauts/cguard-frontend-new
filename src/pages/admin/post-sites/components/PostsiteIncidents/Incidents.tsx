@@ -769,7 +769,7 @@ export default function Incidents({ site }: { site?: SiteProp }) {
             <div className="flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label="Más acciones">
+                <Button variant="ghost" size="icon" aria-label={t("ui.Incidents.masAcciones", "Más acciones")}>
                   <EllipsisVertical className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>

@@ -89,7 +89,7 @@ export default function GuardSchedule() {
       {/* Free Days */}
       <Section title={t('guard.schedule.freeDays', 'Días libres')} icon={<CalendarCheck />}>
         {freeDays.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No tienes días libres aprobados próximos.</p>
+          <p className="text-sm text-muted-foreground">{t("ui.GuardSchedule.noTienesDiasLibresAprobados", "No tienes días libres aprobados próximos.")}</p>
         ) : (
           <div className="flex flex-wrap gap-2">
             {freeDays.slice(0, 30).map((d: string) => (

@@ -7017,5 +7017,198 @@
     "business_max": "The company name is too long",
     "name_length": "The name must be at least 2 characters long",
     "required_fields": "Please fill in the required fields"
+  },
+  "ui": {
+    "AddStation": {
+      "patron": "Pattern"
+    },
+    "AdminOfficeUsers": {
+      "masAcciones": "More actions"
+    },
+    "ChangePasswordForm": {
+      "mostrarContrasena": "Show password"
+    },
+    "ClientForm": {
+      "sinPersonasAdicionalesSoloEl": "No additional people. Only the main contact will have access."
+    },
+    "Clients": {
+      "comoFunciona": "How does it work?",
+      "editaElClienteAgregaUn": "Edit the client, add an email address and try again.",
+      "enlaceParaActivarSuCuenta": "A link to activate their account and create a password",
+      "esteClienteNoTieneCorreo": "This client has no email address on file.",
+      "haceClicEnElEnlace": "They click the link and set their password",
+      "iniciaSesionEnLaApp": "They sign in to the app with their email and password",
+      "presentacionDeLaAppMi": "An introduction to the Mi Seguridad app",
+      "queIncluye": "What's included?"
+    },
+    "DispatchDetails": {
+      "noHayComentariosAun": "No comments yet"
+    },
+    "Dispatcher": {
+      "7Dias": "7 days",
+      "confirmarEliminacion": "Confirm removal",
+      "masAcciones": "More actions"
+    },
+    "EditAdminUser": {
+      "direccionReferencia": "Address (for reference)",
+      "quePuedeHacer": "What they can do",
+      "quePuedeVer": "What they can see",
+      "todaLaOperacion": "the whole operation",
+      "todaLaOperacion2": "The whole operation",
+      "ubicacionDeOficinaAsistencia": "Office location (attendance)",
+      "usarMiUbicacionActual": "Use my current location"
+    },
+    "GuardDashboard": {
+      "proximoTurno": "Next shift"
+    },
+    "GuardSchedule": {
+      "noTienesDiasLibresAprobados": "You have no approved days off coming up."
+    },
+    "GuardSummary": {
+      "calculandoDesempeno": "Calculating performance…",
+      "cargandoAsignacion": "Loading assignment…",
+      "desempenoUltimos30Dias": "Performance (last 30 days)",
+      "puestoYEstacion": "Post and station",
+      "sinAsignacion": "No assignment",
+      "sinDatosDeDesempeno": "No performance data",
+      "sinRotacionConfigurada": "No rotation set up"
+    },
+    "GuardTimeOff": {
+      "calamidadDomestica": "Family emergency"
+    },
+    "Incidents": {
+      "masAcciones": "More actions"
+    },
+    "Inventory": {
+      "accion": "Action",
+      "articulo": "Item",
+      "articuloDelInventario": "Inventory item",
+      "asignarArticuloAlPuesto": "Assign an item to this post",
+      "buscarArticuloDisponible": "Search available item...",
+      "condicion": "Condition",
+      "condicionAlDevolver": "Condition when returned",
+      "condicionAlEntregar": "Condition when issued",
+      "devolverArticulo": "Return item",
+      "sinArticulosDisponibles": "No items available"
+    },
+    "NewAdminUser": {
+      "1QuienEs": "1 · Who they are",
+      "2QuePuedeHacer": "2 · What they can do",
+      "3QuePuedeVer": "3 · What they can see",
+      "todaLaOperacion": "the whole operation",
+      "todaLaOperacion2": "The whole operation"
+    },
+    "NewSecurityGuard": {
+      "buscarDireccionDelVigilante": "Search the guard's address...",
+      "correoElectronico": "Email",
+      "duiCedulaPasaporte": "National ID, passport…",
+      "ejGarciaLopez": "e.g. García López",
+      "ejLicenciaArmasCertificacionAfis": "e.g. Firearms licence, AFIS certification…",
+      "fechaDeContratacion": "Hire date",
+      "genero": "Gender",
+      "identificacionYContrato": "ID and contract",
+      "indiqueLaUbicacionExactaMoviendo": "Set the exact location by dragging the pin on the map.",
+      "informacionPersonal": "Personal details",
+      "instruccionAcademica": "Education",
+      "numeroDeIdentificacion": "ID number",
+      "seleccionarGenero": "Select gender",
+      "seleccionarNivelAcademico": "Select education level",
+      "telefonoCelular": "Phone / mobile"
+    },
+    "PermissionsEditor": {
+      "esteRolEstaBloqueadoNo": "This role is locked. Its default permissions can't be changed."
+    },
+    "Profile": {
+      "proximoTurno": "Next shift",
+      "sinTurnosProgramadosEnLos": "No shifts scheduled in the next 7 days."
+    },
+    "ProfileUserForm": {
+      "espanol": "🇪🇸 Spanish"
+    },
+    "Routes": {
+      "turnoDia": "Day shift",
+      "vehiculo": "Vehicle"
+    },
+    "SecurityGuards": {
+      "asignarAEstacion": "Assign to a station",
+      "estacion": "Station",
+      "paginaAnterior": "Previous page",
+      "paginaSiguiente": "Next page",
+      "seleccionarEstacion": "Select a station",
+      "telefono": "Phone"
+    },
+    "StationGuards": {
+      "proximas4Semanas": "Next 4 weeks:"
+    },
+    "StationOverview": {
+      "cambiarElHorarioReconfiguraLos": "Changing the hours reconfigures the posts; assigned guards will need to be reassigned.",
+      "editarHorarioToleranciasYUbicacion": "Edit hours, allowances and location",
+      "noHayInformacionDelPuesto": "There's no information for this post",
+      "toleranciaDeEntradaTardiaMin": "Late clock-in grace (min)",
+      "toleranciaDeMarcacionDeEntrada": "Clock-in allowance",
+      "turnoUbicacionYToleranciaDe": "Shift, location and clock-in allowance. \"Save\" applies the allowance.",
+      "ubicacionYGeocerca": "Location and geofence",
+      "ubicacionYGeocerca2": "Location and geofence"
+    },
+    "StationShifts": {
+      "dia": "Day",
+      "diaLibre": "Day off",
+      "diaLibreSinHorarioProgramado": "Day off – no shift scheduled",
+      "lineaDeTiempo24H": "Timeline · 24 h",
+      "seleccionaUnDia": "Pick a day"
+    },
+    "Stations": {
+      "masAcciones": "More actions"
+    },
+    "TenantJoinModal": {
+      "buscarDireccion": "Search address...",
+      "codigoPostal": "Postcode",
+      "direccion": "Address",
+      "direccionComplementaria": "Address line 2",
+      "ingreseLaDireccionCompleta": "Enter the full address",
+      "numeroFijo": "Landline number",
+      "numeroMovil": "Mobile number",
+      "pais": "Country",
+      "telefonoFijo": "Landline"
+    },
+    "Tenants": {
+      "configuracion": "Settings"
+    },
+    "acceptinvitation": {
+      "confirmarContrasena": "Confirm password",
+      "contrasena": "Password",
+      "correoElectronico": "Email",
+      "creaUnaContrasenaSegura": "Create a strong password",
+      "invitacionNoValida": "Invalid invitation",
+      "lasContrasenasNoCoinciden": "The passwords don't match.",
+      "repiteLaContrasena": "Repeat the password"
+    },
+    "header": {
+      "comoPodemosAyudar": "How can we help?",
+      "encuentraArticulosVideosYSoporte": "Find articles, videos and support to answer your questions."
+    },
+    "registration": {
+      "confirmarContrasena": "Confirm password",
+      "confirmarContrasena2": "Confirm password*",
+      "confirmarContrasena3": "Confirm password",
+      "contrasena": "Password",
+      "contrasena2": "Password*",
+      "contrasena3": "Password",
+      "correoElectronico": "Email",
+      "correoElectronico2": "Email*",
+      "correoElectronico3": "Email",
+      "direccion": "Address",
+      "direccion2": "Address",
+      "esperaLaConfirmacion": "Wait for confirmation",
+      "fechaDeContratacion": "Hire date",
+      "formacionAcademica": "Education",
+      "genero": "Gender",
+      "googlePlayAppStoreInicia": "Google Play · App Store. Sign in once your account is active.",
+      "grupoSanguineo": "Blood group",
+      "minimo8Caracteres": "At least 8 characters",
+      "repiteLaContrasena": "Repeat the password",
+      "telefonoMovil": "Mobile phone",
+      "tuEmpresaActivaraTuCuenta": "Your company will activate your account and assign you to a post."
+    }
   }
 }

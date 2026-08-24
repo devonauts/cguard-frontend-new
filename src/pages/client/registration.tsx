@@ -292,7 +292,7 @@ export default function ClientRegistration() {
               {errors.name && <p className="mt-1.5 text-xs" style={{ color: 'var(--bad-text)' }}>{errors.name}</p>}
             </div>
             <div>
-              <Etiqueta htmlFor="cliente-email">Correo electrónico</Etiqueta>
+              <Etiqueta htmlFor="cliente-email">{t("ui.registration.correoElectronico3", "Correo electrónico")}</Etiqueta>
               <input
                 id="cliente-email"
                 type="email"
@@ -307,7 +307,7 @@ export default function ClientRegistration() {
               {errors.email && <p className="mt-1.5 text-xs" style={{ color: 'var(--bad-text)' }}>{errors.email}</p>}
             </div>
             <div>
-              <Etiqueta htmlFor="cliente-clave">Contraseña</Etiqueta>
+              <Etiqueta htmlFor="cliente-clave">{t("ui.registration.contrasena3", "Contraseña")}</Etiqueta>
               <div className="relative">
                 <input
                   id="cliente-clave"
@@ -316,7 +316,7 @@ export default function ClientRegistration() {
                   type={showPwd ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: undefined })); }}
-                  placeholder="Mínimo 8 caracteres"
+                  placeholder={t("ui.registration.minimo8Caracteres", "Mínimo 8 caracteres")}
                   disabled={isLoading}
                   aria-invalid={!!errors.password}
                 />
@@ -325,7 +325,7 @@ export default function ClientRegistration() {
               {errors.password && <p className="mt-1.5 text-xs" style={{ color: 'var(--bad-text)' }}>{errors.password}</p>}
             </div>
             <div>
-              <Etiqueta htmlFor="cliente-confirmar">Confirmar contraseña</Etiqueta>
+              <Etiqueta htmlFor="cliente-confirmar">{t("ui.registration.confirmarContrasena3", "Confirmar contraseña")}</Etiqueta>
               <div className="relative">
                 <input
                   id="cliente-confirmar"
@@ -334,7 +334,7 @@ export default function ClientRegistration() {
                   type={showConfirm ? 'text' : 'password'}
                   value={confirm}
                   onChange={(e) => { setConfirm(e.target.value); setErrors((p) => ({ ...p, confirm: undefined })); }}
-                  placeholder="Repite la contraseña"
+                  placeholder={t("ui.registration.repiteLaContrasena", "Repite la contraseña")}
                   disabled={isLoading}
                   aria-invalid={!!errors.confirm}
                 />

@@ -271,7 +271,7 @@ export default function SecurityGuardsPage() {
     const htmlRows = list
       .map((g) => `<tr><td>${escapeHtml(g.name)}</td><td>${escapeHtml(g.email)}</td><td>${escapeHtml(g.phone)}</td><td>${escapeHtml(g.status)}</td></tr>`)
       .join("\n");
-    const html = `<!doctype html><html><head><meta charset="utf-8"><title>Vigilantes</title><style>table{width:100%;border-collapse:collapse}td,th{border:1px solid;padding:8px}</style></head><body><h2>Vigilantes</h2><table><thead><tr><th>Nombre</th><th>Correo</th><th>Teléfono</th><th>Estado</th></tr></thead><tbody>${htmlRows}</tbody></table></body></html>`;
+    const html = `<!doctype html><html><head><meta charset="utf-8"><title>Vigilantes</title><style>table{width:100%;border-collapse:collapse}td,th{border:1px solid;padding:8px}</style></head><body><h2>Vigilantes</h2><table><thead><tr><th>Nombre</th><th>Correo</th><th>{t("ui.SecurityGuards.telefono", "Teléfono")}</th><th>Estado</th></tr></thead><tbody>${htmlRows}</tbody></table></body></html>`;
     const w = window.open("", "_blank");
     if (!w) {
       toast.error(t('guards.list.toasts.printWindowOpenError', 'No se pudo abrir la ventana de impresión'));
@@ -1253,7 +1253,7 @@ export default function SecurityGuardsPage() {
                     size="icon-sm"
                     onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
                     disabled={currentPage === 1}
-                    aria-label="Página anterior"
+                    aria-label={t("ui.SecurityGuards.paginaAnterior", "Página anterior")}
                   >
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
@@ -1264,7 +1264,7 @@ export default function SecurityGuardsPage() {
                       setCurrentPage((p) => Math.min(p + 1, totalPages))
                     }
                     disabled={currentPage >= totalPages}
-                    aria-label="Página siguiente"
+                    aria-label={t("ui.SecurityGuards.paginaSiguiente", "Página siguiente")}
                   >
                     <ChevronRight className="h-4 w-4" />
                   </Button>
@@ -1956,16 +1956,16 @@ export default function SecurityGuardsPage() {
       <Dialog open={assignDialogOpen} onOpenChange={setAssignDialogOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Asignar a estación</DialogTitle>
+            <DialogTitle>{t("ui.SecurityGuards.asignarAEstacion", "Asignar a estación")}</DialogTitle>
             <DialogDescription>
               {assignGuard ? `Asignar a ${assignGuard.name} a una estación` : ''}
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <Label className="mb-2 block">Estación</Label>
+            <Label className="mb-2 block">{t("ui.SecurityGuards.estacion", "Estación")}</Label>
             <Select value={assignStationId} onValueChange={setAssignStationId}>
               <SelectTrigger>
-                <SelectValue placeholder="Seleccionar estación" />
+                <SelectValue placeholder={t("ui.SecurityGuards.seleccionarEstacion", "Seleccionar estación")} />
               </SelectTrigger>
               <SelectContent>
                 {assignStations.map((s) => (

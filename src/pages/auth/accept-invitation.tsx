@@ -163,7 +163,7 @@ export default function AcceptInvitation() {
         splash={false}
         showFeatures={false}
         eyebrow="Invitación"
-        title="Invitación no válida"
+        title={t("ui.acceptinvitation.invitacionNoValida", "Invitación no válida")}
         subtitle="El enlace no existe, ya se usó o caducó."
       >
         <div className="flex flex-col items-center gap-4 py-2 text-center">
@@ -207,7 +207,7 @@ export default function AcceptInvitation() {
         </div>
 
         <div>
-          <Etiqueta>Correo electrónico</Etiqueta>
+          <Etiqueta>{t("ui.acceptinvitation.correoElectronico", "Correo electrónico")}</Etiqueta>
           <div className="relative">
             <input className={`${CAMPO} pr-11`} value={email} onChange={(e) => setEmail(e.target.value)} placeholder="tu@correo.com" disabled={submitting || lockedEmail} />
             {lockedEmail && <Building2 className="pointer-events-none absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />}
@@ -215,9 +215,9 @@ export default function AcceptInvitation() {
         </div>
 
         <div>
-          <Etiqueta>Contraseña</Etiqueta>
+          <Etiqueta>{t("ui.acceptinvitation.contrasena", "Contraseña")}</Etiqueta>
           <div className="relative">
-            <input className={`${CAMPO} pr-11`} type={showPwd ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Crea una contraseña segura" disabled={submitting} />
+            <input className={`${CAMPO} pr-11`} type={showPwd ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t("ui.acceptinvitation.creaUnaContrasenaSegura", "Crea una contraseña segura")} disabled={submitting} />
             <button
               type="button"
               tabIndex={-1}
@@ -264,10 +264,10 @@ export default function AcceptInvitation() {
         </div>
 
         <div>
-          <Etiqueta>Confirmar contraseña</Etiqueta>
-          <input className={CAMPO} type={showPwd ? "text" : "password"} value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="Repite la contraseña" disabled={submitting} />
+          <Etiqueta>{t("ui.acceptinvitation.confirmarContrasena", "Confirmar contraseña")}</Etiqueta>
+          <input className={CAMPO} type={showPwd ? "text" : "password"} value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder={t("ui.acceptinvitation.repiteLaContrasena", "Repite la contraseña")} disabled={submitting} />
           {confirm && password !== confirm && (
-            <p className="mt-1.5 text-[11px] font-medium" style={{ color: 'var(--bad-text)' }}>Las contraseñas no coinciden.</p>
+            <p className="mt-1.5 text-[11px] font-medium" style={{ color: 'var(--bad-text)' }}>{t("ui.acceptinvitation.lasContrasenasNoCoinciden", "Las contraseñas no coinciden.")}</p>
           )}
         </div>
 

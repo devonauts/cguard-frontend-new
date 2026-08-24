@@ -472,7 +472,7 @@ export default function ProfileUserForm() {
                 <SelectValue placeholder="Idioma" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="es">🇪🇸 Español</SelectItem>
+                <SelectItem value="es">{t("ui.ProfileUserForm.espanol", "🇪🇸 Español")}</SelectItem>
                 <SelectItem value="en">🇺🇸 English</SelectItem>
                 <SelectItem value="pt">🇧🇷 Português</SelectItem>
               </SelectContent>

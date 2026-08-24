@@ -1376,7 +1376,7 @@ export default function DispatcherPage() {
             {/* Menú superior (exportar / imprimir / enviar) */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label="Más acciones">
+                <Button variant="ghost" size="icon" aria-label={t("ui.Dispatcher.masAcciones", "Más acciones")}>
                   <EllipsisVertical className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
@@ -1771,7 +1771,7 @@ export default function DispatcherPage() {
                 </label>
                 <label className="flex items-center gap-2">
                   <input type="radio" name="shareExpiry" checked={shareExpiry === '7d'} onChange={() => setShareExpiry('7d')} />
-                  <span>7 días</span>
+                  <span>{t("ui.Dispatcher.7Dias", "7 días")}</span>
                 </label>
                 <label className="flex items-center gap-2">
                   <input type="radio" name="shareExpiry" checked={shareExpiry === 'never'} onChange={() => setShareExpiry('never')} />
@@ -1792,7 +1792,7 @@ export default function DispatcherPage() {
         <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
           <AlertDialogContent>
             <AlertDialogHeader className="text-center">
-              <AlertDialogTitle className="text-center text-lg font-semibold">Confirmar eliminación</AlertDialogTitle>
+              <AlertDialogTitle className="text-center text-lg font-semibold">{t("ui.Dispatcher.confirmarEliminacion", "Confirmar eliminación")}</AlertDialogTitle>
               <AlertDialogDescription className="text-left">
                 ¿Está seguro de eliminar {selectedIds.length} Incidente(s)? Esta acción no se puede deshacer.
               </AlertDialogDescription>
