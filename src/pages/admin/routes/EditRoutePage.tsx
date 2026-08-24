@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import AppLayout from "@/layouts/app-layout";
 import Breadcrumb from "@/components/ui/breadcrumb";
@@ -12,6 +13,7 @@ function localDatePart(iso: string) { const d = new Date(iso); return `${d.getFu
 function localTimePart(iso: string) { const d = new Date(iso); return `${_lpad(d.getHours())}:${_lpad(d.getMinutes())}`; }
 
 export default function EditRoutePage() {
+  const { t } = useTranslation();
   const params = useParams<{ tenantId?: string; id?: string }>();
   const navigate = useNavigate();
   const [routeData, setRouteData] = useState<any>(null);
@@ -144,7 +146,7 @@ export default function EditRoutePage() {
         />
         <PageContainer width="wide" className="p-6">
           <PageHeader icon={<RouteIcon />} title="Editar ruta" />
-          <EmptyState icon={<AlertCircle />} title="No se encontró la ruta" description="La ruta solicitada no existe o no está disponible." />
+          <EmptyState icon={<AlertCircle />} title={t("ui.EditRoute.noSeEncontroLaRuta", "No se encontró la ruta")} description="La ruta solicitada no existe o no está disponible." />
         </PageContainer>
       </AppLayout>
     );

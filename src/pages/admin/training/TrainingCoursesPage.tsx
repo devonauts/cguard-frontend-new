@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import AppLayout from '@/layouts/app-layout';
 import Breadcrumb from '@/components/ui/breadcrumb';
@@ -53,6 +54,7 @@ const emptyForm: TrainingCourseInput = {
 };
 
 export default function TrainingCoursesPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { hasPermission } = usePermissions();
   const canRead = hasPermission('trainingCourseRead');
@@ -224,10 +226,10 @@ export default function TrainingCoursesPage() {
         <TableToolbar search={<TableSearch value={search} onChange={setSearch} placeholder="Buscar cursos" />}>
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
             <SelectTrigger className="w-full sm:w-48">
-              <SelectValue placeholder="Categoría" />
+              <SelectValue placeholder={t("ui.TrainingCourses.categoria", "Categoría")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todas las categorías</SelectItem>
+              <SelectItem value="all">{t("ui.TrainingCourses.todasLasCategorias", "Todas las categorías")}</SelectItem>
               {TRAINING_CATEGORIES.map((c) => (
                 <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
               ))}
@@ -235,7 +237,7 @@ export default function TrainingCoursesPage() {
           </Select>
         </TableToolbar>
 
-        <Section icon={<BookOpen />} title="Catálogo de cursos" contentClassName="-mx-5 -mb-5">
+        <Section icon={<BookOpen />} title={t("ui.TrainingCourses.catalogoDeCursos", "Catálogo de cursos")} contentClassName="-mx-5 -mb-5">
           <DataTable
             surface="none"
             loading={loading}
@@ -274,16 +276,16 @@ export default function TrainingCoursesPage() {
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-2">
-              <Label>Título *</Label>
+              <Label>{t("ui.TrainingCourses.titulo", "Título *")}</Label>
               <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Ej. Primeros auxilios en seguridad" />
             </div>
             <div className="space-y-2">
-              <Label>Descripción</Label>
+              <Label>{t("ui.TrainingCourses.descripcion", "Descripción")}</Label>
               <Textarea value={form.description ?? ''} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label>Categoría</Label>
+                <Label>{t("ui.TrainingCourses.categoria2", "Categoría")}</Label>
                 <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v as any })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
@@ -325,7 +327,7 @@ export default function TrainingCoursesPage() {
       <AlertDialog open={!!deleteId} onOpenChange={(o) => !o && setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar curso?</AlertDialogTitle>
+            <AlertDialogTitle>{t("ui.TrainingCourses.eliminarCurso", "¿Eliminar curso?")}</AlertDialogTitle>
             <AlertDialogDescription>
               Esta acción archivará el curso. Las inscripciones y certificados existentes se conservan.
             </AlertDialogDescription>

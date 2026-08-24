@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from 'react-i18next';
 import {
   Loader2, VideoOff, WifiOff, PlayCircle, AlertTriangle, RefreshCw,
   ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Plus, Minus, Move,
@@ -111,6 +112,7 @@ export type VideoPlayerProps = {
 };
 
 export function VideoPlayer({ camera, className, autoPlay = true, ptz = true, videoRef, onStream }: VideoPlayerProps) {
+  const { t } = useTranslation();
   const videoElRef = React.useRef<HTMLVideoElement | null>(null);
   const hlsRef = React.useRef<any>(null);
   const pcRef = React.useRef<RTCPeerConnection | null>(null);
@@ -274,10 +276,10 @@ export function VideoPlayer({ camera, className, autoPlay = true, ptz = true, vi
         <Overlay><Loader2 className="size-7 animate-spin" style={{ color: "var(--brand)" }} /><p className="text-sm text-white/70">Conectando…</p></Overlay>
       ) : null}
       {state === "offline" ? (
-        <Overlay snapshot={snapshot}><WifiOff className="size-8 text-white/60" /><p className="text-sm font-medium text-white/80">Cámara fuera de línea</p><RetryButton onClick={reload} /></Overlay>
+        <Overlay snapshot={snapshot}><WifiOff className="size-8 text-white/60" /><p className="text-sm font-medium text-white/80">{t("ui.VideoPlayer.camaraFueraDeLinea", "Cámara fuera de línea")}</p><RetryButton onClick={reload} /></Overlay>
       ) : null}
       {state === "none" ? (
-        <Overlay snapshot={snapshot}><VideoOff className="size-8" style={{ color: "var(--brand)" }} /><p className="text-sm font-medium text-white/85">Sin transmisión configurada</p></Overlay>
+        <Overlay snapshot={snapshot}><VideoOff className="size-8" style={{ color: "var(--brand)" }} /><p className="text-sm font-medium text-white/85">{t("ui.VideoPlayer.sinTransmisionConfigurada", "Sin transmisión configurada")}</p></Overlay>
       ) : null}
       {state === "error" ? (
         <Overlay snapshot={snapshot}><AlertTriangle className="size-8" style={{ color: "var(--warn)" }} /><p className="text-sm font-medium text-white/85">{errorMsg || "Error de transmisión"}</p><RetryButton onClick={reload} /></Overlay>

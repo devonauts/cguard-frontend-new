@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from 'react-i18next';
 import { toast } from "sonner";
 import {
   Video,
@@ -231,6 +232,7 @@ const selectClass = "cg-input cg-focus h-9 w-full px-3 text-sm sm:w-56";
 /* ------------------------------------------------------------------ */
 
 export default function VideoMonitoring() {
+  const { t } = useTranslation();
   const [cameras, setCameras] = React.useState<Camera[]>([]);
   const [devices, setDevices] = React.useState<Device[]>([]);
   const [loading, setLoading] = React.useState(true);
@@ -316,7 +318,7 @@ export default function VideoMonitoring() {
                 {enLinea === 1 ? "1 cámara transmitiendo" : `${enLinea} cámaras transmitiendo`}
               </StatusBadge>
             ) : (
-              <StatusBadge tone="neutral">Ninguna cámara transmitiendo</StatusBadge>
+              <StatusBadge tone="neutral">{t("ui.VideoMonitoring.ningunaCamaraTransmitiendo", "Ninguna cámara transmitiendo")}</StatusBadge>
             )
           }
           actions={
@@ -373,7 +375,7 @@ export default function VideoMonitoring() {
         ) : error ? (
           <EmptyState
             icon={<AlertTriangle />}
-            title="No se pudieron cargar las cámaras"
+            title={t("ui.VideoMonitoring.noSePudieronCargarLas", "No se pudieron cargar las cámaras")}
             description={error}
             action={
               <Button variant="brand" onClick={load}>

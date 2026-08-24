@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import { Link } from "react-router-dom";
 import AppLayout from "@/layouts/app-layout";
 import Breadcrumb from "@/components/ui/breadcrumb";
@@ -66,6 +67,7 @@ const fotoVehiculo = (v: any): string | null => {
 };
 
 export default function VehiclesPage() {
+  const { t } = useTranslation();
     const [openFilter, setOpenFilter] = useState(false);
     const [filters, setFilters] = useState<VehicleFilters>(defaultVehicleFilters);
 
@@ -255,7 +257,7 @@ export default function VehiclesPage() {
             <PageContainer width="wide" className="px-4 py-6 sm:px-6">
                 <PageHeader
                     icon={<Car />}
-                    title="Vehículos"
+                    title={t("ui.Vehicles.vehiculos2", "Vehículos")}
                     subtitle="Flota de la empresa y su estado operativo"
                     badges={(
                         <>
@@ -347,7 +349,7 @@ export default function VehiclesPage() {
                         <TableSearch
                             value={filters.search ?? ''}
                             onChange={(v) => setFilters((s) => ({ ...s, search: v }))}
-                            placeholder="Buscar vehículo"
+                            placeholder={t("ui.Vehicles.buscarVehiculo2", "Buscar vehículo")}
                         />
                     </div>
                     <Select disabled={selectedIds.length === 0} value={selectedAction ?? undefined} onValueChange={(v) => handleBulkActionSelect(v)}>
@@ -373,7 +375,7 @@ export default function VehiclesPage() {
                 </Toolbar>
 
                 <Section
-                    title="Listado de vehículos"
+                    title={t("ui.Vehicles.listadoDeVehiculos2", "Listado de vehículos")}
                     icon={<Car />}
                     action={vista === 'tarjetas' && rows.length > 0 ? (
                         <label className="flex cursor-pointer items-center gap-2 text-xs font-medium" style={{ color: 'var(--ink-soft)' }}>
@@ -489,7 +491,7 @@ export default function VehiclesPage() {
                                                 aria-label="Seleccionar todos"
                                             />
                                         </th>
-                                        <th className="px-4 py-2 font-semibold">Año</th>
+                                        <th className="px-4 py-2 font-semibold">{t("ui.Vehicles.ano3", "Año")}</th>
                                         <th className="px-4 py-2 font-semibold">Marca</th>
                                         <th className="px-4 py-2 font-semibold">Modelo</th>
                                         <th className="px-4 py-2 font-semibold">Placa</th>
@@ -534,7 +536,7 @@ export default function VehiclesPage() {
                     <AlertDialog open={!!archiveConfirmId} onOpenChange={(open) => !open && setArchiveConfirmId(null)}>
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
-                                        <AlertDialogTitle>Inactivar vehículos</AlertDialogTitle>
+                                        <AlertDialogTitle>{t("ui.Vehicles.inactivarVehiculos", "Inactivar vehículos")}</AlertDialogTitle>
                                     </AlertDialogHeader>
                                     <div className="p-4 text-sm" style={{ color: 'var(--ink-soft)' }}>
                                         ¿Estás seguro de que deseas inactivar 1 vehículo(s)?
@@ -606,7 +608,7 @@ export default function VehiclesPage() {
                     <Dialog open={!!detailsId} onOpenChange={(open) => { if (!open) { setDetailsId(null); setDetailsVehicle(null); } }}>
                         <DialogContent>
                             <DialogHeader>
-                                <DialogTitle>Detalles del vehículo</DialogTitle>
+                                <DialogTitle>{t("ui.Vehicles.detallesDelVehiculo", "Detalles del vehículo")}</DialogTitle>
                                 <DialogDescription>
                                     Información completa del vehículo.
                                 </DialogDescription>
@@ -670,7 +672,7 @@ export default function VehiclesPage() {
 
                                     {detailsVehicle.description && (
                                         <div>
-                                            <div className="cg-eyebrow mb-1">Descripción</div>
+                                            <div className="cg-eyebrow mb-1">{t("ui.Vehicles.descripcion2", "Descripción")}</div>
                                             <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>{detailsVehicle.description}</p>
                                         </div>
                                     )}
@@ -679,7 +681,7 @@ export default function VehiclesPage() {
                                 <div className="p-4">
                                     <EmptyState
                                         icon={<Car />}
-                                        title="Sin información"
+                                        title={t("ui.Vehicles.sinInformacion", "Sin información")}
                                         description="No se encontró información del vehículo."
                                     />
                                 </div>
@@ -703,7 +705,7 @@ export default function VehiclesPage() {
                         }}
                     >
                         <div className="flex items-center gap-2">
-                            <span>Elementos por página</span>
+                            <span>{t("ui.Vehicles.elementosPorPagina2", "Elementos por página")}</span>
                             <Select
                                 value={filters.perPage}
                                 onValueChange={(v) => setFilters((s: any) => ({ ...s, perPage: v }))}

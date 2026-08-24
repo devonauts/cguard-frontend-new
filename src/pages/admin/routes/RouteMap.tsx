@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { loadGoogleMaps } from '@/utils/loadGoogleMaps';
 import { estiloMapa, huella, pielDe, useMapPalette } from '@/utils/mapTheme';
 import { chipPin, iconoDe, orbPin } from '@/utils/mapPins';
@@ -90,6 +91,7 @@ export default function RouteMap({
   optimizada = false,
   hud = true,
 }: Props) {
+  const { t } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
   const markersRef = useRef<any[]>([]);
@@ -385,8 +387,8 @@ export default function RouteMap({
                 <div className="cc-map-metric">{formatearDistancia(medida.metros)}</div>
               </div>
               <div className="hidden sm:block">
-                <div className="cc-map-eyebrow">Conducción estimada</div>
-                <div className="cc-map-metric" title="A marcha de tráfico urbano, sin contar la permanencia en cada parada">
+                <div className="cc-map-eyebrow">{t("ui.RouteMap.conduccionEstimada", "Conducción estimada")}</div>
+                <div className="cc-map-metric" title={t("ui.RouteMap.aMarchaDeTraficoUrbano", "A marcha de tráfico urbano, sin contar la permanencia en cada parada")}>
                   {formatearMinutos(medida.minutos)}
                 </div>
               </div>

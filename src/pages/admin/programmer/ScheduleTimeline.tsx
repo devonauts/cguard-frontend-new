@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { nombreDeVigilante } from "@/lib/guardName";
 import { Clock, Loader2, MapPin, Pencil, Trash2, User, X } from 'lucide-react';
 import { ApiService } from '@/services/api/apiService';
@@ -152,6 +153,7 @@ const segmentize = (aAbs: number, bAbs: number, dayCount: number): Segment[] => 
 export default function ScheduleTimeline({
   tenantId, view, days, stations, shifts, guardsPool, guardColorMap, tz, todayStr, onChanged,
 }: Props) {
+  const { t } = useTranslation();
   const hourH = 36; // px per hour, vertical
   const pxPerMin = hourH / 60;
   const snapStep = 30;
@@ -713,9 +715,9 @@ export default function ScheduleTimeline({
                 <div className="flex items-center gap-2 text-[11px]" style={{ color: 'var(--ink-soft)' }}>
                   <Clock size={12} />
                   {hours > 0
-                    ? <span>Duración: <b className="tabular-nums" style={{ color: 'var(--ink)' }}>{hours % 1 === 0 ? hours : hours.toFixed(1)}h</b>{hours === 24 ? ' (turno completo)' : ''} · hora de la empresa</span>
+                    ? <span>{t("ui.ScheduleTimeline.duracion", "Duración:")}{" "}<b className="tabular-nums" style={{ color: 'var(--ink)' }}>{hours % 1 === 0 ? hours : hours.toFixed(1)}h</b>{hours === 24 ? ' (turno completo)' : ''} · hora de la empresa</span>
                     : <span className="font-medium" style={{ color: 'var(--bad-text)' }}>El fin debe ser posterior al inicio</span>}
-                  {hours > 24 && <span className="font-medium" style={{ color: 'var(--bad-text)' }}>· máximo 24h</span>}
+                  {hours > 24 && <span className="font-medium" style={{ color: 'var(--bad-text)' }}>{t("ui.ScheduleTimeline.maximo24h", "· máximo 24h")}</span>}
                 </div>
                 <div>
                   <label className="cg-eyebrow mb-1.5 block">Vigilante</label>

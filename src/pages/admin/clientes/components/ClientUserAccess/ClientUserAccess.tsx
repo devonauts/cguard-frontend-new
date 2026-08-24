@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import useScrollToTopOnMount from '@/hooks/useScrollToTopOnMount';
 import { clientService } from '@/lib/api/clientService';
@@ -17,6 +18,7 @@ interface AccessUser {
 }
 
 export default function ClientUserAccess({ client }: Props) {
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement | null>(null);
   useScrollToTopOnMount(containerRef);
 
@@ -87,7 +89,7 @@ export default function ClientUserAccess({ client }: Props) {
             ))}
           </div>
         )}
-        <p className="mt-3 text-xs text-muted-foreground">Los accesos otorgan al cliente visibilidad únicamente de su propia operación.</p>
+        <p className="mt-3 text-xs text-muted-foreground">{t("ui.ClientUserAccess.losAccesosOtorganAlCliente", "Los accesos otorgan al cliente visibilidad únicamente de su propia operación.")}</p>
       </Section>
 
       <Modal open={inviteOpen} onOpenChange={(o) => { if (!sending) setInviteOpen(o); }} title="Invitar acceso" icon={<UserPlus className="h-5 w-5" />}
@@ -113,7 +115,7 @@ export default function ClientUserAccess({ client }: Props) {
               })}
             </div>
           </LabeledField>
-          <p className="text-xs text-muted-foreground">Se creará el acceso y se enviará un enlace para que la persona configure su contraseña.</p>
+          <p className="text-xs text-muted-foreground">{t("ui.ClientUserAccess.seCrearaElAccesoY", "Se creará el acceso y se enviará un enlace para que la persona configure su contraseña.")}</p>
         </div>
       </Modal>
     </div>

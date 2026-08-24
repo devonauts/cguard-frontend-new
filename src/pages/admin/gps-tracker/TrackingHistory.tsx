@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { useSearchParams } from "react-router-dom";
 import AppLayout from "@/layouts/app-layout";
 import { toast } from "sonner";
@@ -31,6 +32,7 @@ const ALTO_FILA = 34;
 const MARGEN_FILAS = 8;
 
 export default function TrackingHistoryPage() {
+  const { t } = useTranslation();
   const [params] = useSearchParams();
 
   const [guards, setGuards] = useState<GuardOpt[]>([]);
@@ -214,8 +216,8 @@ export default function TrackingHistoryPage() {
               <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="roadmap">Hoja de ruta</SelectItem>
-                <SelectItem value="satellite">Satélite</SelectItem>
-                <SelectItem value="hybrid">Híbrido</SelectItem>
+                <SelectItem value="satellite">{t("ui.TrackingHistory.satelite", "Satélite")}</SelectItem>
+                <SelectItem value="hybrid">{t("ui.TrackingHistory.hibrido", "Híbrido")}</SelectItem>
                 <SelectItem value="terrain">Terreno</SelectItem>
               </SelectContent>
             </Select>

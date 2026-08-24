@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { createPortal } from "react-dom";
 import { X, Loader2, Copy, Server } from "lucide-react";
 import { toast } from "sonner";
@@ -11,6 +12,7 @@ import { videoService, type Device } from "@/lib/api/videoService";
 export default function VideoGatewayModal({
   device, open, onClose, onSaved,
 }: { device: Device | null; open: boolean; onClose: () => void; onSaved?: () => void }) {
+  const { t } = useTranslation();
   const [base, setBase] = useState("");
   const [format, setFormat] = useState<"hls" | "webrtc">("hls");
   const [saving, setSaving] = useState(false);
@@ -98,7 +100,7 @@ export default function VideoGatewayModal({
 
           <div className="glass-sunken p-3">
             <div className="mb-1.5 flex items-center justify-between">
-              <p className="text-xs font-semibold" style={{ color: "var(--ink)" }}>Configuración go2rtc (pégala en go2rtc.yaml)</p>
+              <p className="text-xs font-semibold" style={{ color: "var(--ink)" }}>{t("ui.VideoGatewayModal.configuracionGo2rtcPegalaEnGo2rtc", "Configuración go2rtc (pégala en go2rtc.yaml)")}</p>
               <button onClick={copyYaml} disabled={!yaml} className="cg-focus inline-flex items-center gap-1 text-xs font-medium hover:underline disabled:opacity-40" style={{ color: "var(--brand-text)" }}><Copy size={12} /> Copiar</button>
             </div>
             {loadingYaml ? (

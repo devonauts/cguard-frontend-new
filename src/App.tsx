@@ -4,6 +4,7 @@ import AppErrorBoundary from "./components/AppErrorBoundary"
 import ProtectedRoute, { PublicOnlyRoute } from "@/components/ProtectedRoute"
 import AppLayout from "@/layouts/app-layout"
 import Login from "./pages/auth/login";
+import { useTranslation } from 'react-i18next';
 import ForgotPassword from "./pages/auth/forgot-password";
 import ResetPassword from "./pages/auth/reset-password";
 const DashboardPage = lazy(() => import("./pages/admin/dashboard/control-center/ControlCenter"));
@@ -1755,12 +1756,13 @@ export default function App() {
 }
 
 function NotFound() {
+  const { t } = useTranslation();
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/30 px-6">
       <div className="text-center">
         <ArrowLeftCircle className="mx-auto h-16 w-16 text-emerald-500 mb-4" />
         <h1 className="text-6xl font-extrabold text-emerald-600">404</h1>
-        <p className="mt-4 text-lg text-foreground/70">Página no encontrada</p>
+        <p className="mt-4 text-lg text-foreground/70">{t("ui.App.paginaNoEncontrada", "Página no encontrada")}</p>
         <a
           href="/dashboard"
           className="mt-6 inline-block rounded-lg bg-emerald-600 px-6 py-2 text-white font-semibold shadow hover:bg-emerald-700 transition-all"

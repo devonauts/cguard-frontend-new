@@ -1,4 +1,5 @@
 import { useCallback, useRef, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { useGoogleMaps } from '@/hooks/useGoogleMaps';
 import { Button } from '@/components/ui/button';
@@ -71,6 +72,7 @@ export default function AddressAutocomplete({
   onGeocodeResult,
   countryCodes,
 }: AddressAutocompleteProps) {
+  const { t } = useTranslation();
   const { isLoaded, loadError, google } = useGoogleMaps();
 
   const inputRef        = useRef<HTMLInputElement>(null);
@@ -529,7 +531,7 @@ export default function AddressAutocomplete({
           className="flex shrink-0 items-center gap-1.5"
         >
           <MapPin className="h-4 w-4" />
-          <span className="hidden text-sm sm:inline">Mi ubicación</span>
+          <span className="hidden text-sm sm:inline">{t("ui.AddressAutocomplete.miUbicacion", "Mi ubicación")}</span>
         </Button>
       </div>
 

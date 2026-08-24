@@ -8,6 +8,7 @@
  * acciones sin dejar rastro auditable no entra a esta plataforma.
  */
 import { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { Bot, Wallet, MessageSquare, ListChecks } from "lucide-react";
@@ -23,6 +24,7 @@ const formatearDinero = (moneda: { codigo: string; tasa: number }, usd: number, 
   `${(usd * moneda.tasa).toLocaleString(undefined, { minimumFractionDigits: decimales, maximumFractionDigits: decimales })} ${moneda.codigo}`;
 
 export default function VigiaUsagePage() {
+  const { t } = useTranslation();
   const [datos, setDatos] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -95,9 +97,9 @@ export default function VigiaUsagePage() {
 
           {/* Actividad de los últimos 30 días */}
           <section className="glass-flat rounded-2xl p-5">
-            <h3 className="mb-3 text-sm font-semibold">Actividad · últimos 30 días</h3>
+            <h3 className="mb-3 text-sm font-semibold">{t("ui.VigiaUsage.actividadUltimos30Dias", "Actividad · últimos 30 días")}</h3>
             {!hayUso ? (
-              <p className="text-sm" style={{ color: "var(--ink-soft)" }}>Aún sin uso. El asistente vive abajo a la derecha del CRM.</p>
+              <p className="text-sm" style={{ color: "var(--ink-soft)" }}>{t("ui.VigiaUsage.aunSinUsoElAsistente", "Aún sin uso. El asistente vive abajo a la derecha del CRM.")}</p>
             ) : (
               <>
                 <div className="flex items-end gap-[3px]" style={{ height: 90 }}>
@@ -127,7 +129,7 @@ export default function VigiaUsagePage() {
           <section className="glass-flat rounded-2xl p-5">
             <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold"><ListChecks size={15} /> Acciones ejecutadas</h3>
             {!datos.acciones?.length ? (
-              <p className="text-sm" style={{ color: "var(--ink-soft)" }}>Ninguna todavía. Toda acción del asistente queda registrada aquí.</p>
+              <p className="text-sm" style={{ color: "var(--ink-soft)" }}>{t("ui.VigiaUsage.ningunaTodaviaTodaAccionDel", "Ninguna todavía. Toda acción del asistente queda registrada aquí.")}</p>
             ) : (
               <div className="space-y-2">
                 {datos.acciones.map((a: any, i: number) => (

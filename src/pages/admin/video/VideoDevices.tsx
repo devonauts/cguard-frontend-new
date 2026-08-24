@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import {
@@ -166,6 +167,7 @@ function TypeIcon({ type }: { type?: DeviceType }) {
 }
 
 export default function VideoDevices() {
+  const { t } = useTranslation();
   const [devices, setDevices] = useState<Device[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -487,19 +489,19 @@ export default function VideoDevices() {
                   id="vd-name"
                   value={form.name}
                   onChange={(e) => set("name", e.target.value)}
-                  placeholder="DVR Recepción"
+                  placeholder={t("ui.VideoDevices.dvrRecepcion", "DVR Recepción")}
                   required
                 />
               </div>
 
               {/* Connection: direct (same LAN) vs relay (remote site behind NAT) */}
               <div className={form.connectionMode === "relay" ? "" : "sm:col-span-2"}>
-                <Label htmlFor="vd-conn">Conexión</Label>
+                <Label htmlFor="vd-conn">{t("ui.VideoDevices.conexion", "Conexión")}</Label>
                 <Select value={form.connectionMode} onValueChange={(v) => set("connectionMode", v as "direct" | "relay")}>
                   <SelectTrigger id="vd-conn"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="direct">Directa (misma red / accesible)</SelectItem>
-                    <SelectItem value="relay">Remota — vía relay (otra red/país)</SelectItem>
+                    <SelectItem value="relay">{t("ui.VideoDevices.remotaViaRelayOtraRed", "Remota — vía relay (otra red/país)")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -622,7 +624,7 @@ export default function VideoDevices() {
               </div>
 
               <div>
-                <Label htmlFor="vd-password">Contraseña</Label>
+                <Label htmlFor="vd-password">{t("ui.VideoDevices.contrasena", "Contraseña")}</Label>
                 <Input
                   id="vd-password"
                   type="password"
@@ -658,12 +660,12 @@ export default function VideoDevices() {
               </div>
 
               <div>
-                <Label htmlFor="vd-station">Estación (opcional)</Label>
+                <Label htmlFor="vd-station">{t("ui.VideoDevices.estacionOpcional", "Estación (opcional)")}</Label>
                 <Input
                   id="vd-station"
                   value={form.stationId}
                   onChange={(e) => set("stationId", e.target.value)}
-                  placeholder="ID de la estación"
+                  placeholder={t("ui.VideoDevices.idDeLaEstacion", "ID de la estación")}
                 />
               </div>
 
@@ -674,7 +676,7 @@ export default function VideoDevices() {
                   value={form.notes}
                   onChange={(e) => set("notes", e.target.value)}
                   rows={2}
-                  placeholder="Ubicación, observaciones..."
+                  placeholder={t("ui.VideoDevices.ubicacionObservaciones", "Ubicación, observaciones...")}
                 />
               </div>
             </div>

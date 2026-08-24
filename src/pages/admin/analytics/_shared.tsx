@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { Link } from "react-router-dom";
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
@@ -261,6 +262,7 @@ export function PerSiteTable({ rows, showShifts = false, limit }: {
   showShifts?: boolean;
   limit?: number;
 }) {
+  const { t } = useTranslation();
   const visibles = limit ? rows.slice(0, limit) : rows;
   return (
     <div className="overflow-x-auto">
@@ -272,7 +274,7 @@ export function PerSiteTable({ rows, showShifts = false, limit }: {
             {showShifts && <th className="px-3 py-2 text-right font-semibold">Turnos</th>}
             <th className="px-3 py-2 text-right font-semibold">Cobertura</th>
             <th className="px-3 py-2 text-right font-semibold">Rondas</th>
-            <th className="px-3 py-2 text-right font-semibold">Ubicación</th>
+            <th className="px-3 py-2 text-right font-semibold">{t("ui.shared.ubicacion", "Ubicación")}</th>
             <th className="px-3 py-2 text-right font-semibold">Incidentes</th>
           </tr>
         </thead>

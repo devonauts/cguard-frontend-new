@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useTranslation } from 'react-i18next';
 import { toast } from "sonner";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import { ApiService, ApiError } from "@/services/api/apiService";
@@ -33,6 +34,7 @@ type MemoItem = {
 };
 
 export default function MemosPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [memos, setMemos] = useState<MemoItem[]>([]);
@@ -601,7 +603,7 @@ export default function MemosPage() {
               </div>
               <div>
                 <Label className="mb-2 block">Asunto</Label>
-                <Input value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Descripción corta del memo" />
+                <Input value={subject} onChange={(e) => setSubject(e.target.value)} placeholder={t("ui.Memos.descripcionCortaDelMemo", "Descripción corta del memo")} />
               </div>
               <div>
                 <Label className="mb-2 block">Contenido</Label>
@@ -622,7 +624,7 @@ export default function MemosPage() {
         <Dialog open={confirmDeleteOpen} onOpenChange={setConfirmDeleteOpen}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Confirmar eliminación</DialogTitle>
+              <DialogTitle>{t("ui.Memos.confirmarEliminacion", "Confirmar eliminación")}</DialogTitle>
               <DialogDescription>
                 ¿Estás seguro de que deseas eliminar el memo "{memoToDelete?.subject}"?
               </DialogDescription>
@@ -644,7 +646,7 @@ export default function MemosPage() {
           <DialogContent className="sm:max-w-xl">
             <DialogHeader>
               <DialogTitle>Detalle del Memo</DialogTitle>
-              <DialogDescription>Revisa la información del memo seleccionado.</DialogDescription>
+              <DialogDescription>{t("ui.Memos.revisaLaInformacionDelMemo", "Revisa la información del memo seleccionado.")}</DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="flex flex-wrap items-center gap-2">

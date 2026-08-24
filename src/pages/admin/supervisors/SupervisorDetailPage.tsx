@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from "react-router-dom";
 import AppLayout from "@/layouts/app-layout";
 import GuardsLayout from "@/layouts/GuardsLayout";
@@ -53,6 +54,7 @@ const EditSelect = ({ label, value, field, onChange }: { label: string; value: s
 );
 
 export default function SupervisorDetailPage() {
+  const { t } = useTranslation();
   const { id = "" } = useParams();
   const navigate = useNavigate();
   const [sup, setSup] = useState<Supervisor | null>(null);
@@ -115,7 +117,7 @@ export default function SupervisorDetailPage() {
               {/* Barra de edición — la identidad del supervisor (avatar, nombre,
                   estado) vive en la cabecera compartida de GuardsLayout. */}
               <div className="flex items-center justify-between gap-2">
-                <h2 className="text-sm font-semibold text-foreground">Información del supervisor</h2>
+                <h2 className="text-sm font-semibold text-foreground">{t("ui.SupervisorDetail.informacionDelSupervisor", "Información del supervisor")}</h2>
                 <div className="flex items-center gap-2">
                   {!editing ? (
                     <Button variant="brand" size="sm" onClick={beginEdit}>
@@ -170,7 +172,7 @@ export default function SupervisorDetailPage() {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* MAIN (2/3) */}
                 <div className="lg:col-span-2 space-y-6">
-                  <Section title="Información general" icon={<IdCard />}>
+                  <Section title={t("ui.SupervisorDetail.informacionGeneral", "Información general")} icon={<IdCard />}>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <ReadField label="Nombres" value={sup.firstName} />
                       <ReadField label="Apellidos" value={sup.lastName} />
@@ -192,7 +194,7 @@ export default function SupervisorDetailPage() {
                     </div>
                   </Section>
 
-                  <Section title="Información personal" icon={<UserCog />}>
+                  <Section title={t("ui.SupervisorDetail.informacionPersonal", "Información personal")} icon={<UserCog />}>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {editing ? (
                         <>
@@ -233,7 +235,7 @@ export default function SupervisorDetailPage() {
 
                 {/* SIDEBAR (1/3) */}
                 <div className="space-y-6">
-                  <Section title="Operación" icon={<Car />}>
+                  <Section title={t("ui.SupervisorDetail.operacion", "Operación")} icon={<Car />}>
                     <div className="space-y-4">
                       {editing ? (
                         <>

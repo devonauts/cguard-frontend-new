@@ -18,6 +18,7 @@
  * ════════════════════════════════════════════════════════════════════════════
  */
 import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   LogIn, LogOut, Smartphone, AlertTriangle, Search, ShieldCheck, Loader2,
 } from 'lucide-react';
@@ -169,6 +170,7 @@ export function InfiniteFooter({ sentinelRef, loading, hasMore, count, endLabel 
   sentinelRef: React.Ref<HTMLDivElement>;
   loading: boolean; hasMore: boolean; count: number; endLabel: string;
 }) {
+  const { t } = useTranslation();
   return (
     <div
       ref={sentinelRef}
@@ -180,7 +182,7 @@ export function InfiniteFooter({ sentinelRef, loading, hasMore, count, endLabel 
           <Loader2 className="size-4 animate-spin" /> Cargando más…
         </span>
       ) : hasMore ? (
-        <span>Desplázate para ver más</span>
+        <span>{t("ui.shared.desplazateParaVerMas", "Desplázate para ver más")}</span>
       ) : count > 0 ? (
         <span>— {endLabel} —</span>
       ) : null}

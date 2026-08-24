@@ -1,4 +1,5 @@
 import { localToday, rotationDseOf, nextRestDates, weeklyRestWeekday, shortRestLabel, type RotationCycle } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 import { useEffect, useMemo, useState } from 'react';
 import { Loader2, UserPlus, Repeat, CalendarRange, Moon } from 'lucide-react';
 import { toast } from 'sonner';
@@ -44,6 +45,7 @@ type Props = {
  * creates a one-off shift. Self-contained: loads its own guards + positions.
  */
 export default function ShiftAssignModal({ open, onClose, onSaved, station, stationId, postSiteId, presetGuardId }: Props) {
+  const { t } = useTranslation();
   const tenantId = (station?.tenantId || localStorage.getItem('tenantId') || '') as string;
 
   const [assignMode, setAssignMode] = useState<'single' | 'rotation'>('rotation');
@@ -262,8 +264,8 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
             value={assignMode}
             onChange={setAssignMode}
             options={[
-              { value: 'rotation', label: <span className="inline-flex items-center gap-1.5"><Repeat size={13} /> Rotación</span> },
-              { value: 'single', label: <span className="inline-flex items-center gap-1.5"><CalendarRange size={13} /> Turno único</span> },
+              { value: 'rotation', label: <span className="inline-flex items-center gap-1.5"><Repeat size={13} />{" "}{t("ui.ShiftAssignModal.rotacion", "Rotación")}</span> },
+              { value: 'single', label: <span className="inline-flex items-center gap-1.5"><CalendarRange size={13} />{" "}{t("ui.ShiftAssignModal.turnoUnico", "Turno único")}</span> },
             ]}
           />
 
@@ -306,7 +308,7 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
                     ))}
                   </div>
                 )}
-                <p className="mt-1.5 text-[11px] text-muted-foreground">Los vigilantes alternan día y noche según el horario de la estación. El ciclo arranca en su <b>fecha de inicio</b> — cámbiala para mover el día de descanso.</p>
+                <p className="mt-1.5 text-[11px] text-muted-foreground">Los vigilantes alternan día y noche según el horario de la estación. El ciclo arranca en su <b>fecha de inicio</b>{" "}{t("ui.ShiftAssignModal.cambialaParaMoverElDia", "— cámbiala para mover el día de descanso.")}</p>
               </LabeledField>
 
               {/* Fecha de inicio = la fase de la rotación (día-0 del ciclo). */}
@@ -330,7 +332,7 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
 
               <LabeledField label="Hasta (opcional)">
                 <input type="date" value={rotationEndDate} min={rotationStartDate} onChange={(e) => setRotationEndDate(e.target.value)} className={FIELD_CLS_LG} />
-                <p className="mt-1 text-[10px] text-muted-foreground/70">Déjalo vacío para una asignación indefinida; pon una fecha para una cobertura temporal.</p>
+                <p className="mt-1 text-[10px] text-muted-foreground/70">{t("ui.ShiftAssignModal.dejaloVacioParaUnaAsignacion", "Déjalo vacío para una asignación indefinida; pon una fecha para una cobertura temporal.")}</p>
               </LabeledField>
             </>
           ) : (

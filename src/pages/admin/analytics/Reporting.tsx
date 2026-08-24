@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { Link } from "react-router-dom";
 import {
   Shield, ClipboardCheck, MapPin, AlertTriangle, Clock, TrendingUp, Building2, Award, ArrowRight,
@@ -11,6 +12,7 @@ import { analyticsService, PerfLeaderboard } from "@/lib/api/analyticsService";
 import { Stagger, EmptyState } from "@/components/kit";
 
 export default function Reporting() {
+  const { t } = useTranslation();
   const { days, setDays, data, loading, error, reload } = useOpsAnalytics(30);
   const [lb, setLb] = useState<PerfLeaderboard | null>(null);
   useEffect(() => {
@@ -22,7 +24,7 @@ export default function Reporting() {
 
   return (
     <AnalyticsShell
-      title="Analíticas de Operaciones"
+      title={t("ui.Reporting.analiticasDeOperaciones", "Analíticas de Operaciones")}
       subtitle="Indicadores clave del servicio de vigilante para tu operación."
       days={days} setDays={setDays} loading={loading} error={error} reload={reload}
     >
@@ -39,22 +41,22 @@ export default function Reporting() {
 
           {/* Team performance — official score (links to Vigilantes) */}
           {lb && lb.averageScore != null && (
-            <Section title="Desempeño del equipo" icon={<Award size={16} />}>
+            <Section title={t("ui.Reporting.desempenoDelEquipo", "Desempeño del equipo")} icon={<Award size={16} />}>
               <div className="grid gap-5 md:grid-cols-3">
                 <div className="glass-sunken flex flex-col items-center justify-center p-4 text-center">
                   {/* `--brand-text` y no `--brand`: el relleno del acento como
                       letra sobre el lienzo se queda en 2,25:1 e ilegible. */}
                   <p className="font-display text-5xl font-bold tabular-nums" style={{ color: "var(--brand-text)" }}>{lb.averageScore}</p>
-                  <p className="mt-1 text-xs" style={{ color: "var(--ink-soft)" }}>Puntuación promedio /100</p>
+                  <p className="mt-1 text-xs" style={{ color: "var(--ink-soft)" }}>{t("ui.Reporting.puntuacionPromedio100", "Puntuación promedio /100")}</p>
                   <p className="mt-1 text-xs" style={{ color: "var(--ink-faint)" }}>{lb.counts.scored} vigilantes evaluados · {lb.counts.excellent} excelentes</p>
                 </div>
                 <div className="md:col-span-2">
                   <div className="mb-2 flex items-center justify-between">
-                    <p className="text-sm font-semibold text-foreground">Vigilantes con menor desempeño</p>
+                    <p className="text-sm font-semibold text-foreground">{t("ui.Reporting.vigilantesConMenorDesempeno", "Vigilantes con menor desempeño")}</p>
                     <Link to="/analytics/guard" className="inline-flex items-center gap-1 text-xs font-medium hover:underline" style={{ color: "var(--brand-text)" }}>Ver ranking completo <ArrowRight size={12} /></Link>
                   </div>
                   {lb.guards.filter((g) => g.hasData).length === 0 ? (
-                    <p className="text-sm text-muted-foreground">Sin vigilantes evaluados en el período.</p>
+                    <p className="text-sm text-muted-foreground">{t("ui.Reporting.sinVigilantesEvaluadosEnEl", "Sin vigilantes evaluados en el período.")}</p>
                   ) : (
                     <ul className="space-y-1.5">
                       {lb.guards.filter((g) => g.hasData).slice(-5).reverse().map((g) => (
@@ -78,16 +80,16 @@ export default function Reporting() {
           )}
 
           <div className="grid gap-4 lg:grid-cols-3">
-            <DayBars title="Escaneos de ronda por día" color={GOLD} points={data.trend.map((t) => ({ k: t.date, v: t.scans }))} />
-            <DayBars title="Rondas completadas por día" color={TONES.ok} points={data.trend.map((t) => ({ k: t.date, v: t.rondas }))} />
-            <DayBars title="Incidentes por día" color={TONES.bad} points={data.trend.map((t) => ({ k: t.date, v: t.incidents }))} />
+            <DayBars title={t("ui.Reporting.escaneosDeRondaPorDia", "Escaneos de ronda por día")} color={GOLD} points={data.trend.map((t) => ({ k: t.date, v: t.scans }))} />
+            <DayBars title={t("ui.Reporting.rondasCompletadasPorDia", "Rondas completadas por día")} color={TONES.ok} points={data.trend.map((t) => ({ k: t.date, v: t.rondas }))} />
+            <DayBars title={t("ui.Reporting.incidentesPorDia", "Incidentes por día")} color={TONES.bad} points={data.trend.map((t) => ({ k: t.date, v: t.incidents }))} />
           </div>
 
           <div className="grid gap-4 lg:grid-cols-3">
             <Section title="Incidentes por prioridad" icon={<AlertTriangle size={16} />}>
               <HBars items={data.incidentsByPriority} color={TONES.bad} empty="Sin incidentes en el período." />
             </Section>
-            <Section title="Sitios con más incidentes" icon={<Building2 size={16} />}>
+            <Section title={t("ui.Reporting.sitiosConMasIncidentes", "Sitios con más incidentes")} icon={<Building2 size={16} />}>
               <HBars items={data.topIncidentSites.map((s) => ({ label: s.site, count: s.count }))} color={GOLD} empty="Sin incidentes en el período." />
             </Section>
             <Section title="Asistencia" icon={<Clock size={16} />}>

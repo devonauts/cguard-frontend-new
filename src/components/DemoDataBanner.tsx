@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { MessageCircle, Sparkles, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { ApiService } from "@/services/api/apiService";
@@ -27,6 +28,7 @@ const CACHE_KEY = "cg_demo_data_status";
 const TTL_MS = 5 * 60 * 1000;
 
 export default function DemoDataBanner() {
+  const { t } = useTranslation();
   const [active, setActive] = useState(false);
   const [removing, setRemoving] = useState(false);
 
@@ -106,7 +108,7 @@ export default function DemoDataBanner() {
       <span className="flex min-w-0 items-center gap-2">
         <Sparkles size={15} style={{ color: "var(--brand-text)" }} />
         <span className="truncate">
-          Estás explorando con una <strong>operación de ejemplo</strong> — puestos,
+          Estás explorando con una <strong>{t("ui.DemoDataBanner.operacionDeEjemplo", "operación de ejemplo")}</strong> — puestos,
           vigilantes y novedades de muestra para que veas el sistema vivo.
         </span>
       </span>

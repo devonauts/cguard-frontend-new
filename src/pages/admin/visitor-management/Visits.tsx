@@ -1,4 +1,5 @@
 import { loadXlsx } from '../../../lib/lazyXlsx';
+import { useTranslation } from 'react-i18next';
 import { useMemo, useState, useEffect, useCallback, FormEvent } from "react";
 import { useAsyncList } from "@/hooks/useAsyncList";
 import { Search, Filter as FilterIcon, MoreVertical, FileDown, FileSpreadsheet, Printer, ClipboardList, LogIn, LogOut } from "lucide-react";
@@ -168,6 +169,7 @@ const escapeHtml = (val: unknown): string =>
         .replace(/'/g, "&#39;");
 
 export default function Visits() {
+  const { t } = useTranslation();
     const [openFilter, setOpenFilter] = useState(false);
     const [filters, setFilters] = useState<VisitsFilters>(defaultFilters);
 
@@ -445,7 +447,7 @@ export default function Visits() {
                     actions={
                         <Select value={action} onValueChange={handleActionChange}>
                             <SelectTrigger className="w-36">
-                                <SelectValue placeholder="Acción" />
+                                <SelectValue placeholder={t("ui.Visits.accion", "Acción")} />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="eliminar">Eliminar</SelectItem>
@@ -686,7 +688,7 @@ export default function Visits() {
                                     />
                                 </th>
                                 <th className="cg-eyebrow px-2 py-2">Nombre</th>
-                                <th className="cg-eyebrow px-2 py-2">Vehículo</th>
+                                <th className="cg-eyebrow px-2 py-2">{t("ui.Visits.vehiculo", "Vehículo")}</th>
                                 <th className="cg-eyebrow px-2 py-2">Hora de entrada</th>
                                 <th className="cg-eyebrow px-2 py-2">Hora de salida</th>
                                 <th className="cg-eyebrow px-2 py-2">Puesto de seguridad</th>
@@ -754,7 +756,7 @@ export default function Visits() {
 
                     <div className="flex items-center justify-between bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
                         <div className="flex items-center gap-2">
-                            <span>Elementos por página</span>
+                            <span>{t("ui.Visits.elementosPorPagina", "Elementos por página")}</span>
                             <Select
                                 value={filters.perPage}
                                 onValueChange={(v) => {

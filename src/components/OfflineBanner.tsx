@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { WifiOff, RefreshCw, CloudUpload } from "lucide-react";
 import { getNetworkStatus, subscribeNetworkStatus, type NetStatus } from "@/lib/offline/networkStatus";
 import { subscribePending, flush } from "@/lib/offline/offlineQueue";
@@ -11,6 +12,7 @@ import { subscribePending, flush } from "@/lib/offline/offlineQueue";
  * datos cacheados y que lo que registre saldrá solo al volver la conexión.
  */
 export default function OfflineBanner() {
+  const { t } = useTranslation();
   const [status, setStatus] = useState<NetStatus>(getNetworkStatus());
   const [pending, setPending] = useState(0);
 
@@ -32,7 +34,7 @@ export default function OfflineBanner() {
       {offline ? (
         <>
           <WifiOff size={14} />
-          <span>Sin conexión — mostrando los últimos datos conocidos.</span>
+          <span>{t("ui.OfflineBanner.sinConexionMostrandoLosUltimos", "Sin conexión — mostrando los últimos datos conocidos.")}</span>
         </>
       ) : reconnecting ? (
         <>

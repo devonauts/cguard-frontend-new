@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { useAsyncList } from "@/hooks/useAsyncList";
 import AppLayout from "@/layouts/app-layout";
 import Breadcrumb from "@/components/ui/breadcrumb";
@@ -66,6 +67,7 @@ const emptyForm = {
 };
 
 export default function Vehicles() {
+  const { t } = useTranslation();
     const [perPage, setPerPage] = useState("25");
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState("");
@@ -205,7 +207,7 @@ export default function Vehicles() {
               <PageContainer width="wide">
                 <PageHeader
                     icon={<Car />}
-                    title="Vehículos"
+                    title={t("ui.Vehicles.vehiculos", "Vehículos")}
                     subtitle="Registro de vehículos de visitantes y de la empresa"
                     badges={
                         <>
@@ -221,7 +223,7 @@ export default function Vehicles() {
                         <>
                             <Select value="" onValueChange={handleBulkAction}>
                                 <SelectTrigger className="w-36">
-                                    <SelectValue placeholder="Acción" />
+                                    <SelectValue placeholder={t("ui.Vehicles.accion", "Acción")} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="eliminar">Eliminar</SelectItem>
@@ -243,7 +245,7 @@ export default function Vehicles() {
                                 />
                                 <Input
                                     className="w-full pl-9"
-                                    placeholder="Buscar vehículo"
+                                    placeholder={t("ui.Vehicles.buscarVehiculo", "Buscar vehículo")}
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
                                 />
@@ -258,13 +260,13 @@ export default function Vehicles() {
 
                             <SheetContent side="right" className="w-full max-w-xl">
                                 <SheetHeader className="mb-4">
-                                    <SheetTitle>Nuevo vehículo</SheetTitle>
+                                    <SheetTitle>{t("ui.Vehicles.nuevoVehiculo", "Nuevo vehículo")}</SheetTitle>
                                 </SheetHeader>
 
                                 <form onSubmit={handleSubmit} className="space-y-4">
                                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                                         <div className="space-y-1.5">
-                                            <Label>Año</Label>
+                                            <Label>{t("ui.Vehicles.ano", "Año")}</Label>
                                             <Input
                                                 type="number"
                                                 placeholder="e.g. 2024"
@@ -319,7 +321,7 @@ export default function Vehicles() {
                                             Placa<span style={{ color: 'var(--bad-text)' }}>*</span>
                                         </Label>
                                         <Input
-                                            placeholder="Número de placa"
+                                            placeholder={t("ui.Vehicles.numeroDePlaca", "Número de placa")}
                                             value={form.licensePlate}
                                             onChange={(e) => setField("licensePlate", e.target.value)}
                                             aria-invalid={errors.licensePlate || undefined}
@@ -337,7 +339,7 @@ export default function Vehicles() {
                                             onValueChange={(v) => setField("ownership", v)}
                                         >
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Selecciona una opción" />
+                                                <SelectValue placeholder={t("ui.Vehicles.seleccionaUnaOpcion", "Selecciona una opción")} />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectItem value="empresa">Propiedad de la empresa</SelectItem>
@@ -348,19 +350,19 @@ export default function Vehicles() {
                                     </div>
 
                                     <div className="space-y-1.5">
-                                        <Label>Número VIN</Label>
+                                        <Label>{t("ui.Vehicles.numeroVin", "Número VIN")}</Label>
                                         <Input
-                                            placeholder="Identificador del vehículo"
+                                            placeholder={t("ui.Vehicles.identificadorDelVehiculo", "Identificador del vehículo")}
                                             value={form.vin}
                                             onChange={(e) => setField("vin", e.target.value)}
                                         />
                                     </div>
 
                                     <div className="space-y-1.5">
-                                        <Label>Descripción</Label>
+                                        <Label>{t("ui.Vehicles.descripcion", "Descripción")}</Label>
                                         <Textarea
                                             rows={3}
-                                            placeholder="Notas adicionales sobre el vehículo"
+                                            placeholder={t("ui.Vehicles.notasAdicionalesSobreElVehiculo", "Notas adicionales sobre el vehículo")}
                                             value={form.description}
                                             onChange={(e) => setField("description", e.target.value)}
                                         />
@@ -396,7 +398,7 @@ export default function Vehicles() {
                             <DropdownMenuContent align="end" className="w-56">
                                 <DropdownMenuItem disabled className="flex items-center gap-2">
                                     <Upload className="h-4 w-4" />
-                                    <span>Importar vehículos</span>
+                                    <span>{t("ui.Vehicles.importarVehiculos", "Importar vehículos")}</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem disabled className="flex items-center gap-2">
                                     <FileDown className="h-4 w-4" />
@@ -412,7 +414,7 @@ export default function Vehicles() {
                                 </DropdownMenuItem>
                                 <DropdownMenuItem disabled className="flex items-center gap-2">
                                     <Mail className="h-4 w-4" />
-                                    <span>Correo Electrónico</span>
+                                    <span>{t("ui.Vehicles.correoElectronico", "Correo Electrónico")}</span>
                                 </DropdownMenuItem>
                                 <div className="px-2 py-1.5 text-xs text-muted-foreground">
                                     Próximamente
@@ -421,7 +423,7 @@ export default function Vehicles() {
                         </DropdownMenu>
                 </Toolbar>
 
-                <Section title="Listado de vehículos" icon={<Car />}>
+                <Section title={t("ui.Vehicles.listadoDeVehiculos", "Listado de vehículos")} icon={<Car />}>
                 <div className="overflow-hidden rounded-xl border">
                     {loading ? (
                         <div className="p-4">
@@ -440,7 +442,7 @@ export default function Vehicles() {
                                 <th className="cg-eyebrow px-2 py-2">Color</th>
                                 <th className="cg-eyebrow px-2 py-2">Modelo</th>
                                 <th className="cg-eyebrow px-2 py-2">Marca</th>
-                                <th className="cg-eyebrow px-2 py-2">Año</th>
+                                <th className="cg-eyebrow px-2 py-2">{t("ui.Vehicles.ano2", "Año")}</th>
                                 <th className="cg-eyebrow px-2 py-2">Licencia</th>
                             </tr>
                         </thead>
@@ -487,7 +489,7 @@ export default function Vehicles() {
 
                     <div className="flex items-center justify-between bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
                         <div className="flex items-center gap-2">
-                            <span>Elementos por página</span>
+                            <span>{t("ui.Vehicles.elementosPorPagina", "Elementos por página")}</span>
                             <Select value={perPage} onValueChange={setPerPage}>
                                 <SelectTrigger className="h-8 w-20">
                                     <SelectValue placeholder={perPageText} />

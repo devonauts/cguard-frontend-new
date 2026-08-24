@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { toast } from "sonner";
 import { ShieldCheck, AlertTriangle, RefreshCw, Inbox, Download } from "lucide-react";
 import AppLayout from "@/layouts/app-layout";
@@ -19,6 +20,7 @@ type AuditRow = {
 };
 
 export default function AuditLogs() {
+  const { t } = useTranslation();
   const [rows, setRows] = useState<AuditRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -108,13 +110,13 @@ export default function AuditLogs() {
         />
 
         <Toolbar>
-          <AuditSearch value={q} onChange={setQ} placeholder="Buscar por usuario, dirección o dispositivo…" />
+          <AuditSearch value={q} onChange={setQ} placeholder={t("ui.AuditLogs.buscarPorUsuarioDireccionO", "Buscar por usuario, dirección o dispositivo…")} />
           <Button
             variant="outline"
             className="ml-auto"
             onClick={exportar}
             disabled={bajando || loading}
-            title="Descargar en CSV lo que estás viendo"
+            title={t("ui.AuditLogs.descargarEnCsvLoQue", "Descargar en CSV lo que estás viendo")}
           >
             <Download className="mr-2 size-4" />
             {bajando ? "Preparando…" : "Descargar CSV"}
@@ -158,7 +160,7 @@ export default function AuditLogs() {
                 <>
                   <th className="px-4 py-3">Evento</th>
                   <th className="px-3 py-3">Usuario</th>
-                  <th className="px-3 py-3">Dirección</th>
+                  <th className="px-3 py-3">{t("ui.AuditLogs.direccion", "Dirección")}</th>
                   <th className="px-3 py-3">Plataforma</th>
                   <th className="px-3 py-3">Detalle</th>
                   <th className="px-3 py-3 text-right">Fecha</th>

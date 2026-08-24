@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from "react-router-dom";
 import { AlertTriangle, Building2, Crosshair, Home, Shield, User, UserCog, X } from "lucide-react";
 import { loadGoogleMaps } from "@/utils/loadGoogleMaps";
@@ -188,6 +189,7 @@ export function OperationsMap({
   /** Paneles de cristal flotantes (estado en vivo + leyenda). */
   hud?: boolean;
 }) {
+  const { t } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
   const markersRef = useRef<Record<string, any>>({});
@@ -773,7 +775,7 @@ export function OperationsMap({
               <span className="cc-map-key"><i style={{ color: "var(--warn)" }} />En riesgo</span>
               <span className="cc-map-key"><i style={{ color: "var(--bad)" }} />Sin cubrir</span>
               {resumen.sinDatos > 0 && (
-                <span className="cc-map-key" title="Puestos sin ninguna posición de GPS para confirmar cobertura">
+                <span className="cc-map-key" title={t("ui.OperationsMap.puestosSinNingunaPosicionDe", "Puestos sin ninguna posición de GPS para confirmar cobertura")}>
                   <i style={{ color: "var(--ink-faint)" }} />Sin datos ({resumen.sinDatos})
                 </span>
               )}

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { MapPin, Navigation, Clock, RotateCw, Car, Settings2, Building2 } from 'lucide-react';
@@ -20,6 +21,7 @@ interface CoveragePosition {
 }
 
 export default function SupervisorCoveragePage() {
+  const { t } = useTranslation();
   const { id = '' } = useParams();
   const navigate = useNavigate();
   const [positions, setPositions] = useState<CoveragePosition[] | null>(null);
@@ -78,7 +80,7 @@ export default function SupervisorCoveragePage() {
                         value={p.zone}
                       />
                       <Field
-                        label={<span className="inline-flex items-center gap-1.5"><RotateCw className="h-3.5 w-3.5" /> Rotación</span>}
+                        label={<span className="inline-flex items-center gap-1.5"><RotateCw className="h-3.5 w-3.5" />{" "}{t("ui.SupervisorCoverage.rotacion", "Rotación")}</span>}
                         value={p.rotationStyleName}
                       />
                       <Field
@@ -100,7 +102,7 @@ export default function SupervisorCoveragePage() {
                           ))}
                         </div>
                       ) : (
-                        <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>Ningún puesto asignado.</p>
+                        <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t("ui.SupervisorCoverage.ningunPuestoAsignado", "Ningún puesto asignado.")}</p>
                       )}
                     </div>
 

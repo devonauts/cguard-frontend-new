@@ -15,6 +15,7 @@
  * están ahí.
  */
 import { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { toast } from "sonner";
 import { BellRing, Loader2, Save, Monitor, Mail, MessageSquare, Lock } from "lucide-react";
 
@@ -53,6 +54,7 @@ const VIAS: { key: Via; label: string; icon: React.ReactNode }[] = [
 const tenantId = () => localStorage.getItem("tenantId") || "";
 
 export default function MisAvisosPage() {
+  const { t } = useTranslation();
   const [prefs, setPrefs] = useState<Prefs>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -109,7 +111,7 @@ export default function MisAvisosPage() {
                 envía. Las emergencias llegan siempre, aunque las desmarques.
               </InfoNote>
 
-              <Section title="Qué recibo" icon={<BellRing />}>
+              <Section title={t("ui.MisAvisos.queRecibo", "Qué recibo")} icon={<BellRing />}>
                 <div className="overflow-x-auto">
                   <div className="min-w-[520px]">
                     <div

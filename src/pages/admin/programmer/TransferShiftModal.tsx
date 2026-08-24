@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -41,6 +42,7 @@ export default function TransferShiftModal({
   onClose: () => void;
   onDone: () => void;
 }) {
+  const { t } = useTranslation();
   const [toStationId, setToStationId] = useState("");
   const [mode, setMode] = useState<"shift" | "range">("shift");
   const [until, setUntil] = useState("");
@@ -143,7 +145,7 @@ export default function TransferShiftModal({
         </div>
 
         <div>
-          <label className="cg-eyebrow mb-1.5 block">Duración</label>
+          <label className="cg-eyebrow mb-1.5 block">{t("ui.TransferShiftModal.duracion", "Duración")}</label>
           <Segmented<"shift" | "range">
             value={mode}
             onChange={(v) => {

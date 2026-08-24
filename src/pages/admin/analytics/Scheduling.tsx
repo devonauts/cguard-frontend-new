@@ -1,4 +1,5 @@
 import { ClipboardCheck, CheckCircle2, AlertCircle, CalendarClock, Building2 } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 import {
   useOpsAnalytics, AnalyticsShell, MetricCard, HBars, Section, GOLD, TONES, pctColor, RangeFooter, SiteLink,
 } from "./_shared";
@@ -35,12 +36,13 @@ function CoverageBars({ data }: { data: { date: string; scheduled: number; cover
 }
 
 export default function Scheduling() {
+  const { t } = useTranslation();
   const { days, setDays, data, loading, error, reload } = useOpsAnalytics(30);
   const k = data?.kpis;
 
   return (
     <AnalyticsShell
-      title="Planificación de Turnos"
+      title={t("ui.Scheduling.planificacionDeTurnos", "Planificación de Turnos")}
       subtitle="Cobertura de turnos y huecos por cubrir."
       days={days} setDays={setDays} loading={loading} error={error} reload={reload}
     >
@@ -62,7 +64,7 @@ export default function Scheduling() {
           </Section>
 
           <div className="grid gap-4 lg:grid-cols-2">
-            <Section title="Próximos turnos sin cubrir (7 días)" icon={<CalendarClock size={16} />}>
+            <Section title={t("ui.Scheduling.proximosTurnosSinCubrir7", "Próximos turnos sin cubrir (7 días)")} icon={<CalendarClock size={16} />}>
               <HBars items={data.upcomingUncovered.map((s) => ({ label: s.site, count: s.count }))} color={TONES.bad} empty="¡Todos los turnos próximos están cubiertos!" />
             </Section>
             <Section title="Cobertura por sitio" icon={<Building2 size={16} />}>

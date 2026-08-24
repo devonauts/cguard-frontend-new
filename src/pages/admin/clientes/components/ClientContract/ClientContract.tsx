@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { ReactNode } from 'react';
 import type { Client } from '@/types/client';
 import useScrollToTopOnMount from '@/hooks/useScrollToTopOnMount';
@@ -90,6 +91,7 @@ function Bar({ pct, tone = 'ok' }: { pct: number; tone?: 'ok' | 'warn' | 'crit' 
 }
 
 export default function ClientContract({ client }: { client: Client }) {
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement | null>(null);
   useScrollToTopOnMount(containerRef);
 
@@ -224,7 +226,7 @@ export default function ClientContract({ client }: { client: Client }) {
               <div className="mt-1"><StatusBadge tone={c.active ? 'ok' : 'neutral'}>{c.active ? 'Activo' : 'Inactivo'}</StatusBadge></div>
             </div>
             <div>
-              <div className="cg-eyebrow">Días restantes</div>
+              <div className="cg-eyebrow">{t("ui.ClientContract.diasRestantes", "Días restantes")}</div>
               <div
                 className="mt-1 font-display text-2xl font-bold tabular-nums"
                 style={{ color: derived.daysRemaining != null && derived.daysRemaining < 30 ? 'var(--warn-text)' : 'var(--ok-text)' }}
@@ -233,7 +235,7 @@ export default function ClientContract({ client }: { client: Client }) {
               </div>
             </div>
             <div>
-              <div className="cg-eyebrow">Próxima renovación</div>
+              <div className="cg-eyebrow">{t("ui.ClientContract.proximaRenovacion", "Próxima renovación")}</div>
               {/* Misma tipografía que «Días restantes»: son dos métricas de la
                   misma tira y con pesos distintos una parecía más importante. */}
               <div className="mt-1 font-display text-2xl font-bold tabular-nums">{fmtDate(renewalDate)}</div>
@@ -245,7 +247,7 @@ export default function ClientContract({ client }: { client: Client }) {
 
       {/* Row 1 — four info cards */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
-        <Section title="Información del contrato" icon={<FileText className="h-4 w-4" />}>
+        <Section title={t("ui.ClientContract.informacionDelContrato", "Información del contrato")} icon={<FileText className="h-4 w-4" />}>
           <div className="space-y-2.5">
             <Field label="Número de contrato" value={orDash(c.contractNumber)} />
             <Field label="Tipo de contrato" value={orDash(c.contractType)} />
@@ -263,7 +265,7 @@ export default function ClientContract({ client }: { client: Client }) {
           </div>
         </Section>
 
-        <Section title="Términos principales" icon={<ScrollText className="h-4 w-4" />}>
+        <Section title={t("ui.ClientContract.terminosPrincipales", "Términos principales")} icon={<ScrollText className="h-4 w-4" />}>
           <div className="space-y-2.5">
             <Field label="SLA acordado" value={c.slaUptimeTarget != null ? `${c.slaUptimeTarget}% de cumplimiento` : '—'} />
             <Field label="Penalización por incumplimiento" value={orDash(c.penaltyClause)} />
@@ -312,7 +314,7 @@ export default function ClientContract({ client }: { client: Client }) {
         {services.length === 0 ? (
           <EmptyState
             icon={<ClipboardCheck className="h-5 w-5" />}
-            title="Aún no hay servicios contratados"
+            title={t("ui.ClientContract.aunNoHayServiciosContratados", "Aún no hay servicios contratados")}
             description="Agrega los servicios de este contrato. El uso se calcula en vivo desde la operación."
             action={<Button size="sm" onClick={() => openSvc()}><Plus className="mr-1.5 h-4 w-4" /> Agregar servicio</Button>}
           />
@@ -320,7 +322,7 @@ export default function ClientContract({ client }: { client: Client }) {
           <TabTable>
               <THead>
                 <Th>Servicio</Th>
-                <Th>Descripción</Th>
+                <Th>{t("ui.ClientContract.descripcion", "Descripción")}</Th>
                 <Th>Unidad</Th>
                 <Th align="right">Contratado</Th>
                 <Th align="right">Utilizado (mes)</Th>
@@ -419,7 +421,7 @@ export default function ClientContract({ client }: { client: Client }) {
                   <Th>Periodo</Th>
                   <Th>Desde</Th>
                   <Th>Hasta</Th>
-                  <Th>Duración</Th>
+                  <Th>{t("ui.ClientContract.duracion", "Duración")}</Th>
                   <Th>Estado</Th>
                   <Th aria-label="Acciones" />
                 </THead>
@@ -458,14 +460,14 @@ export default function ClientContract({ client }: { client: Client }) {
           <LabeledField label="Renovación automática">
             <div className="flex items-center gap-2 h-9">
               <input id="autoRenew" type="checkbox" className="h-4 w-4" checked={!!form.autoRenew} onChange={(e) => setForm({ ...form, autoRenew: e.target.checked })} />
-              <label htmlFor="autoRenew" className="text-sm text-muted-foreground">Renovar automáticamente</label>
+              <label htmlFor="autoRenew" className="text-sm text-muted-foreground">{t("ui.ClientContract.renovarAutomaticamente", "Renovar automáticamente")}</label>
             </div>
           </LabeledField>
           <LabeledField label="Aviso de renovación (días antes)"><input type="number" className={FIELD_CLS} value={form.autoRenewDaysBefore} onChange={(e) => setForm({ ...form, autoRenewDaysBefore: e.target.value })} /></LabeledField>
           <LabeledField label="Horas contratadas / mes"><input type="number" className={FIELD_CLS} value={form.contractedHoursPerMonth} onChange={(e) => setForm({ ...form, contractedHoursPerMonth: e.target.value })} /></LabeledField>
           <LabeledField label="Jurisdicción"><input className={FIELD_CLS} placeholder="Ecuador" value={form.jurisdiction} onChange={(e) => setForm({ ...form, jurisdiction: e.target.value })} /></LabeledField>
-          <LabeledField label="Penalización por incumplimiento" full><input className={FIELD_CLS} placeholder="Crédito del 5% mensual" value={form.penaltyClause} onChange={(e) => setForm({ ...form, penaltyClause: e.target.value })} /></LabeledField>
-          <LabeledField label="Cancelación anticipada" full><input className={FIELD_CLS} placeholder="60 días de notificación" value={form.earlyCancellationNotice} onChange={(e) => setForm({ ...form, earlyCancellationNotice: e.target.value })} /></LabeledField>
+          <LabeledField label="Penalización por incumplimiento" full><input className={FIELD_CLS} placeholder={t("ui.ClientContract.creditoDel5Mensual", "Crédito del 5% mensual")} value={form.penaltyClause} onChange={(e) => setForm({ ...form, penaltyClause: e.target.value })} /></LabeledField>
+          <LabeledField label="Cancelación anticipada" full><input className={FIELD_CLS} placeholder={t("ui.ClientContract.60DiasDeNotificacion", "60 días de notificación")} value={form.earlyCancellationNotice} onChange={(e) => setForm({ ...form, earlyCancellationNotice: e.target.value })} /></LabeledField>
           <div className="sm:col-span-2 mt-1 grid grid-cols-2 gap-3 sm:grid-cols-4">
             <LabeledField label="SLA uptime (%)"><input type="number" className={FIELD_CLS} value={form.slaUptimeTarget} onChange={(e) => setForm({ ...form, slaUptimeTarget: e.target.value })} /></LabeledField>
             <LabeledField label="Respuesta (min)"><input type="number" className={FIELD_CLS} value={form.slaResponseMinutes} onChange={(e) => setForm({ ...form, slaResponseMinutes: e.target.value })} /></LabeledField>
@@ -492,8 +494,8 @@ export default function ClientContract({ client }: { client: Client }) {
             </LabeledField>
             <LabeledField label="Nombre" full><input className={FIELD_CLS} value={svcForm.name} onChange={(e) => setSvcForm({ ...svcForm, name: e.target.value })} /></LabeledField>
             <LabeledField label="Descripción" full><input className={FIELD_CLS} value={svcForm.description || ''} onChange={(e) => setSvcForm({ ...svcForm, description: e.target.value })} /></LabeledField>
-            <LabeledField label="Unidad"><input className={FIELD_CLS} placeholder="Estación, Rondas…" value={svcForm.unit || ''} onChange={(e) => setSvcForm({ ...svcForm, unit: e.target.value })} /></LabeledField>
-            <LabeledField label="Cantidad contratada"><input type="number" className={FIELD_CLS} placeholder="Vacío = ilimitado" value={svcForm.contractedQty ?? ''} onChange={(e) => setSvcForm({ ...svcForm, contractedQty: e.target.value })} /></LabeledField>
+            <LabeledField label="Unidad"><input className={FIELD_CLS} placeholder={t("ui.ClientContract.estacionRondas", "Estación, Rondas…")} value={svcForm.unit || ''} onChange={(e) => setSvcForm({ ...svcForm, unit: e.target.value })} /></LabeledField>
+            <LabeledField label="Cantidad contratada"><input type="number" className={FIELD_CLS} placeholder={t("ui.ClientContract.vacioIlimitado", "Vacío = ilimitado")} value={svcForm.contractedQty ?? ''} onChange={(e) => setSvcForm({ ...svcForm, contractedQty: e.target.value })} /></LabeledField>
             <LabeledField label="Objetivo SLA (%)"><input type="number" className={FIELD_CLS} value={svcForm.slaTarget ?? ''} onChange={(e) => setSvcForm({ ...svcForm, slaTarget: e.target.value })} /></LabeledField>
           </div>
         )}

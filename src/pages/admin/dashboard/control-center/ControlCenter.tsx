@@ -32,6 +32,7 @@
  * ════════════════════════════════════════════════════════════════════════════
  */
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import {
   User, Shield, UserCog, AlertTriangle, Building2, Timer, Route, ShieldCheck,
   LayoutDashboard, Boxes, type LucideIcon,
@@ -80,6 +81,7 @@ function nombreDe(user?: { firstName?: string; lastName?: string; email?: string
 }
 
 export default function ControlCenter() {
+  const { t } = useTranslation();
   usePageTitle("Panel de control");
   const { user } = useAuth();
   const esMovil = useEsMovil();
@@ -231,7 +233,7 @@ export default function ControlCenter() {
 
                   <StatRail
                     icon={<Boxes />}
-                    title="Recursos de la operación"
+                    title={t("ui.ControlCenter.recursosDeLaOperacion", "Recursos de la operación")}
                     subtitle="Puestos, mando y cartera"
                     items={railItems}
                   />

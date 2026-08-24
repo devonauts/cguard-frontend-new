@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { useWatch, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { routeCreateSchema, type RouteCreateSchema } from "@/lib/validators/route-create.schema";
@@ -119,6 +120,7 @@ type RouteFormProps = {
 const firmaDe = (puntos: Array<{ siteId: string }>) => puntos.map((p) => p.siteId).join('|');
 
 export default function RouteForm({ mode, routeId, initialData, onSuccess }: RouteFormProps) {
+  const { t } = useTranslation();
   const initialSupervisorId = initialData?.supervisorId ?? (initialData as any)?.assignedGuard ?? '';
   const initialSupervisorName = initialData?.supervisorName ?? (initialData as any)?.assignedGuardName ?? '';
   const form = useForm<RouteCreateSchema>({
@@ -908,9 +910,9 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Descripción</FormLabel>
+              <FormLabel>{t("ui.RouteForm.descripcion", "Descripción")}</FormLabel>
               <FormControl>
-                <Textarea rows={3} placeholder="Descripción de la ruta" {...field} />
+                <Textarea rows={3} placeholder={t("ui.RouteForm.descripcionDeLaRuta", "Descripción de la ruta")} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -987,7 +989,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
                   name="days"
                   render={({ field }) => (
                     <FormItem className="md:col-span-2">
-                      <FormLabel>Seleccionar Días*</FormLabel>
+                      <FormLabel>{t("ui.RouteForm.seleccionarDias", "Seleccionar Días*")}</FormLabel>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <button
@@ -1025,7 +1027,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
               </div>
         </Section>
 
-        <Section title="Asignación" contentClassName="space-y-6">
+        <Section title={t("ui.RouteForm.asignacion", "Asignación")} contentClassName="space-y-6">
         <FormField
           control={form.control}
           name="supervisorId"
@@ -1209,7 +1211,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
           ) : (
             <EmptyState
               icon={<MapPin />}
-              title="Todavía no hay recorrido que dibujar"
+              title={t("ui.RouteForm.todaviaNoHayRecorridoQue", "Todavía no hay recorrido que dibujar")}
               description="Elige puestos de vigilancia con ubicación y el mapa mostrará el orden y el sentido de la ruta."
             />
           )}
@@ -1230,9 +1232,9 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
                   <tr className="border-b" style={{ borderColor: 'var(--hairline)' }}>
                     <th className="px-4 py-3 font-semibold">#</th>
                     <th className="px-4 py-3 font-semibold">Puesto de seguridad</th>
-                    <th className="px-4 py-3 font-semibold">Dirección</th>
+                    <th className="px-4 py-3 font-semibold">{t("ui.RouteForm.direccion", "Dirección")}</th>
                     <th className="px-4 py-3 font-semibold">Pasadas</th>
-                    <th className="px-4 py-3 font-semibold">Duración (min)</th>
+                    <th className="px-4 py-3 font-semibold">{t("ui.RouteForm.duracionMin", "Duración (min)")}</th>
                     <th className="px-4 py-3 font-semibold">Acciones</th>
                   </tr>
                 </thead>
@@ -1381,16 +1383,16 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
           </div>
         </Section>
 
-        <Section title="Vehículo y opciones" contentClassName="space-y-6">
+        <Section title={t("ui.RouteForm.vehiculoYOpciones", "Vehículo y opciones")} contentClassName="space-y-6">
         <FormField
           control={form.control}
           name="vehicleId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Seleccionar vehículo*</FormLabel>
+              <FormLabel>{t("ui.RouteForm.seleccionarVehiculo", "Seleccionar vehículo*")}</FormLabel>
               <Select value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar vehículo">
+                  <SelectValue placeholder={t("ui.RouteForm.seleccionarVehiculo2", "Seleccionar vehículo")}>
                     {(() => {
                       const sv = vehicles.find((x) => x.id === field.value);
                       return sv ? [sv.name, sv.licensePlate].filter(Boolean).join(' • ') : undefined;
@@ -1421,7 +1423,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
               <span
                 className="rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
                 style={{ background: "var(--glass-sunken)", color: "var(--ink-faint)" }}
-                title="Se guarda con la ruta, pero todavía no cambia el comportamiento del recorrido."
+                title={t("ui.RouteForm.seGuardaConLaRuta", "Se guarda con la ruta, pero todavía no cambia el comportamiento del recorrido.")}
               >
                 aún no activo
               </span>
@@ -1441,7 +1443,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
               <span
                 className="rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
                 style={{ background: "var(--glass-sunken)", color: "var(--ink-faint)" }}
-                title="Se guarda con la ruta, pero todavía no cambia el comportamiento del recorrido."
+                title={t("ui.RouteForm.seGuardaConLaRuta2", "Se guarda con la ruta, pero todavía no cambia el comportamiento del recorrido.")}
               >
                 aún no activo
               </span>
@@ -1467,7 +1469,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
               <span
                 className="rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
                 style={{ background: "var(--glass-sunken)", color: "var(--ink-faint)" }}
-                title="Se guarda con la ruta, pero todavía no cambia el comportamiento del recorrido."
+                title={t("ui.RouteForm.seGuardaConLaRuta3", "Se guarda con la ruta, pero todavía no cambia el comportamiento del recorrido.")}
               >
                 aún no activo
               </span>
@@ -1503,7 +1505,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
               <span
                 className="rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
                 style={{ background: "var(--glass-sunken)", color: "var(--ink-faint)" }}
-                title="Se guarda con la ruta, pero todavía no cambia el comportamiento del recorrido."
+                title={t("ui.RouteForm.seGuardaConLaRuta4", "Se guarda con la ruta, pero todavía no cambia el comportamiento del recorrido.")}
               >
                 aún no activo
               </span>
@@ -1527,7 +1529,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
               <span
                 className="rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
                 style={{ background: "var(--glass-sunken)", color: "var(--ink-faint)" }}
-                title="Se guarda con la ruta, pero todavía no cambia el comportamiento del recorrido."
+                title={t("ui.RouteForm.seGuardaConLaRuta5", "Se guarda con la ruta, pero todavía no cambia el comportamiento del recorrido.")}
               >
                 aún no activo
               </span>

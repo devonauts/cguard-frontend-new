@@ -7209,6 +7209,786 @@
       "repiteLaContrasena": "Repite la contraseña",
       "telefonoMovil": "Teléfono móvil",
       "tuEmpresaActivaraTuCuenta": "Tu empresa activará tu cuenta y te asignará a un puesto."
+    },
+    "AddressAutocomplete": {
+      "miUbicacion": "Mi ubicación"
+    },
+    "AdminUserDetail": {
+      "editarInformacion": "Editar información",
+      "informacionGeneral": "Información general",
+      "ningunPermisoDelRolFue": "Ningún permiso del rol fue restringido.",
+      "sinUbicacionDeOficinaConfigurada": "Sin ubicación de oficina configurada.",
+      "ubicacionDeOficina": "Ubicación de oficina"
+    },
+    "AlarmAnalytics": {
+      "analisisDeMonitoreo": "Análisis de Monitoreo",
+      "casosDeAlarmaPorDia": "Casos de alarma por día",
+      "desempenoDeOperadores": "Desempeño de operadores",
+      "porCategoria": "Por categoría"
+    },
+    "AlarmCaseDetail": {
+      "descripcion": "Descripción",
+      "disposicion": "Disposición",
+      "sinEntradasDeAuditoria": "Sin entradas de auditoría",
+      "sinInformacionDePanel": "Sin información de panel",
+      "titulo": "Título",
+      "unidadNombreONumeroDe": "Unidad, nombre o número de contacto"
+    },
+    "AlarmPanels": {
+      "agenciaPsapPolicia": "Agencia / PSAP (policía)",
+      "camara": "Cámara",
+      "comunicacion": "Comunicación",
+      "ejPoliciaNacionalZona9": "Ej. Policía Nacional - Zona 9",
+      "estacionOpcional": "Estación (opcional)",
+      "idDeLaEstacion": "ID de la estación",
+      "instruccionesUbicacionObservaciones": "Instrucciones, ubicación, observaciones...",
+      "juanPerez": "Juan Pérez",
+      "lineaDeReceptor": "Línea de receptor",
+      "numeroDeCuenta": "Número de cuenta",
+      "oriAsapDespachoAutomatico": "ORI ASAP (despacho automático)",
+      "particion": "Partición",
+      "senales": "Señales",
+      "sinCamara": "— Sin cámara —",
+      "supervisionMin": "Supervisión (min)",
+      "telefono": "Teléfono",
+      "telefonoPsap": "Teléfono PSAP"
+    },
+    "AlarmSignals": {
+      "buscarPorCuentaCodigoZona": "Buscar por cuenta, código, zona…",
+      "codigo": "Código",
+      "registroDeSenales": "Registro de señales",
+      "sinSenales": "Sin señales"
+    },
+    "App": {
+      "paginaNoEncontrada": "Página no encontrada"
+    },
+    "AssignGuardsPanel": {
+      "aunNoHayVigilantesAsignados": "Aún no hay vigilantes asignados",
+      "esteCursoEsUnBorrador": "Este curso es un borrador. Publícalo para poder asignarlo.",
+      "fechaLimiteOpcional": "Fecha límite (opcional)",
+      "tipoDeAsignacion": "Tipo de asignación",
+      "vigilanteEspecifico": "Vigilante específico"
+    },
+    "AuditLogs": {
+      "buscarPorUsuarioDireccionO": "Buscar por usuario, dirección o dispositivo…",
+      "descargarEnCsvLoQue": "Descargar en CSV lo que estás viendo",
+      "direccion": "Dirección"
+    },
+    "AvatarUploader": {
+      "anadirFoto": "Añadir foto"
+    },
+    "CatalogTable": {
+      "elementosPorPagina": "Elementos por página"
+    },
+    "CategoryAssignDialog": {
+      "categoria": "Categoría",
+      "seleccionaLaCategoriaDestinoPara": "Selecciona la categoría destino para los sitios seleccionados.",
+      "seleccionaUnaCategoria": "Selecciona una categoría"
+    },
+    "Checklist": {
+      "informeDeListaDeVerificacion": "Informe de Lista de Verificación"
+    },
+    "ClientContract": {
+      "60DiasDeNotificacion": "60 días de notificación",
+      "aunNoHayServiciosContratados": "Aún no hay servicios contratados",
+      "creditoDel5Mensual": "Crédito del 5% mensual",
+      "descripcion": "Descripción",
+      "diasRestantes": "Días restantes",
+      "duracion": "Duración",
+      "estacionRondas": "Estación, Rondas…",
+      "informacionDelContrato": "Información del contrato",
+      "proximaRenovacion": "Próxima renovación",
+      "renovarAutomaticamente": "Renovar automáticamente",
+      "terminosPrincipales": "Términos principales",
+      "vacioIlimitado": "Vacío = ilimitado"
+    },
+    "ClientCoverage": {
+      "abrirElDetalleDeLa": "Abrir el detalle de la estación",
+      "buscarEstacionPorNombre": "Buscar estación por nombre",
+      "estacion": "Estación",
+      "estacionSeleccionada": "Estación seleccionada",
+      "estePuestoAunNoTiene": "Este puesto aún no tiene ubicación exacta.",
+      "noHayTurnosProximosEn": "No hay turnos próximos en las siguientes 2 horas.",
+      "proximosAIniciar": "Próximos a iniciar",
+      "satelite": "Satélite",
+      "segunLaAsistenciaRegistradaHoy": "Según la asistencia registrada hoy.",
+      "sinAsignacion": "Sin asignación",
+      "tocaElMapaParaFijar": "Toca el mapa para fijar la ubicación exacta de",
+      "todosLosPuestosConTurno": "Todos los puestos con turno están cubiertos.",
+      "ultimaActividad": "Última actividad"
+    },
+    "ClientDetailsDialog": {
+      "codigoPostal": "Código Postal",
+      "direccion": "Dirección",
+      "direccion2": "Dirección",
+      "direccionComplementaria": "Dirección Complementaria",
+      "pais": "País",
+      "telefono": "Teléfono",
+      "telefonoFijo": "Teléfono fijo"
+    },
+    "ClientDocuments": {
+      "arrastraArchivosAquiOHaz": "Arrastra archivos aquí o haz clic para seleccionar",
+      "aunNoHayCategorias": "Aún no hay categorías.",
+      "categoria": "Categoría",
+      "categoriaTodas": "Categoría: Todas",
+      "categorias": "Categorías",
+      "pdfWordExcelImagenesZip": "PDF, Word, Excel, imágenes, ZIP… (máx. 100 MB)",
+      "tamano": "Tamaño"
+    },
+    "ClientIncidents": {
+      "buscarPorIdTituloO": "Buscar por ID, título o ubicación",
+      "descripcion": "Descripción",
+      "enInvestigacion": "En investigación",
+      "estacionTodas": "Estación: Todas",
+      "resolucion": "Resolución",
+      "sedeEstacion": "Sede / Estación",
+      "sinBitacora": "Sin bitácora"
+    },
+    "ClientPortal": {
+      "comoFunciona": "¿Cómo funciona?",
+      "elClienteRecibiraUnEnlace": "El cliente recibirá un enlace para crear su contraseña y acceder.",
+      "enviarInvitacion": "Enviar invitación",
+      "invitacionEnviada": "¡Invitación enviada!",
+      "quePuedeVerElCliente": "¿Qué puede ver el cliente?",
+      "seEnviaraUnaInvitacion": "Se enviará una invitación"
+    },
+    "ClientPostSites": {
+      "asignacion": "Asignación",
+      "buscarSedePorNombreO": "Buscar sede por nombre o dirección",
+      "direccion": "Dirección"
+    },
+    "ClientProjects": {
+      "eliminarEsteProyecto": "¿Eliminar este proyecto?",
+      "estaAccionNoSePuede": "Esta acción no se puede deshacer."
+    },
+    "ClientReports": {
+      "actividadesPorDia": "Actividades por día",
+      "eliminarProgramacion": "Eliminar programación",
+      "mensualDia10900": "Mensual (día 1, 09:00)",
+      "noHayTurnosProgramadosNi": "No hay turnos programados ni asistencias en el período.",
+      "periodo": "Período",
+      "reportesRapidos": "Reportes rápidos",
+      "sedeEstacion": "Sede / Estación",
+      "vsPeriodoAnterior": "Vs. período anterior"
+    },
+    "ClientStaff": {
+      "buscarPorNombreIdO": "Buscar por nombre, ID o estación",
+      "certificacionesProximasAVencer": "Certificaciones próximas a vencer",
+      "distribucionPorRol": "Distribución por rol",
+      "estacion": "Estación",
+      "sinCertificacionesProximasAVencer": "Sin certificaciones próximas a vencer.",
+      "ultimaActividad": "Última actividad"
+    },
+    "ClientUserAccess": {
+      "losAccesosOtorganAlCliente": "Los accesos otorgan al cliente visibilidad únicamente de su propia operación.",
+      "seCrearaElAccesoY": "Se creará el acceso y se enviará un enlace para que la persona configure su contraseña."
+    },
+    "CommandBar": {
+      "datosDeDemostracion": "Datos de demostración"
+    },
+    "ControlCenter": {
+      "recursosDeLaOperacion": "Recursos de la operación"
+    },
+    "CountryPhoneSelect": {
+      "buscarPaisOCodigo": "Buscar país o código…"
+    },
+    "Coverage": {
+      "anularLaNovedadYDevolver": "Anular la novedad y devolver el turno a la rotación",
+      "duracion": "Duración",
+      "ejLlamoSeLeDano": "Ej.: llamó, se le dañó la moto en la vía",
+      "quienCubreElPuesto": "¿Quién cubre el puesto?",
+      "quienLoCubre": "Quién lo cubre",
+      "quienTomaVacacionesPermiso": "Quién toma vacaciones/permiso"
+    },
+    "CustomerRequests": {
+      "elementosPorPagina": "Elementos por página",
+      "noSePudoCargarLa": "No se pudo cargar la información",
+      "paginaAnterior": "Página anterior",
+      "paginaSiguiente": "Página siguiente"
+    },
+    "CustomizePanel": {
+      "colorDeLaAplicacion": "Color de la aplicación",
+      "estandar": "Estándar"
+    },
+    "DemoDataBanner": {
+      "operacionDeEjemplo": "operación de ejemplo"
+    },
+    "DepartmentDialog": {
+      "descripcion": "Descripción",
+      "queHaceEsteDepartamentoOpcional": "Qué hace este departamento (opcional)"
+    },
+    "DispatchPublicView": {
+      "noHayComentariosAun": "No hay comentarios aún"
+    },
+    "DocPolicyAck": {
+      "reconocimientoDeDocumentosYPoliticas": "Reconocimiento de Documentos y Políticas"
+    },
+    "EditDispatch": {
+      "informacionDelIncidente": "Información del incidente",
+      "ubicacionDelIncidente": "Ubicación del incidente*"
+    },
+    "EditRoute": {
+      "noSeEncontroLaRuta": "No se encontró la ruta"
+    },
+    "EditSecurityGuard": {
+      "cedula": "Cédula",
+      "correoElectronico": "Correo Electrónico *",
+      "direccion": "Dirección",
+      "genero": "Género",
+      "identificacionYContrato": "Identificación y contrato",
+      "instruccionAcademica": "Instrucción académica",
+      "telefono": "Teléfono *"
+    },
+    "EmpresaDireccionForm": {
+      "direccionDeLaEmpresa": "Dirección de la Empresa*",
+      "ejAntonioMiguelDeSoler": "Ej: Antonio Miguel de Soler N29-26 y Bartolomé de las Casas"
+    },
+    "GlobalInventory": {
+      "catalogoDeInventario": "Catálogo de inventario",
+      "condicion": "Condición",
+      "condicion2": "Condición",
+      "eliminarArticulo": "Eliminar artículo",
+      "fotosDelArticulo": "Fotos del artículo",
+      "numeroDeSerie": "Número de serie"
+    },
+    "Guard": {
+      "analiticasDeVigilantes": "Analíticas de Vigilantes",
+      "distribucionDeDesempeno": "Distribución de desempeño",
+      "puntuacion": "Puntuación",
+      "rankingDeDesempeno": "Ranking de desempeño",
+      "tuEmpresaNoEstaMidiendo": "Tu empresa no está midiendo el desempeño"
+    },
+    "GuardAsistencia": {
+      "aprobacion": "Aprobación"
+    },
+    "GuardCardsGrid": {
+      "sinAsignacion": "Sin asignación"
+    },
+    "GuardDeviceFallReport": {
+      "registrosDeAlertaDeCaida": "Registros de Alerta de Caída"
+    },
+    "GuardHorario": {
+      "laRotacionSeConfiguraEn": "La rotación se configura en la estación."
+    },
+    "GuardRatingLevel": {
+      "verResenasDelVigilante": "Ver reseñas del vigilante"
+    },
+    "GuardRatings": {
+      "calificacion": "Calificación",
+      "elementosPorPagina": "Elementos por página",
+      "estacion": "Estación",
+      "noSePudoCargarLa": "No se pudo cargar la información",
+      "paginaAnterior": "Página anterior",
+      "paginaSiguiente": "Página siguiente"
+    },
+    "GuardReviews": {
+      "distribucion": "Distribución",
+      "resenasDeClientes": "Reseñas de clientes",
+      "sinResenasTodavia": "Sin reseñas todavía"
+    },
+    "IncidentTypeDialog": {
+      "pEjRoboLesionAlarma": "p. ej. Robo, Lesión, Alarma de incendio…"
+    },
+    "IntegrationsList": {
+      "operacion": "Operación",
+      "todaviaNoHayIntegracionesDisponibles": "Todavía no hay integraciones disponibles"
+    },
+    "LessonsManager": {
+      "descripcion": "Descripción",
+      "duracionMinutos": "Duración (minutos)",
+      "editarLeccion": "Editar lección",
+      "eliminarLeccion": "Eliminar lección",
+      "eliminarLeccion2": "¿Eliminar lección?",
+      "estaAccionNoSePuede": "Esta acción no se puede deshacer.",
+      "leccionesOrdenadasQueVeranLos": "Lecciones ordenadas que verán los vigilantes.",
+      "noHayLeccionesTodavia": "No hay lecciones todavía",
+      "titulo": "Título *"
+    },
+    "LiveTracking": {
+      "direccion": "Dirección",
+      "hibrido": "Híbrido",
+      "satelite": "Satélite"
+    },
+    "LoginHistory": {
+      "buscarPorUsuarioDireccionO": "Buscar por usuario, dirección o dispositivo…",
+      "direccion": "Dirección",
+      "historialDeInicioDeSesion": "Historial de Inicio de Sesión"
+    },
+    "MapPanel": {
+      "abrirEnPantallaCompletaNueva": "Abrir en pantalla completa (nueva pestaña)"
+    },
+    "Memos": {
+      "confirmarEliminacion": "Confirmar eliminación",
+      "descripcionCortaDelMemo": "Descripción corta del memo",
+      "revisaLaInformacionDelMemo": "Revisa la información del memo seleccionado."
+    },
+    "Messenger": {
+      "anadirVigilante": "Añadir vigilante…",
+      "ningunaConversacionAbierta": "Ninguna conversación abierta"
+    },
+    "MisAvisos": {
+      "queRecibo": "Qué recibo"
+    },
+    "MobileCommandCenter": {
+      "datosDeDemostracion": "Datos de demostración",
+      "recursosDeLaOperacion": "Recursos de la operación"
+    },
+    "ModulesTable": {
+      "modulosContratados": "Módulos contratados",
+      "sinModulosContratados": "Sin módulos contratados"
+    },
+    "NewDispatch": {
+      "buscarEstacion": "Buscar estación...",
+      "estacion": "Estación",
+      "informacionDelIncidente": "Información del incidente",
+      "ubicacionDelIncidente": "Ubicación del incidente*"
+    },
+    "NewVehicle": {
+      "ano": "Año",
+      "descripcion": "Descripción",
+      "fotografia": "Fotografía",
+      "identificacion": "Identificación",
+      "notasDelVehiculo": "Notas del vehículo",
+      "numeroVinNumeroDeIdentificacion": "Número VIN (Número de Identificación del Vehículo)"
+    },
+    "NominaApprovals": {
+      "entradasTardias": "Entradas tardías",
+      "sinSolicitudesDeEntradaTardia": "Sin solicitudes de entrada tardía"
+    },
+    "NominaExceptions": {
+      "describeQueSeHizoO": "Describe qué se hizo o por qué se cierra esta excepción…",
+      "notaDeResolucionQuedaEn": "Nota de resolución (queda en el historial)"
+    },
+    "NominaRecords": {
+      "salidaSinUbicacion": "Salida sin ubicación",
+      "ubicacion": "Ubicación"
+    },
+    "NominaSettings": {
+      "alMultiploDe5Minutos": "Al múltiplo de 5 minutos",
+      "avisarAdemasAEstosCorreos": "Avisar además a estos correos",
+      "miercoles": "Miércoles",
+      "sabado": "Sábado"
+    },
+    "NominaTimeClock": {
+      "dondeVasATrabajar": "¿Dónde vas a trabajar?"
+    },
+    "Notification": {
+      "configuracionDeAvisos": "Configuración de avisos"
+    },
+    "OfflineBanner": {
+      "sinConexionMostrandoLosUltimos": "Sin conexión — mostrando los últimos datos conocidos."
+    },
+    "OnboardingBanner": {
+      "completaLaConfiguracionDeTu": "Completa la configuración de tu empresa"
+    },
+    "OnboardingWizard": {
+      "buscarDireccion": "Buscar dirección...",
+      "codigoPostal": "Código postal",
+      "contactoYUbicacion": "Contacto y ubicación",
+      "correoElectronico": "Correo electrónico",
+      "correoElectronicoInvalido": "Correo electrónico inválido.",
+      "direccion": "Dirección",
+      "direccionCompleta": "Dirección completa",
+      "finalizarConfiguracion": "Finalizar configuración",
+      "numeroDeTelefono": "Número de teléfono",
+      "numeroDeTelefonoInvalido": "Número de teléfono inválido.",
+      "pais": "País",
+      "pngJpgSvgOWebp": "PNG, JPG, SVG o WEBP · máx. 5MB",
+      "razonSocial": "Razón social",
+      "razonSocialRegistrada": "Razón social registrada",
+      "ruc13DigitosOCedula": "RUC (13 dígitos) o cédula (10 dígitos)",
+      "rucCedula": "RUC / Cédula",
+      "teDamosLaBienvenidaA": "¡Te damos la bienvenida a CGuardPro!",
+      "telefono": "Teléfono"
+    },
+    "OpenShifts": {
+      "accion": "Acción",
+      "duracion": "Duración",
+      "elementosPorPagina": "Elementos por página",
+      "paginaAnterior": "Página anterior",
+      "paginaSiguiente": "Página siguiente"
+    },
+    "OperationSetupAlert": {
+      "faltaLaConfiguracionOperativa": "Falta la configuración operativa"
+    },
+    "OperationsMap": {
+      "puestosSinNingunaPosicionDe": "Puestos sin ninguna posición de GPS para confirmar cobertura"
+    },
+    "PanicAlertOverlay": {
+      "aQuienLlamar": "A quién llamar",
+      "describeLaAccionTomadaPara": "Describe la acción tomada para atender el SOS…"
+    },
+    "PanicButtonLog": {
+      "registrosDelBotonDePanico": "Registros del Botón de Pánico"
+    },
+    "Passdowns": {
+      "imagenes": "Imágenes"
+    },
+    "PatrullaBoard": {
+      "rutasDelDia": "Rutas del día"
+    },
+    "PhoneInput": {
+      "noSeEncontraronPaises": "No se encontraron países."
+    },
+    "PostOrderAck": {
+      "reconocimientoDeOrdenesDePublicacion": "Reconocimiento de Órdenes de Publicación"
+    },
+    "PostSite": {
+      "analiticasPorSitioDeServicio": "Analíticas por Sitio de Servicio",
+      "desempenoPorSitioDeServicio": "Desempeño por sitio de servicio",
+      "sitiosConMasIncidentes": "Sitios con más incidentes"
+    },
+    "PostSiteDetailsDialog": {
+      "codigoPostal": "Código Postal",
+      "descripcion": "Descripción",
+      "direccion": "Dirección",
+      "direccion2": "Dirección",
+      "direccion3": "Dirección",
+      "direccionComplementaria": "Dirección Complementaria",
+      "pais": "País",
+      "telefono": "Teléfono",
+      "telefono2": "Teléfono",
+      "telefonoFijo": "Teléfono fijo"
+    },
+    "PostSiteWizard": {
+      "agregarOtraCapacitacion": "Agregar otra capacitación…",
+      "buscarCalleNumeroCiudadLugar": "Buscar calle, número, ciudad, lugar…",
+      "calleYNumero": "Calle y número",
+      "calleYNumero2": "Calle y número",
+      "capacitacion": "Capacitación",
+      "capacitacionRequerida": "Capacitación requerida",
+      "codigoPostal": "Código postal",
+      "compruebaLaInformacionAntesDe": "Comprueba la información antes de crear el puesto de vigilancia.",
+      "descripcionDelPuestoOpcional": "Descripción del puesto (opcional)",
+      "descripcionDelSitio": "Descripción del sitio",
+      "descripcionGeneralIndicacionesEspeciales": "Descripción general, indicaciones especiales…",
+      "direccion": "Dirección",
+      "direccion2": "Dirección",
+      "equipamientoCapacitacionYParametrosDel": "Equipamiento, capacitación y parámetros del servicio.",
+      "minimoDeEstaciones": "Mínimo de estaciones",
+      "mismaDireccionDelCliente": "Misma dirección del cliente",
+      "pais": "País",
+      "protocoloDeAccesoManejoDe": "Protocolo de acceso, manejo de visitantes, emergencias, comunicación con supervisores…",
+      "queTipoDeServicioEs": "¿Qué tipo de servicio es este sitio?",
+      "ubicacionDelSitio": "Ubicación del sitio"
+    },
+    "ProfilePhotoCapture": {
+      "buenaIluminacionEviteSombrasY": "Buena iluminación — evite sombras y contraluz"
+    },
+    "ProjectForm": {
+      "descripcion": "Descripción",
+      "descripcionDelProyectoAlcanceObjetivos": "Descripción del proyecto, alcance, objetivos…",
+      "ejEventoAnual2026Investigacion": "Ej. Evento anual 2026, Investigación #14",
+      "informacionBasica": "Información básica",
+      "lugarUbicacion": "Lugar / ubicación"
+    },
+    "RadioDevices": {
+      "aunNoHayRadiosIp": "Aún no hay radios IP",
+      "contrasenaSip": "Contraseña SIP",
+      "extensionTalkgroup": "Extensión / Talkgroup",
+      "pasarelaRoipSipLaContrasena": "Pasarela RoIP / SIP. La contraseña SIP se guarda cifrada."
+    },
+    "RadioDispatch": {
+      "configuracion": "Configuración",
+      "paseAutomatico": "Pase automático"
+    },
+    "RadioLiveChannelPanel": {
+      "uneteParaEscucharYHablar": "Únete para escuchar y hablar con los vigilantes en tiempo real (push-to-talk)."
+    },
+    "Reporting": {
+      "analiticasDeOperaciones": "Analíticas de Operaciones",
+      "desempenoDelEquipo": "Desempeño del equipo",
+      "escaneosDeRondaPorDia": "Escaneos de ronda por día",
+      "incidentesPorDia": "Incidentes por día",
+      "puntuacionPromedio100": "Puntuación promedio /100",
+      "rondasCompletadasPorDia": "Rondas completadas por día",
+      "sinVigilantesEvaluadosEnEl": "Sin vigilantes evaluados en el período.",
+      "sitiosConMasIncidentes": "Sitios con más incidentes",
+      "vigilantesConMenorDesempeno": "Vigilantes con menor desempeño"
+    },
+    "Reports": {
+      "configuracion": "Configuración",
+      "configuracionDeLaSeccion": "Configuración de la sección",
+      "limpiarBusqueda": "Limpiar búsqueda",
+      "proximamente": "Próximamente"
+    },
+    "RotationStyleSelect": {
+      "patronDeRotacion": "Patrón de rotación"
+    },
+    "RouteForm": {
+      "asignacion": "Asignación",
+      "descripcion": "Descripción",
+      "descripcionDeLaRuta": "Descripción de la ruta",
+      "direccion": "Dirección",
+      "duracionMin": "Duración (min)",
+      "seGuardaConLaRuta": "Se guarda con la ruta, pero todavía no cambia el comportamiento del recorrido.",
+      "seGuardaConLaRuta2": "Se guarda con la ruta, pero todavía no cambia el comportamiento del recorrido.",
+      "seGuardaConLaRuta3": "Se guarda con la ruta, pero todavía no cambia el comportamiento del recorrido.",
+      "seGuardaConLaRuta4": "Se guarda con la ruta, pero todavía no cambia el comportamiento del recorrido.",
+      "seGuardaConLaRuta5": "Se guarda con la ruta, pero todavía no cambia el comportamiento del recorrido.",
+      "seleccionarDias": "Seleccionar Días*",
+      "seleccionarVehiculo": "Seleccionar vehículo*",
+      "seleccionarVehiculo2": "Seleccionar vehículo",
+      "todaviaNoHayRecorridoQue": "Todavía no hay recorrido que dibujar",
+      "vehiculoYOpciones": "Vehículo y opciones"
+    },
+    "RouteMap": {
+      "aMarchaDeTraficoUrbano": "A marcha de tráfico urbano, sin contar la permanencia en cada parada",
+      "conduccionEstimada": "Conducción estimada"
+    },
+    "SacafrancoAssignModal": {
+      "diaACubrirDescansoDel": "Día a cubrir (descanso del fijo)"
+    },
+    "Schedule": {
+      "14Dias": "(14 días)",
+      "agregarPosicionSacafranco": "Agregar posición sacafranco",
+      "anteriorRePag": "Anterior (Re Pág)",
+      "borraArrastraUnDia": "borra · Arrastra un día",
+      "cambiarTipoDeHorarioRotacion": "Cambiar tipo de horario / rotación",
+      "elHorarioYaEstaAl": "El horario ya está al día",
+      "eliminarPosicion": "Eliminar posición",
+      "noHaySacafrancosConfiguradosCrea": "No hay sacafrancos configurados. Crea primero una posición de sacafranco en el puesto.",
+      "primerDiaDeTurno": "Primer día de turno",
+      "reAvPag": "Re/Av Pág",
+      "reAvPag2": "Re/Av Pág",
+      "recomendacion": "Recomendación:",
+      "reconfigurarElPuestoTipoDe": "Reconfigurar el puesto (tipo de horario y rotación)",
+      "siguienteAvPag": "Siguiente (Av Pág)",
+      "terminaAlDiaSiguiente": "· termina al día siguiente",
+      "todaviaNoHayPuestosConfigurados": "Todavía no hay puestos configurados",
+      "todosLosVigilantesEstanAsignados": "Todos los vigilantes están asignados.",
+      "todosLosVigilantesYaEstan": "Todos los vigilantes ya están asignados",
+      "tusPuestosAunNoTienen": "Tus puestos aún no tienen horario.",
+      "unFijoTrabajaLas24": "Un fijo trabaja las 24 h y el otro va al día siguiente. Sin libres y sin sacafranco."
+    },
+    "ScheduleTimeline": {
+      "duracion": "Duración:",
+      "maximo24h": "· máximo 24h"
+    },
+    "Scheduling": {
+      "planificacionDeTurnos": "Planificación de Turnos",
+      "proximosTurnosSinCubrir7": "Próximos turnos sin cubrir (7 días)"
+    },
+    "ServiceTypeBadge": {
+      "ejGestionDeAccesoSeguridad": "Ej. Gestión de acceso, Seguridad industrial, Vigilancia VIP..."
+    },
+    "ShiftAssignModal": {
+      "cambialaParaMoverElDia": "— cámbiala para mover el día de descanso.",
+      "dejaloVacioParaUnaAsignacion": "Déjalo vacío para una asignación indefinida; pon una fecha para una cobertura temporal.",
+      "rotacion": "Rotación",
+      "turnoUnico": "Turno único"
+    },
+    "ShiftExchange": {
+      "elementosPorPagina": "Elementos por página",
+      "paginaAnterior": "Página anterior",
+      "paginaSiguiente": "Página siguiente"
+    },
+    "ShiftStatus": {
+      "elementosPorPagina": "Elementos por página",
+      "paginaAnterior": "Página anterior",
+      "paginaSiguiente": "Página siguiente"
+    },
+    "ShiftTemplates": {
+      "basico": "Básico",
+      "categoria": "Categoría",
+      "categoria2": "Categoría",
+      "dia": "Día",
+      "tituloDelTurno": "Título del turno*"
+    },
+    "StationGeofencePolygon": {
+      "area": "Área",
+      "buscarDireccionDelPuesto": "Buscar dirección del puesto…",
+      "perimetro": "Perímetro"
+    },
+    "StationHero": {
+      "puestoMovil": "Puesto móvil"
+    },
+    "StationRoster": {
+      "dia": "Día"
+    },
+    "StationVisitors": {
+      "apuntaAlFrenteDeLa": "Apunta al frente de la cédula. Asegúrate de que sea legible y bien iluminada.",
+      "cedula": "Cédula",
+      "cedulaPasaporte": "Cédula / Pasaporte",
+      "escanearCedulaId": "Escanear cédula / ID",
+      "fotografiaLaCedulaParaRellenar": "Fotografía la cédula para rellenar los campos automáticamente.",
+      "numeroDetalle": "Número / Detalle",
+      "paginaAnterior": "Página anterior",
+      "paginaSiguiente": "Página siguiente",
+      "perezGarcia": "Pérez García"
+    },
+    "StepIndicator": {
+      "progresoDeConfiguracion": "Progreso de configuración"
+    },
+    "SubscriptionDetailsModule": {
+      "estadoDeLaSuscripcion": "Estado de la Suscripción",
+      "gestionaTuPlanEnSuscripcion": "Gestiona tu plan en Suscripción / Facturación",
+      "informacionDeSuscripcion": "Información de suscripción",
+      "suscripcion": "Suscripción"
+    },
+    "SupervisorCoverage": {
+      "ningunPuestoAsignado": "Ningún puesto asignado.",
+      "rotacion": "Rotación"
+    },
+    "SupervisorDetail": {
+      "informacionDelSupervisor": "Información del supervisor",
+      "informacionGeneral": "Información general",
+      "informacionPersonal": "Información personal",
+      "operacion": "Operación"
+    },
+    "SupervisorPositions": {
+      "aunNoHayPuestosDe": "Aún no hay puestos de supervisor",
+      "rotacion": "Rotación"
+    },
+    "Supervisors": {
+      "aunNoHaySupervisores": "Aún no hay supervisores",
+      "buscarPorNombreZonaVehiculo": "Buscar por nombre, zona, vehículo…",
+      "cedulaId": "Cédula / ID",
+      "diasYHorarioQueEl": "Días y horario que el supervisor debe cumplir (opcional; también editable luego).",
+      "telefono": "Teléfono",
+      "vehiculoAsignado": "Vehículo asignado",
+      "zonaPosicionPEjAguila2": "Zona / posición (p. ej. Aguila2)"
+    },
+    "SystemLogs": {
+      "accion": "Acción",
+      "buscarPorRegistroUsuarioO": "Buscar por registro, usuario o código…"
+    },
+    "TableToolbar": {
+      "limpiarBusqueda": "Limpiar búsqueda"
+    },
+    "TaskApprovals": {
+      "noHayTareasPendientesDe": "No hay tareas pendientes de aprobación",
+      "noHayTareasPendientesDe2": "No hay tareas pendientes de aprobación",
+      "pendientesDeAprobacion": "Pendientes de aprobación"
+    },
+    "TimeOff": {
+      "capacitacion": "Capacitación",
+      "elementosPorPagina": "Elementos por página",
+      "paginaAnterior": "Página anterior",
+      "paginaSiguiente": "Página siguiente"
+    },
+    "TrackingHistory": {
+      "hibrido": "Híbrido",
+      "satelite": "Satélite"
+    },
+    "TrailMap": {
+      "bateria": "Batería",
+      "duracion": "Duración",
+      "velocidadDeReproduccion": "Velocidad de reproducción"
+    },
+    "TrainingCatalog": {
+      "sinAccesoAlCatalogo": "Sin acceso al catálogo"
+    },
+    "TrainingCourseDetail": {
+      "categoria": "Categoría",
+      "descripcion": "Descripción",
+      "titulo": "Título *"
+    },
+    "TrainingCourses": {
+      "catalogoDeCursos": "Catálogo de cursos",
+      "categoria": "Categoría",
+      "categoria2": "Categoría",
+      "descripcion": "Descripción",
+      "eliminarCurso": "¿Eliminar curso?",
+      "titulo": "Título *",
+      "todasLasCategorias": "Todas las categorías"
+    },
+    "TrainingEnrollments": {
+      "aunNoHaCompletadoLecciones": "Aún no ha completado lecciones."
+    },
+    "TransferShiftModal": {
+      "duracion": "Duración"
+    },
+    "UserRoleDialog": {
+      "descripcion": "Descripción"
+    },
+    "Vehicles": {
+      "accion": "Acción",
+      "ano": "Año",
+      "ano2": "Año",
+      "ano3": "Año",
+      "buscarVehiculo": "Buscar vehículo",
+      "buscarVehiculo2": "Buscar vehículo",
+      "correoElectronico": "Correo Electrónico",
+      "descripcion": "Descripción",
+      "descripcion2": "Descripción",
+      "detallesDelVehiculo": "Detalles del vehículo",
+      "elementosPorPagina": "Elementos por página",
+      "elementosPorPagina2": "Elementos por página",
+      "identificadorDelVehiculo": "Identificador del vehículo",
+      "importarVehiculos": "Importar vehículos",
+      "inactivarVehiculos": "Inactivar vehículos",
+      "listadoDeVehiculos": "Listado de vehículos",
+      "listadoDeVehiculos2": "Listado de vehículos",
+      "notasAdicionalesSobreElVehiculo": "Notas adicionales sobre el vehículo",
+      "nuevoVehiculo": "Nuevo vehículo",
+      "numeroDePlaca": "Número de placa",
+      "numeroVin": "Número VIN",
+      "seleccionaUnaOpcion": "Selecciona una opción",
+      "sinInformacion": "Sin información",
+      "vehiculos": "Vehículos",
+      "vehiculos2": "Vehículos"
+    },
+    "VideoActionModals": {
+      "critica": "Crítica",
+      "describaLaSituacionQueRequiere": "Describa la situación que requiere atención…",
+      "descripcion": "Descripción",
+      "despacharASupervision": "Despachar a supervisión",
+      "ejIntrusionDetectada": "Ej. Intrusión detectada",
+      "titulo": "Título"
+    },
+    "VideoDevices": {
+      "conexion": "Conexión",
+      "contrasena": "Contraseña",
+      "dvrRecepcion": "DVR Recepción",
+      "estacionOpcional": "Estación (opcional)",
+      "idDeLaEstacion": "ID de la estación",
+      "remotaViaRelayOtraRed": "Remota — vía relay (otra red/país)",
+      "ubicacionObservaciones": "Ubicación, observaciones..."
+    },
+    "VideoGatewayModal": {
+      "configuracionGo2rtcPegalaEnGo2rtc": "Configuración go2rtc (pégala en go2rtc.yaml)"
+    },
+    "VideoMonitoring": {
+      "ningunaCamaraTransmitiendo": "Ninguna cámara transmitiendo",
+      "noSePudieronCargarLas": "No se pudieron cargar las cámaras"
+    },
+    "VideoPlayer": {
+      "camaraFueraDeLinea": "Cámara fuera de línea",
+      "sinTransmisionConfigurada": "Sin transmisión configurada"
+    },
+    "VideoRelaySites": {
+      "aunNoHaySitiosRemotos": "Aún no hay sitios remotos",
+      "direccionDeRecepcion": "Dirección de recepción:",
+      "seGeneraraUnaClaveDe": "Se generará una clave de sitio y un token de publicación (cifrado)."
+    },
+    "VigiaUsage": {
+      "actividadUltimos30Dias": "Actividad · últimos 30 días",
+      "aunSinUsoElAsistente": "Aún sin uso. El asistente vive abajo a la derecha del CRM.",
+      "ningunaTodaviaTodaAccionDel": "Ninguna todavía. Toda acción del asistente queda registrada aquí."
+    },
+    "Visits": {
+      "accion": "Acción",
+      "elementosPorPagina": "Elementos por página",
+      "vehiculo": "Vehículo"
+    },
+    "configuracion": {
+      "espanol": "Español",
+      "seuIdiomaAtualE": "Seu idioma atual é"
+    },
+    "formerrorsummary": {
+      "faltanDatosOHayValores": "Faltan datos o hay valores inválidos."
+    },
+    "sectionbar": {
+      "mostrarOcultarMenu": "Mostrar/Ocultar menú"
+    },
+    "shared": {
+      "desplazateParaVerMas": "Desplázate para ver más",
+      "ubicacion": "Ubicación"
+    },
+    "tabkit": {
+      "paginaAnterior": "Página anterior",
+      "paginaSiguiente": "Página siguiente"
     }
   }
 }

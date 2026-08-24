@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { useTranslation } from 'react-i18next';
 import AppLayout from "@/layouts/app-layout";
 import { DataTable, type Column } from "@/components/table/DataTable";
 import { Button } from "@/components/ui/button";
@@ -53,6 +54,7 @@ function imageSrc(img: { downloadUrl?: string | null; publicUrl?: string | null 
 }
 
 export default function PassdownsPage() {
+  const { t } = useTranslation();
   const [rows, setRows] = useState<Passdown[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<PassdownStatus | "all">("all");
@@ -219,7 +221,7 @@ export default function PassdownsPage() {
 
             {detail.passdownImages && detail.passdownImages.length > 0 && (
               <div>
-                <div className="cg-eyebrow mb-2">Imágenes</div>
+                <div className="cg-eyebrow mb-2">{t("ui.Passdowns.imagenes", "Imágenes")}</div>
                 <div className="flex flex-wrap gap-3">
                   {detail.passdownImages.map((img, i) => {
                     const src = imageSrc(img);

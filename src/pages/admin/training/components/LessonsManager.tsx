@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -49,6 +50,7 @@ const emptyLesson: LessonForm = {
 };
 
 export default function LessonsManager({ courseId, lessons, readOnly, onChange }: Props) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<TrainingLesson | null>(null);
   const [form, setForm] = useState<LessonForm>(emptyLesson);
@@ -146,7 +148,7 @@ export default function LessonsManager({ courseId, lessons, readOnly, onChange }
   return (
     <FadeIn className="space-y-3">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>Lecciones ordenadas que verán los vigilantes.</p>
+        <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t("ui.LessonsManager.leccionesOrdenadasQueVeranLos", "Lecciones ordenadas que verán los vigilantes.")}</p>
         {!readOnly && (
           <Button variant="brand" onClick={openNew}>
             <Plus className="h-4 w-4 mr-1" /> Agregar lección
@@ -157,7 +159,7 @@ export default function LessonsManager({ courseId, lessons, readOnly, onChange }
       {sorted.length === 0 && (
         <EmptyState
           icon={<BookOpen />}
-          title="No hay lecciones todavía"
+          title={t("ui.LessonsManager.noHayLeccionesTodavia", "No hay lecciones todavía")}
           description="Agrega lecciones con video, texto y recursos para construir el curso."
           action={
             !readOnly ? (
@@ -197,8 +199,8 @@ export default function LessonsManager({ courseId, lessons, readOnly, onChange }
             </div>
             {!readOnly && (
               <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon-sm" aria-label="Editar lección" onClick={() => openEdit(l)}><Pencil /></Button>
-                <Button variant="ghost" size="icon-sm" aria-label="Eliminar lección" style={{ color: 'var(--bad-text)' }} onClick={() => setDeleteId(l.id)}><Trash2 /></Button>
+                <Button variant="ghost" size="icon-sm" aria-label={t("ui.LessonsManager.editarLeccion", "Editar lección")} onClick={() => openEdit(l)}><Pencil /></Button>
+                <Button variant="ghost" size="icon-sm" aria-label={t("ui.LessonsManager.eliminarLeccion", "Eliminar lección")} style={{ color: 'var(--bad-text)' }} onClick={() => setDeleteId(l.id)}><Trash2 /></Button>
               </div>
             )}
         </GlassPanel>
@@ -222,11 +224,11 @@ export default function LessonsManager({ courseId, lessons, readOnly, onChange }
       >
         <div className="space-y-4">
             <div className="space-y-2">
-              <Label>Título *</Label>
+              <Label>{t("ui.LessonsManager.titulo", "Título *")}</Label>
               <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
             </div>
             <div className="space-y-2">
-              <Label>Descripción</Label>
+              <Label>{t("ui.LessonsManager.descripcion", "Descripción")}</Label>
               <Textarea rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
             </div>
             <div className="space-y-2">
@@ -238,7 +240,7 @@ export default function LessonsManager({ courseId, lessons, readOnly, onChange }
               <Textarea rows={5} value={form.richContent} onChange={(e) => setForm({ ...form, richContent: e.target.value })} />
             </div>
             <div className="space-y-2">
-              <Label>Duración (minutos)</Label>
+              <Label>{t("ui.LessonsManager.duracionMinutos", "Duración (minutos)")}</Label>
               <Input type="number" min={0} value={form.durationMinutes} onChange={(e) => setForm({ ...form, durationMinutes: e.target.value })} />
             </div>
             <div className="space-y-2">
@@ -260,8 +262,8 @@ export default function LessonsManager({ courseId, lessons, readOnly, onChange }
       <AlertDialog open={!!deleteId} onOpenChange={(o) => !o && setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar lección?</AlertDialogTitle>
-            <AlertDialogDescription>Esta acción no se puede deshacer.</AlertDialogDescription>
+            <AlertDialogTitle>{t("ui.LessonsManager.eliminarLeccion2", "¿Eliminar lección?")}</AlertDialogTitle>
+            <AlertDialogDescription>{t("ui.LessonsManager.estaAccionNoSePuede", "Esta acción no se puede deshacer.")}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>

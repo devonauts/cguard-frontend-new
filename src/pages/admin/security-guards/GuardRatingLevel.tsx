@@ -14,6 +14,7 @@
  * usuario elija rojo como acento.
  */
 import { Star } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { StatusBadge } from '@/components/kit';
 
 /** Nota → papel del sistema: bueno / regular / malo. */
@@ -32,6 +33,7 @@ export default function GuardRatingLevel({
   showEmpty?: boolean;
   className?: string;
 }) {
+  const { t } = useTranslation();
   const has = typeof average === 'number' && (count ?? 0) > 0;
   if (!has) {
     if (!showEmpty) return null;
@@ -57,7 +59,7 @@ export default function GuardRatingLevel({
         type="button"
         onClick={(e) => { e.stopPropagation(); onClick(); }}
         className="cg-focus rounded-full transition hover:brightness-95"
-        title="Ver reseñas del vigilante"
+        title={t("ui.GuardRatingLevel.verResenasDelVigilante", "Ver reseñas del vigilante")}
       >
         <StatusBadge tone={tone} dot={false} className={className}>{inner}</StatusBadge>
       </button>

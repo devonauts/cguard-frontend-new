@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import AppLayout from "@/layouts/app-layout";
 import SettingsLayout from "@/layouts/SettingsLayout";
 import { Button } from "@/components/ui/button";
@@ -70,6 +71,7 @@ function set<T extends object>(obj: T, path: string, value: unknown): T {
 }
 
 export default function NominaSettings() {
+  const { t } = useTranslation();
   const [s, setS] = useState<NominaSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -174,7 +176,7 @@ export default function NominaSettings() {
                   escribirlos. Un ajuste funcional e inalcanzable es el problema
                   inverso al del interruptor muerto, y se nota igual de poco. */}
               <label className="block">
-                <span className="cg-eyebrow">Avisar además a estos correos</span>
+                <span className="cg-eyebrow">{t("ui.NominaSettings.avisarAdemasAEstosCorreos", "Avisar además a estos correos")}</span>
                 <input
                   type="text"
                   value={(s.notifications?.customEmails || []).join(", ")}
@@ -234,10 +236,10 @@ export default function NominaSettings() {
                     <option value="0">Domingo</option>
                     <option value="1">Lunes</option>
                     <option value="2">Martes</option>
-                    <option value="3">Miércoles</option>
+                    <option value="3">{t("ui.NominaSettings.miercoles", "Miércoles")}</option>
                     <option value="4">Jueves</option>
                     <option value="5">Viernes</option>
-                    <option value="6">Sábado</option>
+                    <option value="6">{t("ui.NominaSettings.sabado", "Sábado")}</option>
                   </select>
                 </label>
               )}
@@ -261,7 +263,7 @@ export default function NominaSettings() {
                   }
                 >
                   <option value="0">Sin redondear</option>
-                  <option value="5">Al múltiplo de 5 minutos</option>
+                  <option value="5">{t("ui.NominaSettings.alMultiploDe5Minutos", "Al múltiplo de 5 minutos")}</option>
                   <option value="15">Al cuarto de hora</option>
                   <option value="30">A la media hora</option>
                   <option value="60">A la hora</option>

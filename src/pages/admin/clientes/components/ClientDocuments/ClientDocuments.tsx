@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Client } from '@/types/client';
 import useScrollToTopOnMount from '@/hooks/useScrollToTopOnMount';
 import { clientService } from '@/lib/api/clientService';
@@ -83,6 +84,7 @@ const ago = (iso: string) => {
 
 
 export default function ClientDocuments({ client }: { client: Client }) {
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement | null>(null);
   useScrollToTopOnMount(containerRef);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -175,7 +177,7 @@ export default function ClientDocuments({ client }: { client: Client }) {
               <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
               <input className={`${FIELD_CLS} pl-8`} placeholder="Buscar por nombre, tipo o palabra clave…" value={q} onChange={(e) => resetPage(setQ)(e.target.value)} />
             </div>
-            <select className={FIELD_CLS} value={category} onChange={(e) => resetPage(setCategory)(e.target.value)}><option value="">Categoría: Todas</option>{categories.map((c) => <option key={c.name} value={c.name}>{c.name}</option>)}</select>
+            <select className={FIELD_CLS} value={category} onChange={(e) => resetPage(setCategory)(e.target.value)}><option value="">{t("ui.ClientDocuments.categoriaTodas", "Categoría: Todas")}</option>{categories.map((c) => <option key={c.name} value={c.name}>{c.name}</option>)}</select>
             <select className={FIELD_CLS} value={type} onChange={(e) => resetPage(setType)(e.target.value)}><option value="">Tipo: Todos</option>{types.map((t) => <option key={t} value={t}>{t}</option>)}</select>
           </div>
 
@@ -185,9 +187,9 @@ export default function ClientDocuments({ client }: { client: Client }) {
             <TabTable>
                 <THead>
                   <Th>Nombre del documento</Th>
-                  <Th>Categoría</Th>
+                  <Th>{t("ui.ClientDocuments.categoria", "Categoría")}</Th>
                   <Th>Tipo</Th>
-                  <Th>Tamaño</Th>
+                  <Th>{t("ui.ClientDocuments.tamano", "Tamaño")}</Th>
                   <Th>Actualizado por</Th>
                   <Th>Fecha</Th>
                   <Th align="right">Acciones</Th>
@@ -247,8 +249,8 @@ export default function ClientDocuments({ client }: { client: Client }) {
             </div>
           </Section>
 
-          <Section title="Categorías" icon={<FolderOpen />}>
-            {categories.length === 0 ? <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>Aún no hay categorías.</p> : (
+          <Section title={t("ui.ClientDocuments.categorias", "Categorías")} icon={<FolderOpen />}>
+            {categories.length === 0 ? <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t("ui.ClientDocuments.aunNoHayCategorias", "Aún no hay categorías.")}</p> : (
               <div className="divide-y" style={{ borderColor: 'var(--hairline)' }}>
                 {categories.map((c) => (
                   <button key={c.name} onClick={() => resetPage(setCategory)(c.name)} className="cg-focus flex w-full items-center justify-between py-2 text-left text-sm transition-opacity hover:opacity-70">
@@ -292,8 +294,8 @@ export default function ClientDocuments({ client }: { client: Client }) {
             className="cursor-pointer rounded-2xl border-2 border-dashed p-6 text-center transition-colors"
             style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}>
             <Upload className="mx-auto mb-2 h-6 w-6" style={{ color: 'var(--ink-faint)' }} />
-            <p className="text-sm">Arrastra archivos aquí o haz clic para seleccionar</p>
-            <p className="text-xs" style={{ color: 'var(--ink-faint)' }}>PDF, Word, Excel, imágenes, ZIP… (máx. 100 MB)</p>
+            <p className="text-sm">{t("ui.ClientDocuments.arrastraArchivosAquiOHaz", "Arrastra archivos aquí o haz clic para seleccionar")}</p>
+            <p className="text-xs" style={{ color: 'var(--ink-faint)' }}>{t("ui.ClientDocuments.pdfWordExcelImagenesZip", "PDF, Word, Excel, imágenes, ZIP… (máx. 100 MB)")}</p>
             <input ref={fileInputRef} type="file" multiple className="hidden" onChange={(e) => onPick(e.target.files)} />
           </div>
           {pending.length > 0 && (

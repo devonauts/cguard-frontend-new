@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { useTranslation } from 'react-i18next';
 import { Menu } from "lucide-react";
 
 type Props = {
@@ -9,6 +10,7 @@ type Props = {
 };
 
 export default function SectionBar({ title, right, onHamburger, className }: Props) {
+  const { t } = useTranslation();
   return (
     <div className={["sticky top-0 z-10 bg-card", className ?? ""].join(" ")}>
       <div className="h-12 flex items-center justify-between border-b border-border px-4">
@@ -18,7 +20,7 @@ export default function SectionBar({ title, right, onHamburger, className }: Pro
           <button
             onClick={onHamburger}
             className="p-2 rounded hover:bg-muted text-foreground/70"
-            aria-label="Mostrar/Ocultar menú"
+            aria-label={t("ui.sectionbar.mostrarOcultarMenu", "Mostrar/Ocultar menú")}
           >
             <Menu className="w-4 h-4" />
           </button>

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Client } from '@/types/client';
 import useScrollToTopOnMount from '@/hooks/useScrollToTopOnMount';
 import { clientService } from '@/lib/api/clientService';
@@ -85,6 +86,7 @@ const resLabel = (ms: number | null) => {
 const ymd = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
 export default function ClientIncidents({ client }: { client: Client }) {
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement | null>(null);
   useScrollToTopOnMount(containerRef);
 
@@ -176,12 +178,12 @@ export default function ClientIncidents({ client }: { client: Client }) {
           <div className="mb-3 grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-6">
             <div className="relative col-span-2 md:col-span-3 xl:col-span-1">
               <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
-              <input className={`${FIELD_CLS} pl-8`} placeholder="Buscar por ID, título o ubicación" value={q} onChange={(e) => resetPage(setQ)(e.target.value)} />
+              <input className={`${FIELD_CLS} pl-8`} placeholder={t("ui.ClientIncidents.buscarPorIdTituloO", "Buscar por ID, título o ubicación")} value={q} onChange={(e) => resetPage(setQ)(e.target.value)} />
             </div>
             <select className={FIELD_CLS} value={sedeId} onChange={(e) => resetPage(setSedeId)(e.target.value)}><option value="">Sede: Todas</option>{sedes.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select>
-            <select className={FIELD_CLS} value={puestoId} onChange={(e) => resetPage(setPuestoId)(e.target.value)}><option value="">Estación: Todas</option>{puestos.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select>
+            <select className={FIELD_CLS} value={puestoId} onChange={(e) => resetPage(setPuestoId)(e.target.value)}><option value="">{t("ui.ClientIncidents.estacionTodas", "Estación: Todas")}</option>{puestos.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select>
             <select className={FIELD_CLS} value={tipo} onChange={(e) => resetPage(setTipo)(e.target.value)}><option value="">Tipo: Todos</option>{tipos.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select>
-            <select className={FIELD_CLS} value={estado} onChange={(e) => resetPage(setEstado)(e.target.value)}><option value="">Estado: Todos</option><option value="abierto">Abierto</option><option value="investigacion">En investigación</option><option value="resuelto">Resuelto</option></select>
+            <select className={FIELD_CLS} value={estado} onChange={(e) => resetPage(setEstado)(e.target.value)}><option value="">Estado: Todos</option><option value="abierto">Abierto</option><option value="investigacion">{t("ui.ClientIncidents.enInvestigacion", "En investigación")}</option><option value="resuelto">Resuelto</option></select>
             <select className={FIELD_CLS} value={prioridad} onChange={(e) => resetPage(setPrioridad)(e.target.value)}><option value="">Prioridad: Todas</option><option value="alta">Alta</option><option value="media">Media</option><option value="baja">Baja</option></select>
           </div>
 
@@ -193,12 +195,12 @@ export default function ClientIncidents({ client }: { client: Client }) {
                   <Th>ID</Th>
                   <Th>Fecha / Hora</Th>
                   <Th>Incidente</Th>
-                  <Th>Sede / Estación</Th>
+                  <Th>{t("ui.ClientIncidents.sedeEstacion", "Sede / Estación")}</Th>
                   <Th>Reportado por</Th>
                   <Th>Prioridad</Th>
                   <Th>Estado</Th>
                   <Th>Respuesta</Th>
-                  <Th>Resolución</Th>
+                  <Th>{t("ui.ClientIncidents.resolucion", "Resolución")}</Th>
                 </THead>
                 <tbody>
                   {incidents.map((i) => {
@@ -271,7 +273,7 @@ export default function ClientIncidents({ client }: { client: Client }) {
 
               {tab === 'detalles' && (
                 <div className="space-y-4">
-                  {selected.description && <div><div className="cg-eyebrow mb-1">Descripción</div><p className="whitespace-pre-line text-sm" style={{ color: 'var(--ink-soft)' }}>{selected.description}</p></div>}
+                  {selected.description && <div><div className="cg-eyebrow mb-1">{t("ui.ClientIncidents.descripcion", "Descripción")}</div><p className="whitespace-pre-line text-sm" style={{ color: 'var(--ink-soft)' }}>{selected.description}</p></div>}
                   {selected.causaProbable && <div><div className="cg-eyebrow mb-1">Causa probable</div><p className="text-sm" style={{ color: 'var(--ink-soft)' }}>{selected.causaProbable}</p></div>}
                   {selected.actionsTaken?.length > 0 && (
                     <div><div className="cg-eyebrow mb-1">Acciones tomadas</div><ul className="list-disc space-y-0.5 pl-5 text-sm" style={{ color: 'var(--ink-soft)' }}>{selected.actionsTaken.map((a: string, i: number) => <li key={i}>{a}</li>)}</ul></div>
@@ -318,7 +320,7 @@ export default function ClientIncidents({ client }: { client: Client }) {
               {tab === 'bitacora' && (
                 <div>
                   {(selected.comments || []).length === 0 ? (
-                    <EmptyState icon={<ListChecks />} title="Sin bitácora" description="No hay registros en la bitácora de este incidente." />
+                    <EmptyState icon={<ListChecks />} title={t("ui.ClientIncidents.sinBitacora", "Sin bitácora")} description="No hay registros en la bitácora de este incidente." />
                   ) : (
                     <div className="space-y-2">
                       {(selected.comments || []).map((c: any, i: number) => {

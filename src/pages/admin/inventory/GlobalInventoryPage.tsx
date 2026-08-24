@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, Fragment } from 'react';
+import { useTranslation } from 'react-i18next';
 import AppLayout from '@/layouts/app-layout';
 import Breadcrumb from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
@@ -74,6 +75,7 @@ const EMPTY_FORM: InventoryItemInput = {
 };
 
 export default function GlobalInventoryPage() {
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   useScrollToTopOnMount(containerRef);
 
@@ -351,7 +353,7 @@ export default function GlobalInventoryPage() {
 
         {/* Catálogo */}
         <Section
-          title="Catálogo de inventario"
+          title={t("ui.GlobalInventory.catalogoDeInventario", "Catálogo de inventario")}
           icon={<Package />}
           action={(
             <span className="text-sm" style={{ color: 'var(--ink-soft)' }}>
@@ -448,7 +450,7 @@ export default function GlobalInventoryPage() {
                     <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--ink-soft)' }}>Nombre</th>
                     <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--ink-soft)' }}>Tipo</th>
                     <th className="hidden px-4 py-3 text-left font-semibold sm:table-cell" style={{ color: 'var(--ink-soft)' }}>N.º de serie</th>
-                    <th className="hidden px-4 py-3 text-left font-semibold md:table-cell" style={{ color: 'var(--ink-soft)' }}>Condición</th>
+                    <th className="hidden px-4 py-3 text-left font-semibold md:table-cell" style={{ color: 'var(--ink-soft)' }}>{t("ui.GlobalInventory.condicion", "Condición")}</th>
                     <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--ink-soft)' }}>Estado</th>
                     <th className="px-4 py-3 text-right font-semibold" style={{ color: 'var(--ink-soft)' }}>Acciones</th>
                   </tr>
@@ -673,7 +675,7 @@ export default function GlobalInventoryPage() {
 
               {/* Serie */}
               <div className="space-y-1">
-                <Label htmlFor="inv-serial">Número de serie</Label>
+                <Label htmlFor="inv-serial">{t("ui.GlobalInventory.numeroDeSerie", "Número de serie")}</Label>
                 <div className="relative">
                   <Hash className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
                   <Input
@@ -689,7 +691,7 @@ export default function GlobalInventoryPage() {
               {/* Condición + estado */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <Label>Condición</Label>
+                  <Label>{t("ui.GlobalInventory.condicion2", "Condición")}</Label>
                   <Select value={form.condition} onValueChange={(v) => setField('condition', v as ItemCondition)}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -744,7 +746,7 @@ export default function GlobalInventoryPage() {
 
               {/* Fotos */}
               <div className="space-y-2">
-                <Label>Fotos del artículo</Label>
+                <Label>{t("ui.GlobalInventory.fotosDelArticulo", "Fotos del artículo")}</Label>
                 <input
                   ref={photoInputRef}
                   type="file"
@@ -846,7 +848,7 @@ export default function GlobalInventoryPage() {
       <Modal
         open={!!deleteTarget}
         onOpenChange={(o) => { if (!o) setDeleteTarget(null); }}
-        title="Eliminar artículo"
+        title={t("ui.GlobalInventory.eliminarArticulo", "Eliminar artículo")}
         icon={<Trash2 className="h-5 w-5" />}
         size="sm"
         footer={(

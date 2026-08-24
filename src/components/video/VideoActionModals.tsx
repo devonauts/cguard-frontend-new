@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from 'react-i18next';
 import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import {
@@ -350,6 +351,7 @@ export function CreateIncidentModal({
   onClose,
   onCreated,
 }: CreateIncidentModalProps) {
+  const { t } = useTranslation();
   const [title, setTitle] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [priority, setPriority] = React.useState<Priority>("media");
@@ -438,17 +440,17 @@ export function CreateIncidentModal({
         ) : null}
 
         <div className="space-y-1.5">
-          <Label htmlFor="inc-title">Título</Label>
+          <Label htmlFor="inc-title">{t("ui.VideoActionModals.titulo", "Título")}</Label>
           <Input
             id="inc-title"
-            placeholder="Ej. Intrusión detectada"
+            placeholder={t("ui.VideoActionModals.ejIntrusionDetectada", "Ej. Intrusión detectada")}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="inc-desc">Descripción</Label>
+          <Label htmlFor="inc-desc">{t("ui.VideoActionModals.descripcion", "Descripción")}</Label>
           <Textarea
             id="inc-desc"
             rows={4}
@@ -469,7 +471,7 @@ export function CreateIncidentModal({
             <option value="baja">Baja</option>
             <option value="media">Media</option>
             <option value="alta">Alta</option>
-            <option value="critica">Crítica</option>
+            <option value="critica">{t("ui.VideoActionModals.critica", "Crítica")}</option>
           </select>
         </div>
       </div>
@@ -496,6 +498,7 @@ export function DispatchModal({
   onClose,
   onDispatched,
 }: DispatchModalProps) {
+  const { t } = useTranslation();
   const [note, setNote] = React.useState("");
   const [busy, setBusy] = React.useState(false);
 
@@ -528,7 +531,7 @@ export function DispatchModal({
     <ModalShell
       open={open}
       onClose={onClose}
-      title="Despachar a supervisión"
+      title={t("ui.VideoActionModals.despacharASupervision", "Despachar a supervisión")}
       icon={<Radio className="size-4" />}
       footer={
         <>
@@ -555,7 +558,7 @@ export function DispatchModal({
           <Textarea
             id="dispatch-note"
             rows={4}
-            placeholder="Describa la situación que requiere atención…"
+            placeholder={t("ui.VideoActionModals.describaLaSituacionQueRequiere", "Describa la situación que requiere atención…")}
             value={note}
             onChange={(e) => setNote(e.target.value)}
           />

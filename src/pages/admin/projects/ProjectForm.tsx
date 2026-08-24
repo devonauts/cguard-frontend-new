@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FIELD_CLS } from '@/pages/admin/clientes/components/_shared/tab-kit';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
@@ -47,6 +48,7 @@ export default function ProjectForm({
   onSaved,
   onCancel,
 }: ProjectFormProps) {
+  const { t } = useTranslation();
   const [clients, setClients] = useState<{ id: string; label: string }[]>([]);
 
   const form = useForm<FormInput, unknown, FormInput>({
@@ -149,7 +151,7 @@ export default function ProjectForm({
           </Section>
 
           {/* ── Información básica ───────────────────────── */}
-          <Section title="Información básica" icon={<FileText />} contentClassName="space-y-4">
+          <Section title={t("ui.ProjectForm.informacionBasica", "Información básica")} icon={<FileText />} contentClassName="space-y-4">
 
             <FormField
               control={form.control}
@@ -158,7 +160,7 @@ export default function ProjectForm({
                 <FormItem>
                   <FormLabel>Nombre del proyecto *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ej. Evento anual 2026, Investigación #14" {...field} />
+                    <Input placeholder={t("ui.ProjectForm.ejEventoAnual2026Investigacion", "Ej. Evento anual 2026, Investigación #14")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -195,10 +197,10 @@ export default function ProjectForm({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Descripción</FormLabel>
+                  <FormLabel>{t("ui.ProjectForm.descripcion", "Descripción")}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Descripción del proyecto, alcance, objetivos…"
+                      placeholder={t("ui.ProjectForm.descripcionDelProyectoAlcanceObjetivos", "Descripción del proyecto, alcance, objetivos…")}
                       rows={3}
                       {...field}
                       value={field.value ?? ''}
@@ -247,7 +249,7 @@ export default function ProjectForm({
               name="location"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Lugar / ubicación</FormLabel>
+                  <FormLabel>{t("ui.ProjectForm.lugarUbicacion", "Lugar / ubicación")}</FormLabel>
                   <FormControl>
                     <Input placeholder="Centro de convenciones, Quito" {...field} value={field.value ?? ''} />
                   </FormControl>

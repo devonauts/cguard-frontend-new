@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useTranslation } from 'react-i18next';
 import { clientDisplayName } from '@/lib/clientName';
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import AppLayout from "@/layouts/app-layout";
@@ -75,6 +76,7 @@ type AssignedGuard = {
 // tiposIncidente se carga desde backend en el estado `tiposIncidente`
 
 export default function NewDispatchPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [attachments, setAttachments] = useState<File[]>([]);
@@ -1171,7 +1173,7 @@ export default function NewDispatchPage() {
         />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <Section title="Información del incidente" icon={<Users />}>
+            <Section title={t("ui.NewDispatch.informacionDelIncidente", "Información del incidente")} icon={<Users />}>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                 {!isFromPostSite ? (
                   <>
@@ -1289,7 +1291,7 @@ export default function NewDispatchPage() {
                   name="stationId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Estación</FormLabel>
+                      <FormLabel>{t("ui.NewDispatch.estacion", "Estación")}</FormLabel>
                       <Select
                         value={field.value || ''}
                         onValueChange={(v) => {
@@ -1308,7 +1310,7 @@ export default function NewDispatchPage() {
                           <div className="px-2 py-2">
                             <Input
                               ref={(el) => (stationInputRef.current = el)}
-                              placeholder="Buscar estación..."
+                              placeholder={t("ui.NewDispatch.buscarEstacion", "Buscar estación...")}
                               value={stationFilter}
                               onChange={(e) => setStationFilter(e.target.value)}
                               disabled={!(watchedSiteId || dupSiteId)}
@@ -1457,7 +1459,7 @@ export default function NewDispatchPage() {
                   name="location"
                   render={({ field }) => (
                     <FormItem className="md:col-span-1">
-                      <FormLabel>Ubicación del incidente*</FormLabel>
+                      <FormLabel>{t("ui.NewDispatch.ubicacionDelIncidente", "Ubicación del incidente*")}</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Client } from '@/types/client';
 import { useNavigate } from 'react-router-dom';
 import useScrollToTopOnMount from '@/hooks/useScrollToTopOnMount';
@@ -86,6 +87,7 @@ function Bar({ pct, status }: { pct: number; status: string }) {
 }
 
 export default function ClientCoverage({ client }: { client: Client }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement | null>(null);
   useScrollToTopOnMount(containerRef);
@@ -236,7 +238,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
             <div className="mb-3 flex flex-wrap items-center gap-2">
               <div className="relative min-w-[180px] flex-1">
                 <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
-                <input className={`${FIELD_CLS} pl-8`} placeholder="Buscar estación por nombre" value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} />
+                <input className={`${FIELD_CLS} pl-8`} placeholder={t("ui.ClientCoverage.buscarEstacionPorNombre", "Buscar estación por nombre")} value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} />
               </div>
               <select className={FIELD_CLS} value={estado} onChange={(e) => { setEstado(e.target.value); setPage(1); }}>
                 <option value="todos">Estado: Todos</option>
@@ -270,13 +272,13 @@ export default function ClientCoverage({ client }: { client: Client }) {
             ) : (
               <TabTable minWidth={860}>
                   <THead className="[&>th]:whitespace-nowrap">
-                      <Th>Estación</Th>
+                      <Th>{t("ui.ClientCoverage.estacion", "Estación")}</Th>
                       <Th>Tipo</Th>
                       <Th>Turno actual</Th>
                       <Th>Guardias</Th>
                       <Th>Cobertura</Th>
                       <Th>Estado</Th>
-                      <Th>Última actividad</Th>
+                      <Th>{t("ui.ClientCoverage.ultimaActividad", "Última actividad")}</Th>
                       <Th aria-label="Acciones" />
                   </THead>
                   <tbody>
@@ -286,7 +288,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
                       const sel = p.id === selectedId;
                       return (
                         <Tr key={p.id} selected={sel} onClick={() => navigate(`/post-sites/${sedeId}/stations/${p.id}`)}
-                          title="Abrir el detalle de la estación">
+                          title={t("ui.ClientCoverage.abrirElDetalleDeLa", "Abrir el detalle de la estación")}>
                           <td className="px-2 py-2.5">
                             <div className="flex items-center gap-2.5">
                               {/* Numbered pin: selects on the map (does NOT navigate) */}
@@ -401,7 +403,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
                   value={mapType}
                   onChange={setMapType}
                   options={[
-                    { value: 'satellite', label: <span className="flex items-center gap-1"><Satellite className="h-3.5 w-3.5" /> Satélite</span> },
+                    { value: 'satellite', label: <span className="flex items-center gap-1"><Satellite className="h-3.5 w-3.5" />{" "}{t("ui.ClientCoverage.satelite", "Satélite")}</span> },
                     { value: 'roadmap', label: <span className="flex items-center gap-1"><MapIcon className="h-3.5 w-3.5" /> Mapa</span> },
                   ]}
                 />
@@ -414,7 +416,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
               <>
                 {placing && (
                   <div className="mb-2 flex items-center gap-2 rounded-xl border px-3 py-2 text-xs" style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }}>
-                    <Crosshair className="h-4 w-4" /> Toca el mapa para fijar la ubicación exacta de <b>{selected?.name}</b>.
+                    <Crosshair className="h-4 w-4" />{" "}{t("ui.ClientCoverage.tocaElMapaParaFijar", "Toca el mapa para fijar la ubicación exacta de")}{" "}<b>{selected?.name}</b>.
                     <button onClick={() => setPlacing(false)} className="ml-auto font-medium underline">Cancelar</button>
                   </div>
                 )}
@@ -445,7 +447,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
 
           {/* Selected puesto detail + place-location */}
           {selected && (
-            <Section title="Estación seleccionada" icon={<Locate />}>
+            <Section title={t("ui.ClientCoverage.estacionSeleccionada", "Estación seleccionada")} icon={<Locate />}>
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <div className="font-semibold">{selected.name}</div>
@@ -453,7 +455,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
                   <div className="mt-1"><StatusBadge tone={(STATUS_META[selected.status] || STATUS_META.sin_turno).tone}>{(STATUS_META[selected.status] || STATUS_META.sin_turno).label}</StatusBadge></div>
                   {Number.isFinite(selected.lat)
                     ? <div className="mt-2 text-xs tabular-nums" style={{ color: 'var(--ink-soft)' }}>{selected.lat!.toFixed(6)}, {selected.lng!.toFixed(6)}</div>
-                    : <div className="mt-2 text-xs" style={{ color: 'var(--warn-text)' }}>Este puesto aún no tiene ubicación exacta.</div>}
+                    : <div className="mt-2 text-xs" style={{ color: 'var(--warn-text)' }}>{t("ui.ClientCoverage.estePuestoAunNoTiene", "Este puesto aún no tiene ubicación exacta.")}</div>}
                 </div>
                 <div className="flex shrink-0 flex-col gap-2">
                   <Button size="sm" variant={placing ? 'brand' : 'outline'} onClick={() => setPlacing((v) => !v)}>
@@ -488,14 +490,14 @@ export default function ClientCoverage({ client }: { client: Client }) {
                   {data?.generalPct ?? 0}%
                 </span>
               </div>
-              <p className="text-xs" style={{ color: 'var(--ink-faint)' }}>Según la asistencia registrada hoy.</p>
+              <p className="text-xs" style={{ color: 'var(--ink-faint)' }}>{t("ui.ClientCoverage.segunLaAsistenciaRegistradaHoy", "Según la asistencia registrada hoy.")}</p>
             </div>
           </Section>
 
           {/* Estaciones sin cobertura */}
           <Section title={`Estaciones sin cobertura (${sinCobertura.length})`} icon={<ShieldAlert />}>
             {sinCobertura.length === 0 ? (
-              <div className="flex items-center gap-2 py-2 text-sm" style={{ color: 'var(--ok-text)' }}><CheckCircle2 className="h-4 w-4" /> Todos los puestos con turno están cubiertos.</div>
+              <div className="flex items-center gap-2 py-2 text-sm" style={{ color: 'var(--ok-text)' }}><CheckCircle2 className="h-4 w-4" />{" "}{t("ui.ClientCoverage.todosLosPuestosConTurno", "Todos los puestos con turno están cubiertos.")}</div>
             ) : (
               <div className="divide-y" style={{ borderColor: 'var(--hairline)' }}>
                 {sinCobertura.map((p) => (
@@ -507,7 +509,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
                         <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{p.window || 'Sin turno'} {p.turno ? `(${p.turno})` : ''} · Requiere {p.requiredGuards} {p.requiredGuards === 1 ? 'vigilante' : 'vigilantes'}</div>
                       </div>
                     </div>
-                    <span className="inline-flex items-center gap-1 text-xs font-semibold" style={{ color: 'var(--bad-text)' }}>Sin asignación <ChevronRight className="h-3.5 w-3.5" /></span>
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold" style={{ color: 'var(--bad-text)' }}>{t("ui.ClientCoverage.sinAsignacion", "Sin asignación")}{" "}<ChevronRight className="h-3.5 w-3.5" /></span>
                   </button>
                 ))}
               </div>
@@ -515,10 +517,10 @@ export default function ClientCoverage({ client }: { client: Client }) {
           </Section>
 
           {/* Próximos a iniciar */}
-          <Section title="Próximos a iniciar" icon={<Clock />}
+          <Section title={t("ui.ClientCoverage.proximosAIniciar", "Próximos a iniciar")} icon={<Clock />}
             action={<button onClick={() => navigate('/schedule')} className="cg-focus rounded-md text-xs font-semibold hover:underline" style={{ color: 'var(--brand-text)' }}>Ver calendario</button>}>
             {proximos.length === 0 ? (
-              <div className="py-2 text-sm" style={{ color: 'var(--ink-soft)' }}>No hay turnos próximos en las siguientes 2 horas.</div>
+              <div className="py-2 text-sm" style={{ color: 'var(--ink-soft)' }}>{t("ui.ClientCoverage.noHayTurnosProximosEn", "No hay turnos próximos en las siguientes 2 horas.")}</div>
             ) : (
               <div className="divide-y" style={{ borderColor: 'var(--hairline)' }}>
                 {proximos.slice(0, 6).map((p) => (

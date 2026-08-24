@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import GuardsLayout from '@/layouts/GuardsLayout';
@@ -48,6 +49,7 @@ function csvCell(v: unknown): string {
  * trabajador. :id = securityGuard id (guardShift.guardNameId).
  */
 export default function GuardAsistenciaPage() {
+  const { t } = useTranslation();
   const { id = '' } = useParams();
   const [rows, setRows] = useState<AttendanceRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -163,7 +165,7 @@ export default function GuardAsistenciaPage() {
                     <th className="px-3 py-2.5 text-left font-semibold">Salida</th>
                     <th className="px-3 py-2.5 text-right font-semibold">Horas</th>
                     <th className="px-3 py-2.5 text-left font-semibold">Estado</th>
-                    <th className="px-3 py-2.5 text-left font-semibold">Aprobación</th>
+                    <th className="px-3 py-2.5 text-left font-semibold">{t("ui.GuardAsistencia.aprobacion", "Aprobación")}</th>
                     <th className="px-3 py-2.5" />
                   </tr>
                 </thead>

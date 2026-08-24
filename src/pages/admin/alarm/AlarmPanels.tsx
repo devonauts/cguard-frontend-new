@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import {
@@ -280,6 +281,7 @@ function PanelModal({
   onClose: () => void;
   onSaved: () => void;
 }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState<PanelForm>(emptyPanelForm());
   const [saving, setSaving] = useState(false);
 
@@ -399,7 +401,7 @@ function PanelModal({
             </div>
 
             <div>
-              <Label htmlFor="ap-account">Número de cuenta</Label>
+              <Label htmlFor="ap-account">{t("ui.AlarmPanels.numeroDeCuenta", "Número de cuenta")}</Label>
               <Input
                 id="ap-account"
                 value={form.accountNumber}
@@ -424,7 +426,7 @@ function PanelModal({
             </div>
 
             <div>
-              <Label htmlFor="ap-comms">Comunicación</Label>
+              <Label htmlFor="ap-comms">{t("ui.AlarmPanels.comunicacion", "Comunicación")}</Label>
               <NativeSelect
                 id="ap-comms"
                 value={form.comms}
@@ -439,7 +441,7 @@ function PanelModal({
             </div>
 
             <div>
-              <Label htmlFor="ap-receiverLine">Línea de receptor</Label>
+              <Label htmlFor="ap-receiverLine">{t("ui.AlarmPanels.lineaDeReceptor", "Línea de receptor")}</Label>
               <Input
                 id="ap-receiverLine"
                 value={form.receiverLine}
@@ -449,7 +451,7 @@ function PanelModal({
             </div>
 
             <div>
-              <Label htmlFor="ap-supervision">Supervisión (min)</Label>
+              <Label htmlFor="ap-supervision">{t("ui.AlarmPanels.supervisionMin", "Supervisión (min)")}</Label>
               <Input
                 id="ap-supervision"
                 type="number"
@@ -461,17 +463,17 @@ function PanelModal({
             </div>
 
             <div>
-              <Label htmlFor="ap-psapAgency">Agencia / PSAP (policía)</Label>
+              <Label htmlFor="ap-psapAgency">{t("ui.AlarmPanels.agenciaPsapPolicia", "Agencia / PSAP (policía)")}</Label>
               <Input
                 id="ap-psapAgency"
                 value={form.psapAgency}
                 onChange={(e) => set("psapAgency", e.target.value)}
-                placeholder="Ej. Policía Nacional - Zona 9"
+                placeholder={t("ui.AlarmPanels.ejPoliciaNacionalZona9", "Ej. Policía Nacional - Zona 9")}
               />
             </div>
 
             <div>
-              <Label htmlFor="ap-psapPhone">Teléfono PSAP</Label>
+              <Label htmlFor="ap-psapPhone">{t("ui.AlarmPanels.telefonoPsap", "Teléfono PSAP")}</Label>
               <Input
                 id="ap-psapPhone"
                 value={form.psapPhone}
@@ -481,7 +483,7 @@ function PanelModal({
             </div>
 
             <div>
-              <Label htmlFor="ap-asapOri">ORI ASAP (despacho automático)</Label>
+              <Label htmlFor="ap-asapOri">{t("ui.AlarmPanels.oriAsapDespachoAutomatico", "ORI ASAP (despacho automático)")}</Label>
               <Input
                 id="ap-asapOri"
                 value={form.asapOri}
@@ -554,12 +556,12 @@ function PanelModal({
             </div>
 
             <div>
-              <Label htmlFor="ap-station">Estación (opcional)</Label>
+              <Label htmlFor="ap-station">{t("ui.AlarmPanels.estacionOpcional", "Estación (opcional)")}</Label>
               <Input
                 id="ap-station"
                 value={form.stationId}
                 onChange={(e) => set("stationId", e.target.value)}
-                placeholder="ID de la estación"
+                placeholder={t("ui.AlarmPanels.idDeLaEstacion", "ID de la estación")}
               />
             </div>
 
@@ -582,7 +584,7 @@ function PanelModal({
                 value={form.notes}
                 onChange={(e) => set("notes", e.target.value)}
                 rows={2}
-                placeholder="Instrucciones, ubicación, observaciones..."
+                placeholder={t("ui.AlarmPanels.instruccionesUbicacionObservaciones", "Instrucciones, ubicación, observaciones...")}
               />
             </div>
           </div>
@@ -657,6 +659,7 @@ const emptyZoneForm = (): ZoneForm => ({
 });
 
 function ZonesManager({ panelId }: { panelId: string }) {
+  const { t } = useTranslation();
   const [zones, setZones] = useState<AlarmZone[]>([]);
   const [cameras, setCameras] = useState<Camera[]>([]);
   const [loading, setLoading] = useState(true);
@@ -777,8 +780,8 @@ function ZonesManager({ panelId }: { panelId: string }) {
                 <th className="px-3 py-2">Zona</th>
                 <th className="px-3 py-2">Nombre</th>
                 <th className="px-3 py-2">Tipo</th>
-                <th className="px-3 py-2">Partición</th>
-                <th className="px-3 py-2">Cámara</th>
+                <th className="px-3 py-2">{t("ui.AlarmPanels.particion", "Partición")}</th>
+                <th className="px-3 py-2">{t("ui.AlarmPanels.camara", "Cámara")}</th>
                 <th className="px-3 py-2">Estado</th>
                 <th className="px-3 py-2 text-right">Acciones</th>
               </tr>
@@ -894,7 +897,7 @@ function ZonesManager({ panelId }: { panelId: string }) {
             onChange={(e) => set("linkedCameraId", e.target.value)}
             className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           >
-            <option value="">— Sin cámara —</option>
+            <option value="">{t("ui.AlarmPanels.sinCamara", "— Sin cámara —")}</option>
             {cameras.map((c) => (
               <option key={c.id} value={c.id}>{c.name || c.id}</option>
             ))}
@@ -959,6 +962,7 @@ const emptyContactForm = (): ContactForm => ({
 });
 
 function ContactsManager({ panelId }: { panelId: string }) {
+  const { t } = useTranslation();
   const [contacts, setContacts] = useState<AlarmContact[]>([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState<ContactForm>(emptyContactForm());
@@ -1081,7 +1085,7 @@ function ContactsManager({ panelId }: { panelId: string }) {
               <tr>
                 <th className="px-3 py-2">Orden</th>
                 <th className="px-3 py-2">Nombre</th>
-                <th className="px-3 py-2">Teléfono</th>
+                <th className="px-3 py-2">{t("ui.AlarmPanels.telefono", "Teléfono")}</th>
                 <th className="px-3 py-2">Email</th>
                 <th className="px-3 py-2">Autoridad</th>
                 <th className="px-3 py-2 text-right">Acciones</th>
@@ -1140,7 +1144,7 @@ function ContactsManager({ panelId }: { panelId: string }) {
             id="c-name"
             value={form.name}
             onChange={(e) => set("name", e.target.value)}
-            placeholder="Juan Pérez"
+            placeholder={t("ui.AlarmPanels.juanPerez", "Juan Pérez")}
           />
         </div>
         <div>
@@ -1267,6 +1271,7 @@ function PanelDetail({ panelId }: { panelId: string }) {
 // ============================================================
 
 export default function AlarmPanels() {
+  const { t } = useTranslation();
   const [panels, setPanels] = useState<AlarmPanel[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -1346,7 +1351,7 @@ export default function AlarmPanels() {
                 <Link to="/alarm/queue">Cola de casos</Link>
               </Button>
               <Button asChild variant="outline">
-                <Link to="/alarm/signals">Señales</Link>
+                <Link to="/alarm/signals">{t("ui.AlarmPanels.senales", "Señales")}</Link>
               </Button>
               <Button variant="brand" onClick={openCreate}>
                 <Plus className="mr-1.5 h-4 w-4" />

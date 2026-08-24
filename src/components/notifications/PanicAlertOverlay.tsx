@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import { useTranslation } from 'react-i18next';
 import { createPortal } from "react-dom";
 import { Siren, Phone, MapPin, User, Building2, Clock } from "lucide-react";
 import { startPanicAlarm, stopPanicAlarm } from "@/lib/notificationSound";
@@ -68,6 +69,7 @@ export function PanicAlertOverlay({
   /** Records the action + acknowledges the alarm case, then removes the alert. */
   onAcknowledge: (alert: PlatformNotification, action: string) => Promise<void> | void;
 }) {
+  const { t } = useTranslation();
   const active = alerts.length > 0;
   const [action, setAction] = useState("");
   const [saving, setSaving] = useState(false);
@@ -240,7 +242,7 @@ export function PanicAlertOverlay({
                   este espacio estaba vacío en todo pánico de persona. */}
               {contactos.filter((c) => c.rol !== "Emergencias").length > 0 && (
                 <div className="pt-1">
-                  <p className="cg-eyebrow mb-1.5">A quién llamar</p>
+                  <p className="cg-eyebrow mb-1.5">{t("ui.PanicAlertOverlay.aQuienLlamar", "A quién llamar")}</p>
                   <div className="space-y-1">
                     {contactos
                       .filter((c) => c.rol !== "Emergencias")
@@ -369,7 +371,7 @@ export function PanicAlertOverlay({
               onFocus={() => setFieldFocused(true)}
               onBlur={() => setFieldFocused(false)}
               rows={2}
-              placeholder="Describe la acción tomada para atender el SOS…"
+              placeholder={t("ui.PanicAlertOverlay.describeLaAccionTomadaPara", "Describe la acción tomada para atender el SOS…")}
               className="mt-2 w-full resize-none p-2 text-sm outline-none"
               style={{
                 background: "var(--glass-solid)",

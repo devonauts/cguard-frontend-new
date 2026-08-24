@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useCallback, useMemo, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import {
   Camera,
   Upload,
@@ -22,6 +23,7 @@ interface ProfilePhotoCaptureProps {
 }
 
 export default function ProfilePhotoCapture({ value, onChange, previewUrl }: ProfilePhotoCaptureProps) {
+  const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -251,7 +253,7 @@ export default function ProfilePhotoCapture({ value, onChange, previewUrl }: Pro
               <li>El vigilante debe vestir <strong>uniforme completo</strong> y presentable</li>
               <li>Use un fondo <strong>neutro</strong> (pared blanca o gris)</li>
               <li>La foto debe mostrar <strong>rostro y parte superior del cuerpo</strong></li>
-              <li>Buena iluminación — evite sombras y contraluz</li>
+              <li>{t("ui.ProfilePhotoCapture.buenaIluminacionEviteSombrasY", "Buena iluminación — evite sombras y contraluz")}</li>
               <li>No use lentes oscuros ni cubiertas en la cabeza</li>
             </ul>
           </div>

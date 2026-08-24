@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import {
     Dialog,
     DialogContent,
@@ -25,6 +26,7 @@ export function ClientDetailsDialog({
     onOpenChange,
     clientId,
 }: ClientDetailsDialogProps) {
+  const { t } = useTranslation();
     const [client, setClient] = useState<Client | null>(null);
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(false);
@@ -104,12 +106,12 @@ export function ClientDetailsDialog({
                                 <p className="text-sm truncate">{client.email || "-"}</p>
                             </div>
                             <div>
-                                <p className="text-xs text-foreground/70 font-semibold">Teléfono</p>
+                                <p className="text-xs text-foreground/70 font-semibold">{t("ui.ClientDetailsDialog.telefono", "Teléfono")}</p>
                                 <p className="text-sm">{client.phoneNumber || "-"}</p>
                             </div>
                             {client.faxNumber && (
                                 <div>
-                                    <p className="text-xs text-foreground/70 font-semibold">Teléfono fijo</p>
+                                    <p className="text-xs text-foreground/70 font-semibold">{t("ui.ClientDetailsDialog.telefonoFijo", "Teléfono fijo")}</p>
                                     <p className="text-sm">{client.faxNumber}</p>
                                 </div>
                             )}
@@ -123,18 +125,18 @@ export function ClientDetailsDialog({
 
                         {/* Dirección completa */}
                         <div className="border-t pt-3">
-                            <h4 className="text-sm font-semibold mb-2 text-foreground">Dirección</h4>
+                            <h4 className="text-sm font-semibold mb-2 text-foreground">{t("ui.ClientDetailsDialog.direccion", "Dirección")}</h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <p className="text-xs text-foreground/70 font-semibold">Dirección</p>
+                                    <p className="text-xs text-foreground/70 font-semibold">{t("ui.ClientDetailsDialog.direccion2", "Dirección")}</p>
                                     <p className="text-sm">{client.address || "-"}</p>
                                 </div>
                                 <div>
-                                    <p className="text-xs text-foreground/70 font-semibold">Dirección Complementaria</p>
+                                    <p className="text-xs text-foreground/70 font-semibold">{t("ui.ClientDetailsDialog.direccionComplementaria", "Dirección Complementaria")}</p>
                                     <p className="text-sm">{client.addressLine2 || "-"}</p>
                                 </div>
                                 <div>
-                                    <p className="text-xs text-foreground/70 font-semibold">Código Postal</p>
+                                    <p className="text-xs text-foreground/70 font-semibold">{t("ui.ClientDetailsDialog.codigoPostal", "Código Postal")}</p>
                                     <p className="text-sm">{client.postalCode || "-"}</p>
                                 </div>
                                 <div>
@@ -142,7 +144,7 @@ export function ClientDetailsDialog({
                                     <p className="text-sm">{client.city || "-"}</p>
                                 </div>
                                 <div>
-                                    <p className="text-xs text-foreground/70 font-semibold">País</p>
+                                    <p className="text-xs text-foreground/70 font-semibold">{t("ui.ClientDetailsDialog.pais", "País")}</p>
                                     <p className="text-sm">{client.country || "-"}</p>
                                 </div>
                             </div>

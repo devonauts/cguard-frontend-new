@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { toast } from "sonner";
 import {
   Loader2,
@@ -98,6 +99,7 @@ const STATUS_BADGE: Record<string, { health: DeviceHealth; label: string }> = {
 };
 
 export default function RadioDevices() {
+  const { t } = useTranslation();
   const [devices, setDevices] = useState<RadioDevice[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -281,7 +283,7 @@ export default function RadioDevices() {
         ) : devices.length === 0 ? (
           <EmptyState
             icon={<Radio />}
-            title="Aún no hay radios IP"
+            title={t("ui.RadioDevices.aunNoHayRadiosIp", "Aún no hay radios IP")}
             description="Agrega la pasarela RoIP/SIP del cliente con su IP y credenciales SIP."
             action={(
               <Button variant="brand" onClick={openNew}>
@@ -348,7 +350,7 @@ export default function RadioDevices() {
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>{editing ? "Editar radio IP" : "Agregar radio IP"}</DialogTitle>
-            <DialogDescription>Pasarela RoIP / SIP. La contraseña SIP se guarda cifrada.</DialogDescription>
+            <DialogDescription>{t("ui.RadioDevices.pasarelaRoipSipLaContrasena", "Pasarela RoIP / SIP. La contraseña SIP se guarda cifrada.")}</DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-3 py-2">
@@ -379,7 +381,7 @@ export default function RadioDevices() {
                 </Select>
               </div>
               <div className="grid gap-1.5">
-                <Label>Extensión / Talkgroup</Label>
+                <Label>{t("ui.RadioDevices.extensionTalkgroup", "Extensión / Talkgroup")}</Label>
                 <Input value={form.extension} onChange={(e) => set({ extension: e.target.value })} placeholder="1001" />
               </div>
             </div>
@@ -389,7 +391,7 @@ export default function RadioDevices() {
                 <Input value={form.sipUsername} onChange={(e) => set({ sipUsername: e.target.value })} autoComplete="off" />
               </div>
               <div className="grid gap-1.5">
-                <Label>Contraseña SIP</Label>
+                <Label>{t("ui.RadioDevices.contrasenaSip", "Contraseña SIP")}</Label>
                 <Input
                   type="password"
                   value={form.sipPassword}

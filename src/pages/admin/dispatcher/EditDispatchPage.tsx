@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useTranslation } from 'react-i18next';
 import { clientDisplayName } from '@/lib/clientName';
 import { Link, useNavigate, useParams } from "react-router-dom";
 import AppLayout from "@/layouts/app-layout";
@@ -49,6 +50,7 @@ const tiposLlamador = [
 ];
 
 export default function EditDispatchPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const params = useParams();
   const editId = params?.id;
@@ -384,7 +386,7 @@ export default function EditDispatchPage() {
         />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <Section title="Información del incidente" icon={<Users />}>
+            <Section title={t("ui.EditDispatch.informacionDelIncidente", "Información del incidente")} icon={<Users />}>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <FormField
                 control={form.control}
@@ -578,7 +580,7 @@ export default function EditDispatchPage() {
                   name="location"
                   render={({ field }) => (
                     <FormItem className="md:col-span-1">
-                      <FormLabel>Ubicación del incidente*</FormLabel>
+                      <FormLabel>{t("ui.EditDispatch.ubicacionDelIncidente", "Ubicación del incidente*")}</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>

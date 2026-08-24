@@ -1,4 +1,5 @@
 import type * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import AppLayout from '@/layouts/app-layout';
@@ -50,6 +51,7 @@ const ymd = (d: Date) =>
  * no CRUD here. Mirrors the client ScheduleCard grid. :id = securityGuard id.
  */
 export default function GuardHorarioPage() {
+  const { t } = useTranslation();
   const { id = '' } = useParams();
   const [data, setData] = useState<ScheduleSnapshot | null>(null);
   const [loading, setLoading] = useState(true);
@@ -164,7 +166,7 @@ export default function GuardHorarioPage() {
                     </span>
                   ))}
                   <span className="inline-flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full" style={{ background: 'var(--warn)' }} /> Cubre otro vigilante</span>
-                  <span className="ml-auto">La rotación se configura en la estación.</span>
+                  <span className="ml-auto">{t("ui.GuardHorario.laRotacionSeConfiguraEn", "La rotación se configura en la estación.")}</span>
                 </div>
               </>
             )}

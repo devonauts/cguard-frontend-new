@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { toast } from "sonner";
 import { crearSocket, cerrarSocket } from "@/lib/socket";
 import AppLayout from "@/layouts/app-layout";
@@ -77,6 +78,7 @@ const MS_SONDEO = 15000;
 const tenantId = () => localStorage.getItem("tenantId") || "";
 
 export default function LiveTrackingPage() {
+  const { t } = useTranslation();
   const [openFilter, setOpenFilter] = useState(false);
   const [mapType, setMapType] = useState<"roadmap" | "satellite" | "hybrid" | "terrain">("roadmap");
   const [showGeofence, setShowGeofence] = useState(true);
@@ -380,8 +382,8 @@ export default function LiveTrackingPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="roadmap">Hoja de Ruta</SelectItem>
-                  <SelectItem value="satellite">Satélite</SelectItem>
-                  <SelectItem value="hybrid">Híbrido</SelectItem>
+                  <SelectItem value="satellite">{t("ui.LiveTracking.satelite", "Satélite")}</SelectItem>
+                  <SelectItem value="hybrid">{t("ui.LiveTracking.hibrido", "Híbrido")}</SelectItem>
                   <SelectItem value="terrain">Terreno</SelectItem>
                 </SelectContent>
               </Select>
@@ -428,7 +430,7 @@ export default function LiveTrackingPage() {
                 <tr className="border-b">
                   <th className="px-4 py-3 font-semibold">Ruta</th>
                   <th className="px-4 py-3 font-semibold">Puesto de seguridad</th>
-                  <th className="px-4 py-3 font-semibold">Dirección</th>
+                  <th className="px-4 py-3 font-semibold">{t("ui.LiveTracking.direccion", "Dirección")}</th>
                   <th className="px-4 py-3 font-semibold">Parada</th>
                   <th className="px-4 py-3 font-semibold">Pasadas</th>
                   <th className="px-4 py-3 font-semibold">Estado</th>

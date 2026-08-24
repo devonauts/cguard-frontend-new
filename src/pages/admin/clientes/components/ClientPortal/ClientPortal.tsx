@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { clientDisplayName } from '@/lib/clientName';
 import type { Client } from '@/types/client';
 import { useNavigate } from 'react-router-dom';
@@ -60,6 +61,7 @@ function Kpi({ icon, value, label, accent = 'primary' }: { icon: ReactNode; valu
 }
 
 export default function ClientPortal({ client }: Props) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement | null>(null);
   useScrollToTopOnMount(containerRef);
@@ -178,7 +180,7 @@ export default function ClientPortal({ client }: Props) {
               >
                 <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" />
                 <div className="flex-1 text-sm">
-                  <p className="font-semibold">¡Invitación enviada!</p>
+                  <p className="font-semibold">{t("ui.ClientPortal.invitacionEnviada", "¡Invitación enviada!")}</p>
                   <p>Se envió la invitación {result.kind === 'app' ? 'a la app' : 'al portal'} a <strong>{result.recipient}</strong>. El cliente debe revisar su bandeja de entrada.</p>
                 </div>
                 <button onClick={() => setResult(null)} className="cg-focus rounded text-xs underline">Cerrar</button>
@@ -234,7 +236,7 @@ export default function ClientPortal({ client }: Props) {
 
         {/* RIGHT — what the client sees + how it works */}
         <div className="space-y-4">
-          <Section title="¿Qué puede ver el cliente?" icon={<Smartphone />}>
+          <Section title={t("ui.ClientPortal.quePuedeVerElCliente", "¿Qué puede ver el cliente?")} icon={<Smartphone />}>
             <div className="space-y-2.5">
               {MODULOS.map((f) => {
                 const on = portal[f.key] !== false;
@@ -258,7 +260,7 @@ export default function ClientPortal({ client }: Props) {
             </div>
           </Section>
 
-          <Section title="¿Cómo funciona?" icon={<ShieldCheck />}>
+          <Section title={t("ui.ClientPortal.comoFunciona", "¿Cómo funciona?")} icon={<ShieldCheck />}>
             <ol className="space-y-2.5">
               {['Se envía un correo de invitación al cliente.', 'El cliente abre el enlace y crea su contraseña.', 'Inicia sesión en el portal web o en la app Mi Seguridad.', 'Accede en tiempo real a su operación de seguridad.'].map((s, i) => (
                 <li key={i} className="flex items-start gap-3 text-sm">
@@ -275,14 +277,14 @@ export default function ClientPortal({ client }: Props) {
       </div>
 
       {/* Confirm modal */}
-      <Modal open={!!confirm} onOpenChange={(o) => { if (!o && !sending) setConfirm(null); }} title="Enviar invitación" icon={<Mail className="h-5 w-5" />} size="sm"
+      <Modal open={!!confirm} onOpenChange={(o) => { if (!o && !sending) setConfirm(null); }} title={t("ui.ClientPortal.enviarInvitacion", "Enviar invitación")} icon={<Mail className="h-5 w-5" />} size="sm"
         footer={<><Button variant="outline" onClick={() => setConfirm(null)} disabled={sending}>Cancelar</Button><Button variant="brand" onClick={() => confirm && send(confirm)} disabled={sending}>{sending ? <><Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> Enviando…</> : 'Enviar'}</Button></>}>
-        <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>Se enviará una invitación <b>{kindLabel}</b> a:</p>
+        <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t("ui.ClientPortal.seEnviaraUnaInvitacion", "Se enviará una invitación")}{" "}<b>{kindLabel}</b> a:</p>
         <div className="glass-sunken mt-3 px-4 py-3 text-center">
           <p className="text-sm font-semibold">{name}</p>
           <p className="text-sm font-semibold" style={{ color: 'var(--brand-text)' }}>{email || '(sin correo registrado)'}</p>
         </div>
-        <p className="mt-3 text-xs" style={{ color: 'var(--ink-faint)' }}>El cliente recibirá un enlace para crear su contraseña y acceder.</p>
+        <p className="mt-3 text-xs" style={{ color: 'var(--ink-faint)' }}>{t("ui.ClientPortal.elClienteRecibiraUnEnlace", "El cliente recibirá un enlace para crear su contraseña y acceder.")}</p>
       </Modal>
     </div>
   );

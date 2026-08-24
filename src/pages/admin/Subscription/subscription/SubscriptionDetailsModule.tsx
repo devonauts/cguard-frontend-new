@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -69,6 +70,7 @@ function fmtDate(iso: string | null | undefined): string {
 }
 
 export default function SubscriptionDetailsModule() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [period, setPeriod] = useState<BillingPeriod>("monthly");
   const [data, setData] = useState<BillingSummary | null>(null);
@@ -115,7 +117,7 @@ export default function SubscriptionDetailsModule() {
     <PageContainer width="wide">
       <PageHeader
         icon={<CreditCard />}
-        title="Suscripción"
+        title={t("ui.SubscriptionDetailsModule.suscripcion", "Suscripción")}
         subtitle="Gestiona tu plan, periodo de facturación y módulos contratados."
       />
 
@@ -140,7 +142,7 @@ export default function SubscriptionDetailsModule() {
 
       {/* Información de suscripción */}
       <Section
-        title="Información de suscripción"
+        title={t("ui.SubscriptionDetailsModule.informacionDeSuscripcion", "Información de suscripción")}
         icon={<CreditCard />}
         action={
           <Button variant="outline" onClick={goToBilling}>
@@ -174,7 +176,7 @@ export default function SubscriptionDetailsModule() {
             }
           />
           <div className="min-w-0">
-            <div className="cg-eyebrow mb-0.5">Estado de la Suscripción</div>
+            <div className="cg-eyebrow mb-0.5">{t("ui.SubscriptionDetailsModule.estadoDeLaSuscripcion", "Estado de la Suscripción")}</div>
             <StatusBadge tone={meta.tone}>{meta.label}</StatusBadge>
           </div>
           <Field
@@ -268,7 +270,7 @@ export default function SubscriptionDetailsModule() {
                         className="w-full"
                         variant={isPopular ? "brand" : "outline"}
                         disabled
-                        title="Gestiona tu plan en Suscripción / Facturación"
+                        title={t("ui.SubscriptionDetailsModule.gestionaTuPlanEnSuscripcion", "Gestiona tu plan en Suscripción / Facturación")}
                       >
                         Próximamente
                       </Button>

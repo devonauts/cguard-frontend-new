@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ApiService } from '@/services/api/apiService';
 import { toast } from 'sonner';
 import { Loader2, Plus } from 'lucide-react';
@@ -31,6 +32,7 @@ export default function RotationStyleSelect({
   /** Fires with the FULL selected style (or null) so callers can derive counts (e.g. alternation fijos = cycle/workDays). */
   onStyleChange?: (style: RotationStyle | null) => void;
 }) {
+  const { t } = useTranslation();
   const tenantId = localStorage.getItem('tenantId') || '';
   const is24h = scheduleType === '24h';
   const [styles, setStyles] = useState<RotationStyle[]>([]);
@@ -107,7 +109,7 @@ export default function RotationStyleSelect({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Patrón de rotación</label>
+        <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{t("ui.RotationStyleSelect.patronDeRotacion", "Patrón de rotación")}</label>
         <button type="button" onClick={() => setCustom((v) => !v)} className="inline-flex items-center gap-1 text-[11px] font-medium text-primary hover:underline">
           <Plus size={12} /> Personalizado
         </button>

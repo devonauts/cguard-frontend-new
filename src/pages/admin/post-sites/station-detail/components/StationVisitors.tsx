@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Camera, Check, ChevronLeft, ChevronRight, Edit2, Loader2, Plus, ScanLine, Trash2, Upload, UserCheck, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { confirmDialog } from '@/components/ui/confirmDialog';
@@ -92,6 +93,7 @@ function CameraModal({ open, mode, onClose, onCapture }: {
   open: boolean; mode: CameraMode;
   onClose: () => void; onCapture: (blob: Blob, url: string) => void;
 }) {
+  const { t } = useTranslation();
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -162,7 +164,7 @@ function CameraModal({ open, mode, onClose, onCapture }: {
             </div>
           ) : (
             <div className="space-y-3">
-              {mode === 'id-scan' && <p className="text-center text-xs" style={{ color: 'var(--ink-soft)' }}>Apunta al frente de la cédula. Asegúrate de que sea legible y bien iluminada.</p>}
+              {mode === 'id-scan' && <p className="text-center text-xs" style={{ color: 'var(--ink-soft)' }}>{t("ui.StationVisitors.apuntaAlFrenteDeLa", "Apunta al frente de la cédula. Asegúrate de que sea legible y bien iluminada.")}</p>}
               <div className="relative flex aspect-video items-center justify-center overflow-hidden rounded" style={{ background: 'oklch(0 0 0)' }}>
                 <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
                 {!ready && <div className="absolute inset-0 flex items-center justify-center"><Loader2 className="animate-spin" style={{ color: 'oklch(1 0 0)' }} /></div>}
@@ -187,6 +189,7 @@ function emptyForm() {
 function VisitorFormModal({ open, initialData, stationId, onClose, onSaved }: {
   open: boolean; initialData?: VisitorRow | null; stationId: string; onClose: () => void; onSaved: () => void;
 }) {
+  const { t } = useTranslation();
   const isEdit = !!initialData?.id;
   const [form, setForm] = useState(emptyForm);
   const [photoBlob, setPhotoBlob] = useState<Blob | null>(null);
@@ -284,20 +287,20 @@ function VisitorFormModal({ open, initialData, stationId, onClose, onSaved }: {
           <div className="space-y-4">
             {/* ID Scan */}
             <div className="space-y-1.5 rounded-lg border p-3" style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)' }}>
-              <p className="cg-eyebrow flex items-center gap-1"><ScanLine size={13} /> Escanear cédula / ID</p>
-              <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>Fotografía la cédula para rellenar los campos automáticamente.</p>
+              <p className="cg-eyebrow flex items-center gap-1"><ScanLine size={13} />{" "}{t("ui.StationVisitors.escanearCedulaId", "Escanear cédula / ID")}</p>
+              <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>{t("ui.StationVisitors.fotografiaLaCedulaParaRellenar", "Fotografía la cédula para rellenar los campos automáticamente.")}</p>
               <Button variant="outline" size="sm" onClick={() => setCameraMode('id-scan')} disabled={scanning} className="gap-1.5">
                 {scanning ? <><Loader2 size={13} className="animate-spin" /> Procesando…</> : <><Camera size={13} /> Escanear</>}
               </Button>
             </div>
             {/* Names */}
             <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1"><Label>Apellido <span style={{ color: 'var(--bad-text)' }}>*</span></Label><Input value={form.lastName} onChange={e => set('lastName', e.target.value)} placeholder="Pérez García" /></div>
+              <div className="space-y-1"><Label>Apellido <span style={{ color: 'var(--bad-text)' }}>*</span></Label><Input value={form.lastName} onChange={e => set('lastName', e.target.value)} placeholder={t("ui.StationVisitors.perezGarcia", "Pérez García")} /></div>
               <div className="space-y-1"><Label>Nombre <span style={{ color: 'var(--bad-text)' }}>*</span></Label><Input value={form.firstName} onChange={e => set('firstName', e.target.value)} placeholder="Juan Carlos" /></div>
             </div>
             {/* ID + NumPeople */}
             <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1"><Label>Cédula / Pasaporte</Label><Input value={form.idNumber} onChange={e => set('idNumber', e.target.value)} placeholder="0912345678" /></div>
+              <div className="space-y-1"><Label>{t("ui.StationVisitors.cedulaPasaporte", "Cédula / Pasaporte")}</Label><Input value={form.idNumber} onChange={e => set('idNumber', e.target.value)} placeholder="0912345678" /></div>
               <div className="space-y-1"><Label>N° Personas</Label><Input type="number" min={1} value={form.numPeople} onChange={e => set('numPeople', e.target.value)} /></div>
             </div>
             {/* Place */}
@@ -309,7 +312,7 @@ function VisitorFormModal({ open, initialData, stationId, onClose, onSaved }: {
                   <SelectContent>{PLACE_TYPES.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
-              <div className="space-y-1"><Label>Número / Detalle</Label><Input value={form.placeTypeValue} onChange={e => set('placeTypeValue', e.target.value)} placeholder="24-B" /></div>
+              <div className="space-y-1"><Label>{t("ui.StationVisitors.numeroDetalle", "Número / Detalle")}</Label><Input value={form.placeTypeValue} onChange={e => set('placeTypeValue', e.target.value)} placeholder="24-B" /></div>
             </div>
             {/* Dates */}
             <div className="grid grid-cols-2 gap-3">
@@ -353,6 +356,7 @@ function VisitorFormModal({ open, initialData, stationId, onClose, onSaved }: {
 // ─── Main Component ───────────────────────────────────────────────────────
 
 export default function StationVisitors({ stationId }: Props) {
+  const { t } = useTranslation();
   const [rows, setRows] = useState<VisitorRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -417,7 +421,7 @@ export default function StationVisitors({ stationId }: Props) {
                 <tr>
                   <th className="cg-eyebrow px-2 py-2 w-10"></th>
                   <th className="cg-eyebrow px-2 py-2">Nombre</th>
-                  <th className="cg-eyebrow px-2 py-2">Cédula</th>
+                  <th className="cg-eyebrow px-2 py-2">{t("ui.StationVisitors.cedula", "Cédula")}</th>
                   <th className="cg-eyebrow px-2 py-2">Lugar</th>
                   <th className="cg-eyebrow px-2 py-2">Entrada</th>
                   <th className="cg-eyebrow px-2 py-2">Salida</th>
@@ -469,8 +473,8 @@ export default function StationVisitors({ stationId }: Props) {
             <div className="flex items-center justify-between border-t px-6 py-3 text-sm" style={{ borderColor: 'var(--hairline)', color: 'var(--ink-soft)' }}>
               <span>Mostrando {page * LIMIT + 1}–{Math.min((page + 1) * LIMIT, total)} de {total}</span>
               <div className="flex gap-1">
-                <button disabled={page === 0} onClick={() => setPage(p => p - 1)} aria-label="Página anterior" className="cg-btn-glass cg-focus rounded p-1.5 disabled:opacity-40"><ChevronLeft size={15} /></button>
-                <button disabled={(page + 1) * LIMIT >= total} onClick={() => setPage(p => p + 1)} aria-label="Página siguiente" className="cg-btn-glass cg-focus rounded p-1.5 disabled:opacity-40"><ChevronRight size={15} /></button>
+                <button disabled={page === 0} onClick={() => setPage(p => p - 1)} aria-label={t("ui.StationVisitors.paginaAnterior", "Página anterior")} className="cg-btn-glass cg-focus rounded p-1.5 disabled:opacity-40"><ChevronLeft size={15} /></button>
+                <button disabled={(page + 1) * LIMIT >= total} onClick={() => setPage(p => p + 1)} aria-label={t("ui.StationVisitors.paginaSiguiente", "Página siguiente")} className="cg-btn-glass cg-focus rounded p-1.5 disabled:opacity-40"><ChevronRight size={15} /></button>
               </div>
             </div>
           )}

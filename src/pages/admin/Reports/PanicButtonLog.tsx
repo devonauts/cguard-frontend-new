@@ -1,4 +1,5 @@
 import { Siren } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 import DataReport, { type ReportColumn } from "./DataReport";
 import { formatDateTime, rangeBounds, REPORT_ROW_LIMIT, warnIfCapped } from "./reportFormat";
 import { alarmService, type AlarmCase } from "@/lib/api/alarmService";
@@ -40,9 +41,10 @@ const columns: ReportColumn<AlarmCase>[] = [
 ];
 
 export default function PanicButtonLog() {
+  const { t } = useTranslation();
   return (
     <DataReport<AlarmCase>
-      title="Registros del Botón de Pánico"
+      title={t("ui.PanicButtonLog.registrosDelBotonDePanico", "Registros del Botón de Pánico")}
       description="Alertas de pánico y SOS: origen, prioridad, reconocimiento y resolución."
       icon={Siren}
       // Un pánico va en `--bad` SIEMPRE, elija la empresa el acento que elija.

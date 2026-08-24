@@ -1,4 +1,5 @@
 import { Check } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 import { cn } from "@/lib/utils";
 
 export interface StepIndicatorStep {
@@ -29,8 +30,9 @@ export default function StepIndicator({
   onStepClick,
   className,
 }: StepIndicatorProps) {
+  const { t } = useTranslation();
   return (
-    <nav aria-label="Progreso de configuración" className={cn("w-full", className)}>
+    <nav aria-label={t("ui.StepIndicator.progresoDeConfiguracion", "Progreso de configuración")} className={cn("w-full", className)}>
       <ol className="flex items-center">
         {steps.map((step, i) => {
           const isCompleted = i < current;

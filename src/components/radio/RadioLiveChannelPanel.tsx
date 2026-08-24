@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useTranslation } from 'react-i18next';
 import { Mic, Loader2, Users, Radio, LogOut, Volume2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -20,6 +21,7 @@ import {
  * connection, two views — like the worker app's RadioContext model.
  */
 export default function RadioLiveChannelPanel() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const myId = (user as any)?.id || (user as any)?._id;
 
@@ -74,7 +76,7 @@ export default function RadioLiveChannelPanel() {
       {!joined ? (
         <div className="flex flex-col items-center gap-3 py-4 text-center">
           <Volume2 size={28} style={{ color: "var(--ink-faint)" }} />
-          <p className="text-xs" style={{ color: "var(--ink-soft)" }}>Únete para escuchar y hablar con los vigilantes en tiempo real (push-to-talk).</p>
+          <p className="text-xs" style={{ color: "var(--ink-soft)" }}>{t("ui.RadioLiveChannelPanel.uneteParaEscucharYHablar", "Únete para escuchar y hablar con los vigilantes en tiempo real (push-to-talk).")}</p>
           <button
             onClick={join}
             disabled={busy}

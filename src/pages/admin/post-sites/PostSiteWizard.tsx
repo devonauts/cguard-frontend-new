@@ -9,9 +9,10 @@
  *  5  Resumen & Crear       — review → POST → inline station builder
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { invalidateEntity } from "@/lib/queryClient";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
   CheckCircle2,
@@ -65,6 +66,11 @@ interface WizardProps {
   clients?: WizardClient[];
   mode?: 'create' | 'edit';
   id?: string;
+  /** Cliente ya decidido por el contexto de navegación (se entró desde su
+   *  ficha). Cuando llega, el paso 2 lo da por hecho: no se pregunta ni se
+   *  puede cambiar — la sede pertenece a ese cliente y punto. */
+  presetClientId?: string;
+  presetClientName?: string;
 }
 
 interface JornadaDraft {
@@ -86,6 +92,9 @@ interface StationDraft {
 
 // Client detail fields consulted for the "same address as client" toggle.
 interface ClientDetail {
+  name?: string;
+  lastName?: string;
+  commercialName?: string;
   address?: string;
   addressLine2?: string;
   city?: string;
@@ -399,6 +408,7 @@ function StationRow({
   onChange: (d: Partial<StationDraft>) => void;
   onRemove: () => void;
 }) {
+  const { t } = useTranslation();
   const addJornada = (preset: typeof JORNADA_PRESETS[number]) => {
     const j: JornadaDraft = {
       id: Math.random().toString(36).slice(2),
@@ -444,7 +454,7 @@ function StationRow({
         <Input
           value={draft.description}
           onChange={(e) => onChange({ description: e.target.value })}
-          placeholder="Descripción del puesto (opcional)"
+          placeholder={t("ui.PostSiteWizard.descripcionDelPuestoOpcional", "Descripción del puesto (opcional)")}
           className="text-sm text-muted-foreground"
         />
       </div>
@@ -500,13 +510,28 @@ function StationRow({
 
 // ─── Main Wizard ──────────────────────────────────────────────────────────────
 
-export default function PostSiteWizard({ clients = [], mode = 'create', id }: WizardProps) {
+export default function PostSiteWizard({ clients = [], mode = 'create', id, presetClientId, presetClientName }: WizardProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { selectedClient } = useClientSelection();
   const isEdit = mode === 'edit' && !!id;
 
+  /**
+   * `?step=N` — para poder entrar DIRECTO al paso que falta.
+   *
+   * El aviso de «falta la configuración operativa» enlaza aquí con `step=1`: lo
+   * que falta es el tipo de servicio, y el paso 3 se dibuja entero a partir de
+   * él, así que mandar a alguien al paso 2 (donde arranca la edición) le
+   * obligaría a adivinar hacia dónde ir. Se acota al rango real de pasos.
+   */
+  const pasoPedido = (() => {
+    const n = Number(searchParams.get('step'));
+    return Number.isFinite(n) && n >= 1 && n <= 5 ? Math.trunc(n) : null;
+  })();
+
   // ── form state ──────────────────────────────────────────────────────────────
-  const [step, setStep] = useState(isEdit ? 2 : 1);
+  const [step, setStep] = useState(pasoPedido ?? (isEdit ? 2 : 1));
   const [submitting, setSubmitting] = useState(false);
   const [createdId, setCreatedId] = useState<string | null>(null);
   const [loadingEdit, setLoadingEdit] = useState(isEdit);
@@ -515,7 +540,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
   const [serviceType, setServiceType] = useState<string | undefined>(undefined);
 
   // Step 2
-  const [clientId, setClientId] = useState(selectedClient?.id ? String(selectedClient.id) : '');
+  const [clientId, setClientId] = useState(presetClientId || (selectedClient?.id ? String(selectedClient.id) : ''));
   const [address, setAddress] = useState('');
   const [addressLine2, setAddressLine2] = useState('');
   const [city, setCity] = useState('');
@@ -548,11 +573,16 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
   const [placePreview, setPlacePrev] = useState<string | null>(null);
   const [placeExisting, setPlaceExisting] = useState<FileAsset | null>(null);
 
+  // El cliente viene decidido desde su ficha (?clientId=…): la sede se crea
+  // dentro de ese cliente, así que el campo queda fijo y no se pregunta.
+  const clientLocked = !isEdit && !!presetClientId;
+
   // Auto-inject client from context (create mode only — edit loads from API)
   useEffect(() => {
     if (isEdit) return;
+    if (presetClientId) { setClientId(presetClientId); return; }
     if (selectedClient?.id) setClientId(String(selectedClient.id));
-  }, [selectedClient]);
+  }, [selectedClient, presetClientId]);
 
   // Fetch client details when client changes (for address toggle)
   useEffect(() => {
@@ -564,6 +594,20 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
       } catch { setClientData(null); }
     })();
   }, [clientId]);
+
+  // Nombre del cliente elegido. La lista corta del asistente no siempre lo
+  // contiene (cuando llega fijado desde su ficha ni siquiera se pide la
+  // lista), así que caemos al dato de navegación y luego al detalle cargado.
+  const resolvedClientName = useMemo(() => {
+    if (!clientId) return null;
+    return (
+      clients.find((c) => c.id === clientId)?.name
+      || presetClientName
+      || clientData?.commercialName
+      || [clientData?.name, clientData?.lastName].filter(Boolean).join(' ').trim()
+      || null
+    );
+  }, [clients, clientId, presetClientName, clientData]);
 
   // Load existing site data in edit mode
   useEffect(() => {
@@ -673,8 +717,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
 
   // ── build payload ────────────────────────────────────────────────────────────
   const buildPayload = () => {
-    const client = clients.find((c) => c.id === clientId);
-    const autoName = address.trim() || (client ? `Sitio de ${client.name}` : 'Sitio sin nombre');
+    const autoName = address.trim() || (resolvedClientName ? `Sitio de ${resolvedClientName}` : 'Sitio sin nombre');
 
     const finalConfig = {
       ...serviceConfig,
@@ -821,7 +864,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
   };
 
   // ── selected client label ────────────────────────────────────────────────────
-  const selectedClientLabel = clients.find((c) => c.id === clientId)?.name ?? null;
+  const selectedClientLabel = resolvedClientName;
 
   // ── equipment / training option lists ────────────────────────────────────────
   const equipmentOptions = [
@@ -883,8 +926,12 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
             </p>
           </div>
           <div className="flex gap-3">
-            <Button type="button" variant="outline" onClick={() => navigate('/post-sites')}>
-              Ver todos los sitios
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate(clientLocked ? `/clients/${presetClientId}/post-sites` : '/post-sites')}
+            >
+              {clientLocked ? 'Volver al cliente' : 'Ver todos los sitios'}
             </Button>
             <Button
               type="button"
@@ -905,7 +952,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
       return (
         <div className="space-y-6">
           <div className="text-center space-y-1">
-            <h2 className="font-display text-xl font-bold">¿Qué tipo de servicio es este sitio?</h2>
+            <h2 className="font-display text-xl font-bold">{t("ui.PostSiteWizard.queTipoDeServicioEs", "¿Qué tipo de servicio es este sitio?")}</h2>
             <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
               Esto nos permite preparar los campos de configuración adecuados. Puede cambiar después.
             </p>
@@ -929,7 +976,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
 
     // ── Step 2: Site info + address ────────────────────────────────────────────
     if (step === 2) {
-      const selectedClientObj = clients.find((c) => c.id === clientId);
+      const selectedClientObj = resolvedClientName ? { id: clientId, name: resolvedClientName } : null;
       const coordsLabel = latitud && longitud
         ? `${Number(latitud).toFixed(5)}, ${Number(longitud).toFixed(5)}`
         : null;
@@ -937,8 +984,12 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
       return (
         <div className="space-y-5">
           <div>
-            <h2 className="font-display mb-0.5 text-xl font-bold">Ubicación del sitio</h2>
-            <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>Busca la dirección en el mapa y asigna el sitio a un cliente.</p>
+            <h2 className="font-display mb-0.5 text-xl font-bold">{t("ui.PostSiteWizard.ubicacionDelSitio", "Ubicación del sitio")}</h2>
+            <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
+              {clientLocked
+                ? 'Busca la dirección de la sede en el mapa. El cliente ya está asignado.'
+                : 'Busca la dirección en el mapa y asigna el sitio a un cliente.'}
+            </p>
           </div>
 
           {/* ── Client selector — card style ─────────────────────────── */}
@@ -959,14 +1010,16 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
                     </div>
                     <span className="text-sm font-semibold">{selectedClientObj.name}</span>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setClientId('')}
-                    className="cg-focus flex items-center gap-1 rounded-md text-xs transition-colors"
-                    style={{ color: 'var(--ink-soft)' }}
-                  >
-                    <Edit3 className="h-3 w-3" /> Cambiar
-                  </button>
+                  {!clientLocked && (
+                    <button
+                      type="button"
+                      onClick={() => setClientId('')}
+                      className="cg-focus flex items-center gap-1 rounded-md text-xs transition-colors"
+                      style={{ color: 'var(--ink-soft)' }}
+                    >
+                      <Edit3 className="h-3 w-3" /> Cambiar
+                    </button>
+                  )}
                 </div>
               ) : (
                 <select
@@ -1006,7 +1059,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
                     style={{ accentColor: 'var(--brand)' }}
                   />
                   <div className="flex-1 min-w-0">
-                    <span className="text-xs font-medium">Misma dirección del cliente</span>
+                    <span className="text-xs font-medium">{t("ui.PostSiteWizard.mismaDireccionDelCliente", "Misma dirección del cliente")}</span>
                     <p className="truncate text-[11px]" style={{ color: 'var(--ink-soft)' }}>{clientData.address}</p>
                   </div>
                 </label>
@@ -1020,7 +1073,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
               <AddressAutocomplete
                 onAddressSelect={handleAddressSelect}
                 defaultValue={address}
-                placeholder="Buscar calle, número, ciudad, lugar…"
+                placeholder={t("ui.PostSiteWizard.buscarCalleNumeroCiudadLugar", "Buscar calle, número, ciudad, lugar…")}
                 showMap
                 mapHeight="300px"
                 initialLat={latitud ? Number(latitud) : undefined}
@@ -1091,8 +1144,8 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
                 >
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="sm:col-span-2">
-                      <label className="block text-xs font-medium text-foreground/70 mb-1">Dirección</label>
-                      <Input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Calle y número" />
+                      <label className="block text-xs font-medium text-foreground/70 mb-1">{t("ui.PostSiteWizard.direccion", "Dirección")}</label>
+                      <Input value={address} onChange={(e) => setAddress(e.target.value)} placeholder={t("ui.PostSiteWizard.calleYNumero", "Calle y número")} />
                     </div>
                     <div className="sm:col-span-2">
                       <label className="block text-xs font-medium text-foreground/70 mb-1">Complemento</label>
@@ -1103,11 +1156,11 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
                       <Input value={city} onChange={(e) => setCity(e.target.value)} />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-foreground/70 mb-1">País</label>
+                      <label className="block text-xs font-medium text-foreground/70 mb-1">{t("ui.PostSiteWizard.pais", "País")}</label>
                       <Input value={country} onChange={(e) => setCountry(e.target.value)} />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-foreground/70 mb-1">Código postal</label>
+                      <label className="block text-xs font-medium text-foreground/70 mb-1">{t("ui.PostSiteWizard.codigoPostal", "Código postal")}</label>
                       <Input value={postalCode} onChange={(e) => setPostalCode(e.target.value)} />
                     </div>
                     <div className="grid grid-cols-2 gap-2">
@@ -1130,19 +1183,19 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
           {!addressConfirmed && address && (
             <div className="glass-sunken space-y-3 px-4 py-3">
               <div className="sm:col-span-2">
-                <label className="block text-xs font-medium text-foreground/70 mb-1">Dirección</label>
-                <Input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Calle y número" />
+                <label className="block text-xs font-medium text-foreground/70 mb-1">{t("ui.PostSiteWizard.direccion2", "Dirección")}</label>
+                <Input value={address} onChange={(e) => setAddress(e.target.value)} placeholder={t("ui.PostSiteWizard.calleYNumero2", "Calle y número")} />
               </div>
             </div>
           )}
 
           {/* ── Description ─────────────────────────────────────────── */}
           <div>
-            <label className="mb-1.5 block text-sm font-semibold">Descripción del sitio</label>
+            <label className="mb-1.5 block text-sm font-semibold">{t("ui.PostSiteWizard.descripcionDelSitio", "Descripción del sitio")}</label>
             <Textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Descripción general, indicaciones especiales…"
+              placeholder={t("ui.PostSiteWizard.descripcionGeneralIndicacionesEspeciales", "Descripción general, indicaciones especiales…")}
               rows={3}
             />
           </div>
@@ -1204,7 +1257,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
                 <span className="ml-2 text-base font-normal" style={{ color: 'var(--brand-text)' }}>— {typeDef.label}</span>
               )}
             </h2>
-            <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>Equipamiento, capacitación y parámetros del servicio.</p>
+            <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t("ui.PostSiteWizard.equipamientoCapacitacionYParametrosDel", "Equipamiento, capacitación y parámetros del servicio.")}</p>
           </div>
 
           {/* Equipment */}
@@ -1219,13 +1272,13 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
           </Section>
 
           {/* Training */}
-          <Section title="Capacitación requerida" icon={<Star />} contentClassName="space-y-3">
+          <Section title={t("ui.PostSiteWizard.capacitacionRequerida", "Capacitación requerida")} icon={<Star />} contentClassName="space-y-3">
             <ChipGroup
               options={trainingOptions}
               value={training}
               customItems={customTraining}
               onChange={(sel, cust) => { setTraining(sel); setCustomTraining(cust); }}
-              placeholder="Agregar otra capacitación…"
+              placeholder={t("ui.PostSiteWizard.agregarOtraCapacitacion", "Agregar otra capacitación…")}
             />
           </Section>
 
@@ -1246,7 +1299,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
                 </select>
               </div>
               <div>
-                <label className="cg-eyebrow mb-1 block">Mínimo de estaciones</label>
+                <label className="cg-eyebrow mb-1 block">{t("ui.PostSiteWizard.minimoDeEstaciones", "Mínimo de estaciones")}</label>
                 <Input
                   type="number" min={1}
                   placeholder="Ej. 2"
@@ -1294,7 +1347,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
               Instrucciones del puesto (SOP)
             </label>
             <Textarea
-              placeholder="Protocolo de acceso, manejo de visitantes, emergencias, comunicación con supervisores…"
+              placeholder={t("ui.PostSiteWizard.protocoloDeAccesoManejoDe", "Protocolo de acceso, manejo de visitantes, emergencias, comunicación con supervisores…")}
               rows={3}
               value={cfgGet('postInstructions')}
               onChange={(e) => cfgSet('postInstructions', e.target.value)}
@@ -1396,7 +1449,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
         <div className="space-y-5">
           <div>
             <h2 className="font-display mb-1 text-xl font-bold">Revisar y crear</h2>
-            <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>Comprueba la información antes de crear el puesto de vigilancia.</p>
+            <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t("ui.PostSiteWizard.compruebaLaInformacionAntesDe", "Comprueba la información antes de crear el puesto de vigilancia.")}</p>
           </div>
 
           {/* Summary card */}
@@ -1445,7 +1498,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
                 </Section>
               )}
               {allTraining.length > 0 && (
-                <Section title="Capacitación" icon={<Star />}>
+                <Section title={t("ui.PostSiteWizard.capacitacion", "Capacitación")} icon={<Star />}>
                   <div className="flex flex-wrap gap-1.5">
                     {allTraining.map((t) => {
                       const opt = trainingOptions.find((o) => o.value === t);
@@ -1540,8 +1593,13 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id }: Wi
             type="button"
             variant="ghost"
             onClick={() => {
-              if (step <= (isEdit ? 2 : 1)) navigate(isEdit ? `/post-sites/${id}` : '/post-sites');
-              else setStep((s) => s - 1);
+              // Cancelar devuelve al sitio de donde se vino: la ficha del
+              // cliente si se entró desde ahí, si no la lista.
+              if (step <= (isEdit ? 2 : 1)) {
+                navigate(isEdit
+                  ? `/post-sites/${id}`
+                  : clientLocked ? `/clients/${presetClientId}/post-sites` : '/post-sites');
+              } else setStep((s) => s - 1);
             }}
             className="gap-1.5 text-foreground/70"
           >

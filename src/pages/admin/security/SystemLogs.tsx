@@ -1,4 +1,5 @@
 import { Fragment, useCallback, useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { ScrollText, RefreshCw, ChevronDown, ChevronRight, PlusCircle, PencilLine, Trash2, Activity, Inbox } from "lucide-react";
 import type { ReactNode } from "react";
 import AppLayout from "@/layouts/app-layout";
@@ -46,6 +47,7 @@ const FILTERS = [
 ];
 
 export default function SystemLogs() {
+  const { t } = useTranslation();
   const [q, setQ] = useState("");
   const [debouncedQ, setDebouncedQ] = useState("");
   const [action, setAction] = useState("");
@@ -99,7 +101,7 @@ export default function SystemLogs() {
         />
 
         <Toolbar>
-          <AuditSearch value={q} onChange={setQ} placeholder="Buscar por registro, usuario o código…" />
+          <AuditSearch value={q} onChange={setQ} placeholder={t("ui.SystemLogs.buscarPorRegistroUsuarioO", "Buscar por registro, usuario o código…")} />
 
           <Segmented
             value={action}
@@ -132,7 +134,7 @@ export default function SystemLogs() {
             <AuditTable
               head={
                 <>
-                  <th className="px-4 py-3">Acción</th>
+                  <th className="px-4 py-3">{t("ui.SystemLogs.accion", "Acción")}</th>
                   <th className="px-3 py-3">Registro</th>
                   <th className="px-3 py-3">Usuario</th>
                   <th className="px-3 py-3 text-right">Fecha</th>

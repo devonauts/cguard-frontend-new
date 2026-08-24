@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import {
@@ -71,6 +72,7 @@ interface AlarmAnalyticsData {
 }
 
 export default function AlarmAnalytics() {
+  const { t } = useTranslation();
   const [days, setDays] = useState(30);
   const [d, setD] = useState<AlarmAnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -99,7 +101,7 @@ export default function AlarmAnalytics() {
       <PageContainer width="wide">
         <PageHeader
           icon={<Activity />}
-          title="Análisis de Monitoreo"
+          title={t("ui.AlarmAnalytics.analisisDeMonitoreo", "Análisis de Monitoreo")}
           subtitle="Tiempos de respuesta, cumplimiento de los plazos comprometidos y desempeño de los operadores."
           actions={
             <>
@@ -135,7 +137,7 @@ export default function AlarmAnalytics() {
             </Stagger>
 
             <div className="mt-5">
-              <DayBars title="Casos de alarma por día" color={GOLD} points={(d.trend || []).map((t) => ({ k: t.k, v: t.v }))} />
+              <DayBars title={t("ui.AlarmAnalytics.casosDeAlarmaPorDia", "Casos de alarma por día")} color={GOLD} points={(d.trend || []).map((t) => ({ k: t.k, v: t.v }))} />
             </div>
 
             <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-3">
@@ -143,7 +145,7 @@ export default function AlarmAnalytics() {
                   del sistema. Iban las dos series de un color plano —dorado de
                   marca y azul decorativo—, así que «Incendio» se pintaba igual
                   que «Prueba» y una P1 igual que una P5. */}
-              <Section title="Por categoría" icon={<AlertTriangle size={16} />}>
+              <Section title={t("ui.AlarmAnalytics.porCategoria", "Por categoría")} icon={<AlertTriangle size={16} />}>
                 <SeverityBars
                   items={toItems(d.byCategory, (k) => CAT_LABEL[k] || k)
                     .map((i) => ({ ...i, tone: categoryTone(i.raw) }))}
@@ -160,7 +162,7 @@ export default function AlarmAnalytics() {
             </div>
 
             <div className="mt-5">
-              <Section title="Desempeño de operadores" icon={<Users size={16} />}>
+              <Section title={t("ui.AlarmAnalytics.desempenoDeOperadores", "Desempeño de operadores")} icon={<Users size={16} />}>
                 {(!d.operators || d.operators.length === 0) ? (
                   <EmptyState
                     icon={<Users />}

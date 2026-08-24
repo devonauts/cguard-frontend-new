@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Shield, CheckCircle2, CalendarDays, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { ApiService } from '@/services/api/apiService';
@@ -41,6 +42,7 @@ export default function SacafrancoAssignModal({
   gapDates: string[]; // station rest-day gap dates (YYYY-MM-DD), next ~14 days
   onAssigned: () => void;
 }) {
+  const { t } = useTranslation();
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState(false);
   const [assigning, setAssigning] = useState<string | null>(null);
@@ -130,7 +132,7 @@ export default function SacafrancoAssignModal({
       <div className="space-y-3">
         {/* Legend */}
         <div className="flex flex-wrap items-center gap-4 text-[10px]" style={{ color: 'var(--ink-soft)' }}>
-          <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded-sm" style={{ background: 'color-mix(in oklab, var(--bad) 45%, transparent)' }} /> Día a cubrir (descanso del fijo)</span>
+          <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded-sm" style={{ background: 'color-mix(in oklab, var(--bad) 45%, transparent)' }} />{" "}{t("ui.SacafrancoAssignModal.diaACubrirDescansoDel", "Día a cubrir (descanso del fijo)")}</span>
           <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded-sm" style={{ background: 'color-mix(in oklab, var(--warn) 55%, transparent)' }} /> Ocupado en otro puesto</span>
           <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded-sm" style={{ background: 'color-mix(in oklab, var(--ok) 45%, transparent)' }} /> Libre</span>
         </div>

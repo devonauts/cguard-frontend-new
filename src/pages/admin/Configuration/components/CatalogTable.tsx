@@ -26,6 +26,7 @@
  * ════════════════════════════════════════════════════════════════════════════
  */
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -61,6 +62,7 @@ export function Pagination({
   onPageChange: (p: number) => void; onPageSizeChange: (n: number) => void;
   disabled?: boolean;
 }) {
+  const { t } = useTranslation();
   const maxPage = Math.max(1, Math.ceil(total / pageSize));
   const from = total === 0 ? 0 : (page - 1) * pageSize + 1;
   const to = Math.min(page * pageSize, total);
@@ -71,7 +73,7 @@ export function Pagination({
       style={{ color: 'var(--ink-soft)' }}
     >
       <div className="flex items-center gap-2">
-        <span>Elementos por página</span>
+        <span>{t("ui.CatalogTable.elementosPorPagina", "Elementos por página")}</span>
         <Select value={String(pageSize)} onValueChange={(v) => onPageSizeChange(Number(v))}>
           <SelectTrigger className="h-9 w-[84px]"><SelectValue /></SelectTrigger>
           <SelectContent>

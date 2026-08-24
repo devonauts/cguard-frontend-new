@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { useTranslation } from 'react-i18next';
 import AppLayout from "@/layouts/app-layout";
 import { DataTable, type Column } from "@/components/table/DataTable";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,7 @@ const PRIORITY_META: Record<string, { label: string; tone: "bad" | "warn" | "neu
 };
 
 export default function TaskApprovals() {
+  const { t } = useTranslation();
   const [rows, setRows] = useState<TaskRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -100,13 +102,13 @@ export default function TaskApprovals() {
             badges={!loading ? <StatusBadge tone={rows.length > 0 ? "warn" : "ok"}>{rows.length > 0 ? `${rows.length} pendientes` : "Nada pendiente"}</StatusBadge> : undefined}
           />
 
-          <Section title="Pendientes de aprobación" icon={<ClipboardCheck />}>
+          <Section title={t("ui.TaskApprovals.pendientesDeAprobacion", "Pendientes de aprobación")} icon={<ClipboardCheck />}>
             {loading ? (
               <SkeletonCards count={4} />
             ) : rows.length === 0 ? (
               <EmptyState
                 icon={<Inbox />}
-                title="No hay tareas pendientes de aprobación"
+                title={t("ui.TaskApprovals.noHayTareasPendientesDe", "No hay tareas pendientes de aprobación")}
                 description="Las tareas que los clientes creen para sus puestos aparecerán aquí."
               />
             ) : (
@@ -116,7 +118,7 @@ export default function TaskApprovals() {
                 emptyState={
                   <EmptyState
                     icon={<Inbox />}
-                    title="No hay tareas pendientes de aprobación"
+                    title={t("ui.TaskApprovals.noHayTareasPendientesDe2", "No hay tareas pendientes de aprobación")}
                     description="Las tareas que los clientes creen para sus puestos aparecerán aquí."
                   />
                 }

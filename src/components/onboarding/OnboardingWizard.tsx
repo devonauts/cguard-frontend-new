@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -110,6 +111,7 @@ export default function OnboardingWizard({
   onRefresh,
   defaultEmail,
 }: OnboardingWizardProps) {
+  const { t } = useTranslation();
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<WizardForm>(emptyForm);
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -354,19 +356,19 @@ export default function OnboardingWizard({
                 />
               </div>
               <div className="space-y-1.5">
-                <Label>Razón social <span style={{ color: "var(--bad-text)" }}>*</span></Label>
+                <Label>{t("ui.OnboardingWizard.razonSocial", "Razón social")}{" "}<span style={{ color: "var(--bad-text)" }}>*</span></Label>
                 <Input
                   value={form.businessTitle}
                   onChange={(e) => set({ businessTitle: e.target.value })}
-                  placeholder="Razón social registrada"
+                  placeholder={t("ui.OnboardingWizard.razonSocialRegistrada", "Razón social registrada")}
                 />
               </div>
               <div className="space-y-1.5">
-                <Label>RUC / Cédula <span style={{ color: "var(--bad-text)" }}>*</span></Label>
+                <Label>{t("ui.OnboardingWizard.rucCedula", "RUC / Cédula")}{" "}<span style={{ color: "var(--bad-text)" }}>*</span></Label>
                 <Input
                   value={form.taxNumber}
                   onChange={(e) => set({ taxNumber: digitsOnly(e.target.value).slice(0, 13) })}
-                  placeholder="RUC (13 dígitos) o cédula (10 dígitos)"
+                  placeholder={t("ui.OnboardingWizard.ruc13DigitosOCedula", "RUC (13 dígitos) o cédula (10 dígitos)")}
                   inputMode="numeric"
                   maxLength={13}
                 />
@@ -402,7 +404,7 @@ export default function OnboardingWizard({
                     <Button type="button" variant="outline" size="sm" onClick={() => logoInputRef.current?.click()}>
                       {logoPreview ? "Cambiar logo" : "Subir logo"}
                     </Button>
-                    <p className="mt-1.5 text-xs">PNG, JPG, SVG o WEBP · máx. 5MB</p>
+                    <p className="mt-1.5 text-xs">{t("ui.OnboardingWizard.pngJpgSvgOWebp", "PNG, JPG, SVG o WEBP · máx. 5MB")}</p>
                   </div>
                   <input
                     ref={logoInputRef}
@@ -421,19 +423,19 @@ export default function OnboardingWizard({
             <div className="space-y-4 animate-in fade-in-50 duration-300">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
-                  <Label>Teléfono <span style={{ color: "var(--bad-text)" }}>*</span></Label>
+                  <Label>{t("ui.OnboardingWizard.telefono", "Teléfono")}{" "}<span style={{ color: "var(--bad-text)" }}>*</span></Label>
                   <PhoneInput
                     value={form.phone}
                     onChange={(v) => set({ phone: v })}
                     onCountryChange={(c: any) => set({ phoneCountry: c?.code || c?.name || "EC" })}
-                    placeholder="Número de teléfono"
+                    placeholder={t("ui.OnboardingWizard.numeroDeTelefono", "Número de teléfono")}
                   />
                   {form.phone && !phoneValid && (
-                    <p className="text-xs" style={{ color: "var(--bad-text)" }}>Número de teléfono inválido.</p>
+                    <p className="text-xs" style={{ color: "var(--bad-text)" }}>{t("ui.OnboardingWizard.numeroDeTelefonoInvalido", "Número de teléfono inválido.")}</p>
                   )}
                 </div>
                 <div className="space-y-1.5">
-                  <Label>Correo electrónico <span style={{ color: "var(--bad-text)" }}>*</span></Label>
+                  <Label>{t("ui.OnboardingWizard.correoElectronico", "Correo electrónico")}{" "}<span style={{ color: "var(--bad-text)" }}>*</span></Label>
                   <Input
                     type="email"
                     value={form.email}
@@ -441,14 +443,14 @@ export default function OnboardingWizard({
                     placeholder="correo@empresa.com"
                   />
                   {form.email && !emailValid && (
-                    <p className="text-xs" style={{ color: "var(--bad-text)" }}>Correo electrónico inválido.</p>
+                    <p className="text-xs" style={{ color: "var(--bad-text)" }}>{t("ui.OnboardingWizard.correoElectronicoInvalido", "Correo electrónico inválido.")}</p>
                   )}
                 </div>
               </div>
 
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <Label>Dirección <span style={{ color: "var(--bad-text)" }}>*</span></Label>
+                  <Label>{t("ui.OnboardingWizard.direccion", "Dirección")}{" "}<span style={{ color: "var(--bad-text)" }}>*</span></Label>
                   <button
                     type="button"
                     onClick={() => setShowManualAddress((v) => !v)}
@@ -464,7 +466,7 @@ export default function OnboardingWizard({
                     defaultValue={form.address}
                     initialLat={form.latitude ? parseFloat(form.latitude) : undefined}
                     initialLng={form.longitude ? parseFloat(form.longitude) : undefined}
-                    placeholder="Buscar dirección..."
+                    placeholder={t("ui.OnboardingWizard.buscarDireccion", "Buscar dirección...")}
                     showMap
                     mapHeight="220px"
                     onAddressSelect={(data: AddressComponents) => {
@@ -484,7 +486,7 @@ export default function OnboardingWizard({
                   <Input
                     value={form.address}
                     onChange={(e) => set({ address: e.target.value })}
-                    placeholder="Dirección completa"
+                    placeholder={t("ui.OnboardingWizard.direccionCompleta", "Dirección completa")}
                   />
                 )}
               </div>
@@ -496,11 +498,11 @@ export default function OnboardingWizard({
                     <Input value={form.city} onChange={(e) => set({ city: e.target.value })} />
                   </div>
                   <div className="space-y-1.5">
-                    <Label>País</Label>
+                    <Label>{t("ui.OnboardingWizard.pais", "País")}</Label>
                     <Input value={form.country} onChange={(e) => set({ country: e.target.value })} />
                   </div>
                   <div className="space-y-1.5">
-                    <Label>Código postal</Label>
+                    <Label>{t("ui.OnboardingWizard.codigoPostal", "Código postal")}</Label>
                     <Input value={form.postalCode} onChange={(e) => set({ postalCode: e.target.value })} />
                   </div>
                 </div>
@@ -601,7 +603,7 @@ export default function OnboardingWizard({
                 {submitting ? (
                   <><Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> Guardando...</>
                 ) : (
-                  <><Check className="mr-1.5 h-4 w-4" /> Finalizar configuración</>
+                  <><Check className="mr-1.5 h-4 w-4" />{" "}{t("ui.OnboardingWizard.finalizarConfiguracion", "Finalizar configuración")}</>
                 )}
               </Button>
             )}
@@ -614,6 +616,7 @@ export default function OnboardingWizard({
 
 // ── Welcome step ────────────────────────────────────────────────────────────
 function WelcomeStep({ days, trialEnd }: { days: number | null; trialEnd: string | null }) {
+  const { t } = useTranslation();
   const items = [
     { icon: Building2, text: "Los datos de tu empresa (nombre, razón social, RUC)" },
     { icon: Camera, text: "El logo que verán tus vigilantes y clientes" },
@@ -628,7 +631,7 @@ function WelcomeStep({ days, trialEnd }: { days: number | null; trialEnd: string
         <Sparkles className="h-8 w-8" />
       </div>
       <div className="space-y-1.5">
-        <h2 className="text-xl font-bold text-foreground">¡Te damos la bienvenida a CGuardPro!</h2>
+        <h2 className="text-xl font-bold text-foreground">{t("ui.OnboardingWizard.teDamosLaBienvenidaA", "¡Te damos la bienvenida a CGuardPro!")}</h2>
         <p className="mx-auto max-w-md text-sm text-muted-foreground">
           En menos de 2 minutos dejaremos lista tu empresa para que empieces a gestionar tus vigilantes, turnos y rondas.
         </p>
@@ -690,6 +693,7 @@ function ReviewStep({
   trialEnd: string | null;
   onEdit: (step: number) => void;
 }) {
+  const { t } = useTranslation();
   const tzLabel = TIMEZONE_OPTIONS.find((t) => t.value === form.timezone)?.label || form.timezone;
   return (
     <div className="space-y-4 animate-in fade-in-50 duration-300">
@@ -714,7 +718,7 @@ function ReviewStep({
         </div>
         <ReviewRow label="RUC / Cédula" value={form.taxNumber} />
         <div className="flex items-center justify-between py-2">
-          <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Contacto y ubicación</span>
+          <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("ui.OnboardingWizard.contactoYUbicacion", "Contacto y ubicación")}</span>
           <button type="button" onClick={() => onEdit(2)} className="text-xs font-medium text-primary hover:underline">Editar</button>
         </div>
         <ReviewRow label="Teléfono" value={form.phone} />

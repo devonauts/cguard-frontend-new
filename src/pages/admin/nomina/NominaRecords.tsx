@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
+import { useTranslation } from 'react-i18next';
 import { useSearchParams } from "react-router-dom";
 import AppLayout from "@/layouts/app-layout";
 import { DataTable, type Column } from "@/components/table/DataTable";
@@ -60,6 +61,7 @@ function csvCell(v: unknown): string {
 }
 
 export default function NominaRecords() {
+  const { t } = useTranslation();
   // Deep-link from a clock-in notification: ?focus=<id> auto-opens that record's
   // detail once the list loads (carried over from the old Programador · Asistencia).
   const [searchParams] = useSearchParams();
@@ -461,7 +463,7 @@ export default function NominaRecords() {
                 {((selected.punchInLatitude != null && selected.punchInLongitude != null) ||
                   (selected.punchOutLatitude != null && selected.punchOutLongitude != null)) && (
                   <div className="space-y-2">
-                    <p className="cg-eyebrow">Ubicación</p>
+                    <p className="cg-eyebrow">{t("ui.NominaRecords.ubicacion", "Ubicación")}</p>
 
                     {/* Clock-in location */}
                     {selected.punchInLatitude != null && selected.punchInLongitude != null && (
@@ -554,7 +556,7 @@ export default function NominaRecords() {
                         </StaticMapImage>
                       </div>
                     ) : selected.punchOutTime ? (
-                      <EmptyState title="Salida sin ubicación" description="Marcación automática o GPS no disponible." className="py-6" />
+                      <EmptyState title={t("ui.NominaRecords.salidaSinUbicacion", "Salida sin ubicación")} description="Marcación automática o GPS no disponible." className="py-6" />
                     ) : null}
                   </div>
                 )}

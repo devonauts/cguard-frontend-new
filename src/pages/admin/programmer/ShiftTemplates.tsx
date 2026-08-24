@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useTranslation } from 'react-i18next';
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -71,6 +72,7 @@ const emptyForm = {
 };
 
 export default function ShiftTemplates() {
+  const { t } = useTranslation();
   const [templates, setTemplates] = useState<ShiftTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -263,7 +265,7 @@ export default function ShiftTemplates() {
                   </SheetHeader>
                   <div className="space-y-6 py-4">
                     <div className="grid gap-2">
-                      <Label>Título del turno*</Label>
+                      <Label>{t("ui.ShiftTemplates.tituloDelTurno", "Título del turno*")}</Label>
                       <Input
                         value={form.templateName}
                         onChange={(e) => setForm({ ...form, templateName: e.target.value })}
@@ -306,7 +308,7 @@ export default function ShiftTemplates() {
                         <Select value={form.repeatBy} onValueChange={(v) => setForm({ ...form, repeatBy: v })}>
                           <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="day">Día</SelectItem>
+                            <SelectItem value="day">{t("ui.ShiftTemplates.dia", "Día")}</SelectItem>
                             <SelectItem value="week">Semana</SelectItem>
                             <SelectItem value="month">Mes</SelectItem>
                           </SelectContent>
@@ -335,7 +337,7 @@ export default function ShiftTemplates() {
                       <Select value={form.skillSet} onValueChange={(v) => setForm({ ...form, skillSet: v })}>
                         <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="basic">Básico</SelectItem>
+                          <SelectItem value="basic">{t("ui.ShiftTemplates.basico", "Básico")}</SelectItem>
                           <SelectItem value="advanced">Avanzado</SelectItem>
                         </SelectContent>
                       </Select>
@@ -401,7 +403,7 @@ export default function ShiftTemplates() {
                     </div>
 
                     <div className="grid gap-2">
-                      <Label>Categoría</Label>
+                      <Label>{t("ui.ShiftTemplates.categoria", "Categoría")}</Label>
                       <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
                         <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
                         <SelectContent>
@@ -454,7 +456,7 @@ export default function ShiftTemplates() {
                   </SheetHeader>
                   <div className="space-y-6 py-4">
                     <div className="grid gap-2">
-                      <Label>Categoría</Label>
+                      <Label>{t("ui.ShiftTemplates.categoria2", "Categoría")}</Label>
                       <Select
                         value={filters.category || NONE}
                         onValueChange={(v) => setFilters({ ...filters, category: v === NONE ? "" : v })}

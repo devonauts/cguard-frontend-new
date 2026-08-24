@@ -4,6 +4,7 @@
  * cuándo fue la última sincronización — con las acciones a mano derecha.
  */
 import { RefreshCw, SlidersHorizontal, Sparkles, Maximize2, Radar } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 import { FadeIn, IconTile } from "@/components/kit";
 import { clockOf } from "../tone";
 import { TonePill } from "./Panel";
@@ -28,6 +29,7 @@ export function CommandBar({
   onFullMap: () => void;
   resumen: string;
 }) {
+  const { t } = useTranslation();
   const enlace = demo
     ? { tone: "brand" as const, label: "Datos de demostración" }
     : sseConnected
@@ -71,7 +73,7 @@ export function CommandBar({
             type="button"
             role="switch"
             aria-checked={demo}
-            aria-label="Datos de demostración"
+            aria-label={t("ui.CommandBar.datosDeDemostracion", "Datos de demostración")}
             onClick={() => onDemo(!demo)}
             className="cg-btn-glass cg-focus inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold"
             style={demo ? { color: "var(--brand-text)", borderColor: "var(--brand-line)" } : undefined}

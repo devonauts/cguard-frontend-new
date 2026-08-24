@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from "react-router-dom";
 import AppLayout from "@/layouts/app-layout";
 import { DataTable, type Column } from "@/components/table/DataTable";
@@ -28,6 +29,7 @@ const WEEKDAYS = [
 ];
 
 export default function SupervisorsPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [rows, setRows] = useState<Supervisor[]>([]);
   const [loading, setLoading] = useState(true);
@@ -247,7 +249,7 @@ export default function SupervisorsPage() {
                 <Toolbar className="hidden p-1 sm:flex">
                   <Search className="ml-1.5 h-4 w-4 shrink-0" style={{ color: "var(--ink-faint)" }} />
                   <Input
-                    placeholder="Buscar por nombre, zona, vehículo…"
+                    placeholder={t("ui.Supervisors.buscarPorNombreZonaVehiculo", "Buscar por nombre, zona, vehículo…")}
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     className="h-8 w-[240px] border-0 bg-transparent px-1 shadow-none"
@@ -282,7 +284,7 @@ export default function SupervisorsPage() {
                 columns={columns}
                 data={filtered as (Supervisor & { id: string })[]}
                 onRowClick={(r) => navigate(`/supervisors/${r.id}`)}
-                emptyState={<EmptyState icon={<ShieldCheck />} title="Aún no hay supervisores" />}
+                emptyState={<EmptyState icon={<ShieldCheck />} title={t("ui.Supervisors.aunNoHaySupervisores", "Aún no hay supervisores")} />}
               />
             ) : (
               <Stagger className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -366,15 +368,15 @@ export default function SupervisorsPage() {
           <Input placeholder="Correo *" type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} className="sm:col-span-2" />
           <Input placeholder="Nombres" value={form.firstName} onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))} />
           <Input placeholder="Apellidos" value={form.lastName} onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))} />
-          <Input placeholder="Cédula / ID" value={form.governmentId} onChange={(e) => setForm((f) => ({ ...f, governmentId: e.target.value }))} />
-          <Input placeholder="Teléfono" value={form.phoneNumber} onChange={(e) => setForm((f) => ({ ...f, phoneNumber: e.target.value }))} />
-          <Input placeholder="Zona / posición (p. ej. Aguila2)" value={form.zone} onChange={(e) => setForm((f) => ({ ...f, zone: e.target.value }))} />
-          <Input placeholder="Vehículo asignado" value={form.assignedVehicle} onChange={(e) => setForm((f) => ({ ...f, assignedVehicle: e.target.value }))} />
+          <Input placeholder={t("ui.Supervisors.cedulaId", "Cédula / ID")} value={form.governmentId} onChange={(e) => setForm((f) => ({ ...f, governmentId: e.target.value }))} />
+          <Input placeholder={t("ui.Supervisors.telefono", "Teléfono")} value={form.phoneNumber} onChange={(e) => setForm((f) => ({ ...f, phoneNumber: e.target.value }))} />
+          <Input placeholder={t("ui.Supervisors.zonaPosicionPEjAguila2", "Zona / posición (p. ej. Aguila2)")} value={form.zone} onChange={(e) => setForm((f) => ({ ...f, zone: e.target.value }))} />
+          <Input placeholder={t("ui.Supervisors.vehiculoAsignado", "Vehículo asignado")} value={form.assignedVehicle} onChange={(e) => setForm((f) => ({ ...f, assignedVehicle: e.target.value }))} />
         </div>
 
         <div className="glass-sunken mt-4 p-3">
           <p className="mb-2 text-sm font-semibold text-foreground">Turno del supervisor</p>
-          <p className="mb-2 text-xs" style={{ color: "var(--ink-soft)" }}>Días y horario que el supervisor debe cumplir (opcional; también editable luego).</p>
+          <p className="mb-2 text-xs" style={{ color: "var(--ink-soft)" }}>{t("ui.Supervisors.diasYHorarioQueEl", "Días y horario que el supervisor debe cumplir (opcional; también editable luego).")}</p>
           <div className="mb-3 flex flex-wrap gap-1.5">
             {WEEKDAYS.map((d) => {
               const on = turnoDays.includes(d.n);

@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,6 +38,7 @@ type PhoneInputProps = {
 };
 
 export function PhoneInput({ value, onChange, placeholder, onCountryChange, maxLocalDigits, maxCountries }: PhoneInputProps) {
+  const { t } = useTranslation();
     // notify parent of selected country via onCountryChange when provided
     const defaultCountry = COUNTRIES[0];
     const [open, setOpen] = useState(false);
@@ -145,7 +147,7 @@ export function PhoneInput({ value, onChange, placeholder, onCountryChange, maxL
                                             el.scrollTop += delta;
                                         }}
                                     >
-                                <CommandEmpty>No se encontraron países.</CommandEmpty>
+                                <CommandEmpty>{t("ui.PhoneInput.noSeEncontraronPaises", "No se encontraron países.")}</CommandEmpty>
                                 <CommandGroup>
                                     {(showAllCountries || typeof maxCountries !== 'number') ? COUNTRIES.map((c) => (
                                          <CommandItem

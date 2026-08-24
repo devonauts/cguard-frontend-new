@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,6 +30,7 @@ function rotationSummary(p: SupervisorPosition): string {
 }
 
 export default function SupervisorPositionsPage() {
+  const { t } = useTranslation();
   const [rows, setRows] = useState<SupervisorPosition[]>([]);
   const [sups, setSups] = useState<Supervisor[]>([]);
   const [stations, setStations] = useState<{ id: string; name: string }[]>([]);
@@ -128,7 +130,7 @@ export default function SupervisorPositionsPage() {
             <Section title="Puestos" icon={<MapPin />}>
               <EmptyState
                 icon={<MapPin />}
-                title="Aún no hay puestos de supervisor"
+                title={t("ui.SupervisorPositions.aunNoHayPuestosDe", "Aún no hay puestos de supervisor")}
                 description="Crea el primero (p. ej. «Aguila2»): defines su turno y su rotación, y los supervisores asignados la siguen."
                 action={<Button variant="brand" size="sm" onClick={() => setOpen(true)}><Plus className="mr-2 h-4 w-4" /> Nuevo puesto</Button>}
               />
@@ -274,7 +276,7 @@ export default function SupervisorPositionsPage() {
             </select>
           </div>
           <div>
-            <label className="cg-eyebrow mb-1 block">Rotación</label>
+            <label className="cg-eyebrow mb-1 block">{t("ui.SupervisorPositions.rotacion", "Rotación")}</label>
             <RotationStyleSelect scheduleType={form.scheduleType} value={form.rotationStyleId} onChange={(id) => setForm((f) => ({ ...f, rotationStyleId: id }))} />
           </div>
           <div className="grid grid-cols-3 gap-3">

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import AppLayout from '@/layouts/app-layout';
 import GuardsLayout from '@/layouts/GuardsLayout';
@@ -37,6 +38,7 @@ const fmtDate = (iso: string | null) =>
   iso ? new Date(iso).toLocaleDateString('es-EC', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
 
 export default function GuardReviewsPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const tenantId = localStorage.getItem('tenantId') || '';
 
@@ -127,7 +129,7 @@ export default function GuardReviewsPage() {
             <StatCard icon={<MessageSquareWarning />} accent="brand" label="Reseñas recibidas" value={total} />
             {/* Tercera ficha de la MISMA fila: mismas medidas y misma etiqueta
                 que las otras dos, o se lee como un hueco. */}
-            <Section title="Distribución" className="p-4" contentClassName="space-y-1">
+            <Section title={t("ui.GuardReviews.distribucion", "Distribución")} className="p-4" contentClassName="space-y-1">
               {dist.map((c, i) => {
                 const starVal = 5 - i;
                 const pct = total ? Math.round((c / total) * 100) : 0;
@@ -144,7 +146,7 @@ export default function GuardReviewsPage() {
           </div>
 
           {/* Reviews list */}
-          <Section title="Reseñas de clientes" icon={<Star className="h-4 w-4" />}>
+          <Section title={t("ui.GuardReviews.resenasDeClientes", "Reseñas de clientes")} icon={<Star className="h-4 w-4" />}>
             {guardName && (
               <p className="mb-3 text-xs" style={{ color: 'var(--ink-soft)' }}>
                 Calificaciones enviadas por los clientes sobre {guardName}.
@@ -155,7 +157,7 @@ export default function GuardReviewsPage() {
             ) : rows.length === 0 ? (
               <EmptyState
                 icon={<Star className="h-5 w-5" />}
-                title="Sin reseñas todavía"
+                title={t("ui.GuardReviews.sinResenasTodavia", "Sin reseñas todavía")}
                 description="Cuando un cliente califique a este vigilante desde su app, la reseña aparecerá aquí."
               />
             ) : (

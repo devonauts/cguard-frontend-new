@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
+import { useTranslation } from 'react-i18next';
 import AppLayout from "@/layouts/app-layout";
 import Breadcrumb from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
@@ -46,6 +47,7 @@ const fmtTime = (iso: string) =>
   new Date(iso).toLocaleTimeString("es-EC", { hour: "2-digit", minute: "2-digit" });
 
 export default function Coverage() {
+  const { t } = useTranslation();
   const [live, setLive] = useState<LiveCoverage | null>(null);
   const [events, setEvents] = useState<CoverageEvent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -462,7 +464,7 @@ export default function Coverage() {
                     {ev.status !== "cancelled" && (
                       <Button
                         size="sm" variant="ghost" disabled={busy}
-                        title="Anular la novedad y devolver el turno a la rotación"
+                        title={t("ui.Coverage.anularLaNovedadYDevolver", "Anular la novedad y devolver el turno a la rotación")}
                         onClick={() => runWithConfirm(() => coverageService.cancel(ev.id), "Novedad anulada")}
                       >
                         <Undo2 className="size-3.5" />
@@ -497,12 +499,12 @@ export default function Coverage() {
               <div>
                 <label className="cg-eyebrow mb-1.5 block">Vigilante que sale</label>
                 <GuardTypeahead value={repOut} onSelect={setRepOut}
-                  excludeGuardId={repIn?.guardId} placeholder="Quién toma vacaciones/permiso" />
+                  excludeGuardId={repIn?.guardId} placeholder={t("ui.Coverage.quienTomaVacacionesPermiso", "Quién toma vacaciones/permiso")} />
               </div>
               <div>
                 <label className="cg-eyebrow mb-1.5 block">Reemplazo</label>
                 <GuardTypeahead value={repIn} onSelect={setRepIn}
-                  excludeGuardId={repOut?.guardId} placeholder="Quién lo cubre" />
+                  excludeGuardId={repOut?.guardId} placeholder={t("ui.Coverage.quienLoCubre", "Quién lo cubre")} />
               </div>
             </div>
 
@@ -577,7 +579,7 @@ export default function Coverage() {
             <div>
               <label className="cg-eyebrow mb-1.5 block">Detalle (opcional)</label>
               <Textarea value={note} onChange={(e) => setNote(e.target.value)} rows={3}
-                placeholder="Ej.: llamó, se le dañó la moto en la vía" />
+                placeholder={t("ui.Coverage.ejLlamoSeLeDano", "Ej.: llamó, se le dañó la moto en la vía")} />
             </div>
           </div>
         </Modal>
@@ -586,7 +588,7 @@ export default function Coverage() {
         <Modal
           open={!!coverFor}
           onOpenChange={(o) => !o && setCoverFor(null)}
-          title="¿Quién cubre el puesto?"
+          title={t("ui.Coverage.quienCubreElPuesto", "¿Quién cubre el puesto?")}
           icon={<UserPlus />}
         >
           <div className="space-y-2">
@@ -654,7 +656,7 @@ export default function Coverage() {
               </Select>
             </div>
             <div>
-              <label className="cg-eyebrow mb-1.5 block">Duración</label>
+              <label className="cg-eyebrow mb-1.5 block">{t("ui.Coverage.duracion", "Duración")}</label>
               <Segmented<"shift" | "range">
                 value={transferMode}
                 onChange={(v) => {

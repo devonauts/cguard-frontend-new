@@ -30,6 +30,7 @@
  * ════════════════════════════════════════════════════════════════════════════
  */
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { GlassPanel, IconTile, SkeletonCards, SmartImage } from '@/components/kit';
@@ -183,6 +184,7 @@ export function Pager({ page, pageCount, total, perPage, noun = 'resultados', on
   page: number; pageCount: number; total: number; perPage: number;
   noun?: string; onPage: (p: number) => void; className?: string;
 }) {
+  const { t } = useTranslation();
   const arrow = 'cg-focus rounded-md border px-2 py-1 disabled:opacity-40';
   return (
     <div className={cn('mt-3 flex flex-wrap items-center justify-between gap-2 text-sm', className)} style={{ color: 'var(--ink-soft)' }}>
@@ -190,7 +192,7 @@ export function Pager({ page, pageCount, total, perPage, noun = 'resultados', on
         Mostrando {total === 0 ? 0 : (page - 1) * perPage + 1} a {Math.min(page * perPage, total)} de {total} {noun}
       </span>
       <div className="flex items-center gap-1">
-        <button type="button" aria-label="Página anterior" disabled={page <= 1} onClick={() => onPage(page - 1)} className={arrow} style={{ borderColor: 'var(--hairline)' }}>‹</button>
+        <button type="button" aria-label={t("ui.tabkit.paginaAnterior", "Página anterior")} disabled={page <= 1} onClick={() => onPage(page - 1)} className={arrow} style={{ borderColor: 'var(--hairline)' }}>‹</button>
         {Array.from({ length: Math.min(5, pageCount) }).map((_, k) => {
           const n = k + 1;
           return (
@@ -208,7 +210,7 @@ export function Pager({ page, pageCount, total, perPage, noun = 'resultados', on
             </button>
           );
         })}
-        <button type="button" aria-label="Página siguiente" disabled={page >= pageCount} onClick={() => onPage(page + 1)} className={arrow} style={{ borderColor: 'var(--hairline)' }}>›</button>
+        <button type="button" aria-label={t("ui.tabkit.paginaSiguiente", "Página siguiente")} disabled={page >= pageCount} onClick={() => onPage(page + 1)} className={arrow} style={{ borderColor: 'var(--hairline)' }}>›</button>
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import AppLayout from '@/layouts/app-layout';
 import Breadcrumb from '@/components/ui/breadcrumb';
@@ -30,6 +31,7 @@ import AssignGuardsPanel from './components/AssignGuardsPanel';
 import { PageContainer, PageHeader, StatusBadge, EmptyState, Section, SkeletonCards } from '@/components/kit';
 
 export default function TrainingCourseDetailPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { hasPermission } = usePermissions();
@@ -179,11 +181,11 @@ export default function TrainingCourseDetailPage() {
           <TabsContent value="details" className="mt-4">
             <Section title="Detalles del curso" icon={<GraduationCap />} contentClassName="max-w-2xl space-y-4">
                 <div className="space-y-2">
-                  <Label>Título *</Label>
+                  <Label>{t("ui.TrainingCourseDetail.titulo", "Título *")}</Label>
                   <Input disabled={readOnly} value={meta.title} onChange={(e) => setMeta({ ...meta, title: e.target.value })} />
                 </div>
                 <div className="space-y-2">
-                  <Label>Descripción</Label>
+                  <Label>{t("ui.TrainingCourseDetail.descripcion", "Descripción")}</Label>
                   <Textarea disabled={readOnly} rows={3} value={meta.description} onChange={(e) => setMeta({ ...meta, description: e.target.value })} />
                 </div>
                 <div className="space-y-2">
@@ -192,7 +194,7 @@ export default function TrainingCourseDetailPage() {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
-                    <Label>Categoría</Label>
+                    <Label>{t("ui.TrainingCourseDetail.categoria", "Categoría")}</Label>
                     <Select value={meta.category} onValueChange={(v) => setMeta({ ...meta, category: v })} disabled={readOnly}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>

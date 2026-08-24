@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -45,6 +46,7 @@ interface Props {
 }
 
 export default function AssignGuardsPanel({ courseId, published }: Props) {
+  const { t } = useTranslation();
   const [assignmentType, setAssignmentType] = useState<'individual' | 'all_guards'>('individual');
   const [dueDate, setDueDate] = useState('');
   const [query, setQuery] = useState('');
@@ -172,14 +174,14 @@ export default function AssignGuardsPanel({ courseId, published }: Props) {
       <Section title="Asignar curso" icon={<UserPlus />}>
         <div className="space-y-4 max-w-2xl">
           {!published && (
-            <p className="text-sm" style={{ color: 'var(--warn-text)' }}>Este curso es un borrador. Publícalo para poder asignarlo.</p>
+            <p className="text-sm" style={{ color: 'var(--warn-text)' }}>{t("ui.AssignGuardsPanel.esteCursoEsUnBorrador", "Este curso es un borrador. Publícalo para poder asignarlo.")}</p>
           )}
           <div className="space-y-2">
-            <Label>Tipo de asignación</Label>
+            <Label>{t("ui.AssignGuardsPanel.tipoDeAsignacion", "Tipo de asignación")}</Label>
             <Select value={assignmentType} onValueChange={(v) => setAssignmentType(v as any)}>
               <SelectTrigger className="w-64"><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="individual">Vigilante específico</SelectItem>
+                <SelectItem value="individual">{t("ui.AssignGuardsPanel.vigilanteEspecifico", "Vigilante específico")}</SelectItem>
                 <SelectItem value="all_guards">Todos los vigilantes</SelectItem>
               </SelectContent>
             </Select>
@@ -217,7 +219,7 @@ export default function AssignGuardsPanel({ courseId, published }: Props) {
           )}
 
           <div className="space-y-2">
-            <Label>Fecha límite (opcional)</Label>
+            <Label>{t("ui.AssignGuardsPanel.fechaLimiteOpcional", "Fecha límite (opcional)")}</Label>
             <Input type="date" className="w-64" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
           </div>
 
@@ -236,7 +238,7 @@ export default function AssignGuardsPanel({ courseId, published }: Props) {
           emptyState={
             <EmptyState
               icon={<Users />}
-              title="Aún no hay vigilantes asignados"
+              title={t("ui.AssignGuardsPanel.aunNoHayVigilantesAsignados", "Aún no hay vigilantes asignados")}
               description="Asigna el curso arriba y el progreso aparecerá aquí."
               className="border-0"
             />

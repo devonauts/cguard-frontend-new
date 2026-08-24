@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useTranslation } from 'react-i18next';
 import { getTenantTimezone } from "@/utils/tenantLocation";
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
@@ -78,6 +79,7 @@ interface GuardListItem {
 // ── component ────────────────────────────────────────────────────────────────
 
 export default function OpenShifts() {
+  const { t } = useTranslation();
   const [rawShifts, setRawShifts] = useState<ShiftRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -346,8 +348,8 @@ export default function OpenShifts() {
                 <TableHead className="cg-eyebrow">Puesto</TableHead>
                 <TableHead className="cg-eyebrow">Hora de inicio</TableHead>
                 <TableHead className="cg-eyebrow">Hora de fin</TableHead>
-                <TableHead className="cg-eyebrow">Duración</TableHead>
-                <TableHead className="cg-eyebrow">Acción</TableHead>
+                <TableHead className="cg-eyebrow">{t("ui.OpenShifts.duracion", "Duración")}</TableHead>
+                <TableHead className="cg-eyebrow">{t("ui.OpenShifts.accion", "Acción")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -399,7 +401,7 @@ export default function OpenShifts() {
 
         {/* Pagination */}
         <div className="flex items-center justify-end space-x-2 py-4">
-          <div className="text-sm" style={{ color: "var(--ink-soft)" }}>Elementos por página</div>
+          <div className="text-sm" style={{ color: "var(--ink-soft)" }}>{t("ui.OpenShifts.elementosPorPagina", "Elementos por página")}</div>
           <Select value={String(pageSize)} onValueChange={(v) => { setPageSize(Number(v)); setPage(1); }}>
             <SelectTrigger className="w-[70px]"><SelectValue /></SelectTrigger>
             <SelectContent>
@@ -415,13 +417,13 @@ export default function OpenShifts() {
           </div>
           <div className="flex items-center space-x-2">
             <Button variant="outline" size="icon" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
-              <span className="sr-only">Página anterior</span>
+              <span className="sr-only">{t("ui.OpenShifts.paginaAnterior", "Página anterior")}</span>
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </Button>
             <Button variant="outline" size="icon" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>
-              <span className="sr-only">Página siguiente</span>
+              <span className="sr-only">{t("ui.OpenShifts.paginaSiguiente", "Página siguiente")}</span>
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>

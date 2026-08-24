@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import AddressAutocomplete from './maps/AddressAutocomplete';
 import GoogleMapEmbed from './GoogleMap/GoogleMapEmbed';
 
 export default function EmpresaDireccionForm() {
+  const { t } = useTranslation();
   const [direccion, setDireccion] = useState('');
   const [lat, setLat] = useState<number | undefined>(undefined);
   const [lng, setLng] = useState<number | undefined>(undefined);
@@ -15,12 +17,12 @@ export default function EmpresaDireccionForm() {
 
   return (
     <div style={{ maxWidth: 600, margin: '0 auto' }}>
-      <label style={{ fontWeight: 600 }}>Dirección de la Empresa*</label>
+      <label style={{ fontWeight: 600 }}>{t("ui.EmpresaDireccionForm.direccionDeLaEmpresa", "Dirección de la Empresa*")}</label>
       <AddressAutocomplete
         defaultValue={direccion}
         initialLat={lat}
         initialLng={lng}
-        placeholder="Ej: Antonio Miguel de Soler N29-26 y Bartolomé de las Casas"
+        placeholder={t("ui.EmpresaDireccionForm.ejAntonioMiguelDeSoler", "Ej: Antonio Miguel de Soler N29-26 y Bartolomé de las Casas")}
         onAddressSelect={handleSelectDireccion}
         showMap={true}
         mapHeight="320px"

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -27,6 +28,7 @@ type Mode = "guard" | "staff" | "none";
  * Ambos caminos acaban en Nómina › Registros de Asistencia.
  */
 export default function NominaTimeClock() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [isClockedIn, setIsClockedIn] = useState(false);
@@ -243,7 +245,7 @@ export default function NominaTimeClock() {
                   media jornada dejaría el turno anterior sin cerrar. */}
               {modosDisponibles.length > 1 && !isClockedIn && (
                 <div className="mt-5 text-left">
-                  <label className="cg-eyebrow">¿Dónde vas a trabajar?</label>
+                  <label className="cg-eyebrow">{t("ui.NominaTimeClock.dondeVasATrabajar", "¿Dónde vas a trabajar?")}</label>
                   <div className="mt-1.5 grid grid-cols-2 gap-2">
                     <button
                       type="button"

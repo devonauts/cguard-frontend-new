@@ -16,6 +16,7 @@ import Stations from './components/PostsiteStations/Stations';
 import Incidents from './components/PostsiteIncidents/Incidents';
 import SiteTours from './components/PostsiteSiteTours/SiteTours';
 import Inventory from './components/PostsiteInventory/Inventory';
+import OperationSetupAlert from './components/OperationSetup/OperationSetupAlert';
 import { useTranslation } from "react-i18next";
 
 export default function PostSiteDetailsPage() {
@@ -104,7 +105,14 @@ export default function PostSiteDetailsPage() {
             description={error}
           />
         ) : site ? (
-          <div className="space-y-4 animate-fade-up">{renderTab()}</div>
+          <div className="space-y-4 animate-fade-up">
+            {/* Va FUERA del switch de pestañas a propósito: el hueco no es de
+                una pestaña, es de la sede entera. Quien entra por «Puestos» o
+                por «Asignar vigilantes» —justo los dos sitios donde el hueco
+                hace daño— tiene que verlo igual que quien entra por Resumen. */}
+            <OperationSetupAlert site={site} siteId={id} />
+            {renderTab()}
+          </div>
         ) : (
           <EmptyState
             icon={<MapPinOff />}

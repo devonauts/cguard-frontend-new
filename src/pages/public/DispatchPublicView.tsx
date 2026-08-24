@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { clientDisplayName } from '@/lib/clientName';
 import { useParams } from 'react-router-dom';
 import { FileText, ShieldAlert } from 'lucide-react';
@@ -22,6 +23,7 @@ function safeHttpUrl(raw: unknown): string | null {
 }
 
 export default function DispatchPublicView() {
+  const { t } = useTranslation();
   const { token } = useParams();
   const [payload, setPayload] = useState<any | null>(null);
   const [clients, setClients] = useState<any[]>([]);
@@ -303,7 +305,7 @@ export default function DispatchPublicView() {
           <Section title="Ticket Summary" icon={<FileText />}>
             <div>
               {payload?.comments && payload.comments.length === 0 ? (
-                <div className="text-sm text-muted-foreground">No hay comentarios aún</div>
+                <div className="text-sm text-muted-foreground">{t("ui.DispatchPublicView.noHayComentariosAun", "No hay comentarios aún")}</div>
               ) : (
                 <div className="space-y-4">
                   {payload.comments && payload.comments.map((c: any) => (

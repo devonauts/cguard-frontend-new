@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { Radio, Play, Square, Loader2, Settings2, AlertTriangle, RefreshCw, FileText } from "lucide-react";
 import { toast } from "sonner";
 import AppLayout from "@/layouts/app-layout";
@@ -34,6 +35,7 @@ function RadioAudio({ audioUrl }: { audioUrl?: string | null }) {
 }
 
 export default function RadioDispatch() {
+  const { t } = useTranslation();
   const { version, connected } = useRadioRealtime();
   const [data, setData] = useState<any>(null);
   const [running, setRunning] = useState<any>(null);
@@ -116,7 +118,7 @@ export default function RadioDispatch() {
             <Button variant="outline" size="icon" onClick={refresh} title="Actualizar">
               <RefreshCw size={16} />
             </Button>
-            <Button variant="outline" size="icon" onClick={() => setShowSettings((v) => !v)} title="Configuración">
+            <Button variant="outline" size="icon" onClick={() => setShowSettings((v) => !v)} title={t("ui.RadioDispatch.configuracion", "Configuración")}>
               <Settings2 size={16} />
             </Button>
             {running ? (
@@ -133,7 +135,7 @@ export default function RadioDispatch() {
       />
 
       {showSettings && settings && (
-        <Section title="Pase automático" icon={<Settings2 />}>
+        <Section title={t("ui.RadioDispatch.paseAutomatico", "Pase automático")} icon={<Settings2 />}>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={!!settings.enabled} onChange={(e) => setSettings({ ...settings, enabled: e.target.checked })} /> Activado</label>
             <label className="text-sm">Intervalo (min)<input type="number" min={1} value={settings.intervalMinutes ?? 35} onChange={(e) => setSettings({ ...settings, intervalMinutes: +e.target.value })} className="mt-1 w-full rounded-lg border border-border bg-background px-2 py-1.5" /></label>

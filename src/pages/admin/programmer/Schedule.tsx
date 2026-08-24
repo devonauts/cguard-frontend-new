@@ -1,4 +1,5 @@
 import { localToday } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 import { nombreDeVigilante, inicialesDeVigilante, primerNombre } from "@/lib/guardName";
 import { getTenantTimezone } from '@/utils/tenantLocation';
 import { useState, useEffect, useMemo, useCallback, useRef, useLayoutEffect } from "react";
@@ -323,6 +324,7 @@ function dnCode(
 // ─── Component ──────────────────────────────────────────────────────────────
 
 export default function Schedule() {
+  const { t } = useTranslation();
   const tenantId = localStorage.getItem('tenantId') || '';
 
   // Saved view (month + scroll + panels) so edits/reloads bring you back to the
@@ -1870,10 +1872,10 @@ export default function Schedule() {
           </div>
 
           <div className="flex items-center gap-1.5">
-            <Button variant="outline" size="sm" onClick={() => nav(-1)} title="Anterior (Re Pág)"><ChevronLeft size={16} /></Button>
+            <Button variant="outline" size="sm" onClick={() => nav(-1)} title={t("ui.Schedule.anteriorRePag", "Anterior (Re Pág)")}><ChevronLeft size={16} /></Button>
             <Button variant="outline" size="sm" onClick={goToday}>Hoy</Button>
             <span className="min-w-[130px] text-center text-sm font-semibold">{rangeLabel}</span>
-            <Button variant="outline" size="sm" onClick={() => nav(1)} title="Siguiente (Av Pág)"><ChevronRight size={16} /></Button>
+            <Button variant="outline" size="sm" onClick={() => nav(1)} title={t("ui.Schedule.siguienteAvPag", "Siguiente (Av Pág)")}><ChevronRight size={16} /></Button>
           </div>
 
           {/* Rango: Mes = hoja de cálculo · Semana/Día = línea de tiempo dibujable */}
@@ -1922,7 +1924,7 @@ export default function Schedule() {
           <div className="py-10">
             <EmptyState
               icon={<MapPin />}
-              title="Todavía no hay puestos configurados"
+              title={t("ui.Schedule.todaviaNoHayPuestosConfigurados", "Todavía no hay puestos configurados")}
               description="Crea un puesto desde la sección de Puestos y el horario aparecerá aquí."
             />
           </div>
@@ -1934,7 +1936,7 @@ export default function Schedule() {
                 <div className="flex flex-1 items-start gap-3">
                   <Sparkles size={18} className="mt-0.5 shrink-0" style={{ color: 'var(--brand-text)' }} />
                   <p className="text-xs leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
-                    <span className="font-bold" style={{ color: 'var(--ink)' }}>Tus puestos aún no tienen horario. </span>
+                    <span className="font-bold" style={{ color: 'var(--ink)' }}>{t("ui.Schedule.tusPuestosAunNoTienen", "Tus puestos aún no tienen horario.")}{" "}</span>
                     Genera la asignación automática para crear los puestos, asignar vigilantes por cercanía y escalonar los turnos (sacafrancos incluidos).
                   </p>
                 </div>
@@ -2052,7 +2054,7 @@ export default function Schedule() {
                                 onClick={() => configureStation(station)}
                                 className="cg-focus text-[11px] transition-colors hover:underline"
                                 style={{ color: 'var(--ink-soft)' }}
-                                title="Cambiar tipo de horario / rotación"
+                                title={t("ui.Schedule.cambiarTipoDeHorarioRotacion", "Cambiar tipo de horario / rotación")}
                               >
                                 {station.scheduleType ? station.scheduleType.replace('-', ' ').toUpperCase() : 'Sin configurar'}
                               </button>
@@ -2083,14 +2085,14 @@ export default function Schedule() {
                                 <button
                                   onClick={() => configureStation(station)}
                                   className="cg-btn-ghost cg-focus rounded p-1 transition-colors"
-                                  title="Reconfigurar el puesto (tipo de horario y rotación)"
+                                  title={t("ui.Schedule.reconfigurarElPuestoTipoDe", "Reconfigurar el puesto (tipo de horario y rotación)")}
                                 >
                                   <Clock size={14} />
                                 </button>
                                 <button
                                   onClick={() => addPosition(station.id)}
                                   className="cg-btn-ghost cg-focus rounded p-1 transition-colors"
-                                  title="Agregar posición sacafranco"
+                                  title={t("ui.Schedule.agregarPosicionSacafranco", "Agregar posición sacafranco")}
                                 >
                                   <Plus size={14} />
                                 </button>
@@ -2179,7 +2181,7 @@ export default function Schedule() {
                                       onClick={() => deletePosition(station.id, pos.id)}
                                       className="cg-focus rounded-md p-1 transition-colors hover:bg-[color-mix(in_oklab,var(--bad)_12%,transparent)]"
                                       style={{ color: 'var(--ink-faint)' }}
-                                      title="Eliminar posición"
+                                      title={t("ui.Schedule.eliminarPosicion", "Eliminar posición")}
                                     >
                                       <X size={11} />
                                     </button>
@@ -2418,7 +2420,7 @@ export default function Schedule() {
                       <span className="text-[10px] tabular-nums" style={{ color: 'var(--ink-faint)' }}>({unassignedGuards.length})</span>
                     </div>
                     {unassignedGuards.length === 0 ? (
-                      <p className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>Todos los vigilantes están asignados.</p>
+                      <p className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>{t("ui.Schedule.todosLosVigilantesEstanAsignados", "Todos los vigilantes están asignados.")}</p>
                     ) : (
                       <>
                         <p className="mb-2 text-[10px]" style={{ color: 'var(--ink-soft)' }}>Arrastra un vigilante a un puesto del horario.</p>
@@ -2494,7 +2496,7 @@ export default function Schedule() {
                     </button>
                     {aiRecommendation && (
                       <div className="glass-sunken mt-2 max-h-[240px] overflow-y-auto p-3">
-                        <div className="mb-1 text-[10px] font-semibold" style={{ color: 'var(--brand-text)' }}><Bot className="mr-1 inline h-3 w-3" />Recomendación:</div>
+                        <div className="mb-1 text-[10px] font-semibold" style={{ color: 'var(--brand-text)' }}><Bot className="mr-1 inline h-3 w-3" />{t("ui.Schedule.recomendacion", "Recomendación:")}</div>
                         <div className="whitespace-pre-wrap text-[10px] leading-relaxed" style={{ color: 'var(--ink-soft)' }}>{aiRecommendation}</div>
                       </div>
                     )}
@@ -2642,11 +2644,11 @@ export default function Schedule() {
               {view === 'month' ? (
                 <>
                   <span className="font-medium" style={{ color: 'var(--ink-soft)' }}>{selInfo || 'Clic en una celda para seleccionar'}</span>
-                  <span className="hidden md:inline"><b>Clic derecho</b>: editar/duplicar/eliminar turno y novedades · Escribe <b>D N L V F P 2</b> para novedad · <b>Supr</b> borra · Arrastra un día <b>L del sacafranco</b> sobre un L del puesto para cubrirlo · <b>Re/Av Pág</b> cambia mes</span>
+                  <span className="hidden md:inline"><b>Clic derecho</b>: editar/duplicar/eliminar turno y novedades · Escribe <b>D N L V F P 2</b> para novedad · <b>Supr</b>{" "}{t("ui.Schedule.borraArrastraUnDia", "borra · Arrastra un día")}{" "}<b>L del sacafranco</b> sobre un L del puesto para cubrirlo · <b>{t("ui.Schedule.reAvPag", "Re/Av Pág")}</b> cambia mes</span>
                 </>
               ) : (
                 <span className="font-medium" style={{ color: 'var(--ink-soft)' }}>
-                  Arrastra sobre la fila de un puesto para <b>dibujar un bloque de trabajo</b> (p. ej. 07:00 → 07:00 del día siguiente) · Clic en un bloque: detalle / eliminar · Suelta un vigilante del panel sobre la línea · <b>Re/Av Pág</b> cambia {view === 'week' ? 'de semana' : 'de día'}
+                  Arrastra sobre la fila de un puesto para <b>dibujar un bloque de trabajo</b> (p. ej. 07:00 → 07:00 del día siguiente) · Clic en un bloque: detalle / eliminar · Suelta un vigilante del panel sobre la línea · <b>{t("ui.Schedule.reAvPag2", "Re/Av Pág")}</b> cambia {view === 'week' ? 'de semana' : 'de día'}
                 </span>
               )}
               <span className="flex-1" />
@@ -2738,7 +2740,7 @@ export default function Schedule() {
                 <p className="flex items-center gap-1.5 text-[11px]" style={{ color: 'var(--ink-soft)' }}>
                   <Clock size={12} />
                   Duración: <b className="tabular-nums" style={{ color: 'var(--ink)' }}>{durH % 1 === 0 ? durH : durH.toFixed(1)}h</b>
-                  {nextDay && <span>· termina al día siguiente</span>}
+                  {nextDay && <span>{t("ui.Schedule.terminaAlDiaSiguiente", "· termina al día siguiente")}</span>}
                   <span>· hora de la empresa</span>
                 </p>
               </div>
@@ -2783,7 +2785,7 @@ export default function Schedule() {
               </div>
               <div className="p-4 space-y-1.5 max-h-[50vh] overflow-y-auto">
                 {rows.length === 0 && (
-                  <p className="py-4 text-center text-[12px]" style={{ color: 'var(--ink-soft)' }}>No hay sacafrancos configurados. Crea primero una posición de sacafranco en el puesto.</p>
+                  <p className="py-4 text-center text-[12px]" style={{ color: 'var(--ink-soft)' }}>{t("ui.Schedule.noHaySacafrancosConfiguradosCrea", "No hay sacafrancos configurados. Crea primero una posición de sacafranco en el puesto.")}</p>
                 )}
                 {free.map(r => (
                   <button
@@ -2863,7 +2865,7 @@ export default function Schedule() {
                     <select value={assignGuard} onChange={e => setAssignGuard(e.target.value)} className="cg-input cg-focus w-full px-3 py-2.5 text-sm">
                       <option value="">Elige un vigilante…</option>
                       {availableGuards.map(g => <option key={g.id} value={g.id}>{g.label}</option>)}
-                      {availableGuards.length === 0 && <option value="" disabled>Todos los vigilantes ya están asignados</option>}
+                      {availableGuards.length === 0 && <option value="" disabled>{t("ui.Schedule.todosLosVigilantesYaEstan", "Todos los vigilantes ya están asignados")}</option>}
                     </select>
                   );
                 })()}
@@ -2878,7 +2880,7 @@ export default function Schedule() {
               {/* Start date: bounds when shifts begin (and sets the phase on
                   alternation stations). Defaults to the day you dropped on. */}
               <div>
-                <label className="cg-eyebrow mb-1.5 block">Primer día de turno</label>
+                <label className="cg-eyebrow mb-1.5 block">{t("ui.Schedule.primerDiaDeTurno", "Primer día de turno")}</label>
                 <input
                   type="date"
                   value={assignStartDate}
@@ -2949,7 +2951,7 @@ export default function Schedule() {
                     className={`cg-focus w-full rounded-xl px-3 py-2 text-left transition-all ${cfgRestCoverage === 'alternate' && cfgWinMin === 1440 && !cfgBlockHours ? 'glass-flat glass-brand' : 'glass-flat glass-hover'}`}
                   >
                     <div className="text-xs font-semibold">Plantilla 24×24 (alternancia diaria)</div>
-                    <div className="text-[10px]" style={{ color: 'var(--ink-soft)' }}>Un fijo trabaja las 24 h y el otro va al día siguiente. Sin libres y sin sacafranco.</div>
+                    <div className="text-[10px]" style={{ color: 'var(--ink-soft)' }}>{t("ui.Schedule.unFijoTrabajaLas24", "Un fijo trabaja las 24 h y el otro va al día siguiente. Sin libres y sin sacafranco.")}</div>
                   </button>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
@@ -3142,7 +3144,7 @@ export default function Schedule() {
                 <div className="flex items-center justify-between px-5 py-2.5" style={{ borderBottom: '1px solid var(--hairline)' }}>
                   <div className="flex items-center gap-2">
                     {ok ? <CheckCircle2 size={15} style={{ color: 'var(--ok-text)' }} /> : <AlertTriangle size={15} style={{ color: 'var(--bad-text)' }} />}
-                    <span className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>Cobertura de puestos <span style={{ color: 'var(--ink-faint)' }}>(14 días)</span></span>
+                    <span className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>Cobertura de puestos <span style={{ color: 'var(--ink-faint)' }}>{t("ui.Schedule.14Dias", "(14 días)")}</span></span>
                   </div>
                   <div className="flex items-center gap-3 text-xs">
                     <span className="font-bold tabular-nums" style={{ color: ok ? 'var(--ok-text)' : 'var(--bad-text)' }}>{cov.coveredPct}%</span>
@@ -3201,7 +3203,7 @@ export default function Schedule() {
                   return (
                     <div className="flex flex-col items-center justify-center py-10 text-center">
                       <CheckCircle2 size={28} className="mb-2" style={{ color: 'var(--ok-text)' }} />
-                      <p className="text-sm font-semibold">El horario ya está al día</p>
+                      <p className="text-sm font-semibold">{t("ui.Schedule.elHorarioYaEstaAl", "El horario ya está al día")}</p>
                       <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>No hay cambios que aplicar.</p>
                     </div>
                   );

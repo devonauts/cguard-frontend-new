@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { clientDisplayName } from '@/lib/clientName';
 import type { Client } from '@/types/client';
 import useScrollToTopOnMount from '@/hooks/useScrollToTopOnMount';
@@ -86,6 +87,7 @@ function ActividadChart({ data }: { data: Array<{ date: string; value: number }>
 }
 
 function Kpi({ icon, k }: { icon: ReactNode; k: ReportKpi }) {
+  const { t } = useTranslation();
   const up = (k.deltaPct || 0) >= 0;
   const good = k.invert ? !up : up; // for incidents/response, up is bad
   const val = k.isTime && k.value != null ? `${Math.floor(k.value / 60).toString().padStart(2, '0')}:${(k.value % 60).toString().padStart(2, '0')}` : (k.value ?? 0).toLocaleString('es-EC');
@@ -102,12 +104,13 @@ function Kpi({ icon, k }: { icon: ReactNode; k: ReportKpi }) {
         )}
       </div>
       <div className="mt-1.5"><Sparkline data={k.spark || []} color={toneVar(k.tone)} ariaLabel={`Tendencia de ${k.label}`} /></div>
-      <div className="text-[11px] text-muted-foreground">Vs. período anterior</div>
+      <div className="text-[11px] text-muted-foreground">{t("ui.ClientReports.vsPeriodoAnterior", "Vs. período anterior")}</div>
     </GlassPanel>
   );
 }
 
 export default function ClientReports({ client }: { client: Client & { companyName?: string } }) {
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement | null>(null);
   useScrollToTopOnMount(containerRef);
 
@@ -164,7 +167,7 @@ export default function ClientReports({ client }: { client: Client & { companyNa
     <div ref={containerRef} className="space-y-4">
       {/* Date range */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2 text-sm"><span className="text-xs font-medium text-muted-foreground">Período</span>
+        <div className="flex items-center gap-2 text-sm"><span className="text-xs font-medium text-muted-foreground">{t("ui.ClientReports.periodo", "Período")}</span>
           <input type="date" className={`${FIELD_CLS} w-auto`} value={from} onChange={(e) => setFrom(e.target.value)} /><span className="text-muted-foreground">–</span>
           <input type="date" className={`${FIELD_CLS} w-auto`} value={to} onChange={(e) => setTo(e.target.value)} />
         </div>
@@ -179,7 +182,7 @@ export default function ClientReports({ client }: { client: Client & { companyNa
           {cumplimiento.hasData === false ? (
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
               <Donut segments={[]} centerTop="—" centerBottom="Sin datos" />
-              <p className="min-w-0 flex-1 text-xs text-muted-foreground">No hay turnos programados ni asistencias en el período.</p>
+              <p className="min-w-0 flex-1 text-xs text-muted-foreground">{t("ui.ClientReports.noHayTurnosProgramadosNi", "No hay turnos programados ni asistencias en el período.")}</p>
             </div>
           ) : (
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
@@ -233,7 +236,7 @@ export default function ClientReports({ client }: { client: Client & { companyNa
             )}
           </Section>
 
-          <Section title="Actividades por día" icon={<TrendingUp className="h-4 w-4" />}><ActividadChart data={actividades} /></Section>
+          <Section title={t("ui.ClientReports.actividadesPorDia", "Actividades por día")} icon={<TrendingUp className="h-4 w-4" />}><ActividadChart data={actividades} /></Section>
         </div>
 
         {/* Right column */}
@@ -245,7 +248,7 @@ export default function ClientReports({ client }: { client: Client & { companyNa
             </div>
           </Section>
 
-          <Section title="Reportes rápidos" icon={<FileBarChart className="h-4 w-4" />}>
+          <Section title={t("ui.ClientReports.reportesRapidos", "Reportes rápidos")} icon={<FileBarChart className="h-4 w-4" />}>
             <div className="space-y-1">
               {quickReports.map((r) => { const Icon = QUICK_ICON[r.key] || FileText; return (
                 <button key={r.key} onClick={() => doExport(r.key)} disabled={!!exporting} className="cg-focus flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left text-sm transition-opacity hover:opacity-80 disabled:opacity-50">
@@ -264,7 +267,7 @@ export default function ClientReports({ client }: { client: Client & { companyNa
                 {programados.map((s) => (
                   <div key={s.id} className="flex items-start justify-between gap-2 py-2.5">
                     <div className="min-w-0"><div className="text-sm font-medium truncate">{s.name}</div><div className="text-xs text-muted-foreground">{s.frequency || s.cron}</div></div>
-                    <div className="flex shrink-0 items-center gap-1.5"><StatusBadge tone={s.active ? 'ok' : 'neutral'} dot={false}>{s.active ? 'Activo' : 'Pausado'}</StatusBadge><RowAction title="Eliminar programación" tone="bad" onClick={() => delSchedule(s)}><Trash2 className="h-3.5 w-3.5" /></RowAction></div>
+                    <div className="flex shrink-0 items-center gap-1.5"><StatusBadge tone={s.active ? 'ok' : 'neutral'} dot={false}>{s.active ? 'Activo' : 'Pausado'}</StatusBadge><RowAction title={t("ui.ClientReports.eliminarProgramacion", "Eliminar programación")} tone="bad" onClick={() => delSchedule(s)}><Trash2 className="h-3.5 w-3.5" /></RowAction></div>
                   </div>
                 ))}
               </div>
@@ -284,7 +287,7 @@ export default function ClientReports({ client }: { client: Client & { companyNa
         ) : (
           <TabTable>
               <THead>
-                <Th>Nombre del reporte</Th><Th>Tipo</Th><Th>Sede / Estación</Th><Th>Generado por</Th><Th>Generado el</Th><Th>Formato</Th>
+                <Th>Nombre del reporte</Th><Th>Tipo</Th><Th>{t("ui.ClientReports.sedeEstacion", "Sede / Estación")}</Th><Th>Generado por</Th><Th>Generado el</Th><Th>Formato</Th>
               </THead>
               <tbody>
                 {reportsList.map((r) => (
@@ -322,7 +325,7 @@ export default function ClientReports({ client }: { client: Client & { companyNa
           </LabeledField>
           <LabeledField label="Frecuencia">
             <select className={FIELD_CLS} value={schedForm.frequency} onChange={(e) => setSchedForm({ ...schedForm, frequency: e.target.value })}>
-              <option value="daily">Diario (07:00)</option><option value="weekly">Semanal (lunes 08:00)</option><option value="monthly">Mensual (día 1, 09:00)</option>
+              <option value="daily">Diario (07:00)</option><option value="weekly">Semanal (lunes 08:00)</option><option value="monthly">{t("ui.ClientReports.mensualDia10900", "Mensual (día 1, 09:00)")}</option>
             </select>
           </LabeledField>
         </div>

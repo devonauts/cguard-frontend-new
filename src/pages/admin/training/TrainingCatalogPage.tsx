@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import AppLayout from '@/layouts/app-layout';
 import Breadcrumb from '@/components/ui/breadcrumb';
@@ -13,6 +14,7 @@ import {
 } from '@/components/kit';
 
 export default function TrainingCatalogPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { hasPermission } = usePermissions();
   const canRead = hasPermission('trainingCourseRead');
@@ -46,7 +48,7 @@ export default function TrainingCatalogPage() {
         <PageContainer width="wide" className="p-4 sm:p-6">
           <EmptyState
             icon={<Lock />}
-            title="Sin acceso al catálogo"
+            title={t("ui.TrainingCatalog.sinAccesoAlCatalogo", "Sin acceso al catálogo")}
             description="No tienes permiso para ver el catálogo."
           />
         </PageContainer>

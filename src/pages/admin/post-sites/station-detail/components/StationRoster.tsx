@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Shield, User, Sun, Moon } from 'lucide-react';
 import { ApiService } from '@/services/api/apiService';
 import { getTenantTimezone } from '@/utils/tenantLocation';
@@ -31,6 +32,7 @@ export default function StationRoster({ stationId, tenantId, events, guardColorM
   events: RosterEvent[];
   guardColorMap: Record<string, { accent: string; bg: string; text: string }>;
 }) {
+  const { t } = useTranslation();
   const [roles, setRoles] = useState<Record<string, { label: string; isRelief: boolean }>>({});
 
   useEffect(() => {
@@ -79,7 +81,7 @@ export default function StationRoster({ stationId, tenantId, events, guardColorM
       <div className="mb-2 flex items-center justify-between px-1">
         <h4 className="cg-eyebrow">Equipo del puesto</h4>
         <div className="flex items-center gap-2.5 text-[9px]" style={{ color: 'var(--ink-soft)' }}>
-          <span className="inline-flex items-center gap-0.5"><Sun size={9} style={{ color: 'var(--warn-text)' }} /> Día</span>
+          <span className="inline-flex items-center gap-0.5"><Sun size={9} style={{ color: 'var(--warn-text)' }} />{" "}{t("ui.StationRoster.dia", "Día")}</span>
           <span className="inline-flex items-center gap-0.5"><Moon size={9} style={{ color: 'var(--info-text)' }} /> Noche</span>
           <span className="inline-flex items-center gap-0.5"><span className="inline-block h-2 w-2 rounded-sm" style={{ background: 'var(--glass-sunken)' }} /> Descanso</span>
         </div>

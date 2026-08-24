@@ -9,6 +9,7 @@
  * nunca `glass` — una rejilla con desenfoque por tarjeta tumba el desplazamiento.
  */
 import { EllipsisVertical, Mail, Phone, MapPin, ShieldCheck } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -79,6 +80,7 @@ export default function GuardCardsGrid({
     onOpen: (guard: GuardRow) => void;
     actions: (guard: GuardRow) => GuardCardAction[];
 }) {
+  const { t } = useTranslation();
     if (loading) return <SkeletonCards count={8} className="sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" />;
     if (!guards.length) {
         return <EmptyState icon={<ShieldCheck />} title="Sin vigilantes" description="Crea tu primer vigilante con “Nuevo Vigilante”." />;
@@ -171,7 +173,7 @@ export default function GuardCardsGrid({
                             style={{ borderColor: 'var(--hairline)', color: 'var(--ink-soft)' }}
                         >
                             <MapPin className="brand-text h-4 w-4 shrink-0" />
-                            {station ? <span className="truncate" style={{ color: 'var(--ink)' }}>{station}</span> : <span>Sin asignación</span>}
+                            {station ? <span className="truncate" style={{ color: 'var(--ink)' }}>{station}</span> : <span>{t("ui.GuardCardsGrid.sinAsignacion", "Sin asignación")}</span>}
                         </div>
                     </div>
                 );

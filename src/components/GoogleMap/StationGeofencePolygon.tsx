@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { loadGoogleMaps } from "@/utils/loadGoogleMaps";
 import { getTenantLocation } from "@/utils/tenantLocation";
 import { useMapPalette } from "@/utils/mapTheme";
@@ -65,6 +66,7 @@ export default function StationGeofencePolygon({
   onCenterChange?: (lat: number, lng: number) => void;
   siteLocation?: { lat: number; lng: number } | null;
 }) {
+  const { t } = useTranslation();
   const pts = value || [];
 
   const mapDivRef = useRef<HTMLDivElement | null>(null);
@@ -444,7 +446,7 @@ export default function StationGeofencePolygon({
             <input
               ref={searchRef}
               type="text"
-              placeholder="Buscar dirección del puesto…"
+              placeholder={t("ui.StationGeofencePolygon.buscarDireccionDelPuesto", "Buscar dirección del puesto…")}
               className="w-full rounded-lg border border-border bg-background py-2 pl-9 pr-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
             />
           </div>
@@ -506,7 +508,7 @@ export default function StationGeofencePolygon({
           <div className="cc-map-hud" style={{ left: 10, top: 10 }}>
             <div className="cc-map-card flex items-stretch gap-4 px-3 py-2">
               <div>
-                <div className="cc-map-eyebrow">Área</div>
+                <div className="cc-map-eyebrow">{t("ui.StationGeofencePolygon.area", "Área")}</div>
                 <div className="cc-map-metric">{formatearArea(medidas.area)}</div>
               </div>
               <div style={{ width: 1, background: "var(--hairline)" }} />
@@ -516,7 +518,7 @@ export default function StationGeofencePolygon({
               </div>
               <div style={{ width: 1, background: "var(--hairline)" }} />
               <div>
-                <div className="cc-map-eyebrow">Perímetro</div>
+                <div className="cc-map-eyebrow">{t("ui.StationGeofencePolygon.perimetro", "Perímetro")}</div>
                 <div className="cc-map-metric">{formatearDistancia(medidas.perimetro)}</div>
               </div>
             </div>

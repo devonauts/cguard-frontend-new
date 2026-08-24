@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Client } from '@/types/client';
 import { useNavigate } from 'react-router-dom';
 import { clientService } from '@/lib/api/clientService';
@@ -12,6 +13,7 @@ import { confirmDialog } from '@/components/ui/confirmDialog';
 import { toast } from 'sonner';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Building2, Search, MapPin, Users, Clock, BarChart3, MoreVertical, Pencil, Trash2, ExternalLink, LocateFixed } from 'lucide-react';
+import OperationSetupAlert, { OperationSetupBadge, needsOperationSetup } from '@/pages/admin/post-sites/components/OperationSetup/OperationSetupAlert';
 import type { ReactNode } from 'react';
 
 // A post-site row from getClientPostSites (raw businessInfo columns).
@@ -25,7 +27,7 @@ interface PostSiteRow {
 interface SedeMeta { lat?: number; lng?: number; thumb?: string | null; city?: string; address?: string; active?: boolean; }
 // A site node from getOperation().sites.
 interface OperationStation { id: string; guards?: Array<{ id: string }>; }
-interface OperationSite { id: string; name: string; address?: string; city?: string; active?: boolean; stations?: OperationStation[]; }
+interface OperationSite { id: string; name: string; address?: string; city?: string; active?: boolean; stations?: OperationStation[]; setup?: { pending?: boolean; missing?: string[] } | null; }
 
 type Sede = {
   id: string;
@@ -41,6 +43,8 @@ type Sede = {
   lat?: number;
   lng?: number;
   thumb?: string | null;
+  /** La sede nunca recibió su configuración operativa (ver OperationSetupAlert). */
+  setupPending: boolean;
 };
 
 /** Nivel de riesgo → tono semántico del sistema (fijo, no depende del acento). */
@@ -55,6 +59,7 @@ const covTone = (c: number): ChartTone => (c >= 95 ? 'ok' : c >= 70 ? 'warn' : '
 const markerRole = (s: Sede) => (!s.active ? 'muted' : s.coverage >= 95 ? 'ok' : s.coverage >= 70 ? 'warn' : 'crit');
 
 export default function ClientPostSites({ client }: { client: Client }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [sedes, setSedes] = useState<Sede[]>([]);
   const [loading, setLoading] = useState(true);
@@ -99,6 +104,7 @@ export default function ClientPostSites({ client }: { client: Client }) {
           active: s.active !== undefined ? !!s.active : !!m.active,
           stations, guards: guards.size, required, coverage: cov,
           lat: m.lat, lng: m.lng, thumb: m.thumb,
+          setupPending: needsOperationSetup(s),
         };
       });
       setSedes(list);
@@ -108,6 +114,8 @@ export default function ClientPostSites({ client }: { client: Client }) {
     return () => { mounted = false; };
   }, [client?.id]);
 
+  /** Sedes de este cliente sin configuración operativa. */
+  const pendientes = useMemo(() => sedes.filter((s) => s.setupPending), [sedes]);
   const cities = useMemo(() => Array.from(new Set(sedes.map((s) => s.city).filter(Boolean))), [sedes]);
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -147,12 +155,23 @@ export default function ClientPostSites({ client }: { client: Client }) {
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
       {/* Left: table */}
       <div className="lg:col-span-2">
+        {/* El aviso va ARRIBA del listado, no dentro de cada fila: quien abre
+            «Sedes» de un cliente recién dado de alta tiene que encontrarse el
+            hueco antes de ponerse a crear puestos, sin abrir sede por sede. */}
+        {pendientes.length > 0 && (
+          <OperationSetupAlert
+            className="mb-4"
+            context="client"
+            site={{ setup: { pending: true } }}
+            siteId={pendientes.length === 1 ? pendientes[0].id : null}
+          />
+        )}
         <Section title="Sedes" icon={<Building2 />}>
           {/* Filters */}
           <div className="mb-4 flex flex-wrap items-center gap-2">
             <div className="relative min-w-[200px] flex-1">
               <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
-              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar sede por nombre o dirección" className={`${FIELD_CLS} pl-8`} />
+              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t("ui.ClientPostSites.buscarSedePorNombreO", "Buscar sede por nombre o dirección")} className={`${FIELD_CLS} pl-8`} />
             </div>
             <select value={estado} onChange={(e) => setEstado(e.target.value)} className={FIELD_CLS}>
               <option value="todos">Estado: Todos</option>
@@ -173,13 +192,13 @@ export default function ClientPostSites({ client }: { client: Client }) {
             <TabTable minWidth={640}>
                   <THead>
                     <Th>Sede</Th>
-                    <Th>Dirección</Th>
+                    <Th>{t("ui.ClientPostSites.direccion", "Dirección")}</Th>
                     <Th>Ciudad</Th>
                     {risk && <Th>Riesgo</Th>}
                     <Th>Guardias</Th>
                     <Th>Estaciones</Th>
                     <Th>Estado</Th>
-                    <Th title="Vigilantes asignados vs estaciones (no es cobertura en vivo)">Asignación</Th>
+                    <Th title="Vigilantes asignados vs estaciones (no es cobertura en vivo)">{t("ui.ClientPostSites.asignacion", "Asignación")}</Th>
                     <Th aria-label="Acciones" />
                   </THead>
                 <tbody>
@@ -208,7 +227,11 @@ export default function ClientPostSites({ client }: { client: Client }) {
                           />
                           <div className="min-w-0">
                             <p className="truncate font-medium text-foreground">{s.name}</p>
-                            <p className="text-[11px]" style={{ color: 'var(--ink-faint)' }}>{s.city || ""}</p>
+                            {s.setupPending ? (
+                              <OperationSetupBadge site={{ setup: { pending: true } }} />
+                            ) : (
+                              <p className="text-[11px]" style={{ color: 'var(--ink-faint)' }}>{s.city || ""}</p>
+                            )}
                           </div>
                         </div>
                       </td>

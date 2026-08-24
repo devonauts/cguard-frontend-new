@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,6 +21,7 @@ type Props = {
 };
 
 export default function IncidentTypeDialog({ open, onOpenChange, title = "Nuevo Tipo de Incidente", defaultValues, onSubmit }: Props) {
+  const { t } = useTranslation();
   const form = useForm<IncidentTypeDialogValues>({ resolver: zodResolver(schema), defaultValues: { name: "" } });
   useEffect(() => { form.reset(defaultValues ?? { name: "" }); }, [defaultValues, form]);
   const submitting = form.formState.isSubmitting;
@@ -40,7 +42,7 @@ export default function IncidentTypeDialog({ open, onOpenChange, title = "Nuevo 
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Nombre del incidente</FormLabel>
-                <FormControl><Input placeholder="p. ej. Robo, Lesión, Alarma de incendio…" {...field} /></FormControl>
+                <FormControl><Input placeholder={t("ui.IncidentTypeDialog.pEjRoboLesionAlarma", "p. ej. Robo, Lesión, Alarma de incendio…")} {...field} /></FormControl>
                 <FormMessage />
               </FormItem>
             )}

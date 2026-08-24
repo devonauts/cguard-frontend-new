@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { RefreshCw, History, Inbox } from "lucide-react";
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
@@ -30,6 +31,7 @@ const FILTERS = [
 ];
 
 export default function LoginHistory() {
+  const { t } = useTranslation();
   const [q, setQ] = useState("");
   const [debouncedQ, setDebouncedQ] = useState("");
   const [filter, setFilter] = useState("");
@@ -68,7 +70,7 @@ export default function LoginHistory() {
       <PageContainer width="wide">
         <PageHeader
           icon={<History />}
-          title="Historial de Inicio de Sesión"
+          title={t("ui.LoginHistory.historialDeInicioDeSesion", "Historial de Inicio de Sesión")}
           subtitle="Inicios y cierres de sesión, intentos fallidos y eventos de dispositivos de esta empresa."
           badges={
             !primeraCarga ? (
@@ -80,7 +82,7 @@ export default function LoginHistory() {
         />
 
         <Toolbar>
-          <AuditSearch value={q} onChange={setQ} placeholder="Buscar por usuario, dirección o dispositivo…" />
+          <AuditSearch value={q} onChange={setQ} placeholder={t("ui.LoginHistory.buscarPorUsuarioDireccionO", "Buscar por usuario, dirección o dispositivo…")} />
 
           <Segmented
             value={filter}
@@ -115,7 +117,7 @@ export default function LoginHistory() {
                 <>
                   <th className="px-4 py-3">Evento</th>
                   <th className="px-3 py-3">Usuario</th>
-                  <th className="px-3 py-3">Dirección</th>
+                  <th className="px-3 py-3">{t("ui.LoginHistory.direccion", "Dirección")}</th>
                   <th className="px-3 py-3">Plataforma</th>
                   <th className="px-3 py-3">Detalle</th>
                   <th className="px-3 py-3 text-right">Fecha</th>

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from 'react-i18next';
 import { toast } from "sonner";
 import {
   Radio,
@@ -65,6 +66,7 @@ const CHANNEL_META: Record<string, { label: string; icon: React.ReactNode }> = {
 /* ------------------------------------------------------------------ */
 
 export default function AlarmSignals() {
+  const { t } = useTranslation();
   const [signals, setSignals] = React.useState<AlarmSignal[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [query, setQuery] = React.useState("");
@@ -125,7 +127,7 @@ export default function AlarmSignals() {
       <PageContainer width="wide">
         <PageHeader
           icon={<Radio />}
-          title="Registro de señales"
+          title={t("ui.AlarmSignals.registroDeSenales", "Registro de señales")}
           subtitle="Todo lo que han enviado los paneles, tal cual llegó. No se puede modificar."
           actions={
             <Button
@@ -150,7 +152,7 @@ export default function AlarmSignals() {
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Buscar por cuenta, código, zona…"
+              placeholder={t("ui.AlarmSignals.buscarPorCuentaCodigoZona", "Buscar por cuenta, código, zona…")}
               className="pl-9"
             />
           </div>
@@ -171,7 +173,7 @@ export default function AlarmSignals() {
         ) : filtered.length === 0 ? (
           <EmptyState
             icon={<Radio />}
-            title="Sin señales"
+            title={t("ui.AlarmSignals.sinSenales", "Sin señales")}
             description={
               query
                 ? "Ninguna señal coincide con la búsqueda."
@@ -190,7 +192,7 @@ export default function AlarmSignals() {
                     <th className="px-4 py-3 font-medium">Recibida</th>
                     <th className="px-4 py-3 font-medium">Cuenta</th>
                     <th className="px-4 py-3 font-medium">Formato</th>
-                    <th className="px-4 py-3 font-medium">Código</th>
+                    <th className="px-4 py-3 font-medium">{t("ui.AlarmSignals.codigo", "Código")}</th>
                     <th className="px-4 py-3 font-medium">Calificador</th>
                     <th className="px-4 py-3 font-medium">Zona</th>
                     <th className="px-4 py-3 font-medium">Canal</th>

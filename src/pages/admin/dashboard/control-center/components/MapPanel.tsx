@@ -7,6 +7,7 @@
  * con nombres distintos para los mismos pines es peor que ninguna.
  */
 import { Maximize2, Map as MapIcon } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 import type { MapEntity } from "../types";
 import type { DashboardPrefs } from "../prefs";
 import type { MapCenter } from "../defaultCenter";
@@ -17,6 +18,7 @@ export function MapPanel({ entities, prefs, defaultCenter, live, onFull, height 
   entities: MapEntity[]; prefs: DashboardPrefs; defaultCenter?: MapCenter;
   live?: boolean; onFull: () => void; height?: number; className?: string;
 }) {
+  const { t } = useTranslation();
   const enMapa = entities.length;
   return (
     <Panel
@@ -29,7 +31,7 @@ export function MapPanel({ entities, prefs, defaultCenter, live, onFull, height 
         <button
           type="button"
           onClick={onFull}
-          title="Abrir en pantalla completa (nueva pestaña)"
+          title={t("ui.MapPanel.abrirEnPantallaCompletaNueva", "Abrir en pantalla completa (nueva pestaña)")}
           aria-label="Abrir el mapa en pantalla completa"
           className="cg-btn-glass cg-focus grid size-8 place-items-center rounded-full"
         >

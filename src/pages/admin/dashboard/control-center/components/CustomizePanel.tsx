@@ -12,6 +12,7 @@
  * sea el tono elegido (ver la cabecera de tokens.css).
  */
 import { useState } from "react";
+import { useTranslation } from 'react-i18next';
 import type { ReactNode } from "react";
 import { X, Palette, MapPin, ShieldCheck, Save, RotateCcw } from "lucide-react";
 import { useAccent, ACCENT_PRESETS } from "@/contexts/AccentContext";
@@ -30,6 +31,7 @@ const KIND_LABEL: Record<EntityKind, string> = {
 export function CustomizePanel({
   open, value, onClose, onSave,
 }: { open: boolean; value: DashboardPrefs; onClose: () => void; onSave: (p: DashboardPrefs) => void }) {
+  const { t } = useTranslation();
   const [p, setP] = useState<DashboardPrefs>(value);
   const { accent, setAccent, resetAccent } = useAccent();
   const { theme } = useThemeContext();
@@ -59,7 +61,7 @@ export function CustomizePanel({
         </div>
 
         {/* ── Acento de la aplicación ─────────────────────────────────────── */}
-        <Group icon={<Palette className="size-4" />} title="Color de la aplicación">
+        <Group icon={<Palette className="size-4" />} title={t("ui.CustomizePanel.colorDeLaAplicacion", "Color de la aplicación")}>
           <div className="flex flex-wrap gap-1.5">
             {ACCENT_PRESETS.map((preset) => {
               const activo = Math.abs(preset.h - accent.h) < 1 && Math.abs(preset.c - accent.c) < 0.005;
@@ -106,7 +108,7 @@ export function CustomizePanel({
             >
               <option value="dark">Oscuro</option>
               <option value="night">Noche</option>
-              <option value="roadmap">Estándar</option>
+              <option value="roadmap">{t("ui.CustomizePanel.estandar", "Estándar")}</option>
             </select>
           </Row>
           {(Object.keys(p.pinColors) as EntityKind[]).map((k) => {

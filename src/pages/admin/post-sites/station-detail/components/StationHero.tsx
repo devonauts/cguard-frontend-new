@@ -5,6 +5,7 @@
  * estación en el CRM), vigilantes asignados y quién está de turno AHORA.
  */
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import {
@@ -57,6 +58,7 @@ export default function StationHero({
     postSiteId: string;
     onRenamed: (name: string) => void;
 }) {
+  const { t } = useTranslation();
     const { hasPermission } = usePermissions();
     const canEdit = hasPermission("stationEdit");
 
@@ -180,7 +182,7 @@ export default function StationHero({
                                 </>
                             )}
                             {station?.nickname && <StatusBadge tone="neutral">{station.nickname}</StatusBadge>}
-                            {station?.isMobile && <StatusBadge tone="warn">Puesto móvil</StatusBadge>}
+                            {station?.isMobile && <StatusBadge tone="warn">{t("ui.StationHero.puestoMovil", "Puesto móvil")}</StatusBadge>}
                         </div>
 
                         <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm" style={{ color: 'var(--ink-soft)' }}>

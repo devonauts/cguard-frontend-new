@@ -6,6 +6,7 @@
  * edición existente para no duplicar lógica sensible.
  */
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import AppLayout from '@/layouts/app-layout';
 import userService from '@/lib/api/userService';
@@ -34,6 +35,7 @@ const STATUS_META: Record<string, { label: string; tone: 'ok' | 'warn' | 'neutra
 const fmtDate = (v: string | number | Date | null | undefined) => (v ? new Date(v).toLocaleDateString('es-EC', { day: '2-digit', month: 'short', year: 'numeric' }) : '—');
 
 export default function AdminUserDetailPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const [user, setUser] = useState<AdminUser | null>(null);
@@ -179,7 +181,7 @@ export default function AdminUserDetailPage() {
         ) : tab === 'perfil' ? (
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
             <div className="lg:col-span-2">
-              <Section title="Información general" icon={<IdCard />} action={<Button variant="outline" size="sm" onClick={() => navigate(`/back-office/edit/${id}`)}><Pencil className="mr-1.5 h-3.5 w-3.5" /> Editar información</Button>}>
+              <Section title={t("ui.AdminUserDetail.informacionGeneral", "Información general")} icon={<IdCard />} action={<Button variant="outline" size="sm" onClick={() => navigate(`/back-office/edit/${id}`)}><Pencil className="mr-1.5 h-3.5 w-3.5" />{" "}{t("ui.AdminUserDetail.editarInformacion", "Editar información")}</Button>}>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <Field label="Nombre completo" value={name} />
                   <Field label="Correo electrónico" value={user.email} />
@@ -191,14 +193,14 @@ export default function AdminUserDetailPage() {
               </Section>
             </div>
             <div>
-              <Section title="Ubicación de oficina" icon={<MapPin />}>
+              <Section title={t("ui.AdminUserDetail.ubicacionDeOficina", "Ubicación de oficina")} icon={<MapPin />}>
                 {user.officeAddress ? (
                   <div className="space-y-2 text-sm">
                     <div className="flex items-start gap-1.5"><MapPin className="mt-0.5 h-3.5 w-3.5" style={{ color: 'var(--brand-text)' }} /> <span>{user.officeAddress}</span></div>
                     {user.officeGeofenceRadiusM != null && <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>Geocerca: {user.officeGeofenceRadiusM} m</div>}
                   </div>
                 ) : (
-                  <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>Sin ubicación de oficina configurada.</p>
+                  <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t("ui.AdminUserDetail.sinUbicacionDeOficinaConfigurada", "Sin ubicación de oficina configurada.")}</p>
                 )}
               </Section>
             </div>
@@ -250,7 +252,7 @@ export default function AdminUserDetailPage() {
                       ))}
                       {overrides.deny.length > 12 && <span className="text-[11px]" style={{ color: 'var(--ink-faint)' }}>+{overrides.deny.length - 12} más</span>}
                     </div>
-                  ) : <p className="mt-1 text-xs" style={{ color: 'var(--ink-soft)' }}>Ningún permiso del rol fue restringido.</p>}
+                  ) : <p className="mt-1 text-xs" style={{ color: 'var(--ink-soft)' }}>{t("ui.AdminUserDetail.ningunPermisoDelRolFue", "Ningún permiso del rol fue restringido.")}</p>}
                 </GlassPanel>
               </div>
             </div>

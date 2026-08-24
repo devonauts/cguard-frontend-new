@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import { Globe2, Check, Loader2 } from "lucide-react"
 import AppLayout from "@/layouts/app-layout";
+import { useTranslation } from 'react-i18next';
 import { PageContainer, PageHeader, Section } from "@/components/kit";
 import { Button } from "@/components/ui/button";
 
@@ -124,6 +125,7 @@ function changeLanguage(code: string) {
 
 /* ---------- COMPONENTE PRINCIPAL ---------- */
 export default function LanguageGooglePage() {
+  const { t } = useTranslation();
   const allowed = useMemo(() => LANGS.map((l) => l.code), [])
   const ready = useGoogleTranslate(allowed)
   const [selected, setSelected] = useState(getSelectedLang())
@@ -203,9 +205,9 @@ export default function LanguageGooglePage() {
         {/* Vista previa */}
         <Section title="Vista previa" icon={<Check />}>
           <div className="rounded-xl border bg-muted/40 p-4 text-foreground text-center">
-            {selected === "es" && <p>Tu idioma actual es <strong>Español</strong>.</p>}
+            {selected === "es" && <p>Tu idioma actual es <strong>{t("ui.configuracion.espanol", "Español")}</strong>.</p>}
             {selected === "en" && <p>Your current language is <strong>English</strong>.</p>}
-            {selected === "pt" && <p>Seu idioma atual é <strong>Português</strong>.</p>}
+            {selected === "pt" && <p>{t("ui.configuracion.seuIdiomaAtualE", "Seu idioma atual é")}{" "}<strong>Português</strong>.</p>}
             {selected === "fr" && <p>Votre langue actuelle est <strong>Français</strong>.</p>}
             {selected === "de" && <p>Ihre aktuelle Sprache ist <strong>Deutsch</strong>.</p>}
             {selected === "it" && <p>La tua lingua corrente è <strong>Italiano</strong>.</p>}

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { Sparkles, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import onboardingService from "@/lib/api/onboardingService";
@@ -29,6 +30,7 @@ export default function OnboardingBanner({
   onOpenWizard,
   onRefresh,
 }: OnboardingBannerProps) {
+  const { t } = useTranslation();
   const autoCompletingRef = useRef(false);
 
   const setUp = isBusinessSetUp(tenant);
@@ -80,7 +82,7 @@ export default function OnboardingBanner({
           <Sparkles className="h-4 w-4" />
         </span>
         <div className="min-w-0">
-          <span className="font-semibold" style={{ color: "var(--ink)" }}>Completa la configuración de tu empresa</span>
+          <span className="font-semibold" style={{ color: "var(--ink)" }}>{t("ui.OnboardingBanner.completaLaConfiguracionDeTu", "Completa la configuración de tu empresa")}</span>
           {missing.length > 0 && (
             <span style={{ color: "var(--ink-soft)" }}>
               {" "}— falta: {missing.join(", ")}

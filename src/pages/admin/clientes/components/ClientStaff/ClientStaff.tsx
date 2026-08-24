@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Client } from '@/types/client';
 import { useNavigate } from 'react-router-dom';
 import useScrollToTopOnMount from '@/hooks/useScrollToTopOnMount';
@@ -79,6 +80,7 @@ const ROLE_META: Record<string, { label: string; tone: BadgeTone; color: string 
 };
 
 export default function ClientStaff({ client }: { client: Client }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement | null>(null);
   useScrollToTopOnMount(containerRef);
@@ -177,7 +179,7 @@ export default function ClientStaff({ client }: { client: Client }) {
           <div className="mb-3 grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-6">
             <div className="relative col-span-2 md:col-span-3 xl:col-span-1">
               <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <input className={`${FIELD_CLS} pl-8`} placeholder="Buscar por nombre, ID o estación" value={q} onChange={(e) => resetPage(setQ)(e.target.value)} />
+              <input className={`${FIELD_CLS} pl-8`} placeholder={t("ui.ClientStaff.buscarPorNombreIdO", "Buscar por nombre, ID o estación")} value={q} onChange={(e) => resetPage(setQ)(e.target.value)} />
             </div>
             <select className={FIELD_CLS} value={sede} onChange={(e) => resetPage(setSede)(e.target.value)}>
               <option value="todos">Sede: Todas</option>
@@ -213,12 +215,12 @@ export default function ClientStaff({ client }: { client: Client }) {
                 <THead>
                   <Th>Personal</Th>
                   <Th>Rol</Th>
-                  <Th>Estación</Th>
+                  <Th>{t("ui.ClientStaff.estacion", "Estación")}</Th>
                   <Th>Sede / Sitio</Th>
                   <Th>Turno</Th>
                   <Th>Estado</Th>
                   <Th>Inicio</Th>
-                  <Th>Última actividad</Th>
+                  <Th>{t("ui.ClientStaff.ultimaActividad", "Última actividad")}</Th>
                   <Th align="right">Acciones</Th>
                 </THead>
                 <tbody>
@@ -297,7 +299,7 @@ export default function ClientStaff({ client }: { client: Client }) {
 
         {/* RIGHT — distribution + coverage + certs + absences */}
         <div className="space-y-4">
-          <Section title="Distribución por rol" icon={<Users className="h-4 w-4" />}>
+          <Section title={t("ui.ClientStaff.distribucionPorRol", "Distribución por rol")} icon={<Users className="h-4 w-4" />}>
             <div className="flex items-center gap-4">
               <Donut segments={donutSegments} size={150} thickness={16} centerTop={data?.total ?? dist.reduce((a, d) => a + d.count, 0)} centerBottom="Total" ariaLabel="Distribución por rol" />
               <div className="flex-1 space-y-2">
@@ -326,10 +328,10 @@ export default function ClientStaff({ client }: { client: Client }) {
             </div>
           </Section>
 
-          <Section title="Certificaciones próximas a vencer" icon={<ShieldCheck className="h-4 w-4" />}
+          <Section title={t("ui.ClientStaff.certificacionesProximasAVencer", "Certificaciones próximas a vencer")} icon={<ShieldCheck className="h-4 w-4" />}
             action={<button onClick={() => navigate('/security-guards')} className="cg-focus rounded-md text-xs font-semibold hover:underline" style={{ color: 'var(--brand-text)' }}>Ver todas</button>}>
             {certs.length === 0 ? (
-              <div className="py-2 text-sm" style={{ color: 'var(--ok-text)' }}>Sin certificaciones próximas a vencer.</div>
+              <div className="py-2 text-sm" style={{ color: 'var(--ok-text)' }}>{t("ui.ClientStaff.sinCertificacionesProximasAVencer", "Sin certificaciones próximas a vencer.")}</div>
             ) : (
               <div className="divide-y">
                 {certs.slice(0, 6).map((c) => (

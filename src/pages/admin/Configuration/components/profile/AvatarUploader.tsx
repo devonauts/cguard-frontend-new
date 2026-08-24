@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { Camera, UserRound } from "lucide-react";
 
 type Props = {
@@ -13,6 +14,7 @@ type Props = {
  * «suelta aquí» que se lee sin texto.
  */
 export default function AvatarUploader({ src, onChange, size = 128 }: Props) {
+  const { t } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
 
@@ -53,7 +55,7 @@ export default function AvatarUploader({ src, onChange, size = 128 }: Props) {
               style={{ color: dragging ? "var(--brand-text)" : "var(--ink-faint)" }}
             >
               <UserRound />
-              <span className="text-[11px] font-medium leading-tight">Añadir foto</span>
+              <span className="text-[11px] font-medium leading-tight">{t("ui.AvatarUploader.anadirFoto", "Añadir foto")}</span>
             </span>
           )}
         </button>

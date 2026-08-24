@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { toast } from "sonner";
 import { Loader2, Plus, Trash2, Download, RefreshCw, KeyRound, Server } from "lucide-react";
 
@@ -40,6 +41,7 @@ const STATUS: Record<string, { health: DeviceHealth; label: string }> = {
 };
 
 export default function VideoRelaySites() {
+  const { t } = useTranslation();
   const [sites, setSites] = useState<RelaySite[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -152,7 +154,7 @@ export default function VideoRelaySites() {
         ) : sites.length === 0 ? (
           <EmptyState
             icon={<Server />}
-            title="Aún no hay sitios remotos"
+            title={t("ui.VideoRelaySites.aunNoHaySitiosRemotos", "Aún no hay sitios remotos")}
             description="Crea un sitio, descarga su relay (docker-compose) y ejecútalo en un equipo del sitio donde está el DVR."
           />
         ) : (
@@ -195,7 +197,7 @@ export default function VideoRelaySites() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Nuevo sitio relay</DialogTitle>
-            <DialogDescription>Se generará una clave de sitio y un token de publicación (cifrado).</DialogDescription>
+            <DialogDescription>{t("ui.VideoRelaySites.seGeneraraUnaClaveDe", "Se generará una clave de sitio y un token de publicación (cifrado).")}</DialogDescription>
           </DialogHeader>
           <div className="grid gap-3 py-2">
             <div className="grid gap-1.5">
@@ -233,7 +235,7 @@ export default function VideoRelaySites() {
           ) : (
             <>
               <div className="glass-sunken grid grid-cols-2 gap-2 p-3 text-sm">
-                <div><span style={{ color: 'var(--ink-faint)' }}>Dirección de recepción:</span> <code>{bundle.ingest}</code></div>
+                <div><span style={{ color: 'var(--ink-faint)' }}>{t("ui.VideoRelaySites.direccionDeRecepcion", "Dirección de recepción:")}</span> <code>{bundle.ingest}</code></div>
                 <div><span style={{ color: 'var(--ink-faint)' }}>Canales:</span> {bundle.channelCount}</div>
               </div>
               {bundle.ingest.includes("INGEST_HOST") && (

@@ -1,4 +1,5 @@
 import { FileX, Boxes } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 import { Section, StatusBadge, EmptyState } from "@/components/kit";
 import { DataTable, type Column } from "@/components/table/DataTable";
 
@@ -40,12 +41,13 @@ export default function ModulesTable({
   modules?: ModuleRow[];
   onDisable?: (id: string) => void;
 }) {
+  const { t } = useTranslation();
   return (
     // `contentClassName` a secas: la tabla ya trae su propia superficie
     // (`glass-flat`) y su radio. El `border` suelto de antes heredaba el color
     // ambiente de Tailwind en vez de `--hairline`, así que este marco no
     // coincidía con el de ninguna otra tabla del CRM.
-    <Section title="Módulos contratados" icon={<Boxes />} contentClassName="overflow-hidden">
+    <Section title={t("ui.ModulesTable.modulosContratados", "Módulos contratados")} icon={<Boxes />} contentClassName="overflow-hidden">
       <DataTable<ModuleRow>
         columns={columns}
         data={modules}
@@ -53,7 +55,7 @@ export default function ModulesTable({
         emptyState={
           <EmptyState
             icon={<FileX />}
-            title="Sin módulos contratados"
+            title={t("ui.ModulesTable.sinModulosContratados", "Sin módulos contratados")}
             description="Todavía no has activado ningún módulo adicional."
             className="border-0"
           />

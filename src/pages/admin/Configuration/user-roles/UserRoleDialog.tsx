@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { useTranslation } from 'react-i18next';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ShieldCheck } from "lucide-react";
@@ -48,6 +49,7 @@ export default function UserRoleDialog({
   defaultValues,
   onSubmit,
 }: Props) {
+  const { t } = useTranslation();
   useEffect(() => {
     console.debug('[UserRoleDialog] mount/open state', open);
   }, [open]);
@@ -103,7 +105,7 @@ export default function UserRoleDialog({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Descripción</FormLabel>
+                  <FormLabel>{t("ui.UserRoleDialog.descripcion", "Descripción")}</FormLabel>
                   <FormControl>
                     <Textarea
                       rows={5}

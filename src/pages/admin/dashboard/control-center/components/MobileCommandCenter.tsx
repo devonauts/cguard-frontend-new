@@ -30,6 +30,7 @@
  * ════════════════════════════════════════════════════════════════════════════
  */
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import {
   Boxes, LayoutDashboard, Maximize2, RefreshCw, ShieldCheck, SlidersHorizontal, Sparkles,
 } from "lucide-react";
@@ -73,6 +74,7 @@ export function MobileCommandCenter({
   userName: string;
   cargando: boolean;
 }) {
+  const { t } = useTranslation();
   const contRef = useRef<HTMLDivElement | null>(null);
   const carruselRef = useRef<HTMLDivElement | null>(null);
   const umbralRef = useRef(320);
@@ -247,7 +249,7 @@ export function MobileCommandCenter({
                 type="button"
                 role="switch"
                 aria-checked={demo}
-                aria-label="Datos de demostración"
+                aria-label={t("ui.MobileCommandCenter.datosDeDemostracion", "Datos de demostración")}
                 onClick={() => onDemo(!demo)}
                 className="cg-btn-glass cg-focus inline-flex items-center gap-2 rounded-full px-3 py-2.5 text-xs font-semibold"
                 style={demo ? { color: "var(--brand-text)", borderColor: "var(--brand-line)" } : undefined}
@@ -282,7 +284,7 @@ export function MobileCommandCenter({
 
             <StatRail
               icon={<Boxes />}
-              title="Recursos de la operación"
+              title={t("ui.MobileCommandCenter.recursosDeLaOperacion", "Recursos de la operación")}
               subtitle="Puestos, mando y cartera"
               items={railItems}
             />

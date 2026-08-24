@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from "react-router-dom";
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
@@ -72,6 +73,7 @@ interface RawGuardListRow { id?: string | number; fullName?: string; guard?: { f
 // ── component ────────────────────────────────────────────────────────────────
 
 export default function GuardRatings() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [records, setRecords] = useState<GuardRatingRecord[]>([]);
   const [average, setAverage] = useState<number | null>(null);
@@ -214,8 +216,8 @@ export default function GuardRatings() {
                 <TableHead className="cg-eyebrow">Fecha</TableHead>
                 <TableHead className="cg-eyebrow">Vigilante</TableHead>
                 <TableHead className="cg-eyebrow">Cliente</TableHead>
-                <TableHead className="cg-eyebrow">Estación</TableHead>
-                <TableHead className="cg-eyebrow">Calificación</TableHead>
+                <TableHead className="cg-eyebrow">{t("ui.GuardRatings.estacion", "Estación")}</TableHead>
+                <TableHead className="cg-eyebrow">{t("ui.GuardRatings.calificacion", "Calificación")}</TableHead>
                 <TableHead className="cg-eyebrow">Comentario</TableHead>
               </TableRow>
             </TableHeader>
@@ -231,7 +233,7 @@ export default function GuardRatings() {
                   <TableCell colSpan={6} className="p-0">
                     <EmptyState
                       icon={<AlertCircle />}
-                      title="No se pudo cargar la información"
+                      title={t("ui.GuardRatings.noSePudoCargarLa", "No se pudo cargar la información")}
                       description="Ocurrió un error al obtener las calificaciones."
                       className="border-0"
                       action={
@@ -278,7 +280,7 @@ export default function GuardRatings() {
 
         {/* Pagination */}
         <div className="flex items-center justify-end space-x-2 py-2">
-          <div className="text-sm text-muted-foreground">Elementos por página</div>
+          <div className="text-sm text-muted-foreground">{t("ui.GuardRatings.elementosPorPagina", "Elementos por página")}</div>
           <Select value={String(pageSize)} onValueChange={(v) => { setPageSize(Number(v)); setPage(1); }}>
             <SelectTrigger className="w-[70px]"><SelectValue /></SelectTrigger>
             <SelectContent>
@@ -294,11 +296,11 @@ export default function GuardRatings() {
           </div>
           <div className="flex items-center space-x-2">
             <Button variant="outline" size="icon" className="rounded-xl" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
-              <span className="sr-only">Página anterior</span>
+              <span className="sr-only">{t("ui.GuardRatings.paginaAnterior", "Página anterior")}</span>
               <ChevronLeft className="h-4 w-4" />
             </Button>
             <Button variant="outline" size="icon" className="rounded-xl" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>
-              <span className="sr-only">Página siguiente</span>
+              <span className="sr-only">{t("ui.GuardRatings.paginaSiguiente", "Página siguiente")}</span>
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>

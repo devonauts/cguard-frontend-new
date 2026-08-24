@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { useTranslation } from 'react-i18next';
 import AppLayout from "@/layouts/app-layout";
 import { DataTable, type Column } from "@/components/table/DataTable";
 import { Button } from "@/components/ui/button";
@@ -54,6 +55,7 @@ function lateBy(scheduledStart: string | null, createdAt: string): string {
 }
 
 export default function NominaApprovals() {
+  const { t } = useTranslation();
   const [rows, setRows] = useState<CorrectionRow[]>([]);
   const [coRows, setCoRows] = useState<ClockOutReqRow[]>([]);
   const [ciRows, setCiRows] = useState<ClockInReqRow[]>([]);
@@ -221,7 +223,7 @@ export default function NominaApprovals() {
           <div className="space-y-6">
             {/* Late clock-in requests */}
             <Section
-              title="Entradas tardías"
+              title={t("ui.NominaApprovals.entradasTardias", "Entradas tardías")}
               icon={<LogIn />}
               action={ciRows.length > 0 && <StatusBadge tone="warn" dot={false}>{ciRows.length} pendiente(s)</StatusBadge>}
             >
@@ -231,7 +233,7 @@ export default function NominaApprovals() {
                 emptyState={
                   <EmptyState
                     icon={<Inbox />}
-                    title="Sin solicitudes de entrada tardía"
+                    title={t("ui.NominaApprovals.sinSolicitudesDeEntradaTardia", "Sin solicitudes de entrada tardía")}
                     description="Las solicitudes de entrada fuera de horario aparecerán aquí."
                   />
                 }

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
@@ -42,6 +43,7 @@ function scheduledOn(route: any, weekday: number): boolean {
 
 
 export default function PatrullaBoardPage() {
+  const { t } = useTranslation();
   usePageTitle('Patrulla vehicular');
   const navigate = useNavigate();
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
@@ -182,7 +184,7 @@ export default function PatrullaBoardPage() {
         </Stagger>
 
         <Section
-          title="Rutas del día"
+          title={t("ui.PatrullaBoard.rutasDelDia", "Rutas del día")}
           icon={<RouteIcon />}
           action={(
             <Segmented

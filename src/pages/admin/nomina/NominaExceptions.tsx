@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { useTranslation } from 'react-i18next';
 import AppLayout from "@/layouts/app-layout";
 import { DataTable, type Column } from "@/components/table/DataTable";
 import { Button } from "@/components/ui/button";
@@ -76,6 +77,7 @@ function FilterSelect({ icon, value, onChange, children }: {
 }
 
 export default function NominaExceptions() {
+  const { t } = useTranslation();
   const [rows, setRows] = useState<ExceptionRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [type, setType] = useState("");
@@ -241,12 +243,12 @@ export default function NominaExceptions() {
                 {/* Resolve / acknowledge (only while actionable) */}
                 {isOpenState && (
                   <div className="space-y-2 pt-1">
-                    <p className="cg-eyebrow">Nota de resolución (queda en el historial)</p>
+                    <p className="cg-eyebrow">{t("ui.NominaExceptions.notaDeResolucionQuedaEn", "Nota de resolución (queda en el historial)")}</p>
                     <textarea
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
                       rows={3}
-                      placeholder="Describe qué se hizo o por qué se cierra esta excepción…"
+                      placeholder={t("ui.NominaExceptions.describeQueSeHizoO", "Describe qué se hizo o por qué se cierra esta excepción…")}
                       className="cg-input cg-focus w-full p-2 text-sm"
                     />
                     <div className="flex flex-wrap gap-2 pt-1">

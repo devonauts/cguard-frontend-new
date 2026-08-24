@@ -11,6 +11,7 @@
  * ════════════════════════════════════════════════════════════════════════════
  */
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search, X } from 'lucide-react';
 import { Segmented, Toolbar } from '@/components/kit';
 import { cn } from '@/lib/utils';
@@ -43,6 +44,7 @@ export function TableSearch({ value, onChange, placeholder = 'Buscar…', classN
     className?: string;
     autoFocus?: boolean;
 }) {
+  const { t } = useTranslation();
     return (
         <div className={cn('relative w-full', className)}>
             <Search
@@ -62,7 +64,7 @@ export function TableSearch({ value, onChange, placeholder = 'Buscar…', classN
             {value && (
                 <button
                     type="button"
-                    aria-label="Limpiar búsqueda"
+                    aria-label={t("ui.TableToolbar.limpiarBusqueda", "Limpiar búsqueda")}
                     onClick={() => onChange('')}
                     className="cg-focus absolute right-2 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-full text-[var(--ink-faint)] transition-colors hover:bg-[var(--glass-sunken)] hover:text-[var(--ink)]"
                 >

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
@@ -14,6 +15,7 @@ type Props = {
 };
 
 export default function CategoryAssignDialog({ open, onOpenChange, targetIds, onDone }: Props) {
+  const { t } = useTranslation();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<string | undefined>(undefined);
@@ -56,15 +58,15 @@ export default function CategoryAssignDialog({ open, onOpenChange, targetIds, on
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>{targetIds.length > 1 ? 'Mover Sitios a Categoría' : 'Sectorizar Sitio'}</DialogTitle>
-          <DialogDescription>Selecciona la categoría destino para los sitios seleccionados.</DialogDescription>
+          <DialogDescription>{t("ui.CategoryAssignDialog.seleccionaLaCategoriaDestinoPara", "Selecciona la categoría destino para los sitios seleccionados.")}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-2">
           <div>
-            <label className="text-sm font-medium mb-1 block">Categoría</label>
+            <label className="text-sm font-medium mb-1 block">{t("ui.CategoryAssignDialog.categoria", "Categoría")}</label>
             <Select onValueChange={(v) => setSelected(v)}>
               <SelectTrigger>
-                <SelectValue placeholder="Selecciona una categoría" />
+                <SelectValue placeholder={t("ui.CategoryAssignDialog.seleccionaUnaCategoria", "Selecciona una categoría")} />
               </SelectTrigger>
               <SelectContent>
                 {categories.map((c) => (

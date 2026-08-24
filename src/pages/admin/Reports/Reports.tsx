@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from "react-router-dom";
 import { Settings, ArrowRight, Search, BarChart3, X, SearchX } from "lucide-react";
 import AppLayout from "@/layouts/app-layout";
@@ -33,6 +34,7 @@ interface ReportsProps {
 }
 
 const Reports: React.FC<ReportsProps> = ({ onNavigate }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
 
@@ -78,7 +80,7 @@ const Reports: React.FC<ReportsProps> = ({ onNavigate }) => {
       {query && (
         <button
           onClick={() => setQuery("")}
-          aria-label="Limpiar búsqueda"
+          aria-label={t("ui.Reports.limpiarBusqueda", "Limpiar búsqueda")}
           className="cg-focus absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md p-1 transition-colors"
           style={{ color: "var(--ink-faint)" }}
         >
@@ -135,8 +137,8 @@ const Reports: React.FC<ReportsProps> = ({ onNavigate }) => {
                       <Button
                         variant="outline"
                         size="icon"
-                        title="Configuración"
-                        aria-label="Configuración de la sección"
+                        title={t("ui.Reports.configuracion", "Configuración")}
+                        aria-label={t("ui.Reports.configuracionDeLaSeccion", "Configuración de la sección")}
                         onClick={() => go(section.settingsHref)}
                       >
                         <Settings size={15} />
@@ -177,7 +179,7 @@ const Reports: React.FC<ReportsProps> = ({ onNavigate }) => {
                           <div className="flex items-start justify-between gap-2">
                             <h3 className="text-sm font-semibold leading-snug">{report.title}</h3>
                             {!ready ? (
-                              <StatusBadge tone="neutral" dot={false} className="shrink-0 px-1.5 py-0.5 text-[10px]">Próximamente</StatusBadge>
+                              <StatusBadge tone="neutral" dot={false} className="shrink-0 px-1.5 py-0.5 text-[10px]">{t("ui.Reports.proximamente", "Próximamente")}</StatusBadge>
                             ) : (report.openCount !== undefined || report.closedCount !== undefined) && (
                               <div className="flex shrink-0 gap-1">
                                 {report.openCount !== undefined && (

@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { Shield, Clock, Award, Timer, ChevronDown, ChevronRight } from "lucide-react";
 import {
   useOpsAnalytics, AnalyticsShell, MetricCard, Section, GOLD, TONES, toneInk, pctColor,
@@ -71,6 +72,7 @@ function FactorBars({ g }: { g: GuardPerformance }) {
 }
 
 export default function Guard() {
+  const { t } = useTranslation();
   const ops = useOpsAnalytics(30);
   const [lb, setLb] = useState<PerfLeaderboard | null>(null);
   const [lbLoading, setLbLoading] = useState(true);
@@ -88,7 +90,7 @@ export default function Guard() {
 
   return (
     <AnalyticsShell
-      title="Analíticas de Vigilantes"
+      title={t("ui.Guard.analiticasDeVigilantes", "Analíticas de Vigilantes")}
       subtitle="Puntuación de desempeño (mismo algoritmo de la app) y asistencia de tu personal."
       days={ops.days} setDays={ops.setDays} loading={ops.loading} error={ops.error}
       reload={() => { ops.reload(); loadLb(ops.days); }}
@@ -105,7 +107,7 @@ export default function Guard() {
 
           {/* Tier distribution */}
           {!!tierTotal && (
-            <Section title="Distribución de desempeño" icon={<Award size={16} />}>
+            <Section title={t("ui.Guard.distribucionDeDesempeno", "Distribución de desempeño")} icon={<Award size={16} />}>
               <div className="flex h-3 w-full overflow-hidden rounded-full">
                 {(["excellent", "good", "fair", "poor"] as const).map((t) => {
                   const v = counts![t]; if (!v) return null;
@@ -121,7 +123,7 @@ export default function Guard() {
           )}
 
           {/* Leaderboard */}
-          <Section title="Ranking de desempeño" icon={<Award size={16} />}>
+          <Section title={t("ui.Guard.rankingDeDesempeno", "Ranking de desempeño")} icon={<Award size={16} />}>
             {lbLoading ? (
               <div className="space-y-3 py-2">
                 {Array.from({ length: 6 }).map((_, i) => (
@@ -136,7 +138,7 @@ export default function Guard() {
             ) : lb && lb.enabled === false ? (
               <EmptyState
                 icon={<Award />}
-                title="Tu empresa no está midiendo el desempeño"
+                title={t("ui.Guard.tuEmpresaNoEstaMidiendo", "Tu empresa no está midiendo el desempeño")}
                 description="La medición está desactivada para toda la empresa en Configuración › Vigilantes en turno. Mientras siga así, nadie tiene puntuación."
               />
             ) : !lb || lb.guards.length === 0 ? (
@@ -148,7 +150,7 @@ export default function Guard() {
                     <tr>
                       <th className="px-3 py-2 text-left font-semibold">#</th>
                       <th className="px-3 py-2 text-left font-semibold">Vigilante</th>
-                      <th className="px-3 py-2 text-left font-semibold">Puntuación</th>
+                      <th className="px-3 py-2 text-left font-semibold">{t("ui.Guard.puntuacion", "Puntuación")}</th>
                       <th className="px-3 py-2 text-left font-semibold">Nivel</th>
                       <th className="px-3 py-2 text-right font-semibold">Asistencia</th>
                       <th className="px-3 py-2 text-right font-semibold">Faltas</th>

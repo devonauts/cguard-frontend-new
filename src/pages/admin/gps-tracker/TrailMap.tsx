@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { Pause, Play, Crosshair, RotateCcw } from "lucide-react";
 import { loadGoogleMaps } from "@/utils/loadGoogleMaps";
 import { estiloMapa, huella, pielDe, useMapPalette, type MapPalette } from "@/utils/mapTheme";
@@ -79,6 +80,9 @@ export default function TrailMap({
   /** Se avisa del punto que se está mirando, para resaltarlo en la lista. */
   onFocusIndex?: (i: number | null) => void;
 }) {
+  // `t` ya está tomado en este archivo (el instante de la reproducción):
+  // el traductor entra como `tr`.
+  const { t: tr } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
   const [ready, setReady] = useState(false);
@@ -528,7 +532,7 @@ export default function TrailMap({
                   </div>
                 </div>
                 <div>
-                  <div className="cc-map-eyebrow">Duración</div>
+                  <div className="cc-map-eyebrow">{tr("ui.TrailMap.duracion", "Duración")}</div>
                   <div className="cc-map-metric">{duracion(analisis.ms)}</div>
                 </div>
                 <div className="hidden sm:block">
@@ -545,7 +549,7 @@ export default function TrailMap({
                 </div>
                 {analisis.bateria != null && (
                   <div>
-                    <div className="cc-map-eyebrow">Batería</div>
+                    <div className="cc-map-eyebrow">{tr("ui.TrailMap.bateria", "Batería")}</div>
                     <div
                       className="cc-map-metric"
                       style={{ color: analisis.bateria <= 20 ? "var(--bad-text)" : undefined }}
@@ -626,7 +630,7 @@ export default function TrailMap({
                   onClick={() => setVelocidad((v) => VELOCIDADES[(VELOCIDADES.indexOf(v) + 1) % VELOCIDADES.length])}
                   className="cg-focus flex-none rounded-full px-2 py-1 tabular-nums"
                   style={{ border: "1px solid var(--hairline)", color: "var(--ink-soft)", fontSize: 11, fontWeight: 700 }}
-                  title="Velocidad de reproducción"
+                  title={tr("ui.TrailMap.velocidadDeReproduccion", "Velocidad de reproducción")}
                 >
                   ×{velocidad}
                 </button>

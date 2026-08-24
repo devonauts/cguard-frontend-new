@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import AlarmActionPlan from "@/components/alarm/AlarmActionPlan";
@@ -85,6 +86,7 @@ const selectClass = "cg-input cg-focus h-9 w-full px-3 text-sm disabled:cursor-n
 /* ------------------------------------------------------------------ */
 
 export default function AlarmCaseDetail() {
+  const { t } = useTranslation();
   const { id = "" } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
@@ -446,7 +448,7 @@ export default function AlarmCaseDetail() {
                 ) : null}
               </dl>
             ) : (
-              <EmptyState className="border-0 py-6" icon={<Cpu />} title="Sin información de panel" />
+              <EmptyState className="border-0 py-6" icon={<Cpu />} title={t("ui.AlarmCaseDetail.sinInformacionDePanel", "Sin información de panel")} />
             )}
           </Section>
 
@@ -533,7 +535,7 @@ export default function AlarmCaseDetail() {
             }
           >
             {sortedAudit.length === 0 ? (
-              <EmptyState className="border-0 py-6" icon={<History />} title="Sin entradas de auditoría" />
+              <EmptyState className="border-0 py-6" icon={<History />} title={t("ui.AlarmCaseDetail.sinEntradasDeAuditoria", "Sin entradas de auditoría")} />
             ) : (
               <ul className="divide-y" style={{ borderColor: 'var(--hairline)' }}>
                 {sortedAudit.map((a) => (
@@ -597,7 +599,7 @@ export default function AlarmCaseDetail() {
               id="d-target"
               value={dTarget}
               onChange={(e) => setDTarget(e.target.value)}
-              placeholder="Unidad, nombre o número de contacto"
+              placeholder={t("ui.AlarmCaseDetail.unidadNombreONumeroDe", "Unidad, nombre o número de contacto")}
             />
           </div>
           <div className="space-y-1.5">
@@ -632,7 +634,7 @@ export default function AlarmCaseDetail() {
         }
       >
         <div className="space-y-1.5">
-          <Label htmlFor="disposition">Disposición</Label>
+          <Label htmlFor="disposition">{t("ui.AlarmCaseDetail.disposicion", "Disposición")}</Label>
           <select
             id="disposition"
             className={selectClass}
@@ -671,7 +673,7 @@ export default function AlarmCaseDetail() {
       >
         <div className="space-y-4">
           <div className="space-y-1.5">
-            <Label htmlFor="inc-title">Título</Label>
+            <Label htmlFor="inc-title">{t("ui.AlarmCaseDetail.titulo", "Título")}</Label>
             <Input
               id="inc-title"
               value={incTitle}
@@ -680,7 +682,7 @@ export default function AlarmCaseDetail() {
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="inc-desc">Descripción</Label>
+            <Label htmlFor="inc-desc">{t("ui.AlarmCaseDetail.descripcion", "Descripción")}</Label>
             <Textarea
               id="inc-desc"
               value={incDescription}

@@ -1,4 +1,5 @@
 import { Camera, Car, FileText, Gauge, Info, Trash2 } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import AppLayout from "@/layouts/app-layout";
@@ -37,6 +38,7 @@ import {
 const Obligatorio = () => <span style={{ color: 'var(--bad-text)' }}>*</span>;
 
 export default function NewVehiclePage() {
+  const { t } = useTranslation();
   const [preview, setPreview] = useState<string | null>(null);
   const previewRef = useRef<string | null>(null);
   previewRef.current = preview;
@@ -216,7 +218,7 @@ export default function NewVehiclePage() {
            )}
 
            {/* ── Fotografía ─────────────────────────────────────────────── */}
-           <Section title="Fotografía" icon={<Camera />} contentClassName="flex flex-col items-center gap-3">
+           <Section title={t("ui.NewVehicle.fotografia", "Fotografía")} icon={<Camera />} contentClassName="flex flex-col items-center gap-3">
             <label
               htmlFor="vehicle-image"
               className="group relative inline-flex h-32 w-32 cursor-pointer items-center justify-center overflow-hidden rounded-2xl border transition-colors"
@@ -271,13 +273,13 @@ export default function NewVehiclePage() {
            </Section>
 
            {/* ── Identificación ─────────────────────────────────────────── */}
-           <Section title="Identificación" icon={<Car />} contentClassName="grid grid-cols-1 gap-4 md:grid-cols-2">
+           <Section title={t("ui.NewVehicle.identificacion", "Identificación")} icon={<Car />} contentClassName="grid grid-cols-1 gap-4 md:grid-cols-2">
               <FormField
                 control={form.control}
                 name="year"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Año <Obligatorio /></FormLabel>
+                    <FormLabel>{t("ui.NewVehicle.ano", "Año")}{" "}<Obligatorio /></FormLabel>
                     <FormControl>
                       <Input inputMode="numeric" placeholder="2022" {...field} disabled={isEditing} />
                     </FormControl>
@@ -347,7 +349,7 @@ export default function NewVehiclePage() {
                 name="vin"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Número VIN (Número de Identificación del Vehículo) <Obligatorio /></FormLabel>
+                    <FormLabel>{t("ui.NewVehicle.numeroVinNumeroDeIdentificacion", "Número VIN (Número de Identificación del Vehículo)")}{" "}<Obligatorio /></FormLabel>
                     <FormControl>
                       <Input className="font-mono" placeholder="1HGCM82633A004352" {...field} disabled={isEditing} />
                     </FormControl>
@@ -402,9 +404,9 @@ export default function NewVehiclePage() {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Descripción</FormLabel>
+                    <FormLabel>{t("ui.NewVehicle.descripcion", "Descripción")}</FormLabel>
                     <FormControl>
-                      <Textarea rows={4} placeholder="Notas del vehículo" {...field} />
+                      <Textarea rows={4} placeholder={t("ui.NewVehicle.notasDelVehiculo", "Notas del vehículo")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

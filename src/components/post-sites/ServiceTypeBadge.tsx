@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Shield, BellElectric, Camera, Car, Lock, Tag } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getServiceType, SERVICE_TYPES } from '@/lib/serviceTypes';
@@ -69,6 +70,7 @@ interface ServiceTypePickerProps {
 }
 
 export function ServiceTypePicker({ value, onChange, error }: ServiceTypePickerProps) {
+  const { t } = useTranslation();
   const isKnownType = !!value && SERVICE_TYPES.some((st) => st.value === value);
   const [isOther, setIsOther] = useState(!isKnownType && !!value);
   const [customText, setCustomText] = useState(!isKnownType && value ? value : '');
@@ -158,7 +160,7 @@ export function ServiceTypePicker({ value, onChange, error }: ServiceTypePickerP
 
       {isOther && (
         <Input
-          placeholder="Ej. Gestión de acceso, Seguridad industrial, Vigilancia VIP..."
+          placeholder={t("ui.ServiceTypeBadge.ejGestionDeAccesoSeguridad", "Ej. Gestión de acceso, Seguridad industrial, Vigilancia VIP...")}
           value={customText}
           onChange={(e) => handleCustomTextChange(e.target.value)}
           maxLength={50}

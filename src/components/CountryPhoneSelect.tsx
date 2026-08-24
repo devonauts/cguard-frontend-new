@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from 'react-i18next';
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -55,6 +56,7 @@ export default function CountryPhoneSelect({
   className,
   apiUrl = "https://restcountries.com/v3.1/all?fields=name,cca2,idd,flag",
 }: Props) {
+  const { t } = useTranslation();
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
@@ -152,7 +154,7 @@ export default function CountryPhoneSelect({
           <div className="p-3 text-sm text-red-600">{error}</div>
         ) : (
           <Command>
-            <CommandInput placeholder="Buscar país o código…" />
+            <CommandInput placeholder={t("ui.CountryPhoneSelect.buscarPaisOCodigo", "Buscar país o código…")} />
             <CommandList className="max-h-80">
               <CommandEmpty>No se encontraron resultados.</CommandEmpty>
               <CommandGroup>

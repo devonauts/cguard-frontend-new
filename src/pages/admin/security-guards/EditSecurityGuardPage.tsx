@@ -1,4 +1,5 @@
 import { toast } from "sonner";
+import { useTranslation } from 'react-i18next';
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { UserCog, User, Phone, MapPin, FileText } from "lucide-react";
@@ -11,6 +12,7 @@ import { usePermissions } from '@/hooks/usePermissions';
 import { PageContainer, PageHeader, Section, SkeletonCards } from '@/components/kit';
 
 export default function EditSecurityGuardPage() {
+  const { t } = useTranslation();
   // Deduplicate toasts across component remounts (React StrictMode may mount twice)
   // Use a module-scoped Set to avoid showing the same toast multiple times.
   // Keys used below: 'edit-guard-not-found' and 'edit-guard-general-error'
@@ -267,7 +269,7 @@ export default function EditSecurityGuardPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Instrucción académica</label>
+                  <label className="block text-sm font-medium mb-1">{t("ui.EditSecurityGuard.instruccionAcademica", "Instrucción académica")}</label>
                   <select name="academicInstruction" value={form.academicInstruction} onChange={handleChange} className={selectClass}>
                     <option value="">Seleccionar…</option>
                     {["Secundaria", "Universitaria", "Universidad", "Especial", "Primaria"].map((o) => (
@@ -276,7 +278,7 @@ export default function EditSecurityGuardPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Género</label>
+                  <label className="block text-sm font-medium mb-1">{t("ui.EditSecurityGuard.genero", "Género")}</label>
                   <select name="gender" value={form.gender} onChange={handleChange} className={selectClass}>
                     <option value="">Seleccionar…</option>
                     {["Masculino", "Femenino"].map((o) => (
@@ -291,25 +293,25 @@ export default function EditSecurityGuardPage() {
             <Section title="Contacto y domicilio" icon={<Phone />}>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Correo Electrónico *</label>
+                  <label className="block text-sm font-medium mb-1">{t("ui.EditSecurityGuard.correoElectronico", "Correo Electrónico *")}</label>
                   <Input name="email" value={form.email} onChange={handleChange} required type="email" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Teléfono *</label>
+                  <label className="block text-sm font-medium mb-1">{t("ui.EditSecurityGuard.telefono", "Teléfono *")}</label>
                   <Input name="phoneNumber" value={form.phoneNumber} onChange={handleChange} required />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium mb-1">Dirección</label>
+                  <label className="block text-sm font-medium mb-1">{t("ui.EditSecurityGuard.direccion", "Dirección")}</label>
                   <Input name="address" value={form.address} onChange={handleChange} />
                 </div>
               </div>
             </Section>
 
             {/* ── Identificación y contrato ────────────────────────── */}
-            <Section title="Identificación y contrato" icon={<FileText />}>
+            <Section title={t("ui.EditSecurityGuard.identificacionYContrato", "Identificación y contrato")} icon={<FileText />}>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Cédula</label>
+                  <label className="block text-sm font-medium mb-1">{t("ui.EditSecurityGuard.cedula", "Cédula")}</label>
                   <Input name="governmentId" value={form.governmentId} onChange={handleChange} />
                 </div>
                 <div>

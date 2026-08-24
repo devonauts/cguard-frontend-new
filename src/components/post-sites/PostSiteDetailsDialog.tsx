@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { clientDisplayName } from '@/lib/clientName';
 import {
   Dialog,
@@ -21,6 +22,7 @@ interface Props {
 }
 
 export default function PostSiteDetailsDialog({ open, onOpenChange, siteId }: Props) {
+  const { t } = useTranslation();
   const [site, setSite] = useState<PostSite | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
@@ -92,7 +94,7 @@ export default function PostSiteDetailsDialog({ open, onOpenChange, siteId }: Pr
                 <p className="text-sm">{(site as any).stationSchedule ?? ((site as any).scheduleLabel) ?? '-'}</p>
               </div>
               <div>
-                <p className="text-xs text-foreground/70 font-semibold">Descripción</p>
+                <p className="text-xs text-foreground/70 font-semibold">{t("ui.PostSiteDetailsDialog.descripcion", "Descripción")}</p>
                 <p className="text-sm">{(site as any).description || "-"}</p>
               </div>
               <div>
@@ -100,11 +102,11 @@ export default function PostSiteDetailsDialog({ open, onOpenChange, siteId }: Pr
                 <p className="text-sm truncate">{(site as any).contactEmail ?? site.email ?? "-"}</p>
               </div>
               <div>
-                <p className="text-xs text-foreground/70 font-semibold">Teléfono</p>
+                <p className="text-xs text-foreground/70 font-semibold">{t("ui.PostSiteDetailsDialog.telefono", "Teléfono")}</p>
                 <p className="text-sm">{(site as any).contactPhone ?? site.phone ?? "-"}</p>
               </div>
               <div>
-                <p className="text-xs text-foreground/70 font-semibold">Teléfono fijo</p>
+                <p className="text-xs text-foreground/70 font-semibold">{t("ui.PostSiteDetailsDialog.telefonoFijo", "Teléfono fijo")}</p>
                 <p className="text-sm">{(site as any).fax ?? "-"}</p>
               </div>
               {/* Client account summary if present */}
@@ -129,11 +131,11 @@ export default function PostSiteDetailsDialog({ open, onOpenChange, siteId }: Pr
                         <p className="text-sm">{(site as any).clientAccount.email || '-'}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-foreground/70 font-semibold">Teléfono</p>
+                        <p className="text-xs text-foreground/70 font-semibold">{t("ui.PostSiteDetailsDialog.telefono2", "Teléfono")}</p>
                         <p className="text-sm">{(site as any).clientAccount.phoneNumber || '-'}</p>
                       </div>
                       <div className="sm:col-span-3">
-                        <p className="text-xs text-foreground/70 font-semibold">Dirección</p>
+                        <p className="text-xs text-foreground/70 font-semibold">{t("ui.PostSiteDetailsDialog.direccion", "Dirección")}</p>
                         <p className="text-sm">{(site as any).clientAccount.address || '-'}</p>
                       </div>
                     </div>
@@ -154,7 +156,7 @@ export default function PostSiteDetailsDialog({ open, onOpenChange, siteId }: Pr
 
             <div className="border-t pt-3">
               <div className="flex items-center justify-between">
-                <h4 className="text-sm font-semibold mb-2 text-foreground">Dirección</h4>
+                <h4 className="text-sm font-semibold mb-2 text-foreground">{t("ui.PostSiteDetailsDialog.direccion2", "Dirección")}</h4>
                 <button type="button" className="text-xs text-muted-foreground" onClick={() => setAddressCollapsed(!addressCollapsed)}>
                   {addressCollapsed ? 'Mostrar' : 'Ocultar'}
                 </button>
@@ -164,15 +166,15 @@ export default function PostSiteDetailsDialog({ open, onOpenChange, siteId }: Pr
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
-                    <p className="text-xs text-foreground/70 font-semibold">Dirección</p>
+                    <p className="text-xs text-foreground/70 font-semibold">{t("ui.PostSiteDetailsDialog.direccion3", "Dirección")}</p>
                     <p className="text-sm">{(site as any).address || "-"}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-foreground/70 font-semibold">Dirección Complementaria</p>
+                    <p className="text-xs text-foreground/70 font-semibold">{t("ui.PostSiteDetailsDialog.direccionComplementaria", "Dirección Complementaria")}</p>
                     <p className="text-sm">{(site as any).secondAddress || "-"}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-foreground/70 font-semibold">Código Postal</p>
+                    <p className="text-xs text-foreground/70 font-semibold">{t("ui.PostSiteDetailsDialog.codigoPostal", "Código Postal")}</p>
                     <p className="text-sm">{(site as any).postalCode || "-"}</p>
                   </div>
                   <div>
@@ -180,7 +182,7 @@ export default function PostSiteDetailsDialog({ open, onOpenChange, siteId }: Pr
                     <p className="text-sm">{(site as any).city || "-"}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-foreground/70 font-semibold">País</p>
+                    <p className="text-xs text-foreground/70 font-semibold">{t("ui.PostSiteDetailsDialog.pais", "País")}</p>
                     <p className="text-sm">{(site as any).country || "-"}</p>
                   </div>
                   <div>

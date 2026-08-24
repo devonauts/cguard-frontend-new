@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Client } from '@/types/client';
 import { Plus, Pencil, Trash2, CheckCircle2, EllipsisVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export default function ClientProjects({ client }: Props) {
+  const { t } = useTranslation();
   const [projects, setProjects] = useState<ClientProject[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -181,8 +183,8 @@ export default function ClientProjects({ client }: Props) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar este proyecto?</AlertDialogTitle>
-            <AlertDialogDescription>Esta acción no se puede deshacer.</AlertDialogDescription>
+            <AlertDialogTitle>{t("ui.ClientProjects.eliminarEsteProyecto", "¿Eliminar este proyecto?")}</AlertDialogTitle>
+            <AlertDialogDescription>{t("ui.ClientProjects.estaAccionNoSePuede", "Esta acción no se puede deshacer.")}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>

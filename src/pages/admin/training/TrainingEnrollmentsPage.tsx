@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import AppLayout from '@/layouts/app-layout';
 import Breadcrumb from '@/components/ui/breadcrumb';
@@ -31,6 +32,7 @@ import { PageContainer, PageHeader, Section, StatCard, Stagger, StatusBadge, Emp
 import { DataTable, type Column } from '@/components/table/DataTable';
 
 export default function TrainingEnrollmentsPage() {
+  const { t } = useTranslation();
   const { courseId } = useParams<{ courseId: string }>();
   const navigate = useNavigate();
   const { hasPermission } = usePermissions();
@@ -246,7 +248,7 @@ export default function TrainingEnrollmentsPage() {
                 <h4 className="mb-2 text-sm font-semibold tracking-tight">Lecciones</h4>
                 <div className="space-y-2">
                   {detail.lessonCompletions.length === 0 && (
-                    <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>Aún no ha completado lecciones.</p>
+                    <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t("ui.TrainingEnrollments.aunNoHaCompletadoLecciones", "Aún no ha completado lecciones.")}</p>
                   )}
                   {detail.lessonCompletions.map((lc) => (
                     <div key={lc.lessonId} className="flex items-center gap-2 text-sm">

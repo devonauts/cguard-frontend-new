@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -41,6 +42,7 @@ export default function DepartmentDialog({
   saving = false,
   onSubmit,
 }: Props) {
+  const { t } = useTranslation();
   const form = useForm<DepartmentDialogValues>({
     resolver: zodResolver(schema),
     defaultValues: { name: "", description: "", managerId: null },
@@ -83,10 +85,10 @@ export default function DepartmentDialog({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Descripción</FormLabel>
+                  <FormLabel>{t("ui.DepartmentDialog.descripcion", "Descripción")}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Qué hace este departamento (opcional)"
+                      placeholder={t("ui.DepartmentDialog.queHaceEsteDepartamentoOpcional", "Qué hace este departamento (opcional)")}
                       rows={4}
                       {...field}
                       value={field.value ?? ""}

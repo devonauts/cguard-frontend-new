@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo, type ReactNode } from "react";
+import { useTranslation } from 'react-i18next';
 import AppLayout from "@/layouts/app-layout";
 import Breadcrumb from "@/components/ui/breadcrumb";
 import { MessageSquareText, Send, Plus, Search, Loader2, X, Check, CheckCheck, Paperclip, Play, Trash2, Users, Mic, UserPlus, RefreshCw, UserCircle2 } from "lucide-react";
@@ -66,6 +67,7 @@ type AcRow = { id: string; label?: string; name?: string; companyName?: string }
 const fmtTime = (d?: string | null) => { try { return new Date(d as string).toLocaleString(undefined, { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }); } catch { return ""; } };
 
 export default function MessengerPage({ scope = "operational" }: { scope?: "operational" | "client" }) {
+  const { t } = useTranslation();
   const isClient = scope === "client";
   const pageTitle = isClient ? "Mensajes de Clientes" : "Mensajes Operativos";
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -285,7 +287,7 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
               <div className="flex flex-1 flex-col items-center justify-center p-6">
                 <EmptyState
                   icon={<MessageSquareText />}
-                  title="Ninguna conversación abierta"
+                  title={t("ui.Messenger.ningunaConversacionAbierta", "Ninguna conversación abierta")}
                   description="Selecciona una conversación de la lista o crea una nueva."
                 />
               </div>
@@ -665,6 +667,7 @@ function ComposeDialog({ scope, onClose, onSent }: { scope: "operational" | "cli
 
 /** Slide-over panel: list group members, add (guard autocomplete), remove, resync. */
 function MembersPanel({ conversation, onClose, onChanged }: { conversation: Conversation; onClose: () => void; onChanged: () => void }) {
+  const { t } = useTranslation();
   const [members, setMembers] = useState<GroupMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -728,7 +731,7 @@ function MembersPanel({ conversation, onClose, onChanged }: { conversation: Conv
         <div className="border-b p-3" style={{ borderColor: 'var(--hairline)' }}>
           <div className="relative">
             <UserPlus size={15} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Añadir vigilante…" disabled={busy} className="cg-input w-full py-2 pl-9 pr-3 text-sm" />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("ui.Messenger.anadirVigilante", "Añadir vigilante…")} disabled={busy} className="cg-input w-full py-2 pl-9 pr-3 text-sm" />
           </div>
           {results.length > 0 && (
             <div className="mt-2 max-h-40 overflow-auto rounded-xl border" style={{ borderColor: 'var(--hairline)' }}>
