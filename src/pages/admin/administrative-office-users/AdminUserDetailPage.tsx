@@ -184,8 +184,8 @@ export default function AdminUserDetailPage() {
               <Section title={t("ui.AdminUserDetail.informacionGeneral", "Información general")} icon={<IdCard />} action={<Button variant="outline" size="sm" onClick={() => navigate(`/back-office/edit/${id}`)}><Pencil className="mr-1.5 h-3.5 w-3.5" />{" "}{t("ui.AdminUserDetail.editarInformacion", "Editar información")}</Button>}>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <Field label="Nombre completo" value={name} />
-                  <Field label="Correo electrónico" value={user.email} />
-                  <Field label="Teléfono" value={user.phoneNumber || user.phone} />
+                  <Field label={t("ui.AdminUserDetail.correoElectronico", "Correo electrónico")} value={user.email} />
+                  <Field label={t("ui.AdminUserDetail.telefono", "Teléfono")} value={user.phoneNumber || user.phone} />
                   <Field label="Rol de acceso" value={roleName} />
                   <Field label="Miembro desde" value={fmtDate(user.createdAt)} />
                   <Field label="Estado" value={status.label} />

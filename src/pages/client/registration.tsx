@@ -260,7 +260,7 @@ export default function ClientRegistration() {
               <img src="/assets/badges/google-play.png" alt="Descargar en Google Play" className="h-12 w-auto" />
             </a>
             <a href={MISEGURIDAD_IOS_URL} target="_blank" rel="noreferrer" className="cg-focus rounded-lg transition-opacity hover:opacity-90">
-              <img src="/assets/badges/app-store.png" alt="Consíguelo en el App Store" className="h-12 w-auto" />
+              <img src="/assets/badges/app-store.png" alt={t("ui.registration.consigueloEnElAppStore", "Consíguelo en el App Store")} className="h-12 w-auto" />
             </a>
           </div>
 

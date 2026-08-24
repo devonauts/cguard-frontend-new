@@ -1470,7 +1470,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id, pres
             )}
             <div className="px-5 py-4 space-y-0">
               <SummaryRow icon={<Building2 className="h-4 w-4" />} label="Cliente" value={selectedClientLabel ?? undefined} />
-              <SummaryRow icon={<MapPin className="h-4 w-4" />} label="Dirección" value={address || undefined} />
+              <SummaryRow icon={<MapPin className="h-4 w-4" />} label={t("ui.PostSiteWizard.direccion", "Dirección")} value={address || undefined} />
               <SummaryRow icon={<MapPin className="h-4 w-4" />} label="Ciudad" value={city || undefined} />
               <SummaryRow icon={<Shield className="h-4 w-4" />} label="Estaciones" value={stations.filter(s => s.name.trim()).length > 0 ? `${stations.filter(s => s.name.trim()).length} definida${stations.filter(s => s.name.trim()).length !== 1 ? 's' : ''}` : undefined} />
             </div>

@@ -187,7 +187,7 @@ export default function ClientPostSites({ client }: { client: Client }) {
           {loading ? (
             <SkeletonCards count={2} />
           ) : filtered.length === 0 ? (
-            <EmptyState icon={<Building2 />} title="Sin sedes" description="Este cliente aún no tiene sedes registradas." />
+            <EmptyState icon={<Building2 />} title="Sin sedes" description={t("ui.ClientPostSites.esteClienteAunNoTiene", "Este cliente aún no tiene sedes registradas.")} />
           ) : (
             <TabTable minWidth={640}>
                   <THead>

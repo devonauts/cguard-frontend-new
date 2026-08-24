@@ -352,8 +352,8 @@ export default function VideoDevices() {
         {/* Summary */}
         <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <StatCard label="Total" value={devices.length} icon={<Video />} accent="primary" />
-          <StatCard label="En línea" value={counts.online} icon={<Wifi />} accent="ok" />
-          <StatCard label="Sin conexión" value={counts.offline} icon={<WifiOff />} accent="bad" />
+          <StatCard label={t("ui.VideoDevices.enLinea", "En línea")} value={counts.online} icon={<Wifi />} accent="ok" />
+          <StatCard label={t("ui.VideoDevices.sinConexion", "Sin conexión")} value={counts.offline} icon={<WifiOff />} accent="bad" />
           <StatCard label="Desconocido" value={counts.unknown} icon={<Server />} accent="neutral" />
         </Stagger>
 

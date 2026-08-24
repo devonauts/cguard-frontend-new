@@ -99,7 +99,7 @@ export default function Guard() {
         <>
           {/* KPIs */}
           <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <MetricCard icon={<Award size={16} />} accent={GOLD} value={lb?.averageScore ?? "—"} label="Puntuación promedio" sub={`${counts?.scored ?? 0} vigilantes evaluados`} pct={lb?.averageScore ?? undefined} />
+            <MetricCard icon={<Award size={16} />} accent={GOLD} value={lb?.averageScore ?? "—"} label={t("ui.Guard.puntuacionPromedio", "Puntuación promedio")} sub={`${counts?.scored ?? 0} vigilantes evaluados`} pct={lb?.averageScore ?? undefined} />
             <MetricCard icon={<Shield size={16} />} accent={TONES.ok} value={counts?.excellent ?? 0} label="Excelentes" sub={`${counts?.good ?? 0} buenos · ${counts?.poor ?? 0} bajos`} />
             <MetricCard icon={<Shield size={16} />} accent={TONES.info} value={k.guardsOnDuty} label="En servicio" sub="ahora mismo" />
             <MetricCard icon={<Clock size={16} />} accent={TONES.warn} value={`${k.punctualityPct}%`} label="Puntualidad" sub={`${k.clockinsOnTime}/${k.clockinsTotal} a tiempo`} pct={k.punctualityPct} />

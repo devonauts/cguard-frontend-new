@@ -145,7 +145,7 @@ export default function ClientPortal({ client }: Props) {
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Kpi icon={<Globe />} value={linked ? 'Vinculado' : 'Sin usuario'} label="Acceso al portal" accent={linked ? 'green' : 'slate'} />
         <Kpi icon={<Users />} value={accessCount} label="Usuarios con acceso" accent="blue" />
-        <Kpi icon={<Smartphone />} value="Mi Seguridad" label="App móvil del cliente" accent="primary" />
+        <Kpi icon={<Smartphone />} value="Mi Seguridad" label={t("ui.ClientPortal.appMovilDelCliente", "App móvil del cliente")} accent="primary" />
         <Kpi icon={<Mail />} value={email ? 'Con correo' : 'Sin correo'} label={email || 'Agrega un correo al cliente'} accent={email ? 'green' : 'orange'} />
       </div>
 

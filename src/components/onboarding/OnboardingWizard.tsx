@@ -716,14 +716,14 @@ function ReviewStep({
           <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Empresa</span>
           <button type="button" onClick={() => onEdit(1)} className="text-xs font-medium text-primary hover:underline">Editar</button>
         </div>
-        <ReviewRow label="RUC / Cédula" value={form.taxNumber} />
+        <ReviewRow label={t("ui.OnboardingWizard.rucCedula", "RUC / Cédula")} value={form.taxNumber} />
         <div className="flex items-center justify-between py-2">
           <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("ui.OnboardingWizard.contactoYUbicacion", "Contacto y ubicación")}</span>
           <button type="button" onClick={() => onEdit(2)} className="text-xs font-medium text-primary hover:underline">Editar</button>
         </div>
-        <ReviewRow label="Teléfono" value={form.phone} />
+        <ReviewRow label={t("ui.OnboardingWizard.telefono", "Teléfono")} value={form.phone} />
         <ReviewRow label="Correo" value={form.email} />
-        <ReviewRow label="Dirección" value={form.address} />
+        <ReviewRow label={t("ui.OnboardingWizard.direccion", "Dirección")} value={form.address} />
         <ReviewRow label="Zona horaria" value={tzLabel} />
         {form.website && <ReviewRow label="Sitio web" value={form.website} />}
       </div>

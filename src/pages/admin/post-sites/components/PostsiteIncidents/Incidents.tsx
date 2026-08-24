@@ -898,7 +898,7 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                         <td className="px-2 py-2.5 text-right">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon" aria-label="Más acciones">
+                              <Button variant="ghost" size="icon" aria-label={t("ui.Incidents.masAcciones", "Más acciones")}>
                                 <EllipsisVertical className="h-5 w-5" />
                               </Button>
                             </DropdownMenuTrigger>

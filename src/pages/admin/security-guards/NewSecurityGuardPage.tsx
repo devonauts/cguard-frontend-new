@@ -761,7 +761,7 @@ export default function NewSecurityGuardPage() {
 
                       <div>
                         <DocumentUpload
-                          label="Imagen de Identificación"
+                          label={t("ui.NewSecurityGuard.imagenDeIdentificacion", "Imagen de Identificación")}
                           description="Foto o escaneo del documento de identidad"
                           value={guardDocs.identificationImage ?? null}
                           onChange={setDoc("identificationImage") as (f: any) => void}
@@ -798,13 +798,13 @@ export default function NewSecurityGuardPage() {
                         onChange={setDoc("afisCertificate") as (f: any) => void}
                       />
                       <DocumentUpload
-                        label="Certificado Médico"
+                        label={t("ui.NewSecurityGuard.certificadoMedico", "Certificado Médico")}
                         description="Certificado médico vigente"
                         value={guardDocs.medicalCertificate ?? null}
                         onChange={setDoc("medicalCertificate") as (f: any) => void}
                       />
                       <DocumentUpload
-                        label="Certificado Psicológico"
+                        label={t("ui.NewSecurityGuard.certificadoPsicologico", "Certificado Psicológico")}
                         description="Evaluación psicológica actualizada"
                         value={guardDocs.psychologicalCertificate ?? null}
                         onChange={setDoc("psychologicalCertificate") as (f: any) => void}
@@ -816,13 +816,13 @@ export default function NewSecurityGuardPage() {
                         onChange={setDoc("credentialDocument") as (f: any) => void}
                       />
                       <DocumentUpload
-                        label="Certificación Nivel 1"
+                        label={t("ui.NewSecurityGuard.certificacionNivel1", "Certificación Nivel 1")}
                         description="Certificación de vigilante nivel 1"
                         value={guardDocs.certificationLevel1 ?? null}
                         onChange={setDoc("certificationLevel1") as (f: any) => void}
                       />
                       <DocumentUpload
-                        label="Certificación Nivel 2"
+                        label={t("ui.NewSecurityGuard.certificacionNivel2", "Certificación Nivel 2")}
                         description="Certificación de vigilante nivel 2"
                         value={guardDocs.certificationLevel2 ?? null}
                         onChange={setDoc("certificationLevel2") as (f: any) => void}

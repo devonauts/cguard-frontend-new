@@ -165,7 +165,7 @@ export default function ClientDocuments({ client }: { client: Client }) {
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <KpiTile icon={<Files />} value={kpis.total ?? 0} label="Total de documentos" accent="primary" />
         <KpiTile icon={<CalendarPlus />} value={kpis.uploadedThisMonth ?? 0} label="Subidos este mes" accent="green" />
-        <KpiTile icon={<FolderOpen />} value={kpis.categoriesCount ?? 0} label="Categorías" accent="blue" />
+        <KpiTile icon={<FolderOpen />} value={kpis.categoriesCount ?? 0} label={t("ui.ClientDocuments.categorias", "Categorías")} accent="blue" />
         <KpiTile icon={<HardDrive />} value={kpis.storageUsedLabel ?? '0 B'} label={`de ${kpis.capLabel ?? '100 GB'}`} accent="orange" bar={kpis.usedPct ?? 0} barTone={(kpis.usedPct ?? 0) >= 90 ? 'bad' : (kpis.usedPct ?? 0) >= 75 ? 'warn' : 'ok'} sub={<span className="text-xs" style={{ color: 'var(--ink-soft)' }}>{kpis.usedPct ?? 0}%</span>} />
       </div>
 
@@ -287,7 +287,7 @@ export default function ClientDocuments({ client }: { client: Client }) {
       <Modal open={uploadOpen} onOpenChange={(o) => { if (!uploading) setUploadOpen(o); }} title="Subir documento" icon={<Upload className="h-5 w-5" />}
         footer={<><Button variant="outline" onClick={() => setUploadOpen(false)} disabled={uploading}>Cancelar</Button><Button onClick={doUpload} disabled={uploading || !pending.length}>{uploading ? 'Subiendo…' : `Subir ${pending.length || ''}`}</Button></>}>
         <div className="space-y-3">
-          <LabeledField label="Categoría">
+          <LabeledField label={t("ui.ClientDocuments.categoria", "Categoría")}>
             <select className={FIELD_CLS} value={upCategory} onChange={(e) => setUpCategory(e.target.value)}>{CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}</select>
           </LabeledField>
           <div onClick={() => fileInputRef.current?.click()} onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); onPick(e.dataTransfer.files); }}

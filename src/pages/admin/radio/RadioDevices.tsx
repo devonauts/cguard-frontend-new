@@ -266,7 +266,7 @@ export default function RadioDevices() {
         <Stagger className="grid grid-cols-3 gap-3">
           <StatCard label="Total" value={counts.total} icon={<Radio />} accent="primary" />
           <StatCard label="Registrados" value={counts.registered} icon={<Wifi />} accent="ok" />
-          <StatCard label="Sin conexión" value={counts.offline} icon={<WifiOff />} accent="neutral" />
+          <StatCard label={t("ui.RadioDevices.sinConexion", "Sin conexión")} value={counts.offline} icon={<WifiOff />} accent="neutral" />
         </Stagger>
 
         {/* List */}

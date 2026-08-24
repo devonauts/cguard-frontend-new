@@ -249,7 +249,7 @@ export default function ClientContract({ client }: { client: Client }) {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
         <Section title={t("ui.ClientContract.informacionDelContrato", "Información del contrato")} icon={<FileText className="h-4 w-4" />}>
           <div className="space-y-2.5">
-            <Field label="Número de contrato" value={orDash(c.contractNumber)} />
+            <Field label={t("ui.ClientContract.numeroDeContrato", "Número de contrato")} value={orDash(c.contractNumber)} />
             <Field label="Tipo de contrato" value={orDash(c.contractType)} />
             <Field label="Moneda" value={orDash(c.currency)} />
             <Field label="Forma de pago" value={orDash(c.paymentTerms)} />
@@ -260,17 +260,17 @@ export default function ClientContract({ client }: { client: Client }) {
           <div className="space-y-2.5">
             <Field label="Fecha de inicio" value={fmtDate(c.contractDate)} />
             <Field label="Fecha de vencimiento" value={fmtDate(c.contractEndDate)} />
-            <Field label="Duración" value={derived.durationMonths != null ? `${derived.durationMonths} meses` : '—'} />
-            <Field label="Renovación automática" value={c.autoRenew ? `Sí${c.autoRenewDaysBefore ? ` (${c.autoRenewDaysBefore} días antes)` : ''}` : 'No'} />
+            <Field label={t("ui.ClientContract.duracion", "Duración")} value={derived.durationMonths != null ? `${derived.durationMonths} meses` : '—'} />
+            <Field label={t("ui.ClientContract.renovacionAutomatica", "Renovación automática")} value={c.autoRenew ? `Sí${c.autoRenewDaysBefore ? ` (${c.autoRenewDaysBefore} días antes)` : ''}` : 'No'} />
           </div>
         </Section>
 
         <Section title={t("ui.ClientContract.terminosPrincipales", "Términos principales")} icon={<ScrollText className="h-4 w-4" />}>
           <div className="space-y-2.5">
             <Field label="SLA acordado" value={c.slaUptimeTarget != null ? `${c.slaUptimeTarget}% de cumplimiento` : '—'} />
-            <Field label="Penalización por incumplimiento" value={orDash(c.penaltyClause)} />
-            <Field label="Cancelación anticipada" value={orDash(c.earlyCancellationNotice)} />
-            <Field label="Jurisdicción" value={orDash(c.jurisdiction)} />
+            <Field label={t("ui.ClientContract.penalizacionPorIncumplimiento", "Penalización por incumplimiento")} value={orDash(c.penaltyClause)} />
+            <Field label={t("ui.ClientContract.cancelacionAnticipada", "Cancelación anticipada")} value={orDash(c.earlyCancellationNotice)} />
+            <Field label={t("ui.ClientContract.jurisdiccion", "Jurisdicción")} value={orDash(c.jurisdiction)} />
           </div>
         </Section>
 
@@ -378,7 +378,7 @@ export default function ClientContract({ client }: { client: Client }) {
 
       {/* Stat cards */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard label="Horas contratadas / mes" value={derived.hoursContracted != null ? `${derived.hoursContracted.toLocaleString('es-EC')} h` : '—'} icon={<Clock className="h-4 w-4" />} hint="Según el contrato" />
+        <StatCard label="Horas contratadas / mes" value={derived.hoursContracted != null ? `${derived.hoursContracted.toLocaleString('es-EC')} h` : '—'} icon={<Clock className="h-4 w-4" />} hint={t("ui.ClientContract.segunElContrato", "Según el contrato")} />
         <StatCard label="Horas utilizadas (mes)" value={`${(derived.hoursUsed || 0).toLocaleString('es-EC')} h`} icon={<Timer className="h-4 w-4" />} hint="De turnos reales" />
         <StatCard
           label="Diferencia"
@@ -451,23 +451,23 @@ export default function ClientContract({ client }: { client: Client }) {
       <Modal open={editOpen} onOpenChange={setEditOpen} title="Editar contrato" icon={<FileText className="h-5 w-5" />} size="lg"
         footer={<><Button variant="outline" onClick={() => setEditOpen(false)}>Cancelar</Button><Button onClick={saveContract} disabled={saving}>{saving ? 'Guardando…' : 'Guardar'}</Button></>}>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <LabeledField label="Número de contrato"><input className={FIELD_CLS} value={form.contractNumber} onChange={(e) => setForm({ ...form, contractNumber: e.target.value })} /></LabeledField>
+          <LabeledField label={t("ui.ClientContract.numeroDeContrato2", "Número de contrato")}><input className={FIELD_CLS} value={form.contractNumber} onChange={(e) => setForm({ ...form, contractNumber: e.target.value })} /></LabeledField>
           <LabeledField label="Tipo de contrato"><input className={FIELD_CLS} placeholder="Servicio integral" value={form.contractType} onChange={(e) => setForm({ ...form, contractType: e.target.value })} /></LabeledField>
           <LabeledField label="Moneda"><input className={FIELD_CLS} placeholder="USD" value={form.currency} onChange={(e) => setForm({ ...form, currency: e.target.value })} /></LabeledField>
           <LabeledField label="Forma de pago"><input className={FIELD_CLS} placeholder="Mensual" value={form.paymentTerms} onChange={(e) => setForm({ ...form, paymentTerms: e.target.value })} /></LabeledField>
           <LabeledField label="Fecha de inicio"><input type="date" className={FIELD_CLS} value={form.contractDate || ''} onChange={(e) => setForm({ ...form, contractDate: e.target.value })} /></LabeledField>
           <LabeledField label="Fecha de vencimiento"><input type="date" className={FIELD_CLS} value={form.contractEndDate || ''} onChange={(e) => setForm({ ...form, contractEndDate: e.target.value })} /></LabeledField>
-          <LabeledField label="Renovación automática">
+          <LabeledField label={t("ui.ClientContract.renovacionAutomatica2", "Renovación automática")}>
             <div className="flex items-center gap-2 h-9">
               <input id="autoRenew" type="checkbox" className="h-4 w-4" checked={!!form.autoRenew} onChange={(e) => setForm({ ...form, autoRenew: e.target.checked })} />
               <label htmlFor="autoRenew" className="text-sm text-muted-foreground">{t("ui.ClientContract.renovarAutomaticamente", "Renovar automáticamente")}</label>
             </div>
           </LabeledField>
-          <LabeledField label="Aviso de renovación (días antes)"><input type="number" className={FIELD_CLS} value={form.autoRenewDaysBefore} onChange={(e) => setForm({ ...form, autoRenewDaysBefore: e.target.value })} /></LabeledField>
+          <LabeledField label={t("ui.ClientContract.avisoDeRenovacionDiasAntes", "Aviso de renovación (días antes)")}><input type="number" className={FIELD_CLS} value={form.autoRenewDaysBefore} onChange={(e) => setForm({ ...form, autoRenewDaysBefore: e.target.value })} /></LabeledField>
           <LabeledField label="Horas contratadas / mes"><input type="number" className={FIELD_CLS} value={form.contractedHoursPerMonth} onChange={(e) => setForm({ ...form, contractedHoursPerMonth: e.target.value })} /></LabeledField>
-          <LabeledField label="Jurisdicción"><input className={FIELD_CLS} placeholder="Ecuador" value={form.jurisdiction} onChange={(e) => setForm({ ...form, jurisdiction: e.target.value })} /></LabeledField>
-          <LabeledField label="Penalización por incumplimiento" full><input className={FIELD_CLS} placeholder={t("ui.ClientContract.creditoDel5Mensual", "Crédito del 5% mensual")} value={form.penaltyClause} onChange={(e) => setForm({ ...form, penaltyClause: e.target.value })} /></LabeledField>
-          <LabeledField label="Cancelación anticipada" full><input className={FIELD_CLS} placeholder={t("ui.ClientContract.60DiasDeNotificacion", "60 días de notificación")} value={form.earlyCancellationNotice} onChange={(e) => setForm({ ...form, earlyCancellationNotice: e.target.value })} /></LabeledField>
+          <LabeledField label={t("ui.ClientContract.jurisdiccion2", "Jurisdicción")}><input className={FIELD_CLS} placeholder="Ecuador" value={form.jurisdiction} onChange={(e) => setForm({ ...form, jurisdiction: e.target.value })} /></LabeledField>
+          <LabeledField label={t("ui.ClientContract.penalizacionPorIncumplimiento2", "Penalización por incumplimiento")} full><input className={FIELD_CLS} placeholder={t("ui.ClientContract.creditoDel5Mensual", "Crédito del 5% mensual")} value={form.penaltyClause} onChange={(e) => setForm({ ...form, penaltyClause: e.target.value })} /></LabeledField>
+          <LabeledField label={t("ui.ClientContract.cancelacionAnticipada2", "Cancelación anticipada")} full><input className={FIELD_CLS} placeholder={t("ui.ClientContract.60DiasDeNotificacion", "60 días de notificación")} value={form.earlyCancellationNotice} onChange={(e) => setForm({ ...form, earlyCancellationNotice: e.target.value })} /></LabeledField>
           <div className="sm:col-span-2 mt-1 grid grid-cols-2 gap-3 sm:grid-cols-4">
             <LabeledField label="SLA uptime (%)"><input type="number" className={FIELD_CLS} value={form.slaUptimeTarget} onChange={(e) => setForm({ ...form, slaUptimeTarget: e.target.value })} /></LabeledField>
             <LabeledField label="Respuesta (min)"><input type="number" className={FIELD_CLS} value={form.slaResponseMinutes} onChange={(e) => setForm({ ...form, slaResponseMinutes: e.target.value })} /></LabeledField>
@@ -493,7 +493,7 @@ export default function ClientContract({ client }: { client: Client }) {
               </select>
             </LabeledField>
             <LabeledField label="Nombre" full><input className={FIELD_CLS} value={svcForm.name} onChange={(e) => setSvcForm({ ...svcForm, name: e.target.value })} /></LabeledField>
-            <LabeledField label="Descripción" full><input className={FIELD_CLS} value={svcForm.description || ''} onChange={(e) => setSvcForm({ ...svcForm, description: e.target.value })} /></LabeledField>
+            <LabeledField label={t("ui.ClientContract.descripcion", "Descripción")} full><input className={FIELD_CLS} value={svcForm.description || ''} onChange={(e) => setSvcForm({ ...svcForm, description: e.target.value })} /></LabeledField>
             <LabeledField label="Unidad"><input className={FIELD_CLS} placeholder={t("ui.ClientContract.estacionRondas", "Estación, Rondas…")} value={svcForm.unit || ''} onChange={(e) => setSvcForm({ ...svcForm, unit: e.target.value })} /></LabeledField>
             <LabeledField label="Cantidad contratada"><input type="number" className={FIELD_CLS} placeholder={t("ui.ClientContract.vacioIlimitado", "Vacío = ilimitado")} value={svcForm.contractedQty ?? ''} onChange={(e) => setSvcForm({ ...svcForm, contractedQty: e.target.value })} /></LabeledField>
             <LabeledField label="Objetivo SLA (%)"><input type="number" className={FIELD_CLS} value={svcForm.slaTarget ?? ''} onChange={(e) => setSvcForm({ ...svcForm, slaTarget: e.target.value })} /></LabeledField>
@@ -509,7 +509,7 @@ export default function ClientContract({ client }: { client: Client }) {
             <LabeledField label="Periodo" full><input className={FIELD_CLS} placeholder="Actual / Anterior" value={renForm.periodLabel} onChange={(e) => setRenForm({ ...renForm, periodLabel: e.target.value })} /></LabeledField>
             <LabeledField label="Desde"><input type="date" className={FIELD_CLS} value={renForm.fromDate || ''} onChange={(e) => setRenForm({ ...renForm, fromDate: e.target.value })} /></LabeledField>
             <LabeledField label="Hasta"><input type="date" className={FIELD_CLS} value={renForm.toDate || ''} onChange={(e) => setRenForm({ ...renForm, toDate: e.target.value })} /></LabeledField>
-            <LabeledField label="Duración (meses)"><input type="number" className={FIELD_CLS} value={renForm.durationMonths ?? ''} onChange={(e) => setRenForm({ ...renForm, durationMonths: e.target.value })} /></LabeledField>
+            <LabeledField label={t("ui.ClientContract.duracionMeses", "Duración (meses)")}><input type="number" className={FIELD_CLS} value={renForm.durationMonths ?? ''} onChange={(e) => setRenForm({ ...renForm, durationMonths: e.target.value })} /></LabeledField>
             <LabeledField label="Estado">
               <select className={FIELD_CLS} value={renForm.status} onChange={(e) => setRenForm({ ...renForm, status: e.target.value })}>
                 <option value="active">Activo</option>

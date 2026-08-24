@@ -126,7 +126,7 @@ export default function GuardReviewsPage() {
               value={average != null ? average.toFixed(2) : '—'}
               hint={average != null ? <Stars value={average} /> : undefined}
             />
-            <StatCard icon={<MessageSquareWarning />} accent="brand" label="Reseñas recibidas" value={total} />
+            <StatCard icon={<MessageSquareWarning />} accent="brand" label={t("ui.GuardReviews.resenasRecibidas", "Reseñas recibidas")} value={total} />
             {/* Tercera ficha de la MISMA fila: mismas medidas y misma etiqueta
                 que las otras dos, o se lee como un hueco. */}
             <Section title={t("ui.GuardReviews.distribucion", "Distribución")} className="p-4" contentClassName="space-y-1">

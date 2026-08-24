@@ -849,7 +849,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps)
 
       {/* Al desplazar la columna el submenú flotante se quedaría colgado a la
           altura vieja: se cierra en cuanto la lista se mueve. */}
-      <nav className="cgsb-rail-list" aria-label="Navegación principal" onScroll={() => setFlyout(null)}>
+      <nav className="cgsb-rail-list" aria-label={t("ui.sidebar.navegacionPrincipal", "Navegación principal")} onScroll={() => setFlyout(null)}>
         {groups.map((g, gi) => (
           <div key={g.id} className="contents">
             {gi > 0 && <div className="cgsb-sep" role="separator" aria-hidden />}

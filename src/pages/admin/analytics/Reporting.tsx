@@ -34,7 +34,7 @@ export default function Reporting() {
             <MetricCard icon={<Shield size={16} />} accent={GOLD} value={k.guardsOnDuty} label="Vigilantes en servicio" sub="ahora mismo" />
             <MetricCard icon={<ClipboardCheck size={16} />} accent={TONES.info} value={`${k.coveragePct}%`} label="Cobertura de turnos" sub={`${k.shiftsCovered}/${k.shiftsTotal} cubiertos`} pct={k.coveragePct} />
             <MetricCard icon={<TrendingUp size={16} />} accent={TONES.ok} value={`${k.rondaCompletionPct}%`} label="Rondas completadas" sub={`${k.rondasCompleted}/${k.rondasTotal}`} pct={k.rondaCompletionPct} />
-            <MetricCard icon={<MapPin size={16} />} accent={TONES.serie2} value={`${k.locationCompliancePct}%`} label="Cumplimiento de ubicación" sub={`${k.scansValid}/${k.scansTotal} escaneos`} pct={k.locationCompliancePct} />
+            <MetricCard icon={<MapPin size={16} />} accent={TONES.serie2} value={`${k.locationCompliancePct}%`} label={t("ui.Reporting.cumplimientoDeUbicacion", "Cumplimiento de ubicación")} sub={`${k.scansValid}/${k.scansTotal} escaneos`} pct={k.locationCompliancePct} />
             <MetricCard icon={<AlertTriangle size={16} />} accent={TONES.bad} value={k.incidentsTotal} label="Incidentes" sub={`${k.incidentsOpen} abiertos`} />
             <MetricCard icon={<Clock size={16} />} accent={TONES.warn} value={`${k.punctualityPct}%`} label="Puntualidad" sub={`${k.clockinsOnTime}/${k.clockinsTotal} a tiempo`} pct={k.punctualityPct} />
           </Stagger>
@@ -87,10 +87,10 @@ export default function Reporting() {
 
           <div className="grid gap-4 lg:grid-cols-3">
             <Section title="Incidentes por prioridad" icon={<AlertTriangle size={16} />}>
-              <HBars items={data.incidentsByPriority} color={TONES.bad} empty="Sin incidentes en el período." />
+              <HBars items={data.incidentsByPriority} color={TONES.bad} empty={t("ui.Reporting.sinIncidentesEnElPeriodo", "Sin incidentes en el período.")} />
             </Section>
             <Section title={t("ui.Reporting.sitiosConMasIncidentes", "Sitios con más incidentes")} icon={<Building2 size={16} />}>
-              <HBars items={data.topIncidentSites.map((s) => ({ label: s.site, count: s.count }))} color={GOLD} empty="Sin incidentes en el período." />
+              <HBars items={data.topIncidentSites.map((s) => ({ label: s.site, count: s.count }))} color={GOLD} empty={t("ui.Reporting.sinIncidentesEnElPeriodo2", "Sin incidentes en el período.")} />
             </Section>
             <Section title="Asistencia" icon={<Clock size={16} />}>
               <AttendanceTiles attendance={data.attendance} />
@@ -99,7 +99,7 @@ export default function Reporting() {
 
           <Section title="Resumen por sitio de servicio" icon={<Building2 size={16} />}>
             {data.perSite.length === 0 ? (
-              <EmptyState icon={<Building2 />} title="Sin actividad" description="Sin actividad registrada en el período." />
+              <EmptyState icon={<Building2 />} title="Sin actividad" description={t("ui.Reporting.sinActividadRegistradaEnEl", "Sin actividad registrada en el período.")} />
             ) : (
               <PerSiteTable rows={data.perSite} limit={10} />
             )}

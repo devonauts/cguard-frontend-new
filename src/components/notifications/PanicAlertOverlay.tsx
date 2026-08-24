@@ -234,9 +234,9 @@ export function PanicAlertOverlay({
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-3">
               <Row icon={<Building2 size={18} />} label="Puesto" value={p.stationName || p.siteName} />
-              <Row icon={<MapPin size={18} />} label="Ubicación" value={p.address || p.location} />
+              <Row icon={<MapPin size={18} />} label={t("ui.PanicAlertOverlay.ubicacion", "Ubicación")} value={p.address || p.location} />
               <Row icon={<User size={18} />} label={isClient ? "Cliente" : "Vigilante"} value={isClient ? (p.clientName || p.guardName) : p.guardName} />
-              <Row icon={<Phone size={18} />} label="Teléfono del sitio" value={p.phone} />
+              <Row icon={<Phone size={18} />} label={t("ui.PanicAlertOverlay.telefonoDelSitio", "Teléfono del sitio")} value={p.phone} />
               <Row icon={<Clock size={18} />} label="Hora" value={when} />
               {/* La cadena de llamadas, en el orden en que se llamaría. Antes
                   este espacio estaba vacío en todo pánico de persona. */}

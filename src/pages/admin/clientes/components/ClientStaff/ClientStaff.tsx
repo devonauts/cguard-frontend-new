@@ -301,7 +301,7 @@ export default function ClientStaff({ client }: { client: Client }) {
         <div className="space-y-4">
           <Section title={t("ui.ClientStaff.distribucionPorRol", "Distribución por rol")} icon={<Users className="h-4 w-4" />}>
             <div className="flex items-center gap-4">
-              <Donut segments={donutSegments} size={150} thickness={16} centerTop={data?.total ?? dist.reduce((a, d) => a + d.count, 0)} centerBottom="Total" ariaLabel="Distribución por rol" />
+              <Donut segments={donutSegments} size={150} thickness={16} centerTop={data?.total ?? dist.reduce((a, d) => a + d.count, 0)} centerBottom="Total" ariaLabel={t("ui.ClientStaff.distribucionPorRol", "Distribución por rol")} />
               <div className="flex-1 space-y-2">
                 {dist.map((d) => (
                   <div key={d.key} className="flex items-center justify-between text-sm">

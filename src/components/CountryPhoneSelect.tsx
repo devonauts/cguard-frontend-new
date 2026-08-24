@@ -52,7 +52,7 @@ function buildDialCode(root?: string | null, suffixes?: string[] | null): string
 export default function CountryPhoneSelect({
   value,
   onChange,
-  placeholder = "Seleccionar país…",
+  placeholder,
   className,
   apiUrl = "https://restcountries.com/v3.1/all?fields=name,cca2,idd,flag",
 }: Props) {
@@ -143,7 +143,7 @@ export default function CountryPhoneSelect({
               <span className="text-sm font-medium">{current.dialCode}</span>
             </span>
           ) : (
-            <span className="text-muted-foreground">{placeholder}</span>
+            <span className="text-muted-foreground">{placeholder ?? t("ui.CountryPhoneSelect.seleccionarPais", "Seleccionar país…")}</span>
           )}
           <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
         </Button>

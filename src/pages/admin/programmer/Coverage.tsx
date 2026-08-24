@@ -406,7 +406,7 @@ export default function Coverage() {
         ) : tab === "board" ? (
           <Section title="Estado de los puestos">
             {!live?.stations.length ? (
-              <EmptyState icon={<ShieldCheck />} title="Sin puestos" description="Todavía no hay puestos configurados." />
+              <EmptyState icon={<ShieldCheck />} title="Sin puestos" description={t("ui.Coverage.todaviaNoHayPuestosConfigurados", "Todavía no hay puestos configurados.")} />
             ) : (
               <Stagger className="grid gap-3 lg:grid-cols-2">
                 {live.stations.map((st) => <StationRow key={st.stationId} st={st} />)}
@@ -416,7 +416,7 @@ export default function Coverage() {
         ) : (
           <Section title="Novedades registradas">
             {!events.length ? (
-              <EmptyState icon={<ShieldCheck />} title="Sin novedades" description="No se han registrado novedades en el período." />
+              <EmptyState icon={<ShieldCheck />} title="Sin novedades" description={t("ui.Coverage.noSeHanRegistradoNovedades", "No se han registrado novedades en el período.")} />
             ) : (
               <div className="space-y-2">
                 {events.map((ev) => (
@@ -595,7 +595,7 @@ export default function Coverage() {
             {candidates == null ? (
               <SkeletonCards />
             ) : !candidates.length ? (
-              <EmptyState icon={<UserPlus />} title="Sin vigilantes disponibles" description="Nadie está libre en ese horario." />
+              <EmptyState icon={<UserPlus />} title="Sin vigilantes disponibles" description={t("ui.Coverage.nadieEstaLibreEnEse", "Nadie está libre en ese horario.")} />
             ) : (
               candidates.map((c) => (
                 <button

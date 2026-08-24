@@ -1364,9 +1364,9 @@ export default function AlarmPanels() {
         {/* Summary */}
         <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <StatCard label="Total" value={counts.total} icon={<ShieldAlert />} accent="neutral" />
-          <StatCard label="En línea" value={counts.online} icon={<Wifi />} accent="ok" />
+          <StatCard label={t("ui.AlarmPanels.enLinea", "En línea")} value={counts.online} icon={<Wifi />} accent="ok" />
           <StatCard label="Armados" value={counts.armed} icon={<ShieldAlert />} accent="warn" />
-          <StatCard label="Sin conexión" value={counts.offline} icon={<WifiOff />} accent="bad" />
+          <StatCard label={t("ui.AlarmPanels.sinConexion", "Sin conexión")} value={counts.offline} icon={<WifiOff />} accent="bad" />
         </Stagger>
 
         {/* List */}

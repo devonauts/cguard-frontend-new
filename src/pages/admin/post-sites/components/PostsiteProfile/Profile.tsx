@@ -323,7 +323,7 @@ export default function PostSiteProfile({ site }: { site?: any }) {
                                     <InfoRow label="Equipo especial" value={equipo.join(', ')} />
                                 ) : null}
                                 {formacion.length ? (
-                                    <InfoRow label="Formación exigida" value={formacion.join(', ')} />
+                                    <InfoRow label={t("ui.Profile.formacionExigida", "Formación exigida")} value={formacion.join(', ')} />
                                 ) : null}
                                 {despliegueActivo.length ? (
                                     <div>

@@ -116,7 +116,7 @@ export default function GuardAsistenciaPage() {
         {/* Resumen del periodo */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <StatCard icon={<CalendarClock />} accent="blue" label="Turnos" value={String(summary.shifts)} />
-          <StatCard icon={<CalendarDays />} accent="green" label="Días trabajados" value={String(summary.days)} />
+          <StatCard icon={<CalendarDays />} accent="green" label={t("ui.GuardAsistencia.diasTrabajados", "Días trabajados")} value={String(summary.days)} />
           <StatCard icon={<Clock />} accent="primary" label="Horas totales" value={summary.hours.toFixed(2)} />
           <StatCard icon={<Timer />} accent="orange" label="Tardanzas" value={String(summary.late)} />
         </div>

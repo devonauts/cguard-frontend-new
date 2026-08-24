@@ -556,7 +556,7 @@ export default function NominaRecords() {
                         </StaticMapImage>
                       </div>
                     ) : selected.punchOutTime ? (
-                      <EmptyState title={t("ui.NominaRecords.salidaSinUbicacion", "Salida sin ubicación")} description="Marcación automática o GPS no disponible." className="py-6" />
+                      <EmptyState title={t("ui.NominaRecords.salidaSinUbicacion", "Salida sin ubicación")} description={t("ui.NominaRecords.marcacionAutomaticaOGpsNo", "Marcación automática o GPS no disponible.")} className="py-6" />
                     ) : null}
                   </div>
                 )}

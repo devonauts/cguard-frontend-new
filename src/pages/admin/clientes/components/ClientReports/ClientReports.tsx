@@ -74,7 +74,8 @@ const fmtD = (iso: string) => { const d = new Date(iso); return Number.isNaN(d.g
 
 /** Actividad diaria — la serie temporal de la pestaña. */
 function ActividadChart({ data }: { data: Array<{ date: string; value: number }> }) {
-  if (!data || data.length < 2) return <EmptyState icon={<FileBarChart className="h-5 w-5" />} title="Sin datos" description="No hay actividad en el período." />;
+  const { t } = useTranslation();
+  if (!data || data.length < 2) return <EmptyState icon={<FileBarChart className="h-5 w-5" />} title="Sin datos" description={t("ui.ClientReports.noHayActividadEnEl", "No hay actividad en el período.")} />;
   const dia = (iso: string) => new Date(iso).toLocaleDateString('es-EC', { day: '2-digit', month: 'short' });
   return (
     <AreaChart
@@ -209,7 +210,7 @@ export default function ClientReports({ client }: { client: Client & { companyNa
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[2.2fr_1fr]">
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
           <Section title="Incidentes por tipo" icon={<AlertTriangle className="h-4 w-4" />}>
-            {porTipo.length === 0 ? <EmptyState icon={<AlertTriangle className="h-5 w-5" />} title="Sin incidentes" description="No hay incidentes en el período." /> : (
+            {porTipo.length === 0 ? <EmptyState icon={<AlertTriangle className="h-5 w-5" />} title="Sin incidentes" description={t("ui.ClientReports.noHayIncidentesEnEl", "No hay incidentes en el período.")} /> : (
               <div className="flex items-center gap-3">
                 {/* Los tipos vienen ordenados por frecuencia: una rampa del acento
                     hacia el gris lo dice mejor que siete colores sin relación, y
@@ -223,7 +224,7 @@ export default function ClientReports({ client }: { client: Client & { companyNa
           </Section>
 
           <Section title="Incidentes por estado" icon={<ShieldCheck className="h-4 w-4" />}>
-            {porEstado.every((e) => e.count === 0) ? <EmptyState icon={<ShieldCheck className="h-5 w-5" />} title="Sin incidentes" description="No hay incidentes en el período." /> : (
+            {porEstado.every((e) => e.count === 0) ? <EmptyState icon={<ShieldCheck className="h-5 w-5" />} title="Sin incidentes" description={t("ui.ClientReports.noHayIncidentesEnEl2", "No hay incidentes en el período.")} /> : (
               <div className="space-y-3 pt-1">
                 {porEstado.map((e) => (
                   <div key={e.key}>
@@ -283,7 +284,7 @@ export default function ClientReports({ client }: { client: Client & { companyNa
           <input className={`${FIELD_CLS} pl-8`} placeholder="Buscar reporte por nombre…" value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} />
         </div>
         {reportsList.length === 0 ? (
-          <EmptyState icon={<FileText className="h-5 w-5" />} title="Sin reportes" description="Aún no hay reportes operativos generados para este cliente en el período." />
+          <EmptyState icon={<FileText className="h-5 w-5" />} title="Sin reportes" description={t("ui.ClientReports.aunNoHayReportesOperativos", "Aún no hay reportes operativos generados para este cliente en el período.")} />
         ) : (
           <TabTable>
               <THead>

@@ -5,6 +5,7 @@
  * minutos contra clientes); uno grande deja LEER la serie que interesa.
  */
 import { useMemo, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { AlertTriangle, Building2, Timer } from "lucide-react";
 import { Segmented } from "@/components/kit";
 import { AreaChart } from "@/components/charts";
@@ -17,6 +18,7 @@ type SerieKey = "incidentes" | "respuesta" | "clientes";
 export function TrendPanel({ incidents, response, acquisition, className }: {
   incidents: MonthPoint[]; response: MonthPoint[]; acquisition: MonthPoint[]; className?: string;
 }) {
+  const { t } = useTranslation();
   const [serie, setSerie] = useState<SerieKey>("incidentes");
 
   const SERIES: Record<SerieKey, {
@@ -92,7 +94,7 @@ export function TrendPanel({ incidents, response, acquisition, className }: {
 
       <div className="mt-4 grid grid-cols-3 gap-3">
         <Resumen label="Promedio" value={promedio == null ? "—" : `${fmtValue(Math.round(promedio * 10) / 10)}${s.suffix}`} />
-        <Resumen label="Máximo" value={maximo == null ? "—" : `${fmtValue(maximo)}${s.suffix}`} />
+        <Resumen label={t("ui.TrendPanel.maximo", "Máximo")} value={maximo == null ? "—" : `${fmtValue(maximo)}${s.suffix}`} />
         <Resumen label="Meses" value={String(vals.length)} />
       </div>
     </Panel>

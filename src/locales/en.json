@@ -7026,7 +7026,8 @@
       "masAcciones": "More actions"
     },
     "ChangePasswordForm": {
-      "mostrarContrasena": "Show password"
+      "mostrarContrasena": "Show password",
+      "mostrarContrasena2": "Show password"
     },
     "ClientForm": {
       "sinPersonasAdicionalesSoloEl": "No additional people. Only the main contact will have access."
@@ -7113,14 +7114,20 @@
       "numeroDeIdentificacion": "ID number",
       "seleccionarGenero": "Select gender",
       "seleccionarNivelAcademico": "Select education level",
-      "telefonoCelular": "Phone / mobile"
+      "telefonoCelular": "Phone / mobile",
+      "imagenDeIdentificacion": "ID photo",
+      "certificadoMedico": "Medical certificate",
+      "certificadoPsicologico": "Psychological certificate",
+      "certificacionNivel1": "Level 1 certification",
+      "certificacionNivel2": "Level 2 certification"
     },
     "PermissionsEditor": {
       "esteRolEstaBloqueadoNo": "This role is locked. Its default permissions can't be changed."
     },
     "Profile": {
       "proximoTurno": "Next shift",
-      "sinTurnosProgramadosEnLos": "No shifts scheduled in the next 7 days."
+      "sinTurnosProgramadosEnLos": "No shifts scheduled in the next 7 days.",
+      "formacionExigida": "Required training"
     },
     "ProfileUserForm": {
       "espanol": "🇪🇸 Spanish"
@@ -7208,7 +7215,8 @@
       "minimo8Caracteres": "At least 8 characters",
       "repiteLaContrasena": "Repeat the password",
       "telefonoMovil": "Mobile phone",
-      "tuEmpresaActivaraTuCuenta": "Your company will activate your account and assign you to a post."
+      "tuEmpresaActivaraTuCuenta": "Your company will activate your account and assign you to a post.",
+      "consigueloEnElAppStore": "Get it on the App Store"
     },
     "AddressAutocomplete": {
       "miUbicacion": "My location"
@@ -7218,13 +7226,17 @@
       "informacionGeneral": "General information",
       "ningunPermisoDelRolFue": "No permission on this role has been restricted.",
       "sinUbicacionDeOficinaConfigurada": "No office location set.",
-      "ubicacionDeOficina": "Office location"
+      "ubicacionDeOficina": "Office location",
+      "correoElectronico": "Email",
+      "telefono": "Phone"
     },
     "AlarmAnalytics": {
       "analisisDeMonitoreo": "Monitoring analysis",
       "casosDeAlarmaPorDia": "Alarm cases per day",
       "desempenoDeOperadores": "Operator performance",
-      "porCategoria": "By category"
+      "porCategoria": "By category",
+      "resolucionProm": "Avg. resolution",
+      "verificacionPorLlamada": "Verification by phone call"
     },
     "AlarmCaseDetail": {
       "descripcion": "Description",
@@ -7232,7 +7244,9 @@
       "sinEntradasDeAuditoria": "No audit entries",
       "sinInformacionDePanel": "No panel information",
       "titulo": "Title",
-      "unidadNombreONumeroDe": "Unit, name or contact number"
+      "unidadNombreONumeroDe": "Unit, name or contact number",
+      "ultimaSenal": "Last signal",
+      "comunicacion": "Communication"
     },
     "AlarmPanels": {
       "agenciaPsapPolicia": "Agency / PSAP (police)",
@@ -7251,7 +7265,9 @@
       "sinCamara": "— No camera —",
       "supervisionMin": "Supervision (min)",
       "telefono": "Phone",
-      "telefonoPsap": "PSAP phone"
+      "telefonoPsap": "PSAP phone",
+      "enLinea": "Online",
+      "sinConexion": "Offline"
     },
     "AlarmSignals": {
       "buscarPorCuentaCodigoZona": "Search by account, code, zone…",
@@ -7286,7 +7302,8 @@
       "seleccionaUnaCategoria": "Choose a category"
     },
     "Checklist": {
-      "informeDeListaDeVerificacion": "Checklist report"
+      "informeDeListaDeVerificacion": "Checklist report",
+      "listasDeVerificacionCompletadasPor": "Checklists completed by the guards at each post."
     },
     "ClientContract": {
       "60DiasDeNotificacion": "60 days' notice",
@@ -7300,7 +7317,20 @@
       "proximaRenovacion": "Next renewal",
       "renovarAutomaticamente": "Renew automatically",
       "terminosPrincipales": "Key terms",
-      "vacioIlimitado": "Empty = unlimited"
+      "vacioIlimitado": "Empty = unlimited",
+      "numeroDeContrato": "Contract number",
+      "renovacionAutomatica": "Automatic renewal",
+      "penalizacionPorIncumplimiento": "Penalty for breach",
+      "cancelacionAnticipada": "Early cancellation",
+      "jurisdiccion": "Jurisdiction",
+      "segunElContrato": "As per the contract",
+      "numeroDeContrato2": "Contract number",
+      "renovacionAutomatica2": "Automatic renewal",
+      "avisoDeRenovacionDiasAntes": "Renewal notice (days before)",
+      "jurisdiccion2": "Jurisdiction",
+      "penalizacionPorIncumplimiento2": "Penalty for breach",
+      "cancelacionAnticipada2": "Early cancellation",
+      "duracionMeses": "Duration (months)"
     },
     "ClientCoverage": {
       "abrirElDetalleDeLa": "Open the station detail",
@@ -7342,7 +7372,8 @@
       "estacionTodas": "Station: All",
       "resolucion": "Resolution",
       "sedeEstacion": "Site / station",
-      "sinBitacora": "No log"
+      "sinBitacora": "No log",
+      "noHayRegistrosEnLa": "There are no log entries for this incident."
     },
     "ClientPortal": {
       "comoFunciona": "How does it work?",
@@ -7350,12 +7381,14 @@
       "enviarInvitacion": "Send invitation",
       "invitacionEnviada": "Invitation sent!",
       "quePuedeVerElCliente": "What can the client see?",
-      "seEnviaraUnaInvitacion": "An invitation will be sent"
+      "seEnviaraUnaInvitacion": "An invitation will be sent",
+      "appMovilDelCliente": "Client mobile app"
     },
     "ClientPostSites": {
       "asignacion": "Assignment",
       "buscarSedePorNombreO": "Search site by name or address",
-      "direccion": "Address"
+      "direccion": "Address",
+      "esteClienteAunNoTiene": "This client has no sites on record yet."
     },
     "ClientProjects": {
       "eliminarEsteProyecto": "Delete this project?",
@@ -7369,7 +7402,11 @@
       "periodo": "Period",
       "reportesRapidos": "Quick reports",
       "sedeEstacion": "Site / station",
-      "vsPeriodoAnterior": "Vs. previous period"
+      "vsPeriodoAnterior": "Vs. previous period",
+      "noHayActividadEnEl": "No activity in this period.",
+      "noHayIncidentesEnEl": "No incidents in this period.",
+      "noHayIncidentesEnEl2": "No incidents in this period.",
+      "aunNoHayReportesOperativos": "No operational reports have been generated for this client in this period."
     },
     "ClientStaff": {
       "buscarPorNombreIdO": "Search by name, ID or station",
@@ -7390,7 +7427,8 @@
       "recursosDeLaOperacion": "Operation resources"
     },
     "CountryPhoneSelect": {
-      "buscarPaisOCodigo": "Search country or code…"
+      "buscarPaisOCodigo": "Search country or code…",
+      "seleccionarPais": "Select country…"
     },
     "Coverage": {
       "anularLaNovedadYDevolver": "Cancel the change and return the shift to the rotation",
@@ -7398,7 +7436,10 @@
       "ejLlamoSeLeDano": "e.g. called in, his bike broke down on the way",
       "quienCubreElPuesto": "Who covers the post?",
       "quienLoCubre": "Who covers it",
-      "quienTomaVacacionesPermiso": "Who is taking leave"
+      "quienTomaVacacionesPermiso": "Who is taking leave",
+      "todaviaNoHayPuestosConfigurados": "No posts set up yet.",
+      "noSeHanRegistradoNovedades": "No changes were recorded in this period.",
+      "nadieEstaLibreEnEse": "Nobody is free at that time."
     },
     "CustomerRequests": {
       "elementosPorPagina": "Items per page",
@@ -7408,7 +7449,13 @@
     },
     "CustomizePanel": {
       "colorDeLaAplicacion": "App colour",
-      "estandar": "Standard"
+      "estandar": "Standard",
+      "rastreoDeUbicacionEnVivo": "Live location tracking",
+      "intervaloDeUbicacionS": "Location interval (s)",
+      "umbralPuntoDeControlTardio": "Late-checkpoint threshold (min)",
+      "avisoDispositivoSinConexionMin": "Device-offline alert (min)",
+      "nivelesDeEscalacionDeAlerta": "Alert escalation levels",
+      "notificacionAutomaticaDeEmergencia": "Automatic emergency notification"
     },
     "DemoDataBanner": {
       "operacionDeEjemplo": "sample operation"
@@ -7421,14 +7468,16 @@
       "noHayComentariosAun": "No comments yet"
     },
     "DocPolicyAck": {
-      "reconocimientoDeDocumentosYPoliticas": "Document and policy acknowledgement"
+      "reconocimientoDeDocumentosYPoliticas": "Document and policy acknowledgement",
+      "quienHaLeidoYAceptado": "Who has read and accepted each company policy or document."
     },
     "EditDispatch": {
       "informacionDelIncidente": "Incident details",
       "ubicacionDelIncidente": "Incident location*"
     },
     "EditRoute": {
-      "noSeEncontroLaRuta": "The route was not found"
+      "noSeEncontroLaRuta": "The route was not found",
+      "laRutaSolicitadaNoExiste": "The page you asked for doesn't exist, or isn't available."
     },
     "EditSecurityGuard": {
       "cedula": "National ID",
@@ -7449,23 +7498,30 @@
       "condicion2": "Condition",
       "eliminarArticulo": "Delete item",
       "fotosDelArticulo": "Item photos",
-      "numeroDeSerie": "Serial number"
+      "numeroDeSerie": "Serial number",
+      "articulos": "Items",
+      "enEstaPagina": "On this page",
+      "enEstaPagina2": "On this page",
+      "enEstaPagina3": "On this page"
     },
     "Guard": {
       "analiticasDeVigilantes": "Guard analytics",
       "distribucionDeDesempeno": "Performance distribution",
       "puntuacion": "Score",
       "rankingDeDesempeno": "Performance ranking",
-      "tuEmpresaNoEstaMidiendo": "Your company isn't measuring performance"
+      "tuEmpresaNoEstaMidiendo": "Your company isn't measuring performance",
+      "puntuacionPromedio": "Average score"
     },
     "GuardAsistencia": {
-      "aprobacion": "Approval"
+      "aprobacion": "Approval",
+      "diasTrabajados": "Days worked"
     },
     "GuardCardsGrid": {
       "sinAsignacion": "No assignment"
     },
     "GuardDeviceFallReport": {
-      "registrosDeAlertaDeCaida": "Man-down alert records"
+      "registrosDeAlertaDeCaida": "Man-down alert records",
+      "alertasDeCaidaDetectadasPor": "Man-down alerts detected by the guard's phone during the shift."
     },
     "GuardHorario": {
       "laRotacionSeConfiguraEn": "The rotation is set up on the station."
@@ -7484,7 +7540,8 @@
     "GuardReviews": {
       "distribucion": "Distribution",
       "resenasDeClientes": "Client reviews",
-      "sinResenasTodavia": "No reviews yet"
+      "sinResenasTodavia": "No reviews yet",
+      "resenasRecibidas": "Reviews received"
     },
     "IncidentTypeDialog": {
       "pEjRoboLesionAlarma": "e.g. Theft, Injury, Fire alarm…"
@@ -7549,7 +7606,8 @@
       "fotografia": "Photo",
       "identificacion": "ID",
       "notasDelVehiculo": "Vehicle notes",
-      "numeroVinNumeroDeIdentificacion": "VIN (vehicle identification number)"
+      "numeroVinNumeroDeIdentificacion": "VIN (vehicle identification number)",
+      "vehiculo": "vehicle"
     },
     "NominaApprovals": {
       "entradasTardias": "Late clock-ins",
@@ -7561,13 +7619,18 @@
     },
     "NominaRecords": {
       "salidaSinUbicacion": "Clock-out without location",
-      "ubicacion": "Location"
+      "ubicacion": "Location",
+      "marcacionAutomaticaOGpsNo": "Automatic clocking or GPS unavailable."
     },
     "NominaSettings": {
       "alMultiploDe5Minutos": "To the nearest 5 minutes",
       "avisarAdemasAEstosCorreos": "Also notify these email addresses",
       "miercoles": "Wednesday",
-      "sabado": "Saturday"
+      "sabado": "Saturday",
+      "requerirValidacionDeGeocerca": "Require geofence validation",
+      "permitirFueraDeGeocercaCon": "Allow outside the geofence (with approval)",
+      "requerirAprobacionParaExcepciones": "Require approval for exceptions",
+      "bloquearRegistrosAlCerrarLa": "Lock records when payroll is closed"
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Where will you be working?"
@@ -7616,7 +7679,9 @@
     },
     "PanicAlertOverlay": {
       "aQuienLlamar": "Who to call",
-      "describeLaAccionTomadaPara": "Describe the action taken on the SOS…"
+      "describeLaAccionTomadaPara": "Describe the action taken on the SOS…",
+      "ubicacion": "Location",
+      "telefonoDelSitio": "Site phone"
     },
     "PanicButtonLog": {
       "registrosDelBotonDePanico": "Panic button records"
@@ -7631,12 +7696,17 @@
       "noSeEncontraronPaises": "No countries found."
     },
     "PostOrderAck": {
-      "reconocimientoDeOrdenesDePublicacion": "Post-order acknowledgement"
+      "reconocimientoDeOrdenesDePublicacion": "Post-order acknowledgement",
+      "quienHaLeidoYAceptado": "Who has read and accepted each post's standing orders."
     },
     "PostSite": {
       "analiticasPorSitioDeServicio": "Analytics by service site",
       "desempenoPorSitioDeServicio": "Performance by service site",
-      "sitiosConMasIncidentes": "Sites with the most incidents"
+      "sitiosConMasIncidentes": "Sites with the most incidents",
+      "enElPeriodo": "in this period",
+      "cumplimientoDeUbicacion": "Location compliance",
+      "sinIncidentesEnElPeriodo": "No incidents in this period.",
+      "sinActividadRegistradaEnEl": "No activity recorded in this period."
     },
     "PostSiteDetailsDialog": {
       "codigoPostal": "Postcode",
@@ -7686,7 +7756,8 @@
       "aunNoHayRadiosIp": "No IP radios yet",
       "contrasenaSip": "SIP password",
       "extensionTalkgroup": "Extension / talkgroup",
-      "pasarelaRoipSipLaContrasena": "RoIP / SIP gateway. The SIP password is stored encrypted."
+      "pasarelaRoipSipLaContrasena": "RoIP / SIP gateway. The SIP password is stored encrypted.",
+      "sinConexion": "Offline"
     },
     "RadioDispatch": {
       "configuracion": "Settings",
@@ -7704,7 +7775,11 @@
       "rondasCompletadasPorDia": "Patrols completed per day",
       "sinVigilantesEvaluadosEnEl": "No guards rated in this period.",
       "sitiosConMasIncidentes": "Sites with the most incidents",
-      "vigilantesConMenorDesempeno": "Lowest-performing guards"
+      "vigilantesConMenorDesempeno": "Lowest-performing guards",
+      "cumplimientoDeUbicacion": "Location compliance",
+      "sinIncidentesEnElPeriodo": "No incidents in this period.",
+      "sinIncidentesEnElPeriodo2": "No incidents in this period.",
+      "sinActividadRegistradaEnEl": "No activity recorded in this period."
     },
     "Reports": {
       "configuracion": "Settings",
@@ -7767,7 +7842,14 @@
     },
     "Scheduling": {
       "planificacionDeTurnos": "Shift planning",
-      "proximosTurnosSinCubrir7": "Upcoming uncovered shifts (7 days)"
+      "proximosTurnosSinCubrir7": "Upcoming uncovered shifts (7 days)",
+      "enElPeriodo": "in this period",
+      "enElPeriodo2": "in this period",
+      "proximosSinCubrir": "Upcoming uncovered",
+      "proximos7Dias": "next 7 days",
+      "noHayTurnosProgramadosEn": "No shifts scheduled in this period.",
+      "todosLosTurnosProximosEstan": "Every upcoming shift is covered!",
+      "sinTurnosEnElPeriodo": "No shifts in this period."
     },
     "ServiceTypeBadge": {
       "ejGestionDeAccesoSeguridad": "e.g. Access control, Industrial security, VIP protection..."
@@ -7834,7 +7916,21 @@
       "informacionDelSupervisor": "Supervisor details",
       "informacionGeneral": "General information",
       "informacionPersonal": "Personal details",
-      "operacion": "Operation"
+      "operacion": "Operation",
+      "cedulaId": "National ID",
+      "direccion": "Address",
+      "cedulaId2": "National ID",
+      "direccion2": "Address",
+      "genero": "Gender",
+      "instruccionAcademica": "Education",
+      "fechaDeContratacion": "Hire date",
+      "genero2": "Gender",
+      "instruccionAcademica2": "Education",
+      "fechaDeContratacion2": "Hire date",
+      "zonaPosicionPEjAguila2": "Zone / position (e.g. Eagle2)",
+      "vehiculoAsignado": "Assigned vehicle",
+      "zonaPosicion": "Zone / position",
+      "vehiculoAsignado2": "Assigned vehicle"
     },
     "SupervisorPositions": {
       "aunNoHayPuestosDe": "No supervisor posts yet",
@@ -7927,7 +8023,9 @@
       "seleccionaUnaOpcion": "Choose an option",
       "sinInformacion": "No information",
       "vehiculos": "Vehicles",
-      "vehiculos2": "Vehicles"
+      "vehiculos2": "Vehicles",
+      "enEstaPagina": "On this page",
+      "enEstaPagina2": "On this page"
     },
     "VideoActionModals": {
       "critica": "Critical",
@@ -7944,7 +8042,9 @@
       "estacionOpcional": "Station (optional)",
       "idDeLaEstacion": "Station ID",
       "remotaViaRelayOtraRed": "Remote — via relay (another network/country)",
-      "ubicacionObservaciones": "Location, notes..."
+      "ubicacionObservaciones": "Location, notes...",
+      "enLinea": "Online",
+      "sinConexion": "Offline"
     },
     "VideoGatewayModal": {
       "configuracionGo2rtcPegalaEnGo2rtc": "go2rtc configuration (paste it into go2rtc.yaml)"
@@ -7989,6 +8089,32 @@
     "tabkit": {
       "paginaAnterior": "Previous page",
       "paginaSiguiente": "Next page"
+    },
+    "sidebar": {
+      "navegacionPrincipal": "Main navigation"
+    },
+    "TaskTracking": {
+      "fechaLimite": "Deadline",
+      "realizada": "Done?",
+      "notasDeAprobacion": "Approval notes",
+      "fotoDeFinalizacion": "Completion photo"
+    },
+    "TrendPanel": {
+      "maximo": "Peak"
+    },
+    "RouteDetailModal": {
+      "vehiculo": "Vehicle",
+      "dias": "Days"
+    }
+  },
+  "map": {
+    "actions": {
+      "verFicha": "View record",
+      "llamar": "Call",
+      "centrar": "Centre",
+      "comoLlegar": "Directions",
+      "verRonda": "View patrol",
+      "radio": "Radio"
     }
   }
 }

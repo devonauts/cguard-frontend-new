@@ -227,7 +227,7 @@ export default function NewVehiclePage() {
               onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--hairline)'; }}
             >
               {preview ? (
-                <img src={preview} alt="vehículo" className="h-full w-full object-cover" />
+                <img src={preview} alt={t("ui.NewVehicle.vehiculo", "vehículo")} className="h-full w-full object-cover" />
               ) : (
                 // El icono `Car` de lucide —ya importado en este mismo
                 // archivo— en vez de un `<path>` de 30 comandos dibujado a

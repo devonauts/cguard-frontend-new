@@ -295,10 +295,10 @@ export default function GlobalInventoryPage() {
         />
 
         <Stagger className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <StatCard label="Artículos" value={total} icon={<Package />} accent="primary" />
-          <StatCard label="Disponibles" value={disponibles} icon={<CheckCircle2 />} accent="ok" hint="En esta página" />
-          <StatCard label="En mantenimiento" value={enMantenimiento} icon={<Wrench />} accent="warn" hint="En esta página" />
-          <StatCard label="En mal estado" value={dañados} icon={<AlertTriangle />} accent="bad" hint="En esta página" />
+          <StatCard label={t("ui.GlobalInventory.articulos", "Artículos")} value={total} icon={<Package />} accent="primary" />
+          <StatCard label="Disponibles" value={disponibles} icon={<CheckCircle2 />} accent="ok" hint={t("ui.GlobalInventory.enEstaPagina", "En esta página")} />
+          <StatCard label="En mantenimiento" value={enMantenimiento} icon={<Wrench />} accent="warn" hint={t("ui.GlobalInventory.enEstaPagina2", "En esta página")} />
+          <StatCard label="En mal estado" value={dañados} icon={<AlertTriangle />} accent="bad" hint={t("ui.GlobalInventory.enEstaPagina3", "En esta página")} />
         </Stagger>
 
         {/* Filtros */}

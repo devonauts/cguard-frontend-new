@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Modal, Field, StatusBadge, SkeletonBlock, EmptyState } from '@/components/kit';
 import { Route, MapPin, Pencil } from 'lucide-react';
@@ -74,6 +75,7 @@ const DAY_LABEL: Record<string, string> = {
 };
 
 export default function RouteDetailModal({ open, onOpenChange, routeId }: Props) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [route, setRoute] = useState<RouteType | null>(null);
   const [guardLabel, setGuardLabel] = useState<string | null>(null);
@@ -277,7 +279,7 @@ export default function RouteDetailModal({ open, onOpenChange, routeId }: Props)
             <Field label="Nombre" value={route.name || '—'} />
             <Field label="Tipo" value={route.continuous ? 'Continua' : 'Programada'} />
             <Field label="Supervisor" value={supervisorValue} />
-            <Field label="Vehículo" value={vehicleValue} />
+            <Field label={t("ui.RouteDetailModal.vehiculo", "Vehículo")} value={vehicleValue} />
             {/* Mismo tono que la lista de rutas, que ya pintaba «Activo» en
                 verde. Aquí iba en el acento de marca: el mismo estado tenía dos
                 colores según por dónde se entrara, y gastaba el acento en un
@@ -303,7 +305,7 @@ export default function RouteDetailModal({ open, onOpenChange, routeId }: Props)
               value={(route.windowEnd ? new Date(route.windowEnd).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : route.endTime) || '—'}
             />
             {route.days && route.days.length > 0 && (
-              <Field className="sm:col-span-2" label="Días" value={route.days.map((day) => DAY_LABEL[day] || day).join(', ')} />
+              <Field className="sm:col-span-2" label={t("ui.RouteDetailModal.dias", "Días")} value={route.days.map((day) => DAY_LABEL[day] || day).join(', ')} />
             )}
             <Field label="Origen" value={origen ? origen.label : 'Empieza en la primera parada'} />
             <Field label="Destino" value={destino ? destino.label : 'Termina en la última parada'} />

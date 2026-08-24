@@ -165,8 +165,8 @@ export default function NominaSettings() {
 
             <SettingsSection title="Geocerca" icon={<MapPinned />}>
               <Num label="Radio por defecto (m)" path="geofence.defaultRadiusM" />
-              <Toggle label="Requerir validación de geocerca" path="geofence.requireValidation" />
-              <Toggle label="Permitir fuera de geocerca (con aprobación)" path="geofence.allowOutsideWithApproval" />
+              <Toggle label={t("ui.NominaSettings.requerirValidacionDeGeocerca", "Requerir validación de geocerca")} path="geofence.requireValidation" />
+              <Toggle label={t("ui.NominaSettings.permitirFueraDeGeocercaCon", "Permitir fuera de geocerca (con aprobación)")} path="geofence.allowOutsideWithApproval" />
             </SettingsSection>
 
             <SettingsSection title="Notificaciones" icon={<BellRing />}>
@@ -203,8 +203,8 @@ export default function NominaSettings() {
 
             <SettingsSection title="Aprobaciones" icon={<CheckSquare />}>
               <Toggle label="Auto-aprobar marcaciones normales" path="approval.autoApproveNormal" />
-              <Toggle label="Requerir aprobación para excepciones" path="approval.requireApprovalForExceptions" />
-              <Toggle label="Bloquear registros al cerrar la nómina" path="approval.lockAfterPayrollClose" />
+              <Toggle label={t("ui.NominaSettings.requerirAprobacionParaExcepciones", "Requerir aprobación para excepciones")} path="approval.requireApprovalForExceptions" />
+              <Toggle label={t("ui.NominaSettings.bloquearRegistrosAlCerrarLa", "Bloquear registros al cerrar la nómina")} path="approval.lockAfterPayrollClose" />
             </SettingsSection>
 
             <SettingsSection title="Periodo y horas extra" icon={<CalendarRange />}>

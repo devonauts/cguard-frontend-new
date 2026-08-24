@@ -50,14 +50,14 @@ export default function Scheduling() {
         <>
           <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <MetricCard icon={<ClipboardCheck size={16} />} accent={TONES.info} value={`${k.coveragePct}%`} label="Cobertura de turnos" sub={`${k.shiftsCovered}/${k.shiftsTotal}`} pct={k.coveragePct} />
-            <MetricCard icon={<CheckCircle2 size={16} />} accent={TONES.ok} value={k.shiftsCovered} label="Turnos cubiertos" sub="en el período" />
-            <MetricCard icon={<AlertCircle size={16} />} accent={TONES.bad} value={k.shiftsOpen ?? (k.shiftsTotal - k.shiftsCovered)} label="Turnos sin cubrir" sub="en el período" />
-            <MetricCard icon={<CalendarClock size={16} />} accent={GOLD} value={data.upcomingUncoveredTotal} label="Próximos sin cubrir" sub="próximos 7 días" />
+            <MetricCard icon={<CheckCircle2 size={16} />} accent={TONES.ok} value={k.shiftsCovered} label="Turnos cubiertos" sub={t("ui.Scheduling.enElPeriodo", "en el período")} />
+            <MetricCard icon={<AlertCircle size={16} />} accent={TONES.bad} value={k.shiftsOpen ?? (k.shiftsTotal - k.shiftsCovered)} label="Turnos sin cubrir" sub={t("ui.Scheduling.enElPeriodo2", "en el período")} />
+            <MetricCard icon={<CalendarClock size={16} />} accent={GOLD} value={data.upcomingUncoveredTotal} label={t("ui.Scheduling.proximosSinCubrir", "Próximos sin cubrir")} sub={t("ui.Scheduling.proximos7Dias", "próximos 7 días")} />
           </Stagger>
 
           <Section title="Cobertura diaria (programados vs cubiertos)" icon={<ClipboardCheck size={16} />}>
             {data.coverageTrend.every((d) => d.scheduled === 0) ? (
-              <EmptyState icon={<CalendarClock />} title="Sin turnos programados" description="No hay turnos programados en el período." />
+              <EmptyState icon={<CalendarClock />} title="Sin turnos programados" description={t("ui.Scheduling.noHayTurnosProgramadosEn", "No hay turnos programados en el período.")} />
             ) : (
               <CoverageBars data={data.coverageTrend} />
             )}
@@ -65,11 +65,11 @@ export default function Scheduling() {
 
           <div className="grid gap-4 lg:grid-cols-2">
             <Section title={t("ui.Scheduling.proximosTurnosSinCubrir7", "Próximos turnos sin cubrir (7 días)")} icon={<CalendarClock size={16} />}>
-              <HBars items={data.upcomingUncovered.map((s) => ({ label: s.site, count: s.count }))} color={TONES.bad} empty="¡Todos los turnos próximos están cubiertos!" />
+              <HBars items={data.upcomingUncovered.map((s) => ({ label: s.site, count: s.count }))} color={TONES.bad} empty={t("ui.Scheduling.todosLosTurnosProximosEstan", "¡Todos los turnos próximos están cubiertos!")} />
             </Section>
             <Section title="Cobertura por sitio" icon={<Building2 size={16} />}>
               {data.perSite.length === 0 ? (
-                <EmptyState icon={<Building2 />} title="Sin turnos" description="Sin turnos en el período." />
+                <EmptyState icon={<Building2 />} title="Sin turnos" description={t("ui.Scheduling.sinTurnosEnElPeriodo", "Sin turnos en el período.")} />
               ) : (
                 <div className="space-y-2.5">
                   {data.perSite.filter((s) => s.shiftsTotal > 0).slice(0, 8).map((s, i) => (

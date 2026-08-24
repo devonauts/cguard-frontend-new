@@ -146,7 +146,7 @@ export default function EditRoutePage() {
         />
         <PageContainer width="wide" className="p-6">
           <PageHeader icon={<RouteIcon />} title="Editar ruta" />
-          <EmptyState icon={<AlertCircle />} title={t("ui.EditRoute.noSeEncontroLaRuta", "No se encontró la ruta")} description="La ruta solicitada no existe o no está disponible." />
+          <EmptyState icon={<AlertCircle />} title={t("ui.EditRoute.noSeEncontroLaRuta", "No se encontró la ruta")} description={t("ui.EditRoute.laRutaSolicitadaNoExiste", "La ruta solicitada no existe o no está disponible.")} />
         </PageContainer>
       </AppLayout>
     );

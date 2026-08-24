@@ -1382,8 +1382,8 @@ export default function ClientesPage() {
                       color: 'var(--bad-text)',
                     }}
                   >
-                    <p className="font-medium">Este cliente no tiene correo electrónico configurado.</p>
-                    <p className="mt-1">Edita el cliente, agrega un correo electrónico y vuelve a intentarlo.</p>
+                    <p className="font-medium">{t("ui.Clients.esteClienteNoTieneCorreo", "Este cliente no tiene correo electrónico configurado.")}</p>
+                    <p className="mt-1">{t("ui.Clients.editaElClienteAgregaUn", "Edita el cliente, agrega un correo electrónico y vuelve a intentarlo.")}</p>
                   </div>
                 )}
               </div>

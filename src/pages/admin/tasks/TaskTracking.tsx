@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, type ReactNode } from "react";
+import { useTranslation } from 'react-i18next';
 import AppLayout from "@/layouts/app-layout";
 import { DataTable, type Column } from "@/components/table/DataTable";
 import { Button } from "@/components/ui/button";
@@ -42,6 +43,7 @@ const FILTERS: Array<{ key: TaskStatus | "all"; label: string }> = [
 ];
 
 export default function TaskTracking() {
+  const { t } = useTranslation();
   const [rows, setRows] = useState<TaskRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<TaskStatus | "all">("all");
@@ -226,18 +228,18 @@ export default function TaskTracking() {
                 </DetailField>
                 <DetailField label="Puesto">{selected.taskBelongsToStation?.stationName || "—"}</DetailField>
                 <DetailField label="Origen">{selected.source === "client" ? "Cliente" : selected.source === "passdown" ? "Pase de turno" : selected.source === "staff" ? "Operación" : "—"}</DetailField>
-                <DetailField label="Fecha límite">{fmtDate(selected.dateToDoTheTask)}</DetailField>
+                <DetailField label={t("ui.TaskTracking.fechaLimite", "Fecha límite")}>{fmtDate(selected.dateToDoTheTask)}</DetailField>
                 <DetailField label="Creada">{fmtDate(selected.createdAt)}</DetailField>
-                <DetailField label="¿Realizada?">{selected.wasItDone ? "Sí" : "No"}</DetailField>
+                <DetailField label={t("ui.TaskTracking.realizada", "¿Realizada?")}>{selected.wasItDone ? "Sí" : "No"}</DetailField>
                 <DetailField label="Completada">{fmtDate(selected.dateCompletedTask)}</DetailField>
               </div>
               {selected.approvalNotes && (
-                <DetailField label="Notas de aprobación">
+                <DetailField label={t("ui.TaskTracking.notasDeAprobacion", "Notas de aprobación")}>
                   <span className="whitespace-pre-wrap">{selected.approvalNotes}</span>
                 </DetailField>
               )}
               <TaskImages label="Imagen de referencia" images={selected.imageOptional} />
-              <TaskImages label="Foto de finalización" images={selected.taskCompletedImage} />
+              <TaskImages label={t("ui.TaskTracking.fotoDeFinalizacion", "Foto de finalización")} images={selected.taskCompletedImage} />
             </div>
           )}
           <DialogFooter>

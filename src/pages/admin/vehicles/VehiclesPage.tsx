@@ -338,8 +338,8 @@ export default function VehiclesPage() {
 
                 <Stagger className="grid gap-4 sm:grid-cols-3">
                     <StatCard label="Total" value={count} icon={<Car />} accent="primary" />
-                    <StatCard label="Activos" value={activos} icon={<CheckCircle2 />} accent="ok" hint="En esta página" />
-                    <StatCard label="Inactivos" value={inactivos} icon={<PauseCircle />} accent="neutral" hint="En esta página" />
+                    <StatCard label="Activos" value={activos} icon={<CheckCircle2 />} accent="ok" hint={t("ui.Vehicles.enEstaPagina", "En esta página")} />
+                    <StatCard label="Inactivos" value={inactivos} icon={<PauseCircle />} accent="neutral" hint={t("ui.Vehicles.enEstaPagina2", "En esta página")} />
                 </Stagger>
 
                 <Toolbar>
@@ -647,7 +647,7 @@ export default function VehiclesPage() {
                                     )}
 
                                     <div className="glass-sunken grid grid-cols-2 gap-4 p-4">
-                                        <Field label="Año" value={detailsVehicle.year || '—'} />
+                                        <Field label={t("ui.Vehicles.ano", "Año")} value={detailsVehicle.year || '—'} />
                                         <Field label="Marca" value={detailsVehicle.make || '—'} />
                                         <Field label="Modelo" value={detailsVehicle.model || '—'} />
                                         <Field

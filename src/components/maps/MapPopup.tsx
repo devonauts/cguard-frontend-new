@@ -73,6 +73,9 @@ import {
   type MouseEvent, type ReactNode,
 } from "react";
 import { createPortal, flushSync } from "react-dom";
+// `mapPopupActions` son funciones sueltas, no componentes: el traductor entra
+// por la instancia de i18next (los hooks aquí no valen).
+import i18n from '@/i18n';
 import {
   AlertTriangle, Briefcase, Building2, Car, Crosshair, ExternalLink, Eye, Flag,
   Locate, MapPin, Navigation, Phone, Radio, Route, Shield, User, UserCog, X,
@@ -323,32 +326,32 @@ export function mapPopupItems<T>(...items: Array<T | null | undefined | false>):
 
 export const mapPopupActions = {
   /** Ir a la ficha. Pásale `onClick: () => navigate(ruta)` (router del CRM). */
-  detail(onClick: (ev: MouseEvent<HTMLElement>) => void, label = "Ver ficha"): MapPopupAction {
+  detail(onClick: (ev: MouseEvent<HTMLElement>) => void, label = i18n.t("map.actions.verFicha", "Ver ficha")): MapPopupAction {
     return { id: "detail", label, icon: <Eye />, onClick, variant: "primary" };
   },
   /** Llamar. Devuelve `null` si no hay teléfono, para poder encadenar con filter. */
-  call(phone?: string | null, label = "Llamar"): MapPopupAction | null {
+  call(phone?: string | null, label = i18n.t("map.actions.llamar", "Llamar")): MapPopupAction | null {
     const limpio = String(phone ?? "").replace(/[^\d+]/g, "");
     if (limpio.length < 6) return null;
     return { id: "call", label, icon: <Phone />, href: `tel:${limpio}`, hint: String(phone) };
   },
   /** Centrar el mapa en el elemento. */
-  center(onClick: (ev: MouseEvent<HTMLElement>) => void, label = "Centrar"): MapPopupAction {
+  center(onClick: (ev: MouseEvent<HTMLElement>) => void, label = i18n.t("map.actions.centrar", "Centrar")): MapPopupAction {
     return { id: "center", label, icon: <Locate />, onClick };
   },
   /** Cómo llegar — abre Google Maps en otra pestaña. */
-  directions(lat: number, lng: number, label = "Cómo llegar"): MapPopupAction {
+  directions(lat: number, lng: number, label = i18n.t("map.actions.comoLlegar", "Cómo llegar")): MapPopupAction {
     return {
       id: "directions", label, icon: <Navigation />, external: true,
       href: `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`,
     };
   },
   /** Ver la ronda / el recorrido. */
-  tour(onClick: (ev: MouseEvent<HTMLElement>) => void, label = "Ver ronda"): MapPopupAction {
+  tour(onClick: (ev: MouseEvent<HTMLElement>) => void, label = i18n.t("map.actions.verRonda", "Ver ronda")): MapPopupAction {
     return { id: "tour", label, icon: <Route />, onClick };
   },
   /** Radio / pase de novedades. */
-  radio(onClick: (ev: MouseEvent<HTMLElement>) => void, label = "Radio"): MapPopupAction {
+  radio(onClick: (ev: MouseEvent<HTMLElement>) => void, label = i18n.t("map.actions.radio", "Radio")): MapPopupAction {
     return { id: "radio", label, icon: <Radio />, onClick };
   },
 };

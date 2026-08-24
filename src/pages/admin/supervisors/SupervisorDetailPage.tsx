@@ -178,17 +178,17 @@ export default function SupervisorDetailPage() {
                       <ReadField label="Apellidos" value={sup.lastName} />
                       {editing ? (
                         <>
-                          <EditText label="Cédula / ID" value={form.governmentId} onChange={(v) => setField("governmentId", v)} />
+                          <EditText label={t("ui.SupervisorDetail.cedulaId", "Cédula / ID")} value={form.governmentId} onChange={(v) => setField("governmentId", v)} />
                           <EditText label="Fecha de nacimiento" value={form.birthDate} onChange={(v) => setField("birthDate", v)} type="date" />
                           <EditText label="Lugar de nacimiento" value={form.birthPlace} onChange={(v) => setField("birthPlace", v)} />
-                          <EditText label="Dirección" value={form.address} onChange={(v) => setField("address", v)} />
+                          <EditText label={t("ui.SupervisorDetail.direccion", "Dirección")} value={form.address} onChange={(v) => setField("address", v)} />
                         </>
                       ) : (
                         <>
-                          <ReadField label="Cédula / ID" value={sup.governmentId} />
+                          <ReadField label={t("ui.SupervisorDetail.cedulaId2", "Cédula / ID")} value={sup.governmentId} />
                           <ReadField label="Fecha de nacimiento" value={fmtDate(sup.birthDate)} />
                           <ReadField label="Lugar de nacimiento" value={sup.birthPlace} />
-                          <ReadField label="Dirección" value={sup.address} />
+                          <ReadField label={t("ui.SupervisorDetail.direccion2", "Dirección")} value={sup.address} />
                         </>
                       )}
                     </div>
@@ -198,21 +198,21 @@ export default function SupervisorDetailPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {editing ? (
                         <>
-                          <EditSelect label="Género" field="gender" value={form.gender} onChange={(v) => setField("gender", v)} />
+                          <EditSelect label={t("ui.SupervisorDetail.genero", "Género")} field="gender" value={form.gender} onChange={(v) => setField("gender", v)} />
                           <EditSelect label="Tipo de sangre" field="bloodType" value={form.bloodType} onChange={(v) => setField("bloodType", v)} />
                           <EditSelect label="Estado civil" field="maritalStatus" value={form.maritalStatus} onChange={(v) => setField("maritalStatus", v)} />
-                          <EditSelect label="Instrucción académica" field="academicInstruction" value={form.academicInstruction} onChange={(v) => setField("academicInstruction", v)} />
+                          <EditSelect label={t("ui.SupervisorDetail.instruccionAcademica", "Instrucción académica")} field="academicInstruction" value={form.academicInstruction} onChange={(v) => setField("academicInstruction", v)} />
                           <EditText label="Credencial" value={form.guardCredentials} onChange={(v) => setField("guardCredentials", v)} />
-                          <EditText label="Fecha de contratación" value={form.hiringContractDate} onChange={(v) => setField("hiringContractDate", v)} type="date" />
+                          <EditText label={t("ui.SupervisorDetail.fechaDeContratacion", "Fecha de contratación")} value={form.hiringContractDate} onChange={(v) => setField("hiringContractDate", v)} type="date" />
                         </>
                       ) : (
                         <>
-                          <ReadField label="Género" value={sup.gender} />
+                          <ReadField label={t("ui.SupervisorDetail.genero2", "Género")} value={sup.gender} />
                           <ReadField label="Tipo de sangre" value={sup.bloodType} />
                           <ReadField label="Estado civil" value={sup.maritalStatus} />
-                          <ReadField label="Instrucción académica" value={sup.academicInstruction} />
+                          <ReadField label={t("ui.SupervisorDetail.instruccionAcademica2", "Instrucción académica")} value={sup.academicInstruction} />
                           <ReadField label="Credencial" value={sup.guardCredentials} />
-                          <ReadField label="Fecha de contratación" value={fmtDate(sup.hiringContractDate)} />
+                          <ReadField label={t("ui.SupervisorDetail.fechaDeContratacion2", "Fecha de contratación")} value={fmtDate(sup.hiringContractDate)} />
                         </>
                       )}
                     </div>
@@ -239,13 +239,13 @@ export default function SupervisorDetailPage() {
                     <div className="space-y-4">
                       {editing ? (
                         <>
-                          <EditText label="Zona / posición (p. ej. Aguila2)" value={form.zone} onChange={(v) => setField("zone", v)} />
-                          <EditText label="Vehículo asignado" value={form.assignedVehicle} onChange={(v) => setField("assignedVehicle", v)} />
+                          <EditText label={t("ui.SupervisorDetail.zonaPosicionPEjAguila2", "Zona / posición (p. ej. Aguila2)")} value={form.zone} onChange={(v) => setField("zone", v)} />
+                          <EditText label={t("ui.SupervisorDetail.vehiculoAsignado", "Vehículo asignado")} value={form.assignedVehicle} onChange={(v) => setField("assignedVehicle", v)} />
                         </>
                       ) : (
                         <>
-                          <ReadField label="Zona / posición" value={sup.zone} />
-                          <ReadField label="Vehículo asignado" value={sup.assignedVehicle} />
+                          <ReadField label={t("ui.SupervisorDetail.zonaPosicion", "Zona / posición")} value={sup.zone} />
+                          <ReadField label={t("ui.SupervisorDetail.vehiculoAsignado2", "Vehículo asignado")} value={sup.assignedVehicle} />
                         </>
                       )}
                     </div>

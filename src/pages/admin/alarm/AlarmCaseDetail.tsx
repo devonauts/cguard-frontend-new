@@ -431,7 +431,7 @@ export default function AlarmCaseDetail() {
                   value={[panel.make, panel.model].filter(Boolean).join(" ") || null}
                 />
                 <PanelField
-                  label="Comunicación"
+                  label={t("ui.AlarmCaseDetail.comunicacion", "Comunicación")}
                   value={
                     panel.comms
                       ? { ip: "IP", cellular: "Celular", dual: "Dual" }[panel.comms] || panel.comms
@@ -439,7 +439,7 @@ export default function AlarmCaseDetail() {
                   }
                 />
                 <PanelField label="Estado del panel" value={panel.status} />
-                <PanelField label="Última señal" value={formatWhen(panel.lastSignalAt)} />
+                <PanelField label={t("ui.AlarmCaseDetail.ultimaSenal", "Última señal")} value={formatWhen(panel.lastSignalAt)} />
                 {panel.notes ? (
                   <div className="flex items-start gap-1.5 pt-1 text-muted-foreground">
                     <MapPin className="mt-0.5 size-3.5 shrink-0" />

@@ -165,7 +165,7 @@ export default function ClientIncidents({ client }: { client: Client }) {
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-7">
         <KpiTile icon={<AlertTriangle />} value={kpis.total ?? 0} label="Total de incidentes" accent="primary" />
         <KpiTile icon={<ShieldAlert />} value={kpis.abiertos ?? 0} label="Incidentes abiertos" accent={(kpis.abiertos ?? 0) > 0 ? 'red' : 'slate'} sub={<StatusBadge tone={(kpis.abiertos ?? 0) > 0 ? 'bad' : 'neutral'} dot={false}>{kpis.abiertosPct ?? 0}%</StatusBadge>} />
-        <KpiTile icon={<Search />} value={kpis.investigacion ?? 0} label="En investigación" accent="orange" sub={<StatusBadge tone="warn" dot={false}>{kpis.investigacionPct ?? 0}%</StatusBadge>} />
+        <KpiTile icon={<Search />} value={kpis.investigacion ?? 0} label={t("ui.ClientIncidents.enInvestigacion", "En investigación")} accent="orange" sub={<StatusBadge tone="warn" dot={false}>{kpis.investigacionPct ?? 0}%</StatusBadge>} />
         <KpiTile icon={<CheckCircle2 />} value={kpis.resueltos ?? 0} label="Resueltos" accent="green" sub={<StatusBadge tone="ok" dot={false}>{kpis.resueltosPct ?? 0}%</StatusBadge>} />
         <KpiTile icon={<Clock />} value={kpis.avgResponseMin != null ? `${kpis.avgResponseMin} min` : '—'} label={`Resp. prom. (Meta ${kpis.metaResponseMin ?? 15} min)`} accent="blue" bar={kpis.avgResponseMin != null ? Math.min(100, Math.round(((kpis.metaResponseMin ?? 15) / Math.max(1, kpis.avgResponseMin)) * 100)) : null} />
         <KpiTile icon={<Timer />} value={kpis.avgResolutionDays != null ? `${kpis.avgResolutionDays} días` : '—'} label={`Resol. prom. (Meta ${kpis.metaResolutionDays ?? 3} días)`} accent="blue" bar={kpis.avgResolutionDays != null ? Math.min(100, Math.round(((kpis.metaResolutionDays ?? 3) / Math.max(0.1, kpis.avgResolutionDays)) * 100)) : null} />
@@ -320,7 +320,7 @@ export default function ClientIncidents({ client }: { client: Client }) {
               {tab === 'bitacora' && (
                 <div>
                   {(selected.comments || []).length === 0 ? (
-                    <EmptyState icon={<ListChecks />} title={t("ui.ClientIncidents.sinBitacora", "Sin bitácora")} description="No hay registros en la bitácora de este incidente." />
+                    <EmptyState icon={<ListChecks />} title={t("ui.ClientIncidents.sinBitacora", "Sin bitácora")} description={t("ui.ClientIncidents.noHayRegistrosEnLa", "No hay registros en la bitácora de este incidente.")} />
                   ) : (
                     <div className="space-y-2">
                       {(selected.comments || []).map((c: any, i: number) => {
