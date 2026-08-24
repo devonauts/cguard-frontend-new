@@ -5952,7 +5952,14 @@
       "alertOperatorLabel": "Notify whoever has the console first",
       "alertOperatorHint": "Updates and alarms go to the operator clocked in at the monitoring center, instead of to everyone with the role whether they're asleep or not. If no one is clocked in, notifications go out by role as always: an alert is never left without a recipient.",
       "escalateLabel": "Escalate to the supervisor if no one responds",
-      "escalateHint": "Minutes of margin. 0 = don't escalate."
+      "escalateHint": "Minutes of margin. 0 = don't escalate.",
+      "crmAccessSection": "Who gets panel access through the console",
+      "crmAccessIntro": "Assigning a guard to this post opens the company panel for them so they can do console work: handling clock-ins, opening and closing incidents, watching the live map, the cameras and the radio log. They cannot touch settings, users or billing. They keep using their field app, so when they are moved to cover a post they clock in there as usual.",
+      "crmAccessRevoke": "Access follows the assignment: remove them from this post and they stop getting in. There is nothing to revoke by hand.",
+      "crmAccessEmpty": "Nobody is assigned to this post yet, so nobody gets panel access this way. Assign your console operator from Schedule or from the post's page.",
+      "operatorTemporary": "Temporary",
+      "operatorOnConsole": "On the console now",
+      "operatorAssigned": "Assigned"
     },
     "retencion": {
       "locationTrailDays_titulo": "Location trail",

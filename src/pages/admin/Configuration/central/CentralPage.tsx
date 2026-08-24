@@ -16,7 +16,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import { Headphones, MapPin, BellRing, Users } from "lucide-react";
+import { Headphones, MapPin, BellRing, Users, MonitorCheck } from "lucide-react";
 import { Section, Stagger, SkeletonCards, StatusBadge } from "@/components/kit";
 import SettingsPageShell from "../components/SettingsPageShell";
 import { ToggleRow, SaveBar } from "../components/SettingsForm";
@@ -41,6 +41,7 @@ const DEFAULTS: Central = {
 
 type Estacion = { id: string; stationName?: string; name?: string };
 type EnConsola = { userId: string; nombre: string | null; desde: string | null };
+type Operador = { userId: string; nombre: string | null; email: string | null; temporal: boolean; enConsola: boolean };
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
 
@@ -53,6 +54,7 @@ export default function CentralPage() {
   const [row, setRow] = useState<any>(null);
   const [estaciones, setEstaciones] = useState<Estacion[]>([]);
   const [enConsola, setEnConsola] = useState<EnConsola[]>([]);
+  const [operadores, setOperadores] = useState<Operador[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -72,6 +74,7 @@ export default function CentralPage() {
       try {
         const { data } = await api.get(`/tenant/${tenantId()}/central`);
         setEnConsola(data?.enConsola || []);
+        setOperadores(data?.operadores || []);
       } catch { /* idem */ }
       setLoading(false);
     })();
@@ -167,6 +170,50 @@ export default function CentralPage() {
                   onCheckedChange={(v: boolean) => set("operadoresCubrenPuestos", v)}
                   disabled={!canEdit}
                 />
+              </Section>
+
+              <Section
+                title={t('settings.central.crmAccessSection', { defaultValue: 'Quién entra al panel por la consola' })}
+                icon={<MonitorCheck />}
+              >
+                <div className="space-y-3">
+                  <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+                    {t('settings.central.crmAccessIntro', { defaultValue: 'Asignar a un vigilante a este puesto le abre el panel de la empresa para hacer el trabajo de central: atender fichajes, abrir y cerrar novedades, ver el mapa en vivo, las cámaras y el parte de radio. No puede tocar ajustes, usuarios ni cobros. Sigue usando su app en el campo, así que cuando lo trasladen a cubrir un puesto ficha allí con normalidad.' })}
+                  </p>
+                  <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+                    {t('settings.central.crmAccessRevoke', { defaultValue: 'El acceso va con la asignación: si le quitas este puesto, deja de entrar. No hay nada que revocar a mano.' })}
+                  </p>
+                  {operadores.length ? (
+                    <ul className="divide-y">
+                      {operadores.map((o) => (
+                        <li key={o.userId} className="flex flex-wrap items-center justify-between gap-2 py-2.5">
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-medium">{o.nombre || o.email || o.userId}</p>
+                            {o.email && o.nombre && (
+                              <p className="truncate text-xs" style={{ color: "var(--ink-soft)" }}>{o.email}</p>
+                            )}
+                          </div>
+                          <div className="flex shrink-0 flex-wrap items-center gap-2">
+                            {o.temporal && (
+                              <StatusBadge tone="info">
+                                {t('settings.central.operatorTemporary', { defaultValue: 'Temporal' })}
+                              </StatusBadge>
+                            )}
+                            <StatusBadge tone={o.enConsola ? "ok" : "neutral"}>
+                              {o.enConsola
+                                ? t('settings.central.operatorOnConsole', { defaultValue: 'En la consola ahora' })
+                                : t('settings.central.operatorAssigned', { defaultValue: 'Asignado' })}
+                            </StatusBadge>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+                      {t('settings.central.crmAccessEmpty', { defaultValue: 'Todavía no hay nadie asignado a este puesto, así que nadie entra al panel por esta vía. Asigna a tu centralista desde Horario o desde la ficha del puesto.' })}
+                    </p>
+                  )}
+                </div>
               </Section>
 
               <Section title={t('settings.central.alertsSection', { defaultValue: 'A dónde van las alertas' })} icon={<BellRing />} contentClassName="divide-y">

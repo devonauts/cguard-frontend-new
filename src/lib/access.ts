@@ -37,7 +37,19 @@ export function isPlatformSuperadmin(user: any): boolean {
 export function canAccessCrm(user: any): boolean {
   if (!user) return false;
   if (isPlatformSuperadmin(user)) return true;
+  // El operador de la CENTRAL entra aunque su rol sea «vigilante»: lo que le
+  // abre el CRM es tener la consola asignada, no su rol. El servidor lo marca
+  // en cada membresía (ver centralOperationsService); aquí sólo se respeta.
+  if (esOperadorDeCentral(user)) return true;
   const roles = normalizedRoles(user);
   if (roles.length === 0) return true;
   return roles.some((r) => !FIELD_ONLY_ROLES.includes(r));
+}
+
+/** ¿Alguna empresa activa lo marca como operador de la central de operaciones? */
+export function esOperadorDeCentral(user: any): boolean {
+  if (!user) return false;
+  if (user.centralOperator === true) return true;
+  const ts = Array.isArray(user?.tenants) ? user.tenants : [];
+  return ts.some((t: any) => t && t.centralOperator === true && (!t.status || t.status === 'active'));
 }

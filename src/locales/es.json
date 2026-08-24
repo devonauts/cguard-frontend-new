@@ -5952,7 +5952,14 @@
       "alertOperatorLabel": "Avisar primero a quien tiene la consola",
       "alertOperatorHint": "Las novedades y alarmas van al operador fichado en la central, en vez de a todos los que tengan el rol duerman o no. Si no hay nadie fichado, se avisa por rol como siempre: una alerta nunca se queda sin destinatario.",
       "escalateLabel": "Escalar al supervisor si nadie atiende",
-      "escalateHint": "Minutos de margen. 0 = no escalar."
+      "escalateHint": "Minutos de margen. 0 = no escalar.",
+      "crmAccessSection": "Quién entra al panel por la consola",
+      "crmAccessIntro": "Asignar a un vigilante a este puesto le abre el panel de la empresa para hacer el trabajo de central: atender fichajes, abrir y cerrar novedades, ver el mapa en vivo, las cámaras y el parte de radio. No puede tocar ajustes, usuarios ni cobros. Sigue usando su app en el campo, así que cuando lo trasladen a cubrir un puesto ficha allí con normalidad.",
+      "crmAccessRevoke": "El acceso va con la asignación: si le quitas este puesto, deja de entrar. No hay nada que revocar a mano.",
+      "crmAccessEmpty": "Todavía no hay nadie asignado a este puesto, así que nadie entra al panel por esta vía. Asigna a tu centralista desde Horario o desde la ficha del puesto.",
+      "operatorTemporary": "Temporal",
+      "operatorOnConsole": "En la consola ahora",
+      "operatorAssigned": "Asignado"
     },
     "retencion": {
       "locationTrailDays_titulo": "Rastro de ubicación",

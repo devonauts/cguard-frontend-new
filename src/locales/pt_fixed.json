@@ -1047,7 +1047,14 @@
       "alertOperatorLabel": "Avisar primeiro quem tem o console",
       "alertOperatorHint": "As novidades e alarmes vão para o operador com ponto batido na central, em vez de para todos que tenham o cargo, dormindo ou não. Se não houver ninguém com ponto batido, o aviso vai por cargo como sempre: um alerta nunca fica sem destinatário.",
       "escalateLabel": "Escalar para o supervisor se ninguém atender",
-      "escalateHint": "Minutos de margem. 0 = não escalar."
+      "escalateHint": "Minutos de margem. 0 = não escalar.",
+      "crmAccessSection": "Quem entra no painel pela central",
+      "crmAccessIntro": "Atribuir um vigilante a este posto abre o painel da empresa para ele fazer o trabalho de central: atender registros de ponto, abrir e fechar ocorrências, ver o mapa ao vivo, as câmeras e o boletim de rádio. Não pode mexer em configurações, usuários nem cobranças. Continua usando o app no campo, então quando for transferido para cobrir um posto registra o ponto lá normalmente.",
+      "crmAccessRevoke": "O acesso acompanha a atribuição: se você tirar este posto dele, deixa de entrar. Não há nada para revogar à mão.",
+      "crmAccessEmpty": "Ainda não há ninguém atribuído a este posto, então ninguém entra no painel por esta via. Atribua seu operador de central pelo Horário ou pela página do posto.",
+      "operatorTemporary": "Temporário",
+      "operatorOnConsole": "Na central agora",
+      "operatorAssigned": "Atribuído"
     },
     "retencion": {
       "locationTrailDays_titulo": "Rastro de localização",
