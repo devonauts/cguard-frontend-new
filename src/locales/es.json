@@ -5325,8 +5325,20 @@
       "consignas": "Consignas",
       "rondas": "Rondas",
       "quiz": "Examen",
-      "training": "Capacitación"
-    }
+      "training": "Capacitación",
+      "clientRating": "Valoración del cliente"
+    },
+    "measureThisPerson": "Medir desempeño",
+    "toggleOn": "Se volverá a medir el desempeño de esta persona.",
+    "toggleOff": "Se dejó de medir el desempeño de esta persona.",
+    "toggleError": "No se pudo cambiar la medición de desempeño.",
+    "offTenantTitle": "Tu empresa no está midiendo el desempeño",
+    "offTenantHint": "La medición está desactivada para toda la empresa en Configuración › Vigilantes en turno. Mientras siga así, nadie ve puntaje —ni aquí ni en su aplicación.",
+    "offSubjectTitle": "A esta persona no se le mide el desempeño",
+    "offSubjectHint": "Ni esta ficha ni su aplicación muestran puntaje. No es una calificación de cero: simplemente no se le mide. Puedes volver a activarlo con el interruptor de arriba.",
+    "freshStart": "Todo el personal arranca en 100. Aún no hay turnos ni evaluaciones en este periodo, así que no hay nada que descontar todavía.",
+    "startsAt100": "Parte de 100 · descontado {{n}}",
+    "noFactors": "Todavía no hay ningún factor medido en este periodo."
   },
   "settings": {
     "configuracion": {
@@ -5554,7 +5566,10 @@
       "startWarning": "Empezar a avisar",
       "daysBeforeExpiry": "días antes del vencimiento",
       "blockClockInLabel": "Impedir marcar entrada con la credencial vencida",
-      "blockClockInHint": "Hasta ahora una credencial caducada sólo generaba un aviso: el vigilante fichaba igual, se le asignaba un puesto y salía en el informe al cliente. Actívalo sólo cuando las fechas de tus credenciales estén al día — si no, alguien puede quedarse sin poder empezar su turno."
+      "blockClockInHint": "Hasta ahora una credencial caducada sólo generaba un aviso: el vigilante fichaba igual, se le asignaba un puesto y salía en el informe al cliente. Actívalo sólo cuando las fechas de tus credenciales estén al día — si no, alguien puede quedarse sin poder empezar su turno.",
+      "sectionDesempeno": "Medición de desempeño",
+      "performanceLabel": "Medir el desempeño del personal",
+      "performanceHint": "Todo el personal arranca en 100 y sólo baja por lo que se mide: puntualidad, uniforme, inventario, consignas, rondas, evaluaciones, capacitación y la valoración del cliente, más las faltas. Apagado, nadie ve puntaje —ni tú en las fichas, ni el vigilante en su aplicación—; no se pone a cero, deja de existir. Para dejar de medir a UNA persona en concreto, usa el interruptor de su ficha, en Desempeño."
     },
     "postingGlobal": {
       "loadError": "No se pudo cargar la configuración.",

@@ -25,12 +25,19 @@ export interface OpsAnalytics {
 
 export interface GuardPerformance {
   id: string; name: string; score: number | null; base?: number; tier: string; hasData: boolean;
+  /** ¿Se le mide el desempeño a esta persona? Apagado ⇒ sin nota, no un cero. */
+  enabled?: boolean;
+  /** ¿Hay algo real detrás de la nota, o es el 100 con el que se arranca? */
+  hasSignals?: boolean;
   attendanceRate: number | null; shiftsWorked: number | null; onTimeShifts: number | null;
   absences: number; tardies: number;
   components: { key: string; score: number; weight: number }[];
 }
 export interface PerfLeaderboard {
   period: number; averageScore: number | null;
+  /** `false` cuando la empresa tiene apagada la medición entera. */
+  enabled?: boolean;
+  disabledBy?: 'tenant' | null;
   counts: { total: number; scored: number; excellent: number; good: number; fair: number; poor: number };
   guards: GuardPerformance[];
 }

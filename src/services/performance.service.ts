@@ -28,6 +28,24 @@ const PerformanceService = {
     );
   },
 
+  // --- Interruptor por persona ---
+  /**
+   * Si a ESTE empleado se le mide el desempeño. Devuelve los dos interruptores
+   * —el de la empresa y el suyo— porque la pantalla necesita distinguirlos: no
+   * es lo mismo «lo has apagado tú para él» que «tu empresa lo tiene apagado
+   * entero», y el segundo no se arregla desde la ficha del empleado.
+   */
+  async getSubject(userId: string) {
+    const tenantId = getTenantId();
+    return ApiService.get(`/tenant/${tenantId}/performance/subject/${userId}`);
+  },
+  async setSubject(userId: string, enabled: boolean) {
+    const tenantId = getTenantId();
+    return ApiService.put(`/tenant/${tenantId}/performance/subject/${userId}`, {
+      enabled,
+    });
+  },
+
   // --- Uniform inspections ---
   async uniformHistory(securityGuardId: string) {
     const tenantId = getTenantId();

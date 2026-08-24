@@ -159,9 +159,14 @@ export interface PerformanceComponent {
     | 'consignas'
     | 'rondas'
     | 'quiz'
-    | 'training';
+    | 'training'
+    | 'clientRating';
   score: number;
   weight: number;
+  /** Cuánto puede restar este factor de los 100 como máximo. */
+  maxDeduction?: number;
+  /** Cuánto está restando ahora mismo. */
+  deduction?: number;
 }
 
 /** Attendance/rating stats bundled with the performance score. */
@@ -176,11 +181,31 @@ export interface PerformanceStats {
   clientRatingAvg?: number;
 }
 
-/** Guard/supervisor performance score (security-guard `/performance`). */
+/**
+ * Guard/supervisor performance score (security-guard `/performance`).
+ *
+ * La nota PARTE DE 100 y sólo baja por lo que se mide, así que `score` es 100
+ * para quien acaba de entrar. Cuando la medición está apagada —por la empresa o
+ * por esta persona— `enabled` es false y `score` llega NULO: un 0 se leería
+ * como una mala calificación, que es justo lo contrario de «no se le mide».
+ */
 export interface GuardPerformance {
-  score: number;
+  score: number | null;
   tier: string;
   hasData?: boolean;
+  /** ¿Hay algo real detrás de la nota, o es el 100 de salida? */
+  hasSignals?: boolean;
+  /** ¿Se le mide el desempeño a esta persona? */
+  enabled?: boolean;
+  /** Qué interruptor lo apagó, si alguno. */
+  disabledBy?: 'tenant' | 'subject' | null;
+  /** El usuario puntuado — con él se escribe el interruptor de la persona. */
+  subjectUserId?: string | null;
+  /** De dónde parte la nota (100). */
+  startingScore?: number;
+  /** Cuánto se ha descontado de los 100 por los factores medidos. */
+  deduction?: number;
+  base?: number;
   penalty?: { points: number; absences: number; tardies: number };
   bonus?: { points: number; volunteerCount: number; coverCount: number };
   components?: PerformanceComponent[];

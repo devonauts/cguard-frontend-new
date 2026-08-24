@@ -168,8 +168,8 @@
             "label": "Vigilantes en turno",
             "path": "/setting/keep-safe",
             "icon": "Shield",
-            "desc": "Inactividad, recordatorios de turno y aviso de credenciales por vencer.",
-            "keywords": "guardia vigilante inactividad recordatorio credencial licencia vencimiento carnet emergencia panico vencida"
+            "desc": "Inactividad, recordatorios de turno, medición de desempeño y aviso de credenciales por vencer.",
+            "keywords": "guardia vigilante inactividad recordatorio credencial licencia vencimiento carnet emergencia panico vencida desempeno desempeño puntaje nota rendimiento evaluacion medicion"
           },
           {
             "id": "emergencias",

@@ -5325,8 +5325,20 @@
       "consignas": "Standing orders",
       "rondas": "Patrols",
       "quiz": "Test",
-      "training": "Training"
-    }
+      "training": "Training",
+      "clientRating": "Client rating"
+    },
+    "measureThisPerson": "Measure performance",
+    "toggleOn": "This person's performance will be measured again.",
+    "toggleOff": "This person's performance is no longer measured.",
+    "toggleError": "Performance measurement could not be changed.",
+    "offTenantTitle": "Your company is not measuring performance",
+    "offTenantHint": "Measurement is turned off company-wide in Settings › Officers on shift. While it stays off, nobody sees a score — not here, and not in their app.",
+    "offSubjectTitle": "This person's performance is not measured",
+    "offSubjectHint": "Neither this profile nor their app shows a score. This is not a zero rating: they are simply not being measured. You can turn it back on with the switch above.",
+    "freshStart": "Everyone starts at 100. There are no shifts or evaluations in this period yet, so there is nothing to deduct.",
+    "startsAt100": "Starts at 100 · {{n}} deducted",
+    "noFactors": "No factor has been measured in this period yet."
   },
   "settings": {
     "configuracion": {
@@ -5554,7 +5566,10 @@
       "startWarning": "Start alerting",
       "daysBeforeExpiry": "days before expiration",
       "blockClockInLabel": "Prevent clocking in with an expired credential",
-      "blockClockInHint": "Until now an expired credential only generated an alert: the guard clocked in anyway, was assigned a post and appeared in the client report. Turn it on only when your credential dates are up to date — otherwise, someone may be left unable to start their shift."
+      "blockClockInHint": "Until now an expired credential only generated an alert: the guard clocked in anyway, was assigned a post and appeared in the client report. Turn it on only when your credential dates are up to date — otherwise, someone may be left unable to start their shift.",
+      "sectionDesempeno": "Performance measurement",
+      "performanceLabel": "Measure staff performance",
+      "performanceHint": "Everyone starts at 100 and only goes down for what is actually measured: punctuality, uniform, inventory, standing orders, patrols, tests, training and client rating, plus absences. Turned off, nobody sees a score — not you on their profile, not the officer in their app; it is not set to zero, it stops existing. To stop measuring ONE person, use the switch on their profile, under Performance."
     },
     "postingGlobal": {
       "loadError": "The settings could not be loaded.",

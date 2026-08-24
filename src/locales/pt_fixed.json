@@ -661,7 +661,10 @@
       "startWarning": "Começar a avisar",
       "daysBeforeExpiry": "dias antes do vencimento",
       "blockClockInLabel": "Impedir marcar entrada com a credencial vencida",
-      "blockClockInHint": "Até agora uma credencial vencida só gerava um aviso: o vigilante marcava entrada mesmo assim, era atribuído a um posto e aparecia no relatório ao cliente. Ative apenas quando as datas das suas credenciais estiverem em dia — caso contrário, alguém pode ficar sem poder iniciar seu turno."
+      "blockClockInHint": "Até agora uma credencial vencida só gerava um aviso: o vigilante marcava entrada mesmo assim, era atribuído a um posto e aparecia no relatório ao cliente. Ative apenas quando as datas das suas credenciais estiverem em dia — caso contrário, alguém pode ficar sem poder iniciar seu turno.",
+      "sectionDesempeno": "Medição de desempenho",
+      "performanceLabel": "Medir o desempenho do pessoal",
+      "performanceHint": "Todo o pessoal começa em 100 e só desce pelo que é medido: pontualidade, uniforme, inventário, consignas, rondas, avaliações, formação e avaliação do cliente, mais as faltas. Desligado, ninguém vê pontuação — nem você nas fichas, nem o vigilante na aplicação; não fica a zero, deixa de existir. Para deixar de medir UMA pessoa em concreto, use o interruptor da ficha dela, em Desempenho."
     },
     "postingGlobal": {
       "loadError": "Não foi possível carregar a configuração.",
@@ -4154,7 +4157,8 @@
       "quiz": "Prova",
       "rondas": "Rondas",
       "training": "Treinamento",
-      "uniform": "Uniforme"
+      "uniform": "Uniforme",
+      "clientRating": "Avaliação do cliente"
     },
     "lateShort": "a",
     "noData": "Ainda não há dados suficientes para calcular o desempenho.",
@@ -4165,7 +4169,18 @@
       "good": "Bom",
       "needs_improvement": "Precisa melhorar"
     },
-    "title": "Indicador de desempenho"
+    "title": "Indicador de desempenho",
+    "measureThisPerson": "Medir desempenho",
+    "toggleOn": "O desempenho desta pessoa voltará a ser medido.",
+    "toggleOff": "O desempenho desta pessoa deixou de ser medido.",
+    "toggleError": "Não foi possível alterar a medição de desempenho.",
+    "offTenantTitle": "A sua empresa não está a medir o desempenho",
+    "offTenantHint": "A medição está desativada para toda a empresa em Configuração › Vigilantes em turno. Enquanto assim for, ninguém vê pontuação — nem aqui nem na aplicação.",
+    "offSubjectTitle": "O desempenho desta pessoa não é medido",
+    "offSubjectHint": "Nem esta ficha nem a aplicação mostram pontuação. Não é uma nota zero: simplesmente não se mede. Pode voltar a ativar com o interruptor acima.",
+    "freshStart": "Todo o pessoal começa em 100. Ainda não há turnos nem avaliações neste período, por isso não há nada a descontar.",
+    "startsAt100": "Começa em 100 · descontado {{n}}",
+    "noFactors": "Ainda não há nenhum fator medido neste período."
   },
   "tenantJoinModal": {
     "businessLogo": "Logotipo da empresa",

@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
     ShieldCheck, SatelliteDish, BellRing, IdCard,
-    MapPin, Route as RouteIcon, Smartphone, Wallet, CalendarClock,
+    MapPin, Route as RouteIcon, Smartphone, Wallet, CalendarClock, Gauge,
 } from "lucide-react";
 import { Section, Stagger, SkeletonCards } from "@/components/kit";
 import SettingsPageShell from "../components/SettingsPageShell";
@@ -46,6 +46,7 @@ type GuardSettings = {
     licenseExpiryAlert: boolean;
     licenseExpiryDays: number;
     blockClockInOnExpiredLicense: boolean;
+    performanceScoringEnabled: boolean;
 };
 
 const DEFAULTS: GuardSettings = {
@@ -61,6 +62,8 @@ const DEFAULTS: GuardSettings = {
     // Apagado, igual que en el backend: encenderlo de oficio dejaría sin fichar
     // a toda plantilla con las fechas de credencial mal cargadas.
     blockClockInOnExpiredLicense: false,
+    // Encendido, igual que en el backend: es como se ha comportado siempre.
+    performanceScoringEnabled: true,
 };
 
 // Partial view of the tenant settings blob (GET/PUT /settings). Only the fields
@@ -229,6 +232,16 @@ export default function GuardsGlobalSettingsPage() {
                                 checked={cfg.shiftRemindersAdaptive}
                                 onCheckedChange={(v) => set("shiftRemindersAdaptive", v)}
                                 disabled={disabled || !cfg.shiftRemindersEnabled}
+                            />
+                        </Section>
+
+                        <Section title={t('settings.guardsGlobal.sectionDesempeno', { defaultValue: 'Medición de desempeño' })} icon={<Gauge />} contentClassName="divide-y">
+                            <ToggleRow
+                                label={t('settings.guardsGlobal.performanceLabel', { defaultValue: 'Medir el desempeño del personal' })}
+                                hint={t('settings.guardsGlobal.performanceHint', { defaultValue: 'Todo el personal arranca en 100 y sólo baja por lo que se mide: puntualidad, uniforme, inventario, consignas, rondas, evaluaciones, capacitación y la valoración del cliente, más las faltas. Apagado, nadie ve puntaje —ni tú en las fichas, ni el vigilante en su aplicación—; no se pone a cero, deja de existir. Para dejar de medir a UNA persona en concreto, usa el interruptor de su ficha, en Desempeño.' })}
+                                checked={cfg.performanceScoringEnabled}
+                                onCheckedChange={(v) => set("performanceScoringEnabled", v)}
+                                disabled={disabled}
                             />
                         </Section>
 

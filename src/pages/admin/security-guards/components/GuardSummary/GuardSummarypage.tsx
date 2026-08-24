@@ -289,6 +289,22 @@ export default function GuardSummary({ guard }: Props) {
       >
         {perfLoading && perf === null ? (
           <div className="py-6 text-center text-sm" style={{ color: 'var(--ink-soft)' }}>Calculando desempeño…</div>
+        ) : perf?.enabled === false ? (
+          /* Apagada la medición no hay nota, y decir «faltan datos» convertiría
+             una decisión de la empresa en un vacío que se llenaría solo. */
+          <EmptyState
+            icon={<Gauge />}
+            title={
+              perf.disabledBy === 'tenant'
+                ? 'Tu empresa no está midiendo el desempeño'
+                : 'A esta persona no se le mide el desempeño'
+            }
+            description={
+              perf.disabledBy === 'tenant'
+                ? 'La medición está desactivada para toda la empresa en Configuración › Vigilantes en turno.'
+                : 'Puedes volver a activarlo desde la pestaña Desempeño de esta ficha.'
+            }
+          />
         ) : !perf?.hasData ? (
           <EmptyState
             icon={<Gauge />}

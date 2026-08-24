@@ -26,8 +26,12 @@ const FACTOR_ES: Record<string, string> = {
   consignas: "Consignas", rondas: "Rondas", quiz: "Quiz", training: "Capacitación",
 };
 
-function ScoreBadge({ score, tier }: { score: number | null; tier: string }) {
+function ScoreBadge({ score, tier, enabled = true }: { score: number | null; tier: string; enabled?: boolean }) {
   const t = tierOf(tier);
+  // «No se le mide» y «no hay datos» son cosas distintas, y la diferencia
+  // importa: la primera es una decisión de la empresa, la segunda un vacío que
+  // se llena solo trabajando.
+  if (!enabled) return <StatusBadge tone="neutral" dot={false}>Sin medir</StatusBadge>;
   if (score == null) return <StatusBadge tone="neutral" dot={false}>Sin datos</StatusBadge>;
   return (
     <StatusBadge tone={t.tone} dot={false} className="text-sm font-bold">
@@ -37,7 +41,20 @@ function ScoreBadge({ score, tier }: { score: number | null; tier: string }) {
 }
 
 function FactorBars({ g }: { g: GuardPerformance }) {
-  if (!g.components?.length) return <p className="text-xs text-muted-foreground">Sin factores con datos en el período.</p>;
+  if (g.enabled === false) {
+    return (
+      <p className="text-xs text-muted-foreground">
+        A esta persona no se le mide el desempeño. Puedes volver a activarlo desde su ficha, en Desempeño.
+      </p>
+    );
+  }
+  if (!g.components?.length) {
+    return (
+      <p className="text-xs text-muted-foreground">
+        Todavía no hay ningún factor medido en el período. La puntuación parte de 100 y baja sólo por lo que se mide.
+      </p>
+    );
+  }
   return (
     <div className="grid gap-x-6 gap-y-2 sm:grid-cols-2">
       {g.components.map((c) => (
@@ -116,6 +133,12 @@ export default function Guard() {
                   </div>
                 ))}
               </div>
+            ) : lb && lb.enabled === false ? (
+              <EmptyState
+                icon={<Award />}
+                title="Tu empresa no está midiendo el desempeño"
+                description="La medición está desactivada para toda la empresa en Configuración › Vigilantes en turno. Mientras siga así, nadie tiene puntuación."
+              />
             ) : !lb || lb.guards.length === 0 ? (
               <EmptyState icon={<Award />} title="Sin evaluaciones" description="No hay vigilantes para evaluar." />
             ) : (
@@ -139,10 +162,10 @@ export default function Guard() {
                       return (
                         <Fragment key={g.id}>
                           <tr className="cursor-pointer transition-colors hover:bg-[var(--glass-sunken)]" onClick={() => setExpanded(open ? null : g.id)}>
-                            <td className="px-3 py-2 text-muted-foreground">{g.hasData ? i + 1 : "—"}</td>
+                            <td className="px-3 py-2 text-muted-foreground">{g.enabled !== false && g.hasData ? i + 1 : "—"}</td>
                             <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}><GuardLink id={g.id} name={g.name} /></td>
-                            <td className="px-3 py-2"><ScoreBadge score={g.score} tier={g.tier} /></td>
-                            <td className="px-3 py-2"><span style={{ color: tierOf(g.tier).ink }} className="text-xs font-semibold">{g.hasData ? tierOf(g.tier).label : "—"}</span></td>
+                            <td className="px-3 py-2"><ScoreBadge score={g.score} tier={g.tier} enabled={g.enabled !== false} /></td>
+                            <td className="px-3 py-2"><span style={{ color: tierOf(g.tier).ink }} className="text-xs font-semibold">{g.enabled !== false && g.hasData ? tierOf(g.tier).label : "—"}</span></td>
                             <td className="px-3 py-2 text-right">{g.attendanceRate != null ? <span style={{ color: pctColor(g.attendanceRate) }}>{g.attendanceRate}%</span> : <span className="text-muted-foreground">—</span>}</td>
                             <td className="px-3 py-2 text-right text-muted-foreground">{g.absences}</td>
                             <td className="px-3 py-2 text-right text-muted-foreground">{g.tardies}</td>
