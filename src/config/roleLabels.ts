@@ -60,9 +60,13 @@ const ROLE_DESCRIPTIONS: Record<string, Localized> = {
     pt: "Gerencia pessoal e certificações",
   },
   dispatcher: {
-    es: "Gestiona programación y turnos",
-    en: "Manages scheduling and shifts",
-    pt: "Gerencia programação e turnos",
+    // La central de operaciones. Este rol dejó de ser «el que programa turnos»
+    // cuando pasó a ser el de la consola 24/7 — y es además el que heredan los
+    // vigilantes asignados a la central, así que su descripción es lo que lee
+    // quien vaya a decidir qué puede hacer un centralista.
+    es: "Central de operaciones: novedades, alarmas, radio, cobertura y despacho",
+    en: "Operations center: incidents, alarms, radio, coverage and dispatch",
+    pt: "Central de operações: ocorrências, alarmes, rádio, cobertura e despacho",
   },
   clientaccountmanager: {
     es: "Gestiona cuentas de clientes",
