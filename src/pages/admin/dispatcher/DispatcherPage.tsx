@@ -1743,8 +1743,8 @@ export default function DispatcherPage() {
             </div>
 
             <DialogFooter className="mt-4 flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setSendDialogOpen(false)}>{t('cancel')}</Button>
-              <Button variant="brand" onClick={performSend} disabled={sendingEmail}>{sendingEmail ? t('dispatcher.sending') : t('send')}</Button>
+              <Button variant="outline" onClick={() => setSendDialogOpen(false)}>{t('dispatcher.cancel')}</Button>
+              <Button variant="brand" onClick={performSend} disabled={sendingEmail}>{sendingEmail ? t('dispatcher.sending') : t('common.send')}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

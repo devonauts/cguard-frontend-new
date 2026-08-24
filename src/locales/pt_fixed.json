@@ -20,7 +20,8 @@
     "send": "Enviar",
     "cancel": "Cancelar",
     "createdAt": "Data de criação",
-    "updatedAt": "Última atualização"
+    "updatedAt": "Última atualização",
+    "enterVerificationCode": "Digite o código de verificação"
   },
   "sidebar": {
     "panel": "Painel",
@@ -1315,7 +1316,11 @@
       "confirmDeleteTitle": "Confirmar exclusão",
       "cancelBtn": "Cancelar",
       "confirmDeleteText": "Tem certeza de que deseja excluir {{count}} tipo(s) de incidente? Esta ação não pode ser desfeita."
-    }
+    },
+    "back": "Configurações",
+    "backToSettings": "Voltar às configurações",
+    "index": "Índice de configurações",
+    "searchPlaceholder": "Buscar configuração..."
   },
   "guards": {
     "nav": {
@@ -1375,8 +1380,12 @@
         "message": "Esta mensagem notifica que 'José Alejo Pinos' aceitou a solicitação da empresa e passou para a lista ativa"
       },
       "badge": {
-        "joined": "Guarda entrou"
-      }
+        "joined": "Guarda entrou",
+        "accepted": "Aceito"
+      },
+      "offDuty": "Fora de serviço",
+      "onDutyNo": "Não",
+      "onDutyYes": "Sim"
     },
     "profile": {
       "actions": {
@@ -1434,7 +1443,8 @@
         "issueDate": "Data de emissão",
         "expiryDate": "Data de validade",
         "guardCredentials": "Credencial",
-        "middleName": "Nome do meio"
+        "middleName": "Nome do meio",
+        "hireDate": "Data de contratação"
       },
       "values": {
         "enabled": "Habilitado",
@@ -1443,7 +1453,8 @@
       },
       "placeholders": {
         "languages": "Ex: Spanish, English",
-        "skills": "Ex: First aid, Self-defense"
+        "skills": "Ex: First aid, Self-defense",
+        "csvHint": "Separe cada valor com uma vírgula"
       },
       "noLicense": "Nenhuma licença encontrada",
       "access": {
@@ -1459,7 +1470,10 @@
         "statusPending": "Convite pendente",
         "tokenExpired": "O link do convite expirou",
         "tokenExpires": "Convite válido até"
-      }
+      },
+      "editHint": "Edite os dados pessoais e trabalhistas do vigilante.",
+      "nav": "Perfil",
+      "noAttendance": "Sem registros de presença"
     },
     "tabs": {
       "invite": "Convidar via SMS ou Email",
@@ -1484,8 +1498,10 @@
       },
       "save": "Salvar",
       "toasts": {
-        "saved": "Disponibilidade salva"
-      }
+        "saved": "Disponibilidade salva",
+        "saveError": "Sem id do vigilante"
+      },
+      "empty": "Sem disponibilidade"
     },
     "new": {
       "title": "Novo Segurança",
@@ -1556,7 +1572,13 @@
         "default": "Ação"
       },
       "actions": {
-        "delete": "Excluir"
+        "delete": "Excluir",
+        "confirmDeleteStation": "Remover este vigilante de {{station}}? {{count}} turnos serão excluídos.",
+        "confirmDeleteTitle": "Confirmar exclusão",
+        "deleteFailed": "Não foi possível excluir a atribuição",
+        "deleted": "Atribuição excluída",
+        "removeFromPost": "Remover do posto",
+        "selectPair": "Selecione ao menos uma estação para excluir"
       },
       "searchPlaceholder": "Buscar Post Sites",
       "assignButton": "Atribuir Sites",
@@ -1582,7 +1604,22 @@
       "noPostSites": "Nenhum site encontrado",
       "noStations": "Nenhuma estação encontrada",
       "postSiteLoadError": "Não foi possível carregar o posto",
-      "postSiteLoading": "Carregando informações do posto..."
+      "postSiteLoading": "Carregando informações do posto...",
+      "assigned": "Vigilante atribuído",
+      "empty": "Nenhum posto atribuído ainda",
+      "emptyHint": "Atribua um posto para começar.",
+      "errors": {
+        "assignFailed": "Não foi possível atribuir o posto",
+        "noTenant": "Não foi possível determinar a organização",
+        "noneToDelete": "Não há atribuições válidas para excluir",
+        "selectClientSite": "Selecione um cliente e um posto",
+        "selectTimes": "Selecione a hora de início e de fim",
+        "timeOrder": "A hora de início deve ser anterior à hora de fim"
+      },
+      "loadingPostSite": "Carregando informações do posto…",
+      "noResults": "Sem resultados",
+      "noResultsHint": "Nenhuma atribuição corresponde à busca.",
+      "thisPost": "este posto"
     },
     "files": {
       "action": {
@@ -1610,7 +1647,9 @@
         "chooseFilesPlaceholder": "Selecionar arquivos Nenhum arquivo selecionado",
         "filesToUpload": "Arquivos para carregar",
         "upload": "Carregar"
-      }
+      },
+      "feedTitle": "Arquivos do vigilante",
+      "subtitle": "Documentos e arquivos do vigilante."
     },
     "skills": {
       "action": {
@@ -1748,6 +1787,25 @@
       "tabs": {
         "create_profile": "Criar perfil",
         "invite": "Convidar usando SMS ou e-mail"
+      },
+      "empty": "Sem dados de KPI",
+      "kpiadded": "Adicionar novo KPI",
+      "kpisearch": "Buscar KPI",
+      "kpitable": {
+        "kpicreatedfor": "Adicionado por",
+        "kpidate": "Data/hora"
+      },
+      "subtitle": "KPIs e desempenho do vigilante.",
+      "table": {
+        "noTargets": "Nenhuma meta definida"
+      },
+      "title": "Indicadores de desempenho",
+      "toasts": {
+        "deleteError": "Não foi possível excluir o(s) KPI(s)",
+        "deleteNoneSelected": "Nenhum item selecionado",
+        "pdfOpenError": "Não foi possível abrir o PDF",
+        "saveError": "Não foi possível salvar o KPI",
+        "selectAtLeastOne": "Selecione ao menos um KPI"
       }
     },
     "created": "KPI criado com sucesso",
@@ -1790,7 +1848,8 @@
       "modal": {
         "cancel": "Cancelar",
         "save": "Salvar",
-        "title": "Adicionar nova licença"
+        "title": "Adicionar nova licença",
+        "editTitle": "Editar licença"
       },
       "newLicense": "Nova licença",
       "searchPlaceholder": "Buscar licença",
@@ -1799,6 +1858,18 @@
         "expires": "Vence em",
         "number": "Número da licença",
         "type": "Tipo de licença"
+      },
+      "details": {
+        "edit": "Editar"
+      },
+      "noNumber": "Sem número",
+      "status": {
+        "noExpiry": "Sem vencimento",
+        "soon": "A vencer"
+      },
+      "subtitle": "Documentos e credenciais do vigilante",
+      "toasts": {
+        "noPermissionCreateType": "Você não tem permissão para criar tipos de licença"
       }
     },
     "list": {
@@ -1809,7 +1880,9 @@
         "remove": "Remover",
         "resendInvite": "Reenviar Convite",
         "restore": "Restaurar",
-        "viewDetails": "Ver Detalhes"
+        "viewDetails": "Ver Detalhes",
+        "assignStation": "Atribuir a uma estação",
+        "resetPassword": "Redefinir senha"
       },
       "applyFilters": "Aplicar filtros",
       "aria": {
@@ -1845,7 +1918,11 @@
       "dialog": {
         "archive": {
           "description": "Tem certeza de que deseja arquivar este vigilante? Esta ação pode ser revertida pelo filtro.",
-          "title": "Arquivar vigilante"
+          "title": "Arquivar vigilante",
+          "date": "Último dia trabalhado",
+          "equipment": "Qual equipamento foi devolvido hoje? O que não for marcado fica pendente.",
+          "notePh": "Detalhe do motivo",
+          "rehire": "Elegível para recontratação"
         },
         "bulk": {
           "archiveDescription": "Tem certeza de que deseja arquivar {{count}} vigilante(s)? Esta ação pode ser revertida pelo filtro de arquivados.",
@@ -1940,7 +2017,8 @@
         "email": "E-mail",
         "name": "Nome",
         "phone": "Número de Celular",
-        "status": "Status"
+        "status": "Status",
+        "assignment": "Atribuição"
       },
       "toasts": {
         "archiveError": "Erro ao arquivar vigilante",
@@ -1960,8 +2038,13 @@
         "printWindowOpenError": "Não foi possível abrir a janela de impressão",
         "restoreError": "Erro ao restaurar vigilante: {{msg}}",
         "restoreSuccess": "Vigilante restaurado",
-        "selectAtLeastOne": "Selecione ao menos um vigilante"
-      }
+        "selectAtLeastOne": "Selecione ao menos um vigilante",
+        "assignError": "Erro ao atribuir o vigilante",
+        "assigned": "Vigilante atribuído com sucesso",
+        "resetError": "Não foi possível redefinir a senha"
+      },
+      "noData": "Nenhum vigilante encontrado",
+      "subtitle": "Gerencie a equipe de segurança da sua organização"
     },
     "notes": {
       "actions": {
@@ -1971,12 +2054,16 @@
       "addButton": "Nova Nota",
       "empty": {
         "message": "Não encontramos<br />itens que correspondam<br />à sua busca",
-        "title": "Nenhum resultado encontrado"
+        "title": "Nenhum resultado encontrado",
+        "hint": "Crie a primeira nota para este vigilante.",
+        "none": "Sem notas ainda"
       },
       "form": {
         "attachments": {
           "label": "Anexos",
-          "noFiles": "Nenhum arquivo selecionado"
+          "noFiles": "Nenhum arquivo selecionado",
+          "invalidType": "Tipo de arquivo não permitido",
+          "metadataCreateFailed": "Falha ao salvar os metadados do arquivo"
         },
         "date": {
           "label": "Data"
@@ -2000,7 +2087,15 @@
         "addedBy": "Adicionado por",
         "date": "Data",
         "title": "Título"
-      }
+      },
+      "delete": {
+        "confirm": "Excluir \"{{title}}\"? Esta ação não pode ser desfeita.",
+        "title": "Excluir nota"
+      },
+      "missingId": "Identificador não encontrado",
+      "noteCreateFailed": "Não foi possível criar a nota",
+      "noteDeleteFailed": "Não foi possível excluir a nota",
+      "untitled": "Sem título"
     },
     "pdfError": "Não foi possível gerar/obter o PDF",
     "pdfGenerated": "PDF gerado",
@@ -2088,7 +2183,76 @@
     },
     "saveError": "Erro ao salvar o KPI",
     "selectAtLeastOne": "Você deve selecionar ao menos um KPI",
-    "updated": "KPI atualizado com sucesso"
+    "updated": "KPI atualizado com sucesso",
+    "device": {
+      "appVersion": "Versão do app",
+      "empty": "Ainda não há dispositivo registrado para este vigilante.",
+      "emptyTitle": "Sem dispositivos ainda",
+      "flaggedBadge": "{{n}} não reconhecido(s)",
+      "lastMismatch": "Última anomalia",
+      "reset": "Redefinir vínculo",
+      "resetDone": "Vínculo redefinido. O próximo dispositivo do vigilante será vinculado.",
+      "resetError": "Não foi possível redefinir o vínculo.",
+      "subtitle": "O primeiro dispositivo em que o vigilante faz login fica vinculado. Se aparecer outro, ele é marcado como não reconhecido (não é bloqueado). Redefina o vínculo se o vigilante trocou de celular.",
+      "title": "Dispositivo do vigilante",
+      "unrecognized": "Não reconhecido"
+    },
+    "documents": {
+      "deleteConfirm": "Excluir \"{{name}}\"? Esta ação não pode ser desfeita.",
+      "deleteError": "Não foi possível excluir o documento",
+      "deleteTitle": "Excluir documento",
+      "dropzone": "Arraste arquivos ou clique para selecionar",
+      "dropzoneHint": "Fotos e imagens ou PDF · máx. 10MB",
+      "empty": {
+        "description": "Envie fotos ou documentos (PDF) deste vigilante.",
+        "title": "Sem documentos ainda"
+      },
+      "errorDesc": "Não conseguimos carregar os documentos. Tente novamente.",
+      "invalidType": "Somente imagens e PDF são permitidos",
+      "loadError": "Não foi possível carregar os documentos",
+      "saveError": "Não foi possível salvar os documentos",
+      "tooLarge": "O arquivo excede o tamanho máximo (10MB)",
+      "uploadFailed": "Falha no envio de {{name}}"
+    },
+    "employment": {
+      "cycles": "Ciclos na empresa",
+      "equipmentPending": "{{n}} itens não devolvidos",
+      "hiredOn": "Data de admissão",
+      "noRehire": "Não recontratável",
+      "terminations": "Histórico de desligamentos"
+    },
+    "memos": {
+      "addButton": "Novo memorando",
+      "by": "por",
+      "createError": "Não foi possível enviar o memorando",
+      "created": "Memorando enviado ao vigilante",
+      "deleteError": "Não foi possível excluir",
+      "empty": {
+        "message": "Este vigilante ainda não tem memorandos.",
+        "title": "Sem memorandos ainda"
+      },
+      "feedTitle": "Histórico de memorandos",
+      "form": {
+        "contentPlaceholder": "Escreva o memorando...",
+        "subjectPlaceholder": "Assunto do memorando"
+      },
+      "loadError": "Não foi possível carregar os memorandos",
+      "modal": {
+        "title": "Novo memorando",
+        "to": "Para"
+      },
+      "noResults": "Sem resultados",
+      "noResultsHint": "Nenhum memorando corresponde à sua busca.",
+      "searchPlaceholder": "Buscar memorando...",
+      "subjectRequired": "O assunto é obrigatório",
+      "subtitle": "Comunicados dirigidos a este vigilante."
+    },
+    "actionNotImplemented": "Ação ainda não disponível",
+    "overview": {
+      "empty": "Ainda não há atividade deste vigilante",
+      "loadError": "Não foi possível carregar o resumo do vigilante",
+      "loading": "Carregando o resumo…"
+    }
   },
   "clients": {
     "nav": {
@@ -2141,8 +2305,10 @@
       "errors": {
         "invalidEmail": "E-mail inválido",
         "invalidPhone": "Número inválido",
-        "requiredName": "Nome obrigatório"
-      }
+        "requiredName": "Nome obrigatório",
+        "invalidForm": "Corrija os erros do formulário"
+      },
+      "loadError": "Não foi possível carregar os contatos"
     },
     "overview": {
       "cards": {
@@ -2151,7 +2317,10 @@
         "toursCompleted": "Tours completados (últimos 7 dias)",
         "tasksCompleted": "Tarefas completadas (últimos 7 dias)",
         "incidents": "Relatórios de incidentes",
-        "hoursWorked": "Horas trabalhadas (últimos 7 dias)"
+        "hoursWorked": "Horas trabalhadas (últimos 7 dias)",
+        "onsite": "Em turno agora",
+        "viewIncidents": "Ver ocorrências",
+        "viewStaff": "Ver equipe"
       },
       "generalInfo": {
         "notfoundclient": "Cliente não encontrado",
@@ -2166,6 +2335,40 @@
         "fax": "Telefone fixo",
         "email": "Email",
         "website": "Website"
+      },
+      "alerts": {
+        "attention": "Atenção",
+        "critical": "Crítico",
+        "last7": "nos últimos 7 dias",
+        "noneHint": "Não há pendências para este cliente.",
+        "uncovered": "Sites sem cobertura"
+      },
+      "contactPerson": {
+        "add": "Adicionar pessoa de contato",
+        "addHint": "Adicione quem é o contato do cliente.",
+        "direct": "Contato direto do cliente",
+        "more": "contato(s) a mais",
+        "none": "Sem pessoa de contato",
+        "title": "Pessoa de contato"
+      },
+      "mapSedes": "{{count}} sites localizados",
+      "mapSedesOne": "1 site localizado",
+      "noLocation": "Sem localização registrada",
+      "noSedes": "Sem sites cadastrados",
+      "noSedesHint": "Crie o primeiro site deste cliente.",
+      "opsMap": "Mapa de operações",
+      "otherStations": "Estações sem site",
+      "recent": {
+        "none": "Sem atividade recente",
+        "noneHint": "Aqui você verá a atividade da equipe nos sites do cliente: turnos, ocorrências, visitas, tarefas e rondas."
+      },
+      "sedesStatus": "Situação dos sites",
+      "status": {
+        "sinOp": "Sem operação"
+      },
+      "tbl": {
+        "sede": "Site",
+        "status": "Situação"
       }
     },
     "loadError": "Erro ao carregar clientes",
@@ -2197,7 +2400,8 @@
       "address": "Endereço",
       "email": "E-mail",
       "phone": "Número de telefone",
-      "status": "Status"
+      "status": "Status",
+      "more": "Mais"
     },
     "status": {
       "active": "Ativo",
@@ -2356,7 +2560,12 @@
       },
       "tasksLabel": "Tarefas",
       "viewModalTitle": "Atribuições de vigilante",
-      "viewNoAssignments": "Nenhuma atribuição encontrada."
+      "viewNoAssignments": "Nenhuma atribuição encontrada.",
+      "emptyHint": "Abra uma estação deste site para atribuir vigilantes.",
+      "guardOne": "vigilante",
+      "manageInStation": "Gerenciar na estação",
+      "siteRosterHint": "Os vigilantes pertencem às estações deste site. Aqui você vê o resumo; para atribuir, remover ou trocar um vigilante, abra a estação.",
+      "view": "Ver"
     },
     "clientCreated": "Cliente criado com sucesso",
     "clientUpdated": "Cliente atualizado com sucesso",
@@ -2380,7 +2589,33 @@
       "phone": "Telefone *",
       "postalCode": "Código postal/CEP *",
       "useMyLocation": "Usar minha localização",
-      "website": "Site"
+      "website": "Site",
+      "addressAutoFilled": "Endereço preenchido automaticamente",
+      "addressSearch": "Endereço",
+      "businessInfo": "Informações da empresa",
+      "categoryLabel": "Setor de segurança",
+      "categoryTooltip": "Selecione o setor de segurança associado ao cliente",
+      "cedula": "Documento de identidade",
+      "clickToUpload": "Clique para enviar",
+      "clientType": "Tipo de cliente",
+      "code": "Código do cliente",
+      "commercialName": "Nome comercial",
+      "commercialNameHint": "Será usado como nome do site de serviço.",
+      "contractDate": "Data do contrato",
+      "contractEndDate": "Fim do contrato",
+      "extraAccess": "Pessoas com acesso adicionais",
+      "logo": "Logotipo da empresa",
+      "personJuridica": "Pessoa jurídica (CNPJ)",
+      "personNatural": "Pessoa física (CPF)",
+      "placePicture": "Foto do local",
+      "purchaseOrder": "Ordem de compra",
+      "purchaseOrderHint": "Use quando o cliente for um órgão público que contrata por ordem de compra.",
+      "purchaseOrderPh": "N.º da ordem de compra (clientes públicos)",
+      "riskLevel": "Nível de risco",
+      "ruc": "CNPJ da empresa",
+      "searchAddress": "Buscar endereço...",
+      "selectRisk": "Não definido",
+      "switchToAutocomplete": "Busca"
     },
     "notes": {
       "Added By": "Adicionado por",
@@ -2408,14 +2643,17 @@
         "Save": "SALVAR",
         "Title": "Adicionar nova nota",
         "Titleinput": "Insira o título da nota",
-        "Titlenote": "Título *"
+        "Titlenote": "Título *",
+        "NoFilesSelected": "Nenhum arquivo selecionado"
       },
       "noteCreateFailed": "Não foi possível criar a nota",
       "noteCreated": "Nota criada com sucesso",
       "noteDeleted": "Nota excluída com sucesso",
       "noteUpdateFailed": "Não foi possível atualizar a nota",
       "noteUpdated": "Nota atualizada com sucesso",
-      "notesearchPlaceholder": "Buscar notas"
+      "notesearchPlaceholder": "Buscar notas",
+      "addedBy": "Adicionado por",
+      "detailsTitle": "Detalhe da nota"
     },
     "sourcePivot": "pivot",
     "stations": {
@@ -2445,7 +2683,41 @@
     "validation": {
       "cedula_invalid": "Cédula inválida",
       "ruc_invalid": "RUC inválido (deve terminar em 001 e conter cédula válida)"
-    }
+    },
+    "clientCreatedSiteHint": "A primeira sede também foi criada com estes dados. Falta configurar a sua operação antes de criar postos e atribuir vigilantes.",
+    "bulkPartialSuccess": "{{succeeded}} atualizados, {{failed}} com erro",
+    "code": "Código",
+    "contractEnd": "Até",
+    "contractStart": "Início do contrato",
+    "corporate": "Cliente corporativo",
+    "editClientSubtitle": "Atualize as informações do cliente.",
+    "generalInfo": {
+      "notfoundclient": "Cliente não encontrado ou erro ao carregar os dados."
+    },
+    "header": {
+      "subtitle": "Gerencie seus clientes, o acesso ao app e a categorização."
+    },
+    "hero": {
+      "newSite": "Criar site"
+    },
+    "individual": "Cliente pessoa física",
+    "inviteToApp": "Convidar para o app",
+    "legalRep": {
+      "document": "Documento do representante",
+      "email": "E-mail pessoal",
+      "phone": "Telefone pessoal",
+      "title": "Dados do representante legal"
+    },
+    "newClientSubtitle": "Cadastre um novo cliente na plataforma.",
+    "noChanges": "Não havia alterações para salvar",
+    "onboarding": {
+      "not_invited": "Sem acesso"
+    },
+    "resendAppAccess": "Reenviar convite",
+    "sendAppAccess": "Enviar acesso ao app",
+    "deleteError": "Não foi possível excluir o cliente",
+    "duplicateFound": "Já existe um cliente com esses dados",
+    "errorLoadingClients": "Não foi possível carregar os clientes"
   },
   "header": {
     "openMenu": "Abrir menu",
@@ -2468,7 +2740,8 @@
     "send": "Enviar",
     "settings": "Configurações",
     "subscription": "Assinatura",
-    "system_logs": "Registros do sistema"
+    "system_logs": "Registros do sistema",
+    "searchPlaceholder": "Buscar no C-Guard Pro…"
   },
   "dispatcher": {
     "noPermissionViewToast": "Você não tem permissão para ver Incidentes",
@@ -2520,7 +2793,8 @@
       "note": "Nota",
       "remove_file": "Remover",
       "write_error": "Escreva um comentário",
-      "you": "Você"
+      "you": "Você",
+      "no_files_selected": "Nenhum arquivo selecionado"
     },
     "confirm_delete_desc": "Tem certeza de que deseja excluir {{count}} incidente(s)? Esta ação não pode ser desfeita.",
     "confirm_delete_title": "Confirmar exclusão",
@@ -2577,7 +2851,17 @@
     "ticket_closed": "Ticket fechado",
     "ticket_id": "ID do ticket",
     "ticket_summary": "Resumo do ticket",
-    "view_details": "Ver detalhes"
+    "view_details": "Ver detalhes",
+    "dispatcher": "Despachante",
+    "incident_datetime": "Data e hora da ocorrência",
+    "incident_type": "Tipo de ocorrência",
+    "no_stations": "Não há estações",
+    "search_station": "Buscar estação…",
+    "select_site_first": "Escolha primeiro um site",
+    "select_station": "Selecione uma estação",
+    "station": "Estação",
+    "subtitle": "Receba, despache e acompanhe os chamados dos seus postos",
+    "you": "Você"
   },
   "components": {
     "addRemove": {
@@ -2699,6 +2983,10 @@
         },
         "title": "Estatísticas"
       }
+    },
+    "copyable": {
+      "copied": "Copiado",
+      "copy": "Copiar"
     }
   },
   "visitantes": {
@@ -2782,7 +3070,8 @@
       "mobile": "ex. +12015550123",
       "name": "ex. João",
       "phone": "ex. +12015550123",
-      "reason": "Motivo da visita"
+      "reason": "Motivo da visita",
+      "numPeople": "N.º de pessoas"
     },
     "print": "Imprimir",
     "save": "Salvar",
@@ -2805,7 +3094,23 @@
       "provider": "Fornecedor",
       "vip": "VIP"
     },
-    "updated": "Visitante atualizado"
+    "updated": "Visitante atualizado",
+    "archiveError": "Não foi possível arquivar a visita",
+    "archived": "Visita arquivada",
+    "attachUploadError": "Não foi possível enviar o anexo",
+    "confirmArchive": "Arquivar esta visita?",
+    "createError": "Não foi possível registrar a visita",
+    "deleteError": "Não foi possível excluir a visita",
+    "exitError": "Não foi possível registrar a saída",
+    "exitMarked": "Saída registrada",
+    "exportError": "Não foi possível exportar a lista",
+    "loadError": "Não foi possível carregar as visitas",
+    "missingFields": "Preencha os campos obrigatórios",
+    "placeTypeFilterPlaceholder": "Todos os tipos de lugar",
+    "printError": "Não foi possível imprimir",
+    "subtitle": "Controle de entrada e saída de visitantes",
+    "placeTypeLabel": "Tipo de lugar",
+    "tagLabel": "Etiqueta"
   },
   "kit": {
     "pagination": {
@@ -2859,7 +3164,9 @@
       "detailserror": "Não foi possível carregar os detalhes do posto de vigilância",
       "notfoundpostsite": "Nenhum posto de vigilância encontrado",
       "title": "Postos de vigilância",
-      "unexpected": "Ocorreu um erro inesperado"
+      "unexpected": "Ocorreu um erro inesperado",
+      "errorTitle": "Não foi possível carregar o site",
+      "newStation": "Criar estação"
     },
     "KPI": {
       "confirmDelete": {
@@ -2939,7 +3246,8 @@
         "pdfOpened": "PDF aberto",
         "selectAtLeastOne": "Você deve selecionar pelo menos um KPI"
       },
-      "toursCompleted": "Rondas concluídas (últimos 7 dias)"
+      "toursCompleted": "Rondas concluídas (últimos 7 dias)",
+      "noPermission": "Somente um administrador pode criar ou alterar indicadores"
     },
     "action": "Ação",
     "actions": "Ações",
@@ -3056,7 +3364,8 @@
         "MapType": "Tipo de mapa",
         "Roadmap": "Mapa de ruas",
         "Satellite": "Satélite",
-        "title": "Mapa"
+        "title": "Mapa",
+        "noCoords": "Este site não tem coordenadas configuradas."
       },
       "Stats": {
         "guardOnSite": "Vigilantes no local",
@@ -3100,7 +3409,12 @@
         "timeOff": "Folga",
         "vehiclePatrol": "Patrulha veicular",
         "watchModeReport": "Relatório de modo vigilância"
-      }
+      },
+      "Filter": {
+        "fromDate": "De",
+        "toDate": "Até"
+      },
+      "last7days": "últimos 7 dias"
     },
     "pdfDownloaded": "PDF baixado",
     "pdfexport": "Exportar para PDF",
@@ -3185,7 +3499,17 @@
         "name": "Nome *",
         "schedule": "Horário *",
         "selectSchedule": "Selecione o horário",
-        "startTime": "Início"
+        "startTime": "Início",
+        "alternate": "Alternância entre fixos (sem folguista)",
+        "blockHours": "Turno por vigilante",
+        "clockInBufferHint": "Minutos antes/depois do horário de início em que o vigilante pode registrar entrada. Vazio = usar o padrão da empresa.",
+        "clockInEarlyBuffer": "Tolerância de entrada antecipada (min)",
+        "clockInLateGrace": "Tolerância de entrada atrasada (min)",
+        "geofenceHint": "Distância máxima para registrar entrada",
+        "nicknameHint": "Visível apenas para a operação da sua empresa. O cliente não vê.",
+        "restCoverage": "Cobertura de descansos",
+        "wholeWindow": "Toda a jornada",
+        "withSf": "O folguista cobre os descansos"
       },
       "guardsCount": "Vigilantes",
       "hShort": "h",
@@ -3218,7 +3542,13 @@
       "tableActions": "Ações",
       "tags": "etiquetas",
       "tenantId": "Tenant ID",
-      "view": "Ver detalhes"
+      "view": "Ver detalhes",
+      "alternateMismatch": "Para alternar sem folguista, o ciclo do padrão deve ser múltiplo dos dias de trabalho (ex.: 1-1, 2-2).",
+      "blockMismatch": "A duração do turno deve dividir exatamente a cobertura do posto.",
+      "createSubtitle": "Defina o turno, o horário e a geocerca do posto.",
+      "horarioConfigFailed": "Estação criada, mas não foi possível configurar o horário. Configure em Programador › Horário.",
+      "noResults": "Sem resultados para a busca.",
+      "provideCustomTimes": "Defina a hora de início e de fim"
     },
     "tasks": {
       "action": "Ação",
@@ -3255,13 +3585,24 @@
         "type": "Tipo"
       }
     },
-    "viewDetails": "Ver detalhes"
+    "viewDetails": "Ver detalhes",
+    "wizardSubtitle": "Configure o local, sua localização, serviço e estações passo a passo.",
+    "wizardSubtitleForClient": "Nova sede para {{client}}: localização, serviço e estações passo a passo.",
+    "client": "Cliente"
   },
   "common": {
     "active": "Ativo",
     "cancel": "Cancelar",
     "inactive": "Inativo",
-    "save": "Salvar"
+    "save": "Salvar",
+    "default": "Padrão",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "no": "Não",
+    "viewAll": "Ver todas",
+    "viewDetail": "Ver detalhe",
+    "loading": "Carregando…",
+    "send": "Enviar"
   },
   "section": {
     "acceso_de_desarrollador": "ACESSO DE DESENVOLVEDOR",
@@ -3316,7 +3657,8 @@
         "new": "Novo Usuário"
       },
       "errors": {
-        "loadError": "Não foi possível carregar o usuário"
+        "loadError": "Não foi possível carregar o usuário",
+        "loadClientsError": "Não foi possível carregar os clientes"
       },
       "form": {
         "accessLevelLabel": "Nível de Acesso*",
@@ -3342,7 +3684,10 @@
       "toasts": {
         "created": "Usuário criado",
         "updated": "Usuário atualizado"
-      }
+      },
+      "sectionTitle": "Dados do usuário",
+      "subtitle": "Atualize a identidade, o nível de acesso e as permissões do usuário",
+      "viewSupervisorProfile": "Ver perfil de supervisor"
     },
     "filters": {
       "apply": "Aplicar filtros",
@@ -3408,7 +3753,9 @@
         "inviteCreated": "Código de convite criado",
         "inviteGeneratedLocal": "Código gerado localmente (não salvo no servidor)",
         "updated": "Usuário atualizado"
-      }
+      },
+      "sectionTitle": "Dados do usuário",
+      "subtitle": "Defina a identidade, o nível de acesso e as atribuições do usuário"
     },
     "noData": {
       "message": "Não encontramos nenhum item que corresponda à sua busca",
@@ -3419,14 +3766,18 @@
       "zero": "0 – 0 de 0"
     },
     "roleNames": {
-      "supervisor": "Supervisor"
+      "supervisor": "Supervisor",
+      "clientAccountManager": "Gerente de contas",
+      "hrManager": "Gerente de RH",
+      "operationsManager": "Gerente de operações"
     },
     "rowActions": {
       "delete": "Excluir",
       "edit": "Editar",
       "resendInvitation": "Reenviar Convite",
       "restore": "Restaurar",
-      "suspend": "Suspender"
+      "suspend": "Suspender",
+      "supervisorProfile": "Perfil de supervisor"
     },
     "searchPlaceholder": "Buscar usuário",
     "statuses": {
@@ -3459,8 +3810,11 @@
       "skippedAdminsWarning": "Administradores foram ignorados no processo de suspensão",
       "suspendAllError": "Não foi possível suspender todos os usuários",
       "suspendedArchivedSuccess": "Usuário suspenso e arquivado",
-      "suspendedCount": "{{count}} usuário(s) suspenso(s)"
-    }
+      "suspendedCount": "{{count}} usuário(s) suspenso(s)",
+      "sessionsCloseError": "Não foi possível encerrar as sessões.",
+      "sessionsClosed": "Sessões encerradas. Será necessário entrar novamente."
+    },
+    "subtitle": "Gerencie o acesso, os cargos e as permissões da equipe de escritório"
   },
   "actions": {
     "action": "Ação",
@@ -3537,7 +3891,8 @@
       "tag_cloud": "Baseado na nuvem",
       "tag_realtime": "Rastreamento em tempo real",
       "title_part1": "Leve suas operações de segurança",
-      "title_part2": "ao próximo nível"
+      "title_part2": "ao próximo nível",
+      "eyebrow": "Plataforma de segurança"
     },
     "login": "Entrar",
     "login_failed": "Erro ao entrar",
@@ -3575,7 +3930,32 @@
     "validation_passwords_not_match": "As senhas não coincidem",
     "validation_uppercase": "Deve incluir uma letra maiúscula",
     "verify_email_success": "Verificação de e-mail bem-sucedida",
-    "change_password_subtitle": "Atualize sua senha de acesso."
+    "change_password_subtitle": "Atualize sua senha de acesso.",
+    "enter_email": "Digite seu e-mail",
+    "fieldLanding": {
+      "desc": "Redefina a senha da sua conta de vigilante para voltar a usar o app C-Guard Pro.",
+      "eyebrow": "App do vigilante",
+      "tag_incidents": "Registro de ocorrências",
+      "title_part1": "Seu turno,"
+    },
+    "forgot_subtitle": "Informe seu e-mail e enviaremos um link para criar uma nova.",
+    "forgot_title": "Esqueceu sua senha?",
+    "hide_password": "Ocultar senha",
+    "new_password_placeholder": "Nova senha",
+    "reset_done_field_body": "Sua senha foi redefinida. Abra o app C-Guard Pro no seu celular e entre com seu e-mail e a nova senha.",
+    "reset_done_field_subtitle": "Volte ao app C-Guard Pro e entre com sua nova senha.",
+    "reset_done_title": "Senha atualizada!",
+    "reset_open_app": "Abrir o app C-Guard Pro",
+    "reset_sent": "Link enviado. Verifique seu e-mail",
+    "reset_subtitle": "Escolha uma nova senha para voltar a acessar sua conta.",
+    "show_password": "Mostrar senha",
+    "verify_email_subtitle": "Estamos confirmando seu endereço. Isso leva apenas um instante.",
+    "footer_copyright": "© {{year}} C-Guard Pro. Todos os direitos reservados.",
+    "verify_email_failed": "Não conseguimos verificar seu e-mail. O link pode ter expirado.",
+    "verify_email_missing_token": "O link de verificação está incompleto. Abra-o novamente pelo e-mail.",
+    "verify_email_processing": "Um momento, estamos confirmando seu endereço…",
+    "verify_email_title": "Verificando seu e-mail",
+    "weakPassword": "A senha é muito fraca"
   },
   "billing": {
     "activate": "Ativar assinatura",
@@ -3700,7 +4080,12 @@
         "specific": "Horário específico"
       },
       "tourDescription": "Descrição da Ronda",
-      "tourName": "Nome da Ronda*"
+      "tourName": "Nome da Ronda*",
+      "noPostSiteId": "Nenhum site selecionado",
+      "scheduledDaysPlaceholder": "Selecione os dias...",
+      "validation": {
+        "scheduledDaysRequired": "Selecione ao menos um dia"
+      }
     },
     "menu": {
       "action": "Ação",
@@ -3720,7 +4105,9 @@
     },
     "options": {
       "monFri": "Seg - Sex",
-      "weekend": "Fim de semana"
+      "weekend": "Fim de semana",
+      "saturday": "Sábado",
+      "wednesday": "Quarta-feira"
     },
     "placeholders": {
       "tourNameFallback": "Nome da ronda"
@@ -3730,6 +4117,9 @@
       "duration": "Duração",
       "name": "Nome da Ronda",
       "type": "Tipo"
+    },
+    "detail": {
+      "title": "Detalhes da ronda"
     }
   },
   "siteTourTag": {
@@ -3807,7 +4197,10 @@
   },
   "station": {
     "details": {
-      "orders": "Consignas específicas"
+      "orders": "Consignas específicas",
+      "loadError": "Erro ao carregar o posto",
+      "patrolQr": "QR de rondas",
+      "station": "Estação"
     },
     "orders": {
       "activate": "Ativar",
@@ -3864,6 +4257,100 @@
       "title": "Consignas específicas",
       "titleRequired": "O título é obrigatório",
       "viewVideo": "Ver vídeo"
+    },
+    "guards": {
+      "added": "Vigilante atribuído",
+      "allBusy": "Todos os vigilantes já têm uma atribuição ativa.",
+      "assign": "Atribuir vigilante",
+      "assignFailed": "Não foi possível atribuir",
+      "assignSub": "Vigilante fixo da rotação do posto",
+      "assignTitle": "Atribuir vigilante",
+      "changeTitle": "Trocar vigilante",
+      "changed": "Vigilante atualizado",
+      "empty": "Não há vigilantes atribuídos. Atribua um vigilante fixo para começar.",
+      "guard": "Vigilante",
+      "hint": "O fixo cobre a rotação; o folguista é colocado manualmente em Programador › Horário (ou com Otimizar folguistas).",
+      "pickGuard": "Selecione um vigilante",
+      "removeFailed": "Não foi possível remover",
+      "removed": "Vigilante removido do posto e dos turnos",
+      "sacaSub": "Cobre os dias de folga do vigilante fixo",
+      "save": "Salvar",
+      "selectGuard": "Selecionar vigilante…",
+      "startDay": "Primeiro dia de turno",
+      "startDayHint": "Este vigilante trabalha nesse dia e depois em dias alternados. Atribua o rendimento a partir do dia seguinte."
+    },
+    "incidents": {
+      "col": {
+        "date": "Data",
+        "description": "Descrição",
+        "guard": "Vigilante",
+        "status": "Situação"
+      },
+      "empty": "Não há ocorrências para este posto."
+    },
+    "inventory": {
+      "col": {
+        "condition": "Estado",
+        "item": "Item",
+        "serial": "Série / código"
+      },
+      "empty": "Não há inventário para este posto.",
+      "title": "Inventário / dotação"
+    },
+    "parking": {
+      "col": {
+        "guard": "Vigilante",
+        "visitor": "Visitante / veículo"
+      },
+      "empty": "Não há registros de estacionamento para este posto.",
+      "loadError": "Erro ao carregar os registros",
+      "subtitle": "Registro de entrada e saída de veículos neste posto",
+      "title": "Gestão de estacionamento"
+    },
+    "patrolQr": {
+      "empty": "Ainda não há pontos de controle. Crie-os em \"Rondas de segurança\" e volte aqui para gerar os QR.",
+      "loadError": "Erro ao carregar os pontos de controle",
+      "locationSet": "Localização do ponto atualizada",
+      "locationSetFailed": "Não foi possível atualizar a localização",
+      "noCoords": "Sem localização — a verificação não funcionará.",
+      "printAll": "Imprimir todos",
+      "stationNoCoords": "O posto não tem coordenadas configuradas.",
+      "subtitle": "Imprima e coloque estes QR em cada ponto de controle. O vigilante os escaneia durante a ronda.",
+      "title": "Gerar códigos QR de rondas",
+      "useStationLocation": "Usar a localização do posto",
+      "verifyNote": "Verificação de localização: ao escanear, o servidor compara o GPS do vigilante com a localização do ponto. Só conta como válido dentro de",
+      "verifyNote2": "Escaneamentos fora do alcance ficam registrados como \"fora de localização\"."
+    },
+    "rondaHistory": {
+      "empty": "Não há rondas registradas neste posto.",
+      "hint": "Todas as rondas realizadas neste posto. Toque em uma ronda para ver cada ponto de controle, com foto, nota e localização.",
+      "loadError": "Erro ao carregar o histórico de rondas",
+      "title": "Histórico de rondas"
+    },
+    "siteTours": {
+      "addPoint": "Adicionar ponto de controle",
+      "confirmDelete": "Excluir esta ronda e seus pontos de controle?",
+      "confirmDeleteCp": "Excluir este ponto de controle?",
+      "cpCreateFailed": "Não foi possível criar o ponto",
+      "cpCreated": "Ponto de controle criado",
+      "cpLocRequired": "Marque a localização do ponto no mapa",
+      "cpName": "Nome do ponto",
+      "cpNameRequired": "Escreva um nome para o ponto",
+      "cpNoLoc": "Sem localização — a verificação não funcionará",
+      "createFailed": "Não foi possível criar a ronda",
+      "deleteFailed": "Não foi possível excluir",
+      "desc": "Descrição",
+      "empty": "Ainda não há rondas. Crie a primeira com \"Nova ronda\".",
+      "hint": "Crie rondas e seus pontos de controle. Depois gere os QR na aba \"Gerar QR de rondas\".",
+      "name": "Nome",
+      "nameRequired": "Escreva um nome",
+      "new": "Nova ronda",
+      "newTitle": "Nova ronda",
+      "noPoints": "Sem pontos de controle ainda.",
+      "reorderFailed": "Não foi possível salvar a ordem",
+      "settingsTitle": "Configurações de rondas",
+      "title": "Rondas de segurança",
+      "useStationLoc": "Usar a localização do posto"
     }
   },
   "activity": {
@@ -3939,7 +4426,9 @@
     "notfoundcategory": "Nenhum Setor encontrado",
     "searchPlaceholder": "Buscar...",
     "title": "Administrador de Setores",
-    "titleDescription": "Gerencie os Setores do módulo selecionado. Os Setores em uso não podem ser excluídos."
+    "titleDescription": "Gerencie os Setores do módulo selecionado. Os Setores em uso não podem ser excluídos.",
+    "categoryCreateFailed": "Não foi possível criar o setor",
+    "searchOrCreate": "Buscar ou criar setor…"
   },
   "dashboard": {
     "manageWidgets": "Gerenciar Widgets",
@@ -4153,7 +4642,9 @@
       "closed": "Fechado",
       "open": "Aberto"
     },
-    "subject": "Assunto"
+    "subject": "Assunto",
+    "dispatchHint": "O supervisor receberá uma notificação para aceitar e marcar a caminho / no local.",
+    "selectSupervisor": "— Selecione um supervisor —"
   },
   "performance": {
     "absShort": "f",
@@ -4212,7 +4703,8 @@
     "actions": {
       "add": "Adicionar",
       "delete": "Excluir",
-      "more": "Mais"
+      "more": "Mais",
+      "view": "Ver"
     },
     "columns": {
       "email": "E-mail",
@@ -4221,7 +4713,11 @@
       "status": "Status",
       "url": "URL"
     },
-    "searchPlaceholder": "Buscar tenants"
+    "searchPlaceholder": "Buscar tenants",
+    "pagination": {
+      "emptyRange": "0 - 0 de 0",
+      "range": "{{start}} - {{end}} de {{total}}"
+    }
   },
   "sms": {
     "loadError": "Não foi possível carregar a conta de SMS",
@@ -4432,5 +4928,50 @@
     "covered": "Com cobertura",
     "uncovered": "Sem vigilantes",
     "guardsLabel": "vigilante(s)"
+  },
+  "admin": {
+    "registration_title": "Cadastro de administrador"
+  },
+  "categoriesnotloaded": "Não foi possível carregar os setores",
+  "client": {
+    "invite_not_found": "Convite não encontrado ou inválido.",
+    "registration_title": "Cadastro de cliente"
+  },
+  "customer": {
+    "registration_title": "Cadastro de cliente"
+  },
+  "guard": {
+    "dashboard": {
+      "offDuty": "Fora de serviço"
+    },
+    "registration_subtitle": "Preencha seus dados para ativar sua conta.",
+    "registration_success": "Cadastro concluído!",
+    "registration_title": "Cadastro de vigilante",
+    "schedule": {
+      "freeDays": "Dias de folga",
+      "upcoming": "Próximos turnos"
+    }
+  },
+  "notes": {
+    "deleteError": "Não foi possível excluir as notas",
+    "noSelection": "Nenhuma nota selecionada",
+    "noSite": "Nenhum site selecionado"
+  },
+  "postsite": {
+    "Details": {
+      "unexpected": "Ocorreu um erro inesperado"
+    }
+  },
+  "staff": {
+    "registration_title": "Cadastro de usuário"
+  },
+  "supervisor": {
+    "invite_not_found": "Convite não encontrado ou inválido.",
+    "registration_title": "Cadastro de supervisor"
+  },
+  "tenantValidations": {
+    "business_max": "O nome da empresa é muito longo",
+    "name_length": "O nome deve ter pelo menos 2 caracteres",
+    "required_fields": "Preencha os campos obrigatórios"
   }
 }

@@ -1605,7 +1605,7 @@ export default function SecurityGuardsPage() {
 
           <div className="space-y-4">
             <div>
-              <p className="mb-2 text-sm" style={{ color: 'var(--ink-soft)' }}>{t('guards.list.import.howTo', 'Antes de cargar, asegúrese de:')}</p>
+              <p className="mb-2 text-sm" style={{ color: 'var(--ink-soft)' }}>{t('guards.list.importDialog.howTo', 'Antes de cargar, asegúrese de:')}</p>
               <ul className="list-inside list-disc space-y-1 text-sm" style={{ color: 'var(--ink-soft)' }}>
                 <li>{t('guards.list.importDialog.fileFormat', 'El archivo debe ser formato .xlsx, .xls o .csv')}</li>
                 <li>

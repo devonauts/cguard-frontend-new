@@ -1076,7 +1076,7 @@ export default function Visitors() {
                                         </Select>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label>{t('visitantes.placeType') || 'Tipo de lugar'}</Label>
+                                        <Label>{t('visitantes.placeTypeLabel', 'Tipo de lugar')}</Label>
                                         <Input
                                             value={filters.placeType}
                                             onChange={(e) => setFilters((s) => ({ ...s, placeType: e.target.value }))}
@@ -1085,7 +1085,7 @@ export default function Visitors() {
                                     </div>
                                     {/*
                                     <div className="space-y-2">
-                                        <Label>{t('visitantes.tag') || 'Etiqueta'}</Label>
+                                        <Label>{t('visitantes.tagLabel', 'Etiqueta')}</Label>
                                         <Select
                                             value={filters.tag}
                                             onValueChange={(v) =>

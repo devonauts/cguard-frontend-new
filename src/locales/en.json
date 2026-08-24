@@ -106,14 +106,18 @@
       "zero": "0 – 0 of 0"
     },
     "roleNames": {
-      "supervisor": "Supervisor"
+      "supervisor": "Supervisor",
+      "clientAccountManager": "Account Manager",
+      "hrManager": "HR Manager",
+      "operationsManager": "Operations Manager"
     },
     "rowActions": {
       "delete": "Delete",
       "edit": "Edit",
       "resendInvitation": "Resend Invitation",
       "restore": "Restore",
-      "suspend": "Suspend"
+      "suspend": "Suspend",
+      "supervisorProfile": "Supervisor profile"
     },
     "statuses": {
       "active": "Active",
@@ -135,7 +139,9 @@
       "skippedAdminsWarning": "Some admins were skipped during suspension",
       "suspendAllError": "Could not suspend all users",
       "suspendedArchivedSuccess": "User suspended and archived",
-      "suspendedCount": "Suspended {{count}} user(s)"
+      "suspendedCount": "Suspended {{count}} user(s)",
+      "sessionsCloseError": "Sessions could not be closed.",
+      "sessionsClosed": "Sessions closed. They will need to sign in again."
     },
     "dialogs": {
       "common": {
@@ -171,7 +177,8 @@
         "new": "New User"
       },
       "errors": {
-        "loadError": "Could not load user"
+        "loadError": "Could not load user",
+        "loadClientsError": "Clients could not be loaded"
       },
       "form": {
         "accessLevelLabel": "Access Level*",
@@ -197,7 +204,10 @@
       "toasts": {
         "created": "User created",
         "updated": "User updated"
-      }
+      },
+      "sectionTitle": "User details",
+      "subtitle": "Update this user's identity, access level and permissions",
+      "viewSupervisorProfile": "View supervisor profile"
     },
     "newUser": {
       "breadcrumb": {
@@ -246,7 +256,9 @@
         "inviteCreated": "Invitation code created",
         "inviteGeneratedLocal": "Code generated locally (not saved on server)",
         "updated": "User updated"
-      }
+      },
+      "sectionTitle": "User details",
+      "subtitle": "Set this user's identity, access level and assignments"
     },
     "table": {
       "headers": {
@@ -256,7 +268,8 @@
         "lastLogin": "Last Login",
         "status": "Status"
       }
-    }
+    },
+    "subtitle": "Manage office staff access, roles and permissions"
   },
   "auth": {
     "account_created_verify_email": "Account created. Verify your email to sign in.",
@@ -319,9 +332,35 @@
       "tag_cloud": "Cloud-based",
       "tag_realtime": "Real-time tracking",
       "title_part1": "Take your security operations",
-      "title_part2": "to the next level"
+      "title_part2": "to the next level",
+      "eyebrow": "Security platform"
     },
-    "change_password_subtitle": "Update your login password."
+    "change_password_subtitle": "Update your login password.",
+    "enter_email": "Please enter your email address",
+    "fieldLanding": {
+      "desc": "Reset your guard account password to get back into the C-Guard Pro app.",
+      "eyebrow": "Guard app",
+      "tag_incidents": "Incident reporting",
+      "title_part1": "Your shift,"
+    },
+    "forgot_subtitle": "Enter your email and we'll send you a link to create a new one.",
+    "forgot_title": "Forgot your password?",
+    "hide_password": "Hide password",
+    "new_password_placeholder": "New password",
+    "reset_done_field_body": "Your password has been reset. Open the C-Guard Pro app on your phone and sign in with your email and new password.",
+    "reset_done_field_subtitle": "Go back to the C-Guard Pro app and sign in with your new password.",
+    "reset_done_title": "Password updated!",
+    "reset_open_app": "Open the C-Guard Pro app",
+    "reset_sent": "Link sent. Check your email",
+    "reset_subtitle": "Choose a new password to get back into your account.",
+    "show_password": "Show password",
+    "verify_email_subtitle": "We're confirming your address. This only takes a moment.",
+    "footer_copyright": "© {{year}} C-Guard Pro. All rights reserved.",
+    "verify_email_failed": "We couldn't verify your email. The link may have expired.",
+    "verify_email_missing_token": "The verification link is incomplete. Open it again from your email.",
+    "verify_email_processing": "One moment, we're confirming your address…",
+    "verify_email_title": "Verifying your email",
+    "weakPassword": "That password is too weak"
   },
   "billing": {
     "title": "Subscription status",
@@ -416,7 +455,9 @@
     "notfoundcategory": "No categories found",
     "searchPlaceholder": "Search...",
     "title": "Category Manager",
-    "titleDescription": "Manage categories for the selected module. Categories in use cannot be deleted."
+    "titleDescription": "Manage categories for the selected module. Categories in use cannot be deleted.",
+    "categoryCreateFailed": "The sector could not be created",
+    "searchOrCreate": "Search or create a sector…"
   },
   "clientPostSites": {
     "action": "Action",
@@ -550,7 +591,12 @@
         "name": "Name",
         "source": "Source",
         "station": "Station"
-      }
+      },
+      "emptyHint": "Open a station at this site to assign guards.",
+      "guardOne": "guard",
+      "manageInStation": "Manage in the station",
+      "siteRosterHint": "Guards belong to this site's stations. This is the summary; to assign, remove or change a guard, open its station.",
+      "view": "View"
     },
     "breadcrumb": {
       "clients": "Clients",
@@ -568,7 +614,8 @@
       "email": "Email",
       "name": "Client",
       "phone": "Phone Number",
-      "status": "Status"
+      "status": "Status",
+      "more": "More"
     },
     "contacts": {
       "addcontact": "Add contact",
@@ -588,7 +635,8 @@
       "errors": {
         "invalidEmail": "Invalid email",
         "invalidPhone": "Invalid number",
-        "requiredName": "Name required"
+        "requiredName": "Name required",
+        "invalidForm": "Please fix the errors in the form"
       },
       "form": {
         "AddClientContact": "Add contact",
@@ -600,7 +648,8 @@
         "Name": "Name *",
         "checkbox": "Permitir que el guardia vea el contacto",
         "descriptioninput": "Enter the contact description"
-      }
+      },
+      "loadError": "Contacts could not be loaded"
     },
     "empty": {
       "alt": "No data",
@@ -642,7 +691,33 @@
       "phone": "Phone *",
       "postalCode": "Postal code/Zip *",
       "useMyLocation": "Use my location",
-      "website": "Website"
+      "website": "Website",
+      "addressAutoFilled": "Address filled in automatically",
+      "addressSearch": "Address",
+      "businessInfo": "Company information",
+      "categoryLabel": "Security sector",
+      "categoryTooltip": "Choose the security sector this client belongs to",
+      "cedula": "National ID",
+      "clickToUpload": "Click to upload",
+      "clientType": "Client type",
+      "code": "Client code",
+      "commercialName": "Trade name",
+      "commercialNameHint": "This will be used as the service site name.",
+      "contractDate": "Contract date",
+      "contractEndDate": "Contract end",
+      "extraAccess": "Additional people with access",
+      "logo": "Company logo",
+      "personJuridica": "Company (tax ID)",
+      "personNatural": "Individual (national ID)",
+      "placePicture": "Site photo",
+      "purchaseOrder": "Purchase order",
+      "purchaseOrderHint": "Use this when the client is a public body that contracts through a purchase order.",
+      "purchaseOrderPh": "Purchase order no. (public-sector clients)",
+      "riskLevel": "Risk level",
+      "ruc": "Company tax ID",
+      "searchAddress": "Search address...",
+      "selectRisk": "Not set",
+      "switchToAutocomplete": "Search"
     },
     "nav": {
       "clientPortal": "Client portal",
@@ -697,8 +772,11 @@
         "Save": "SAVE",
         "Title": "Add New Note",
         "Titleinput": "Enter note title",
-        "Titlenote": "Title *"
-      }
+        "Titlenote": "Title *",
+        "NoFilesSelected": "No files selected"
+      },
+      "addedBy": "Added by",
+      "detailsTitle": "Note details"
     },
     "pagination": {
       "itemsPerPage": "Items per page",
@@ -784,7 +862,10 @@
         "incidents": "Incident reports (last 7 days)",
         "postSites": "Active locations",
         "tasksCompleted": "Tasks completed (last 7 days)",
-        "toursCompleted": "Tours completed (last 7 days)"
+        "toursCompleted": "Tours completed (last 7 days)",
+        "onsite": "On shift now",
+        "viewIncidents": "View incidents",
+        "viewStaff": "View staff"
       },
       "contactDetails": {
         "email": "Email",
@@ -799,14 +880,90 @@
         "clientName": "Client name",
         "notfoundclient": "Client not found",
         "title": "General information"
+      },
+      "alerts": {
+        "attention": "Attention",
+        "critical": "Critical",
+        "last7": "in the last 7 days",
+        "noneHint": "Nothing outstanding for this client.",
+        "uncovered": "Sites without coverage"
+      },
+      "contactPerson": {
+        "add": "Add a contact person",
+        "addHint": "Add who the client's contact is.",
+        "direct": "Client's direct contact",
+        "more": "more contact(s)",
+        "none": "No contact person",
+        "title": "Contact person"
+      },
+      "mapSedes": "{{count}} sites located",
+      "mapSedesOne": "1 site located",
+      "noLocation": "No location on record",
+      "noSedes": "No sites on record",
+      "noSedesHint": "Create this client's first site.",
+      "opsMap": "Operations map",
+      "otherStations": "Stations without a site",
+      "recent": {
+        "none": "No recent activity",
+        "noneHint": "Staff activity at this client's sites shows up here: shifts, incidents, visits, tasks and patrols."
+      },
+      "sedesStatus": "Site status",
+      "status": {
+        "sinOp": "No operation"
+      },
+      "tbl": {
+        "sede": "Site",
+        "status": "Status"
       }
-    }
+    },
+    "clientCreatedSiteHint": "Their first site was created with this same data. Its operation still needs to be set up before you create posts and assign officers.",
+    "bulkPartialSuccess": "{{succeeded}} updated, {{failed}} failed",
+    "code": "Code",
+    "contractEnd": "Until",
+    "contractStart": "Contract start",
+    "corporate": "Corporate client",
+    "editClientSubtitle": "Update this client's information.",
+    "generalInfo": {
+      "notfoundclient": "Client not found, or the data could not be loaded."
+    },
+    "header": {
+      "subtitle": "Manage your clients, their app access and their categorisation."
+    },
+    "hero": {
+      "newSite": "New site"
+    },
+    "individual": "Individual client",
+    "inviteToApp": "Invite to the app",
+    "legalRep": {
+      "document": "Representative's ID",
+      "email": "Personal email",
+      "phone": "Personal phone",
+      "title": "Legal representative"
+    },
+    "newClientSubtitle": "Register a new client on the platform.",
+    "noChanges": "There were no changes to save",
+    "onboarding": {
+      "not_invited": "No access"
+    },
+    "resendAppAccess": "Resend invitation",
+    "sendAppAccess": "Send app access",
+    "deleteError": "The client could not be deleted",
+    "duplicateFound": "A client with those details already exists",
+    "errorLoadingClients": "The clients could not be loaded"
   },
   "common": {
     "active": "Active",
     "cancel": "Cancel",
     "inactive": "Inactive",
-    "save": "Save"
+    "save": "Save",
+    "default": "Default",
+    "delete": "Delete",
+    "edit": "Edit",
+    "no": "No",
+    "viewAll": "View all",
+    "viewDetail": "View detail",
+    "loading": "Loading…",
+    "send": "Send"
   },
   "dashboard": {
     "manageWidgets": "Manage Widgets",
@@ -974,8 +1131,19 @@
       "note": "Note",
       "remove_file": "Remove",
       "write_error": "Please write a comment",
-      "you": "You"
-    }
+      "you": "You",
+      "no_files_selected": "No files selected"
+    },
+    "dispatcher": "Dispatcher",
+    "incident_datetime": "Incident date and time",
+    "incident_type": "Incident type",
+    "no_stations": "No stations",
+    "search_station": "Search station…",
+    "select_site_first": "Choose a site first",
+    "select_station": "Select a station",
+    "station": "Station",
+    "subtitle": "Take, dispatch and follow up on calls from your posts",
+    "you": "You"
   },
   "guards": {
     "created": "KPI created successfully",
@@ -1094,6 +1262,25 @@
       "tabs": {
         "create_profile": "Create profile",
         "invite": "Invite using SMS or email"
+      },
+      "empty": "No KPI data",
+      "kpiadded": "Add new KPI",
+      "kpisearch": "Search KPI",
+      "kpitable": {
+        "kpicreatedfor": "Added by",
+        "kpidate": "Date/time"
+      },
+      "subtitle": "This guard's KPIs and performance.",
+      "table": {
+        "noTargets": "No targets defined"
+      },
+      "title": "Performance indicators",
+      "toasts": {
+        "deleteError": "The KPI(s) could not be deleted",
+        "deleteNoneSelected": "Nothing is selected",
+        "pdfOpenError": "The PDF could not be opened",
+        "saveError": "The KPI could not be saved",
+        "selectAtLeastOne": "Select at least one KPI"
       }
     },
     "assignSites": {
@@ -1109,7 +1296,13 @@
         "default": "Action"
       },
       "actions": {
-        "delete": "Delete"
+        "delete": "Delete",
+        "confirmDeleteStation": "Remove this guard from {{station}}? {{count}} shifts will be deleted.",
+        "confirmDeleteTitle": "Confirm removal",
+        "deleteFailed": "The assignment could not be removed",
+        "deleted": "Assignment removed",
+        "removeFromPost": "Remove from post",
+        "selectPair": "Select at least one station to remove"
       },
       "form": {
         "client": "Client",
@@ -1128,7 +1321,22 @@
         "client": "Client",
         "postSites": "Post Sites",
         "station": "Station"
-      }
+      },
+      "assigned": "Guard assigned",
+      "empty": "No posts assigned yet",
+      "emptyHint": "Assign a post to get started.",
+      "errors": {
+        "assignFailed": "The post could not be assigned",
+        "noTenant": "The organisation could not be determined",
+        "noneToDelete": "There are no valid assignments to remove",
+        "selectClientSite": "Select a client and a post",
+        "selectTimes": "Select a start and end time",
+        "timeOrder": "The start time must be earlier than the end time"
+      },
+      "loadingPostSite": "Loading post details…",
+      "noResults": "No results",
+      "noResultsHint": "No assignment matches your search.",
+      "thisPost": "this post"
     },
     "availability": {
       "save": "Save",
@@ -1149,8 +1357,10 @@
         "to": "To"
       },
       "toasts": {
-        "saved": "Availability saved"
-      }
+        "saved": "Availability saved",
+        "saveError": "No guard id"
+      },
+      "empty": "No availability"
     },
     "files": {
       "loadError": "Could not load guard",
@@ -1178,7 +1388,9 @@
         "addedBy": "Added By",
         "date": "Date",
         "file": "File"
-      }
+      },
+      "feedTitle": "Guard's files",
+      "subtitle": "This guard's documents and files."
     },
     "licenses": {
       "newLicense": "New License",
@@ -1214,13 +1426,26 @@
       "modal": {
         "cancel": "Cancel",
         "save": "Save",
-        "title": "Add New License"
+        "title": "Add New License",
+        "editTitle": "Edit licence"
       },
       "table": {
         "addedBy": "Added By",
         "expires": "Expires On",
         "number": "License Number",
         "type": "License Type"
+      },
+      "details": {
+        "edit": "Edit"
+      },
+      "noNumber": "No number",
+      "status": {
+        "noExpiry": "No expiry",
+        "soon": "Expiring soon"
+      },
+      "subtitle": "This guard's documents and credentials",
+      "toasts": {
+        "noPermissionCreateType": "You don't have permission to create licence types"
       }
     },
     "list": {
@@ -1241,7 +1466,9 @@
         "remove": "Remove",
         "resendInvite": "Resend invite",
         "restore": "Restore",
-        "viewDetails": "View details"
+        "viewDetails": "View details",
+        "assignStation": "Assign to a station",
+        "resetPassword": "Reset password"
       },
       "aria": {
         "closeModal": "Close modal"
@@ -1336,7 +1563,8 @@
         "email": "Email",
         "name": "Name",
         "phone": "Mobile Number",
-        "status": "Status"
+        "status": "Status",
+        "assignment": "Assignment"
       },
       "toasts": {
         "archiveError": "Error archiving guard",
@@ -1356,12 +1584,19 @@
         "printWindowOpenError": "Could not open print window",
         "restoreError": "Error restoring guard: {{msg}}",
         "restoreSuccess": "Guard restored",
-        "selectAtLeastOne": "Select at least one guard"
+        "selectAtLeastOne": "Select at least one guard",
+        "assignError": "The guard could not be assigned",
+        "assigned": "Guard assigned successfully",
+        "resetError": "The password could not be reset"
       },
       "dialog": {
         "archive": {
           "description": "Are you sure you want to archive this guard? This action can be undone from the archived filter.",
-          "title": "Archive guard"
+          "title": "Archive guard",
+          "date": "Last day worked",
+          "equipment": "What equipment did they hand back today? Anything unticked stays outstanding.",
+          "notePh": "Details of the reason",
+          "rehire": "Eligible for rehire"
         },
         "bulk": {
           "archiveDescription": "Are you sure you want to archive {{count}} guard(s)? This can be reverted from archived filter.",
@@ -1383,7 +1618,9 @@
           "description": "Do you want to restore this guard? This will return it to active state.",
           "title": "Restore guard"
         }
-      }
+      },
+      "noData": "No guards found",
+      "subtitle": "Manage your organisation's security staff"
     },
     "nav": {
       "archivos": "Files",
@@ -1477,7 +1714,9 @@
       },
       "empty": {
         "message": "We couldn't find<br />any items matching<br />your search",
-        "title": "No results found"
+        "title": "No results found",
+        "hint": "Create the first note for this guard.",
+        "none": "No notes yet"
       },
       "modal": {
         "cancel": "Cancel",
@@ -1492,7 +1731,9 @@
       "form": {
         "attachments": {
           "label": "Attachments",
-          "noFiles": "No files selected"
+          "noFiles": "No files selected",
+          "invalidType": "File type not allowed",
+          "metadataCreateFailed": "The file details could not be saved"
         },
         "date": {
           "label": "Date"
@@ -1505,7 +1746,15 @@
           "label": "Title",
           "placeholder": "Enter note title"
         }
-      }
+      },
+      "delete": {
+        "confirm": "Delete \"{{title}}\"? This cannot be undone.",
+        "title": "Delete note"
+      },
+      "missingId": "The identifier was not found",
+      "noteCreateFailed": "The note could not be created",
+      "noteDeleteFailed": "The note could not be deleted",
+      "untitled": "Untitled"
     },
     "profile": {
       "noLicense": "No license found",
@@ -1574,11 +1823,13 @@
         "mobile": "Mobile Number",
         "osVersion": "OS Version",
         "pushNotifications": "Push Notifications",
-        "skills": "Skills"
+        "skills": "Skills",
+        "hireDate": "Hire date"
       },
       "placeholders": {
         "languages": "Eg: Spanish, English",
-        "skills": "Eg: First aid, Self-defense"
+        "skills": "Eg: First aid, Self-defense",
+        "csvHint": "Separate each value with a comma"
       },
       "toasts": {
         "updateError": "Error updating guard",
@@ -1588,7 +1839,10 @@
         "background": "Background",
         "disabled": "Disabled",
         "enabled": "Enabled"
-      }
+      },
+      "editHint": "Edit the guard's personal and employment details.",
+      "nav": "Profile",
+      "noAttendance": "No attendance records"
     },
     "reminders": {
       "addReminder": "Add Reminder",
@@ -1709,7 +1963,8 @@
       "previous": "Previous",
       "roleDefault": "Security Guard",
       "badge": {
-        "joined": "Guard joined"
+        "joined": "Guard joined",
+        "accepted": "Accepted"
       },
       "header": {
         "about": "About",
@@ -1743,11 +1998,83 @@
           "reportsSent": "Reports Sent",
           "tasksCompleted": "Tasks Completed"
         }
-      }
+      },
+      "offDuty": "Off duty",
+      "onDutyNo": "No",
+      "onDutyYes": "Yes"
     },
     "tabs": {
       "create_profile": "Create profile",
       "invite": "Invite via SMS or Email"
+    },
+    "device": {
+      "appVersion": "App version",
+      "empty": "No device has been registered for this guard yet.",
+      "emptyTitle": "No devices yet",
+      "flaggedBadge": "{{n}} unrecognised",
+      "lastMismatch": "Last anomaly",
+      "reset": "Reset the link",
+      "resetDone": "Link reset. The guard's next device will be the linked one.",
+      "resetError": "The link could not be reset.",
+      "subtitle": "The first device a guard signs in from becomes the linked one. If another device shows up it is flagged as unrecognised (it is not blocked). Reset the link if the guard changed phones.",
+      "title": "Guard's device",
+      "unrecognized": "Unrecognised"
+    },
+    "documents": {
+      "deleteConfirm": "Delete \"{{name}}\"? This cannot be undone.",
+      "deleteError": "The document could not be deleted",
+      "deleteTitle": "Delete document",
+      "dropzone": "Drag files here, or click to choose",
+      "dropzoneHint": "Photos and images or PDF · max. 10MB",
+      "empty": {
+        "description": "Upload photos or documents (PDF) for this guard.",
+        "title": "No documents yet"
+      },
+      "errorDesc": "We couldn't load the documents. Try again.",
+      "invalidType": "Only images and PDFs are allowed",
+      "loadError": "The documents could not be loaded",
+      "saveError": "The documents could not be saved",
+      "tooLarge": "The file is over the size limit (10MB)",
+      "uploadFailed": "{{name}} failed to upload"
+    },
+    "employment": {
+      "cycles": "Spells at the company",
+      "equipmentPending": "{{n}} items not returned",
+      "hiredOn": "Start date",
+      "noRehire": "Not eligible for rehire",
+      "terminations": "Termination history"
+    },
+    "memos": {
+      "addButton": "New memo",
+      "by": "by",
+      "createError": "The memo could not be sent",
+      "created": "Memo sent to the guard",
+      "deleteError": "It could not be deleted",
+      "empty": {
+        "message": "This guard has no memos yet.",
+        "title": "No memos yet"
+      },
+      "feedTitle": "Memo history",
+      "form": {
+        "contentPlaceholder": "Write the memo...",
+        "subjectPlaceholder": "Memo subject"
+      },
+      "loadError": "The memos could not be loaded",
+      "modal": {
+        "title": "New memo",
+        "to": "To"
+      },
+      "noResults": "No results",
+      "noResultsHint": "No memo matches your search.",
+      "searchPlaceholder": "Search memo...",
+      "subjectRequired": "A subject is required",
+      "subtitle": "Notices addressed to this guard."
+    },
+    "actionNotImplemented": "That action isn't available yet",
+    "overview": {
+      "empty": "There's no activity for this guard yet",
+      "loadError": "The guard's summary could not be loaded",
+      "loading": "Loading the summary…"
     }
   },
   "header": {
@@ -1771,7 +2098,8 @@
     "send": "Send",
     "settings": "Settings",
     "subscription": "Subscription",
-    "system_logs": "System logs"
+    "system_logs": "System logs",
+    "searchPlaceholder": "Search C-Guard Pro…"
   },
   "incidents": {
     "actionsLabel": "Actions",
@@ -1839,7 +2167,9 @@
     "status": {
       "closed": "Closed",
       "open": "Open"
-    }
+    },
+    "dispatchHint": "The supervisor will get a notification to accept and mark en route / on site.",
+    "selectSupervisor": "— Select a supervisor —"
   },
   "postSites": {
     "action": "Action",
@@ -1909,7 +2239,9 @@
       "detailserror": "Could not load post site details",
       "notfoundpostsite": "No post sites found",
       "title": "Details",
-      "unexpected": "Unexpected error occurred"
+      "unexpected": "Unexpected error occurred",
+      "errorTitle": "The site could not be loaded",
+      "newStation": "New station"
     },
     "KPI": {
       "descriptionLabel": "DESCRIPTION :",
@@ -1989,7 +2321,8 @@
         "pdfOpenError": "Error opening PDF",
         "pdfOpened": "PDF opened",
         "selectAtLeastOne": "You must select at least one KPI"
-      }
+      },
+      "noPermission": "Only an administrator can create or change indicators"
     },
     "filters": {
       "active": "Active",
@@ -2093,7 +2426,8 @@
         "MapType": "Map Type",
         "Roadmap": "Roadmap",
         "Satellite": "Satellite",
-        "title": "Map"
+        "title": "Map",
+        "noCoords": "This site has no coordinates set."
       },
       "Stats": {
         "guardOnSite": "Guard On-Site",
@@ -2132,7 +2466,12 @@
         "timeOff": "Time off",
         "vehiclePatrol": "Vehicle Patrol",
         "watchModeReport": "Watch Mode Report"
-      }
+      },
+      "Filter": {
+        "fromDate": "From",
+        "toDate": "To"
+      },
+      "last7days": "last 7 days"
     },
     "profile": {
       "Edit": "Edit",
@@ -2227,13 +2566,29 @@
         "name": "Name *",
         "schedule": "Schedule *",
         "selectSchedule": "Select schedule",
-        "startTime": "Start"
+        "startTime": "Start",
+        "alternate": "Alternate between permanent guards (no relief guard)",
+        "blockHours": "Shift per guard",
+        "clockInBufferHint": "Minutes before/after the start time in which the guard may clock in. Empty = use the company default.",
+        "clockInEarlyBuffer": "Early clock-in allowance (min)",
+        "clockInLateGrace": "Late clock-in grace (min)",
+        "geofenceHint": "Maximum distance for clocking in",
+        "nicknameHint": "Only visible to your own operations team. The client does not see it.",
+        "restCoverage": "Break coverage",
+        "wholeWindow": "The whole day",
+        "withSf": "A relief guard covers the breaks"
       },
       "table": {
         "description": "Description",
         "guards": "Guardias",
         "name": "Name"
-      }
+      },
+      "alternateMismatch": "To alternate without a relief guard, the pattern cycle must be a multiple of its working days (e.g. 1-1, 2-2).",
+      "blockMismatch": "The shift length must divide the post's coverage exactly.",
+      "createSubtitle": "Set the post's shift, hours and geofence.",
+      "horarioConfigFailed": "Station created, but its schedule could not be set up. Set it in Scheduler › Schedule.",
+      "noResults": "No results for that search.",
+      "provideCustomTimes": "Set the start and end time"
     },
     "tasks": {
       "action": "Action",
@@ -2269,7 +2624,10 @@
         "taskName": "Task Name",
         "type": "Type"
       }
-    }
+    },
+    "wizardSubtitle": "Set up the site, its location, service and stations step by step.",
+    "wizardSubtitleForClient": "New site for {{client}}: location, service and stations step by step.",
+    "client": "Client"
   },
   "profile": {
     "cancel": "Cancel",
@@ -2292,7 +2650,8 @@
     "updatedAt": "Updated At",
     "verifyEmail": "Verify email",
     "verifyNumberDesc": "Enter the code we sent you by SMS to verify your number.",
-    "verifyNumberTitle": "Verify number"
+    "verifyNumberTitle": "Verify number",
+    "enterVerificationCode": "Enter the verification code"
   },
   "projects": {
     "clientNav": "Projects",
@@ -4873,6 +5232,11 @@
       "timeMode": {
         "any": "Any time",
         "specific": "Specific time"
+      },
+      "noPostSiteId": "No post site selected",
+      "scheduledDaysPlaceholder": "Choose the days...",
+      "validation": {
+        "scheduledDaysRequired": "Choose at least one day"
       }
     },
     "menu": {
@@ -4892,7 +5256,9 @@
     },
     "options": {
       "monFri": "Mon - Fri",
-      "weekend": "Weekend"
+      "weekend": "Weekend",
+      "saturday": "Saturday",
+      "wednesday": "Wednesday"
     },
     "placeholders": {
       "tourNameFallback": "Tour name"
@@ -4901,6 +5267,9 @@
       "duration": "Duration",
       "name": "Tour Name",
       "type": "Type"
+    },
+    "detail": {
+      "title": "Patrol details"
     }
   },
   "siteTourTag": {
@@ -5007,7 +5376,8 @@
     "actions": {
       "add": "Add",
       "delete": "Delete",
-      "more": "More"
+      "more": "More",
+      "view": "View"
     },
     "columns": {
       "email": "Email",
@@ -5015,6 +5385,10 @@
       "plan": "Plan",
       "status": "Status",
       "url": "URL"
+    },
+    "pagination": {
+      "emptyRange": "0 - 0 of 0",
+      "range": "{{start}} - {{end}} of {{total}}"
     }
   },
   "visitantes": {
@@ -5109,7 +5483,8 @@
       "mobile": "e.g. +12015550123",
       "name": "e.g. John",
       "phone": "e.g. +12015550123",
-      "reason": "Reason of visit"
+      "reason": "Reason of visit",
+      "numPeople": "No. of people"
     },
     "table": {
       "company": "Company",
@@ -5121,7 +5496,23 @@
     "tag": {
       "provider": "Provider",
       "vip": "VIP"
-    }
+    },
+    "archiveError": "The visit could not be archived",
+    "archived": "Visit archived",
+    "attachUploadError": "The attachment could not be uploaded",
+    "confirmArchive": "Archive this visit?",
+    "createError": "The visit could not be recorded",
+    "deleteError": "The visit could not be deleted",
+    "exitError": "The exit could not be recorded",
+    "exitMarked": "Exit recorded",
+    "exportError": "The list could not be exported",
+    "loadError": "The visits could not be loaded",
+    "missingFields": "Please fill in the required fields",
+    "placeTypeFilterPlaceholder": "All place types",
+    "printError": "It could not be printed",
+    "subtitle": "Visitor sign-in and sign-out",
+    "placeTypeLabel": "Place type",
+    "tagLabel": "Tag"
   },
   "components": {
     "addRemove": {
@@ -5243,11 +5634,18 @@
           "tasksCompleted": "Tasks completed"
         }
       }
+    },
+    "copyable": {
+      "copied": "Copied",
+      "copy": "Copy"
     }
   },
   "station": {
     "details": {
-      "orders": "Specific Standing Orders"
+      "orders": "Specific Standing Orders",
+      "loadError": "The post could not be loaded",
+      "patrolQr": "Patrol QR codes",
+      "station": "Station"
     },
     "orders": {
       "title": "Specific Standing Orders",
@@ -5304,6 +5702,100 @@
       "logEmptyHint": "When a guard completes a standing order, it will appear here with its evidence.",
       "viewVideo": "View video",
       "order": "Standing order"
+    },
+    "guards": {
+      "added": "Guard assigned",
+      "allBusy": "Every guard already has an active assignment.",
+      "assign": "Assign a guard",
+      "assignFailed": "It could not be assigned",
+      "assignSub": "Permanent guard on this post's rotation",
+      "assignTitle": "Assign a guard",
+      "changeTitle": "Change guard",
+      "changed": "Guard updated",
+      "empty": "No guards assigned. Assign a permanent guard to get started.",
+      "guard": "Guard",
+      "hint": "The permanent guard covers the rotation; the relief guard is placed by hand in Scheduler › Schedule (or with Optimise relief guards).",
+      "pickGuard": "Choose a guard",
+      "removeFailed": "It could not be removed",
+      "removed": "Guard removed from the post and its shifts",
+      "sacaSub": "Covers the permanent guard's days off",
+      "save": "Save",
+      "selectGuard": "Select a guard…",
+      "startDay": "First shift day",
+      "startDayHint": "This guard works that day and then every other day. Assign their relief starting the following day."
+    },
+    "incidents": {
+      "col": {
+        "date": "Date",
+        "description": "Description",
+        "guard": "Guard",
+        "status": "Status"
+      },
+      "empty": "There are no incidents for this post."
+    },
+    "inventory": {
+      "col": {
+        "condition": "Condition",
+        "item": "Item",
+        "serial": "Serial / code"
+      },
+      "empty": "There is no inventory for this post.",
+      "title": "Inventory / issued kit"
+    },
+    "parking": {
+      "col": {
+        "guard": "Guard",
+        "visitor": "Visitor / vehicle"
+      },
+      "empty": "There are no parking records for this post.",
+      "loadError": "The records could not be loaded",
+      "subtitle": "Vehicles in and out of this post",
+      "title": "Parking"
+    },
+    "patrolQr": {
+      "empty": "No checkpoints yet. Create them under \"Security patrols\" and come back here to generate their QR codes.",
+      "loadError": "The checkpoints could not be loaded",
+      "locationSet": "Checkpoint location updated",
+      "locationSetFailed": "The location could not be updated",
+      "noCoords": "No location — verification won't work.",
+      "printAll": "Print all",
+      "stationNoCoords": "This post has no coordinates set.",
+      "subtitle": "Print these QR codes and put one at each checkpoint. The guard scans them during the patrol.",
+      "title": "Generate patrol QR codes",
+      "useStationLocation": "Use the post's location",
+      "verifyNote": "Location check: on each scan the server compares the guard's GPS with the checkpoint's location. It only counts as valid within",
+      "verifyNote2": "Scans out of range are recorded as \"off location\"."
+    },
+    "rondaHistory": {
+      "empty": "No patrols have been recorded at this post.",
+      "hint": "Every patrol walked at this post. Tap one to see each checkpoint, with its photo, note and location.",
+      "loadError": "The patrol history could not be loaded",
+      "title": "Patrol history"
+    },
+    "siteTours": {
+      "addPoint": "Add a checkpoint",
+      "confirmDelete": "Delete this patrol and its checkpoints?",
+      "confirmDeleteCp": "Delete this checkpoint?",
+      "cpCreateFailed": "The checkpoint could not be created",
+      "cpCreated": "Checkpoint created",
+      "cpLocRequired": "Mark the checkpoint's location on the map",
+      "cpName": "Checkpoint name",
+      "cpNameRequired": "Give the checkpoint a name",
+      "cpNoLoc": "No location — verification won't work",
+      "createFailed": "The patrol could not be created",
+      "deleteFailed": "It could not be deleted",
+      "desc": "Description",
+      "empty": "No patrols yet. Create the first one with \"New patrol\".",
+      "hint": "Create patrols and their checkpoints. Then generate the QR codes on the \"Generate patrol QR codes\" tab.",
+      "name": "Name",
+      "nameRequired": "Enter a name",
+      "new": "New patrol",
+      "newTitle": "New patrol",
+      "noPoints": "No checkpoints yet.",
+      "reorderFailed": "The new order could not be saved",
+      "settingsTitle": "Patrol settings",
+      "title": "Security patrols",
+      "useStationLoc": "Use the post's location"
     }
   },
   "performance": {
@@ -6220,7 +6712,11 @@
       "confirmDeleteTitle": "Confirm deletion",
       "cancelBtn": "Cancel",
       "confirmDeleteText": "Are you sure you want to delete {{count}} incident type(s)? This action can't be undone."
-    }
+    },
+    "back": "Settings",
+    "backToSettings": "Back to Settings",
+    "index": "Settings index",
+    "searchPlaceholder": "Search settings..."
   },
   "vigia": {
     "placeholder": "Message VigIA…",
@@ -6476,5 +6972,50 @@
     "covered": "Covered",
     "uncovered": "No guards",
     "guardsLabel": "guard(s)"
+  },
+  "admin": {
+    "registration_title": "Administrator sign-up"
+  },
+  "categoriesnotloaded": "Sectors could not be loaded",
+  "client": {
+    "invite_not_found": "Invitation not found or invalid.",
+    "registration_title": "Client sign-up"
+  },
+  "customer": {
+    "registration_title": "Client sign-up"
+  },
+  "guard": {
+    "dashboard": {
+      "offDuty": "Off duty"
+    },
+    "registration_subtitle": "Fill in your details to activate your account.",
+    "registration_success": "Sign-up complete!",
+    "registration_title": "Guard sign-up",
+    "schedule": {
+      "freeDays": "Days off",
+      "upcoming": "Upcoming shifts"
+    }
+  },
+  "notes": {
+    "deleteError": "The notes could not be deleted",
+    "noSelection": "No notes selected",
+    "noSite": "No post site selected"
+  },
+  "postsite": {
+    "Details": {
+      "unexpected": "Something unexpected went wrong"
+    }
+  },
+  "staff": {
+    "registration_title": "User sign-up"
+  },
+  "supervisor": {
+    "invite_not_found": "Invitation not found or invalid.",
+    "registration_title": "Supervisor sign-up"
+  },
+  "tenantValidations": {
+    "business_max": "The company name is too long",
+    "name_length": "The name must be at least 2 characters long",
+    "required_fields": "Please fill in the required fields"
   }
 }
