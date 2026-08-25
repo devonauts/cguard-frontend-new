@@ -895,8 +895,15 @@ body:has(.cg-flotante) .cg-scrim-menu { opacity: 1; }
   55%  { transform: translateX(-10%)  scaleX(.75); }
   100% { transform: translateX(100%)  scaleX(.35); }
 }
+/* La barra de carga va JUSTO debajo de la cabecera, así que su `top` es la
+   MISMA fórmula que la altura de la cabecera en `app-layout.tsx`: 3,5rem más
+   la muesca. Estaba clavada en 56px, que es 3,5rem sin muesca — correcto hasta
+   el día que el borde a borde se activó; a partir de ahí la barra se metía
+   dentro de la cabecera en un iPhone con muesca. Si alguien cambia el alto de
+   la cabecera, esta línea cambia con ella. */
 .cg-route-progress {
-  position: fixed; top: 56px; left: 0; right: 0; height: 2px; z-index: 55;
+  position: fixed; top: calc(3.5rem + env(safe-area-inset-top, 0px));
+  left: 0; right: 0; height: 2px; z-index: 55;
   pointer-events: none; overflow: hidden;
 }
 .cg-route-progress::before {

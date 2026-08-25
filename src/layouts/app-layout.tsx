@@ -290,7 +290,7 @@ function AppLayoutShell({ children }: AppLayoutProps) {
           desplegables; el desplazamiento vive dentro de la propia barra. */}
       <aside
         className={[
-          "hidden lg:block fixed left-0 top-0 z-40 h-screen supports-[height:100dvh]:h-[100dvh] overflow-visible transition-[width] duration-300",
+          "hidden lg:block fixed left-0 top-0 z-40 pl-[env(safe-area-inset-left)] h-screen supports-[height:100dvh]:h-[100dvh] overflow-visible transition-[width] duration-300",
           sidebarOpen ? "w-[17rem]" : "w-16",
         ].join(" ")}
       >
@@ -299,7 +299,7 @@ function AppLayoutShell({ children }: AppLayoutProps) {
 
       <div
         className={[
-          "fixed left-0 top-0 z-[60] w-[17rem] h-screen supports-[height:100dvh]:h-[100dvh] lg:hidden transform transition-transform duration-300",
+          "fixed left-0 top-0 z-[60] w-[calc(17rem_+_env(safe-area-inset-left))] pl-[env(safe-area-inset-left)] h-screen supports-[height:100dvh]:h-[100dvh] lg:hidden transform transition-transform duration-300",
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
         ].join(" ")}
       >

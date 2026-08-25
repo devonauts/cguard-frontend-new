@@ -43,15 +43,24 @@ export default function SettingsLayout({
   const secciones = (NAVS as Record<string, { sections: Section[] }>).configuracion.sections;
 
   return (
-    /* Misma fórmula que `<main>` en `app-layout.tsx` (ventana − cabecera −
-       muesca). Si se cambia allí, se cambia aquí: con `vh` a secas este bloque
-       quedaba más alto que su hueco en el móvil y aparecía un segundo
-       desplazamiento dentro del que ya tiene el contenido. */
-    <div className="relative flex h-[calc(100vh_-_3.5rem_-_env(safe-area-inset-top))] overflow-hidden supports-[height:100dvh]:h-[calc(100dvh_-_3.5rem_-_env(safe-area-inset-top))]">
+    /* ── POR QUÉ AQUÍ YA NO SE MIDE LA VENTANA ────────────────────────────
+       Esto reclamaba «ventana − cabecera − muesca», la misma fórmula que
+       `<main>`. El problema es que este bloque vive DENTRO de `<main>`, y
+       encima de él pueden aparecer el aviso de prueba, el de datos de ejemplo
+       y los comunicados de la plataforma. Con banners, el hueco real es más
+       corto que la ventana menos la cabecera, así que el panel sobresalía por
+       abajo —recortado, con su final inalcanzable— y aparecía un segundo
+       desplazamiento compitiendo con el de `<main>`.
+
+       Ahora no mide nada: crece con su contenido y quien desplaza es `<main>`,
+       como en el resto del CRM. El índice lateral se queda a la vista con
+       `sticky`, que es lo que antes conseguía a base de ser su propio
+       contenedor de desplazamiento. */
+    <div className="relative flex items-start">
       {/* ── Índice lateral ─────────────────────────────────────────────────── */}
       <nav
         aria-label={t("settings.index", { defaultValue: "Índice de configuración" })}
-        className="hidden w-60 shrink-0 overflow-y-auto border-r px-3 py-4 lg:block"
+        className="hidden w-60 shrink-0 border-r px-3 py-4 lg:block lg:sticky lg:top-0 lg:max-h-[calc(100vh_-_3.5rem_-_env(safe-area-inset-top))] lg:overflow-y-auto lg:supports-[height:100dvh]:max-h-[calc(100dvh_-_3.5rem_-_env(safe-area-inset-top))]"
         style={{ borderColor: "var(--hairline)" }}
       >
         <Link
@@ -123,7 +132,7 @@ export default function SettingsLayout({
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1">
           <div className="p-4 sm:p-6">{children}</div>
         </div>
       </div>

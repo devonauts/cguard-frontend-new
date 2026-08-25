@@ -10,17 +10,16 @@
          Ojo: al devolver el zoom, iOS vuelve a ampliar solo al enfocar un campo
          de menos de 16 px — por eso glass.css fija 16 px en pantalla táctil.
 
-         TAMPOCO lleva `viewport-fit=cover`, y no es un olvido: dibujar bajo la
-         muesca exige que la cabecera reserve `env(safe-area-inset-top)`, y la
-         altura de la cabecera está codificada a mano en dos sitios más
-         (`app-layout.tsx` dimensiona `main` con `calc(100vh-56px)` y glass.css
-         pone `.cg-route-progress { top: 56px }`). Sin cambiar los tres a la vez,
-         `cover` mete la cabecera DEBAJO de la barra de estado en el iPhone con
-         muesca con la app instalada. El zoom se arregla hoy; el borde a borde
-         cuando esos tres puntos se toquen juntos. -->
+         `viewport-fit=cover` SÍ va, y ahora es seguro: las tres piezas que
+         tienen que sumar lo mismo ya usan la misma fórmula —la cabecera y
+         `<main>` en `app-layout.tsx`, y `.cg-route-progress` en glass.css—,
+         todas con `env(safe-area-inset-top)`. Sin `cover`, esa variable vale
+         `0px` y el resultado es idéntico al de antes; con `cover`, la cabecera
+         reserva la muesca en vez de meterse debajo. El cajón lateral y el rail
+         reservan además el inset izquierdo, que es el que muerde en apaisado. -->
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0"
+      content="viewport-fit=cover, width=device-width, initial-scale=1.0"
     />
 
     <title>C-Guard Pro | Plataforma de Gestión de Seguridad Física</title>
@@ -100,7 +99,6 @@
     </script>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="style.css" />
     <script>
     /* Acento guardado ANTES del primer pintado. Sin esto, la app arranca en
        mostaza y salta al color del usuario en cuanto React monta. */

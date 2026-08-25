@@ -27,23 +27,32 @@ export default function EmpresaDireccionForm() {
         showMap={true}
         mapHeight="320px"
       />
-      <div style={{ margin: '16px 0' }}>
-        <label>Latitud</label>
-        <input
-          type="number"
-          value={lat ?? ''}
-          onChange={e => setLat(Number(e.target.value))}
-          placeholder="Latitud"
-          style={{ width: 120, marginRight: 8 }}
-        />
-        <label>Longitud</label>
-        <input
-          type="number"
-          value={lng ?? ''}
-          onChange={e => setLng(Number(e.target.value))}
-          placeholder="Longitud"
-          style={{ width: 120 }}
-        />
+      {/* Los dos campos iban con `width: 120` en línea y sin envoltorio: en un
+          teléfono se salían de la tarjeta y la etiqueta quedaba pegada al
+          campo anterior. Ahora se apilan y usan los estilos del sistema. */}
+      <div className="my-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div className="min-w-0">
+          <label className="cg-eyebrow mb-1.5 block" htmlFor="empresa-lat">Latitud</label>
+          <input
+            id="empresa-lat"
+            type="number"
+            value={lat ?? ''}
+            onChange={e => setLat(Number(e.target.value))}
+            placeholder="Latitud"
+            className="cg-input cg-focus w-full px-3 py-2 text-sm tabular-nums"
+          />
+        </div>
+        <div className="min-w-0">
+          <label className="cg-eyebrow mb-1.5 block" htmlFor="empresa-lng">Longitud</label>
+          <input
+            id="empresa-lng"
+            type="number"
+            value={lng ?? ''}
+            onChange={e => setLng(Number(e.target.value))}
+            placeholder="Longitud"
+            className="cg-input cg-focus w-full px-3 py-2 text-sm tabular-nums"
+          />
+        </div>
       </div>
       {lat && lng && (
         <GoogleMapEmbed

@@ -336,7 +336,7 @@ export function Segmented<T extends string>({ value, onChange, options, classNam
             role="tab"
             aria-selected={activo}
             onClick={() => onChange(o.value)}
-            className="cg-focus shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all duration-200"
+            className="cg-focus min-h-8 shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all duration-200 sm:min-h-0"
             style={
               activo
                 ? { background: 'var(--brand)', color: 'var(--brand-ink)', boxShadow: '0 0 18px -6px var(--brand-glow)' }

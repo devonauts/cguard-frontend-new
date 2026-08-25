@@ -217,12 +217,12 @@ export default function DispatchPublicView() {
             se estrujen a una letra por línea— la tabla se lee entera y el
             desplazamiento se queda DENTRO de la tarjeta, sin arrastrar la
             página. */}
-        <Section title="Basic Details" icon={<FileText />} contentClassName="overflow-x-auto rounded-xl border">
+        <Section title="Datos del despacho" icon={<FileText />} contentClassName="overflow-x-auto rounded-xl border">
           <div className="text-sm">
             <table className="w-full min-w-[640px] text-sm border-collapse">
               <tbody>
                 <tr className="border-b">
-                  <td className="py-3 px-4 text-xs font-medium text-muted-foreground">Ticket ID</td>
+                  <td className="py-3 px-4 text-xs font-medium text-muted-foreground">N.º de ticket</td>
                   <td className="py-3 px-4 text-sm text-foreground">{ticketShort} <StatusBadge className="ml-2" tone={payload.status === 'open' || payload.status === 'abierto' ? 'red' : 'green'}>{payload.status ?? ''}</StatusBadge></td>
                   <td className="py-3 px-4 text-xs font-medium text-muted-foreground">Date/Time</td>
                   <td className="py-3 px-4 text-sm text-foreground">{payload.createdAt ? new Date(payload.createdAt).toLocaleString() : '-'}</td>
@@ -250,7 +250,7 @@ export default function DispatchPublicView() {
                 </tr>
 
                 <tr className="border-b">
-                  <td className="py-3 px-4 text-xs font-medium text-muted-foreground">Incident Location</td>
+                  <td className="py-3 px-4 text-xs font-medium text-muted-foreground">Ubicación del incidente</td>
                   <td className="py-3 px-4 text-sm text-foreground">{payload.location || payload.incidentLocation || '-'}</td>
                   <td className="py-3 px-4 text-xs font-medium text-muted-foreground">Dispatcher</td>
                   <td className="py-3 px-4 text-sm text-foreground">{(typeof payload.guardName === 'string' ? payload.guardName : (payload.guardName?.fullName || payload.guardName?.name)) || '-'}</td>
@@ -292,7 +292,7 @@ export default function DispatchPublicView() {
             </div>
           </Section>
 
-          <Section title="Guard Assigned" icon={<ShieldAlert />}>
+          <Section title="Vigilante asignado" icon={<ShieldAlert />}>
             <div className="text-sm">
               <div className="overflow-x-auto rounded-xl border">
                 {/* `table-fixed w-full` repartía el ancho a partes iguales pase
@@ -304,7 +304,7 @@ export default function DispatchPublicView() {
                   <thead>
                     <tr className="bg-muted/40 text-left">
                       <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Guard</th>
-                      <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Status</th>
+                      <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Estado</th>
                       <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Date/Time</th>
                     </tr>
                   </thead>
