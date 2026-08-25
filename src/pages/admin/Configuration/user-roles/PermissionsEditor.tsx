@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Check, ChevronDown, ChevronRight, Lock, Minus } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PERMISSIONS, groupPermissions } from "@/config/permissions";
+import { usePermissionCatalog } from "@/hooks/usePermissionCatalog";
 import { formatPermissionLabel, getResourceLabel } from "@/config/permissionLabels";
 
 type Props = {
@@ -49,7 +50,19 @@ export default function PermissionsEditor({ value, onChange, query = "", readOnl
   const lang = i18n.language;
   const lockedSet = React.useMemo(() => new Set(lockedPermissions), [lockedPermissions]);
   const isLocked = (p: string) => lockedSet.has(p);
-  const grouped = React.useMemo(() => groupPermissions(PERMISSIONS), []);
+  // EL CATÁLOGO SALE DEL SERVIDOR.
+  //
+  // Antes se pintaba `PERMISSIONS`, una copia A MANO del catálogo del servidor
+  // que iba 33 permisos por detrás — entre ellos `assistantUse` (VigIA) y toda
+  // la familia de cobertura y facturación. O sea: funciones que existían y NO SE
+  // PODÍAN conceder ni quitar desde esta pantalla, porque no salían en la lista.
+  //
+  // Ahora se pide a `/permission-catalog`, que devuelve `permissions.ts` tal
+  // cual. La copia local se queda SÓLO como red si la petición falla, para que
+  // la pantalla nunca aparezca en blanco.
+  const { ids: idsDelServidor } = usePermissionCatalog();
+  const catalogo = idsDelServidor.length ? idsDelServidor : PERMISSIONS;
+  const grouped = React.useMemo(() => groupPermissions(catalogo), [catalogo]);
   const filteredGrouped = React.useMemo(() => {
     if (!query) return grouped;
     const q = query.toLowerCase();

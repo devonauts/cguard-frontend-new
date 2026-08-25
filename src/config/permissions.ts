@@ -70,6 +70,9 @@ export const PERMISSIONS: string[] = [
   "backupConfirm","backupVolunteer","backupEventRead",
   // ── Autoservicio apps móviles ──
   "staffMe","supervisorMe"
+,
+  // ── Puestos al día con el servidor (respaldo; la fuente es /permission-catalog) ──
+  "assistantUse","performanceSettingsRead","performanceSettingsEdit","coverageRead","coverageCreate","coverageTransfer","billingImport","billingCreate","billingEdit","billingDestroy","billingRead","billingAutocomplete","estimateImport","estimateCreate","estimateEdit","estimateDestroy","estimateRead","estimateAutocomplete","estimateSend","estimateConvert","estimateDownload","invoiceImport","invoiceCreate","invoiceEdit","invoiceDestroy","invoiceRead","invoiceAutocomplete","invoiceSend","taxCreate","taxEdit","taxDestroy","taxRead","taxAutocomplete",
 ];
 
 // Admin "floor" — permissions that can never be removed from the admin role or
