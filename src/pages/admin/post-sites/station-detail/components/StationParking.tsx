@@ -1,7 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Car } from 'lucide-react';
+import { Car, Settings2, AlarmClock, Ban } from 'lucide-react';
 import { visitorLogService } from '@/lib/api/visitorLogService';
+import { vehicleControlService, type Ocupacion, type ReglasVehiculo } from '@/lib/api/vehicleControlService';
+import { toast } from 'sonner';
 import { Section, EmptyState, SkeletonCards, FadeIn, StatusBadge, SmartImage } from '@/components/kit';
 import { fileUrlFromFile } from '@/lib/fileUrl';
 import type { Station } from '@/types';
@@ -98,6 +100,10 @@ export default function StationParking({ stationId }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [soloDentro, setSoloDentro] = useState(false);
   const [lightbox, setLightbox] = useState<{ url: string; placa: string; cual: 'entrada' | 'salida' } | null>(null);
+  const [ocup, setOcup] = useState<Ocupacion | null>(null);
+  const [ajustes, setAjustes] = useState(false);
+  const [guardando, setGuardando] = useState(false);
+  const [borrador, setBorrador] = useState<ReglasVehiculo | null>(null);
 
   useEffect(() => {
     if (!stationId) return;
@@ -115,6 +121,12 @@ export default function StationParking({ stationId }: Props) {
         );
         const list: ParkingRow[] = Array.isArray(res) ? res : (res?.rows ?? []);
         if (mounted) setRows(list);
+        // Las reglas del puesto van aparte: pueden estar apagadas, y en ese
+        // caso la pantalla no enseña ni cupo ni permanencia ni vetos.
+        try {
+          const o = await vehicleControlService.ocupacion(stationId);
+          if (mounted) { setOcup(o); setBorrador(o.reglas); }
+        } catch { /* sin reglas, la tabla funciona igual */ }
       } catch (e: any) {
         if (mounted) setError(e?.message || t('station.parking.loadError', 'Error al cargar registros'));
       } finally {
@@ -150,7 +162,32 @@ export default function StationParking({ stationId }: Props) {
         </span>
       }
       action={
-        !loading && vehiculos.length > 0 ? (
+        !loading ? (
+          <>
+          {/* El cupo sólo aparece si el puesto lo tiene configurado. */}
+          {ocup?.reglas.enabled && ocup.capacidad != null && (
+            <span
+              className="shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold tabular-nums"
+              style={ocup.lleno
+                ? { background: 'color-mix(in oklab, var(--bad) 16%, transparent)', color: 'var(--bad-text)' }
+                : { background: 'var(--glass-sunken)', color: 'var(--ink-soft)' }}
+              title={t('station.parking.capacityHint', 'Vehículos dentro respecto al cupo del puesto')}
+            >
+              {ocup.dentro}/{ocup.capacidad}
+              {ocup.lleno ? ` · ${t('station.parking.full', 'lleno')}` : ` · ${ocup.libres} ${t('station.parking.free', 'libres')}`}
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={() => setAjustes(v => !v)}
+            className="cg-focus min-h-9 shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold transition-all"
+            style={{ background: 'var(--glass-sunken)', color: 'var(--ink-soft)' }}
+            title={t('station.parking.rules', 'Reglas del control vehicular')}
+          >
+            <Settings2 size={13} className="mr-1 inline" />
+            {t('station.parking.rules', 'Reglas')}
+          </button>
+          {vehiculos.length > 0 && (
           <button
             type="button"
             onClick={() => setSoloDentro(v => !v)}
@@ -162,6 +199,8 @@ export default function StationParking({ stationId }: Props) {
           >
             {t('station.parking.onlyInside', 'Sólo los que están dentro')} ({dentro.length})
           </button>
+          )}
+          </>
         ) : undefined
       }
       contentClassName="-mx-5 -mb-5"
@@ -169,6 +208,126 @@ export default function StationParking({ stationId }: Props) {
       <p className="px-5 -mt-2 mb-3 text-xs text-muted-foreground">
         {t('station.parking.subtitle', 'Entrada y salida de vehículos en este puesto. El vigilante los registra desde la app y marca la salida cuando se van.')}
       </p>
+
+      {/* ── LAS TRES REGLAS, OPCIONALES ────────────────────────────────────
+          Apagadas, el puesto registra entradas y salidas y nada más — que es
+          lo que quiere una garita de patio abierto. Encendidas, cada una añade
+          UNA cosa concreta. Ninguna bloquea el registro: en la puerta decide
+          el vigilante, que ve lo que la pantalla no ve. */}
+      {ajustes && borrador && (
+        <div className="mx-5 mb-4 space-y-4 rounded-2xl p-4" style={{ background: 'var(--glass-sunken)' }}>
+          <label className="flex cursor-pointer items-start gap-3">
+            <input
+              type="checkbox"
+              checked={borrador.enabled}
+              onChange={e => setBorrador({ ...borrador, enabled: e.target.checked })}
+              className="mt-0.5 h-4 w-4 shrink-0"
+            />
+            <span className="min-w-0">
+              <span className="block text-sm font-semibold">{t('station.parking.enable', 'Activar reglas en este puesto')}</span>
+              <span className="block text-[11px]" style={{ color: 'var(--ink-soft)' }}>
+                {t('station.parking.enableHint', 'Sin activar, el puesto sigue registrando entradas y salidas: sólo se apagan el cupo, el aviso de permanencia y las placas vetadas.')}
+              </span>
+            </span>
+          </label>
+
+          {borrador.enabled && (
+            <div className="space-y-4 border-t pt-4" style={{ borderColor: 'var(--hairline)' }}>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="min-w-0">
+                  <label className="cg-eyebrow mb-1.5 block">{t('station.parking.capacity', 'Cupo de vehículos')}</label>
+                  <input
+                    type="number" min={0}
+                    value={borrador.capacity ?? ''}
+                    onChange={e => setBorrador({ ...borrador, capacity: e.target.value === '' ? null : Number(e.target.value) })}
+                    placeholder={t('station.parking.noLimit', 'Sin límite') as string}
+                    className="cg-input cg-focus w-full px-3 py-2 text-sm tabular-nums"
+                  />
+                  <p className="mt-1 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
+                    {t('station.parking.capacityHelp', 'Vacío = sin límite. El vigilante ve cuántos quedan al registrar.')}
+                  </p>
+                </div>
+                <div className="min-w-0">
+                  <label className="cg-eyebrow mb-1.5 block">
+                    <AlarmClock size={11} className="mr-1 inline" />
+                    {t('station.parking.maxStay', 'Aviso por permanencia (min)')}
+                  </label>
+                  <input
+                    type="number" min={0}
+                    value={borrador.maxStayMinutes ?? ''}
+                    onChange={e => setBorrador({ ...borrador, maxStayMinutes: e.target.value === '' ? null : Number(e.target.value) })}
+                    placeholder={t('station.parking.noAlert', 'Sin aviso') as string}
+                    className="cg-input cg-focus w-full px-3 py-2 text-sm tabular-nums"
+                  />
+                  <p className="mt-1 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
+                    {t('station.parking.maxStayHelp', 'Vacío = sin aviso. Se avisa una sola vez por vehículo.')}
+                  </p>
+                </div>
+              </div>
+
+              <div className="min-w-0">
+                <label className="cg-eyebrow mb-1.5 block">{t('station.parking.bays', 'Cajones (opcional)')}</label>
+                <input
+                  value={borrador.bays.join(', ')}
+                  onChange={e => setBorrador({ ...borrador, bays: e.target.value.split(',').map(x => x.trim()).filter(Boolean) })}
+                  placeholder="A-01, A-02, B-01…"
+                  className="cg-input cg-focus w-full px-3 py-2 text-sm"
+                />
+                <p className="mt-1 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
+                  {t('station.parking.baysHelp', 'Separados por comas. Con la lista puesta, el vigilante elige cajón en vez de escribirlo, y aquí se ve cuáles están libres.')}
+                </p>
+              </div>
+
+              <label className="flex cursor-pointer items-start gap-3">
+                <input
+                  type="checkbox"
+                  checked={borrador.blacklistEnabled}
+                  onChange={e => setBorrador({ ...borrador, blacklistEnabled: e.target.checked })}
+                  className="mt-0.5 h-4 w-4 shrink-0"
+                />
+                <span className="min-w-0">
+                  <span className="block text-sm font-semibold">
+                    <Ban size={12} className="mr-1 inline" />
+                    {t('station.parking.blacklist', 'Avisar de placas vetadas')}
+                  </span>
+                  <span className="block text-[11px]" style={{ color: 'var(--ink-soft)' }}>
+                    {t('station.parking.blacklistHint', 'Al escribir la placa, el vigilante ve un aviso si está vetada. No le impide registrarla: la decisión en la puerta es suya.')}
+                  </span>
+                </span>
+              </label>
+
+              {ocup && ocup.reglas.bays.length > 0 && (
+                <p className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>
+                  {t('station.parking.freeBays', 'Cajones libres ahora')}: <strong>{ocup.cajonesLibres.join(', ') || '—'}</strong>
+                </p>
+              )}
+            </div>
+          )}
+
+          <div className="flex flex-wrap justify-end gap-2 border-t pt-3" style={{ borderColor: 'var(--hairline)' }}>
+            <button
+              type="button"
+              onClick={() => { setBorrador(ocup?.reglas ?? borrador); setAjustes(false); }}
+              className="cg-btn-ghost cg-focus min-h-9 rounded-full px-4 text-sm font-semibold"
+            >{t('common.cancel', 'Cancelar')}</button>
+            <button
+              type="button"
+              disabled={guardando}
+              onClick={async () => {
+                setGuardando(true);
+                try {
+                  const o = await vehicleControlService.guardarReglas(stationId, borrador);
+                  setOcup(o); setBorrador(o.reglas); setAjustes(false);
+                  toast.success(t('station.parking.saved', 'Reglas guardadas'));
+                } catch (e: any) {
+                  toast.error(e?.message || t('station.parking.saveError', 'No se pudieron guardar las reglas'));
+                } finally { setGuardando(false); }
+              }}
+              className="cg-btn-brand cg-focus min-h-9 rounded-full px-5 text-sm font-semibold disabled:opacity-40"
+            >{guardando ? '…' : t('common.save', 'Guardar')}</button>
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <div className="px-5 pb-5"><SkeletonCards count={4} /></div>
@@ -273,7 +432,23 @@ export default function StationParking({ stationId }: Props) {
                         ? <span className="text-muted-foreground">{formatDate(salidaISO)}</span>
                         : <StatusBadge tone="ok">{t('station.parking.inside', 'Dentro')}</StatusBadge>}
                     </td>
-                    <td className="px-2 py-2.5 tabular-nums text-muted-foreground">{permanencia(entradaISO, salidaISO)}</td>
+                    <td className="px-2 py-2.5 tabular-nums">
+                      {(() => {
+                        const texto = permanencia(entradaISO, salidaISO);
+                        const limite = ocup?.reglas.enabled ? ocup.reglas.maxStayMinutes : null;
+                        const mins = entradaISO
+                          ? Math.round((( salidaISO ? new Date(salidaISO).getTime() : Date.now()) - new Date(entradaISO).getTime()) / 60000)
+                          : 0;
+                        // Sólo se marca al que SIGUE dentro: uno que ya salió
+                        // tarde es historia, no algo que atender ahora.
+                        const pasado = !!limite && !salidaISO && mins > limite;
+                        return pasado
+                          ? <span className="inline-flex items-center gap-1 font-semibold" style={{ color: 'var(--bad-text)' }}>
+                              <AlarmClock size={12} />{texto}
+                            </span>
+                          : <span className="text-muted-foreground">{texto}</span>;
+                      })()}
+                    </td>
                     <td className="min-w-0 px-2 py-2.5">
                       {est ? <StatusBadge tone={est.tono}>{est.texto}</StatusBadge> : <span className="text-muted-foreground">—</span>}
                       {r.vehicleConditionNotes && (
