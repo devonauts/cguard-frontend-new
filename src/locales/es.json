@@ -360,7 +360,11 @@
     "verify_email_missing_token": "El enlace de verificación está incompleto. Ábrelo de nuevo desde el correo.",
     "verify_email_processing": "Un momento, estamos confirmando tu dirección…",
     "verify_email_title": "Verificando tu correo",
-    "weakPassword": "La contraseña es demasiado débil"
+    "weakPassword": "La contraseña es demasiado débil",
+    "phone_label": "Teléfono",
+    "phone_placeholder": "99 123 4567",
+    "phone_invalid": "Ese teléfono no parece válido. Revisa el país y el número.",
+    "captcha_pending": "Confirma que no eres un robot para continuar."
   },
   "billing": {
     "title": "Estado de la suscripción",

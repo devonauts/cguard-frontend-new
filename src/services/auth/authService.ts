@@ -10,8 +10,16 @@ export interface SignUpData {
   email: string
   password: string
   name: string
+  /** Formato internacional, tal como lo entrega `PhoneInput`: +593987654321. */
+  phoneNumber: string
   invitationToken?: string
   tenantId?: string
+  /** Token del captcha. Ausente cuando la plataforma no lo tiene configurado. */
+  captchaToken?: string
+  /** Campo trampa: SIEMPRE vacío en un envío humano (va oculto por CSS). */
+  companyWebsite?: string
+  /** Milisegundos entre pintar el formulario y enviarlo. */
+  elapsedMs?: number
 }
 
 export interface AuthResponse {
@@ -72,6 +80,9 @@ export class AuthService {
       fullName: rawName || undefined,
       firstName: firstName || undefined,
       lastName: lastName || undefined,
+      // El servidor lo normaliza y lo exige; se manda tal cual lo dejó el
+      // componente, en formato internacional.
+      phoneNumber: (data as any).phoneNumber || undefined,
     }
     // NOTE: never log `payload`/`response` here — they contain the plaintext password.
     const response = await ApiService.post('/auth/sign-up', payload, { skipAuth: true })

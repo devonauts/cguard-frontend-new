@@ -3955,7 +3955,11 @@
     "verify_email_missing_token": "O link de verificação está incompleto. Abra-o novamente pelo e-mail.",
     "verify_email_processing": "Um momento, estamos confirmando seu endereço…",
     "verify_email_title": "Verificando seu e-mail",
-    "weakPassword": "A senha é muito fraca"
+    "weakPassword": "A senha é muito fraca",
+    "phone_label": "Telefone",
+    "phone_placeholder": "99 123 4567",
+    "phone_invalid": "Esse telefone não parece válido. Verifique o país e o número.",
+    "captcha_pending": "Confirme que não é um robô para continuar."
   },
   "billing": {
     "activate": "Ativar assinatura",

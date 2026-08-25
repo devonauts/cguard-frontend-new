@@ -2,9 +2,12 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff, User, ArrowRight } from "lucide-react";
 import AuthShell, { CAMPO_ICONO, BOTON_PRINCIPAL, Etiqueta } from "./AuthShell";
 import { useAuth } from "@/contexts/AuthContext";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useTranslation } from 'react-i18next';
+import { PhoneInput } from "@/components/phone/PhoneInput";
+import CaptchaTurnstile from "@/components/auth/CaptchaTurnstile";
+import { ApiService } from "@/services/api/apiService";
 
 export default function Register() {
   const { t } = useTranslation();
@@ -15,21 +18,62 @@ export default function Register() {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [phone, setPhone] = useState("");
   const [showPwd, setShowPwd] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  // ── ANTI-ROBOTS ────────────────────────────────────────────────────────
+  // El campo trampa va oculto por CSS: una persona no lo ve y no lo rellena;
+  // un robot rellena todo lo que encuentra. El momento en que se pintó el
+  // formulario sirve para descartar el envío instantáneo. Ninguna de las dos
+  // molesta a nadie real, y las dos funcionan sin configurar nada.
+  const [trampa, setTrampa] = useState("");
+  const pintadoEn = useRef<number>(Date.now());
+
+  const [captchaToken, setCaptchaToken] = useState("");
+  const [captcha, setCaptcha] = useState<{ enabled: boolean; siteKey: string | null }>({
+    enabled: false,
+    siteKey: null,
+  });
 
   useEffect(() => {
     document.title = t('auth.register_title') || 'Registro | Cguard';
+  }, []);
+
+  // ¿Hay captcha configurado? Lo dice el servidor. Si no responde, el
+  // formulario sigue siendo usable: el servidor decide igual del otro lado.
+  useEffect(() => {
+    let vivo = true;
+    ApiService.get('/auth/sign-up/config')
+      .then((r: any) => {
+        if (!vivo) return;
+        const c = (r && (r.captcha || r.data?.captcha)) || null;
+        if (c && c.enabled && c.siteKey) setCaptcha({ enabled: true, siteKey: c.siteKey });
+      })
+      .catch(() => undefined);
+    return () => { vivo = false; };
   }, []);
 
   const handleRegister = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
 
 
-    if (!name || !email || !password || !confirm) {
+    if (!name || !email || !phone || !password || !confirm) {
       toast.error(t('auth.fill_all_fields'));
+      return;
+    }
+
+    // Mismo criterio que el servidor (lib/validators/telefono): entre 8 y 15
+    // dígitos. Se comprueba aquí para no gastar un viaje y dar el mensaje ya.
+    const digitos = phone.replace(/\D/g, '');
+    if (digitos.length < 8 || digitos.length > 15) {
+      toast.error(t('auth.phone_invalid', { defaultValue: 'Ese teléfono no parece válido. Revisa el país y el número.' }));
+      return;
+    }
+
+    if (captcha.enabled && !captchaToken) {
+      toast.error(t('auth.captcha_pending', { defaultValue: 'Confirma que no eres un robot para continuar.' }));
       return;
     }
     if (password !== confirm) {
@@ -47,7 +91,15 @@ export default function Register() {
     }
 
     setIsLoading(true);
-    const res = await signUp({ email, password, name });
+    const res = await signUp({
+      email,
+      password,
+      name,
+      phoneNumber: phone,
+      captchaToken: captchaToken || undefined,
+      companyWebsite: trampa,
+      elapsedMs: Date.now() - pintadoEn.current,
+    });
     setIsLoading(false);
 
     if (res?.success) {
@@ -97,6 +149,18 @@ export default function Register() {
               autoComplete="email"
             />
           </div>
+        </div>
+
+        {/* Teléfono — el dato con el que se contacta al prospecto. El mismo
+            componente que usa el CRM, así que el número queda en formato
+            internacional y sirve luego para SMS, WhatsApp y el marcador. */}
+        <div>
+          <Etiqueta htmlFor="phone">{t('auth.phone_label', { defaultValue: 'Teléfono' })}</Etiqueta>
+          <PhoneInput
+            value={phone}
+            onChange={setPhone}
+            placeholder={t('auth.phone_placeholder', { defaultValue: '99 123 4567' })}
+          />
         </div>
 
         {/* Contraseña */}
@@ -154,6 +218,45 @@ export default function Register() {
             </button>
           </div>
         </div>
+
+        {/* CAMPO TRAMPA — invisible para una persona, irresistible para un robot.
+
+            `aria-hidden` + `tabIndex={-1}` lo sacan también del lector de pantalla
+
+            y del recorrido por tabulador: nadie real puede llegar a él. */}
+
+        <div aria-hidden="true" className="absolute left-[-9999px] top-0 h-0 w-0 overflow-hidden">
+
+          <label htmlFor="companyWebsite">No rellenar</label>
+
+          <input
+
+            id="companyWebsite"
+
+            name="companyWebsite"
+
+            type="text"
+
+            tabIndex={-1}
+
+            autoComplete="off"
+
+            value={trampa}
+
+            onChange={(e) => setTrampa(e.target.value)}
+
+          />
+
+        </div>
+
+        
+
+        {captcha.enabled && captcha.siteKey ? (
+
+          <CaptchaTurnstile siteKey={captcha.siteKey} onToken={setCaptchaToken} className="flex justify-center" />
+
+        ) : null}
+
 
         <button type="submit" disabled={isLoading} className={BOTON_PRINCIPAL}>
           {isLoading ? t('auth.creating_account') : <>{t('auth.create_account')} <ArrowRight className="h-4 w-4" /></>}
