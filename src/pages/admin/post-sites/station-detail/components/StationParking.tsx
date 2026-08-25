@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Car } from 'lucide-react';
 import { visitorLogService } from '@/lib/api/visitorLogService';
-import { Section, EmptyState, SkeletonCards, FadeIn, StatusBadge } from '@/components/kit';
+import { Section, EmptyState, SkeletonCards, FadeIn, StatusBadge, SmartImage } from '@/components/kit';
+import { fileUrlFromFile } from '@/lib/fileUrl';
 import type { Station } from '@/types';
 
 type Props = { station: Station; stationId: string; postSiteId: string };
@@ -48,10 +49,23 @@ interface ParkingRow {
   vehicleColor?: string; vehicleMakeModel?: string;
   parkingLocation?: string;
   tagNumber?: string;
+  vehiclePhoto?: any[] | null;
+  vehicleExitPhoto?: any[] | null;
+  vehicleCondition?: string | null;
+  vehicleConditionNotes?: string | null;
+  vehicleExitCondition?: string | null;
+  vehicleExitConditionNotes?: string | null;
   visitDate?: string | null; entryTime?: string | null; createdAt?: string | null;
   exitTime?: string | null; exit_time?: string | null;
   guard?: ParkGuardRef | null; securityGuard?: ParkGuardRef | null; guardName?: string;
 }
+
+/** Estado del vehículo → cómo se pinta. Los semánticos son fijos. */
+const ESTADO: Record<string, { texto: string; tono: 'ok' | 'bad' | 'warn' }> = {
+  ok: { texto: 'Sin daños', tono: 'ok' },
+  damaged: { texto: 'Con daños', tono: 'bad' },
+  noted: { texto: 'Con observación', tono: 'warn' },
+};
 
 /** Los tipos que manda la app del vigilante, traducidos a algo legible. */
 const TIPO: Record<string, string> = {
@@ -83,6 +97,7 @@ export default function StationParking({ stationId }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [soloDentro, setSoloDentro] = useState(false);
+  const [lightbox, setLightbox] = useState<{ url: string; placa: string; cual: 'entrada' | 'salida' } | null>(null);
 
   useEffect(() => {
     if (!stationId) return;
@@ -176,12 +191,14 @@ export default function StationParking({ stationId }: Props) {
           <table className="min-w-[880px] text-sm">
             <thead className="bg-muted/30 border-b">
               <tr>
+                <th className="cg-eyebrow px-2 py-2 text-left">{t('station.parking.col.photo', 'Foto')}</th>
                 <th className="cg-eyebrow px-2 py-2 text-left">{t('station.parking.col.plate', 'Placa')}</th>
                 <th className="cg-eyebrow px-2 py-2 text-left">{t('station.parking.col.vehicle', 'Vehículo')}</th>
                 <th className="cg-eyebrow px-2 py-2 text-left">{t('station.parking.col.driver', 'Conductor / empresa')}</th>
                 <th className="cg-eyebrow px-2 py-2 text-left">{t('station.parking.col.entry', 'Entrada')}</th>
                 <th className="cg-eyebrow px-2 py-2 text-left">{t('station.parking.col.exit', 'Salida')}</th>
                 <th className="cg-eyebrow px-2 py-2 text-left">{t('station.parking.col.stay', 'Permanencia')}</th>
+                <th className="cg-eyebrow px-2 py-2 text-left">{t('station.parking.col.condition', 'Estado')}</th>
                 <th className="cg-eyebrow px-2 py-2 text-left">{t('station.parking.col.guard', 'Vigilante')}</th>
               </tr>
             </thead>
@@ -199,8 +216,43 @@ export default function StationParking({ stationId }: Props) {
                 const guard = r.guard || r.securityGuard || {};
                 const guardName = [guard.firstName || guard.first_name, guard.lastName || guard.last_name]
                   .filter(Boolean).join(' ') || guard.name || guard.fullName || r.guardName || '—';
+                const fotoEntrada = fileUrlFromFile(Array.isArray(r.vehiclePhoto) ? r.vehiclePhoto[0] : null);
+                const fotoSalida = fileUrlFromFile(Array.isArray(r.vehicleExitPhoto) ? r.vehicleExitPhoto[0] : null);
+                const est = r.vehicleCondition ? ESTADO[r.vehicleCondition] : null;
+                const estSalida = r.vehicleExitCondition ? ESTADO[r.vehicleExitCondition] : null;
                 return (
                   <tr key={r.id || i} className="hover:bg-muted/40">
+                    <td className="px-2 py-2">
+                      {/* La foto de ENTRADA es la que se mira de un vistazo; la de
+                          salida se ofrece detrás, porque sólo importa al comparar. */}
+                      <button
+                        type="button"
+                        onClick={() => fotoEntrada && setLightbox({ url: fotoEntrada, placa, cual: 'entrada' })}
+                        disabled={!fotoEntrada}
+                        className="cg-focus block disabled:cursor-default"
+                        title={fotoEntrada ? t('station.parking.viewPhoto', 'Ver foto') : undefined}
+                      >
+                        <SmartImage
+                          src={fotoEntrada}
+                          alt=""
+                          fit="cover"
+                          rounded="rounded-lg"
+                          className="h-11 w-16 shrink-0"
+                          style={{ border: '1px solid var(--hairline)' }}
+                          fallback={<Car size={16} style={{ color: 'var(--ink-faint)' }} />}
+                        />
+                      </button>
+                      {fotoSalida && (
+                        <button
+                          type="button"
+                          onClick={() => setLightbox({ url: fotoSalida, placa, cual: 'salida' })}
+                          className="cg-focus mt-1 block text-[10px] font-semibold hover:underline"
+                          style={{ color: 'var(--brand-text)' }}
+                        >
+                          {t('station.parking.exitPhoto', 'Ver salida')}
+                        </button>
+                      )}
+                    </td>
                     <td className="px-2 py-2.5">
                       <span className="font-mono text-sm font-bold tracking-wider" style={{ color: 'var(--ink)' }}>{placa}</span>
                       {r.parkingLocation && (
@@ -223,6 +275,20 @@ export default function StationParking({ stationId }: Props) {
                     </td>
                     <td className="px-2 py-2.5 tabular-nums text-muted-foreground">{permanencia(entradaISO, salidaISO)}</td>
                     <td className="min-w-0 px-2 py-2.5">
+                      {est ? <StatusBadge tone={est.tono}>{est.texto}</StatusBadge> : <span className="text-muted-foreground">—</span>}
+                      {r.vehicleConditionNotes && (
+                        <span className="mt-0.5 block max-w-[220px] truncate text-[11px] text-muted-foreground" title={r.vehicleConditionNotes}>
+                          {r.vehicleConditionNotes}
+                        </span>
+                      )}
+                      {estSalida && (
+                        <span className="mt-1 block text-[11px] text-muted-foreground">
+                          {t('station.parking.onExit', 'Al salir')}: {estSalida.texto}
+                          {r.vehicleExitConditionNotes ? ` · ${r.vehicleExitConditionNotes}` : ''}
+                        </span>
+                      )}
+                    </td>
+                    <td className="min-w-0 px-2 py-2.5">
                       <span className="block truncate" style={{ color: 'var(--ink)' }}>{guardName}</span>
                     </td>
                   </tr>
@@ -231,6 +297,41 @@ export default function StationParking({ stationId }: Props) {
             </tbody>
           </table>
         </FadeIn>
+      )}
+
+      {/* Visor. Una foto de 64px no sirve para discutir un rayón: hay que poder
+          abrirla grande. Se cierra tocando fuera o con Escape. */}
+      {lightbox && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-[70] flex items-center justify-center p-4"
+          style={{ background: 'oklch(0 0 0 / 0.85)' }}
+          onClick={() => setLightbox(null)}
+          onKeyDown={e => { if (e.key === 'Escape') setLightbox(null); }}
+          tabIndex={-1}
+        >
+          <div className="max-h-full w-full max-w-3xl" onClick={e => e.stopPropagation()}>
+            <div className="mb-2 flex items-center justify-between gap-3">
+              <p className="font-mono text-sm font-bold tracking-wider text-white">
+                {lightbox.placa}
+                <span className="ml-2 font-sans text-xs font-normal opacity-70">
+                  {lightbox.cual === 'entrada'
+                    ? t('station.parking.photoEntry', 'foto de entrada')
+                    : t('station.parking.photoExit', 'foto de salida')}
+                </span>
+              </p>
+              <button
+                type="button"
+                onClick={() => setLightbox(null)}
+                className="cg-focus min-h-9 rounded-full px-3 text-sm font-semibold text-white/80 hover:text-white"
+              >
+                {t('common.close', 'Cerrar')}
+              </button>
+            </div>
+            <img src={lightbox.url} alt="" className="max-h-[78vh] w-full rounded-xl object-contain" />
+          </div>
+        </div>
       )}
     </Section>
   );
