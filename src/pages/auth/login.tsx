@@ -4,7 +4,7 @@ import AuthShell, { CAMPO_ICONO, BOTON_PRINCIPAL, Etiqueta } from "./AuthShell";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAuthForm } from "@/hooks/useAuthForm";
 import { toast } from "sonner";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from 'react-i18next';
 import { ApiService } from '@/services/api/apiService';
 
@@ -79,8 +79,36 @@ export default function Login() {
     }
   };
   
+  /**
+   * Por qué te echó el CRM, si te echó.
+   *
+   * El caso que lo motiva es el operador de consola: su acceso al CRM dura lo
+   * que dura su turno, así que al fichar salida en la app la sesión se le
+   * cierra sola — que es lo correcto, pero sin decirlo se lee como una avería.
+   * Se consume una sola vez para que no reaparezca en el siguiente login.
+   */
+  const [motivoSalida] = useState<string | null>(() => {
+    try {
+      const m = sessionStorage.getItem('authExitReason');
+      sessionStorage.removeItem('authExitReason');
+      return m && m.trim() ? m : null;
+    } catch { return null; }
+  });
+
   return (
     <AuthShell title={t('auth.login_prompt') || 'Inicia sesión en tu cuenta'}>
+      {motivoSalida && (
+        <div
+          className="mb-4 rounded-2xl border p-3 text-sm"
+          style={{
+            background: 'color-mix(in oklab, var(--info) 12%, transparent)',
+            borderColor: 'color-mix(in oklab, var(--info) 28%, transparent)',
+            color: 'var(--info-text)',
+          }}
+        >
+          {motivoSalida}
+        </div>
+      )}
       <form className="space-y-4" onSubmit={handleLogin}>
         <div>
           <Etiqueta>{t('auth.email_label')}</Etiqueta>

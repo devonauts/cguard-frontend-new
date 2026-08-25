@@ -127,6 +127,10 @@ export class ApiService {
       // (e.g. this session was ended by a login on another device — single active
       // session). Clear it and return to the login screen.
       if (response.status === 401 && token && !window.location.pathname.startsWith('/login')) {
+        // POR QUÉ se cerró la sesión. Sin esto, al centralista que ficha salida
+        // le aparecía la pantalla de login sin explicación y parecía una avería.
+        // `sessionStorage`: vale para este arranque y no sobrevive al navegador.
+        try { sessionStorage.setItem('authExitReason', String(msg || '')); } catch {}
         try { localStorage.removeItem('authToken'); } catch {}
         // El perfil cacheado para la sesión offline pertenece a la sesión que
         // acaba de morir — sin esto, el próximo arranque sin red restauraría a
