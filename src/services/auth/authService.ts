@@ -94,9 +94,23 @@ export class AuthService {
   }
 
   static async signOut(): Promise<void> {
-    // El logout se maneja completamente en el frontend limpiando el localStorage
-    // No es necesario llamar al backend ya que estamos usando JWT stateless
-    return Promise.resolve();
+    // La sesión se cierra en el navegador (JWT sin estado), pero AVISAR al
+    // servidor sí hace falta: sin este aviso el registro de accesos tenía
+    // 1.370 entradas y UNA salida, así que no se podía reconstruir cuándo
+    // terminó una sesión — que es media pregunta de cualquier caso de soporte.
+    //
+    // Sin `revoke`: el servidor sólo anota la salida. Revocar tiraría TODOS
+    // los tokens de esa persona, y quien usa el CRM y la app con la misma
+    // cuenta (el operador de central) se quedaría fuera del teléfono al cerrar
+    // una pestaña. Ver `api/auth/authSignOut.ts`.
+    //
+    // Best-effort: si falla, la sesión se cierra igual. Nunca puede dejar a
+    // alguien atrapado dentro del CRM.
+    try {
+      await ApiService.post('/auth/sign-out', {})
+    } catch {
+      /* sin red o token ya caducado: la sesión se cierra igual */
+    }
   }
 
   static async sendPasswordResetEmail(email: string): Promise<void> {
