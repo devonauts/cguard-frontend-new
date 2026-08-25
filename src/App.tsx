@@ -10,7 +10,6 @@ import ResetPassword from "./pages/auth/reset-password";
 const DashboardPage = lazy(() => import("./pages/admin/dashboard/control-center/ControlCenter"));
 const AppearancePage = lazy(() => import("./pages/admin/Configuration/appearance/AppearancePage"));
 const OperationsMapFull = lazy(() => import("./pages/admin/dashboard/control-center/OperationsMapFull"));
-const LanguagePage = lazy(() => import("./pages/idioma/configuracion"));
 import { AuthProvider, useAuth } from "./contexts/AuthContext"
 import { ThemeProvider } from "./contexts/ThemeContext"
 import { AccentProvider } from "./contexts/AccentContext"
@@ -47,6 +46,7 @@ const EmergencySettingsPage = lazy(() => import("./pages/admin/Configuration/eme
 const SecurityPolicyPage = lazy(() => import("./pages/admin/Configuration/security/SecurityPolicyPage"));
 const VigiaUsagePage = lazy(() => import("./pages/admin/Configuration/vigia/VigiaUsagePage"));
 const RondasSettingsPage = lazy(() => import("./pages/admin/Configuration/rondas-settings/RondasSettingsPage"));
+const LanguagePage = lazy(() => import("./pages/admin/Configuration/language/LanguagePage"));
 const JornadaPage = lazy(() => import("./pages/admin/Configuration/scheduling/JornadaPage"));
 const ActivityLogHubPage = lazy(() => import("./pages/admin/Configuration/activity-log/ActivityLogHubPage"));
 const MarcaPage = lazy(() => import("./pages/admin/Configuration/brand/MarcaPage"));
@@ -1537,6 +1537,14 @@ export default function App() {
                 }
               />
               <Route
+                path="/setting/idioma"
+                element={
+                  <ProtectedRoute>
+                    <LanguagePage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/setting/apariencia"
                 element={
                   <ProtectedRoute>
@@ -1719,14 +1727,12 @@ export default function App() {
                 }
               />
 
-              <Route
-                path="/idioma"
-                element={
-                  <ProtectedRoute>
-                    <LanguagePage />
-                  </ProtectedRoute>
-                }
-              />
+              {/* La antigua /idioma montaba el widget de Google Translate: un
+                  segundo sistema de traducción, por máquina y encima del real,
+                  que además ofrecía idiomas que el producto no habla. El ajuste
+                  de verdad vive en Configuración › Idioma; el marcador viejo
+                  sigue funcionando. */}
+              <Route path="/idioma" element={<Navigate to="/setting/idioma" replace />} />
 
 
 

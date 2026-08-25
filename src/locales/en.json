@@ -5906,7 +5906,9 @@
       "asistente-ia.desc": "Assistant usage: messages, cost, free quota and executed actions.",
       "central": "Operations Center",
       "central.desc": "If you run a 24/7 console: which post it is, whether its operators cover shifts, and who gets the alerts.",
-      "sms": "SMS balance"
+      "sms": "SMS balance",
+      "idioma": "Language",
+      "idioma.desc": "What language you see the CRM in. Automatic, or the one you pick."
     },
     "section": {
       "mi_cuenta": "My account",
@@ -6720,7 +6722,23 @@
     "back": "Settings",
     "backToSettings": "Back to Settings",
     "index": "Settings index",
-    "searchPlaceholder": "Search settings..."
+    "searchPlaceholder": "Search settings...",
+    "language": {
+      "layoutTitle": "Language",
+      "pageTitle": "Language",
+      "pageSubtitle": "What language you want to see C-Guard Pro in. Your browser normally decides, but here you can set it yourself. The change applies instantly and is saved to your account, so you will see the same on any computer.",
+      "badgeAuto": "Automatic",
+      "badgeFixed": "Set by you",
+      "chooseSection": "Choose your language",
+      "chooseIntro": "This applies only to your account: everyone on the team picks their own, and nothing changes for anyone else because of what you choose here.",
+      "autoTitle": "Automatic",
+      "autoDesc": "Whatever your browser uses. Right now: {{idioma}}",
+      "fixedDesc": "Always this language, whatever your browser uses.",
+      "saved": "Language saved",
+      "reachSection": "How far it reaches",
+      "reachScreen": "Everything on screen: menus, buttons, alerts and the section names.",
+      "reachMail": "And the emails and alerts we send you too: they are written in the language you choose here."
+    }
   },
   "vigia": {
     "placeholder": "Message VigIA…",

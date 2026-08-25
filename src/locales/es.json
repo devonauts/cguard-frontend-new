@@ -5906,7 +5906,9 @@
       "asistente-ia.desc": "Uso del asistente: mensajes, costo, cuota gratis y acciones ejecutadas.",
       "central": "Central de Operaciones",
       "central.desc": "Si tienes consola 24/7: qué puesto es, si sus operadores salen a cubrir y a quién llegan las alertas.",
-      "sms": "Saldo SMS"
+      "sms": "Saldo SMS",
+      "idioma": "Idioma",
+      "idioma.desc": "En qué idioma ves el CRM. Automático o el que tú elijas."
     },
     "section": {
       "mi_cuenta": "Mi cuenta",
@@ -6720,7 +6722,23 @@
     "back": "Configuración",
     "backToSettings": "Volver a Configuración",
     "index": "Índice de configuración",
-    "searchPlaceholder": "Buscar ajuste..."
+    "searchPlaceholder": "Buscar ajuste...",
+    "language": {
+      "layoutTitle": "Idioma",
+      "pageTitle": "Idioma",
+      "pageSubtitle": "En qué idioma quieres ver el C-Guard Pro. Normalmente lo decide tu navegador, pero aquí puedes fijarlo tú. El cambio se aplica al instante y se guarda en tu cuenta, así que lo verás igual desde cualquier computadora.",
+      "badgeAuto": "Automático",
+      "badgeFixed": "Elegido por ti",
+      "chooseSection": "Elige el idioma",
+      "chooseIntro": "Se aplica sólo a tu cuenta: cada persona del equipo elige el suyo, y nadie ve el CRM distinto por lo que tú elijas aquí.",
+      "autoTitle": "Automático",
+      "autoDesc": "El que use tu navegador. Ahora mismo: {{idioma}}",
+      "fixedDesc": "Siempre en este idioma, use lo que use tu navegador.",
+      "saved": "Idioma guardado",
+      "reachSection": "Hasta dónde llega",
+      "reachScreen": "Todo lo que ves en pantalla: menús, botones, avisos y los nombres de las secciones.",
+      "reachMail": "Y también los correos y avisos que te enviamos: se escriben en el idioma que elijas aquí."
+    }
   },
   "vigia": {
     "placeholder": "Escríbele a VigIA…",

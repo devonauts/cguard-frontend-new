@@ -506,7 +506,9 @@
       "asistente-ia.desc": "Uso do assistente: mensagens, custo, cota grátis e ações executadas.",
       "sms": "Saldo de SMS",
       "central": "Central de monitoramento",
-      "central.desc": "Central própria: quem recebe os pânicos e os alertas ao vivo."
+      "central.desc": "Central própria: quem recebe os pânicos e os alertas ao vivo.",
+      "idioma": "Idioma",
+      "idioma.desc": "Em que idioma você vê o CRM. Automático ou o que você escolher."
     },
     "section": {
       "apps_y_portales": "Apps e portais",
@@ -1320,7 +1322,23 @@
     "back": "Configurações",
     "backToSettings": "Voltar às configurações",
     "index": "Índice de configurações",
-    "searchPlaceholder": "Buscar configuração..."
+    "searchPlaceholder": "Buscar configuração...",
+    "language": {
+      "layoutTitle": "Idioma",
+      "pageTitle": "Idioma",
+      "pageSubtitle": "Em que idioma você quer ver o C-Guard Pro. Normalmente quem decide é o seu navegador, mas aqui você pode definir. A mudança vale na hora e fica salva na sua conta, então você verá igual em qualquer computador.",
+      "badgeAuto": "Automático",
+      "badgeFixed": "Escolhido por você",
+      "chooseSection": "Escolha o idioma",
+      "chooseIntro": "Vale só para a sua conta: cada pessoa da equipe escolhe o seu, e ninguém vê o CRM diferente por causa do que você escolher aqui.",
+      "autoTitle": "Automático",
+      "autoDesc": "O que o seu navegador usar. Agora: {{idioma}}",
+      "fixedDesc": "Sempre neste idioma, use o que usar o seu navegador.",
+      "saved": "Idioma salvo",
+      "reachSection": "Até onde vai",
+      "reachScreen": "Tudo o que aparece na tela: menus, botões, avisos e os nomes das seções.",
+      "reachMail": "E também os e-mails e avisos que enviamos: são escritos no idioma que você escolher aqui."
+    }
   },
   "guards": {
     "nav": {

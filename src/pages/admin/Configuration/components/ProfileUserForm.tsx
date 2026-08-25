@@ -4,20 +4,14 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
 import { Mail, Phone, Globe, UserRound, Languages } from "lucide-react";
 import AccountService, { ProfilePayload } from "@/services/accountService";
 import { useAuth } from "@/contexts/AuthContext";
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import AvatarUploader from "./profile/AvatarUploader";
 import PhoneField from "./profile/PhoneField";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage, LANGUAGES } from "@/contexts/LanguageContext";
+import { useNavigate } from "react-router-dom";
 import { Section, Modal, Stagger, StatusBadge, SkeletonCards } from "@/components/kit";
 
 type MeTenantSetting = { theme?: string; logoUrl?: string | null };
@@ -121,7 +115,8 @@ function splitFullName(name: string): { firstName: string; lastName: string } {
 export default function ProfileUserForm() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const { language, setLanguage } = useLanguage();
+  const { language, choice } = useLanguage();
+  const navigate = useNavigate();
   const { t } = useTranslation();
 
   const [fullName, setFullName] = useState("");
@@ -454,36 +449,40 @@ export default function ProfileUserForm() {
           </div>
         </Section>
 
-        {/* ── Preferencias ──────────────────────────────────────────── */}
-        <Section title="Preferencias" icon={<Languages />} contentClassName="grid gap-6 md:grid-cols-2">
+        {/* ── Preferencias ──────────────────────────────────────────────
+            El idioma tiene pantalla propia (Configuración › Idioma), que además
+            permite volver a «Automático». Aquí sólo se muestra en cuál estás y
+            se lleva allí: dos selectores para lo mismo es la vía rápida a que
+            uno de los dos se quede atrás. */}
+        <Section title={t('profile.preferencesSection', { defaultValue: 'Preferencias' })} icon={<Languages />} contentClassName="grid gap-6 md:grid-cols-2">
           <div className="space-y-2">
             <Label>{t('profile.selectLanguage')}</Label>
-            <Select
-              value={language}
-              onValueChange={(value) => {
-                setLanguage(value as "es" | "en" | "pt");
-                // Persistir en el backend: sin esto el idioma vive solo en este
-                // navegador y los correos/notificaciones no pueden localizarse.
-                AccountService.updateProfile({ language: value }).catch(() => { /* el cambio local ya aplicó */ });
-                toast.success(t('profile.languageSaved'));
-              }}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Idioma" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="es">{t("ui.ProfileUserForm.espanol", "🇪🇸 Español")}</SelectItem>
-                <SelectItem value="en">🇺🇸 English</SelectItem>
-                <SelectItem value="pt">🇧🇷 Português</SelectItem>
-              </SelectContent>
-            </Select>
-            <p className="text-xs" style={{ color: 'var(--ink-faint)' }}>{t('profile.languageSaved')}</p>
+            <div className="glass-sunken flex items-center justify-between gap-3 rounded-2xl p-3">
+              <span className="flex items-center gap-2 text-sm" style={{ color: 'var(--ink)' }}>
+                <span aria-hidden>{LANGUAGES[language].flag}</span>
+                {LANGUAGES[language].name}
+                {choice === 'auto' && (
+                  <StatusBadge tone="neutral" dot={false}>
+                    {t('profile.languageAutoBadge', { defaultValue: 'Automático' })}
+                  </StatusBadge>
+                )}
+              </span>
+              <Button
+                type="button"
+                variant="link"
+                className="h-auto p-0 text-xs"
+                style={{ color: 'var(--brand-text)' }}
+                onClick={() => navigate('/setting/idioma')}
+              >
+                {t('profile.languageChange', { defaultValue: 'Cambiar' })}
+              </Button>
+            </div>
           </div>
 
           <div className="glass-sunken flex items-start gap-3 p-4">
             <Globe className="mt-0.5 h-4 w-4 shrink-0" style={{ color: 'var(--ink-faint)' }} />
             <p className="text-xs leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
-              El idioma se aplica sólo a tu cuenta. Cada persona del equipo elige el suyo.
+              {t('profile.languageScopeHint', { defaultValue: 'El idioma se aplica sólo a tu cuenta. Cada persona del equipo elige el suyo.' })}
             </p>
           </div>
         </Section>

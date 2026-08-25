@@ -32,6 +32,14 @@
             "keywords": "avisos notificaciones correo sms push silenciar ruido molestar personal mios"
           },
           {
+            "id": "idioma",
+            "label": "Idioma",
+            "path": "/setting/idioma",
+            "icon": "Languages",
+            "desc": "En qué idioma ves el CRM. Automático o el que tú elijas.",
+            "keywords": "idioma lenguaje language espanol ingles portugues english portugues traduccion cambiar idioma manual automatico navegador"
+          },
+          {
             "id": "apariencia",
             "label": "Apariencia",
             "path": "/setting/apariencia",
