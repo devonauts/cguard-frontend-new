@@ -2655,7 +2655,11 @@
     "verifyEmail": "Verify email",
     "verifyNumberDesc": "Enter the code we sent you by SMS to verify your number.",
     "verifyNumberTitle": "Verify number",
-    "enterVerificationCode": "Enter the verification code"
+    "enterVerificationCode": "Enter the verification code",
+    "preferencesSection": "Preferences",
+    "languageAutoBadge": "Automatic",
+    "languageChange": "Change",
+    "languageScopeHint": "The language applies only to your account. Everyone on the team picks their own."
   },
   "projects": {
     "clientNav": "Projects",

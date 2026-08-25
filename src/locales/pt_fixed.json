@@ -21,7 +21,11 @@
     "cancel": "Cancelar",
     "createdAt": "Data de criação",
     "updatedAt": "Última atualização",
-    "enterVerificationCode": "Digite o código de verificação"
+    "enterVerificationCode": "Digite o código de verificação",
+    "preferencesSection": "Preferências",
+    "languageAutoBadge": "Automático",
+    "languageChange": "Alterar",
+    "languageScopeHint": "O idioma vale só para a sua conta. Cada pessoa da equipe escolhe o seu."
   },
   "sidebar": {
     "panel": "Painel",
