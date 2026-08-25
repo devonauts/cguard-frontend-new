@@ -177,7 +177,7 @@ export default function GuardAsistenciaPage() {
                       <td className="px-3 py-2.5 tabular-nums">{fmtDateTime(r.punchInTime)}</td>
                       <td className="px-3 py-2.5 tabular-nums">{r.punchOutTime ? fmtDateTime(r.punchOutTime) : <span className="text-muted-foreground">—</span>}</td>
                       <td className="px-3 py-2.5 text-right tabular-nums">{fmtHours(r.hoursWorked)}</td>
-                      <td className="px-3 py-2.5"><StatusBadge status={r.status} /></td>
+                      <td className="px-3 py-2.5"><StatusBadge status={r.status} approval={r.approvalStatus} /></td>
                       <td className="px-3 py-2.5"><ApprovalBadge status={r.approvalStatus} /></td>
                       <td className="px-3 py-2.5 text-right">
                         <Link to={`/nomina/records?focus=${r.id}`} className="inline-flex items-center gap-1 text-xs brand-text hover:underline" title="Ver en Asistencia">

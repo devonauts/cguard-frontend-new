@@ -73,7 +73,31 @@ export const SEVERITY_META: Record<string, { label: string; tone: PillTone }> = 
   critical: { label: "Crítica", tone: "bad" },
 };
 
-export function StatusBadge({ status }: { status: string }) {
+/**
+ * Píldora del estado de la marcación.
+ *
+ * `approval` es opcional y sólo cambia UN caso: `pending_review` —«En revisión»—
+ * cuando la revisión YA ocurrió. El estado se conserva a propósito en la base
+ * (la nómina necesita saber que la marcación tuvo novedad, ver
+ * attendanceAdminService.setApproval), pero seguir diciendo «En revisión»
+ * después de aprobarla hace pensar que la aprobación no se guardó. Lo que
+ * cambia es la etiqueta, no el dato.
+ */
+export function StatusBadge({
+  status,
+  approval,
+}: {
+  status: string;
+  approval?: string | null;
+}) {
+  const decidida = approval === "approved" || approval === "rejected";
+  if (status === "pending_review" && decidida) {
+    return (
+      <KitStatusBadge tone={approval === "approved" ? "ok" : "bad"}>
+        {approval === "approved" ? "Revisado" : "Revisado (rechazado)"}
+      </KitStatusBadge>
+    );
+  }
   const m = STATUS_META[status] || { label: status, tone: "neutral" as PillTone };
   return <KitStatusBadge tone={m.tone}>{m.label}</KitStatusBadge>;
 }

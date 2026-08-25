@@ -249,7 +249,22 @@ export default function NominaRecords() {
           <ToneBadge tone="ok" dot={false}>Dentro</ToneBadge>
         ),
     },
-    { key: "status", header: "Estado", render: (_v, r) => <StatusBadge status={r.status} /> },
+    {
+      key: "status",
+      header: "Estado",
+      render: (_v, r) => <StatusBadge status={r.status} approval={r.approvalStatus} />,
+    },
+    {
+      // LA APROBACIÓN, EN LA TABLA.
+      //
+      // Vivía SÓLO en el panel de detalle: había que abrir registro por registro
+      // para saber si estaba aprobado. Como el estado (Tarde / En revisión) se
+      // conserva a propósito después de aprobar —la nómina lo necesita—, la
+      // lista daba a entender que aprobar no había hecho nada.
+      key: "approvalStatus",
+      header: "Aprobación",
+      render: (_v, r) => <ApprovalBadge status={r.approvalStatus} />,
+    },
   ];
 
   return (
@@ -405,7 +420,7 @@ export default function NominaRecords() {
                 })()}
 
                 <div className="flex items-center justify-between">
-                  <StatusBadge status={selected.status} />
+                  <StatusBadge status={selected.status} approval={selected.approvalStatus} />
                   <span className="flex items-center gap-1.5 text-xs" style={{ color: "var(--ink-soft)" }}>
                     Aprobación: <ApprovalBadge status={selected.approvalStatus} />
                   </span>
