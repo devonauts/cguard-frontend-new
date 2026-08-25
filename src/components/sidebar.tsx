@@ -316,7 +316,17 @@ const CGSB_CSS = `
 .cgsb-orb-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
 .cgsb-sep { width: 22px; height: 1px; background: var(--hairline); margin: 2px 0; flex: 0 0 auto; }
-.cgsb-ghost { background: transparent; border-color: transparent; }
+/* El botón de tema del bloque de usuario. Sin caja propia se quedaba en 16 px
+   de ancho —el del icono— dentro de un flex: un objetivo táctil de 16×44
+   medido en el navegador, presente en TODAS las pantallas porque el bloque de
+   usuario vive en el cajón lateral. Se le da caja cuadrada de 36 px, que es
+   el mínimo cómodo, sin tocar su aspecto (sigue sin fondo ni borde). */
+.cgsb-ghost {
+  background: transparent; border-color: transparent;
+  display: grid; place-items: center;
+  width: 36px; height: 36px; flex: 0 0 36px;
+  border-radius: 9999px;
+}
 
 /* ── PANEL FLOTANTE (colapsado) ───────────────────────────────────────────── */
 .cgsb-flyout {
