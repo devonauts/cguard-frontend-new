@@ -438,7 +438,13 @@
     },
     "solicitudes-clientes": "Solicitações de clientes",
     "control-de-calidad": "Controle de qualidade",
-    "seguridad-auditoria": "Registro de segurança"
+    "seguridad-auditoria": "Registro de segurança",
+    "brandTooltip": "Painel de controle",
+    "accountSettings": "Ajustes da conta",
+    "themeToLight": "Mudar para o modo claro",
+    "themeToDark": "Mudar para o modo escuro",
+    "themeToggle": "Alternar tema",
+    "goToDashboard": "Ir ao painel de controle"
   },
   "settings": {
     "configuracion": {
@@ -1363,7 +1369,8 @@
       "desempeno": "Desempenho",
       "dispositivo": "Dispositivo",
       "documentos": "Documentos",
-      "horario": "Horário"
+      "horario": "Horário",
+      "supervisorsRoot": "Supervisores"
     },
     "summary": {
       "roleDefault": "Segurança",
@@ -2763,7 +2770,29 @@
     "settings": "Configurações",
     "subscription": "Assinatura",
     "system_logs": "Registros do sistema",
-    "searchPlaceholder": "Buscar no C-Guard Pro…"
+    "searchPlaceholder": "Buscar no C-Guard Pro…",
+    "sidebar": {
+      "collapse": "Recolher o menu",
+      "expand": "Expandir o menu"
+    },
+    "cmdk": {
+      "settingsGroup": "Configurações",
+      "mainGroup": "Menu principal"
+    },
+    "sos": {
+      "ackOk": "SOS reconhecido e registrado no histórico",
+      "ackError": "Não foi possível registrar o reconhecimento — tente de novo"
+    },
+    "support": {
+      "helpCenter": "Central de Suporte",
+      "helpCenterSub": "Lista de artigos",
+      "chat": "Suporte por Chat",
+      "chatSub": "Chat ao vivo com o suporte",
+      "videos": "Vídeos instrutivos",
+      "videosSub": "Aprenda passo a passo",
+      "ticket": "Enviar Chamado",
+      "ticketSub": "Chamados de suporte"
+    }
   },
   "dispatcher": {
     "noPermissionViewToast": "Você não tem permissão para ver Incidentes",
@@ -3177,7 +3206,8 @@
       "thisMonth": "Este mês",
       "lastMonth": "Último mês",
       "last2m": "Últimos 2 meses",
-      "last3m": "Últimos 3 meses"
+      "last3m": "Últimos 3 meses",
+      "placeholder": "Selecionar período"
     },
     "form": {
       "errorSummaryTitle": "Revise os campos marcados"
@@ -3639,7 +3669,19 @@
     "viewDetails": "Ver detalhes",
     "wizardSubtitle": "Configure o local, sua localização, serviço e estações passo a passo.",
     "wizardSubtitleForClient": "Nova sede para {{client}}: localização, serviço e estações passo a passo.",
-    "client": "Cliente"
+    "client": "Cliente",
+    "tabs": {
+      "overview": "Estatísticas",
+      "stations": "Estações",
+      "guards": "Vigilantes",
+      "tours": "Rondas",
+      "incidents": "Incidentes",
+      "inventory": "Inventário",
+      "kpis": "Indicadores",
+      "contacts": "Contatos",
+      "notes": "Notas",
+      "profile": "Perfil"
+    }
   },
   "common": {
     "active": "Ativo",
@@ -5005,7 +5047,13 @@
     "schedule": {
       "freeDays": "Dias de folga",
       "upcoming": "Próximos turnos"
-    }
+    },
+    "nav": {
+      "home": "Início",
+      "schedule": "Horário",
+      "timeOff": "Folgas"
+    },
+    "roleLabel": "Vigilante"
   },
   "notes": {
     "deleteError": "Não foi possível excluir as notas",
@@ -6222,6 +6270,39 @@
     },
     "popup": {
       "loadError": "Não foi possível carregar o detalhe"
+    }
+  },
+  "supervisors": {
+    "nav": {
+      "perfil": "Perfil",
+      "cobertura": "Cobertura",
+      "horario": "Horário",
+      "desempeno": "Desempenho",
+      "licencias": "Licenças",
+      "notas": "Notas",
+      "dispositivo": "Dispositivo"
+    }
+  },
+  "coverage": {
+    "reason": {
+      "permiso_con_sueldo": "Licença remunerada",
+      "permiso_sin_sueldo": "Licença não remunerada",
+      "no_call_no_show": "Não compareceu nem avisou",
+      "enfermedad": "Doença",
+      "calamidad_domestica": "Calamidade doméstica",
+      "vacaciones": "Férias",
+      "suspension": "Suspensão",
+      "abandono_puesto": "Abandono do posto",
+      "transporte": "Problema de transporte",
+      "transferencia_operativa": "Transferência operacional",
+      "refuerzo_cliente": "Reforço solicitado",
+      "otro": "Outro"
+    },
+    "status": {
+      "covered": "Coberto",
+      "at_risk": "Em risco",
+      "uncovered": "Sem cobertura",
+      "idle": "Sem turno"
     }
   }
 }

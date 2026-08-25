@@ -1,12 +1,14 @@
 import React from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
 import { Shield, Calendar, CalendarOff } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function GuardAppLayout() {
+  const { t } = useTranslation();
   const navItems = [
-    { to: '/guard', icon: Shield, label: 'Inicio' },
-    { to: '/guard/schedule', icon: Calendar, label: 'Horario' },
-    { to: '/guard/time-off', icon: CalendarOff, label: 'Permisos' },
+    { to: '/guard', icon: Shield, label: t('guard.nav.home') },
+    { to: '/guard/schedule', icon: Calendar, label: t('guard.nav.schedule') },
+    { to: '/guard/time-off', icon: CalendarOff, label: t('guard.nav.timeOff') },
   ];
 
   return (
@@ -17,7 +19,7 @@ export default function GuardAppLayout() {
           <Shield size={20} className="text-primary" />
           <span className="font-bold text-foreground text-sm">CGuard Pro</span>
         </div>
-        <span className="text-xs text-muted-foreground">Vigilante</span>
+        <span className="text-xs text-muted-foreground">{t('guard.roleLabel')}</span>
       </header>
 
       {/* Content */}

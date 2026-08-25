@@ -1,4 +1,5 @@
 import api from "../api";
+import { tablaDeEtiquetas } from "@/lib/i18nLabel";
 
 // Station labels live in one place — the nominativo is what disambiguates
 // posts that share a stationName. Re-exported so existing imports keep working.
@@ -90,28 +91,29 @@ export const COVERAGE_REASONS = [
 ] as const;
 export type CoverageReason = (typeof COVERAGE_REASONS)[number];
 
-/** Spanish labels for the operator-facing UI (this CRM is Spanish-first). */
-export const REASON_LABEL: Record<string, string> = {
-  permiso_con_sueldo: "Permiso con sueldo",
-  permiso_sin_sueldo: "Permiso sin sueldo",
-  no_call_no_show: "No se presentó ni avisó",
-  enfermedad: "Enfermedad",
-  calamidad_domestica: "Calamidad doméstica",
-  vacaciones: "Vacaciones",
-  suspension: "Suspensión",
-  abandono_puesto: "Abandono del puesto",
-  transporte: "Problema de transporte",
-  transferencia_operativa: "Traslado operativo",
-  refuerzo_cliente: "Refuerzo solicitado",
-  otro: "Otro",
-};
+/** Etiquetas del motivo de cobertura. Se resuelven AL LEERLAS: este módulo lo
+ *  importan varias páginas y se evalúa mucho antes de saber el idioma. */
+export const REASON_LABEL: Record<string, string> = tablaDeEtiquetas({
+  permiso_con_sueldo: "coverage.reason.permiso_con_sueldo",
+  permiso_sin_sueldo: "coverage.reason.permiso_sin_sueldo",
+  no_call_no_show: "coverage.reason.no_call_no_show",
+  enfermedad: "coverage.reason.enfermedad",
+  calamidad_domestica: "coverage.reason.calamidad_domestica",
+  vacaciones: "coverage.reason.vacaciones",
+  suspension: "coverage.reason.suspension",
+  abandono_puesto: "coverage.reason.abandono_puesto",
+  transporte: "coverage.reason.transporte",
+  transferencia_operativa: "coverage.reason.transferencia_operativa",
+  refuerzo_cliente: "coverage.reason.refuerzo_cliente",
+  otro: "coverage.reason.otro",
+});
 
-export const STATUS_LABEL: Record<CoverageStatus, string> = {
-  covered: "Cubierto",
-  at_risk: "En riesgo",
-  uncovered: "Sin cubrir",
-  idle: "Sin turno",
-};
+export const STATUS_LABEL: Record<CoverageStatus, string> = tablaDeEtiquetas({
+  covered: "coverage.status.covered",
+  at_risk: "coverage.status.at_risk",
+  uncovered: "coverage.status.uncovered",
+  idle: "coverage.status.idle",
+}) as Record<CoverageStatus, string>;
 
 /**
  * Rules violations come back as `{ error: code }` with a 400. They are operator

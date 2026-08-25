@@ -93,7 +93,7 @@ export default function GuardsLayout({ navKey, title, children }: Props) {
     allItems.find((it: any) => location.pathname.startsWith(resolvePath(it.path) + '/'));
 
   const listPath = isSupervisor ? '/supervisors' : '/security-guards';
-  const rootLabel = isSupervisor ? 'Supervisores' : t('guards.list.title', 'Vigilantes');
+  const rootLabel = isSupervisor ? t('guards.nav.supervisorsRoot') : t('guards.list.title', 'Vigilantes');
   const landingPath = isSupervisor ? `/supervisors/${id}/perfil` : `/guards/${id}/resumen`;
   const displayName = entity?.name || (title ? t(title) : (cfg?.title ? t(cfg.title) : '—'));
 

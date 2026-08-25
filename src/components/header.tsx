@@ -185,10 +185,10 @@ export default function Header({
     try {
       if (caseId) {
         await alarmService.acknowledge(String(caseId), action);
-        toast.success("SOS reconocido y registrado en el historial");
+        toast.success(t('header.sos.ackOk'));
       }
     } catch {
-      toast.error("No se pudo registrar el reconocimiento — intenta de nuevo");
+      toast.error(t('header.sos.ackError'));
       return; // keep the alert up; don't silence on failure
     }
     setPanicAlerts((prev) => prev.filter((a) => a.id !== alert.id));
@@ -434,9 +434,9 @@ export default function Header({
       <button
         onClick={toggleSidebar}
         className="cg-focus cg-btn-glass grid h-9 w-9 shrink-0 place-items-center rounded-xl"
-        aria-label={sidebarOpen ? 'Plegar el menú' : 'Desplegar el menú'}
+        aria-label={sidebarOpen ? t('header.sidebar.collapse') : t('header.sidebar.expand')}
         aria-expanded={sidebarOpen}
-        title={sidebarOpen ? 'Plegar el menú' : 'Desplegar el menú'}
+        title={sidebarOpen ? t('header.sidebar.collapse') : t('header.sidebar.expand')}
       >
         {/* En MÓVIL sí toca hamburguesa: ahí el menú es un cajón que se superpone,
             no un panel que se pliega, y las tres rayas son la convención que todo
@@ -513,7 +513,7 @@ export default function Header({
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-sm font-semibold" style={{ color: 'var(--ink)' }}>{d.label}</span>
                         <span className="block truncate text-[11px]" style={{ color: 'var(--ink-faint)' }}>
-                          {d.grupo === 'config' ? 'Configuración' : 'Menú principal'}
+                          {d.grupo === 'config' ? t('header.cmdk.settingsGroup') : t('header.cmdk.mainGroup')}
                           {d.contexto ? ` · ${d.contexto}` : ''}
                         </span>
                       </span>
@@ -741,10 +741,10 @@ export default function Header({
               «Chat en vivo con soporte»: en el teléfono va a una columna. */}
           <div className="grid grid-cols-1 gap-4 py-6 sm:grid-cols-2">
             {[
-              { icono: <HelpCircle />, titulo: 'Centro de Soporte', pie: 'Lista de artículos' },
-              { icono: <MessageSquare />, titulo: 'Soporte por Chat', pie: 'Chat en vivo con soporte' },
-              { icono: <Clock />, titulo: 'Videos instructivos', pie: 'Aprende paso a paso' },
-              { icono: <Settings />, titulo: 'Enviar Ticket', pie: 'Tickets de soporte' },
+              { icono: <HelpCircle />, titulo: t('header.support.helpCenter'), pie: t('header.support.helpCenterSub') },
+              { icono: <MessageSquare />, titulo: t('header.support.chat'), pie: t('header.support.chatSub') },
+              { icono: <Clock />, titulo: t('header.support.videos'), pie: t('header.support.videosSub') },
+              { icono: <Settings />, titulo: t('header.support.ticket'), pie: t('header.support.ticketSub') },
             ].map((c) => (
               <button
                 key={c.titulo}

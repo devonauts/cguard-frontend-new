@@ -107,7 +107,7 @@ export function DateRangePicker({
 
   const formatDateRange = () => {
     if (!dateRange?.from) {
-      return "Seleccionar rango";
+      return i18n.t("kit.dateRange.placeholder");
     }
     if (!dateRange.to) {
       return format(dateRange.from, "d/MM/yyyy", { locale: es });

@@ -9,6 +9,7 @@ import {
   FileBarChart, Contact, StickyNote, IdCard,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import i18n from '@/i18n';
 
 type Props = { title?: string; children: ReactNode; site?: any };
 
@@ -17,16 +18,16 @@ type Props = { title?: string; children: ReactNode; site?: any };
 // (consignas, geocerca, checklists, config) vive dentro de cada estación.
 // Solo se exponen secciones REALES conectadas a la base de datos.
 const TAB_DEFS: Array<{ id: string; seg: string; label: string; icon: any }> = [
-  { id: 'overview', seg: 'overview', label: 'Estadísticas', icon: LayoutGrid },
-  { id: 'stations', seg: 'stations', label: 'Estaciones', icon: Building2 },
-  { id: 'assign-guards', seg: 'assign-guards', label: 'Vigilantes', icon: Users },
-  { id: 'site-tours', seg: 'site-tours', label: 'Rondas', icon: RouteIcon },
-  { id: 'incidents', seg: 'incidents', label: 'Incidentes', icon: AlertTriangle },
-  { id: 'inventory', seg: 'inventory', label: 'Inventario', icon: Package },
-  { id: 'kpis', seg: 'kpis', label: 'Indicadores', icon: FileBarChart },
-  { id: 'contacts', seg: 'contacts', label: 'Contactos', icon: Contact },
-  { id: 'notes', seg: 'notes', label: 'Notas', icon: StickyNote },
-  { id: 'profile', seg: 'profile', label: 'Perfil', icon: IdCard },
+  { id: 'overview', seg: 'overview', label: i18n.t('postSites.tabs.overview'), icon: LayoutGrid },
+  { id: 'stations', seg: 'stations', label: i18n.t('postSites.tabs.stations'), icon: Building2 },
+  { id: 'assign-guards', seg: 'assign-guards', label: i18n.t('postSites.tabs.guards'), icon: Users },
+  { id: 'site-tours', seg: 'site-tours', label: i18n.t('postSites.tabs.tours'), icon: RouteIcon },
+  { id: 'incidents', seg: 'incidents', label: i18n.t('postSites.tabs.incidents'), icon: AlertTriangle },
+  { id: 'inventory', seg: 'inventory', label: i18n.t('postSites.tabs.inventory'), icon: Package },
+  { id: 'kpis', seg: 'kpis', label: i18n.t('postSites.tabs.kpis'), icon: FileBarChart },
+  { id: 'contacts', seg: 'contacts', label: i18n.t('postSites.tabs.contacts'), icon: Contact },
+  { id: 'notes', seg: 'notes', label: i18n.t('postSites.tabs.notes'), icon: StickyNote },
+  { id: 'profile', seg: 'profile', label: i18n.t('postSites.tabs.profile'), icon: IdCard },
 ];
 
 export default function PostSiteLayout({ title, children, site }: Props) {

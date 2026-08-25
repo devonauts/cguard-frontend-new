@@ -748,7 +748,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps)
           type="button"
           className="cgsb-brand cg-focus"
           onClick={() => go('/dashboard')}
-          title={`${tenantName || 'CGuard'} · Panel de control`}
+          title={`${tenantName || 'CGuard'} · ${t('sidebar.brandTooltip')}`}
         >
           {brandTile}
           <span className="min-w-0 flex-1">
@@ -813,7 +813,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps)
             to="/setting"
             className="cgsb-user-link cg-focus"
             onClick={() => onNavigate?.()}
-            title="Ajustes de la cuenta"
+            title={t('sidebar.accountSettings')}
           >
             <span className="cgsb-avatar">
               {avatar ? <img src={avatar} alt={userName} /> : initials(userName)}
@@ -831,8 +831,8 @@ export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps)
             type="button"
             className="cgsb-ghost cg-focus"
             onClick={toggleTheme}
-            title={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-            aria-label="Cambiar tema"
+            title={theme === 'dark' ? t('sidebar.themeToLight') : t('sidebar.themeToDark')}
+            aria-label={t('sidebar.themeToggle')}
           >
             {theme === 'dark' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
           </button>
@@ -848,8 +848,8 @@ export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps)
         type="button"
         className={`cgsb-orb cg-focus ${tenantLogo ? 'cgsb-orb-avatar' : 'cgsb-orb-brand'}`}
         onClick={() => go('/dashboard')}
-        title={`${tenantName || 'C-GUARD PRO'} · Panel de control`}
-        aria-label="Ir al panel de control"
+        title={`${tenantName || 'C-GUARD PRO'} · ${t('sidebar.brandTooltip')}`}
+        aria-label={t('sidebar.goToDashboard')}
       >
         {tenantLogo
           ? <img src={tenantLogo} alt={tenantName || 'Logo'} />
@@ -873,8 +873,8 @@ export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps)
         type="button"
         className="cgsb-orb cg-focus"
         onClick={toggleTheme}
-        title={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-        aria-label="Cambiar tema"
+        title={theme === 'dark' ? t('sidebar.themeToLight') : t('sidebar.themeToDark')}
+        aria-label={t('sidebar.themeToggle')}
       >
         {theme === 'dark' ? <Moon className="h-[17px] w-[17px]" /> : <Sun className="h-[17px] w-[17px]" />}
       </button>

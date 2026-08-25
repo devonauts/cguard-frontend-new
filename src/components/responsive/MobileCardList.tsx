@@ -13,6 +13,7 @@
 import React from 'react';
 import { EmptyState, SkeletonCards } from '@/components/kit';
 import { cn } from '@/lib/utils';
+import i18n from "@/i18n";
 
 type MobileCardListProps<T> = {
     items: T[];
@@ -53,8 +54,8 @@ export default function MobileCardList<T>({
                 {emptyState ?? (
                     <EmptyState
                         icon={emptyIcon}
-                        title={emptyMessage || 'No hay elementos'}
-                        description={emptyMessage ? undefined : 'Cuando haya registros aparecerán aquí.'}
+                        title={emptyMessage || i18n.t("kit.list.empty")}
+                        description={emptyMessage ? undefined : i18n.t("kit.list.emptyHint")}
                         className={className}
                     />
                 )}

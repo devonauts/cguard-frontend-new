@@ -97,37 +97,37 @@
         "items": [
           {
             "id": "sup-perfil",
-            "label": "Perfil",
+            "label": "supervisors.nav.perfil",
             "path": "/supervisors/:id/perfil"
           },
           {
             "id": "sup-cobertura",
-            "label": "Cobertura",
+            "label": "supervisors.nav.cobertura",
             "path": "/supervisors/:id/cobertura"
           },
           {
             "id": "sup-horario",
-            "label": "Horario",
+            "label": "supervisors.nav.horario",
             "path": "/supervisors/:id/horario"
           },
           {
             "id": "sup-indicadores",
-            "label": "Desempeño",
+            "label": "supervisors.nav.desempeno",
             "path": "/supervisors/:id/indicadores"
           },
           {
             "id": "sup-licencias",
-            "label": "Licencias",
+            "label": "supervisors.nav.licencias",
             "path": "/supervisors/:id/licencias"
           },
           {
             "id": "sup-notas",
-            "label": "Notas",
+            "label": "supervisors.nav.notas",
             "path": "/supervisors/:id/notas"
           },
           {
             "id": "sup-dispositivo",
-            "label": "Dispositivo",
+            "label": "supervisors.nav.dispositivo",
             "path": "/supervisors/:id/dispositivo"
           }
         ]

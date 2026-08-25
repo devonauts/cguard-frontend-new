@@ -1644,7 +1644,8 @@
       "horario": "Schedule",
       "asistencia": "Attendance",
       "desempeno": "Performance",
-      "documentos": "Documents"
+      "documentos": "Documents",
+      "supervisorsRoot": "Supervisors"
     },
     "new": {
       "title": "New Guard",
@@ -2103,7 +2104,29 @@
     "settings": "Settings",
     "subscription": "Subscription",
     "system_logs": "System logs",
-    "searchPlaceholder": "Search C-Guard Pro…"
+    "searchPlaceholder": "Search C-Guard Pro…",
+    "sidebar": {
+      "collapse": "Collapse the menu",
+      "expand": "Expand the menu"
+    },
+    "cmdk": {
+      "settingsGroup": "Settings",
+      "mainGroup": "Main menu"
+    },
+    "sos": {
+      "ackOk": "SOS acknowledged and logged in the history",
+      "ackError": "The acknowledgement could not be saved — try again"
+    },
+    "support": {
+      "helpCenter": "Help Center",
+      "helpCenterSub": "Browse articles",
+      "chat": "Chat Support",
+      "chatSub": "Live chat with support",
+      "videos": "How-to videos",
+      "videosSub": "Learn step by step",
+      "ticket": "Submit a Ticket",
+      "ticketSub": "Support tickets"
+    }
   },
   "incidents": {
     "actionsLabel": "Actions",
@@ -2631,7 +2654,19 @@
     },
     "wizardSubtitle": "Set up the site, its location, service and stations step by step.",
     "wizardSubtitleForClient": "New site for {{client}}: location, service and stations step by step.",
-    "client": "Client"
+    "client": "Client",
+    "tabs": {
+      "overview": "Overview",
+      "stations": "Stations",
+      "guards": "Officers",
+      "tours": "Patrols",
+      "incidents": "Incidents",
+      "inventory": "Inventory",
+      "kpis": "Metrics",
+      "contacts": "Contacts",
+      "notes": "Notes",
+      "profile": "Profile"
+    }
   },
   "profile": {
     "cancel": "Cancel",
@@ -5180,7 +5215,13 @@
     },
     "solicitudes-clientes": "Client requests",
     "control-de-calidad": "Quality control",
-    "seguridad-auditoria": "Security log"
+    "seguridad-auditoria": "Security log",
+    "brandTooltip": "Dashboard",
+    "accountSettings": "Account settings",
+    "themeToLight": "Switch to light mode",
+    "themeToDark": "Switch to dark mode",
+    "themeToggle": "Toggle theme",
+    "goToDashboard": "Go to the dashboard"
   },
   "siteTour": {
     "newTour": "New Tour",
@@ -6812,7 +6853,8 @@
       "thisMonth": "This month",
       "lastMonth": "Last month",
       "last2m": "Last 2 months",
-      "last3m": "Last 3 months"
+      "last3m": "Last 3 months",
+      "placeholder": "Select a range"
     },
     "form": {
       "errorSummaryTitle": "Check the highlighted fields"
@@ -7049,7 +7091,13 @@
     "schedule": {
       "freeDays": "Days off",
       "upcoming": "Upcoming shifts"
-    }
+    },
+    "nav": {
+      "home": "Home",
+      "schedule": "Schedule",
+      "timeOff": "Time off"
+    },
+    "roleLabel": "Officer"
   },
   "notes": {
     "deleteError": "The notes could not be deleted",
@@ -8266,6 +8314,39 @@
     },
     "popup": {
       "loadError": "Could not load the details"
+    }
+  },
+  "supervisors": {
+    "nav": {
+      "perfil": "Profile",
+      "cobertura": "Coverage",
+      "horario": "Schedule",
+      "desempeno": "Performance",
+      "licencias": "Licenses",
+      "notas": "Notes",
+      "dispositivo": "Device"
+    }
+  },
+  "coverage": {
+    "reason": {
+      "permiso_con_sueldo": "Paid leave",
+      "permiso_sin_sueldo": "Unpaid leave",
+      "no_call_no_show": "No-show, no notice",
+      "enfermedad": "Illness",
+      "calamidad_domestica": "Family emergency",
+      "vacaciones": "Vacation",
+      "suspension": "Suspension",
+      "abandono_puesto": "Abandoned post",
+      "transporte": "Transport problem",
+      "transferencia_operativa": "Operational transfer",
+      "refuerzo_cliente": "Extra cover requested",
+      "otro": "Other"
+    },
+    "status": {
+      "covered": "Covered",
+      "at_risk": "At risk",
+      "uncovered": "Uncovered",
+      "idle": "No shift"
     }
   }
 }

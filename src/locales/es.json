@@ -1644,7 +1644,8 @@
       "horario": "Horario",
       "asistencia": "Asistencia",
       "desempeno": "Desempeño",
-      "documentos": "Documentos"
+      "documentos": "Documentos",
+      "supervisorsRoot": "Supervisores"
     },
     "new": {
       "title": "Nuevo Vigilante",
@@ -2103,7 +2104,29 @@
     "settings": "Configuración",
     "subscription": "Suscripción",
     "system_logs": "Registros del sistema",
-    "searchPlaceholder": "Buscar en C-Guard Pro…"
+    "searchPlaceholder": "Buscar en C-Guard Pro…",
+    "sidebar": {
+      "collapse": "Plegar el menú",
+      "expand": "Desplegar el menú"
+    },
+    "cmdk": {
+      "settingsGroup": "Configuración",
+      "mainGroup": "Menú principal"
+    },
+    "sos": {
+      "ackOk": "SOS reconocido y registrado en el historial",
+      "ackError": "No se pudo registrar el reconocimiento — intenta de nuevo"
+    },
+    "support": {
+      "helpCenter": "Centro de Soporte",
+      "helpCenterSub": "Lista de artículos",
+      "chat": "Soporte por Chat",
+      "chatSub": "Chat en vivo con soporte",
+      "videos": "Videos instructivos",
+      "videosSub": "Aprende paso a paso",
+      "ticket": "Enviar Ticket",
+      "ticketSub": "Tickets de soporte"
+    }
   },
   "incidents": {
     "actionsLabel": "Acciones",
@@ -2631,7 +2654,19 @@
     },
     "wizardSubtitle": "Configura el sitio, su ubicación, servicio y estaciones paso a paso.",
     "wizardSubtitleForClient": "Nueva sede para {{client}}: ubicación, servicio y estaciones paso a paso.",
-    "client": "Cliente"
+    "client": "Cliente",
+    "tabs": {
+      "overview": "Estadísticas",
+      "stations": "Estaciones",
+      "guards": "Vigilantes",
+      "tours": "Rondas",
+      "incidents": "Incidentes",
+      "inventory": "Inventario",
+      "kpis": "Indicadores",
+      "contacts": "Contactos",
+      "notes": "Notas",
+      "profile": "Perfil"
+    }
   },
   "profile": {
     "cancel": "Cancelar",
@@ -5180,7 +5215,13 @@
     },
     "solicitudes-clientes": "Solicitudes de clientes",
     "control-de-calidad": "Control de Calidad",
-    "seguridad-auditoria": "Registro de Seguridad"
+    "seguridad-auditoria": "Registro de Seguridad",
+    "brandTooltip": "Panel de control",
+    "accountSettings": "Ajustes de la cuenta",
+    "themeToLight": "Cambiar a modo claro",
+    "themeToDark": "Cambiar a modo oscuro",
+    "themeToggle": "Cambiar tema",
+    "goToDashboard": "Ir al panel de control"
   },
   "siteTour": {
     "newTour": "Nuevo Recorrido",
@@ -6812,7 +6853,8 @@
       "thisMonth": "Este mes",
       "lastMonth": "Último mes",
       "last2m": "Últimos 2 meses",
-      "last3m": "Últimos 3 meses"
+      "last3m": "Últimos 3 meses",
+      "placeholder": "Seleccionar rango"
     },
     "form": {
       "errorSummaryTitle": "Revisa los campos marcados"
@@ -7049,7 +7091,13 @@
     "schedule": {
       "freeDays": "Días libres",
       "upcoming": "Próximos turnos"
-    }
+    },
+    "nav": {
+      "home": "Inicio",
+      "schedule": "Horario",
+      "timeOff": "Permisos"
+    },
+    "roleLabel": "Vigilante"
   },
   "notes": {
     "deleteError": "No se pudieron eliminar las notas",
@@ -8266,6 +8314,39 @@
     },
     "popup": {
       "loadError": "No se pudo cargar el detalle"
+    }
+  },
+  "supervisors": {
+    "nav": {
+      "perfil": "Perfil",
+      "cobertura": "Cobertura",
+      "horario": "Horario",
+      "desempeno": "Desempeño",
+      "licencias": "Licencias",
+      "notas": "Notas",
+      "dispositivo": "Dispositivo"
+    }
+  },
+  "coverage": {
+    "reason": {
+      "permiso_con_sueldo": "Permiso con sueldo",
+      "permiso_sin_sueldo": "Permiso sin sueldo",
+      "no_call_no_show": "No se presentó ni avisó",
+      "enfermedad": "Enfermedad",
+      "calamidad_domestica": "Calamidad doméstica",
+      "vacaciones": "Vacaciones",
+      "suspension": "Suspensión",
+      "abandono_puesto": "Abandono del puesto",
+      "transporte": "Problema de transporte",
+      "transferencia_operativa": "Traslado operativo",
+      "refuerzo_cliente": "Refuerzo solicitado",
+      "otro": "Otro"
+    },
+    "status": {
+      "covered": "Cubierto",
+      "at_risk": "En riesgo",
+      "uncovered": "Sin cubrir",
+      "idle": "Sin turno"
     }
   }
 }
