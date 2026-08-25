@@ -3,7 +3,6 @@ import { useState, useCallback, useMemo, useEffect } from "react";
 import { clientDisplayName } from '@/lib/clientName';
 import { invalidateEntity } from "@/lib/queryClient";
 import { useNavigate } from "react-router-dom";
-import MobileCardList from '@/components/responsive/MobileCardList';
 import GuardCardsGrid, { type GuardCardAction, type AsignacionVigilante } from './GuardCardsGrid';
 import GuardRatingLevel from './GuardRatingLevel';
 import guardRatingService from '@/lib/api/guardRatingService';
@@ -585,7 +584,7 @@ export default function SecurityGuardsPage() {
   return (
     <AppLayout>
       {/* Page Header */}
-      <div className="px-6 pt-5">
+      <div className="px-4 pt-5 sm:px-6">
         <Breadcrumb
           items={[
             { label: t('sidebar.panel', 'Panel de control'), path: "/dashboard" },
@@ -622,7 +621,7 @@ export default function SecurityGuardsPage() {
       )}
 
       {/* Indicadores */}
-      <div className="px-6 pb-2 pt-5">
+      <div className="px-4 pb-2 pt-5 sm:px-6">
         <Stagger className="grid grid-cols-2 gap-4 sm:grid-cols-4">
           <StatCard icon={<Users />} accent="info" label="Total" value={guards.length} />
           <StatCard icon={<ShieldCheck />} accent="ok" label="Activos" value={activeCount} />
@@ -631,7 +630,7 @@ export default function SecurityGuardsPage() {
         </Stagger>
       </div>
 
-      <div className="px-6 pb-6 pt-2">
+      <div className="px-4 pb-6 pt-2 sm:px-6">
         <section>
           {/* Pestañas de estado */}
           <div className="mb-4">
@@ -664,7 +663,7 @@ export default function SecurityGuardsPage() {
 
           {/* Barra de acciones y filtros */}
           <Toolbar className="mt-2 justify-between gap-3">
-            <div className="flex items-center gap-2">
+            <div className="order-2 flex w-full items-center gap-2 md:order-1 md:w-auto">
               <Select
                 value={bulkActionValue}
                 onValueChange={(v) => {
@@ -701,7 +700,7 @@ export default function SecurityGuardsPage() {
                 }}
                 disabled={bulkActionLoading}
               >
-                <SelectTrigger className="w-40" disabled={selectedGuards.length === 0}>
+                <SelectTrigger className="w-full md:w-40" disabled={selectedGuards.length === 0}>
                   <SelectValue placeholder={t('actions.action', 'Acción')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -719,12 +718,15 @@ export default function SecurityGuardsPage() {
               </Select>
             </div>
 
-            <div className="flex items-center gap-2">
-              <div className="relative">
+            {/* En móvil la búsqueda se lleva su propia línea entera y los botones
+                comparten la siguiente: apretados en una sola fila, el campo se
+                quedaba en un muñón donde no cabía ni un apellido. */}
+            <div className="order-1 flex w-full flex-wrap items-center gap-2 md:order-2 md:w-auto md:flex-nowrap">
+              <div className="relative w-full md:w-auto">
                 <Search className="absolute left-3 top-2.5 h-4 w-4" style={{ color: 'var(--ink-faint)' }} />
                 <Input
                   placeholder={t('guards.list.searchPlaceholder', 'Buscar vigilante')}
-                  className="pl-9 w-64"
+                  className="w-full pl-9 md:w-64"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -733,12 +735,14 @@ export default function SecurityGuardsPage() {
               {/* Filtros */}
               <Sheet open={openFilter} onOpenChange={setOpenFilter}>
                 <SheetTrigger asChild>
-                  <Button variant="outline">
+                  <Button variant="outline" className="flex-1 justify-center md:flex-none">
                     <Filter className="mr-2 h-4 w-4" />
                     {t('guards.list.filters', 'Filtros')}
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-[400px] sm:w-[460px]">
+                {/* Ancho fijo de 400px en una pantalla de 375: la hoja se salía.
+                    `w-full` en móvil, medida fija a partir de sm. */}
+                <SheetContent side="right" className="w-full sm:w-[460px]">
                   <SheetHeader>
                     <SheetTitle>{t('guards.list.filters', 'Filtros')}</SheetTitle>
                   </SheetHeader>
@@ -843,24 +847,39 @@ export default function SecurityGuardsPage() {
           {/* Tabla */}
           <GlassPanel className="mt-4 overflow-hidden p-0">
             <div className="mt-2">
-              <div className="md:block hidden">
-                {loading ? (
-                  <div className="p-4">
-                    <SkeletonCards count={4} />
+              {/*
+                MÓVIL = TARJETAS, SIEMPRE.
+                El conmutador Tarjetas ⇄ Lista sólo existe en escritorio, así
+                que en un teléfono la tabla no se puede ni elegir ni leer. La
+                rejilla de tarjetas YA es de una columna en móvil y trae el
+                menú de acciones, el estado, la asignación y la reseña — que es
+                justo lo que la lista móvil anterior no tenía.
+
+                Por eso no hay dos ramas duplicadas: las tarjetas se pintan
+                siempre y sólo se esconden a partir de `md` cuando el usuario
+                pidió Lista; la tabla nunca se pinta por debajo de `md`.
+              */}
+              {loading ? (
+                <div className="p-4">
+                  <SkeletonCards count={4} />
+                </div>
+              ) : (
+                <>
+                  <div className={viewMode === 'cards' ? undefined : 'md:hidden'}>
+                    <GuardCardsGrid
+                      guards={paginatedGuards}
+                      stationByUserId={stationByUserId}
+                      ratings={ratings}
+                      onOpenReviews={(realId) => navigate(`/guards/${realId}/reviews`)}
+                      loading={false}
+                      selectedIds={selectedGuards}
+                      onSelect={handleSelectGuard}
+                      onOpen={(g) => { const realId = g.raw?.id || g.id; navigate(`/guards/${realId}/resumen`); }}
+                      actions={guardCardActions}
+                    />
                   </div>
-                ) : viewMode === "cards" ? (
-                  <GuardCardsGrid
-                    guards={paginatedGuards}
-                    stationByUserId={stationByUserId}
-                    ratings={ratings}
-                    onOpenReviews={(realId) => navigate(`/guards/${realId}/reviews`)}
-                    loading={false}
-                    selectedIds={selectedGuards}
-                    onSelect={handleSelectGuard}
-                    onOpen={(g) => { const realId = g.raw?.id || g.id; navigate(`/guards/${realId}/resumen`); }}
-                    actions={guardCardActions}
-                  />
-                ) : (
+                  {viewMode !== 'cards' && (
+              <div className="hidden md:block">
                 <table className="min-w-full text-sm text-left border-collapse">
               <thead style={{ background: 'var(--glass-sunken)' }}>
                 <tr className="border-b">
@@ -1195,38 +1214,15 @@ export default function SecurityGuardsPage() {
                 )}
               </tbody>
                 </table>
-                )}
               </div>
-
-              <div className="md:hidden">
-                <MobileCardList
-                  items={paginatedGuards || []}
-                  loading={false}
-                  emptyMessage={t('guards.list.noData', { defaultValue: 'No guards found' }) as string}
-                  renderCard={(g: any) => (
-                    /* `glass-flat`: la lista móvil se repite, el desenfoque por fila mata el desplazamiento. */
-                    <div className="glass-flat p-4">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold"
-                          style={{ background: 'var(--brand-wash)', color: 'var(--brand-text)' }}
-                        >
-                          {(g.name?.trim()?.[0] ?? 'G').toUpperCase()}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="truncate text-sm font-semibold">{g.name}</div>
-                          <div className="truncate text-xs" style={{ color: 'var(--ink-soft)' }}>{g.email}</div>
-                        </div>
-                        {renderStatus(g.status)}
-                      </div>
-                    </div>
                   )}
-                />
-              </div>
+                </>
+              )}
             </div>
 
-            {/* Paginación (única) */}
-            <div className="flex items-center justify-between px-4 py-3 text-sm" style={{ color: 'var(--ink-soft)', background: 'var(--glass-sunken)' }}>
+            {/* Paginación (única). En móvil se parte en dos líneas: los cinco
+                controles en una sola fila de 375px se pisaban unos a otros. */}
+            <div className="flex flex-col gap-3 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between" style={{ color: 'var(--ink-soft)', background: 'var(--glass-sunken)' }}>
               <div className="flex items-center gap-2">
                 <span>{t('guards.list.pagination.itemsPerPage', 'Elementos por página')}</span>
                 <Select
@@ -1244,7 +1240,7 @@ export default function SecurityGuardsPage() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-between gap-2 sm:justify-end">
                 <div>
                   {filteredGuards.length > 0 ? (
                     t('guards.list.pagination.range', '{{start}} - {{end}} de {{total}}', {
