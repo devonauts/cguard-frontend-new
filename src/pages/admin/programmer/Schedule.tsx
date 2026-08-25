@@ -385,6 +385,7 @@ export default function Schedule() {
    * asignación existente a otro puesto) SIEMPRE es rotación: ahí no hay elección.
    */
   const [assignMode, setAssignMode] = useState<'single' | 'rotation'>('single');
+  const [sfPickQuery, setSfPickQuery] = useState('');
   const [assignStartTime, setAssignStartTime] = useState('07:00');
   const [assignEndTime, setAssignEndTime] = useState('19:00');
   const [assignTarget, setAssignTarget] = useState<{ stationId: string; positionId: string } | null>(null);
@@ -778,6 +779,47 @@ export default function Schedule() {
     [overrideByGuardDate],
   );
 
+  /**
+   * Quién puede cubrir un día — TODOS los vigilantes, con su estado en esa fecha.
+   *
+   * Antes esta lista eran sólo los sacafrancos, y por eso la pantalla se
+   * quedaba corta: hay sacafrancos fijos, sí, pero la mayoría de los huecos los
+   * tapa quien ese día libra en otro puesto. Si la lista no los enseña, no
+   * existen. Un sacafranco puede cubrir CUALQUIER estación (su asignación no lo
+   * ata a una), así que aquí no se filtra por estación: se filtra por si puede
+   * ese día.
+   *
+   * El estado sale de lo que YA sabe la rejilla: un turno real ese día = ocupado;
+   * una novedad = ausente (y con qué); una rotación que ese día trabaja = de
+   * turno en su puesto; el resto, libre.
+   */
+  const candidatosParaCubrir = useCallback((dateStr: string) => {
+    const dia = new Date(dateStr + 'T00:00:00');
+    const AUSENCIAS = ['V', 'PM', 'F', 'L'];
+    return guardsPool.map(g => {
+      const turno = shiftByGuardDate.get(`${g.id}|${dateStr}`);
+      const nov = getOverride(g.id, dateStr);
+      const propia = assignments.find(a => a.guardId === g.id && !a.isRelief);
+      const esSf = reliefGuardIds.has(g.id);
+
+      let estado: 'libre' | 'ocupado' | 'deTurno' | 'ausente' = 'libre';
+      let detalle = '';
+      if (nov && AUSENCIAS.includes(nov.type)) {
+        estado = 'ausente'; detalle = nov.type;
+      } else if (turno) {
+        estado = 'ocupado'; detalle = stationsById.get(turno.stationId)?.stationName || 'otro puesto';
+      } else if (propia && isWorkDay(propia, dia) !== 'rest') {
+        estado = 'deTurno'; detalle = stationsById.get(propia.stationId)?.stationName || 'su puesto';
+      }
+      return { id: g.id, nombre: g.label, esSf, estado, detalle };
+    }).sort((a, b) => {
+      // Libres primero; entre libres, los sacafrancos delante (es su oficio).
+      const peso = (r: typeof a) => (r.estado === 'libre' ? (r.esSf ? 0 : 1) : r.estado === 'deTurno' ? 2 : r.estado === 'ocupado' ? 3 : 4);
+      const d = peso(a) - peso(b);
+      return d !== 0 ? d : a.nombre.localeCompare(b.nombre);
+    });
+  }, [guardsPool, shiftByGuardDate, getOverride, assignments, reliefGuardIds, stationsById, isWorkDay]);
+
   // ─── Spreadsheet selection model ─────────────────────────────────────────
   // Rows (in visual order) that can hold a selection: every puesto row.
 
@@ -1053,10 +1095,18 @@ export default function Schedule() {
       const guardName = nombreDeVigilante(a.guard, 'Vigilante');
       // On a rest (L) day the puesto is uncovered — offer to assign a sacafranco
       // to cover it (opens the picker modal). Skip when it's already covered.
+      // ── QUIÉN CUBRE ESTE DÍA ──────────────────────────────────────────
+      // El día que el fijo libra («L») es el hueco de verdad, y es donde más se
+      // usa el clic derecho. Antes esto sólo salía si NADIE lo cubría aún y
+      // sólo ofrecía sacafrancos; ahora sale siempre en un día de descanso —
+      // añadir un segundo relevo es legítimo— y el selector enseña a todos.
       const resting = isWorkDay(a, new Date(dateStr + 'T00:00:00')) === 'rest';
-      const alreadyCovered = (sfStationCoverage.get(`${station.id}-${dateStr}`) || []).length > 0;
-      if (resting && !alreadyCovered) {
-        items.push({ label: 'Asignar sacafranco…', onClick: () => setSfPick({ station, pos, dateStr, assignment: a, guardName }) });
+      const yaCubierto = (sfStationCoverage.get(`${station.id}-${dateStr}`) || []).length > 0;
+      if (resting) {
+        items.push({
+          label: yaCubierto ? 'Añadir otro relevo este día…' : 'Cubrir este día…',
+          onClick: () => { setSfPickQuery(''); setSfPick({ station, pos, dateStr, assignment: a, guardName }); },
+        });
         items.push({ label: '—' });
       }
       // Trasladar works with or without a generated shift row: with one we move
@@ -1083,8 +1133,13 @@ export default function Schedule() {
       // el menú era un callejón sin salida: el hueco estaba ahí y no había
       // forma de taparlo desde la casilla. Esto vale para cualquier vigilante
       // y para cualquier día — es un turno suelto, no una rotación.
-      items.push({ label: '—' });
-      items.push({ label: 'Cubrir este día con otro vigilante…', onClick: () => openAssignForm(station.id, pos.id, dateStr) });
+      // En un día TRABAJADO el selector de arriba no aplica (`placeSfCoverage`
+      // se niega a doblar un día que el fijo trabaja, y hace bien). Para el caso
+      // raro de reforzar un puesto, queda el turno suelto por el diálogo.
+      if (!resting) {
+        items.push({ label: '—' });
+        items.push({ label: 'Añadir un turno suelto aquí…', onClick: () => openAssignForm(station.id, pos.id, dateStr) });
+      }
     } else {
       items.push({ label: 'Cubrir este día con un vigilante…', onClick: () => openAssignForm(station.id, pos.id, dateStr) });
     }
@@ -1118,7 +1173,10 @@ export default function Schedule() {
       const ov = getOverride(sfGuard.guardId, dateStr);
       if (ov) items.push({ label: `Quitar novedad (${ov.type})`, danger: true, onClick: () => void removeOverride(ov.id) });
     } else {
-      items.push({ label: 'Asignar sacafranco…', onClick: () => openAssignForm(pos.stationId, pos.id, dateStr) });
+      // La posición de sacafranco admite las dos cosas: tapar ese día (turno
+      // suelto) o dejar a alguien fijo en la posición (rotación). El diálogo
+      // pregunta cuál; el nombre ya no promete sólo una.
+      items.push({ label: 'Asignar a esta posición…', onClick: () => openAssignForm(pos.stationId, pos.id, dateStr) });
     }
     setCtxMenu({ x: e.clientX, y: e.clientY, items });
   };
@@ -2858,65 +2916,88 @@ export default function Schedule() {
       {sfPick && (() => {
         const { station, pos, dateStr } = sfPick;
         const fecha = new Date(dateStr + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
-        const rows = sacafrancoData.map(sf => {
-          const gid = sf.assignments[0]?.guardId;
-          const av = sf.availability.find(a => fmtDate(a.date) === dateStr);
-          const name = sf.guard
-            ? nombreDeVigilante(sf.guard)
-            : (guardsPool.find(g => g.id === gid)?.label || 'Sacafranco');
-          return { gid, name: name || 'Sacafranco', busy: av?.status === 'covering', where: av?.stationName };
-        }).filter(r => !!r.gid);
-        const free = rows.filter(r => !r.busy);
-        const busy = rows.filter(r => r.busy);
+        const q = sfPickQuery.trim().toLowerCase();
+        const todos = candidatosParaCubrir(dateStr);
+        const filas = q ? todos.filter(r => r.nombre.toLowerCase().includes(q)) : todos;
+        const libres = filas.filter(r => r.estado === 'libre');
+        const resto = filas.filter(r => r.estado !== 'libre');
+
+        const chipEstado = (r: typeof filas[number]) => {
+          if (r.estado === 'libre') return <span className="text-[10px] font-semibold" style={{ color: 'var(--ok-text)' }}>Libre</span>;
+          if (r.estado === 'deTurno') return <span className="text-[10px]" style={{ color: 'var(--warn-text)' }}>De turno · {r.detalle}</span>;
+          if (r.estado === 'ocupado') return <span className="text-[10px]" style={{ color: 'var(--ink-faint)' }}>Cubre {r.detalle}</span>;
+          return <span className="text-[10px]" style={{ color: 'var(--bad-text)' }}>Ausente · {r.detalle}</span>;
+        };
+
+        const elegir = (id: string) => { setSfPick(null); setSfPickQuery(''); void placeSfCoverage(station, pos, dateStr, id); };
+
+        const fila = (r: typeof filas[number]) => (
+          <button
+            key={r.id}
+            onClick={() => elegir(r.id)}
+            className="glass-flat glass-hover cg-focus flex w-full items-center gap-2 px-3 py-2.5 text-left transition-all"
+            style={r.estado === 'libre' ? undefined : { opacity: 0.72 }}
+          >
+            <span
+              className="grid h-7 w-7 shrink-0 place-items-center rounded-full text-xs font-bold"
+              style={r.estado === 'libre' ? tonePill('ok', 16) : { background: 'var(--glass-raised)', color: 'var(--ink-soft)' }}
+            >
+              {(r.nombre[0] || '?').toUpperCase()}
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-sm font-medium">{r.nombre}</span>
+              {r.esSf && (
+                <span className="cg-eyebrow" style={{ color: 'var(--ok-text)' }}>Sacafranco</span>
+              )}
+            </span>
+            {chipEstado(r)}
+          </button>
+        );
+
         return (
-          <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'oklch(0 0 0 / 0.55)' }} onClick={() => setSfPick(null)}>
+          <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'oklch(0 0 0 / 0.55)' }} onClick={() => { setSfPick(null); setSfPickQuery(''); }}>
             <div className="glass-raised mx-4 w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--hairline)' }}>
-                <div>
-                  <h4 className="text-sm font-semibold">Asignar sacafranco</h4>
-                  <p className="mt-0.5 text-[11px]" style={{ color: 'var(--ink-soft)' }}>{stationLabel(station)} · {fecha}</p>
+                <div className="min-w-0">
+                  <h4 className="text-sm font-semibold">¿Quién cubre este día?</h4>
+                  <p className="mt-0.5 truncate text-[11px]" style={{ color: 'var(--ink-soft)' }}>{stationLabel(station)} · {fecha}</p>
                 </div>
-                <button onClick={() => setSfPick(null)} className="cg-btn-ghost cg-focus rounded-lg p-1.5"><X size={15} /></button>
+                <button onClick={() => { setSfPick(null); setSfPickQuery(''); }} className="cg-btn-ghost cg-focus rounded-lg p-1.5"><X size={15} /></button>
               </div>
-              <div className="p-4 space-y-1.5 max-h-[50vh] overflow-y-auto">
-                {rows.length === 0 && (
-                  <p className="py-4 text-center text-[12px]" style={{ color: 'var(--ink-soft)' }}>{t("ui.Schedule.noHaySacafrancosConfiguradosCrea", "No hay sacafrancos configurados. Crea primero una posición de sacafranco en el puesto.")}</p>
+
+              <div className="px-4 pt-3">
+                <input
+                  value={sfPickQuery}
+                  onChange={e => setSfPickQuery(e.target.value)}
+                  placeholder="Buscar vigilante…"
+                  autoFocus
+                  className="cg-input cg-focus w-full px-3 py-2 text-sm"
+                />
+              </div>
+
+              <div className="max-h-[46vh] space-y-1.5 overflow-y-auto p-4">
+                {filas.length === 0 && (
+                  <p className="py-4 text-center text-[12px]" style={{ color: 'var(--ink-soft)' }}>
+                    {q ? 'Nadie coincide con la búsqueda.' : 'No hay vigilantes para mostrar.'}
+                  </p>
                 )}
-                {free.map(r => (
-                  <button
-                    key={r.gid}
-                    onClick={() => { setSfPick(null); void placeSfCoverage(station, pos, dateStr, r.gid!); }}
-                    className="glass-flat glass-hover cg-focus flex w-full items-center gap-2 px-3 py-2.5 text-left transition-all"
-                  >
-                    <span className="grid h-7 w-7 place-items-center rounded-full text-xs font-bold" style={tonePill('ok', 16)}>{(r.name[0] || '?').toUpperCase()}</span>
-                    <span className="flex-1 text-sm font-medium">{r.name}</span>
-                    <span className="text-[10px] font-semibold" style={{ color: 'var(--ok-text)' }}>Libre</span>
-                  </button>
-                ))}
-                {busy.map(r => (
-                  <div key={r.gid} className="glass-sunken flex w-full items-center gap-2 px-3 py-2.5 opacity-60">
-                    <span className="grid h-7 w-7 place-items-center rounded-full text-xs font-bold" style={{ background: 'var(--glass-raised)', color: 'var(--ink-soft)' }}>{(r.name[0] || '?').toUpperCase()}</span>
-                    <span className="flex-1 text-sm font-medium" style={{ color: 'var(--ink-soft)' }}>{r.name}</span>
-                    <span className="text-[10px]" style={{ color: 'var(--ink-faint)' }}>Cubre {r.where || 'otro puesto'}</span>
-                  </div>
-                ))}
+                {libres.map(fila)}
+                {resto.length > 0 && libres.length > 0 && (
+                  <p className="cg-eyebrow px-1 pt-2">Ya tienen algo ese día</p>
+                )}
+                {/* Se enseñan, y se pueden elegir: a veces hay que mover a
+                    alguien de puesto y quien decide eso es quien mira, no la
+                    pantalla. El turno nuevo reemplaza al que se solape. */}
+                {resto.map(fila)}
               </div>
+
               <div className="flex items-center justify-between px-5 py-3" style={{ borderTop: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => { const p = sfPick; setSfPick(null); setOverrideTarget({ guardId: p.assignment.guardId, guardName: p.guardName, date: p.dateStr, assignmentId: p.assignment.id }); }}
-                    className="cg-focus text-[11px] font-semibold hover:underline"
-                    style={{ color: 'var(--ink-soft)' }}
-                  >Marcar novedad…</button>
-                  {/* Sin sacafrancos —o con todos ocupados— esta pantalla era un
-                      callejón sin salida. El hueco se puede tapar con cualquiera. */}
-                  <button
-                    onClick={() => { const p = sfPick; setSfPick(null); openAssignForm(p.station.id, p.pos.id, p.dateStr); }}
-                    className="cg-focus text-[11px] font-semibold hover:underline"
-                    style={{ color: 'var(--brand-text)' }}
-                  >Cubrir con otro vigilante…</button>
-                </div>
-                <button onClick={() => setSfPick(null)} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all">Cerrar</button>
+                <button
+                  onClick={() => { const p = sfPick; setSfPick(null); setSfPickQuery(''); setOverrideTarget({ guardId: p.assignment.guardId, guardName: p.guardName, date: p.dateStr, assignmentId: p.assignment.id }); }}
+                  className="cg-focus text-[11px] font-semibold hover:underline"
+                  style={{ color: 'var(--ink-soft)' }}
+                >Marcar novedad…</button>
+                <button onClick={() => { setSfPick(null); setSfPickQuery(''); }} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all">Cerrar</button>
               </div>
             </div>
           </div>
