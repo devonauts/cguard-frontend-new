@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { MapPin, Maximize2 } from 'lucide-react';
-import { staticMapUrl, type StaticMapOptions } from '@/utils/staticMapUrl';
+import { staticMapUrl, staticMapUrlMulti, type StaticMapOptions, type StaticMapPoint } from '@/utils/staticMapUrl';
 
 /**
  * Miniatura de mapa que sólo se vuelve interactiva cuando alguien la pide.
@@ -28,8 +28,12 @@ import { staticMapUrl, type StaticMapOptions } from '@/utils/staticMapUrl';
  *    siempre la red de seguridad: esto no puede dejar una pantalla sin mapa.
  */
 export interface StaticMapImageProps extends Omit<StaticMapOptions, 'height' | 'width'> {
-  lat: number | string | null | undefined;
-  lng: number | string | null | undefined;
+  lat?: number | string | null | undefined;
+  lng?: number | string | null | undefined;
+  /** Varias chinchetas con encuadre automático. Si viene con al menos un punto
+   *  válido manda sobre `lat`/`lng`: es el caso de "todas las sedes de este
+   *  cliente", donde no hay un centro único que valga. */
+  points?: StaticMapPoint[];
   /** El mapa interactivo real. Se monta al pulsar, o si la imagen no sirve. */
   children: ReactNode;
   /** Alto CSS del hueco. Debe coincidir con el del mapa interactivo. */
@@ -44,6 +48,7 @@ export interface StaticMapImageProps extends Omit<StaticMapOptions, 'height' | '
 export default function StaticMapImage({
   lat,
   lng,
+  points,
   children,
   height = '256px',
   className = '',
@@ -64,7 +69,9 @@ export default function StaticMapImage({
   const alturaPx = /^\d+(\.\d+)?px$|^\d+$/.test(height.trim())
     ? Math.max(120, parseInt(height, 10))
     : 320;
-  const url = staticMapUrl(lat, lng, { height: alturaPx, ...mapOptions });
+  const url = points && points.length
+    ? staticMapUrlMulti(points, { height: alturaPx, ...mapOptions })
+    : staticMapUrl(lat, lng, { height: alturaPx, ...mapOptions });
 
   useEffect(() => {
     const nodo = hostRef.current;

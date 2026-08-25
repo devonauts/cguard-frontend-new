@@ -257,6 +257,7 @@ export default function GoogleMapEmbed({
   markerPopup,
   onMarkerClick,
   focusMarker,
+  fitMarkers = false,
   hud,
 }: {
   lat?: number;
@@ -291,6 +292,10 @@ export default function GoogleMapEmbed({
   /** Enfoca un marcador desde fuera (una lista lateral, un teclado): vuela hasta
    *  él, lo señala con una onda y abre su globo. `nonce` es lo que dispara. */
   focusMarker?: { id: string; nonce: number } | null;
+  /** Encuadra el mapa para que quepan TODOS los marcadores de la lista.
+   *  Sin esto el mapa se centra en el primero con el zoom pedido, así que una
+   *  lista de sedes repartidas por la ciudad deja fuera a casi todas. */
+  fitMarkers?: boolean;
   /** Panel de cristal libre sobre el mapa (lo coloca quien lo pasa). */
   hud?: ReactNode;
 }) {
@@ -1014,6 +1019,39 @@ export default function GoogleMapEmbed({
     // yet) and never re-applied, leaving the map pin-less.
   }, [markers, ready, pal, abrirGloboMarcador]);
 
+  // Encuadre de TODOS los marcadores.
+  //
+  // El centrado normal usa el primer marcador y el zoom pedido — bien para una
+  // sola chincheta, inútil para una lista repartida por la ciudad. Aquí se
+  // calcula el rectángulo que las contiene y se deja que el mapa elija el zoom.
+  // Con un único punto no hay rectángulo que valga (`fitBounds` sobre un punto
+  // se va al zoom máximo), así que se centra y punto.
+  useEffect(() => {
+    if (!fitMarkers || !ready) return;
+    const google = (window as any).google;
+    const mapa = mapInstance.current;
+    if (!google?.maps || !mapa) return;
+
+    const puntos = (markers || []).filter(
+      (m) => m && Number.isFinite(m.lat) && Number.isFinite(m.lng),
+    );
+    if (puntos.length === 0) return;
+
+    if (puntos.length === 1) {
+      try {
+        mapa.setCenter({ lat: puntos[0].lat, lng: puntos[0].lng });
+        mapa.setZoom(zoom);
+      } catch { /* mapa aún montándose */ }
+      return;
+    }
+
+    try {
+      const limites = new google.maps.LatLngBounds();
+      puntos.forEach((m) => limites.extend({ lat: m.lat, lng: m.lng }));
+      mapa.fitBounds(limites, 48);
+    } catch { /* mapa aún montándose */ }
+  }, [fitMarkers, markers, ready, zoom]);
+
   // Latido de lo que está VIVO. Se mantiene aparte del efecto de marcadores
   // porque depende del motor, que llega un fotograma después que el mapa.
   useEffect(() => {
@@ -1088,7 +1126,13 @@ export default function GoogleMapEmbed({
     // mapa parpadeaba en otro sitio y había que reconstruir mentalmente dónde
     // estabas. La cámara del motor conserva ese hilo — y si el destino queda
     // lejos, aleja, desplaza y acerca en vez de cruzar el mundo de golpe.
-    volar(center, zoom);
+    //
+    // Con `fitMarkers` el encuadre lo decide el rectángulo de la lista: volar a
+    // un centro aquí lo desharía en el mismo fotograma (este efecto se declara
+    // después, así que gana). Sin coordenadas propias ese centro sería además
+    // la ubicación de la empresa, que no es donde están las chinchetas.
+    const encuadrandoLista = fitMarkers && Array.isArray(markers) && markers.length > 0;
+    if (!encuadrandoLista) volar(center, zoom);
     map.setMapTypeId(mapType === "satellite" ? "satellite" : "roadmap");
 
     if (markerRef.current) {
@@ -1144,6 +1188,8 @@ export default function GoogleMapEmbed({
     geofenceRadius,
     draggable,
     address,
+    fitMarkers,
+    markers,
   ]);
 
   // Allow forced recenter when `centerRequest` changes (useful for manual centering from parent)

@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams, useSearchParams } from "react-router-dom";
 import PostSiteWizard from "./PostSiteWizard";
 
-type Category = { id: string; name: string };
 type Client = { id: string; name: string; lastName?: string };
 import { clientService } from "@/lib/api/clientService";
 import { MapPin, Pencil } from "lucide-react";
@@ -13,11 +12,21 @@ import { PageContainer, PageHeader, SkeletonCards } from "@/components/kit";
 
 export default function NewOrEditPostSitePage() {
     const { id } = useParams<{ id: string }>();
+    const [searchParams] = useSearchParams();
+    const location = useLocation();
     const [clients, setClients] = useState<Client[]>([]);
     const [loading, setLoading] = useState(true);
     const { t } = useTranslation();
 
+    // Se entró desde la ficha de un cliente (/post-sites/new?clientId=…): la
+    // sede es de ese cliente, así que no hay nada que preguntar. El nombre
+    // viaja en el state de navegación para pintarlo sin esperar a la red.
+    const presetClientId = id ? undefined : (searchParams.get('clientId') || undefined);
+    const presetClientName = (location.state as { clientName?: string } | null)?.clientName;
+
     useEffect(() => {
+        // Con el cliente ya fijado la lista completa no se usa: no se pide.
+        if (presetClientId) { setLoading(false); return; }
         (async () => {
             try {
                 const data = await clientService.getClients({});
@@ -32,7 +41,7 @@ export default function NewOrEditPostSitePage() {
                 setLoading(false);
             }
         })();
-    }, []);
+    }, [presetClientId]);
 
     return (
         <AppLayout>
@@ -47,12 +56,22 @@ export default function NewOrEditPostSitePage() {
                     <PageHeader
                         icon={id ? <Pencil /> : <MapPin />}
                         title={id ? t('postSites.editPostSite', 'Editar Puesto de seguridad') : t('postSites.newPostSite', 'Nuevo Puesto de seguridad')}
-                        subtitle={t('postSites.wizardSubtitle', 'Configura el sitio, su ubicación, servicio y estaciones paso a paso.')}
+                        subtitle={
+                            presetClientName
+                                ? t('postSites.wizardSubtitleForClient', 'Nueva sede para {{client}}: ubicación, servicio y estaciones paso a paso.', { client: presetClientName })
+                                : t('postSites.wizardSubtitle', 'Configura el sitio, su ubicación, servicio y estaciones paso a paso.')
+                        }
                     />
                     {loading ? (
                         <SkeletonCards count={4} />
                     ) : (
-                        <PostSiteWizard clients={clients} mode={id ? 'edit' : 'create'} id={id} />
+                        <PostSiteWizard
+                            clients={clients}
+                            mode={id ? 'edit' : 'create'}
+                            id={id}
+                            presetClientId={presetClientId}
+                            presetClientName={presetClientName}
+                        />
                     )}
                 </PageContainer>
             </section>

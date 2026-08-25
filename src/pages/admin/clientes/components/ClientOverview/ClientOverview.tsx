@@ -4,7 +4,7 @@ import type { Client } from '@/types/client';
 import useScrollToTopOnMount from '@/hooks/useScrollToTopOnMount';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
-import IncidentMap from '@/components/IncidentMap/IncidentMap';
+import SitesMap from '@/components/maps/SitesMap';
 import { clientService } from '@/lib/api/clientService';
 import { Section, EmptyState, StatusBadge, IconTile } from '@/components/kit';
 import { TabTable, THead, Th, Tr } from '../_shared/tab-kit';
@@ -44,7 +44,7 @@ type Overview = {
   tasksLast7Days: number; incidentsLast7Days: number; hoursLoggedSeconds: number;
   incidentsBySite?: Record<string, number>;
 };
-type Site = { id: string; name: string; address?: string; city?: string; active?: boolean; stations: StationLite[] };
+type Site = { id: string; name: string; address?: string; city?: string; active?: boolean; latitud?: number | string | null; longitud?: number | string | null; stations: StationLite[] };
 
 const fmtTime = (d: string | number | Date) => {
   const dt = new Date(d);
@@ -116,6 +116,30 @@ export default function ClientOverview({ client }: { client: Client & { lat?: nu
     };
   });
 
+  // Las sedes que el mapa puede pintar. Se arma sobre `sites` (que trae las
+  // coordenadas) y se le pegan los recuentos ya calculados arriba, para que la
+  // chincheta y la fila de la tabla digan exactamente lo mismo.
+  const sedesEnMapa = sites
+    .filter((s) => s.id !== '__loose__')
+    .map((s) => {
+      const fila = siteRows.find((r) => r.id === s.id);
+      return {
+        id: String(s.id),
+        name: s.name,
+        address: s.address ?? null,
+        city: s.city ?? null,
+        lat: s.latitud ?? null,
+        lng: s.longitud ?? null,
+        stations: fila?.stations ?? 0,
+        guards: fila?.guards ?? 0,
+      };
+    });
+  // Cuántas de ellas tienen de verdad coordenadas: es el número honesto para la
+  // cabecera del mapa. Contar todas las sedes prometería chinchetas que no hay.
+  const sedesUbicadas = sedesEnMapa.filter(
+    (s) => Number.isFinite(Number(s.lat)) && Number.isFinite(Number(s.lng)) && Number(s.lat) !== 0 && Number(s.lng) !== 0,
+  ).length;
+
   // Real, derived alerts (no fabricated numbers).
   const alerts: { icon: ReactNode; label: string; sub: string; tone: string }[] = [];
   const uncovered = siteRows.filter((s) => s.estado === 'sin-operacion' && s.id !== '__loose__');
@@ -129,19 +153,30 @@ export default function ClientOverview({ client }: { client: Client & { lat?: nu
       {/* Two columns: operations (map + sites table) · contact + alerts + activity */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
-          <Section title={t('clients.overview.opsMap', 'Mapa de operaciones')} icon={<MapPin />}>
-            {hasCoords ? (
-              <div className="h-[300px] overflow-hidden rounded-xl border" style={{ borderColor: 'var(--hairline)' }}>
-                <IncidentMap lat={lat} lng={lng} label={clientDisplayName(client, 'Client location')} />
-              </div>
-            ) : (
-              <div
-                className="flex h-[300px] flex-col items-center justify-center gap-1 rounded-xl border border-dashed text-sm"
-                style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)', color: 'var(--ink-soft)' }}
-              >
-                <MapPin className="h-5 w-5 opacity-50" /> {t('clients.overview.noLocation', 'Sin ubicación registrada')}
-              </div>
-            )}
+          <Section
+            title={t('clients.overview.opsMap', 'Mapa de operaciones')}
+            icon={<MapPin />}
+            action={
+              sedesUbicadas > 0 ? (
+                <span className="text-xs" style={{ color: 'var(--ink-soft)' }}>
+                  {sedesUbicadas === 1
+                    ? t('clients.overview.mapSedesOne', '1 sede ubicada')
+                    : t('clients.overview.mapSedes', '{{count}} sedes ubicadas', { count: sedesUbicadas })}
+                </span>
+              ) : undefined
+            }
+          >
+            {/* `key` por cliente: al pasar de un cliente a otro el mapa se monta
+                de cero. Sin esto se reaprovechaba la instancia y quedaba la
+                chincheta del cliente anterior mientras llegaban los datos. */}
+            <SitesMap
+              key={client?.id}
+              sedes={sedesEnMapa}
+              clienteFallback={hasCoords ? { lat, lng, label: clientDisplayName(client, 'Client location') } : null}
+              height="300px"
+              onSedeClick={(sedeId) => navigate(`/post-sites/${sedeId}/overview`)}
+              textoVacio={t('clients.overview.noLocation', 'Sin ubicación registrada') as string}
+            />
           </Section>
 
           <Section

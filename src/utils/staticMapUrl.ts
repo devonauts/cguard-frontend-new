@@ -137,4 +137,68 @@ export function staticMapUrl(
   return url;
 }
 
+/** Un punto de la versión de varias chinchetas. */
+export interface StaticMapPoint {
+  lat: unknown;
+  lng: unknown;
+}
+
+/**
+ * La misma miniatura, pero con VARIAS chinchetas y encuadre automático.
+ *
+ * La diferencia real está en lo que NO se manda: sin `center` ni `zoom`, la
+ * Maps Static API encuadra sola el rectángulo que contiene a todos los
+ * marcadores. Es la única forma de que un cliente con sedes repartidas por la
+ * ciudad se vea entero en una imagen — fijar el centro en la primera deja al
+ * resto fuera del encuadre.
+ *
+ * Con un solo punto sí se fija centro y zoom (`staticMapUrl`): el encuadre
+ * automático de un único marcador se va al zoom máximo y no se entiende nada.
+ * Sigue siendo UNA petición y la URL sigue siendo determinista.
+ */
+export function staticMapUrlMulti(
+  points: StaticMapPoint[],
+  opts: Omit<StaticMapOptions, 'polygon' | 'radiusMeters'> = {},
+): string | null {
+  if (!KEY) return null;
+
+  const validos = (points || [])
+    .map((p) => ({ lat: Number(p?.lat), lng: Number(p?.lng) }))
+    .filter(
+      (p) =>
+        Number.isFinite(p.lat) &&
+        Number.isFinite(p.lng) &&
+        !(p.lat === 0 && p.lng === 0),
+    );
+
+  if (validos.length === 0) return null;
+  if (validos.length === 1) return staticMapUrl(validos[0].lat, validos[0].lng, opts);
+
+  const {
+    width = 640,
+    height = 320,
+    mapType = 'roadmap',
+    markerColor = '0xC8860A',
+  } = opts;
+
+  const w = Math.min(Math.round(width), MAX_LADO);
+  const h = Math.min(Math.round(height), MAX_LADO);
+
+  const params = new URLSearchParams({
+    size: `${w}x${h}`,
+    scale: '2',
+    maptype: mapType,
+    key: KEY,
+  });
+
+  const chinchetas = validos
+    .map((p) => `${redondear(p.lat)},${redondear(p.lng)}`)
+    .join('%7C');
+
+  return (
+    `https://maps.googleapis.com/maps/api/staticmap?${params.toString()}` +
+    `&markers=color:${markerColor}%7C${chinchetas}`
+  );
+}
+
 export default staticMapUrl;

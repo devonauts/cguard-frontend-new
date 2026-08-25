@@ -121,29 +121,41 @@ export default function ClientsDetails() {
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [activeTab]);
 
+  /**
+   * El cliente cargado sólo vale si es EL DE LA URL.
+   *
+   * Al pasar de un cliente a otro, `id` cambia en el mismo render en que
+   * `client` todavía guarda el anterior: el efecto que lo limpia corre DESPUÉS
+   * de pintar. Ese fotograma entregaba el cliente viejo a la cabecera y a la
+   * pestaña activa — de ahí el mapa marcando la dirección del cliente que
+   * acabas de dejar, y el botón "Crear sede" apuntando a él. Comprobarlo en el
+   * render, y no en un efecto, elimina la ventana entera.
+   */
+  const clienteVigente = client && String(client.id) === String(id) ? client : null;
+
   return (
     <AppLayout>
-      <ClientsLayout navKey="clients" title="clients.nav.title" client={client}>
+      <ClientsLayout navKey="clients" title="clients.nav.title" client={clienteVigente}>
         <div className="flex-1 flex flex-col">
-          {loading ? (
+          {loading || Boolean(client && !clienteVigente) ? (
             <SkeletonCards count={4} className="p-1" />
-          ) : client ? (
+          ) : clienteVigente ? (
             <>
-              {(activeTab === 'overview' || activeTab === 'profile') && <ClientOverview client={client} />}
-              {activeTab === 'contacts' && <ClientContacts client={client} />}
-              {activeTab === 'notes' && <ClientNotes client={client} />}
-              {activeTab === 'files' && <ClientDocuments client={client} />}
-              {activeTab === 'postSites' && <ClientPostSites client={client} />}
-              {activeTab === 'clientPortal' && <ClientPortal client={client} />}
-              {activeTab === 'userAccess' && <ClientUserAccess client={client} />}
-              {activeTab === 'emailReports' && <ClientReports client={client} />}
-              {activeTab === 'projects' && <ClientProjects client={client} />}
-              {activeTab === 'contrato' && <ClientContract client={client} />}
-              {activeTab === 'coverage' && <ClientCoverage client={client} />}
-              {activeTab === 'staff' && <ClientStaff client={client} />}
-              {activeTab === 'incidents' && <ClientIncidents client={client} />}
-              {activeTab === 'reports' && <ClientReports client={client} />}
-              {activeTab === 'documents' && <ClientDocuments client={client} />}
+              {(activeTab === 'overview' || activeTab === 'profile') && <ClientOverview client={clienteVigente} />}
+              {activeTab === 'contacts' && <ClientContacts client={clienteVigente} />}
+              {activeTab === 'notes' && <ClientNotes client={clienteVigente} />}
+              {activeTab === 'files' && <ClientDocuments client={clienteVigente} />}
+              {activeTab === 'postSites' && <ClientPostSites client={clienteVigente} />}
+              {activeTab === 'clientPortal' && <ClientPortal client={clienteVigente} />}
+              {activeTab === 'userAccess' && <ClientUserAccess client={clienteVigente} />}
+              {activeTab === 'emailReports' && <ClientReports client={clienteVigente} />}
+              {activeTab === 'projects' && <ClientProjects client={clienteVigente} />}
+              {activeTab === 'contrato' && <ClientContract client={clienteVigente} />}
+              {activeTab === 'coverage' && <ClientCoverage client={clienteVigente} />}
+              {activeTab === 'staff' && <ClientStaff client={clienteVigente} />}
+              {activeTab === 'incidents' && <ClientIncidents client={clienteVigente} />}
+              {activeTab === 'reports' && <ClientReports client={clienteVigente} />}
+              {activeTab === 'documents' && <ClientDocuments client={clienteVigente} />}
             </>
           ) : (
             <FadeIn>
