@@ -21,6 +21,23 @@ import {
 import { StatusBadge, SkeletonCards, EmptyState, SmartImage } from "@/components/kit";
 import GuardRatingLevel from "./GuardRatingLevel";
 
+/**
+ * Dónde está asignado un vigilante. Sale de `guardAssignment` —la fuente única
+ * de la asignación— y no de los turnos que esa asignación genera.
+ */
+export type AsignacionVigilante = {
+    stationId: string;
+    stationName: string;
+    /** El «nominativo» de la estación. Manda como etiqueta, igual que en la
+     *  vista de estaciones (ver `stations/StationCardsGrid`). */
+    nickname: string;
+    postSiteId?: string | null;
+    postSiteName?: string;
+    isTemporary?: boolean;
+    /** Cuántas estaciones MÁS tiene asignadas (relevos, coberturas). */
+    extra?: number;
+};
+
 export type GuardCardAction = {
     label: string;
     icon?: React.ReactNode;
@@ -71,7 +88,7 @@ export default function GuardCardsGrid({
     actions,
 }: {
     guards: GuardRow[];
-    stationByUserId: Record<string, string>;
+    stationByUserId: Record<string, AsignacionVigilante>;
     ratings?: Record<string, { average: number; count: number }>;
     onOpenReviews?: (guardId: string) => void;
     loading: boolean;
@@ -91,7 +108,7 @@ export default function GuardCardsGrid({
             {guards.map((g, i) => {
                 const name = g.name || "—";
                 const userId = g.raw?.guard?.id || g.raw?.guardId || g.raw?.userId || "";
-                const station = stationByUserId[userId] || null;
+                const asignacion = stationByUserId[userId] || null;
                 const pi = g.raw?.profileImage;
                 const photoFromPi = Array.isArray(pi)
                     ? (pi[0]?.downloadUrl || pi[0]?.publicUrl || null)
@@ -173,7 +190,25 @@ export default function GuardCardsGrid({
                             style={{ borderColor: 'var(--hairline)', color: 'var(--ink-soft)' }}
                         >
                             <MapPin className="brand-text h-4 w-4 shrink-0" />
-                            {station ? <span className="truncate" style={{ color: 'var(--ink)' }}>{station}</span> : <span>{t("ui.GuardCardsGrid.sinAsignacion", "Sin asignación")}</span>}
+                            {asignacion ? (
+                                <span className="flex min-w-0 items-baseline gap-1.5">
+                                    {/* El nominativo manda; el nombre del puesto va detrás
+                                        en tinta suave, como en la vista de estaciones. */}
+                                    <span className="truncate font-medium" style={{ color: 'var(--ink)' }}>
+                                        {asignacion.nickname || asignacion.stationName}
+                                    </span>
+                                    {asignacion.nickname && asignacion.stationName && (
+                                        <span className="truncate text-xs">{asignacion.stationName}</span>
+                                    )}
+                                    {!!asignacion.extra && (
+                                        <span className="shrink-0 text-xs" style={{ color: 'var(--ink-faint)' }}>
+                                            +{asignacion.extra}
+                                        </span>
+                                    )}
+                                </span>
+                            ) : (
+                                <span>{t("ui.GuardCardsGrid.sinAsignacion", "Sin asignación")}</span>
+                            )}
                         </div>
                     </div>
                 );

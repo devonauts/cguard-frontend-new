@@ -4,7 +4,7 @@ import { clientDisplayName } from '@/lib/clientName';
 import { invalidateEntity } from "@/lib/queryClient";
 import { useNavigate } from "react-router-dom";
 import MobileCardList from '@/components/responsive/MobileCardList';
-import GuardCardsGrid, { type GuardCardAction } from './GuardCardsGrid';
+import GuardCardsGrid, { type GuardCardAction, type AsignacionVigilante } from './GuardCardsGrid';
 import GuardRatingLevel from './GuardRatingLevel';
 import guardRatingService from '@/lib/api/guardRatingService';
 import { PageHeader, StatCard, Stagger, Modal, StatusBadge, Toolbar, Segmented, EmptyState, GlassPanel, SkeletonCards, Field } from '@/components/kit';
@@ -168,8 +168,8 @@ export default function SecurityGuardsPage() {
   const [availableClients, setAvailableClients] = useState<any[]>([]);
   const [availablePostSites, setAvailablePostSites] = useState<any[]>([]);
   const [loadingFilters, setLoadingFilters] = useState(false);
-  // station lookup: userId -> stationName
-  const [stationByUserId, setStationByUserId] = useState<Record<string, string>>({});
+  // Dónde está asignado cada vigilante: userId → estación (de `guardAssignment`).
+  const [stationByUserId, setStationByUserId] = useState<Record<string, AsignacionVigilante>>({});
 
   // Estado principal SIN datos de prueba
   const [guards, setGuards] = useState<SecurityGuard[]>([]);
@@ -361,25 +361,30 @@ export default function SecurityGuardsPage() {
     }
   };
 
-  // Load all shifts once to build guardUserId -> stationName lookup
+  /**
+   * Dónde está asignado cada vigilante.
+   *
+   * Esto salía de `/shift?limit=1000`: se cogía la estación del primer turno
+   * de cada uno. Un turno NO es una asignación —es lo que la asignación
+   * genera—, así que un vigilante recién asignado, o uno cuya rotación aún no
+   * había generado turnos, salía «Sin asignación» teniendo puesto. Y el tope
+   * de mil turnos remataba la faena: en una operación real hay miles, así que
+   * ese millar era un recorte arbitrario y la mayoría de la plantilla se
+   * quedaba fuera pasara lo que pasara.
+   *
+   * Ahora se lee la asignación de verdad (`guardAssignment`), en una sola
+   * llamada para toda la plantilla.
+   */
   useEffect(() => {
     const tenantId = localStorage.getItem('tenantId') || '';
     if (!tenantId) return;
     import('@/lib/api').then(({ default: api }) => {
-      api.get(`/tenant/${tenantId}/shift?limit=1000&offset=0`)
+      api.get(`/tenant/${tenantId}/security-guard/assignment-map`, { toast: { silentError: true } })
         .then((resp: any) => {
-          const rows: any[] = resp?.data?.rows ?? resp?.rows ?? [];
-          const map: Record<string, string> = {};
-          for (const shift of rows) {
-            const uid = shift.guardId ?? shift.guard?.id ?? null;
-            const stationName = shift.station?.stationName ?? shift.station?.name ?? shift.stationName ?? null;
-            if (uid && stationName && !map[uid]) {
-              map[uid] = stationName;
-            }
-          }
-          setStationByUserId(map);
+          const mapa = resp?.data?.byGuardId ?? resp?.byGuardId ?? {};
+          setStationByUserId(mapa);
         })
-        .catch(() => {/* ignore */});
+        .catch(() => {/* la tarjeta enseña «Sin asignación», no rompe la lista */});
     });
   }, []);
 
@@ -457,7 +462,11 @@ export default function SecurityGuardsPage() {
     () =>
       guards.map((g) => {
         const guardUserId = g.raw?.guard?.id ?? g.raw?.guardId ?? null;
-        const station = guardUserId ? (stationByUserId[guardUserId] ?? '') : '';
+        const a = guardUserId ? stationByUserId[guardUserId] : null;
+        // Para la tabla y la búsqueda basta una etiqueta: el nominativo manda,
+        // y el nombre del puesto va detrás para que buscar por cualquiera de
+        // los dos encuentre al vigilante.
+        const station = a ? [a.nickname, a.stationName].filter(Boolean).join(' · ') : '';
         return station ? { ...g, station } : g;
       }),
     [guards, stationByUserId]
