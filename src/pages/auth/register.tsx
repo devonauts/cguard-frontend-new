@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useTranslation } from 'react-i18next';
 import { PhoneInput } from "@/components/phone/PhoneInput";
-import CaptchaTurnstile from "@/components/auth/CaptchaTurnstile";
+import Captcha from "@/components/auth/Captcha";
 import { ApiService } from "@/services/api/apiService";
 
 export default function Register() {
@@ -32,9 +32,10 @@ export default function Register() {
   const pintadoEn = useRef<number>(Date.now());
 
   const [captchaToken, setCaptchaToken] = useState("");
-  const [captcha, setCaptcha] = useState<{ enabled: boolean; siteKey: string | null }>({
+  const [captcha, setCaptcha] = useState<{ enabled: boolean; siteKey: string | null; provider: 'turnstile' | 'recaptcha' }>({
     enabled: false,
     siteKey: null,
+    provider: 'turnstile',
   });
 
   useEffect(() => {
@@ -49,7 +50,7 @@ export default function Register() {
       .then((r: any) => {
         if (!vivo) return;
         const c = (r && (r.captcha || r.data?.captcha)) || null;
-        if (c && c.enabled && c.siteKey) setCaptcha({ enabled: true, siteKey: c.siteKey });
+        if (c && c.enabled && c.siteKey) setCaptcha({ enabled: true, siteKey: c.siteKey, provider: c.provider === 'recaptcha' ? 'recaptcha' : 'turnstile' });
       })
       .catch(() => undefined);
     return () => { vivo = false; };
@@ -183,7 +184,7 @@ export default function Register() {
               type="button"
               onClick={() => setShowPwd((v) => !v)}
               aria-label={showPwd ? t('auth.hide_password', { defaultValue: 'Ocultar contraseña' }) : t('auth.show_password', { defaultValue: 'Mostrar contraseña' })}
-              className="cg-focus absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 transition-colors"
+              className="cg-focus absolute right-1.5 top-1/2 -translate-y-1/2 rounded-md p-2.5 transition-colors"
               style={{ color: 'var(--ink-faint)' }}
             >
               {showPwd ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
@@ -211,7 +212,7 @@ export default function Register() {
               type="button"
               onClick={() => setShowConfirm((v) => !v)}
               aria-label={showConfirm ? t('auth.hide_password', { defaultValue: 'Ocultar contraseña' }) : t('auth.show_password', { defaultValue: 'Mostrar contraseña' })}
-              className="cg-focus absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 transition-colors"
+              className="cg-focus absolute right-1.5 top-1/2 -translate-y-1/2 rounded-md p-2.5 transition-colors"
               style={{ color: 'var(--ink-faint)' }}
             >
               {showConfirm ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
@@ -253,7 +254,7 @@ export default function Register() {
 
         {captcha.enabled && captcha.siteKey ? (
 
-          <CaptchaTurnstile siteKey={captcha.siteKey} onToken={setCaptchaToken} className="flex justify-center" />
+          <Captcha siteKey={captcha.siteKey} provider={captcha.provider} action="signup" onToken={setCaptchaToken} className="flex justify-center" />
 
         ) : null}
 
