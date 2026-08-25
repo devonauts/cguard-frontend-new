@@ -17,6 +17,10 @@ const ROLE_NAMES: Record<string, Localized> = {
   operationsmanager: { es: "Gerente de Operaciones", en: "Operations Manager", pt: "Gerente de Operações" },
   hrmanager: { es: "Gerente de RR.HH.", en: "HR Manager", pt: "Gerente de RH" },
   dispatcher: { es: "Despachador", en: "Dispatcher", pt: "Despachante" },
+  // El vigilante que cubre la consola. Rol propio y editable: hasta ahora
+  // heredaba el juego del despachador y no aparecía en ninguna lista, así que
+  // no había dónde ajustarle los permisos.
+  centraloperator: { es: "Operador de Central", en: "Central Operator", pt: "Operador de Central" },
   clientaccountmanager: { es: "Gestor de Cuentas", en: "Client Account Manager", pt: "Gestor de Contas" },
   administrativesupervisor: { es: "Supervisor Administrativo", en: "Administrative Supervisor", pt: "Supervisor Administrativo" },
   administrativeassistant: { es: "Asistente Administrativo", en: "Administrative Assistant", pt: "Assistente Administrativo" },
@@ -59,11 +63,15 @@ const ROLE_DESCRIPTIONS: Record<string, Localized> = {
     en: "Manages personnel and certifications",
     pt: "Gerencia pessoal e certificações",
   },
+  centraloperator: {
+    es: "El vigilante que cubre la consola. Entra al CRM mientras tenga la central asignada; al quitársela, deja de entrar.",
+    en: "The officer covering the console. Gets CRM access while assigned to the central station; loses it when unassigned.",
+    pt: "O vigilante que cobre a consola. Entra no CRM enquanto tiver a central atribuída.",
+  },
   dispatcher: {
     // La central de operaciones. Este rol dejó de ser «el que programa turnos»
-    // cuando pasó a ser el de la consola 24/7 — y es además el que heredan los
-    // vigilantes asignados a la central, así que su descripción es lo que lee
-    // quien vaya a decidir qué puede hacer un centralista.
+    // cuando pasó a ser el de la consola 24/7. El centralista YA NO lo hereda:
+    // tiene su propio rol «Operador de Central», editable por separado.
     es: "Central de operaciones: novedades, alarmas, radio, cobertura y despacho",
     en: "Operations center: incidents, alarms, radio, coverage and dispatch",
     pt: "Central de operações: ocorrências, alarmes, rádio, cobertura e despacho",
