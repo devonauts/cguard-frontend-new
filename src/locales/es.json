@@ -6787,6 +6787,35 @@
       "confirm": "Confirmar",
       "promptTitle": "Escribe un valor",
       "accept": "Aceptar"
+    },
+    "select": {
+      "placeholder": "Seleccionar",
+      "empty": "Sin resultados"
+    },
+    "table": {
+      "selectAll": "Seleccionar todo",
+      "selectRow": "Seleccionar fila",
+      "rowActions": "Acciones de la fila",
+      "emptyTitle": "No se encontraron resultados",
+      "emptyHint": "Intenta ajustar la búsqueda o los filtros."
+    },
+    "list": {
+      "empty": "No hay elementos",
+      "emptyHint": "Cuando haya registros aparecerán aquí."
+    },
+    "dateRange": {
+      "today": "Hoy",
+      "yesterday": "Ayer",
+      "last7d": "Últimos 7 días",
+      "last2w": "Últimas 2 semanas",
+      "last3w": "Últimas 3 semanas",
+      "thisMonth": "Este mes",
+      "lastMonth": "Último mes",
+      "last2m": "Últimos 2 meses",
+      "last3m": "Últimos 3 meses"
+    },
+    "form": {
+      "errorSummaryTitle": "Revisa los campos marcados"
     }
   },
   "sms": {
@@ -8141,6 +8170,102 @@
       "comoLlegar": "Cómo llegar",
       "verRonda": "Ver ronda",
       "radio": "Radio"
+    }
+  },
+  "alarm": {
+    "status": {
+      "queued": "En cola",
+      "acknowledged": "Reconocida",
+      "verifying": "Verificando",
+      "dispatched": "Despachada",
+      "resolved": "Resuelta",
+      "closed": "Cerrada"
+    },
+    "category": {
+      "burglary": "Intrusión",
+      "fire": "Incendio",
+      "holdup": "Atraco",
+      "panic": "Pánico",
+      "medical": "Médica",
+      "tamper": "Sabotaje",
+      "trouble": "Avería",
+      "openclose": "Apertura/Cierre",
+      "test": "Prueba",
+      "supervisory": "Supervisión",
+      "restore": "Restauración",
+      "default": "Alarma"
+    },
+    "priority": {
+      "1": "P1 · Crítica",
+      "2": "P2 · Alta",
+      "3": "P3 · Media",
+      "4": "P4 · Baja",
+      "5": "P5 · Info"
+    },
+    "sinDatos": "Sin datos"
+  },
+  "nomina": {
+    "estado": {
+      "on_time": "A tiempo",
+      "late": "Tarde",
+      "early_departure": "Salida anticipada",
+      "missed_clockin": "Sin entrada",
+      "missed_clockout": "Sin salida",
+      "no_call_no_show": "Inasistencia",
+      "overtime": "Tiempo extra",
+      "no_schedule": "Sin horario",
+      "pending_review": "En revisión",
+      "approved": "Aprobado",
+      "rejected": "Rechazado",
+      "revisado": "Revisado",
+      "revisadoRechazado": "Revisado (rechazado)"
+    },
+    "aprobacion": {
+      "none": "Sin aprobación",
+      "pending": "Pendiente",
+      "approved": "Aprobada",
+      "rejected": "Rechazada"
+    },
+    "excepcion": {
+      "late_arrival": "Llegada tarde",
+      "early_departure": "Salida anticipada",
+      "missed_clockin": "Sin marcar entrada",
+      "missed_clockout": "Sin marcar salida",
+      "no_call_no_show": "Inasistencia (no-show)",
+      "outside_geofence": "Fuera de geocerca",
+      "overtime": "Tiempo extra",
+      "correction_pending": "Corrección pendiente"
+    },
+    "excEstado": {
+      "open": "Abierta",
+      "acknowledged": "Reconocida",
+      "resolved": "Resuelta",
+      "approved": "Aprobada",
+      "rejected": "Rechazada"
+    },
+    "severidad": {
+      "low": "Baja",
+      "medium": "Media",
+      "high": "Alta",
+      "critical": "Crítica"
+    }
+  },
+  "maps": {
+    "kind": {
+      "site": "Sede",
+      "station": "Puesto",
+      "client": "Cliente",
+      "guard": "Vigilante",
+      "supervisor": "Supervisor",
+      "incident": "Incidente",
+      "vehicle": "Vehículo",
+      "checkpoint": "Punto de control",
+      "route": "Ronda",
+      "zone": "Zona",
+      "point": "Punto"
+    },
+    "popup": {
+      "loadError": "No se pudo cargar el detalle"
     }
   }
 }

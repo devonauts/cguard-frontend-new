@@ -6787,6 +6787,35 @@
       "confirm": "Confirm",
       "promptTitle": "Enter a value",
       "accept": "OK"
+    },
+    "select": {
+      "placeholder": "Select",
+      "empty": "No results"
+    },
+    "table": {
+      "selectAll": "Select all",
+      "selectRow": "Select row",
+      "rowActions": "Row actions",
+      "emptyTitle": "No results found",
+      "emptyHint": "Try adjusting your search or filters."
+    },
+    "list": {
+      "empty": "Nothing here yet",
+      "emptyHint": "Records will show up here once there are any."
+    },
+    "dateRange": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "last7d": "Last 7 days",
+      "last2w": "Last 2 weeks",
+      "last3w": "Last 3 weeks",
+      "thisMonth": "This month",
+      "lastMonth": "Last month",
+      "last2m": "Last 2 months",
+      "last3m": "Last 3 months"
+    },
+    "form": {
+      "errorSummaryTitle": "Check the highlighted fields"
     }
   },
   "sms": {
@@ -8141,6 +8170,102 @@
       "comoLlegar": "Directions",
       "verRonda": "View patrol",
       "radio": "Radio"
+    }
+  },
+  "alarm": {
+    "status": {
+      "queued": "Queued",
+      "acknowledged": "Acknowledged",
+      "verifying": "Verifying",
+      "dispatched": "Dispatched",
+      "resolved": "Resolved",
+      "closed": "Closed"
+    },
+    "category": {
+      "burglary": "Intrusion",
+      "fire": "Fire",
+      "holdup": "Hold-up",
+      "panic": "Panic",
+      "medical": "Medical",
+      "tamper": "Tamper",
+      "trouble": "Trouble",
+      "openclose": "Open/Close",
+      "test": "Test",
+      "supervisory": "Supervisory",
+      "restore": "Restore",
+      "default": "Alarm"
+    },
+    "priority": {
+      "1": "P1 · Critical",
+      "2": "P2 · High",
+      "3": "P3 · Medium",
+      "4": "P4 · Low",
+      "5": "P5 · Info"
+    },
+    "sinDatos": "No data"
+  },
+  "nomina": {
+    "estado": {
+      "on_time": "On time",
+      "late": "Late",
+      "early_departure": "Early departure",
+      "missed_clockin": "No clock-in",
+      "missed_clockout": "No clock-out",
+      "no_call_no_show": "No-show",
+      "overtime": "Overtime",
+      "no_schedule": "No schedule",
+      "pending_review": "Under review",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "revisado": "Reviewed",
+      "revisadoRechazado": "Reviewed (rejected)"
+    },
+    "aprobacion": {
+      "none": "No approval needed",
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "excepcion": {
+      "late_arrival": "Late arrival",
+      "early_departure": "Early departure",
+      "missed_clockin": "Clock-in missed",
+      "missed_clockout": "Clock-out missed",
+      "no_call_no_show": "No-show",
+      "outside_geofence": "Outside geofence",
+      "overtime": "Overtime",
+      "correction_pending": "Correction pending"
+    },
+    "excEstado": {
+      "open": "Open",
+      "acknowledged": "Acknowledged",
+      "resolved": "Resolved",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "severidad": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    }
+  },
+  "maps": {
+    "kind": {
+      "site": "Site",
+      "station": "Post",
+      "client": "Client",
+      "guard": "Officer",
+      "supervisor": "Supervisor",
+      "incident": "Incident",
+      "vehicle": "Vehicle",
+      "checkpoint": "Checkpoint",
+      "route": "Patrol",
+      "zone": "Zone",
+      "point": "Point"
+    },
+    "popup": {
+      "loadError": "Could not load the details"
     }
   }
 }

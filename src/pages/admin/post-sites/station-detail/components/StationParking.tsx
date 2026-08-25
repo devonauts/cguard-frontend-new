@@ -103,7 +103,12 @@ export default function StationParking({ stationId }: Props) {
   const [ocup, setOcup] = useState<Ocupacion | null>(null);
   const [ajustes, setAjustes] = useState(false);
   const [guardando, setGuardando] = useState(false);
-  const [borrador, setBorrador] = useState<ReglasVehiculo | null>(null);
+  // Nunca null: si la consulta de reglas falla, se parte de las de fábrica y
+  // el panel sigue sirviendo para configurarlas. Un botón que abre un panel
+  // vacío es peor que no tener botón.
+  const [borrador, setBorrador] = useState<ReglasVehiculo>(
+    { enabled: false, capacity: null, bays: [], maxStayMinutes: null, blacklistEnabled: false },
+  );
 
   useEffect(() => {
     if (!stationId) return;
@@ -214,7 +219,7 @@ export default function StationParking({ stationId }: Props) {
           lo que quiere una garita de patio abierto. Encendidas, cada una añade
           UNA cosa concreta. Ninguna bloquea el registro: en la puerta decide
           el vigilante, que ve lo que la pantalla no ve. */}
-      {ajustes && borrador && (
+      {ajustes && (
         <div className="mx-5 mb-4 space-y-4 rounded-2xl p-4" style={{ background: 'var(--glass-sunken)' }}>
           <label className="flex cursor-pointer items-start gap-3">
             <input

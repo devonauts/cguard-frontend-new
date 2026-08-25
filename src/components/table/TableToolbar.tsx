@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { Search, X } from 'lucide-react';
 import { Segmented, Toolbar } from '@/components/kit';
 import { cn } from '@/lib/utils';
+import i18n from "@/i18n";
 
 /**
  * Fila de herramientas sobre una lista o tabla.
@@ -37,7 +38,7 @@ export function TableToolbar({ leading, search, children, className }: {
 }
 
 /** Buscador de la lista. Campo hundido (`.cg-input`), lupa y botón de borrado. */
-export function TableSearch({ value, onChange, placeholder = 'Buscar…', className, autoFocus }: {
+export function TableSearch({ value, onChange, placeholder = i18n.t('kit.search.placeholder'), className, autoFocus }: {
     value: string;
     onChange: (v: string) => void;
     placeholder?: string;

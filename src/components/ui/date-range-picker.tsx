@@ -11,6 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import i18n from "@/i18n";
 
 interface DateRangePickerProps {
   dateRange: DateRange | undefined;
@@ -27,42 +28,42 @@ export function DateRangePicker({
 
   const presets = [
     {
-      label: "Hoy",
+      label: i18n.t("kit.dateRange.today"),
       getValue: () => ({
         from: startOfDay(new Date()),
         to: endOfDay(new Date()),
       }),
     },
     {
-      label: "Ayer",
+      label: i18n.t("kit.dateRange.yesterday"),
       getValue: () => ({
         from: startOfDay(subDays(new Date(), 1)),
         to: endOfDay(subDays(new Date(), 1)),
       }),
     },
     {
-      label: "Últimos 7 días",
+      label: i18n.t("kit.dateRange.last7d"),
       getValue: () => ({
         from: startOfDay(subDays(new Date(), 6)),
         to: endOfDay(new Date()),
       }),
     },
     {
-      label: "Últimos 2 semanas",
+      label: i18n.t("kit.dateRange.last2w"),
       getValue: () => ({
         from: startOfDay(subDays(new Date(), 13)),
         to: endOfDay(new Date()),
       }),
     },
     {
-      label: "Últimos 3 semanas",
+      label: i18n.t("kit.dateRange.last3w"),
       getValue: () => ({
         from: startOfDay(subDays(new Date(), 20)),
         to: endOfDay(new Date()),
       }),
     },
     {
-      label: "Este mes",
+      label: i18n.t("kit.dateRange.thisMonth"),
       getValue: () => {
         const now = new Date();
         return {
@@ -72,7 +73,7 @@ export function DateRangePicker({
       },
     },
     {
-      label: "Último mes",
+      label: i18n.t("kit.dateRange.lastMonth"),
       getValue: () => {
         const now = new Date();
         const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
@@ -83,14 +84,14 @@ export function DateRangePicker({
       },
     },
     {
-      label: "Últimos 2 meses",
+      label: i18n.t("kit.dateRange.last2m"),
       getValue: () => ({
         from: startOfDay(subDays(new Date(), 60)),
         to: endOfDay(new Date()),
       }),
     },
     {
-      label: "Últimos 3 meses",
+      label: i18n.t("kit.dateRange.last3m"),
       getValue: () => ({
         from: startOfDay(subDays(new Date(), 90)),
         to: endOfDay(new Date()),

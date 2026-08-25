@@ -23,17 +23,21 @@ import {
 import { StatusBadge } from '@/components/kit';
 import { MeterBar } from '@/components/charts';
 import { alarmSourceMeta } from '@/lib/api/alarmService';
+import { conEtiqueta } from '@/lib/i18nLabel';
+import i18n from '@/i18n';
 
 export type AlarmTone = 'ok' | 'warn' | 'bad' | 'info' | 'neutral' | 'brand';
 
 // ── Estado del caso ─────────────────────────────────────────────────────────
+// Las etiquetas se resuelven AL LEERLAS (ver lib/i18nLabel): esta tabla se
+// evalúa al importar el módulo, antes de que el usuario elija idioma.
 export const STATUS_META: Record<string, { label: string; tone: AlarmTone }> = {
-  queued: { label: 'En cola', tone: 'bad' },
-  acknowledged: { label: 'Reconocida', tone: 'warn' },
-  verifying: { label: 'Verificando', tone: 'info' },
-  dispatched: { label: 'Despachada', tone: 'info' },
-  resolved: { label: 'Resuelta', tone: 'ok' },
-  closed: { label: 'Cerrada', tone: 'neutral' },
+  queued: conEtiqueta('alarm.status.queued', { tone: 'bad' as AlarmTone }),
+  acknowledged: conEtiqueta('alarm.status.acknowledged', { tone: 'warn' as AlarmTone }),
+  verifying: conEtiqueta('alarm.status.verifying', { tone: 'info' as AlarmTone }),
+  dispatched: conEtiqueta('alarm.status.dispatched', { tone: 'info' as AlarmTone }),
+  resolved: conEtiqueta('alarm.status.resolved', { tone: 'ok' as AlarmTone }),
+  closed: conEtiqueta('alarm.status.closed', { tone: 'neutral' as AlarmTone }),
 };
 
 /** Los cuatro estados en los que el caso sigue vivo y cuenta para la carga. */
@@ -52,21 +56,23 @@ export function sourceTone(source?: string | null): string {
  * tamaños distintos en dos pantallas hermanas.
  */
 const CATEGORY_META: Record<string, { label: string; icon: ReactNode; grave: boolean }> = {
-  burglary: { label: 'Intrusión', icon: <ShieldAlert />, grave: true },
-  fire: { label: 'Incendio', icon: <Flame />, grave: true },
-  holdup: { label: 'Atraco', icon: <Hand />, grave: true },
-  panic: { label: 'Pánico', icon: <Bell />, grave: true },
-  medical: { label: 'Médica', icon: <HeartPulse />, grave: true },
-  tamper: { label: 'Sabotaje', icon: <Wrench />, grave: false },
-  trouble: { label: 'Avería', icon: <AlertTriangle />, grave: false },
-  openclose: { label: 'Apertura/Cierre', icon: <DoorOpen />, grave: false },
-  test: { label: 'Prueba', icon: <Activity />, grave: false },
-  supervisory: { label: 'Supervisión', icon: <Activity />, grave: false },
-  restore: { label: 'Restauración', icon: <Activity />, grave: false },
+  burglary: conEtiqueta('alarm.category.burglary', { icon: <ShieldAlert />, grave: true }),
+  fire: conEtiqueta('alarm.category.fire', { icon: <Flame />, grave: true }),
+  holdup: conEtiqueta('alarm.category.holdup', { icon: <Hand />, grave: true }),
+  panic: conEtiqueta('alarm.category.panic', { icon: <Bell />, grave: true }),
+  medical: conEtiqueta('alarm.category.medical', { icon: <HeartPulse />, grave: true }),
+  tamper: conEtiqueta('alarm.category.tamper', { icon: <Wrench />, grave: false }),
+  trouble: conEtiqueta('alarm.category.trouble', { icon: <AlertTriangle />, grave: false }),
+  openclose: conEtiqueta('alarm.category.openclose', { icon: <DoorOpen />, grave: false }),
+  test: conEtiqueta('alarm.category.test', { icon: <Activity />, grave: false }),
+  supervisory: conEtiqueta('alarm.category.supervisory', { icon: <Activity />, grave: false }),
+  restore: conEtiqueta('alarm.category.restore', { icon: <Activity />, grave: false }),
 };
 
 export function categoryMeta(cat?: string | null): { label: string; icon: ReactNode; grave: boolean } {
-  return (cat && CATEGORY_META[cat]) || { label: cat || 'Alarma', icon: <Siren />, grave: false };
+  // El respaldo usa el código crudo del panel si viene, y si no la palabra
+  // genérica traducida: un código de fabricante no se traduce.
+  return (cat && CATEGORY_META[cat]) || { label: cat || i18n.t('alarm.category.default'), icon: <Siren />, grave: false };
 }
 
 /**
@@ -80,11 +86,11 @@ export function categoryTone(cat?: string | null): AlarmTone {
 
 // ── Prioridad ───────────────────────────────────────────────────────────────
 const PRIORITY_META: Record<number, { label: string; token: AlarmTone }> = {
-  1: { label: 'P1 · Crítica', token: 'bad' },
-  2: { label: 'P2 · Alta', token: 'warn' },
-  3: { label: 'P3 · Media', token: 'warn' },
-  4: { label: 'P4 · Baja', token: 'info' },
-  5: { label: 'P5 · Info', token: 'neutral' },
+  1: conEtiqueta('alarm.priority.1', { token: 'bad' as AlarmTone }),
+  2: conEtiqueta('alarm.priority.2', { token: 'warn' as AlarmTone }),
+  3: conEtiqueta('alarm.priority.3', { token: 'warn' as AlarmTone }),
+  4: conEtiqueta('alarm.priority.4', { token: 'info' as AlarmTone }),
+  5: conEtiqueta('alarm.priority.5', { token: 'neutral' as AlarmTone }),
 };
 
 export function priorityMeta(p?: number) {
@@ -131,7 +137,7 @@ export function Chip({ children }: { children: ReactNode }) {
  * que la P5. Aquí la barra la dibuja `MeterBar` del sistema; lo único que se
  * añade es que el tono lo decide el dato.
  */
-export function SeverityBars({ items, empty = 'Sin datos' }: {
+export function SeverityBars({ items, empty = i18n.t('alarm.sinDatos') }: {
   items: Array<{ label: string; count: number; tone: AlarmTone }>;
   empty?: string;
 }) {

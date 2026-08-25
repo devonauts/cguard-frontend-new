@@ -1,5 +1,7 @@
 import { getTenantTimezone } from "@/utils/tenantLocation";
 import { StatusBadge as KitStatusBadge } from "@/components/kit";
+import { conEtiqueta, tablaDeEtiquetas } from "@/lib/i18nLabel";
+import i18n from "@/i18n";
 
 /**
  * Vocabulario de estados de asistencia.
@@ -12,27 +14,27 @@ import { StatusBadge as KitStatusBadge } from "@/components/kit";
 export type PillTone = "ok" | "warn" | "bad" | "info" | "neutral" | "brand";
 
 export const STATUS_META: Record<string, { label: string; tone: PillTone }> = {
-  on_time: { label: "A tiempo", tone: "ok" },
-  late: { label: "Tarde", tone: "warn" },
-  early_departure: { label: "Salida anticipada", tone: "warn" },
-  missed_clockin: { label: "Sin entrada", tone: "bad" },
-  missed_clockout: { label: "Sin salida", tone: "bad" },
-  no_call_no_show: { label: "Inasistencia", tone: "bad" },
-  overtime: { label: "Tiempo extra", tone: "info" },
-  no_schedule: { label: "Sin horario", tone: "neutral" },
-  pending_review: { label: "En revisión", tone: "brand" },
-  approved: { label: "Aprobado", tone: "ok" },
-  rejected: { label: "Rechazado", tone: "bad" },
+  on_time: conEtiqueta("nomina.estado.on_time", { tone: "ok" as PillTone }),
+  late: conEtiqueta("nomina.estado.late", { tone: "warn" as PillTone }),
+  early_departure: conEtiqueta("nomina.estado.early_departure", { tone: "warn" as PillTone }),
+  missed_clockin: conEtiqueta("nomina.estado.missed_clockin", { tone: "bad" as PillTone }),
+  missed_clockout: conEtiqueta("nomina.estado.missed_clockout", { tone: "bad" as PillTone }),
+  no_call_no_show: conEtiqueta("nomina.estado.no_call_no_show", { tone: "bad" as PillTone }),
+  overtime: conEtiqueta("nomina.estado.overtime", { tone: "info" as PillTone }),
+  no_schedule: conEtiqueta("nomina.estado.no_schedule", { tone: "neutral" as PillTone }),
+  pending_review: conEtiqueta("nomina.estado.pending_review", { tone: "brand" as PillTone }),
+  approved: conEtiqueta("nomina.estado.approved", { tone: "ok" as PillTone }),
+  rejected: conEtiqueta("nomina.estado.rejected", { tone: "bad" as PillTone }),
 };
 
 /** guardShift.approvalStatus → etiqueta + tono. "none" (el valor por defecto en
  *  la base) significa que no hizo falta aprobación — no es un valor crudo que
  *  deba salir en pantalla. */
 export const APPROVAL_META: Record<string, { label: string; tone: PillTone }> = {
-  none: { label: "Sin aprobación", tone: "neutral" },
-  pending: { label: "Pendiente", tone: "warn" },
-  approved: { label: "Aprobada", tone: "ok" },
-  rejected: { label: "Rechazada", tone: "bad" },
+  none: conEtiqueta("nomina.aprobacion.none", { tone: "neutral" as PillTone }),
+  pending: conEtiqueta("nomina.aprobacion.pending", { tone: "warn" as PillTone }),
+  approved: conEtiqueta("nomina.aprobacion.approved", { tone: "ok" as PillTone }),
+  rejected: conEtiqueta("nomina.aprobacion.rejected", { tone: "bad" as PillTone }),
 };
 
 /** Etiqueta legible de un estado de aprobación (para texto / CSV). */
@@ -46,31 +48,31 @@ export function ApprovalBadge({ status }: { status: string | null | undefined })
   return <KitStatusBadge tone={m.tone}>{m.label}</KitStatusBadge>;
 }
 
-export const EXCEPTION_LABEL: Record<string, string> = {
-  late_arrival: "Llegada tarde",
-  early_departure: "Salida anticipada",
-  missed_clockin: "Sin marcar entrada",
-  missed_clockout: "Sin marcar salida",
-  no_call_no_show: "Inasistencia (no-show)",
-  outside_geofence: "Fuera de geocerca",
-  overtime: "Tiempo extra",
-  correction_pending: "Corrección pendiente",
-};
+export const EXCEPTION_LABEL: Record<string, string> = tablaDeEtiquetas({
+  late_arrival: "nomina.excepcion.late_arrival",
+  early_departure: "nomina.excepcion.early_departure",
+  missed_clockin: "nomina.excepcion.missed_clockin",
+  missed_clockout: "nomina.excepcion.missed_clockout",
+  no_call_no_show: "nomina.excepcion.no_call_no_show",
+  outside_geofence: "nomina.excepcion.outside_geofence",
+  overtime: "nomina.excepcion.overtime",
+  correction_pending: "nomina.excepcion.correction_pending",
+});
 
 /** attendanceException.status → etiqueta + tono (de abierta a resuelta). */
 export const EXC_STATUS_META: Record<string, { label: string; tone: PillTone }> = {
-  open: { label: "Abierta", tone: "warn" },
-  acknowledged: { label: "Reconocida", tone: "info" },
-  resolved: { label: "Resuelta", tone: "ok" },
-  approved: { label: "Aprobada", tone: "ok" },
-  rejected: { label: "Rechazada", tone: "bad" },
+  open: conEtiqueta("nomina.excEstado.open", { tone: "warn" as PillTone }),
+  acknowledged: conEtiqueta("nomina.excEstado.acknowledged", { tone: "info" as PillTone }),
+  resolved: conEtiqueta("nomina.excEstado.resolved", { tone: "ok" as PillTone }),
+  approved: conEtiqueta("nomina.excEstado.approved", { tone: "ok" as PillTone }),
+  rejected: conEtiqueta("nomina.excEstado.rejected", { tone: "bad" as PillTone }),
 };
 
 export const SEVERITY_META: Record<string, { label: string; tone: PillTone }> = {
-  low: { label: "Baja", tone: "neutral" },
-  medium: { label: "Media", tone: "warn" },
-  high: { label: "Alta", tone: "warn" },
-  critical: { label: "Crítica", tone: "bad" },
+  low: conEtiqueta("nomina.severidad.low", { tone: "neutral" as PillTone }),
+  medium: conEtiqueta("nomina.severidad.medium", { tone: "warn" as PillTone }),
+  high: conEtiqueta("nomina.severidad.high", { tone: "warn" as PillTone }),
+  critical: conEtiqueta("nomina.severidad.critical", { tone: "bad" as PillTone }),
 };
 
 /**
@@ -94,7 +96,7 @@ export function StatusBadge({
   if (status === "pending_review" && decidida) {
     return (
       <KitStatusBadge tone={approval === "approved" ? "ok" : "bad"}>
-        {approval === "approved" ? "Revisado" : "Revisado (rechazado)"}
+        {approval === "approved" ? i18n.t("nomina.estado.revisado") : i18n.t("nomina.estado.revisadoRechazado")}
       </KitStatusBadge>
     );
   }

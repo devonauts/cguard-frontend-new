@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import i18n from "@/i18n";
 
 type Option = { value: string; label: string };
 type Props = {
@@ -18,7 +19,7 @@ type Props = {
   "aria-label"?: string;
 };
 
-export function MultiCombobox({ value = [], onChange, placeholder = "Seleccionar", options, empty = "Sin resultados", className, popoverClassName, "aria-label": ariaLabel }: Props) {
+export function MultiCombobox({ value = [], onChange, placeholder = i18n.t("kit.select.placeholder"), options, empty = i18n.t("kit.select.empty"), className, popoverClassName, "aria-label": ariaLabel }: Props) {
   const [open, setOpen] = React.useState(false);
   const selectedItems = options.filter((o) => value.includes(o.value));
 

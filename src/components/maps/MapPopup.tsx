@@ -76,6 +76,7 @@ import { createPortal, flushSync } from "react-dom";
 // `mapPopupActions` son funciones sueltas, no componentes: el traductor entra
 // por la instancia de i18next (los hooks aquí no valen).
 import i18n from '@/i18n';
+import { tablaDeEtiquetas } from "@/lib/i18nLabel";
 import {
   AlertTriangle, Briefcase, Building2, Car, Crosshair, ExternalLink, Eye, Flag,
   Locate, MapPin, Navigation, Phone, Radio, Route, Shield, User, UserCog, X,
@@ -220,19 +221,22 @@ export interface MapPopupController {
    TABLAS PÚBLICAS — para que todos los mapas digan lo mismo
    ═══════════════════════════════════════════════════════════════════════════ */
 
-export const MAP_POPUP_KIND_LABEL: Record<MapPopupKind, string> = {
-  site: "Sede",
-  station: "Puesto",
-  client: "Cliente",
-  guard: "Vigilante",
-  supervisor: "Supervisor",
-  incident: "Incidente",
-  vehicle: "Vehículo",
-  checkpoint: "Punto de control",
-  route: "Ronda",
-  zone: "Zona",
-  point: "Punto",
-};
+// Se resuelven AL LEERLAS (ver lib/i18nLabel): esta tabla la importan otros
+// módulos y se evalúa al cargarlos, mucho antes de saber en qué idioma lee
+// quien va a abrir el mapa.
+export const MAP_POPUP_KIND_LABEL: Record<MapPopupKind, string> = tablaDeEtiquetas({
+  site: "maps.kind.site",
+  station: "maps.kind.station",
+  client: "maps.kind.client",
+  guard: "maps.kind.guard",
+  supervisor: "maps.kind.supervisor",
+  incident: "maps.kind.incident",
+  vehicle: "maps.kind.vehicle",
+  checkpoint: "maps.kind.checkpoint",
+  route: "maps.kind.route",
+  zone: "maps.kind.zone",
+  point: "maps.kind.point",
+});
 
 const KIND_ICON: Record<MapPopupKind, ReactNode> = {
   site: <Building2 />,
@@ -557,7 +561,7 @@ function esPosicion(a: any): a is { lat: number; lng: number } {
 
 function mensajeError(e: any): string {
   const m = e?.response?.data?.message || e?.message;
-  return typeof m === "string" && m.trim() ? m : "No se pudo cargar el detalle";
+  return typeof m === "string" && m.trim() ? m : i18n.t("maps.popup.loadError");
 }
 
 /**

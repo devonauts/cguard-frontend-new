@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import i18n from "@/i18n";
 
 type Option = { value: string; label: string };
 type Props = {
@@ -16,7 +17,7 @@ type Props = {
   "aria-label"?: string;
 };
 
-export function Combobox({ value, onChange, placeholder = "Seleccionar", options, empty = "Sin resultados", ...aria }: Props) {
+export function Combobox({ value, onChange, placeholder = i18n.t("kit.select.placeholder"), options, empty = i18n.t("kit.select.empty"), ...aria }: Props) {
   const [open, setOpen] = React.useState(false);
   const selected = options.find((o) => o.value === value)?.label ?? "";
 
