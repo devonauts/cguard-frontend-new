@@ -373,6 +373,20 @@ export default function Schedule() {
 
   // Assignment form
   const [showAssignForm, setShowAssignForm] = useState(false);
+  /**
+   * Qué se crea al soltar (o al elegir «Asignar vigilante…» con el clic derecho).
+   *
+   * `single` = UN turno para ESE día. `rotation` = meter al vigilante en la
+   * rotación del puesto, que es lo que hacía siempre: el servidor genera un AÑO
+   * de turnos (365 días; en esta base, 172 de media y hasta 318 por asignación)
+   * antes de contestar. Por eso «tardaba una eternidad» — y por eso el defecto
+   * ahora es `single`: tapar el hueco de hoy es el gesto de todos los días, y
+   * meter a alguien en la rotación es la excepción. Un traslado (arrastrar una
+   * asignación existente a otro puesto) SIEMPRE es rotación: ahí no hay elección.
+   */
+  const [assignMode, setAssignMode] = useState<'single' | 'rotation'>('single');
+  const [assignStartTime, setAssignStartTime] = useState('07:00');
+  const [assignEndTime, setAssignEndTime] = useState('19:00');
   const [assignTarget, setAssignTarget] = useState<{ stationId: string; positionId: string } | null>(null);
   const [assignGuard, setAssignGuard] = useState('');
   const [assignStartDate, setAssignStartDate] = useState(() => tzToday());
@@ -639,22 +653,31 @@ export default function Schedule() {
     return Array.from(byGuard.values());
   }, [assignments, positionsById, stationsById, shiftByGuardDate, monthDays]);
 
-  // Map: `${stationId}-${dateStr}` → SF guard(s) ACTUALLY covering there that
-  // day (real shifts only — shows on the fijo's L cell as "SF").
+  // Map: `${stationId}-${dateStr}` → quién cubre REALMENTE ahí ese día (turnos
+  // de verdad — se pinta sobre la casilla «L» del fijo).
+  //
+  // Antes sólo contaba a los SACAFRANCOS (`reliefGuardIds`). Con eso, tapar un
+  // hueco con un vigilante cualquiera creaba el turno en la base y la rejilla no
+  // lo enseñaba: parecía que no había pasado nada. Ahora cuenta cualquier turno
+  // que NO venga de la rotación de ese puesto — que es la definición de una
+  // cobertura, sea quien sea quien la haga.
   const sfStationCoverage = useMemo(() => {
     const map = new Map<string, { name: string; fullName: string }[]>();
+    // Los turnos que la rotación del puesto genera llevan `positionId`; los
+    // sueltos (cobertura, bloque dibujado, turno único) no. Un SF sigue contando
+    // aunque su turno traiga posición, por compatibilidad con lo de antes.
     for (const s of shifts) {
-      if (!s.startTime || !reliefGuardIds.has(s.guardId)) continue;
+      if (!s.startTime) continue;
+      const esCobertura = !s.positionId || reliefGuardIds.has(s.guardId);
+      if (!esCobertura) continue;
       const dateStr = dateToWall(new Date(s.startTime), tzName).dateStr;
       const key = `${s.stationId}-${dateStr}`;
       const g = s.guard;
       // El respaldo por `guardsPool` cubre el turno que llega sin objeto guard;
       // el segundo argumento cubre el que lo trae SIN nombre.
-      const fullName = nombreDeVigilante(
-        g,
-        guardsPool.find(x => x.id === s.guardId)?.label || 'SF',
-      );
-      const initials = inicialesDeVigilante(g, 'SF');
+      const respaldo = guardsPool.find(x => x.id === s.guardId)?.label || 'Cobertura';
+      const fullName = nombreDeVigilante(g, respaldo);
+      const initials = inicialesDeVigilante(g, respaldo.slice(0, 2).toUpperCase());
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push({ name: initials || 'SF', fullName });
     }
@@ -828,10 +851,25 @@ export default function Schedule() {
 
   // ─── Actions ──────────────────────────────────────────────────────────────
 
+  /** Las horas del puesto, para prefijar un turno de un solo día. */
+  const horasDelPuesto = (positionId: string): [string, string] => {
+    const pos = positionsById.get(positionId);
+    const hhmm = (x?: string | null) => (x ? String(x).slice(0, 5) : '');
+    const ini = hhmm(pos?.startTime) || '07:00';
+    const fin = hhmm(pos?.endTime) || '19:00';
+    return [ini, fin];
+  };
+
   const openAssignForm = (stationId: string, positionId: string, dateStr?: string) => {
+    const [ini, fin] = horasDelPuesto(positionId);
     setAssignTarget({ stationId, positionId });
     setAssignGuard('');
     setAssignStartDate(dateStr || tzToday());
+    setAssignStartTime(ini);
+    setAssignEndTime(fin);
+    // Con fecha (clic derecho sobre un día) se asume tapar ESE día; sin fecha,
+    // el gesto sólo puede significar rotación.
+    setAssignMode(dateStr ? 'single' : 'rotation');
     setMoveFrom(null);
     setShowAssignForm(true);
   };
@@ -1039,8 +1077,16 @@ export default function Schedule() {
       items.push({ label: 'Registrar novedad…', onClick: () => setOverrideTarget({ guardId: a.guardId, guardName, date: dateStr, assignmentId: a.id }) });
       const ov = getOverride(a.guardId, dateStr);
       if (ov) items.push({ label: `Quitar novedad (${ov.type})`, danger: true, onClick: () => void removeOverride(ov.id) });
+      // ── TAPAR EL HUECO CON QUIEN SEA ──────────────────────────────────
+      // Antes, un puesto CON fijo sólo ofrecía «Asignar sacafranco…», y sólo
+      // si ese día libraba y nadie lo cubría ya. Sin sacafrancos configurados
+      // el menú era un callejón sin salida: el hueco estaba ahí y no había
+      // forma de taparlo desde la casilla. Esto vale para cualquier vigilante
+      // y para cualquier día — es un turno suelto, no una rotación.
+      items.push({ label: '—' });
+      items.push({ label: 'Cubrir este día con otro vigilante…', onClick: () => openAssignForm(station.id, pos.id, dateStr) });
     } else {
-      items.push({ label: 'Asignar vigilante…', onClick: () => openAssignForm(station.id, pos.id, dateStr) });
+      items.push({ label: 'Cubrir este día con un vigilante…', onClick: () => openAssignForm(station.id, pos.id, dateStr) });
     }
     setCtxMenu({ x: e.clientX, y: e.clientY, items });
   };
@@ -1092,10 +1138,15 @@ export default function Schedule() {
     const fromId = e.dataTransfer.getData('fromAssignmentId') || '';
     const from = fromId ? assignments.find(a => a.id === fromId) || null : null;
     if (from && from.positionId === positionId) return; // dropped back on its own puesto
+    const [ini, fin] = horasDelPuesto(positionId);
     setMoveFrom(from);
     setAssignTarget({ stationId, positionId });
     setAssignGuard(guardId);
     setAssignStartDate(dateStr || tzToday());
+    setAssignStartTime(ini);
+    setAssignEndTime(fin);
+    // Un traslado es siempre rotación; soltar sobre un día es tapar ese día.
+    setAssignMode(from ? 'rotation' : (dateStr ? 'single' : 'rotation'));
     setShowAssignForm(true);
   };
 
@@ -1105,6 +1156,50 @@ export default function Schedule() {
       return;
     }
     const isSacafranco = positions.find(p => p.id === assignTarget.positionId)?.type === 'sacafranco';
+
+    // ── SÓLO ESTE DÍA ──────────────────────────────────────────────────────
+    // Un turno suelto, exactamente el mismo que dibujar un bloque en la vista
+    // Día o el «Turno único» de la estación: una petición, sin rotación y sin
+    // generar un año de turnos. Es lo que hace falta para tapar un hueco.
+    if (assignMode === 'single') {
+      const toMin = (x: string) => { const [h, mm] = x.split(':').map(n => parseInt(n, 10) || 0); return (h % 24) * 60 + (mm % 60); };
+      const startMin = toMin(assignStartTime);
+      let endMin = toMin(assignEndTime);
+      // Fin ≤ inicio = cruza la medianoche (iguales = 24 h completas).
+      if (endMin <= startMin) endMin += 1440;
+      const [y, mo, d] = assignStartDate.split('-').map(Number);
+      const start = wallToDate(y, mo, d, startMin, tzName);
+      const end = wallToDate(y, mo, d, endMin, tzName);
+      setAssignSaving(true);
+      try {
+        // Reemplaza, no duplica: misma regla que el bloque dibujado y el turno único.
+        const solapados = shifts.filter(x =>
+          x.guardId === assignGuard && new Date(x.startTime) < end && new Date(x.endTime) > start);
+        if (solapados.length) {
+          await ApiService.delete(`/tenant/${tenantId}/shift?ids=${solapados.map(x => x.id).join(',')}`).catch(() => {});
+        }
+        const st = stationsById.get(assignTarget.stationId);
+        await ApiService.post(`/tenant/${tenantId}/shift`, {
+          data: {
+            startTime: start.toISOString(),
+            endTime: end.toISOString(),
+            station: assignTarget.stationId,
+            guard: assignGuard,
+            postSiteId: st?.postSiteId,
+          },
+        });
+        toast.success(solapados.length ? 'Turno creado (reemplazó turnos solapados)' : 'Turno creado para ese día');
+        setShowAssignForm(false);
+        setMoveFrom(null);
+        fetchAll({ silent: true });
+      } catch (e: any) {
+        toast.error(e?.data?.message || e?.message || 'Error al crear el turno');
+      } finally {
+        setAssignSaving(false);
+      }
+      return;
+    }
+
     setAssignSaving(true);
     try {
       // Drag-move: free the guard from their current puesto first (one active
@@ -2807,11 +2902,20 @@ export default function Schedule() {
                 ))}
               </div>
               <div className="flex items-center justify-between px-5 py-3" style={{ borderTop: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>
-                <button
-                  onClick={() => { const p = sfPick; setSfPick(null); setOverrideTarget({ guardId: p.assignment.guardId, guardName: p.guardName, date: p.dateStr, assignmentId: p.assignment.id }); }}
-                  className="cg-focus text-[11px] font-semibold hover:underline"
-                  style={{ color: 'var(--ink-soft)' }}
-                >Marcar novedad…</button>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => { const p = sfPick; setSfPick(null); setOverrideTarget({ guardId: p.assignment.guardId, guardName: p.guardName, date: p.dateStr, assignmentId: p.assignment.id }); }}
+                    className="cg-focus text-[11px] font-semibold hover:underline"
+                    style={{ color: 'var(--ink-soft)' }}
+                  >Marcar novedad…</button>
+                  {/* Sin sacafrancos —o con todos ocupados— esta pantalla era un
+                      callejón sin salida. El hueco se puede tapar con cualquiera. */}
+                  <button
+                    onClick={() => { const p = sfPick; setSfPick(null); openAssignForm(p.station.id, p.pos.id, p.dateStr); }}
+                    className="cg-focus text-[11px] font-semibold hover:underline"
+                    style={{ color: 'var(--brand-text)' }}
+                  >Cubrir con otro vigilante…</button>
+                </div>
                 <button onClick={() => setSfPick(null)} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all">Cerrar</button>
               </div>
             </div>
@@ -2824,7 +2928,7 @@ export default function Schedule() {
         <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'oklch(0 0 0 / 0.55)' }} onClick={() => { setShowAssignForm(false); setMoveFrom(null); }}>
           <div className="glass-raised mx-4 max-h-[90vh] w-full max-w-md overflow-hidden overflow-y-auto animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--hairline)' }}>
-              <h4 className="text-sm font-semibold">{moveFrom ? 'Mover vigilante de puesto' : 'Asignar vigilante a una posición'}</h4>
+              <h4 className="text-sm font-semibold">{moveFrom ? 'Mover vigilante de puesto' : (assignMode === 'single' ? 'Cubrir este día' : 'Asignar vigilante a la rotación')}</h4>
               <button onClick={() => { setShowAssignForm(false); setMoveFrom(null); }} className="cg-btn-ghost cg-focus rounded-lg p-1.5"><X size={15} /></button>
             </div>
             <div className="p-5 space-y-4">
@@ -2851,28 +2955,71 @@ export default function Schedule() {
                 </div>
               )}
 
+              {/* ── Qué se va a crear ──────────────────────────────────────
+                  Un traslado no tiene elección (mover una asignación es
+                  rotación por definición), así que ahí no se enseña. */}
+              {!moveFrom && (
+                <div>
+                  <Segmented<'single' | 'rotation'>
+                    value={assignMode}
+                    onChange={setAssignMode}
+                    options={[
+                      { value: 'single', label: 'Sólo este día' },
+                      { value: 'rotation', label: 'Rotación' },
+                    ]}
+                  />
+                  <p className="mt-1.5 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
+                    {assignMode === 'single'
+                      ? 'Un turno suelto para la fecha elegida. No entra en la rotación del puesto.'
+                      : 'Entra en la rotación del puesto: se generan sus turnos de todo el año. Tarda unos segundos.'}
+                  </p>
+                </div>
+              )}
+
               {/* Guard */}
               <div>
                 <label className="cg-eyebrow mb-1.5 block">Vigilante</label>
                 {(() => {
-                  // A vigilante can hold only ONE active rotation (fijo OR sacafranco).
-                  // Drop everyone already assigned from the options so it's impossible
-                  // to pick an occupied vigilante — except the one being MOVED here.
-                  const occupiedIds = new Set(assignments.map(a => a.guardId));
-                  const availableGuards = guardsPool.filter(g => !occupiedIds.has(g.id) || g.id === assignGuard);
+                  // ── QUIÉN PUEDE APARECER AQUÍ ────────────────────────────
+                  // En ROTACIÓN, sólo quien no tenga ya una: un vigilante
+                  // sostiene UNA sola rotación activa (fijo o sacafranco) y el
+                  // servidor rechaza el resto — esconderlos evita el error.
+                  //
+                  // Para UN DÍA esa regla no aplica: cubrir un hueco el martes
+                  // no es «pertenecer» a ningún puesto, y quien tapa el hueco
+                  // suele ser precisamente alguien que YA tiene su rotación en
+                  // otro sitio y ese día libra. Filtrarlos dejaba la lista casi
+                  // vacía justo cuando más falta hacía.
+                  const ocupados = new Set(assignments.map(a => a.guardId));
+                  const disponibles = assignMode === 'single'
+                    ? guardsPool
+                    : guardsPool.filter(g => !ocupados.has(g.id) || g.id === assignGuard);
+
+                  // Con turno ese día ya: se muestran, pero avisados. El turno
+                  // nuevo REEMPLAZA al que se solape, y conviene saberlo antes.
+                  const conTurnoEseDia = (id: string) => !!shiftByGuardDate.get(`${id}|${assignStartDate}`);
 
                   return (
                     <select value={assignGuard} onChange={e => setAssignGuard(e.target.value)} className="cg-input cg-focus w-full px-3 py-2.5 text-sm">
                       <option value="">Elige un vigilante…</option>
-                      {availableGuards.map(g => <option key={g.id} value={g.id}>{g.label}</option>)}
-                      {availableGuards.length === 0 && <option value="" disabled>{t("ui.Schedule.todosLosVigilantesYaEstan", "Todos los vigilantes ya están asignados")}</option>}
+                      {disponibles.map(g => (
+                        <option key={g.id} value={g.id}>
+                          {g.label}{assignMode === 'single' && conTurnoEseDia(g.id) ? ' · ya tiene turno ese día' : ''}
+                        </option>
+                      ))}
+                      {disponibles.length === 0 && <option value="" disabled>{t("ui.Schedule.todosLosVigilantesYaEstan", "Todos los vigilantes ya están asignados")}</option>}
                     </select>
                   );
                 })()}
-                {positions.find(p => p.id === assignTarget?.positionId)?.type === 'sacafranco' && (
+                {assignMode === 'single' && assignGuard && shiftByGuardDate.get(`${assignGuard}|${assignStartDate}`) && (
+                  <p className="mt-1 text-[10px]" style={{ color: 'var(--warn-text)' }}>
+                    Ya tiene turno ese día: el nuevo reemplazará al que se solape.
+                  </p>
+                )}
+                {assignMode === 'rotation' && positions.find(p => p.id === assignTarget?.positionId)?.type === 'sacafranco' && (
                   <p className="mt-1 text-[10px]" style={{ color: 'var(--ok-text)' }}>Sacafranco: puede cubrir varios puestos</p>
                 )}
-                {positions.find(p => p.id === assignTarget?.positionId)?.type === 'fijo' && (
+                {assignMode === 'rotation' && positions.find(p => p.id === assignTarget?.positionId)?.type === 'fijo' && (
                   <p className="mt-1 text-[10px]" style={{ color: 'var(--warn-text)' }}>Fijo: exclusivo de este puesto</p>
                 )}
               </div>
@@ -2880,19 +3027,47 @@ export default function Schedule() {
               {/* Start date: bounds when shifts begin (and sets the phase on
                   alternation stations). Defaults to the day you dropped on. */}
               <div>
-                <label className="cg-eyebrow mb-1.5 block">{t("ui.Schedule.primerDiaDeTurno", "Primer día de turno")}</label>
+                <label className="cg-eyebrow mb-1.5 block">
+                  {assignMode === 'single' ? 'Día que cubre' : t("ui.Schedule.primerDiaDeTurno", "Primer día de turno")}
+                </label>
                 <input
                   type="date"
                   value={assignStartDate}
                   onChange={e => setAssignStartDate(e.target.value)}
                   className="cg-input cg-focus w-full px-3 py-2.5 text-sm"
                 />
-                <p className="mt-1 text-[10px]" style={{ color: 'var(--ink-faint)' }}>Los turnos se generan desde esta fecha (hora de la empresa).</p>
+                <p className="mt-1 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
+                  {assignMode === 'single'
+                    ? 'Hora de la empresa.'
+                    : 'Los turnos se generan desde esta fecha (hora de la empresa).'}
+                </p>
               </div>
+
+              {/* Horas del turno suelto. Vienen del puesto; si el fin es menor o
+                  igual que el inicio, el turno cruza la medianoche (iguales = 24 h). */}
+              {assignMode === 'single' && (
+                <div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="cg-eyebrow mb-1.5 block">Entra</label>
+                      <input type="time" value={assignStartTime} onChange={e => setAssignStartTime(e.target.value)} className="cg-input cg-focus w-full px-3 py-2 font-mono text-sm tabular-nums" />
+                    </div>
+                    <div>
+                      <label className="cg-eyebrow mb-1.5 block">Sale</label>
+                      <input type="time" value={assignEndTime} onChange={e => setAssignEndTime(e.target.value)} className="cg-input cg-focus w-full px-3 py-2 font-mono text-sm tabular-nums" />
+                    </div>
+                  </div>
+                  <p className="mt-1 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
+                    {assignEndTime <= assignStartTime
+                      ? (assignEndTime === assignStartTime ? 'Turno de 24 horas.' : 'Termina al día siguiente.')
+                      : 'Horas tomadas del puesto; puedes cambiarlas.'}
+                  </p>
+                </div>
+              )}
 
               {/* The patrón de rotación is set on the STATION (Sitios › Estación ›
                   Horario del turno) and inherited here — not chosen per guard. */}
-              {(() => {
+              {assignMode === 'rotation' && (() => {
                 const st = stationsById.get(assignTarget?.stationId || '');
                 const rot = st?.rotationStyleId ? rotationStylesById.get(st.rotationStyleId) : null;
                 return (
@@ -2907,7 +3082,7 @@ export default function Schedule() {
             <div className="flex items-center justify-end gap-2 px-5 py-3" style={{ borderTop: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>
               <button onClick={() => { setShowAssignForm(false); setMoveFrom(null); }} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all">Cancelar</button>
               <button onClick={saveAssignment} disabled={assignSaving || !assignGuard} className="cg-btn-brand cg-focus rounded-full px-5 py-2 text-sm font-semibold transition-all disabled:opacity-40">
-                {assignSaving ? <Loader2 size={14} className="animate-spin" /> : (moveFrom ? 'Mover' : 'Asignar')}
+                {assignSaving ? <Loader2 size={14} className="animate-spin" /> : (moveFrom ? 'Mover' : (assignMode === 'single' ? 'Cubrir el día' : 'Asignar a la rotación'))}
               </button>
             </div>
           </div>
