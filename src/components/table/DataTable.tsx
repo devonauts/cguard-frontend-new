@@ -143,7 +143,7 @@ export function DataTable<T extends { id: string }>({
                             style={{ background: headBg, borderBottom: "1px solid var(--hairline)" }}
                         >
                             <Checkbox
-                                aria-label=i18n.t("kit.table.selectAll")
+                                aria-label={i18n.t("kit.table.selectAll")}
                                 checked={allSelected}
                                 onCheckedChange={(checked) => onSelectAll && onSelectAll(!!checked)}
                             />
@@ -236,8 +236,8 @@ export function DataTable<T extends { id: string }>({
                         <td colSpan={colCount} className="p-4">
                             {emptyState ?? (
                                 <EmptyState
-                                    title=i18n.t("kit.table.emptyTitle")
-                                    description=i18n.t("kit.table.emptyHint")
+                                    title={i18n.t("kit.table.emptyTitle")}
+                                    description={i18n.t("kit.table.emptyHint")}
                                 />
                             )}
                         </td>
@@ -275,7 +275,7 @@ export function DataTable<T extends { id: string }>({
                                 {showSelection && (
                                     <td className={cn(cellPad, railOnce())} onClick={(e) => e.stopPropagation()}>
                                         <Checkbox
-                                            aria-label=i18n.t("kit.table.selectRow")
+                                            aria-label={i18n.t("kit.table.selectRow")}
                                             checked={selected}
                                             onCheckedChange={(checked) => onSelectOne && onSelectOne(row.id, !!checked)}
                                         />

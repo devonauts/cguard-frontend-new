@@ -31,7 +31,7 @@ export function RowActionsMenu({ actions }: RowActionsMenuProps) {
             <DropdownMenuTrigger asChild>
                 <button
                     type="button"
-                    aria-label=i18n.t("kit.table.rowActions")
+                    aria-label={i18n.t("kit.table.rowActions")}
                     className="cg-focus inline-grid h-8 w-8 place-items-center rounded-lg border border-transparent text-[var(--ink-faint)] transition-colors hover:border-[var(--hairline)] hover:bg-[var(--glass-sunken)] hover:text-[var(--ink)] data-[state=open]:border-[var(--brand-line)] data-[state=open]:bg-[var(--brand-wash)] data-[state=open]:text-[var(--brand-text)]"
                 >
                     <EllipsisVertical className="h-4 w-4" />
