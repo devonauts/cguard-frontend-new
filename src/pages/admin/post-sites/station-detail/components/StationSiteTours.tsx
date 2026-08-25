@@ -210,7 +210,8 @@ export default function StationSiteTours({ station, stationId, postSiteId }: Pro
           </span>
         }
         action={
-          <div className="flex items-center gap-2">
+          /* Los dos botones rozan los 300 px: se envuelven en pantallas estrechas. */
+          <div className="flex flex-wrap items-center justify-end gap-2">
             <Button variant="brand" size="sm" onClick={() => setShowNewTour(true)} className="gap-1.5 rounded-full">
               <Plus size={16} /> {t('station.siteTours.new', 'Nueva ronda')}
             </Button>
@@ -247,9 +248,9 @@ export default function StationSiteTours({ station, stationId, postSiteId }: Pro
               return (
                 <li key={id}>
                   <div className="flex items-center gap-3 px-6 py-3 hover:bg-muted/40">
-                    <button onClick={() => toggleExpand(id)} className="flex flex-1 items-center gap-3 text-left">
-                      {isOpen ? <ChevronDown size={18} className="text-muted-foreground" /> : <ChevronRight size={18} className="text-muted-foreground" />}
-                      <span className="font-medium text-foreground">{name}</span>
+                    <button onClick={() => toggleExpand(id)} className="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-1 text-left">
+                      {isOpen ? <ChevronDown size={18} className="shrink-0 text-muted-foreground" /> : <ChevronRight size={18} className="shrink-0 text-muted-foreground" />}
+                      <span className="min-w-0 truncate font-medium text-foreground">{name}</span>
                       <StatusBadge tone={active ? 'green' : 'slate'}>
                         {active ? t('station.siteTours.active', 'Activa') : t('station.siteTours.inactive', 'Inactiva')}
                       </StatusBadge>
@@ -277,9 +278,9 @@ export default function StationSiteTours({ station, stationId, postSiteId }: Pro
                               {list.map((c, ci) => (
                                 <li key={c.id} className="glass-sunken flex items-center justify-between px-3 py-2">
                                   <div className="min-w-0">
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex min-w-0 flex-wrap items-center gap-x-2">
                                       <span className="w-5 shrink-0 text-right font-mono text-xs text-muted-foreground">{ci + 1}.</span>
-                                      <span className="font-medium text-foreground">{c.name}</span>
+                                      <span className="min-w-0 truncate font-medium text-foreground">{c.name}</span>
                                       <span className="font-mono text-xs text-muted-foreground">{c.tagIdentifier}</span>
                                     </div>
                                     <div className="mt-0.5 text-xs">

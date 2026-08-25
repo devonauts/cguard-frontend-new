@@ -188,7 +188,7 @@ export function CategoryManagerDialog({ open, onOpenChange, module, onChanged }:
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-center">{t('categories.title', 'Category Manager')}</DialogTitle>
             <DialogDescription>
@@ -197,8 +197,8 @@ export function CategoryManagerDialog({ open, onOpenChange, module, onChanged }:
           </DialogHeader>
 
           <div className="flex flex-col gap-3">
-            <div className="flex items-center justify-between gap-2">
-              <div className="relative w-72">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="relative w-full sm:w-72">
                 <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input placeholder={t('categories.searchPlaceholder', 'Search...')} className="pl-9" value={search} onChange={(e) => setSearch(e.target.value)} />
               </div>

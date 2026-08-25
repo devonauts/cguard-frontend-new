@@ -750,7 +750,7 @@ function PanelField({
   return (
     <div className="flex items-baseline justify-between gap-3">
       <dt className="cg-eyebrow shrink-0">{label}</dt>
-      <dd className={["text-right", mono ? "font-mono text-xs" : ""].join(" ")}>
+      <dd className={["min-w-0 break-words text-right", mono ? "font-mono text-xs" : ""].join(" ")}>
         {value || <span style={{ color: 'var(--ink-faint)' }}>—</span>}
       </dd>
     </div>

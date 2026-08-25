@@ -58,7 +58,7 @@ export default function SupervisorCoveragePage() {
             />
           ) : (
             <>
-              <div className="flex items-center justify-between gap-2">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
                   Zonas y puestos que este supervisor cubre según sus asignaciones.
                 </p>

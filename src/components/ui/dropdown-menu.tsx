@@ -75,7 +75,9 @@ const DropdownMenuContent = React.forwardRef<
       sideOffset={sideOffset}
       className={cn(
         surfaceBase,
-        "max-h-[var(--radix-dropdown-menu-content-available-height)] overflow-y-auto overflow-x-hidden origin-[--radix-dropdown-menu-content-transform-origin]",
+        /* `max-w`: un elemento de texto largo sacaba el menú por el lado de la
+           pantalla en un teléfono. */
+        "max-h-[var(--radix-dropdown-menu-content-available-height)] max-w-[calc(100vw-1rem)] overflow-y-auto overflow-x-hidden origin-[--radix-dropdown-menu-content-transform-origin]",
         className
       )}
       {...props}

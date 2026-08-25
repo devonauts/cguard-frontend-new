@@ -310,7 +310,7 @@ export default function ShiftExchange() {
                     <Plus className="h-4 w-4 mr-1" /> Nueva solicitud
                   </Button>
                 </SheetTrigger>
-                <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto">
+                <SheetContent className="w-full sm:w-[540px] overflow-y-auto">
                   <SheetHeader className="relative">
                     <SheetTitle>Nueva solicitud de intercambio</SheetTitle>
                     <Button variant="ghost" size="icon" className="absolute right-0 top-0" onClick={() => setIsNewRequestOpen(false)}>
@@ -446,7 +446,7 @@ export default function ShiftExchange() {
         </Section>
 
         {/* Pagination */}
-        <div className="flex items-center justify-end space-x-2 py-4">
+        <div className="flex flex-wrap items-center justify-end gap-2 py-4">
           <div className="text-sm" style={{ color: "var(--ink-soft)" }}>{t("ui.ShiftExchange.elementosPorPagina", "Elementos por página")}</div>
           <Select value={String(pageSize)} onValueChange={(v) => { setPageSize(Number(v)); setPage(1); }}>
             <SelectTrigger className="w-[70px]"><SelectValue /></SelectTrigger>
@@ -456,7 +456,7 @@ export default function ShiftExchange() {
               <SelectItem value="100">100</SelectItem>
             </SelectContent>
           </Select>
-          <div className="mx-4 text-sm tabular-nums" style={{ color: "var(--ink-soft)" }}>
+          <div className="text-sm tabular-nums sm:mx-4" style={{ color: "var(--ink-soft)" }}>
             {filtered.length === 0
               ? "0 de 0"
               : `${(page - 1) * pageSize + 1}–${Math.min(page * pageSize, filtered.length)} de ${filtered.length}`}

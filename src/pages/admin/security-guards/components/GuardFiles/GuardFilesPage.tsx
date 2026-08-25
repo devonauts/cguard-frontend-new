@@ -197,7 +197,7 @@ export default function GuardFilesPage() {
           {/* Upload Files Modal */}
           {showUploadModal && (
             <div className="glass-scrim fixed inset-0 z-50" onClick={() => setShowUploadModal(false)}>
-              <div className="glass-raised fixed bottom-0 right-0 top-0 flex w-96 flex-col rounded-l-3xl rounded-r-none" style={{ position: 'fixed' }} onClick={(e) => e.stopPropagation()}>
+              <div className="glass-raised fixed bottom-0 right-0 top-0 flex w-full max-w-md flex-col rounded-l-3xl rounded-r-none" style={{ position: 'fixed' }} onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-center justify-between p-4 border-b sticky top-0 z-10 [background:var(--glass-solid)]">
                   <div className="flex items-center gap-2.5">
                     <IconTile size="sm"><FolderOpen /></IconTile>

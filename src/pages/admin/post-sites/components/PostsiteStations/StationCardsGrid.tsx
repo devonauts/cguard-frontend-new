@@ -86,7 +86,7 @@ export default function StationCardsGrid({
                             </div>
                         </div>
 
-                        <div className="mt-3 flex items-center gap-4 border-t pt-3 text-sm" style={{ borderColor: 'var(--hairline)', color: 'var(--ink-soft)' }}>
+                        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 border-t pt-3 text-sm" style={{ borderColor: 'var(--hairline)', color: 'var(--ink-soft)' }}>
                             <span className="flex items-center gap-1.5">
                                 <Users className="h-4 w-4" style={{ color: 'var(--brand-text)' }} />
                                 <span className="font-semibold" style={{ color: 'var(--ink)' }}>{guards ?? '—'}</span> vigilante(s)

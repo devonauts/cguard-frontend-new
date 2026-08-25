@@ -86,7 +86,7 @@ export default function SystemLogs() {
 
   return (
     <AppLayout>
-      <PageContainer width="wide">
+      <PageContainer width="wide" className="px-4 pt-4 sm:px-6 sm:pt-6">
         <PageHeader
           icon={<ScrollText />}
           title="Registros del Sistema"
@@ -107,6 +107,7 @@ export default function SystemLogs() {
             value={action}
             onChange={setAction}
             options={FILTERS.map((f) => ({ value: f.key, label: f.label }))}
+            className="max-w-full overflow-x-auto"
           />
 
           <Button variant="outline" size="icon" className="ml-auto" onClick={() => load(true)} title="Recargar" aria-label="Recargar">

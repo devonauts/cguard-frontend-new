@@ -153,7 +153,7 @@ export default function SubscriptionDetailsModule() {
         {loading ? (
           // Barras fantasma con la forma de los cuatro campos, no una ruleta:
           // el bloque no salta de altura cuando llegan los datos.
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="space-y-1.5">
                 <SkeletonBlock className="h-2.5 w-20" />
@@ -162,7 +162,7 @@ export default function SubscriptionDetailsModule() {
             ))}
           </div>
         ) : (
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
           <Field
             label="Plan"
             value={data?.plan?.name || (currentPlan ? PLAN_LABEL[currentPlan] : "—")}

@@ -82,7 +82,7 @@ export default function VideoGatewayModal({
           </div>
           <div>
             <label className="cg-eyebrow mb-1.5 block">Formato</label>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {(["hls", "webrtc"] as const).map((f) => (
                 <button
                   key={f}

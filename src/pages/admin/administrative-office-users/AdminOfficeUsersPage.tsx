@@ -601,7 +601,7 @@ export default function AdminOfficeUsersPage() {
                   {t('adminOfficeUsers.filters.title', { defaultValue: 'Filtros' })}
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[400px] sm:w-[460px]">
+              <SheetContent side="right" className="w-full max-w-full sm:w-[460px] overflow-y-auto">
                 <SheetHeader>
                   <SheetTitle>{t('adminOfficeUsers.filters.title', { defaultValue: 'Filtros' })}</SheetTitle>
                 </SheetHeader>
@@ -699,7 +699,7 @@ export default function AdminOfficeUsersPage() {
 
         {/* Tabla */}
         <GlassPanel flat className="mt-4 overflow-hidden p-0">
-          <div className="md:block hidden">
+          <div className="md:block hidden overflow-x-auto">
             {viewMode === "cards" ? (
               <AdminUserCardsGrid
                 users={pagedRows}
@@ -943,8 +943,8 @@ export default function AdminOfficeUsersPage() {
           </div>
         </GlassPanel>
         {/* Footer de tabla */}
-        <div className="glass-sunken mt-2 flex items-center justify-between px-4 py-3 text-sm" style={{ color: 'var(--ink-soft)' }}>
-          <div className="flex items-center gap-2">
+        <div className="glass-sunken mt-2 flex flex-col gap-3 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between" style={{ color: 'var(--ink-soft)' }}>
+          <div className="flex flex-wrap items-center gap-2">
             <span>{t('adminOfficeUsers.footer.itemsPerPage', { defaultValue: 'Elementos por página' })}</span>
             <Select
               value={String(pageSize)}
@@ -960,7 +960,7 @@ export default function AdminOfficeUsersPage() {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 sm:justify-end sm:gap-4">
             <div className="tabular-nums">
               {filteredRows.length === 0 ? t('adminOfficeUsers.pagination.zero', { defaultValue: '0 – 0 de 0' }) : t('adminOfficeUsers.pagination.range', { defaultValue: '{{start}} – {{end}} de {{total}}', start: rangeStart, end: rangeEnd, total: filteredRows.length })}
             </div>

@@ -140,10 +140,24 @@
     font-family: "Inter Variable", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   }
   html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  /* El recuadro gris que pinta el móvil al tocar. Ignora el `border-radius`, así
+     que sobre una tarjeta de cristal redondeada dibuja un rectángulo duro justo
+     encima del filo. La respuesta al toque ya la da el `:active` de glass.css
+     (la pieza cede al pulsarla), que sí respeta la forma. */
+  html { -webkit-tap-highlight-color: transparent; }
   /* El interletraje anterior (-0.011em) estaba calibrado para Poppins, que es
      ancha y redonda. Inter ya viene compensada: apretarla tanto le come el
      contrapunzón a 12 px, justo donde más falta hace. */
   body { letter-spacing: -0.005em; }
+
+  /* Un dato que el usuario escribió no cabe siempre: un correo largo, una URL de
+     un adjunto o un nombre de archivo sin espacios se salen de su caja y, en una
+     pantalla de 375 px, arrastran la página entera de lado.
+     Es `break-word` y NO `anywhere` A PROPÓSITO: `anywhere` también cambia el
+     tamaño mínimo intrínseco, y eso recalcula el ancho de cada columna de tabla
+     y de cada elemento flexible del CRM. `break-word` sólo actúa cuando una
+     palabra ya no cabe en su línea — que es exactamente el caso a cubrir. */
+  body { overflow-wrap: break-word; }
 
   /* CERO BARRADO en todo lo que sea un dato. En una consola de operaciones se
      leen matrículas, identificadores y coordenadas, y ahí distinguir 0 de O no

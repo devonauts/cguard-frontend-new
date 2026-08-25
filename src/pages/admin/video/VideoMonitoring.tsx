@@ -93,7 +93,7 @@ function TileButton({
          al navegador a rasterizar el fotograma de vídeo que tiene detrás. El
          cluster ya se apoya en una superficie `--glass-sunken`, que es la que
          da el aspecto esmerilado; los botones sólo necesitan su propio filo. */
-      className="cg-focus grid size-8 place-items-center rounded-full border transition-all duration-200 hover:-translate-y-0.5"
+      className="cg-focus grid size-9 place-items-center rounded-full border transition-all duration-200 hover:-translate-y-0.5 sm:size-8"
       style={{ background: 'var(--glass-raised)', borderColor: 'var(--hairline)', color: 'var(--ink)' }}
     >
       {icon}

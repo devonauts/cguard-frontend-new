@@ -249,7 +249,7 @@ export default function ShiftTemplates() {
                     <Plus className="mr-1 h-4 w-4" /> Nueva plantilla
                   </Button>
                 </SheetTrigger>
-                <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto">
+                <SheetContent className="w-full sm:w-[540px] overflow-y-auto">
                   <SheetHeader className="relative">
                     <SheetTitle>
                       {editingId ? "Editar plantilla de turno" : "Nueva plantilla de turno"}
@@ -442,7 +442,7 @@ export default function ShiftTemplates() {
                     <Filter className="mr-2 h-4 w-4" /> Filtros
                   </Button>
                 </SheetTrigger>
-                <SheetContent className="w-[400px] sm:w-[540px]">
+                <SheetContent className="w-full sm:w-[540px] overflow-y-auto">
                   <SheetHeader className="relative">
                     <SheetTitle>Filtros</SheetTitle>
                     <Button

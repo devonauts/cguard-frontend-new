@@ -513,14 +513,14 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
       {/* Alert banner for uncovered shifts */}
       {futureUncovered > 0 && (
         <div
-          className="glass-flat flex items-center gap-3 px-4 py-3 animate-in fade-in slide-in-from-top-2 duration-300"
+          className="glass-flat flex flex-wrap items-center gap-3 px-4 py-3 animate-in fade-in slide-in-from-top-2 duration-300"
           style={{
             background: 'color-mix(in oklab, var(--bad) 10%, transparent)',
             borderColor: 'color-mix(in oklab, var(--bad) 28%, transparent)',
           }}
         >
           <IconTile tone="bad" size="sm"><AlertTriangle /></IconTile>
-          <div className="flex-1 min-w-0">
+          <div className="min-w-48 flex-1">
             <p className="text-sm font-semibold" style={{ color: 'var(--bad-text)' }}>
               {futureUncovered} turno{futureUncovered > 1 ? 's' : ''} por cubrir (próximos 14 días)
             </p>
@@ -551,7 +551,10 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
           justo debajo de una rejilla que se desplaza. */}
       <div className="glass-flat overflow-hidden" style={{ borderRadius: 'var(--r-xl)' }}>
         {/* Top Bar */}
-        <div className="flex items-center justify-between border-b px-5 py-3" style={{ borderColor: 'var(--hairline)' }}>
+        {/* Vista + navegación + «Nuevo turno» suman ~640 px. El contenedor
+            recorta (`overflow-hidden`), así que sin envolver el botón de crear
+            turno quedaba fuera de alcance en un teléfono. */}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b px-5 py-3" style={{ borderColor: 'var(--hairline)' }}>
           <div className="flex items-center gap-2">
             <Segmented
               value={viewMode}
@@ -571,7 +574,7 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
             <button onClick={() => navigate(-1)} aria-label="Periodo anterior" className="cg-btn-ghost cg-focus rounded-lg p-1.5 transition-colors">
               <ChevronLeft size={16} />
             </button>
-            <h3 className="min-w-[200px] select-none text-center text-sm font-semibold">{title}</h3>
+            <h3 className="select-none text-center text-sm font-semibold sm:min-w-[200px]">{title}</h3>
             <button onClick={() => navigate(1)} aria-label="Periodo siguiente" className="cg-btn-ghost cg-focus rounded-lg p-1.5 transition-colors">
               <ChevronRight size={16} />
             </button>

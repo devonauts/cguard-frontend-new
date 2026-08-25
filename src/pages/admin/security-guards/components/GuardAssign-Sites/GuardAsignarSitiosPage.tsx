@@ -622,7 +622,7 @@ export default function GuardAsignarSitiosPage() {
                     </div>
                   )}
 
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <div>
                       <label className="cg-eyebrow mb-1.5 block">{t('guards.assignSites.form.start', { defaultValue: 'Inicio' })}<span className="ml-0.5" style={{ color: 'var(--bad-text)' }}>*</span></label>
                       <input type="datetime-local" value={selectedStart} onChange={(e) => setSelectedStart(e.target.value)} className="cg-input flex h-9 w-full px-2 text-sm" />

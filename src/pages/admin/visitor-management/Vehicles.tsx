@@ -430,7 +430,8 @@ export default function Vehicles() {
                             <SkeletonCards count={4} />
                         </div>
                     ) : (
-                    <table className="min-w-full border-collapse text-left text-sm">
+                    <div className="overflow-x-auto">
+                    <table className="w-full min-w-[640px] border-collapse text-left text-sm">
                         <thead>
                             <tr className="border-b">
                                 <th className="cg-eyebrow px-2 py-2">
@@ -485,9 +486,10 @@ export default function Vehicles() {
                                 ))}
                         </tbody>
                     </table>
+                    </div>
                     )}
 
-                    <div className="flex items-center justify-between bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
+                    <div className="flex flex-wrap items-center justify-between gap-3 bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
                         <div className="flex items-center gap-2">
                             <span>{t("ui.Vehicles.elementosPorPagina", "Elementos por página")}</span>
                             <Select value={perPage} onValueChange={setPerPage}>
@@ -501,7 +503,7 @@ export default function Vehicles() {
                                 </SelectContent>
                             </Select>
                         </div>
-                        <div className="flex items-center gap-4">
+                        <div className="flex flex-wrap items-center gap-4">
                             <span>{count === 0 ? "0 de 0" : `${start}–${end} de ${count}`}</span>
                             <div className="flex gap-2">
                                 <Button

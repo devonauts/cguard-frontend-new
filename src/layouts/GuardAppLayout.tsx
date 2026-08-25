@@ -21,12 +21,15 @@ export default function GuardAppLayout() {
       </header>
 
       {/* Content */}
-      <main className="flex-1 overflow-y-auto pb-20">
+      {/* El hueco de abajo cuenta la barra fija MÁS la franja del gesto de inicio
+          (iPhone/Android con navegación por gestos): sin ella, el último elemento
+          de cada pantalla quedaba tapado por la barra. */}
+      <main className="flex-1 overflow-y-auto pb-[calc(5rem+env(safe-area-inset-bottom))]">
         <Outlet />
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-card border-t flex items-center justify-around py-2 z-50">
+      <nav className="fixed bottom-0 left-0 right-0 bg-card border-t flex items-center justify-around pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] z-50">
         {navItems.map(({ to, icon: Icon, label }) => (
           <NavLink
             key={to}

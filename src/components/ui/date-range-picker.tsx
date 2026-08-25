@@ -135,15 +135,18 @@ export function DateRangePicker({
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto overflow-hidden p-0" align="end">
-          <div className="flex">
+          {/* Atajos + calendario suman ~410 px: en un teléfono no caben uno al
+              lado del otro, así que ahí se apilan y los atajos pasan a ser una
+              fila que se desplaza. */}
+          <div className="flex flex-col sm:flex-row">
             {/* Atajos — pozo hundido a la izquierda del calendario. */}
-            <div className="w-40 border-r border-[color:var(--hairline)] bg-[var(--glass-sunken)] p-1.5">
-              <div className="space-y-0.5">
+            <div className="w-full border-b border-[color:var(--hairline)] bg-[var(--glass-sunken)] p-1.5 sm:w-40 sm:border-b-0 sm:border-r">
+              <div className="flex gap-1 overflow-x-auto sm:block sm:space-y-0.5 sm:overflow-visible">
                 {presets.map((preset) => (
                   <button
                     key={preset.label}
                     onClick={() => handlePresetClick(preset)}
-                    className="cg-focus w-full rounded-[var(--r-sm)] px-2.5 py-1.5 text-left text-xs font-medium text-[color:var(--ink-soft)] transition-colors duration-200 hover:bg-[var(--brand-wash)] hover:text-[color:var(--brand-text)] motion-reduce:transition-none"
+                    className="cg-focus w-auto shrink-0 whitespace-nowrap rounded-[var(--r-sm)] px-2.5 py-1.5 text-left text-xs font-medium text-[color:var(--ink-soft)] transition-colors duration-200 hover:bg-[var(--brand-wash)] hover:text-[color:var(--brand-text)] motion-reduce:transition-none sm:w-full"
                   >
                     {preset.label}
                   </button>

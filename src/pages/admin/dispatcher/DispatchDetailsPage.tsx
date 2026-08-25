@@ -376,8 +376,8 @@ export function DispatchDetailsContent({ requestId, resourceTypeProp }: { reques
 
                 </div>
               </div>
-            <div className="p-0 text-sm">
-              <table className="w-full text-sm border-collapse">
+            <div className="overflow-x-auto p-0 text-sm">
+              <table className="w-full min-w-[720px] text-sm border-collapse">
                 <tbody>
                   <tr className="border-b">
                     <td className="py-3 px-4 text-xs font-medium text-muted-foreground">{t('dispatcher.ticket_id')}</td>
@@ -542,12 +542,12 @@ export function DispatchDetailsContent({ requestId, resourceTypeProp }: { reques
                 {comments.map((c) => (
                   <div key={c.id || c.createdAt} className="flex items-start gap-3">
                     <div className="flex-shrink-0 h-8 w-8 rounded-full bg-muted flex items-center justify-center text-sm font-medium text-foreground">{(c.author && (c.author.name || c.author.fullName || c.author.username) ? String((c.author.name || c.author.fullName || c.author.username)).charAt(0).toUpperCase() : 'U')}</div>
-                    <div className="flex-1">
+                    <div className="min-w-0 flex-1">
                       <div className="text-xs text-foreground/70">{(c.author && (c.author.name || c.author.fullName || c.author.username)) || 'Usuario'} · {c.createdAt ? new Date(c.createdAt).toLocaleString() : ''}</div>
-                      <div className="mt-1 text-sm text-foreground whitespace-pre-wrap">{c.text || c.body || c.message}</div>
+                      <div className="mt-1 text-sm text-foreground whitespace-pre-wrap break-words">{c.text || c.body || c.message}</div>
                       {c.attachment && c.attachment.url && (
                         <div className="mt-2">
-                          <a className="text-xs underline" style={{ color: 'var(--brand-text)' }} href={c.attachment.url} target="_blank" rel="noreferrer">Adjunto: {c.attachment.name || c.attachment.url}</a>
+                          <a className="text-xs underline break-all" style={{ color: 'var(--brand-text)' }} href={c.attachment.url} target="_blank" rel="noreferrer">Adjunto: {c.attachment.name || c.attachment.url}</a>
                         </div>
                       )}
                     </div>

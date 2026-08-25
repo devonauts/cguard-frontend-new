@@ -505,7 +505,7 @@ export default function Visits() {
                                 </Button>
                             </SheetTrigger>
 
-                            <SheetContent side="right" className="w-[400px] sm:w-[460px]">
+                            <SheetContent side="right" className="w-full overflow-y-auto sm:w-[460px]">
                                 <SheetHeader>
                                     <SheetTitle>Filtros</SheetTitle>
                                 </SheetHeader>
@@ -678,7 +678,7 @@ export default function Visits() {
                 <Section title="Registro de visitas" icon={<ClipboardList />}>
                 <div className="overflow-hidden rounded-xl border">
                     <div className="overflow-x-auto">
-                    <table className="min-w-full border-collapse text-left text-sm">
+                    <table className="w-full min-w-[960px] border-collapse text-left text-sm">
                         <thead>
                             <tr className="border-b">
                                 <th className="cg-eyebrow px-2 py-2">
@@ -754,7 +754,7 @@ export default function Visits() {
                     </table>
                     </div>
 
-                    <div className="flex items-center justify-between bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
+                    <div className="flex flex-wrap items-center justify-between gap-3 bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
                         <div className="flex items-center gap-2">
                             <span>{t("ui.Visits.elementosPorPagina", "Elementos por página")}</span>
                             <Select

@@ -86,7 +86,7 @@ export default function AlarmActionPlan({ caseId }: { caseId: string }) {
               <button
                 onClick={() => toggle(i, !done)}
                 disabled={savingIdx === i}
-                className="cg-focus mt-0.5 flex size-5 shrink-0 items-center justify-center rounded border transition-colors"
+                className="cg-focus relative mt-0.5 flex size-5 shrink-0 items-center justify-center rounded border transition-colors after:absolute after:-inset-2 after:content-['']"
                 // Marcado: relleno de marca con tinta `--brand-ink`. Blanco sobre
                 // `--brand` (L 0.72/0.78) daría ~2,2:1 — ver tokens.css.
                 style={done

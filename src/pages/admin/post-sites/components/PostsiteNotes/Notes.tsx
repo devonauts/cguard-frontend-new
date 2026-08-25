@@ -195,7 +195,9 @@ export default function PostSiteNotes({ site }: Props) {
   return (
     <div ref={containerRef} className="min-h-screen flex flex-col animate-fade-up">
       <div className="glass flex min-h-0 flex-1 flex-col p-6">
-        <div className="flex items-center justify-between gap-4 mb-6">
+        {/* Sin `flex-wrap` el buscador se quedaba en ~30 px de ancho entre los
+            dos botones en un teléfono. */}
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div className="relative" ref={actionRef}>
             <button onClick={() => setActionOpen(v => !v)} className="cg-btn-glass cg-focus flex min-w-[100px] items-center gap-2 rounded-md px-3 py-2 text-sm font-medium">
               {t('actions.action', 'Action')}
@@ -208,7 +210,7 @@ export default function PostSiteNotes({ site }: Props) {
             )}
           </div>
 
-          <div className="flex-1 max-w-xs">
+          <div className="min-w-48 flex-1 sm:max-w-xs">
             <div className="relative">
               <Search size={16} className="absolute left-3 top-3 text-muted-foreground" />
               <input type="text" placeholder={t('clients.notes.notesearchPlaceholder', 'Search note')} value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className={`${FIELD_CLS} pl-9`} />
@@ -323,7 +325,9 @@ export default function PostSiteNotes({ site }: Props) {
         <div className="fixed inset-0 z-50 flex items-end sm:items-center" onClick={handleCloseModal}>
           <div className="absolute inset-0" style={{ background: 'oklch(0 0 0 / 0.45)' }} onClick={handleCloseModal} />
 
-          <div className="glass-raised w-full overflow-y-auto sm:ml-auto sm:w-96" onClick={(e) => e.stopPropagation()}>
+          {/* Sin tope de altura el `overflow-y-auto` no llega a activarse: el
+              panel crecía por encima del borde superior de la pantalla. */}
+          <div className="glass-raised max-h-[90vh] w-full overflow-y-auto sm:ml-auto sm:w-96" onClick={(e) => e.stopPropagation()}>
             <div className="sticky top-0 flex items-center justify-between border-b p-6">
               <h2 className="text-lg font-semibold text-foreground">{t('clients.notes.form.Title', 'Add New Note')}</h2>
             </div>

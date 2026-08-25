@@ -304,8 +304,10 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
   return (
     <div ref={containerRef} className="min-h-screen flex flex-col">
       <Section className="flex-1 flex flex-col min-h-0" contentClassName="flex-1 flex flex-col min-h-0">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center w-full">
+        {/* Acción + buscador + «Agregar contacto» no caben en 375 px: la fila
+            tiene que poder partirse en vez de empujar la página. */}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
             <div className="flex-shrink-0">
               <div className="relative">
                 <button
@@ -324,8 +326,8 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
                 )}
               </div>
             </div>
-            <div className="flex-1 flex justify-center">
-              <div className="relative">
+            <div className="flex min-w-48 flex-1 justify-center">
+              <div className="relative w-full max-w-lg">
                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
                     <path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -343,7 +345,7 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
             </div>
           </div>
           <div>
-            <Button variant="brand" onClick={handleOpenAdd} className="whitespace-nowrap min-w-[160px]">
+            <Button variant="brand" onClick={handleOpenAdd} className="whitespace-nowrap sm:min-w-[160px]">
               <Plus className="h-4 w-4" />
               <span>{t('clients.contacts.addcontact') || 'Add Contact'}</span>
             </Button>

@@ -34,10 +34,16 @@ const AlertDialogContent = React.forwardRef<
     <AlertDialogPrimitive.Content
       ref={ref}
       /* `position` en línea: `.glass-raised` va sin capa en glass.css y su
-         `position: relative` gana a la utilidad `fixed`. */
-      style={{ position: "fixed", ...style }}
+         `position: relative` gana a la utilidad `fixed`.
+         El ancho también va en línea: `w-full` dejaba la tarjeta pegada a los
+         dos bordes del teléfono, con las esquinas redondeadas cortadas, y un
+         tope escrito como clase `max-w-*` lo borraría tailwind-merge en cuanto
+         quien llama pasara el suyo. */
+      style={{ position: "fixed", width: "calc(100% - 2rem)", ...style }}
       className={cn(
-        "glass-raised left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 p-6 text-[color:var(--ink)] duration-200",
+        /* El tope de altura evita que un texto largo empuje los botones fuera
+           de la pantalla, donde no hay forma de alcanzarlos. */
+        "glass-raised left-[50%] top-[50%] z-50 grid max-h-[90dvh] max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 overflow-y-auto p-6 text-[color:var(--ink)] duration-200",
         "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 motion-reduce:animate-none!",
         className
       )}

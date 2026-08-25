@@ -67,7 +67,7 @@ export default function LoginHistory() {
 
   return (
     <AppLayout>
-      <PageContainer width="wide">
+      <PageContainer width="wide" className="px-4 pt-4 sm:px-6 sm:pt-6">
         <PageHeader
           icon={<History />}
           title={t("ui.LoginHistory.historialDeInicioDeSesion", "Historial de Inicio de Sesión")}
@@ -88,6 +88,7 @@ export default function LoginHistory() {
             value={filter}
             onChange={setFilter}
             options={FILTERS.map((f) => ({ value: f.key, label: f.label }))}
+            className="max-w-full overflow-x-auto"
           />
 
           <Button variant="outline" size="icon" className="ml-auto" onClick={() => load(true)} title="Recargar" aria-label="Recargar">

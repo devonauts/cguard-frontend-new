@@ -248,7 +248,25 @@ function AppLayoutShell({ children }: AppLayoutProps) {
 
   return (
     <AppLayoutMountedContext.Provider value={true}>
-    <div className="app-shell h-screen w-full bg-background">
+    {/* ── EL CONTRATO DE ALTURA DEL ARMAZÓN ──────────────────────────────────
+       Tres piezas tienen que sumar lo mismo o el armazón se descuadra:
+         · esta caja            → alto de la ventana
+         · la cabecera          → 3,5rem + la muesca (`safe-area-inset-top`)
+         · `<main>`             → lo que sobra: ventana − cabecera − muesca
+       Y fuera de este archivo, `glass.css` coloca `.cg-route-progress` justo
+       debajo de la cabecera, así que su `top` es la MISMA fórmula.
+
+       `dvh` y no `vh`: en el móvil `100vh` cuenta la franja del navegador, así
+       que la barra de direcciones tapaba los últimos ~60 px de la aplicación.
+       Va detrás de `@supports` —igual que `control-center.css` hace con su
+       propia altura— porque si un navegador no entiende `dvh` la declaración
+       se cae entera y la caja se quedaría en `height:auto`. Con el respaldo
+       en `vh` delante, ese navegador se comporta EXACTAMENTE como hoy.
+
+       `env(safe-area-inset-*)` vale `0px` mientras el `<meta viewport>` no
+       lleve `viewport-fit=cover`, que hoy NO lo lleva: todo esto mide lo mismo
+       que antes hasta que alguien active el borde a borde. */}
+    <div className="app-shell h-screen w-full bg-background supports-[height:100dvh]:h-[100dvh]">
       {/* El velo de los menús flotantes vive AQUÍ DENTRO, no en el <body>.
           `.app-shell` lleva `isolation: isolate`, así que crea su propio contexto
           de apilamiento: un velo hermano suyo pintaba por encima del armazón
@@ -256,7 +274,12 @@ function AppLayoutShell({ children }: AppLayoutProps) {
           venía a destacar. Dentro, con z-40, queda por debajo de la cabecera
           (z-50) y por encima del contenido, que es exactamente lo que hace falta. */}
       <div className="cg-scrim-menu" aria-hidden />
-      <div className={["app-header sticky top-0 z-50 h-14 transition-[margin] duration-300", sidebarOpen ? "lg:ml-[17rem]" : "lg:ml-16"].join(" ")}>
+      {/* La cabecera RESERVA la muesca con `padding-top` y crece lo mismo en
+          `height`: con `box-sizing: border-box` su caja de contenido sigue
+          midiendo 3,5rem exactas, así que los botones no se mueven ni un píxel.
+          Ojo al tocar esto: `.app-header` NO debe añadir su propio
+          `padding-top` — se sumaría a este y la barra saldría el doble de alta. */}
+      <div className={["app-header sticky top-0 z-50 h-[calc(3.5rem_+_env(safe-area-inset-top))] pt-[env(safe-area-inset-top)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] transition-[margin] duration-300", sidebarOpen ? "lg:ml-[17rem]" : "lg:ml-16"].join(" ")}>
         <Header toggleSidebar={toggleSidebar} sidebarOpen={sidebarOpen} />
       </div>
 
@@ -267,7 +290,7 @@ function AppLayoutShell({ children }: AppLayoutProps) {
           desplegables; el desplazamiento vive dentro de la propia barra. */}
       <aside
         className={[
-          "hidden lg:block fixed left-0 top-0 z-40 h-screen overflow-visible transition-[width] duration-300",
+          "hidden lg:block fixed left-0 top-0 z-40 h-screen supports-[height:100dvh]:h-[100dvh] overflow-visible transition-[width] duration-300",
           sidebarOpen ? "w-[17rem]" : "w-16",
         ].join(" ")}
       >
@@ -276,7 +299,7 @@ function AppLayoutShell({ children }: AppLayoutProps) {
 
       <div
         className={[
-          "fixed left-0 top-0 z-[60] w-[17rem] h-screen lg:hidden transform transition-transform duration-300",
+          "fixed left-0 top-0 z-[60] w-[17rem] h-screen supports-[height:100dvh]:h-[100dvh] lg:hidden transform transition-transform duration-300",
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
         ].join(" ")}
       >
@@ -290,7 +313,7 @@ function AppLayoutShell({ children }: AppLayoutProps) {
       <main
         ref={mainRef}
         className={[
-          "relative h-[calc(100vh-56px)] overflow-y-auto transition-[margin] duration-300",
+          "relative h-[calc(100vh_-_3.5rem_-_env(safe-area-inset-top))] supports-[height:100dvh]:h-[calc(100dvh_-_3.5rem_-_env(safe-area-inset-top))] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] overflow-y-auto transition-[margin] duration-300",
           sidebarOpen ? "lg:ml-[17rem]" : "lg:ml-16",
         ].join(" ")}
       >

@@ -66,8 +66,8 @@ function ModalShell({ open, onClose, title, icon, children, footer }: ModalShell
         style={{ background: "oklch(0 0 0 / 0.55)" }}
         onClick={onClose}
       />
-      <div className="glass-raised relative z-10 w-full max-w-lg">
-        <div className="flex items-center justify-between gap-3 border-b px-5 py-4" style={{ borderColor: "var(--hairline)" }}>
+      <div className="glass-raised relative z-10 flex max-h-[92vh] w-full max-w-lg flex-col overflow-hidden">
+        <div className="flex shrink-0 items-center justify-between gap-3 border-b px-5 py-4" style={{ borderColor: "var(--hairline)" }}>
           <div className="flex items-center gap-2.5">
             <span
               className="flex size-8 items-center justify-center rounded-lg border"
@@ -88,10 +88,10 @@ function ModalShell({ open, onClose, title, icon, children, footer }: ModalShell
           </button>
         </div>
 
-        <div className="px-5 py-4">{children}</div>
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">{children}</div>
 
         {footer ? (
-          <div className="flex items-center justify-end gap-2 border-t px-5 py-4" style={{ borderColor: "var(--hairline)", background: "var(--glass-sunken)" }}>
+          <div className="flex shrink-0 flex-wrap items-center justify-end gap-2 border-t px-5 py-4" style={{ borderColor: "var(--hairline)", background: "var(--glass-sunken)" }}>
             {footer}
           </div>
         ) : null}

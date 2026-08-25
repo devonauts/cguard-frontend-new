@@ -147,7 +147,10 @@ function CameraModal({ open, mode, onClose, onCapture }: {
 
   return (
     <Dialog open={open} onOpenChange={v => { if (!v) { stopCamera(); onClose(); } }}>
-      <DialogContent className="max-w-lg z-[60]">
+      {/* `sm:max-w-lg`, no `max-w-lg`: el diálogo base ya trae
+          `max-w-[calc(100%-2rem)]` para dejar margen en el teléfono, y una clase
+          `max-w-*` sin prefijo se la come (tailwind-merge). */}
+      <DialogContent className="z-[60] max-h-[90vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>{mode === 'id-scan' ? 'Escanear cédula / ID' : 'Foto del visitante'}</DialogTitle>
         </DialogHeader>
@@ -282,7 +285,7 @@ function VisitorFormModal({ open, initialData, stationId, onClose, onSaved }: {
   return (
     <>
       <Dialog open={open} onOpenChange={v => { if (!v && !saving && !cameraMode) onClose(); }}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
           <DialogHeader><DialogTitle>{isEdit ? 'Editar visitante' : 'Nuevo visitante'}</DialogTitle></DialogHeader>
           <div className="space-y-4">
             {/* ID Scan */}
@@ -327,7 +330,7 @@ function VisitorFormModal({ open, initialData, stationId, onClose, onSaved }: {
               {displayPhoto && (
                 <div className="relative w-24 h-24">
                   <img src={displayPhoto} alt="Foto del visitante" className="h-24 w-24 rounded-lg border object-cover" style={{ borderColor: 'var(--hairline)' }} />
-                  <button type="button" aria-label="Quitar foto" onClick={() => { setPhotoBlob(null); setPhotoUrl(null); setExistingPhotoUrl(null); }} className="cg-btn-bad cg-focus absolute -right-2 -top-2 rounded-full p-0.5"><X size={11} /></button>
+                  <button type="button" aria-label="Quitar foto" onClick={() => { setPhotoBlob(null); setPhotoUrl(null); setExistingPhotoUrl(null); }} className="cg-btn-bad cg-focus absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full"><X size={12} /></button>
                 </div>
               )}
               <div className="flex gap-2">

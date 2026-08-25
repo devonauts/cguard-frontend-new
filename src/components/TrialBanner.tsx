@@ -85,16 +85,18 @@ export default function TrialBanner() {
 
   return (
     <div
-      className="flex items-center justify-between gap-3 border-b px-4 py-2 text-sm"
+      className="flex flex-wrap items-center justify-between gap-2 border-b px-4 py-2 text-sm"
       style={{
         background: `color-mix(in oklab, var(--${tono}) 12%, transparent)`,
         borderColor: `color-mix(in oklab, var(--${tono}) 30%, transparent)`,
         color: `var(--${tono}-text)`,
       }}
     >
-      <span className="flex items-center gap-2">
+      {/* `min-w-0` + salto de línea: el aviso de prueba es una frase larga y
+          en un teléfono aplastaba al botón contra el borde. */}
+      <span className="flex min-w-0 items-center gap-2">
         {icon}
-        {text}
+        <span className="min-w-0">{text}</span>
       </span>
       {/* Activar es la acción principal del producto: relleno de marca con tinta
           `--brand-ink`. El coral `#f36a6d` de antes no salía de ningún token. */}

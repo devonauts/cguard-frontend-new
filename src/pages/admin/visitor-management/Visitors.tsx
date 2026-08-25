@@ -1166,7 +1166,7 @@ export default function Visitors() {
                     {/* Desktop table (hidden on small screens) */}
                     <div className="md:block hidden">
                         <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-border">
+                            <table className="w-full min-w-[1100px] divide-y divide-border">
                                 <thead className="bg-muted/30 text-left text-sm" style={{ color: 'var(--ink-soft)' }}>
                                     <tr>
                                         <th className="cg-eyebrow px-2 py-2">

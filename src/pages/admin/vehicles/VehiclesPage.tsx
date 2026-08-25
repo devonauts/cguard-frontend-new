@@ -281,7 +281,7 @@ export default function VehiclesPage() {
                                         Filtros
                                     </Button>
                                 </SheetTrigger>
-                                <SheetContent side="right" className="w-[400px] sm:w-[460px]">
+                                <SheetContent side="right" className="w-full overflow-y-auto sm:w-[460px]">
                                     <SheetHeader>
                                         <SheetTitle>Filtros</SheetTitle>
                                     </SheetHeader>
@@ -481,7 +481,7 @@ export default function VehiclesPage() {
                         </Stagger>
                     ) : (
                         <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-border">
+                            <table className="w-full min-w-[760px] divide-y divide-border">
                                 <thead className="text-left text-sm" style={{ color: 'var(--ink-soft)', background: 'var(--glass-sunken)' }}>
                                     <tr>
                                         <th className="px-4 py-2">

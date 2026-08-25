@@ -146,7 +146,7 @@ export default function StationHero({
                     <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
                             {editing ? (
-                                <div className="flex items-center gap-1.5">
+                                <div className="flex w-full min-w-0 items-center gap-1.5">
                                     <Input
                                         value={draft}
                                         onChange={(e) => setDraft(e.target.value)}
@@ -155,7 +155,10 @@ export default function StationHero({
                                             if (e.key === "Escape") setEditing(false);
                                         }}
                                         autoFocus
-                                        className="h-9 w-64 font-semibold"
+                                        /* En un teléfono el campo se queda con lo que
+                                           sobra tras los dos botones; los 256 px fijos
+                                           sacaban la fila fuera de la pantalla. */
+                                        className="h-9 w-full min-w-0 font-semibold sm:w-64 sm:flex-none"
                                     />
                                     <Button size="icon" variant="brand" className="h-9 w-9" disabled={saving} onClick={saveRename}>
                                         <Check className="h-4 w-4" />
@@ -166,7 +169,9 @@ export default function StationHero({
                                 </div>
                             ) : (
                                 <>
-                                    <h2 className="font-display truncate text-xl font-bold leading-tight">{name}</h2>
+                                    {/* `min-w-0`: sin él un hijo flex no baja de su
+                                        contenido y el `truncate` no llega a actuar. */}
+                                    <h2 className="font-display min-w-0 truncate text-xl font-bold leading-tight">{name}</h2>
                                     {canEdit && (
                                         <button
                                             aria-label="Renombrar puesto"

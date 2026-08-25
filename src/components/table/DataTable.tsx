@@ -316,8 +316,11 @@ export function DataTable<T extends { id: string }>({
     );
 
     const scroller = (
+        /* `min-w-0`: dentro de una rejilla o de un flex, el ancho mínimo por
+           defecto es el del CONTENIDO, así que una tabla ancha estiraba la
+           columna entera y sacaba scroll a la página en vez de a la tabla. */
         <div
-            className="w-full overflow-x-auto"
+            className="w-full min-w-0 overflow-x-auto"
             style={maxHeight != null ? { maxHeight, overflowY: "auto" } : undefined}
         >
             {table}
@@ -329,7 +332,7 @@ export function DataTable<T extends { id: string }>({
 
     return (
         <div
-            className={cn(modo === "glass" ? "glass" : "glass-flat", "overflow-hidden")}
+            className={cn(modo === "glass" ? "glass" : "glass-flat", "min-w-0 overflow-hidden")}
             style={{ borderRadius: "var(--r-xl)" }}
         >
             {toolbar && (

@@ -263,7 +263,7 @@ export default function RadioDevices() {
         />
 
         {/* Summary */}
-        <Stagger className="grid grid-cols-3 gap-3">
+        <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           <StatCard label="Total" value={counts.total} icon={<Radio />} accent="primary" />
           <StatCard label="Registrados" value={counts.registered} icon={<Wifi />} accent="ok" />
           <StatCard label={t("ui.RadioDevices.sinConexion", "Sin conexión")} value={counts.offline} icon={<WifiOff />} accent="neutral" />
@@ -358,7 +358,7 @@ export default function RadioDevices() {
               <Label>Nombre *</Label>
               <Input value={form.name} onChange={(e) => set({ name: e.target.value })} placeholder="Radio Central Norte" />
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="grid gap-1.5">
                 <Label>IP / Host *</Label>
                 <Input value={form.host} onChange={(e) => set({ host: e.target.value })} placeholder="192.168.1.50" />
@@ -368,7 +368,7 @@ export default function RadioDevices() {
                 <Input type="number" value={form.sipPort} onChange={(e) => set({ sipPort: e.target.value })} />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="grid gap-1.5">
                 <Label>Transporte</Label>
                 <Select value={form.transport} onValueChange={(v) => set({ transport: v as RadioTransport })}>
@@ -385,7 +385,7 @@ export default function RadioDevices() {
                 <Input value={form.extension} onChange={(e) => set({ extension: e.target.value })} placeholder="1001" />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="grid gap-1.5">
                 <Label>Usuario SIP</Label>
                 <Input value={form.sipUsername} onChange={(e) => set({ sipUsername: e.target.value })} autoComplete="off" />
@@ -408,7 +408,7 @@ export default function RadioDevices() {
               <Label>Dominio / Registrar (opcional)</Label>
               <Input value={form.sipDomain} onChange={(e) => set({ sipDomain: e.target.value })} placeholder="Por defecto: el host" />
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="grid gap-1.5">
                 <Label>Puerto RTP inicial</Label>
                 <Input type="number" value={form.rtpPortStart} onChange={(e) => set({ rtpPortStart: e.target.value })} />

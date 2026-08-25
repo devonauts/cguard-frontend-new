@@ -270,7 +270,11 @@ export default function TrainingCoursesPage() {
 
       {/* Create dialog */}
       <Dialog open={openForm} onOpenChange={setOpenForm}>
-        <DialogContent className="max-w-lg">
+        {/* `max-w-lg` a secas borraba el tope móvil del propio diálogo
+            (`max-w-[calc(100%-2rem)]`, misma familia en twMerge) y la ficha salía
+            512 px de ancho en un teléfono de 375. Se repone el tope y el ancho
+            grande queda a partir de `sm`. */}
+        <DialogContent className="max-h-[90vh] w-full max-w-[calc(100%-2rem)] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Nuevo curso</DialogTitle>
           </DialogHeader>
@@ -283,7 +287,7 @@ export default function TrainingCoursesPage() {
               <Label>{t("ui.TrainingCourses.descripcion", "Descripción")}</Label>
               <Textarea value={form.description ?? ''} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} />
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label>{t("ui.TrainingCourses.categoria2", "Categoría")}</Label>
                 <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v as any })}>
@@ -303,7 +307,7 @@ export default function TrainingCoursesPage() {
                 </Select>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label>Puntos al completar</Label>
                 <Input type="number" min={0} value={form.pointsValue ?? 0} onChange={(e) => setForm({ ...form, pointsValue: Number(e.target.value) })} />

@@ -456,7 +456,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
     <div className="space-y-4">
       <div className="glass overflow-hidden">
         {/* Edit header */}
-        <div className="flex items-center justify-between border-b px-6 py-4" style={{ borderColor: 'var(--hairline)', background: 'var(--brand-wash)' }}>
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b px-6 py-4" style={{ borderColor: 'var(--hairline)', background: 'var(--brand-wash)' }}>
           <div>
             <h3 className="text-sm font-semibold">Configurar puesto</h3>
             <p className="mt-0.5 text-xs" style={{ color: 'var(--ink-soft)' }}>{t("ui.StationOverview.turnoUbicacionYToleranciaDe", "Turno, ubicación y tolerancia de marcación. «Guardar» aplica la tolerancia.")}</p>
@@ -569,7 +569,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
         {/* Ubicación y geocerca — ONE map: search the address / "igual que el sitio"
             to set where the guard clocks in, then draw the geofence on the same map. */}
         <div className="space-y-3 border-t p-6" style={{ borderColor: 'var(--hairline)' }}>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <MapPin size={16} style={{ color: 'var(--brand-text)' }} />
               <h3 className="text-sm font-semibold text-foreground">{t("ui.StationOverview.ubicacionYGeocerca2", "Ubicación y geocerca")}</h3>

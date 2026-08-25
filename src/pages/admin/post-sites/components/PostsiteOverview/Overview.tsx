@@ -277,7 +277,9 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
                 </Button>
               </SheetTrigger>
 
-              <SheetContent side="right" className="w-[400px] sm:w-[460px] z-[9999]">
+              {/* 400 px fijos son más anchos que un teléfono de 375: el panel se
+                  salía por la derecha. En móvil ocupa el ancho disponible. */}
+              <SheetContent side="right" className="z-[9999] w-full max-w-full sm:w-[460px] sm:max-w-[460px]">
                 <SheetHeader>
                   <SheetTitle>{t('postSites.overview.Filters', 'Filtros')}</SheetTitle>
                 </SheetHeader>

@@ -671,7 +671,9 @@ export default function PostSiteTours({ site, guards = [] }: { site?: SiteProp; 
   return (
     <div ref={containerRef} className="min-h-screen flex flex-col animate-fade-up">
       <div className="glass flex flex-1 flex-col p-4">
-        <div className="sticky top-0 z-10 mb-4 flex items-center justify-between gap-4" style={{ background: 'var(--glass-solid)' }}>
+        {/* Acción + buscador + dos botones pasan de 400 px: sin `flex-wrap` la
+            barra empujaba la página fuera de la pantalla del teléfono. */}
+        <div className="sticky top-0 z-10 mb-4 flex flex-wrap items-center justify-between gap-3" style={{ background: 'var(--glass-solid)' }}>
             <div className="relative">
             <button onClick={() => setActionOpen(v => !v)} className="cg-btn-glass cg-focus inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm">
               {t('siteTour.menu.action', 'Action')}
@@ -710,7 +712,7 @@ export default function PostSiteTours({ site, guards = [] }: { site?: SiteProp; 
             )}
           </div>
 
-          <div className="flex-1 flex justify-center">
+          <div className="flex min-w-48 flex-1 justify-center">
             <div className="relative w-full max-w-xl">
               <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none">
                 <Search size={16} />
@@ -719,7 +721,7 @@ export default function PostSiteTours({ site, guards = [] }: { site?: SiteProp; 
             </div>
           </div>
 
-          <div className="flex-shrink-0 flex items-center gap-3">
+          <div className="flex flex-shrink-0 flex-wrap items-center gap-2">
             {/* TagScans ahora es un componente independiente; abre la vista de Etiquetas desde el menú lateral o la ruta dedicada. */}
             <Button variant="outline" size="sm" onClick={() => setShowSettingsModal(true)}>
               <Settings className="mr-1.5 h-4 w-4" /> Configuraciones

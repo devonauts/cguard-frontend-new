@@ -417,7 +417,9 @@ export default function PostSiteKPIs({ site }: Props) {
 
     return (
       <div ref={containerRef} className="glass min-h-[560px] p-6 animate-fade-up">
-        <div className="flex items-center justify-between gap-4 mb-6">
+        {/* Con «Añadir Nuevo KPI» a la derecha, la fila pasa de 375 px y el
+            buscador se quedaba sin sitio: se envuelve. */}
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div className="relative inline-block">
             <button
               onClick={() => setActionOpen(!actionOpen)}
@@ -445,7 +447,7 @@ export default function PostSiteKPIs({ site }: Props) {
             )}
           </div>
 
-          <div className="flex-1 max-w-xs">
+          <div className="min-w-48 flex-1 sm:max-w-xs">
             <div className="relative">
               <Search size={16} className="absolute left-3 top-3 text-muted-foreground" />
               <input

@@ -153,11 +153,15 @@ export default function TaskTracking() {
           />
 
           <Section title="Tareas" icon={<ListChecks />} action={
-            <Segmented<TaskStatus | "all">
-              value={filter}
-              onChange={setFilter}
-              options={FILTERS.map((f) => ({ value: f.key, label: f.label }))}
-            />
+            /* Cinco pestañas no caben en un teléfono: el conmutador se desplaza
+               dentro de su propio carril en vez de empujar la página. */
+            <div className="-my-1 min-w-0 overflow-x-auto py-1">
+              <Segmented<TaskStatus | "all">
+                value={filter}
+                onChange={setFilter}
+                options={FILTERS.map((f) => ({ value: f.key, label: f.label }))}
+              />
+            </div>
           }>
             {loading ? (
               <SkeletonCards count={4} />
@@ -211,7 +215,7 @@ export default function TaskTracking() {
 
       {/* Task detail */}
       <Dialog open={!!selected} onOpenChange={(o) => { if (!o) setSelected(null); }}>
-        <DialogContent>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle>Detalle de la tarea</DialogTitle></DialogHeader>
           {selected && (
             <div className="space-y-4">

@@ -915,7 +915,14 @@ body:has(.cg-flotante) .cg-scrim-menu { opacity: 1; }
 /* ── RESPUESTA AL PUNTERO ─────────────────────────────────────────────────── */
 /* Lo pulsable cede al pulsarse. Es el detalle que más «responde» aporta por
    línea de CSS, y no distrae porque sólo ocurre cuando ya estás actuando. */
+/* Los enlaces entran en la lista porque en un móvil el destello del navegador
+   ya no existe (`-webkit-tap-highlight-color: transparent` en globals.css): sin
+   esto, tocar una tarjeta enlazada no devolvía NADA y parecía que no había
+   registrado el toque. No se les añade `transition`: la navegación ocurre antes
+   de que se vea, y meter una transición a todos los `<a>` pisaría la de la
+   barra lateral, que tiene su propio tiempo calibrado. */
 button:not(:disabled):active,
+a[href]:active,
 [role="button"]:not([aria-disabled="true"]):active { transform: scale(0.985); }
 button, [role="button"] { transition: transform 0.09s var(--ease); }
 
@@ -924,7 +931,7 @@ button, [role="button"] { transition: transform 0.09s var(--ease); }
   .cg-in, .cg-in-soft, .cg-cascade > *, .cg-changed, .cg-row-in, .cg-swap, .cg-live { animation: none; }
   .cg-route-progress::before { animation: none; opacity: .6; }
   button, [role="button"] { transition: none; }
-  button:not(:disabled):active, [role="button"]:active { transform: none; }
+  button:not(:disabled):active, a[href]:active, [role="button"]:active { transform: none; }
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -1013,7 +1020,18 @@ button, [role="button"] { transition: transform 0.09s var(--ease); }
   button, [role="button"], a.cg-focus, .app-nav-item, .cgsb-item, .cgsb-sub {
     min-height: 44px;
   }
-  .cg-carrusel > * { min-width: 160px; }
+  /* Salvo la aspa de los avisos: sonner la coloca en ABSOLUTO en la esquina,
+     con 20x20, y estirarla a 44 de alto la convertía en un óvalo que se salía
+     del aviso. Un objetivo de 44 px sólo vale si el elemento ocupa sitio en el
+     flujo; éste no. */
+  [data-sonner-toast] [data-close-button] { min-height: 0; }
+
+  /* 16 px en los campos, y no es una decisión tipográfica: por debajo de eso
+     iOS AMPLÍA la página al enfocar un campo, y luego no vuelve. El formulario
+     se queda a 1,3x y desalineado, y quien está rellenando un parte en la calle
+     tiene que pellizcar para volver. Va aquí y no en cada campo porque son
+     cientos y el que se escriba mañana también lo necesita. */
+  input, select, textarea, .cg-input, .cg-input input { font-size: 16px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

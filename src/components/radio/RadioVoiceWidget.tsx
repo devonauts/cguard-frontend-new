@@ -111,7 +111,7 @@ export default function RadioVoiceWidget() {
     // sin `@layer`, así que gana a la utilidad `fixed` (ver su cabecera).
     <div
       onPointerDown={() => radioResume()}
-      className="glass-raised fixed right-3 top-16 z-[80] w-80 max-w-[calc(100vw-1.5rem)]"
+      className="glass-raised fixed right-3 top-16 z-[80] max-h-[calc(100dvh-5rem)] w-80 max-w-[calc(100vw-1.5rem)] overflow-y-auto"
       style={{ position: "fixed" }}
     >
       {/* Header + on/off switch */}
@@ -145,7 +145,7 @@ export default function RadioVoiceWidget() {
         <button
           onClick={() => setWidgetOpen(false)}
           title="Cerrar"
-          className="cg-focus grid h-7 w-7 place-items-center rounded-full transition-colors"
+          className="cg-focus grid h-9 w-9 shrink-0 place-items-center rounded-full transition-colors"
           style={{ color: "var(--ink-faint)" }}
         >
           <X size={16} />

@@ -279,7 +279,7 @@ export default function SupervisorPositionsPage() {
             <label className="cg-eyebrow mb-1 block">{t("ui.SupervisorPositions.rotacion", "Rotación")}</label>
             <RotationStyleSelect scheduleType={form.scheduleType} value={form.rotationStyleId} onChange={(id) => setForm((f) => ({ ...f, rotationStyleId: id }))} />
           </div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <label className="cg-eyebrow">Entrada (día)
               <Input type="time" value={form.startTime} onChange={(e) => setForm((f) => ({ ...f, startTime: e.target.value }))} className="mt-1" /></label>
             <label className="cg-eyebrow">Salida (día)

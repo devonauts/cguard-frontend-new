@@ -67,8 +67,16 @@ const DialogContent = React.forwardRef<
         data-slot="dialog-content"
         /* `position` en línea: `.glass-raised` se declara sin capa en glass.css
            y su `position: relative` gana el cascade a la utilidad `fixed`. Sin
-           esto el diálogo cae en el flujo del documento en vez de centrarse. */
-        style={{ position: "fixed", ...style }}
+           esto el diálogo cae en el flujo del documento en vez de centrarse.
+           ── EL HUECO LATERAL TAMBIÉN VA EN LÍNEA ──────────────────────────
+           Estaba escrito como `w-full max-w-[calc(100%-2rem)]`, y `cn()` es
+           tailwind-merge: en cuanto una pantalla pasaba su propio `max-w-*`
+           —cosa que hacen decenas— el tope se BORRABA y el diálogo salía de
+           borde a borde en el teléfono, sin margen ni esquinas. Como ancho en
+           línea no hay clase que lo pueda tirar, y los `max-w-*` de quien
+           llama siguen mandando en el ancho grande. Un `style` propio con
+           `width` gana igual, porque `...style` se esparce después. */
+        style={{ position: "fixed", width: "calc(100% - 2rem)", ...style }}
         onInteractOutside={(e) => {
           // Prevent Radix from closing or blocking clicks on Google Places
           // autocomplete dropdown (.pac-container) which is appended to <body>
@@ -86,7 +94,18 @@ const DialogContent = React.forwardRef<
           onPointerDownOutside?.(e);
         }}
         className={cn(
-          "glass-raised data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-2xl border p-6 shadow-xl duration-200 motion-reduce:animate-none! sm:max-w-lg",
+          /* `max-w-lg` va SIN `sm:`: con el prefijo, una pantalla que pedía
+             `max-w-3xl` a secas se quedaba capada a 512 px de 640 px para
+             arriba, porque el `sm:` es otra clave para tailwind-merge y no lo
+             pisaba. Sin prefijo, el valor de quien llama lo sustituye limpio.
+             El hueco lateral del teléfono ya no depende de esto: va en el
+             `width` en línea de más arriba. */
+          "glass-raised data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 rounded-2xl border p-6 shadow-xl duration-200 motion-reduce:animate-none!",
+          /* Sin altura máxima, un diálogo alto se sale de la pantalla del
+             teléfono y los botones del pie quedan inalcanzables: Radix bloquea
+             el desplazamiento del documento, así que no hay forma de llegar.
+             El que ya trae su propio `max-h`/`overflow` sigue mandando. */
+          "max-h-[90dvh] overflow-y-auto",
           className
         )}
         {...props}

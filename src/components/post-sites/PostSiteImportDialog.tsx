@@ -515,7 +515,7 @@ export default function PostSiteImportDialog({ open, onOpenChange, onSuccess }: 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg w-full">
+      <DialogContent className="max-h-[90vh] w-full max-w-lg overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Importar Sitios desde Excel/CSV</DialogTitle>
           <DialogDescription>Sube un archivo .xlsx/.xls/.csv para importar Puestos de Vigilancia.</DialogDescription>

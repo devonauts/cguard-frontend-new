@@ -114,7 +114,7 @@ export default function PolicyDialog({
 
           <div className="rounded-xl border" style={{ borderColor: "var(--hairline)" }}>
             <div
-              className="flex items-center gap-1 border-b p-2"
+              className="flex flex-wrap items-center gap-1 border-b p-2"
               style={{ borderColor: "var(--hairline)", background: "var(--glass-sunken)", color: "var(--ink-soft)" }}
             >
               <Button size="sm" type="button" variant="ghost"><Bold className="h-4 w-4" /></Button>
@@ -196,7 +196,7 @@ function GuardMultiSelect({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="p-0 w-[360px]">
+      <PopoverContent className="w-[min(360px,calc(100vw-2rem))] p-0">
         <Command>
           <CommandInput placeholder={t('settings.companyPolicies.searchGuardPlaceholder', { defaultValue: "Buscar vigilante…" })} />
           <CommandList>

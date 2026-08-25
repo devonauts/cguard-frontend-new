@@ -1227,7 +1227,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
               </div>
             </div>
             <div className="overflow-x-auto">
-              <table className="min-w-full border-collapse text-left text-sm">
+              <table className="w-full min-w-[820px] border-collapse text-left text-sm">
                 <thead style={{ background: 'var(--glass-sunken)' }}>
                   <tr className="border-b" style={{ borderColor: 'var(--hairline)' }}>
                     <th className="px-4 py-3 font-semibold">#</th>

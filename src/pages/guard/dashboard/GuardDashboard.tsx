@@ -115,7 +115,7 @@ export default function GuardDashboard() {
   };
 
   return (
-    <PageContainer width="narrow">
+    <PageContainer width="narrow" className="px-4 pt-4 sm:px-6 sm:pt-6">
       <PageHeader
         icon={<Shield />}
         title={guard?.fullName || t('guard.dashboard.title', 'Mi Panel')}

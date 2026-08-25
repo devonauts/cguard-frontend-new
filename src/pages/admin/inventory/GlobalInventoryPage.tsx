@@ -802,7 +802,11 @@ export default function GlobalInventoryPage() {
                             // el blanco sobre el rojo de peligro es una decisión
                             // que ya toma el sistema, en glass.css, y que sigue
                             // valiendo si el rojo semántico cambia.
-                            className="cg-btn-bad cg-focus absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full opacity-0 transition-opacity group-hover:opacity-100"
+                            /* En un móvil no hay `hover`: si la única forma de
+                               ver la aspa es pasar el ratón, la foto no se
+                               puede quitar desde el teléfono. Visible siempre
+                               en táctil, y del tamaño mínimo para el dedo. */
+                            className="cg-btn-bad cg-focus absolute right-1 top-1 flex h-7 w-7 items-center justify-center rounded-full transition-opacity md:h-5 md:w-5 md:opacity-0 md:group-hover:opacity-100"
                           >
                             <X className="h-3 w-3" />
                           </button>

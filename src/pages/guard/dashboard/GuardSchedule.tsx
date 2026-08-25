@@ -49,7 +49,7 @@ export default function GuardSchedule() {
   const now = Date.now();
 
   return (
-    <PageContainer width="narrow">
+    <PageContainer width="narrow" className="px-4 pt-4 sm:px-6 sm:pt-6">
       <PageHeader
         icon={<Calendar />}
         title={t('guard.schedule.title', 'Mi Horario')}

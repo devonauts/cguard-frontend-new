@@ -23,9 +23,9 @@ function CoverageBars({ data }: { data: { date: string; scheduled: number; cover
           </div>
         ))}
       </div>
-      <div className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
+      <div className="mt-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
         <span>{data[0]?.date.slice(5)}</span>
-        <span className="flex items-center gap-3">
+        <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
           <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded" style={{ background: CHART_VARS.ok }} /> Cubiertos</span>
           <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded" style={{ background: alphaVar(CHART_VARS.inkFaint, 55) }} /> Programados</span>
         </span>
@@ -74,9 +74,11 @@ export default function Scheduling() {
                 <div className="space-y-2.5">
                   {data.perSite.filter((s) => s.shiftsTotal > 0).slice(0, 8).map((s, i) => (
                     <div key={i}>
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="truncate" title={s.site}><SiteLink id={s.id} name={s.site} /></span>
-                        <span style={{ color: pctColor(s.coveragePct) }}>{s.coveragePct}% <span className="text-muted-foreground">({s.shiftsCovered}/{s.shiftsTotal})</span></span>
+                      <div className="flex items-center justify-between gap-2 text-xs">
+                        {/* Sin `min-w-0` el `truncate` no recorta: el nombre del
+                            sitio empujaba el porcentaje fuera de la tarjeta. */}
+                        <span className="min-w-0 truncate" title={s.site}><SiteLink id={s.id} name={s.site} /></span>
+                        <span className="shrink-0" style={{ color: pctColor(s.coveragePct) }}>{s.coveragePct}% <span className="text-muted-foreground">({s.shiftsCovered}/{s.shiftsTotal})</span></span>
                       </div>
                       <MeterBar className="mt-1" height={8} ariaLabel={s.site} pct={s.coveragePct}
                         tone={s.coveragePct >= 90 ? "ok" : s.coveragePct >= 70 ? "warn" : "bad"} />

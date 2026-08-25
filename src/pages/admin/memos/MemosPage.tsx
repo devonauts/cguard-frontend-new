@@ -566,7 +566,7 @@ export default function MemosPage() {
         </PageContainer>
 
         <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-          <DialogContent className="sm:max-w-xl">
+          <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Nuevo Memo</DialogTitle>
               <DialogDescription>
@@ -643,7 +643,7 @@ export default function MemosPage() {
         </Dialog>
 
         <Dialog open={viewOpen} onOpenChange={setViewOpen}>
-          <DialogContent className="sm:max-w-xl">
+          <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Detalle del Memo</DialogTitle>
               <DialogDescription>{t("ui.Memos.revisaLaInformacionDelMemo", "Revisa la información del memo seleccionado.")}</DialogDescription>
@@ -654,7 +654,7 @@ export default function MemosPage() {
                   {viewMemo?.wasAccepted ? 'Acuse de lectura recibido' : 'Pendiente de acuse'}
                 </StatusBadge>
               </div>
-              <div className="glass-sunken grid grid-cols-2 gap-4 p-4">
+              <div className="glass-sunken grid grid-cols-1 gap-4 p-4 sm:grid-cols-2">
                 <Field
                   label="Vigilante"
                   value={typeof viewMemo?.guardName === 'string' ? viewMemo?.guardName : viewMemo?.guardName?.name || '-'}
@@ -666,7 +666,7 @@ export default function MemosPage() {
                 <Field
                   label="Fecha"
                   value={viewMemo?.dateTime ? new Date(viewMemo.dateTime).toLocaleString() : '-'}
-                  className="col-span-2"
+                  className="sm:col-span-2"
                 />
               </div>
               <div>

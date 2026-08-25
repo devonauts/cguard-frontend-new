@@ -411,19 +411,21 @@ export default function CommunicationsPage() {
             <SkeletonCards count={4} />
           ) : (
             <Tabs value={tab} onValueChange={setTab} className="space-y-6">
-              <TabsList className="w-full justify-start">
-                <TabsTrigger value="whatsapp">WhatsApp</TabsTrigger>
-                <TabsTrigger value="sms">SMS</TabsTrigger>
-                <TabsTrigger value="saldo">
-                  {t("comms.tabWallet", { defaultValue: "Saldo y recargas" })}
-                </TabsTrigger>
-                <TabsTrigger value="preferencias">
-                  {t("comms.tabPrefs", { defaultValue: "Preferencias" })}
-                </TabsTrigger>
-                <TabsTrigger value="historial">
-                  {t("comms.tabHistory", { defaultValue: "Historial" })}
-                </TabsTrigger>
-              </TabsList>
+              <div className="-mx-1 overflow-x-auto px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <TabsList className="w-max min-w-full justify-start">
+                  <TabsTrigger value="whatsapp">WhatsApp</TabsTrigger>
+                  <TabsTrigger value="sms">SMS</TabsTrigger>
+                  <TabsTrigger value="saldo">
+                    {t("comms.tabWallet", { defaultValue: "Saldo y recargas" })}
+                  </TabsTrigger>
+                  <TabsTrigger value="preferencias">
+                    {t("comms.tabPrefs", { defaultValue: "Preferencias" })}
+                  </TabsTrigger>
+                  <TabsTrigger value="historial">
+                    {t("comms.tabHistory", { defaultValue: "Historial" })}
+                  </TabsTrigger>
+                </TabsList>
+              </div>
 
               {/* ── Saldo: el monedero que paga SMS, plantillas de WhatsApp y VigIA ── */}
               <TabsContent value="saldo" className="space-y-6">
@@ -456,8 +458,8 @@ export default function CommunicationsPage() {
                     onChange={(v) => setRechargeAmount(Number(v))}
                     options={RECHARGE_PRESETS.map((p) => ({ value: String(p), label: `$${p}` }))}
                   />
-                  <div className="flex items-end gap-3">
-                    <div className="w-40">
+                  <div className="flex flex-wrap items-end gap-3">
+                    <div className="w-full max-w-40">
                       <Label className="text-xs">{t("comms.customAmount", { defaultValue: "Monto (USD)" })}</Label>
                       <Input
                         type="number"
@@ -860,7 +862,7 @@ export default function CommunicationsPage() {
 
                   {/* Pagination */}
                   {logsResult && logsResult.totalPages > 1 && (
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
                       <span className="text-xs tabular-nums" style={{ color: "var(--ink-soft)" }}>
                         {t("comms.pageOf", {
                           defaultValue: "Página {{page}} de {{total}} · {{count}} registros",

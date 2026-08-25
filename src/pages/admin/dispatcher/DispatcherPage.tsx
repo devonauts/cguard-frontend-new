@@ -1067,11 +1067,11 @@ export default function DispatcherPage() {
           </div>
 
           {/* Derecha: buscador, nuevo, filtros, menú */}
-          <div className="flex items-center gap-2">
-            <div className="relative">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="relative min-w-0 flex-1 sm:flex-none">
               <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-                className="w-72 pl-9"
+                className="w-full pl-9 sm:w-72"
                 placeholder={t('dispatcher.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => {
@@ -1192,7 +1192,7 @@ export default function DispatcherPage() {
                 </Button>
               </SheetTrigger>
 
-              <SheetContent side="right" className="w-[400px] sm:w-[460px]">
+              <SheetContent side="right" className="w-full overflow-y-auto sm:w-[460px]">
                 <SheetHeader>
                   <SheetTitle>{t('dispatcher.filters')}</SheetTitle>
                 </SheetHeader>
@@ -1467,7 +1467,8 @@ export default function DispatcherPage() {
           </div>
         )}
         <div className="mt-4 overflow-hidden rounded-lg border">
-          <table className="min-w-full border-collapse text-left text-sm">
+          <div className="overflow-x-auto">
+          <table className="w-full min-w-[1000px] border-collapse text-left text-sm">
             <thead className="bg-muted/30">
               <tr className="border-b">
                 <th className="px-4 py-3">
@@ -1659,9 +1660,10 @@ export default function DispatcherPage() {
               {/* Aquí mapear filas cuando haya datos */}
             </tbody>
           </table>
+          </div>
 
           {/* Footer de tabla */}
-          <div className="flex items-center justify-between px-4 py-3 text-sm text-foreground/70 bg-muted/30 border-x border-b rounded-b-lg">
+          <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm text-foreground/70 bg-muted/30 border-x border-b rounded-b-lg">
             <div className="flex items-center gap-2">
               <span>{t('dispatcher.items_per_page')}</span>
               <Select value={String(limit)} onValueChange={(v) => { setLimit(Number(v)); setPage(1); }}>

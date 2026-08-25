@@ -116,9 +116,9 @@ export default function SupervisorDetailPage() {
             <>
               {/* Barra de edición — la identidad del supervisor (avatar, nombre,
                   estado) vive en la cabecera compartida de GuardsLayout. */}
-              <div className="flex items-center justify-between gap-2">
-                <h2 className="text-sm font-semibold text-foreground">{t("ui.SupervisorDetail.informacionDelSupervisor", "Información del supervisor")}</h2>
-                <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h2 className="min-w-0 text-sm font-semibold text-foreground">{t("ui.SupervisorDetail.informacionDelSupervisor", "Información del supervisor")}</h2>
+                <div className="flex flex-wrap items-center gap-2">
                   {!editing ? (
                     <Button variant="brand" size="sm" onClick={beginEdit}>
                       <Pencil className="mr-2 h-4 w-4" /> Editar

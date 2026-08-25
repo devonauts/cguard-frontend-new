@@ -117,7 +117,7 @@ export default function Login() {
               type="button"
               onClick={toggleShowPassword}
               aria-label={showPassword ? t('auth.hide_password', { defaultValue: 'Ocultar contraseña' }) : t('auth.show_password', { defaultValue: 'Mostrar contraseña' })}
-              className="cg-focus absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 transition-colors"
+              className="cg-focus absolute right-1.5 top-1/2 -translate-y-1/2 rounded-md p-2.5 transition-colors"
               style={{ color: 'var(--ink-faint)' }}
             >
               {showPassword ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}

@@ -223,7 +223,7 @@ export default function AcceptInvitation() {
               tabIndex={-1}
               aria-label={showPwd ? "Ocultar contraseña" : "Mostrar contraseña"}
               onClick={() => setShowPwd((v) => !v)}
-              className="cg-focus absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1"
+              className="cg-focus absolute right-1.5 top-1/2 -translate-y-1/2 rounded-md p-2.5"
               style={{ color: 'var(--ink-faint)' }}
             >
               {showPwd ? <EyeOff size={18} /> : <Eye size={18} />}

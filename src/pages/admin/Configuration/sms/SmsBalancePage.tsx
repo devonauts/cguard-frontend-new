@@ -277,8 +277,8 @@ export default function SmsBalancePage() {
             title={t("sms.buyNumberTitle", { defaultValue: "Comprar número de envío" })}
           >
                 <div className="space-y-4">
-                  <div className="flex items-end gap-3">
-                    <div className="flex-1">
+                  <div className="flex flex-wrap items-end gap-3">
+                    <div className="min-w-[9rem] flex-1">
                       <Label className="text-xs">{t("sms.country", { defaultValue: "País" })}</Label>
                       <select
                         value={country}

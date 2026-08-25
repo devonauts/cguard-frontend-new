@@ -67,7 +67,7 @@ export default function AlarmECV({
 
   return (
     <Card className="p-4">
-      <div className="mb-3 flex items-center justify-between">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
           <PhoneCall className="size-4 text-primary" /> Verificación (ECV)
         </div>
@@ -110,7 +110,7 @@ export default function AlarmECV({
                     key={o.key}
                     onClick={() => log(ct, o.key)}
                     disabled={busyKey === `${ct.id}:${o.key}`}
-                    className="cg-focus inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] transition-colors hover:border-[var(--brand-line)] disabled:opacity-50"
+                    className="cg-focus inline-flex min-h-8 items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] transition-colors hover:border-[var(--brand-line)] disabled:opacity-50"
                     style={{ borderColor: "var(--hairline)", color: "var(--ink-soft)" }}
                   >
                     {busyKey === `${ct.id}:${o.key}` ? <Loader2 className="size-3 animate-spin" /> : null}

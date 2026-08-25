@@ -224,11 +224,11 @@ export default function RoutesPage() {
             </Select>
           </div>
 
-          <div className="flex items-center gap-2">
-            <div className="relative">
+          <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
+            <div className="relative min-w-0 flex-1 sm:flex-none">
               <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-                className="w-72 pl-9"
+                className="w-full pl-9 sm:w-72"
                 placeholder="Buscar ruta"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
@@ -243,7 +243,7 @@ export default function RoutesPage() {
                 </Button>
               </SheetTrigger>
 
-              <SheetContent side="right" className="w-[400px] sm:w-[460px]">
+              <SheetContent side="right" className="w-full overflow-y-auto sm:w-[460px]">
                 <SheetHeader>
                   <SheetTitle>Filtros</SheetTitle>
                 </SheetHeader>
@@ -303,7 +303,8 @@ export default function RoutesPage() {
         </Toolbar>
 
         <Section icon={<RouteIcon />} title="Listado de rutas" contentClassName="overflow-hidden rounded-xl border">
-          <table className="min-w-full border-collapse text-left text-sm">
+          <div className="overflow-x-auto">
+          <table className="w-full min-w-[900px] border-collapse text-left text-sm">
             <thead className="bg-muted/30">
               <tr className="border-b">
                 <th className="px-4 py-3">
@@ -402,6 +403,7 @@ export default function RoutesPage() {
               ))}
             </tbody>
           </table>
+          </div>
 
           <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm text-foreground/70 bg-muted/30 border-x border-b rounded-b-lg">
             <div className="flex items-center gap-2">

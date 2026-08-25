@@ -475,7 +475,7 @@ export default function StationGeofencePolygon({
             type="button"
             onClick={cuadrar}
             disabled={pts.length < 2}
-            className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-xs disabled:opacity-40"
+            className="inline-flex min-h-9 items-center gap-1 rounded-md border border-border px-2.5 py-1 text-xs disabled:opacity-40"
           >
             <Maximize2 size={12} /> Encuadrar
           </button>
@@ -483,7 +483,7 @@ export default function StationGeofencePolygon({
             type="button"
             onClick={undo}
             disabled={!pts.length}
-            className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-xs disabled:opacity-40"
+            className="inline-flex min-h-9 items-center gap-1 rounded-md border border-border px-2.5 py-1 text-xs disabled:opacity-40"
           >
             <Undo2 size={12} /> Deshacer
           </button>
@@ -491,7 +491,7 @@ export default function StationGeofencePolygon({
             type="button"
             onClick={clear}
             disabled={!pts.length}
-            className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-xs disabled:opacity-40"
+            className="inline-flex min-h-9 items-center gap-1 rounded-md border border-border px-2.5 py-1 text-xs disabled:opacity-40"
             style={{ color: "var(--bad-text)" }}
           >
             <Trash2 size={12} /> Limpiar

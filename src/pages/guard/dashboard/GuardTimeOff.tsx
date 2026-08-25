@@ -86,7 +86,7 @@ export default function GuardTimeOff() {
   }
 
   return (
-    <PageContainer width="narrow">
+    <PageContainer width="narrow" className="px-4 pt-4 sm:px-6 sm:pt-6">
       <PageHeader
         icon={<CalendarOff />}
         title={t('guard.timeOff.title', 'Mis Permisos')}
@@ -113,7 +113,7 @@ export default function GuardTimeOff() {
                   <option value="otro">Otro</option>
                 </select>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">Desde</label>
                   <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="w-full h-9 px-2.5 border border-input bg-background rounded-lg text-sm" />

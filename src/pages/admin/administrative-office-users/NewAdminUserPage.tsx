@@ -71,7 +71,7 @@ function ClientMultiSelect({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="p-0 w-[360px]">
+      <PopoverContent className="p-0 w-[calc(100vw-2rem)] sm:w-[360px]">
         <div className="p-2">
           <Command>
             <CommandInput placeholder={`Buscar ${placeholder || t('adminOfficeUsers.newUser.form.searchPlaceholder', { defaultValue: 'opción' })}…`} />

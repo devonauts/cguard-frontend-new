@@ -168,7 +168,7 @@ export default function ClientReports({ client }: { client: Client & { companyNa
     <div ref={containerRef} className="space-y-4">
       {/* Date range */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2 text-sm"><span className="text-xs font-medium text-muted-foreground">{t("ui.ClientReports.periodo", "Período")}</span>
+        <div className="flex flex-wrap items-center gap-2 text-sm"><span className="text-xs font-medium text-muted-foreground">{t("ui.ClientReports.periodo", "Período")}</span>
           <input type="date" className={`${FIELD_CLS} w-auto`} value={from} onChange={(e) => setFrom(e.target.value)} /><span className="text-muted-foreground">–</span>
           <input type="date" className={`${FIELD_CLS} w-auto`} value={to} onChange={(e) => setTo(e.target.value)} />
         </div>

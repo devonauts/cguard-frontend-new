@@ -351,7 +351,7 @@ export default function Coverage() {
           }
           icon={<ShieldCheck />}
           actions={
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <Button onClick={openReplacement}>
                 <UserPlus className="mr-1.5 size-4" /> Reemplazo por vacaciones
               </Button>

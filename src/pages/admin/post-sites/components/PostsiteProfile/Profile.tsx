@@ -70,13 +70,15 @@ const RateRow = ({
                 <span className="text-sm font-semibold">
                     {value ? `$${parseFloat(value).toFixed(2)}` : '-'}
                 </span>
+                {/* En táctil no hay `hover`: con `opacity-0` el lápiz era
+                    invisible y la tarifa no se podía editar desde un teléfono. */}
                 <button
                     onClick={onEdit}
-                    className="cg-btn-ghost cg-focus rounded p-0.5 opacity-0 transition-opacity group-hover:opacity-100"
+                    className="cg-btn-ghost cg-focus grid h-8 w-8 place-items-center rounded transition-opacity md:h-auto md:w-auto md:p-0.5 md:opacity-0 md:group-hover:opacity-100"
                     title="Editar"
                     aria-label="Editar tarifa"
                 >
-                    <Pencil size={11} />
+                    <Pencil size={12} />
                 </button>
             </div>
         )}
@@ -484,7 +486,7 @@ export default function PostSiteProfile({ site }: { site?: any }) {
                         {activeStatus.stations.map((station) => (
                             <div key={station.id} className="border-b px-6 py-4 last:border-0" style={{ borderColor: 'var(--hairline)' }}>
                                 {/* Station header */}
-                                <div className="mb-3 flex items-center gap-2">
+                                <div className="mb-3 flex flex-wrap items-center gap-2">
                                     {station.isActive ? (
                                         <ShieldCheck size={16} className="flex-shrink-0" style={{ color: 'var(--ok-text)' }} />
                                     ) : (

@@ -170,7 +170,9 @@ export default function TrainingCourseDetailPage() {
         />
 
         <Tabs defaultValue="details">
-          <TabsList>
+          {/* Cuatro pestañas no caben en un teléfono: el carril se desplaza
+              DENTRO de su píldora en vez de ensanchar la página. */}
+          <TabsList className="max-w-full justify-start overflow-x-auto [&>*]:shrink-0">
             <TabsTrigger value="details">Detalles</TabsTrigger>
             <TabsTrigger value="lessons">Lecciones ({lessons.length})</TabsTrigger>
             <TabsTrigger value="quiz">Cuestionario</TabsTrigger>
@@ -192,7 +194,7 @@ export default function TrainingCourseDetailPage() {
                   <Label>URL de portada</Label>
                   <Input disabled={readOnly} value={meta.coverUrl} onChange={(e) => setMeta({ ...meta, coverUrl: e.target.value })} placeholder="https://..." />
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label>{t("ui.TrainingCourseDetail.categoria", "Categoría")}</Label>
                     <Select value={meta.category} onValueChange={(v) => setMeta({ ...meta, category: v })} disabled={readOnly}>
@@ -212,7 +214,7 @@ export default function TrainingCourseDetailPage() {
                     </Select>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label>Puntos al completar</Label>
                     <Input type="number" min={0} disabled={readOnly} value={meta.pointsValue} onChange={(e) => setMeta({ ...meta, pointsValue: Number(e.target.value) })} />

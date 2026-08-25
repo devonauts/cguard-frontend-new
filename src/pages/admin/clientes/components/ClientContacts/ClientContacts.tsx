@@ -387,7 +387,7 @@ export default function ClientContacts({ client }: { client: Client & { contacts
 
   return (
     <div ref={containerRef} className="min-h-screen flex flex-col">
-      <div className={`bg-card border rounded-lg p-6 shadow-sm flex-1 flex flex-col min-h-0 ${isCompact ? 'overflow-x-hidden' : ''}`}>
+      <div className={`bg-card border rounded-lg p-4 sm:p-6 shadow-sm flex-1 flex flex-col min-h-0 ${isCompact ? 'overflow-x-hidden' : ''}`}>
         <div className="grid grid-cols-1 gap-4 md:flex md:items-center md:gap-4">
           <div className="flex-shrink-0">
             <div className="relative">
@@ -517,13 +517,13 @@ export default function ClientContacts({ client }: { client: Client & { contacts
             emptyMessage={t('clients.empty.title') as string}
             renderCard={(c: Contact) => (
               <div>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <div className="font-medium">{c.name}</div>
-                    <div className="text-xs text-muted-foreground">{c.email || '-'}</div>
-                    <div className="text-xs text-muted-foreground">{resolvePostSiteLabel(c)}</div>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate font-medium">{c.name}</div>
+                    <div className="truncate text-xs text-muted-foreground">{c.email || '-'}</div>
+                    <div className="truncate text-xs text-muted-foreground">{resolvePostSiteLabel(c)}</div>
                   </div>
-                  <div className="text-right">
+                  <div className="shrink-0 text-right">
                     <div className="mt-2">
                       <button onClick={() => { setForm(c); setShowAdd(true); }} className="px-2 py-1 text-sm">{t('actions.edit')}</button>
                     </div>

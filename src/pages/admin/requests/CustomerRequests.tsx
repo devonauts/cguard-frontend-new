@@ -134,7 +134,7 @@ export default function CustomerRequests() {
           { label: "Solicitudes de clientes" },
         ]}
       />
-      <PageContainer width="wide" className="p-6">
+      <PageContainer width="wide" className="p-4 sm:p-6">
         <PageHeader
           icon={<Inbox />}
           title="Solicitudes de clientes"
@@ -183,7 +183,10 @@ export default function CustomerRequests() {
         <Section title="Solicitudes" icon={<Inbox />}>
         {/* Tabla */}
         <div className="overflow-hidden rounded-2xl" style={{ border: "1px solid var(--hairline)" }}>
-          <Table>
+          {/* 7 columnas: por debajo de ~880 px la tabla se desplaza dentro de su
+              caja (el envoltorio de `Table` ya trae el `overflow-auto`) en vez de
+              apretar cada columna hasta lo ilegible. */}
+          <Table className="min-w-[880px]">
             <TableHeader style={{ background: "var(--glass-sunken)" }}>
               <TableRow>
                 <TableHead className="cg-eyebrow">Fecha</TableHead>
@@ -268,7 +271,7 @@ export default function CustomerRequests() {
         </div>
 
         {/* Pagination */}
-        <div className="flex items-center justify-end space-x-2 py-4">
+        <div className="flex flex-wrap items-center justify-center gap-2 py-4 sm:justify-end">
           <div className="text-sm" style={{ color: "var(--ink-soft)" }}>{t("ui.CustomerRequests.elementosPorPagina", "Elementos por página")}</div>
           <Select value={String(pageSize)} onValueChange={(v) => { setPageSize(Number(v)); setPage(1); }}>
             <SelectTrigger className="w-[70px]"><SelectValue /></SelectTrigger>
@@ -278,7 +281,7 @@ export default function CustomerRequests() {
               <SelectItem value="100">100</SelectItem>
             </SelectContent>
           </Select>
-          <div className="mx-4 text-sm tabular-nums" style={{ color: "var(--ink-soft)" }}>
+          <div className="text-sm tabular-nums sm:mx-4" style={{ color: "var(--ink-soft)" }}>
             {filtered.length === 0
               ? "0 de 0"
               : `${(page - 1) * pageSize + 1}–${Math.min(page * pageSize, filtered.length)} de ${filtered.length}`}

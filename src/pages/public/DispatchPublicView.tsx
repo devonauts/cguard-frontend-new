@@ -192,17 +192,34 @@ export default function DispatchPublicView() {
   })();
 
   return (
-    <div className="p-6 bg-muted/30 min-h-screen" style={{ fontFamily: 'Inter, Arial, sans-serif' }}>
+    <div className="p-4 sm:p-6 bg-muted/30 min-h-screen" style={{ fontFamily: 'Inter, Arial, sans-serif' }}>
+      {/* En un móvil de 375 px, 24 px de margen a cada lado se comen el 13 % del
+          ancho útil justo donde hay una tabla que ya va justa: de ahí el p-4. */}
       <div className="max-w-4xl mx-auto space-y-4">
         {/* Logo + Map header */}
         <div className="flex flex-col items-center mb-2">
-          <img src="/assets/logo/c-guard-logo.png" alt="C Guard logo" className="h-32 mb-4" style={{ objectFit: 'contain' }} />
+          {/* El archivo mide 6477x1119 (casi 6:1). Con sólo la ALTURA fijada
+              (h-32) el navegador calculaba 741 px de ancho: en un móvil eso no
+              es un logo grande, es la página entera desplazándose de lado. Se
+              manda el ANCHO y la altura se deduce. */}
+          <img
+            src="/assets/logo/c-guard-logo.png"
+            alt="C Guard logo"
+            className="mb-4 h-auto w-full max-w-[260px] object-contain sm:max-w-md"
+          />
           {coords && <div className="w-full overflow-hidden rounded-2xl border shadow-sm"><IncidentMap lat={coords.lat} lng={coords.lng} label={payload?.ticketId || payload?.id} /></div>}
         </div>
 
-        <Section title="Basic Details" icon={<FileText />} contentClassName="overflow-hidden rounded-xl border">
+        {/* `overflow-hidden` RECORTABA: son cuatro columnas de etiqueta+valor y
+            en un móvil no caben, así que la fecha y el nombre del puesto
+            desaparecían por el borde derecho sin forma de llegar a ellos. Con
+            desplazamiento horizontal —y un ancho mínimo para que las celdas no
+            se estrujen a una letra por línea— la tabla se lee entera y el
+            desplazamiento se queda DENTRO de la tarjeta, sin arrastrar la
+            página. */}
+        <Section title="Basic Details" icon={<FileText />} contentClassName="overflow-x-auto rounded-xl border">
           <div className="text-sm">
-            <table className="w-full text-sm border-collapse">
+            <table className="w-full min-w-[640px] text-sm border-collapse">
               <tbody>
                 <tr className="border-b">
                   <td className="py-3 px-4 text-xs font-medium text-muted-foreground">Ticket ID</td>
@@ -278,7 +295,12 @@ export default function DispatchPublicView() {
           <Section title="Guard Assigned" icon={<ShieldAlert />}>
             <div className="text-sm">
               <div className="overflow-x-auto rounded-xl border">
-                <table className="w-full text-sm table-fixed border-collapse">
+                {/* `table-fixed w-full` repartía el ancho a partes iguales pase
+                    lo que pase, así que el contenedor que se desplaza nunca
+                    tenía nada que desplazar: en un móvil la columna de fecha
+                    quedaba en 100 px y la hora caía en cuatro líneas. Con un
+                    ancho mínimo, cuando no cabe se desliza. */}
+                <table className="w-full min-w-[460px] text-sm table-fixed border-collapse">
                   <thead>
                     <tr className="bg-muted/40 text-left">
                       <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Guard</th>
@@ -311,12 +333,15 @@ export default function DispatchPublicView() {
                   {payload.comments && payload.comments.map((c: any) => (
                     <div key={c.id || c.createdAt} className="flex items-start gap-3">
                       <div className="flex-shrink-0 h-8 w-8 rounded-full bg-muted flex items-center justify-center text-sm font-medium text-foreground">{(c.author && (c.author.name || c.author.fullName || c.author.username) ? String((c.author.name || c.author.fullName || c.author.username)).charAt(0).toUpperCase() : 'U')}</div>
-                      <div className="flex-1">
+                      {/* `min-w-0`: un hijo flexible no baja de su contenido
+                          mínimo, así que un adjunto con URL larga empujaba el
+                          comentario fuera de la tarjeta en vez de partirse. */}
+                      <div className="min-w-0 flex-1">
                         <div className="text-xs text-foreground/70">{(c.author && (c.author.name || c.author.fullName || c.author.username)) || 'Usuario'} · {c.createdAt ? new Date(c.createdAt).toLocaleString() : ''}</div>
                         <div className="mt-1 text-sm text-foreground whitespace-pre-wrap">{c.text || c.body || c.message}</div>
                         {c.attachment && c.attachment.url && safeHttpUrl(c.attachment.url) && (
                           <div className="mt-2">
-                            <a className="text-xs text-blue-600 underline" href={safeHttpUrl(c.attachment.url) as string} target="_blank" rel="noreferrer">Adjunto: {c.attachment.name || c.attachment.url}</a>
+                            <a className="break-all text-xs text-blue-600 underline" href={safeHttpUrl(c.attachment.url) as string} target="_blank" rel="noreferrer">Adjunto: {c.attachment.name || c.attachment.url}</a>
                           </div>
                         )}
                       </div>

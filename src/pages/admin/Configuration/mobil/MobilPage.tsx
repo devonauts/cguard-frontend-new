@@ -540,7 +540,7 @@ export default function MobilPage() {
               {t('settings.mobil.bannerSectionDesc', { defaultValue: 'Las imágenes que giran en la portada de la app del cliente.' })}
             </p>
 
-            <Table className="table-fixed">
+            <Table className="table-fixed min-w-[560px]">
               <colgroup>
                 <col style={{ width: '25%' }} />
                 <col style={{ width: '45%' }} />
@@ -629,7 +629,7 @@ export default function MobilPage() {
                       <Plus className="h-4 w-4" /> {t('settings.mobil.newServiceBtn', { defaultValue: 'Nuevo servicio' })}
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-lg">
+                  <DialogContent className="max-h-[90vh] max-w-[calc(100%-2rem)] overflow-y-auto sm:max-w-lg">
                     <DialogHeader>
                       <DialogTitle>{editingServiceId ? t('settings.mobil.editServiceTitle', { defaultValue: 'Editar Servicio' }) : t('settings.mobil.newServiceTitle', { defaultValue: 'Nuevo Servicio' })}</DialogTitle>
                       <DialogDescription>{t('settings.mobil.serviceDialogDesc', { defaultValue: 'Configura un servicio para la app móvil.' })}</DialogDescription>
@@ -700,9 +700,9 @@ export default function MobilPage() {
                                 type="button"
                                 aria-label={t('settings.mobil.removeImage', { defaultValue: 'Quitar imagen' })}
                                 onClick={() => setServiceForm((p) => ({ ...p, images: p.images.filter((_: UploadedFile, j: number) => j !== i) }))}
-                                className="cg-btn-bad cg-focus absolute right-0.5 top-0.5 grid size-4 place-items-center rounded-full"
+                                className="cg-btn-bad cg-focus absolute right-0.5 top-0.5 grid size-6 place-items-center rounded-full"
                               >
-                                <Trash2 className="size-2.5" />
+                                <Trash2 className="size-3" />
                               </button>
                             </div>
                           ))}
@@ -713,9 +713,9 @@ export default function MobilPage() {
                                 type="button"
                                 aria-label={t('settings.mobil.removeImage', { defaultValue: 'Quitar imagen' })}
                                 onClick={() => setServiceForm((p) => ({ ...p, newImageFiles: p.newImageFiles.filter((_: File, j: number) => j !== i) }))}
-                                className="cg-btn-bad cg-focus absolute right-0.5 top-0.5 grid size-4 place-items-center rounded-full"
+                                className="cg-btn-bad cg-focus absolute right-0.5 top-0.5 grid size-6 place-items-center rounded-full"
                               >
-                                <Trash2 className="size-2.5" />
+                                <Trash2 className="size-3" />
                               </button>
                             </div>
                           ))}
@@ -788,7 +788,7 @@ export default function MobilPage() {
             <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t('settings.mobil.serviceSectionDesc', { defaultValue: 'Lista de servicios de tu empresa. Sólo los publicados se ven en la app.' })}</p>
 
             <div>
-              <Table className="table-fixed">
+              <Table className="table-fixed min-w-[720px]">
                 <colgroup>
                   <col style={{ width: '28%' }} />
                   <col style={{ width: '34%' }} />
@@ -862,7 +862,7 @@ export default function MobilPage() {
           >
             <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t('settings.mobil.certSectionDesc', { defaultValue: 'Los sellos y acreditaciones de tu empresa, con sus fechas y archivos.' })}</p>
 
-            <Table className="table-fixed">
+            <Table className="table-fixed min-w-[900px]">
               <colgroup>
                 <col style={{ width: '18%' }} />
                 <col style={{ width: '12%' }} />
@@ -995,7 +995,7 @@ export default function MobilPage() {
         </PageContainer>
 
         <Dialog open={bannerDialogOpen} onOpenChange={setBannerDialogOpen}>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-h-[90vh] max-w-[calc(100%-2rem)] overflow-y-auto sm:max-w-2xl">
             <DialogHeader className="text-center">
               <DialogTitle className="mx-auto">{bannerTitle}</DialogTitle>
               <DialogDescription>{t('settings.mobil.bannerDialogDesc', { defaultValue: 'Configura el banner que se mostrará en el módulo MOBIL.' })}</DialogDescription>
@@ -1061,7 +1061,7 @@ export default function MobilPage() {
         </Dialog>
 
         <Dialog open={certDialogOpen} onOpenChange={setCertDialogOpen}>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-h-[90vh] max-w-[calc(100%-2rem)] overflow-y-auto sm:max-w-2xl">
             <DialogHeader className="text-center">
               <DialogTitle className="mx-auto">{certTitle}</DialogTitle>
               <DialogDescription>{t('settings.mobil.certDialogDesc', { defaultValue: 'Configura los datos de la certificación y sus archivos.' })}</DialogDescription>
@@ -1188,7 +1188,7 @@ export default function MobilPage() {
         <Dialog open={imagePreviewOpen} onOpenChange={setImagePreviewOpen}>
           <DialogContent
             showCloseButton={false}
-            className="max-h-[90vh] w-full max-w-[920px] overflow-hidden rounded-3xl border p-0"
+            className="max-h-[90vh] w-full max-w-[calc(100%-2rem)] overflow-hidden rounded-3xl border p-0 sm:max-w-[920px]"
           >
             <DialogHeader
               className="flex items-center justify-center gap-4 border-b px-4 py-4"
@@ -1217,7 +1217,7 @@ export default function MobilPage() {
         </Dialog>
 
         <Dialog open={confirmDeleteOpen} onOpenChange={setConfirmDeleteOpen}>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-h-[90vh] max-w-[calc(100%-2rem)] overflow-y-auto sm:max-w-md">
             <DialogHeader className="text-center">
               <DialogTitle>{t('settings.mobil.confirmDeleteTitle', { defaultValue: 'Confirmar eliminación' })}</DialogTitle>
               <DialogDescription>

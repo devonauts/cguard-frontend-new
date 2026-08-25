@@ -162,7 +162,7 @@ export default function ReportPageShell({
                     <Filter className="h-4 w-4" /> Filtros
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-[400px] overflow-y-auto sm:w-[440px]">
+                <SheetContent side="right" className="w-full max-w-[400px] overflow-y-auto sm:max-w-[440px]">
                   <SheetHeader><SheetTitle>Filtros</SheetTitle></SheetHeader>
                   <div className="mt-6 space-y-5">
                     {filters}

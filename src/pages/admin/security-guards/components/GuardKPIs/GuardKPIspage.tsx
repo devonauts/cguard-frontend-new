@@ -771,20 +771,6 @@ export default function GuardIndicators({ guard }: Props) {
                                               </tbody>
                                             </table>
 
-                                            <div className="md:hidden">
-                                              <MobileCardList
-                                                items={kpiData || []}
-                                                loading={false}
-                                                emptyMessage={t('guards.KPI.empty', { defaultValue: 'No KPI data' }) as string}
-                                                renderCard={(k: Kpi) => (
-                                                  <div className="glass-flat p-4">
-                                                    <div className="text-sm font-semibold">{k.type}</div>
-                                                    <div className="text-xs text-muted-foreground">{k.date} • {k.createdBy?.fullName ?? k.addedBy}</div>
-                                                  </div>
-                                                )}
-                                              />
-                                            </div>
-
                                             <div className="w-full">
                                               <KpiBarChart data={metrics.map((m) => ({ name: m.name, target: m.target, actual: m.actual }))} width={720} height={300} />
                                             </div>
@@ -802,6 +788,25 @@ export default function GuardIndicators({ guard }: Props) {
                     </tbody>
                   </table>
                 </div>
+
+                {/* Móvil: la tabla no se pinta por debajo de `md`, así que la
+                    lista de KPIs va en tarjetas. Antes esta lista vivía DENTRO
+                    de la fila expandida de la tabla, es decir, dentro de lo que
+                    el teléfono nunca llega a pintar: en un móvil la pantalla
+                    quedaba en blanco. */}
+                <div className="md:hidden">
+                  <MobileCardList
+                    items={kpiData || []}
+                    loading={false}
+                    emptyMessage={t('guards.KPI.empty', { defaultValue: 'No KPI data' }) as string}
+                    renderCard={(k: Kpi) => (
+                      <div className="glass-flat p-4">
+                        <div className="text-sm font-semibold">{k.type}</div>
+                        <div className="text-xs text-muted-foreground">{k.date} • {k.createdBy?.fullName ?? k.addedBy}</div>
+                      </div>
+                    )}
+                  />
+                </div>
               </div>
 
               {/* Modal */}
@@ -811,7 +816,7 @@ export default function GuardIndicators({ guard }: Props) {
                   onClick={handleCloseModal}
                 >
                   <div
-                    className="glass-raised fixed bottom-0 right-0 top-0 w-96 overflow-y-auto rounded-l-3xl rounded-r-none" style={{ position: 'fixed' }}
+                    className="glass-raised fixed bottom-0 right-0 top-0 w-full max-w-md overflow-y-auto rounded-l-3xl rounded-r-none" style={{ position: 'fixed' }}
                     onClick={(e) => e.stopPropagation()}
                   >
                     {/* Header */}

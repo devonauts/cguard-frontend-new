@@ -2061,7 +2061,7 @@ export default function Schedule() {
             variant="outline"
             size="sm"
             onClick={() => setPanelOpen(v => !v)}
-            className="gap-1.5"
+            className="hidden gap-1.5 md:inline-flex"
             title={panelOpen ? 'Ocultar panel lateral' : 'Mostrar panel (vigilantes, IA, personal)'}
           >
             {panelOpen ? <PanelRightClose size={15} /> : <PanelRightOpen size={15} />}
@@ -2563,8 +2563,10 @@ export default function Schedule() {
               )}
 
               {/* ─── Side panel (former left sidebar + guard pool, now collapsible) ─── */}
+              {/* En un teléfono el panel se esconde: 280 px fijos al lado de
+                  la hoja dejaban la rejilla en 60 px de ancho, ilegible. */}
               {panelOpen && (
-                <aside className="w-[280px] shrink-0 overflow-y-auto space-y-3 pr-0.5">
+                <aside className="hidden w-[280px] shrink-0 overflow-y-auto space-y-3 pr-0.5 md:block">
                   {/* Vigilantes disponibles — drag them onto the sheet */}
                   <div className="glass p-3">
                     <div className="mb-2 flex items-center gap-2">
@@ -3374,7 +3376,7 @@ export default function Schedule() {
                 { label: 'Vigilantes afectados', value: s.guardsAffected || 0, icon: <Users size={14} />, tone: 'neutral' as Tone },
               ];
               return (
-                <div className="grid grid-cols-4 gap-2 px-5 py-3" style={{ borderBottom: '1px solid var(--hairline)' }}>
+                <div className="grid grid-cols-2 gap-2 px-5 py-3 sm:grid-cols-4" style={{ borderBottom: '1px solid var(--hairline)' }}>
                   {cards.map((c) => (
                     <div key={c.label} className="glass-flat p-2 text-center">
                       <div className="flex items-center justify-center gap-1" style={{ color: toneInk(c.tone) }}>

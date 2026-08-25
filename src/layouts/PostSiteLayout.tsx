@@ -122,7 +122,9 @@ export default function PostSiteLayout({ title, children, site }: Props) {
               </div>
             </div>
             {id && (
-              <div className="flex shrink-0 flex-wrap items-center gap-2">
+              /* Sin `shrink-0`: su ancho natural (tres botones) desbordaba la
+                 página en un teléfono. Encogiendo, envuelven dentro de la fila. */
+              <div className="flex min-w-0 flex-wrap items-center gap-2">
                 <Button variant="outline" size="sm" onClick={() => navigate(`${base}/edit`)}><Pencil className="mr-1 h-4 w-4" /> {t('common.edit', 'Editar sede')}</Button>
                 <Button variant="outline" size="sm" onClick={() => navigate(`${base}/stations/new`)}><Plus className="mr-1 h-4 w-4" /> {t('postSites.Details.newStation', 'Crear estación')}</Button>
                 <Button variant="brand" size="sm" onClick={() => navigate('/dispatch-tickets/new')}><AlertTriangle className="mr-1 h-4 w-4" /> {t('clients.newIncident', 'Crear incidente')}</Button>

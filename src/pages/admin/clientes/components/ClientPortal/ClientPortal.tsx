@@ -218,15 +218,15 @@ export default function ClientPortal({ client }: Props) {
                 {/* /access-users already includes the titular — only fall back
                     to the linked-user row when the fetch returned nothing. */}
                 {linked && accessUsers.length === 0 && (
-                  <div className="flex items-center justify-between py-2.5">
-                    <div className="flex items-center gap-2.5"><span className="grid h-8 w-8 place-items-center rounded-full border text-xs font-semibold" style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }}>{initial}</span><div><div className="text-sm font-medium">{name}</div><div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{email || '—'}</div></div></div>
-                    <StatusBadge tone="ok" dot={false}>Titular</StatusBadge>
+                  <div className="flex items-center justify-between gap-3 py-2.5">
+                    <div className="flex min-w-0 items-center gap-2.5"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border text-xs font-semibold" style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }}>{initial}</span><div className="min-w-0"><div className="truncate text-sm font-medium">{name}</div><div className="truncate text-xs" style={{ color: 'var(--ink-soft)' }}>{email || '—'}</div></div></div>
+                    <StatusBadge tone="ok" dot={false} className="shrink-0">Titular</StatusBadge>
                   </div>
                 )}
                 {accessUsers.map((u, i) => (
-                  <div key={u.id || i} className="flex items-center justify-between py-2.5">
-                    <div className="flex items-center gap-2.5"><span className="grid h-8 w-8 place-items-center rounded-full border text-xs font-semibold" style={{ background: 'var(--glass-sunken)', borderColor: 'var(--hairline)' }}>{(u.name || u.email || '?').charAt(0).toUpperCase()}</span><div><div className="text-sm font-medium">{u.name || u.email}</div><div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{u.email || ''}</div></div></div>
-                    <StatusBadge tone={(u.status || '').toLowerCase().includes('activ') ? 'ok' : 'neutral'} dot={false}>{u.role || u.status || 'Acceso'}</StatusBadge>
+                  <div key={u.id || i} className="flex items-center justify-between gap-3 py-2.5">
+                    <div className="flex min-w-0 items-center gap-2.5"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border text-xs font-semibold" style={{ background: 'var(--glass-sunken)', borderColor: 'var(--hairline)' }}>{(u.name || u.email || '?').charAt(0).toUpperCase()}</span><div className="min-w-0"><div className="truncate text-sm font-medium">{u.name || u.email}</div><div className="truncate text-xs" style={{ color: 'var(--ink-soft)' }}>{u.email || ''}</div></div></div>
+                    <StatusBadge tone={(u.status || '').toLowerCase().includes('activ') ? 'ok' : 'neutral'} dot={false} className="shrink-0">{u.role || u.status || 'Acceso'}</StatusBadge>
                   </div>
                 ))}
               </div>

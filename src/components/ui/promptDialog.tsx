@@ -65,7 +65,7 @@ export function PromptHost() {
     >
       <div
         role="dialog" aria-modal="true"
-        className="glass-raised w-full max-w-sm p-5 animate-in zoom-in-95 duration-150 motion-reduce:animate-none!"
+        className="glass-raised max-h-[90dvh] w-full max-w-sm overflow-y-auto p-5 animate-in zoom-in-95 duration-150 motion-reduce:animate-none!"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex gap-3">

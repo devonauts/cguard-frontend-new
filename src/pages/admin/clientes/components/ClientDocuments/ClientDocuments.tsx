@@ -266,7 +266,7 @@ export default function ClientDocuments({ client }: { client: Client }) {
               <div className="space-y-3">
                 {activity.map((a) => (
                   <div key={a.id} className="flex items-start justify-between gap-3 text-sm">
-                    <div><div className="font-medium">{a.user}</div><div className="max-w-[180px] truncate text-xs" style={{ color: 'var(--ink-soft)' }}>{a.action} {a.name}</div></div>
+                    <div className="min-w-0"><div className="truncate font-medium">{a.user}</div><div className="max-w-[180px] truncate text-xs" style={{ color: 'var(--ink-soft)' }}>{a.action} {a.name}</div></div>
                     <span className="shrink-0 text-xs" style={{ color: 'var(--ink-faint)' }}>{ago(a.at)}</span>
                   </div>
                 ))}

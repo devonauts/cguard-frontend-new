@@ -147,7 +147,7 @@ export default function LessonsManager({ courseId, lessons, readOnly, onChange }
 
   return (
     <FadeIn className="space-y-3">
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t("ui.LessonsManager.leccionesOrdenadasQueVeranLos", "Lecciones ordenadas que verán los vigilantes.")}</p>
         {!readOnly && (
           <Button variant="brand" onClick={openNew}>
@@ -174,12 +174,12 @@ export default function LessonsManager({ courseId, lessons, readOnly, onChange }
       <Stagger className="space-y-3">
       {sorted.map((l, idx) => (
         <GlassPanel key={l.id} flat hover className="flex items-start gap-3 p-4">
-            <div className="flex flex-col items-center pt-1" style={{ color: 'var(--ink-soft)' }}>
+            <div className="flex shrink-0 flex-col items-center pt-1" style={{ color: 'var(--ink-soft)' }}>
               {!readOnly ? (
                 <div className="flex flex-col">
-                  <button className="hover:text-foreground disabled:opacity-30" disabled={idx === 0} onClick={() => move(l, -1)}>▲</button>
+                  <button className="inline-flex h-8 w-8 items-center justify-center rounded-md leading-none hover:text-foreground disabled:opacity-30" disabled={idx === 0} onClick={() => move(l, -1)}>▲</button>
                   <GripVertical className="h-4 w-4 my-0.5" />
-                  <button className="hover:text-foreground disabled:opacity-30" disabled={idx === sorted.length - 1} onClick={() => move(l, 1)}>▼</button>
+                  <button className="inline-flex h-8 w-8 items-center justify-center rounded-md leading-none hover:text-foreground disabled:opacity-30" disabled={idx === sorted.length - 1} onClick={() => move(l, 1)}>▼</button>
                 </div>
               ) : (
                 <span className="text-sm font-semibold tabular-nums">{idx + 1}</span>
@@ -198,7 +198,7 @@ export default function LessonsManager({ courseId, lessons, readOnly, onChange }
               </div>
             </div>
             {!readOnly && (
-              <div className="flex items-center gap-1">
+              <div className="flex shrink-0 items-center gap-1">
                 <Button variant="ghost" size="icon-sm" aria-label={t("ui.LessonsManager.editarLeccion", "Editar lección")} onClick={() => openEdit(l)}><Pencil /></Button>
                 <Button variant="ghost" size="icon-sm" aria-label={t("ui.LessonsManager.eliminarLeccion", "Eliminar lección")} style={{ color: 'var(--bad-text)' }} onClick={() => setDeleteId(l.id)}><Trash2 /></Button>
               </div>
@@ -249,10 +249,12 @@ export default function LessonsManager({ courseId, lessons, readOnly, onChange }
                 <Button type="button" size="sm" variant="outline" onClick={addResource}><Plus className="h-3 w-3 mr-1" /> Agregar</Button>
               </div>
               {form.resources.map((r, i) => (
-                <div key={i} className="flex items-center gap-2">
+                /* Nombre + URL + papelera no caben en una fila de teléfono:
+                   se apilan hasta `sm`. */
+                <div key={i} className="flex flex-col gap-2 sm:flex-row sm:items-center">
                   <Input placeholder="Nombre" value={r.name} onChange={(e) => updateResource(i, { name: e.target.value })} />
                   <Input placeholder="URL" value={r.url} onChange={(e) => updateResource(i, { url: e.target.value })} />
-                  <button className="p-1.5" style={{ color: 'var(--bad-text)' }} onClick={() => removeResource(i)}><Trash2 className="h-4 w-4" /></button>
+                  <button aria-label="Eliminar recurso" className="inline-flex h-9 w-9 shrink-0 items-center justify-center self-end rounded-md sm:self-auto" style={{ color: 'var(--bad-text)' }} onClick={() => removeResource(i)}><Trash2 className="h-4 w-4" /></button>
                 </div>
               ))}
             </div>

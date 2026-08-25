@@ -113,7 +113,7 @@ export default function ResetPassword() {
               type="button"
               aria-label={showPassword ? t('auth.hide_password', { defaultValue: 'Ocultar contraseña' }) : t('auth.show_password', { defaultValue: 'Mostrar contraseña' })}
               onClick={() => setShowPassword((s) => !s)}
-              className="cg-focus absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 transition-colors"
+              className="cg-focus absolute right-1.5 top-1/2 -translate-y-1/2 rounded-md p-2.5 transition-colors"
               style={{ color: 'var(--ink-faint)' }}
               disabled={loading}
             >
@@ -140,7 +140,7 @@ export default function ResetPassword() {
               type="button"
               aria-label={showConfirm ? t('auth.hide_password', { defaultValue: 'Ocultar contraseña' }) : t('auth.show_password', { defaultValue: 'Mostrar contraseña' })}
               onClick={() => setShowConfirm((s) => !s)}
-              className="cg-focus absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 transition-colors"
+              className="cg-focus absolute right-1.5 top-1/2 -translate-y-1/2 rounded-md p-2.5 transition-colors"
               style={{ color: 'var(--ink-faint)' }}
               disabled={loading}
             >

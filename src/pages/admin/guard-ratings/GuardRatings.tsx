@@ -279,7 +279,7 @@ export default function GuardRatings() {
         </Section>
 
         {/* Pagination */}
-        <div className="flex items-center justify-end space-x-2 py-2">
+        <div className="flex flex-wrap items-center justify-end gap-2 py-2">
           <div className="text-sm text-muted-foreground">{t("ui.GuardRatings.elementosPorPagina", "Elementos por página")}</div>
           <Select value={String(pageSize)} onValueChange={(v) => { setPageSize(Number(v)); setPage(1); }}>
             <SelectTrigger className="w-[70px]"><SelectValue /></SelectTrigger>
@@ -289,7 +289,7 @@ export default function GuardRatings() {
               <SelectItem value="100">100</SelectItem>
             </SelectContent>
           </Select>
-          <div className="text-sm text-muted-foreground mx-4">
+          <div className="text-sm text-muted-foreground sm:mx-4">
             {filtered.length === 0
               ? "0 de 0"
               : `${(page - 1) * pageSize + 1}–${Math.min(page * pageSize, filtered.length)} de ${filtered.length}`}

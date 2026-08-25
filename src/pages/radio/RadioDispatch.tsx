@@ -154,7 +154,7 @@ export default function RadioDispatch() {
             <span className="font-semibold">
               {done >= total ? "Finalizando…" : "Reportes entrantes"} · {running.respondedCount || 0}/{total} recibidos
             </span>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               {countdown && (
                 <span
                   className={`rounded-lg px-3 py-1 font-mono text-lg font-bold tabular-nums ${
@@ -192,9 +192,9 @@ export default function RadioDispatch() {
                     <p className="truncate font-semibold">{s.stationName}</p>
                     <p className="truncate text-xs text-muted-foreground">{(s.onDutyGuards || []).join(", ") || "Sin vigilante en turno"}</p>
                   </div>
-                  {cc && <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${cc.cls}`}>{cc.label}</span>}
-                  {badge && <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${badge.cls}`}>{badge.label}</span>}
-                  <Button variant="outline" size="icon" onClick={() => start("station", s.stationId)} disabled={busy || !!running} title="Llamar a este puesto"><Play size={13} /></Button>
+                  {cc && <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${cc.cls}`}>{cc.label}</span>}
+                  {badge && <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${badge.cls}`}>{badge.label}</span>}
+                  <Button className="shrink-0" variant="outline" size="icon" onClick={() => start("station", s.stationId)} disabled={busy || !!running} title="Llamar a este puesto"><Play size={13} /></Button>
                 </div>
                 {e && (e.transcript || e.transcriptStatus === "pending" || e.hasAudio) && (
                   <div className="mt-2 space-y-1.5 border-t border-border pt-2">
@@ -243,7 +243,7 @@ function RecentSessions() {
       <div className="space-y-2">
         {rows.map((s) => (
           <div key={s.id} className="cg-card cg-card-hover">
-            <button onClick={() => open(s.id)} className="flex w-full items-center gap-3 p-3 text-left">
+            <button onClick={() => open(s.id)} className="flex w-full flex-wrap items-center gap-x-3 gap-y-1.5 p-3 text-left">
               <span className="text-xs text-muted-foreground">{new Date(s.startedAt).toLocaleString()}</span>
               <span className="text-xs">{s.mode === "auto" ? "Automático" : "Manual"}</span>
               <span className="flex-1" />

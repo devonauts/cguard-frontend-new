@@ -207,12 +207,12 @@ export function PanicAlertOverlay({
       >
         {/* Header */}
         <div
-          className="relative flex shrink-0 items-center gap-3 px-6 py-4"
+          className="relative flex shrink-0 items-center gap-3 px-4 py-4 sm:px-6"
           style={{ background: "var(--panic-fill)", color: "var(--panic-ink)" }}
         >
           <Siren size={36} className="shrink-0 animate-pulse" />
           <div className="min-w-0">
-            <div className="text-xl font-black leading-none tracking-tight">
+            <div className="text-lg font-black leading-none tracking-tight sm:text-xl">
               {isClient ? "ALERTA SOS — CLIENTE" : "ALERTA DE PÁNICO"}
             </div>
             <div className="mt-1 text-sm" style={{ color: "color-mix(in oklab, var(--panic-ink) 84%, transparent)" }}>
@@ -349,7 +349,7 @@ export function PanicAlertOverlay({
                     key={a}
                     type="button"
                     onClick={() => setAction(a)}
-                    className="cg-focus rounded-full border px-3 py-1 text-xs font-medium transition-colors"
+                    className="cg-focus inline-flex min-h-9 items-center rounded-full border px-3 py-1 text-xs font-medium transition-colors"
                     style={
                       elegida
                         ? {

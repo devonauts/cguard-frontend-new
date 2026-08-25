@@ -220,7 +220,10 @@ export default function ClientsLayout({ navKey, title, children, client }: Props
             </div>
           </div>
           {client?.id && (
-            <div className="flex shrink-0 flex-wrap items-center gap-2">
+            /* Sin `shrink-0`: con cuatro botones su ancho natural pasa de 600 px
+               y en un teléfono empujaba la página entera de lado. Al poder
+               encogerse, los botones envuelven dentro de la propia fila. */
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
               <Button variant="outline" size="sm" onClick={() => navigate(`/clients/edit/${client.id}`)}><Pencil className="mr-1 h-4 w-4" /> {t('clients.editClient', 'Editar cliente')}</Button>
               <Button variant="outline" size="sm" onClick={() => navigate(`/post-sites/new?clientId=${client.id}`, { state: { clientName: displayName } })}><Plus className="mr-1 h-4 w-4" /> {t('clients.hero.newSite', 'Crear sede')}</Button>
               <Button variant="outline" size="sm" onClick={() => navigate('/dispatch-tickets/new')}><AlertTriangle className="mr-1 h-4 w-4" /> {t('clients.newIncident', 'Crear incidente')}</Button>

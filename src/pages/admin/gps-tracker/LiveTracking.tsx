@@ -314,7 +314,7 @@ export default function LiveTrackingPage() {
                   </Button>
                 </SheetTrigger>
 
-                <SheetContent side="right" className="w-[400px] sm:w-[460px]">
+                <SheetContent side="right" className="w-full max-w-[400px] overflow-y-auto sm:max-w-[460px]">
                   <SheetHeader>
                     <SheetTitle>Filtros</SheetTitle>
                   </SheetHeader>
@@ -424,7 +424,10 @@ export default function LiveTrackingPage() {
               height={420}
             />
 
-            {/* Tabla debajo del mapa */}
+            {/* Tabla debajo del mapa. Seis columnas no caben en un teléfono y el
+                marco de arriba recorta: sin este contenedor, la mitad derecha
+                quedaba fuera de alcance en vez de poder desplazarse. */}
+            <div className="overflow-x-auto">
             <table className="min-w-full text-sm text-left border-collapse">
               <thead className="bg-muted/30">
                 <tr className="border-b">
@@ -485,6 +488,7 @@ export default function LiveTrackingPage() {
                 )}
               </tbody>
             </table>
+            </div>
           </div>
         </Section>
       </PageContainer>

@@ -208,7 +208,7 @@ export default function CoBrowseAgent() {
       {/* Awareness banner — amber while watched, red while support is controlling. */}
       <div
         role="status"
-        className="fixed inset-x-0 top-0 z-[100000] flex items-center justify-center gap-2 px-3 py-1.5 text-center text-xs font-semibold"
+        className="fixed inset-x-0 top-0 z-[100000] flex flex-wrap items-center justify-center gap-x-2 gap-y-1 px-3 py-1.5 text-center text-xs font-semibold"
         style={{
           paddingTop: 'max(6px, env(safe-area-inset-top))',
           background: fondo,
@@ -218,18 +218,18 @@ export default function CoBrowseAgent() {
       >
         {/* El punto va del color de la TINTA, no blanco: sobre el ámbar un punto
             blanco casi desaparece. */}
-        <span className="relative flex h-2.5 w-2.5">
+        <span className="relative flex h-2.5 w-2.5 shrink-0">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" style={{ background: tinta }} />
           <span className="relative inline-flex h-2.5 w-2.5 rounded-full" style={{ background: tinta }} />
         </span>
-        {controlling ? <Hand className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+        {controlling ? <Hand className="h-3.5 w-3.5 shrink-0" /> : <Eye className="h-3.5 w-3.5 shrink-0" />}
         {controlling
           ? `Soporte (${controller}) está controlando tu pantalla.`
           : `Soporte (${watchedBy}) está viendo tu sesión en vivo para ayudarte.`}
         {controlling && (
           <button
             onClick={reclaimControl}
-            className="cg-focus ml-2 rounded-full px-2 py-0.5 text-[11px] font-bold transition-[filter] hover:brightness-95"
+            className="cg-focus ml-2 inline-flex min-h-8 shrink-0 items-center rounded-full px-3 py-0.5 text-[11px] font-bold transition-[filter] hover:brightness-95"
             style={{ background: tinta, color: fondo }}
           >
             Recuperar control

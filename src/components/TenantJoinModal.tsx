@@ -736,7 +736,7 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
                         </div>
                     ) : (
                         <div className="grid gap-4">
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <div>
                                     <label className="text-sm">{t('tenantJoinModal.companyName')}<span className="ml-1" style={{ color: "var(--bad-text)" }}>*</span></label>
                                     <Input value={form.name} onChange={(e) => setForm((s: any) => ({ ...s, name: e.target.value }))} />
@@ -773,7 +773,7 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <div>
                                     <label className="text-sm">{t('tenantJoinModal.website')}</label>
                                     <Input
@@ -803,7 +803,7 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <div>
                                     <label className="text-sm">{t('tenantJoinModal.businessTitle')}<span className="ml-1" style={{ color: "var(--bad-text)" }}>*</span></label>
                                     <Input value={form.businessTitle} onChange={(e) => setForm((s: any) => ({ ...s, businessTitle: e.target.value }))} />
@@ -877,7 +877,7 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
 
                                 {/* Se elimina el mapa secundario para evitar duplicidad. Usar el mapa integrado en AddressAutocompleteOSM para seleccionar la dirección. */}
 
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                     <div>
                                         <label className="text-sm">{t("ui.TenantJoinModal.direccionComplementaria", "Dirección Complementaria")}</label>
                                         <Input value={form.addressLine2} onChange={(e) => setForm((s: any) => ({ ...s, addressLine2: e.target.value }))} disabled={false} />
@@ -888,7 +888,7 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                     <div>
                                         <label className="text-sm">Ciudad</label>
                                         <Input value={form.city} onChange={(e) => setForm((s: any) => ({ ...s, city: e.target.value }))} disabled={showAddressAutocomplete} />
@@ -899,7 +899,7 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                     <div>
                                         <label className="text-sm">Latitud</label>
                                         <Input value={form.latitude} onChange={(e) => setForm((s: any) => ({ ...s, latitude: e.target.value }))} disabled={showAddressAutocomplete} />
@@ -911,7 +911,7 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
                                 </div>
                             </div>
 
-                            <div className="flex items-center justify-between gap-3 mt-2">
+                            <div className="flex flex-wrap items-center justify-between gap-3 mt-2">
                                 <div className="flex flex-col gap-2">
                                     <Button variant="destructive" onClick={clearDraft} disabled={loading}>Borrar borrador</Button>
                                 </div>

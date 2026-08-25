@@ -1252,7 +1252,7 @@ export default function ClientesPage() {
 
       {/* Send app access dialog */}
       <AlertDialog open={openSendAccessDialog} onOpenChange={(v) => { if (!sendingAccess) setOpenSendAccessDialog(v); }}>
-        <AlertDialogContent className="max-w-md">
+        <AlertDialogContent className="max-w-[calc(100%-2rem)] sm:max-w-md max-h-[90vh] overflow-y-auto">
           <AlertDialogHeader>
             <div className="flex items-center gap-3 mb-1">
               <IconTile size="sm"><Smartphone /></IconTile>
@@ -1340,7 +1340,7 @@ export default function ClientesPage() {
 
       {/* Invitar a la app (Mi Seguridad app-download invitation) */}
       <AlertDialog open={openAppInviteDialog} onOpenChange={(v) => { if (!sendingAppInvite) setOpenAppInviteDialog(v); }}>
-        <AlertDialogContent className="max-w-md">
+        <AlertDialogContent className="max-w-[calc(100%-2rem)] sm:max-w-md max-h-[90vh] overflow-y-auto">
           <AlertDialogHeader>
             <div className="flex items-center gap-3 mb-1">
               <IconTile size="sm" tone="info"><Download /></IconTile>

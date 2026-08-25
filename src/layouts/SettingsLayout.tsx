@@ -43,7 +43,11 @@ export default function SettingsLayout({
   const secciones = (NAVS as Record<string, { sections: Section[] }>).configuracion.sections;
 
   return (
-    <div className="relative flex h-[calc(100vh-56px)] overflow-hidden">
+    /* Misma fórmula que `<main>` en `app-layout.tsx` (ventana − cabecera −
+       muesca). Si se cambia allí, se cambia aquí: con `vh` a secas este bloque
+       quedaba más alto que su hueco en el móvil y aparecía un segundo
+       desplazamiento dentro del que ya tiene el contenido. */
+    <div className="relative flex h-[calc(100vh_-_3.5rem_-_env(safe-area-inset-top))] overflow-hidden supports-[height:100dvh]:h-[calc(100dvh_-_3.5rem_-_env(safe-area-inset-top))]">
       {/* ── Índice lateral ─────────────────────────────────────────────────── */}
       <nav
         aria-label={t("settings.index", { defaultValue: "Índice de configuración" })}
@@ -120,7 +124,7 @@ export default function SettingsLayout({
         </div>
 
         <div className="flex-1 overflow-y-auto">
-          <div className="p-6">{children}</div>
+          <div className="p-4 sm:p-6">{children}</div>
         </div>
       </div>
     </div>

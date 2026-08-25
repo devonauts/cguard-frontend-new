@@ -81,7 +81,7 @@ export function ImportDialog({ open, onOpenChange, onSuccess }: ImportDialogProp
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent>
+            <DialogContent className="max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Importar Clientes desde Excel</DialogTitle>
                     <DialogDescription>Sube un archivo .xlsx/.xls/.csv para importar clientes.</DialogDescription>

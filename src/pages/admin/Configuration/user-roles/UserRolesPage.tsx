@@ -381,7 +381,7 @@ export default function UserRolesPage() {
                     <span>{t('settings.userRoles.lockedRoleNote', { defaultValue: 'Este rol está bloqueado. No se pueden modificar los permisos predeterminados.' })}</span>
                   </div>
                 ) : (
-                  <div className="flex gap-2 justify-end mt-3">
+                  <div className="mt-3 flex flex-wrap justify-end gap-2">
                     {expandedRole?.isSystem && (
                       <Button variant="outline" className="mr-auto" onClick={() => resetRoleToDefault(expandedRoleId as string)}>
                         {t('settings.userRoles.restoreDefaultsBtn', { defaultValue: 'Restaurar valores predeterminados' })}

@@ -788,7 +788,7 @@ export default function GuardRegistration() {
                   disabled={isLoading}
                   className={`${formControl} pr-10`} style={errorStyle('password')}
                 />
-                <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowPwd((v) => !v)}>{showPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
+                <button type="button" className="absolute right-1 top-1/2 inline-flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground hover:text-foreground" onClick={() => setShowPwd((v) => !v)}>{showPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
               </div>
               {errors.password && <div className="mt-1 text-sm" style={{ color: 'var(--bad-text)' }}>{errors.password}</div>}
             </div>
@@ -805,7 +805,7 @@ export default function GuardRegistration() {
                   disabled={isLoading}
                   className={`${formControl} pr-10`} style={errorStyle('confirm')}
                 />
-                <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowConfirm((v) => !v)}>{showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
+                <button type="button" className="absolute right-1 top-1/2 inline-flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground hover:text-foreground" onClick={() => setShowConfirm((v) => !v)}>{showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
               </div>
               {errors.confirm && <div className="mt-1 text-sm" style={{ color: 'var(--bad-text)' }}>{errors.confirm}</div>}
             </div>

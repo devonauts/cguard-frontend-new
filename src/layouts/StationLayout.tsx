@@ -63,7 +63,11 @@ export default function StationLayout({ title, children, station }: Props) {
 
   return (
     <AppLayout>
-      <div className="flex h-[calc(100vh-64px)] flex-col overflow-hidden">
+      {/* Misma fórmula que `<main>` en `app-layout.tsx` (ventana − cabecera −
+          muesca). Antes restaba 64 px cuando la cabecera mide 3,5rem: el bloque
+          quedaba 8 px más alto que su hueco y aparecía una segunda barra de
+          desplazamiento sobre la que ya tiene el contenido. */}
+      <div className="flex h-[calc(100vh_-_3.5rem_-_env(safe-area-inset-top))] flex-col overflow-hidden supports-[height:100dvh]:h-[calc(100dvh_-_3.5rem_-_env(safe-area-inset-top))]">
         {/* Barra de navegación: breadcrumb + cards de sección (scroll horizontal) */}
         <div className="shrink-0 px-4 pt-3">
           {/* Breadcrumb: Clientes › Cliente › Sede › Estación › Pestaña */}

@@ -88,7 +88,7 @@ export default function AuditLogs() {
 
   return (
     <AppLayout>
-      <PageContainer width="wide">
+      <PageContainer width="wide" className="px-4 pt-4 sm:px-6 sm:pt-6">
         <PageHeader
           icon={<ShieldCheck />}
           title="Registro de seguridad"

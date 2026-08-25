@@ -270,7 +270,7 @@ export default function SecurityGuardsPage() {
     const htmlRows = list
       .map((g) => `<tr><td>${escapeHtml(g.name)}</td><td>${escapeHtml(g.email)}</td><td>${escapeHtml(g.phone)}</td><td>${escapeHtml(g.status)}</td></tr>`)
       .join("\n");
-    const html = `<!doctype html><html><head><meta charset="utf-8"><title>Vigilantes</title><style>table{width:100%;border-collapse:collapse}td,th{border:1px solid;padding:8px}</style></head><body><h2>Vigilantes</h2><table><thead><tr><th>Nombre</th><th>Correo</th><th>{t("ui.SecurityGuards.telefono", "Teléfono")}</th><th>Estado</th></tr></thead><tbody>${htmlRows}</tbody></table></body></html>`;
+    const html = `<!doctype html><html><head><meta charset="utf-8"><title>Vigilantes</title><style>table{width:100%;border-collapse:collapse}td,th{border:1px solid;padding:8px}</style></head><body><h2>Vigilantes</h2><table><thead><tr><th>Nombre</th><th>Correo</th><th>Teléfono</th><th>Estado</th></tr></thead><tbody>${htmlRows}</tbody></table></body></html>`;
     const w = window.open("", "_blank");
     if (!w) {
       toast.error(t('guards.list.toasts.printWindowOpenError', 'No se pudo abrir la ventana de impresión'));
@@ -879,7 +879,7 @@ export default function SecurityGuardsPage() {
                     />
                   </div>
                   {viewMode !== 'cards' && (
-              <div className="hidden md:block">
+              <div className="hidden md:block overflow-x-auto">
                 <table className="min-w-full text-sm text-left border-collapse">
               <thead style={{ background: 'var(--glass-sunken)' }}>
                 <tr className="border-b">
@@ -1282,7 +1282,7 @@ export default function SecurityGuardsPage() {
       {/* Modal de detalles del vigilante */}
       {/* Diálogo de confirmación para archivar vigilante */}
       <Dialog open={archiveDialogOpen} onOpenChange={setArchiveDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{t('guards.list.dialog.archive.title', 'Archivar vigilante')}</DialogTitle>
           </DialogHeader>
@@ -1294,7 +1294,7 @@ export default function SecurityGuardsPage() {
               <strong>{t('guards.list.labels.name', 'Nombre')}:</strong> {guardToArchive?.name ?? "-"}
               <span className="ml-2 text-muted-foreground">{guardToArchive?.email ?? ""}</span>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div>
                 <Label className="text-xs">{t('guards.list.dialog.archive.date', 'Último día trabajado')}</Label>
                 <Input type="date" value={bajaFecha} onChange={(e) => setBajaFecha(e.target.value)} />
@@ -1602,7 +1602,7 @@ export default function SecurityGuardsPage() {
 
       {/* Import dialog (styled like clients import) */}
       <Dialog open={importDialogOpen} onOpenChange={setImportDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{t('guards.list.importDialog.title', 'Importar Vigilantes desde Excel')}</DialogTitle>
             <DialogDescription>{t('guards.list.importDialog.description', 'Sube un archivo .xlsx/.xls/.csv para importar vigilantes.')}</DialogDescription>

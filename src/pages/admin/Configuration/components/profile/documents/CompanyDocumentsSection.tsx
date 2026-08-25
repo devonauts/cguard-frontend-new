@@ -85,7 +85,7 @@ export default function CompanyDocumentsSection({ documents, onUpload, onDelete,
                 <button aria-label="Eliminar"
                   type="button"
                   onClick={() => onDelete(doc.id)}
-                  className="cg-focus inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-semibold"
+                  className="cg-focus inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-semibold"
                   style={{ color: 'var(--bad-text)' }}
                 >
                   <Trash2 className="h-3.5 w-3.5" />

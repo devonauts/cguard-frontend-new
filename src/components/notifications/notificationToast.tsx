@@ -183,7 +183,7 @@ export function showNotificationToast(
             e.stopPropagation();
             toast.dismiss(id);
           }}
-          className="cg-focus shrink-0 rounded-full p-0.5 transition-colors"
+          className="cg-focus -m-1 grid size-9 shrink-0 place-items-center rounded-full transition-colors"
           style={{ color: 'var(--ink-faint)' }}
         >
           <X size={16} />

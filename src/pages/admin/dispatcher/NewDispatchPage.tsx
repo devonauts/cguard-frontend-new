@@ -1658,7 +1658,7 @@ export default function NewDispatchPage() {
                         }}
                       />
 
-                      <div className="flex items-center gap-3">
+                      <div className="flex flex-wrap items-center gap-3">
                         <Button
                           type="button"
                           variant="outline"
@@ -1668,13 +1668,13 @@ export default function NewDispatchPage() {
                           Elegir archivos
                         </Button>
 
-                        <div className="flex flex-col gap-1">
+                        <div className="flex min-w-0 flex-1 flex-col gap-1">
                           {attachments.length === 0 ? (
                             <span className="text-sm text-muted-foreground">No hay archivos adjuntos</span>
                           ) : (
                             attachments.map((f, idx) => (
-                              <div key={idx} className="flex items-center gap-2">
-                                <span className="text-sm text-muted-foreground">{f.name}</span>
+                              <div key={idx} className="flex min-w-0 items-center gap-2">
+                                <span className="min-w-0 truncate text-sm text-muted-foreground">{f.name}</span>
                                 <button
                                   type="button"
                                   onClick={() => {

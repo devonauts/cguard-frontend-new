@@ -108,7 +108,9 @@ export default function StationOrders({ stationId }: Props) {
         icon={<ClipboardList />}
         title={t('station.orders.title', 'Consignas específicas')}
         action={
-          <div className="flex items-center gap-2">
+          /* El selector y el botón juntos pasan de 380 px: en un teléfono tienen
+             que poder caer uno debajo del otro o sacan la cabecera de pantalla. */
+          <div className="flex flex-wrap items-center justify-end gap-2">
             <Segmented
               value={view}
               onChange={(v) => setView(v)}

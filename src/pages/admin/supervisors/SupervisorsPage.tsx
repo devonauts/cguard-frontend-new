@@ -208,7 +208,7 @@ export default function SupervisorsPage() {
             title="Supervisores"
             subtitle="Gestiona los supervisores de seguridad: perfil, zona, vehículo y estado en turno."
             actions={
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Button variant="outline" onClick={() => navigate("/supervisor-positions")}>
                   <MapPin className="mr-2 h-4 w-4" /> Puestos
                 </Button>

@@ -319,12 +319,12 @@ export default function ClientNotes({ client }: Props) {
                                                 emptyMessage={t('clients.empty.title') as string}
                                                 renderCard={(note: ClientNote) => (
                                                     <div>
-                                                        <div className="flex items-start justify-between">
-                                                            <div>
-                                                                <div className="font-medium">{note.title}</div>
+                                                        <div className="flex items-start justify-between gap-2">
+                                                            <div className="min-w-0 flex-1">
+                                                                <div className="break-words font-medium">{note.title}</div>
                                                                 <div className="text-xs text-muted-foreground">{note.noteDate || note.createdAt?.split('T')?.[0]}</div>
                                                             </div>
-                                                            <div className="text-right">
+                                                            <div className="shrink-0 text-right">
                                                                 <div className="mt-2">
                                                                     <button onClick={() => { setDetailsNote(note); }} className="px-2 py-1 text-sm">{t('actions.viewDetails')}</button>
                                                                 </div>

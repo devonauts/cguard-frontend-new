@@ -497,8 +497,8 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
 
           {/* ── PAGINATION ────────────────────────────────────────────────────── */}
           {!loading && visibleLicenses.length > 0 && (
-            <div className="glass flex items-center justify-between px-4 py-3 text-sm" style={{ color: 'var(--ink-soft)' }}>
-              <div className="flex items-center gap-2">
+            <div className="glass flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm" style={{ color: 'var(--ink-soft)' }}>
+              <div className="flex flex-wrap items-center gap-2">
                 <span>{t('clients.pagination.itemsPerPage')}</span>
                 <Select value={String(limit)} onValueChange={(v) => { setLimit(Number(v)); setPage(1); }}>
                   <SelectTrigger className="h-8 w-20"><SelectValue /></SelectTrigger>

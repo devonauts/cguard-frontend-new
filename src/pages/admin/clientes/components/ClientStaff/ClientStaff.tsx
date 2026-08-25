@@ -336,9 +336,9 @@ export default function ClientStaff({ client }: { client: Client }) {
               <div className="divide-y">
                 {certs.slice(0, 6).map((c) => (
                   <div key={c.id} className="flex items-center justify-between gap-3 py-2.5">
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex min-w-0 items-center gap-2.5">
                       <Avatar url={c.photoUrl} name={c.name} />
-                      <div><div className="text-sm font-medium">{c.name}</div><div className="text-xs text-muted-foreground">{c.cert}</div></div>
+                      <div className="min-w-0"><div className="truncate text-sm font-medium">{c.name}</div><div className="truncate text-xs text-muted-foreground">{c.cert}</div></div>
                     </div>
                     <span
                       className="shrink-0 text-xs font-semibold"
@@ -359,9 +359,9 @@ export default function ClientStaff({ client }: { client: Client }) {
               <div className="divide-y">
                 {ausencias.map((a) => (
                   <div key={a.id} className="flex items-center justify-between gap-3 py-2.5">
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex min-w-0 items-center gap-2.5">
                       <Avatar url={a.photoUrl} name={a.name} />
-                      <div><div className="text-sm font-medium">{a.name}</div><div className="text-xs text-muted-foreground">{a.turno || ''}</div></div>
+                      <div className="min-w-0"><div className="truncate text-sm font-medium">{a.name}</div><div className="truncate text-xs text-muted-foreground">{a.turno || ''}</div></div>
                     </div>
                     <span className="shrink-0 text-xs font-semibold" style={{ color: a.tone === 'red' ? 'var(--bad-text)' : 'var(--warn-text)' }}>{a.reason}</span>
                   </div>

@@ -737,7 +737,9 @@ export default function Header({
             <DialogDescription className="text-center">{t("ui.header.encuentraArticulosVideosYSoporte", "Encuentra artículos, videos y soporte para resolver tus dudas.")}</DialogDescription>
           </DialogHeader>
 
-          <div className="grid grid-cols-2 gap-4 py-6">
+          {/* Dos columnas de ~164 px menos 48 px de relleno dejan 116 px para
+              «Chat en vivo con soporte»: en el teléfono va a una columna. */}
+          <div className="grid grid-cols-1 gap-4 py-6 sm:grid-cols-2">
             {[
               { icono: <HelpCircle />, titulo: 'Centro de Soporte', pie: 'Lista de artículos' },
               { icono: <MessageSquare />, titulo: 'Soporte por Chat', pie: 'Chat en vivo con soporte' },

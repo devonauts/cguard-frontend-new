@@ -656,7 +656,9 @@ export default function Stations({ site }: { site?: SiteProp }) {
         <div className="flex items-center justify-between mb-4 gap-3">
           
 
-          <div className="flex-1 mx-2 flex items-center gap-3">
+          {/* La barra (acción + buscador + crear) pasa de 375 px: sin `flex-wrap`
+              el buscador se quedaba en unos pocos píxeles. */}
+          <div className="mx-2 flex min-w-0 flex-1 flex-wrap items-center gap-3">
               <div className="flex-shrink-0">
               <select value={actionSelectValue} onChange={(e) => {
                 const v = e.target.value; setActionSelectValue(v);
@@ -703,7 +705,7 @@ export default function Stations({ site }: { site?: SiteProp }) {
               </select>
             </div>
 
-            <div className="flex-1">
+            <div className="min-w-48 flex-1">
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none" style={{ color: 'var(--ink-faint)' }}>
                   <Search className="h-4 w-4" />
@@ -881,7 +883,7 @@ export default function Stations({ site }: { site?: SiteProp }) {
         <div className="fixed inset-0 z-60 flex items-center justify-center" onClick={() => setShowDetailModal(false)}>
           <div className="absolute inset-0 z-50" style={{ background: 'oklch(0 0 0 / 0.35)' }} onClick={() => setShowDetailModal(false)} />
 
-          <div className="glass-raised pointer-events-auto relative z-70 w-full overflow-y-auto sm:w-96" onClick={(e) => e.stopPropagation()}>
+          <div className="glass-raised pointer-events-auto relative z-70 max-h-[90vh] w-full overflow-y-auto sm:w-96" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between border-b p-6" style={{ borderColor: 'var(--hairline)' }}>
               <h2 className="font-display text-lg font-semibold">{t('postSites.stations.detailsTitle', 'Station details')}</h2>
               <button onClick={() => setShowDetailModal(false)} aria-label="Cerrar" className="cg-btn-ghost cg-focus rounded-full p-2"><X className="h-4 w-4" /></button>
@@ -1051,7 +1053,7 @@ export default function Stations({ site }: { site?: SiteProp }) {
         <div className="fixed inset-0 z-60 flex items-center justify-center" onClick={() => setShowShiftModal(false)}>
           <div className="absolute inset-0 z-50" style={{ background: 'oklch(0 0 0 / 0.35)' }} onClick={() => setShowShiftModal(false)} />
 
-          <div className="glass-raised pointer-events-auto relative z-70 w-full overflow-y-auto sm:w-96" onClick={(e) => e.stopPropagation()}>
+          <div className="glass-raised pointer-events-auto relative z-70 max-h-[90vh] w-full overflow-y-auto sm:w-96" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between border-b p-6" style={{ borderColor: 'var(--hairline)' }}>
               <h2 className="font-display text-lg font-semibold">{editingShiftId ? t('postSites.stations.editShift', 'Edit shift') : t('postSites.stations.createShift', 'Create shift')}</h2>
               <button onClick={() => setShowShiftModal(false)} aria-label="Cerrar" className="cg-btn-ghost cg-focus rounded-full p-2"><X className="h-4 w-4" /></button>

@@ -295,7 +295,7 @@ export default function OnboardingWizard({
     <Dialog open={open} onOpenChange={(v) => { if (!v) snoozeAndClose(); else onOpenChange(true); }}>
       <DialogContent
         showCloseButton={false}
-        className="max-w-[640px] gap-0 overflow-hidden p-0 max-h-[92vh] sm:max-w-[680px]"
+        className="max-w-[calc(100%-2rem)] gap-0 overflow-hidden p-0 max-h-[92vh] sm:max-w-[680px]"
       >
         {/* Header */}
         {/* El degradado oro fijo (#C8860A → #F5C300) se sustituye por el acento:
@@ -303,7 +303,7 @@ export default function OnboardingWizard({
             oro daba ~2,2:1 (ver la medición en tokens.css) y además el degradado
             se quedaba dorado aunque el CRM entero pasara a otro tono. */}
         <DialogHeader
-          className="space-y-0 border-b px-6 py-4 text-left"
+          className="space-y-0 border-b px-4 py-4 text-left sm:px-6"
           style={{ borderColor: "var(--hairline)", background: "linear-gradient(90deg, var(--brand-wash) 0%, transparent 100%)" }}
         >
           <div className="flex items-center gap-3">
@@ -340,7 +340,7 @@ export default function OnboardingWizard({
         </DialogHeader>
 
         {/* Body (scrollable) */}
-        <div className="max-h-[58vh] overflow-y-auto px-6 py-5">
+        <div className="max-h-[58vh] overflow-y-auto px-4 py-5 sm:px-6">
           {step === 0 && (
             <WelcomeStep days={days} trialEnd={trialEnd} />
           )}
@@ -382,7 +382,7 @@ export default function OnboardingWizard({
               {/* Logo */}
               <div className="space-y-1.5">
                 <Label>Logo de la empresa <span style={{ color: "var(--bad-text)" }}>*</span></Label>
-                <div className="flex items-center gap-4">
+                <div className="flex flex-wrap items-center gap-4">
                   <div className="relative">
                     <div className="grid h-20 w-20 place-items-center overflow-hidden rounded-2xl border-2 border-dashed border-border bg-muted">
                       {logoPreview ? (
@@ -558,7 +558,7 @@ export default function OnboardingWizard({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between gap-3 border-t border-border bg-muted/30 px-6 py-3.5">
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-border bg-muted/30 px-4 py-3.5 sm:px-6">
           <button
             type="button"
             onClick={snoozeAndClose}
@@ -568,7 +568,7 @@ export default function OnboardingWizard({
             Completar más tarde
           </button>
 
-          <div className="flex items-center gap-2">
+          <div className="ml-auto flex items-center gap-2">
             {step > 0 && (
               <Button type="button" variant="outline" onClick={back} disabled={submitting}>
                 <ArrowLeft className="mr-1.5 h-4 w-4" /> Atrás

@@ -62,10 +62,15 @@ export default function Reporting() {
                       {lb.guards.filter((g) => g.hasData).slice(-5).reverse().map((g) => (
                         // `glass-flat`: son filas repetidas, y el desenfoque por
                         // fila es lo que hunde el desplazamiento de una lista.
-                        <li key={g.id} className="glass-flat flex items-center justify-between px-3 py-2">
-                          <GuardLink id={g.id} name={g.name} />
+                        <li key={g.id} className="glass-flat flex items-center justify-between gap-2 px-3 py-2">
+                          {/* `min-w-0` + `truncate`: un nombre largo empujaba la
+                              puntuación fuera de la tarjeta en pantallas
+                              estrechas en vez de recortarse. */}
+                          <span className="min-w-0 truncate text-sm">
+                            <GuardLink id={g.id} name={g.name} />
+                          </span>
                           <span
-                            className="text-sm font-bold tabular-nums"
+                            className="shrink-0 text-sm font-bold tabular-nums"
                             style={{ color: toneInk(g.score != null && g.score >= 75 ? TONES.info : g.score != null && g.score >= 60 ? TONES.warn : TONES.bad) }}
                           >
                             {g.score}<span className="text-[10px] font-normal" style={{ color: "var(--ink-faint)" }}>/100</span>

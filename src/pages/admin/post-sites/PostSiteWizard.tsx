@@ -343,7 +343,9 @@ function JornadaRow({
   onRemove: () => void;
 }) {
   return (
-    <div className="glass-flat flex items-center gap-2 px-3 py-2" style={jornadaEdge(jornada.tipo)}>
+    /* La fila (etiqueta + nombre + dos horas + vigilantes + quitar) pide unos
+       300 px de ancho fijo: en un teléfono se parte en dos líneas. */
+    <div className="glass-flat flex flex-wrap items-center gap-2 px-3 py-2" style={jornadaEdge(jornada.tipo)}>
       {/* Type badge */}
       <span
         className="shrink-0 rounded-full border px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide"
@@ -355,7 +357,7 @@ function JornadaRow({
       <Input
         value={jornada.nombre}
         onChange={(e) => onChange({ nombre: e.target.value })}
-        className="h-7 flex-1 min-w-0 text-xs font-medium border-0 bg-transparent px-0 focus-visible:ring-0 shadow-none"
+        className="h-7 min-w-32 flex-1 text-xs font-medium border-0 bg-transparent px-0 focus-visible:ring-0 shadow-none"
         placeholder="Nombre del turno"
       />
       {/* Times */}

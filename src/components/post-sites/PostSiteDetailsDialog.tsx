@@ -65,7 +65,7 @@ export default function PostSiteDetailsDialog({ open, onOpenChange, siteId }: Pr
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl w-full p-4">
+      <DialogContent className="max-h-[90vh] w-full max-w-4xl overflow-y-auto p-4">
         <div className="bg-muted/30 p-2 border-b">
           <DialogHeader>
             <DialogTitle className="text-center">Detalles del Sitio</DialogTitle>

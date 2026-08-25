@@ -152,7 +152,7 @@ export default function ClientIncidents({ client }: { client: Client }) {
     <div ref={containerRef} className="space-y-4">
       {/* Top bar: date range + new incident */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2 text-sm">
+        <div className="flex flex-wrap items-center gap-2 text-sm">
           <span className="text-xs font-medium text-muted-foreground">Rango</span>
           <input type="date" className={`${FIELD_CLS} w-auto`} value={from} onChange={(e) => resetPage(setFrom)(e.target.value)} />
           <span style={{ color: 'var(--ink-faint)' }}>–</span>
@@ -247,7 +247,7 @@ export default function ClientIncidents({ client }: { client: Client }) {
                 </select>
               </div>
 
-              <div className="glass-sunken grid grid-cols-2 gap-3 p-3 text-sm">
+              <div className="glass-sunken grid grid-cols-2 gap-3 break-words p-3 text-sm [&>div]:min-w-0">
                 <div><div className="cg-eyebrow mb-0.5">Sede / Puesto</div><div className="font-medium">{selected.sedeName || '—'}</div><div className="text-xs" style={{ color: 'var(--ink-faint)' }}>{selected.puestoName || ''}</div></div>
                 <div><div className="cg-eyebrow mb-0.5">Prioridad</div>{selected.priority ? <StatusBadge tone={(PRIO[selected.priority] || PRIO.media).tone} dot={false}>{(PRIO[selected.priority] || PRIO.media).label}</StatusBadge> : <span style={{ color: 'var(--ink-faint)' }}>—</span>}</div>
                 <div><div className="cg-eyebrow mb-0.5">Fecha / Hora</div><div className="font-medium tabular-nums">{fmtDT(selected.date)}</div></div>
@@ -257,12 +257,13 @@ export default function ClientIncidents({ client }: { client: Client }) {
               </div>
 
               {/* Tabs */}
-              <div className="flex items-center gap-1 border-b" style={{ borderColor: 'var(--hairline)' }}>
+              {/* La tira se desplaza; ensanchar la ficha entera no es opción. */}
+              <div className="flex items-center gap-1 overflow-x-auto border-b" style={{ borderColor: 'var(--hairline)' }}>
                 {([['detalles', 'Detalles'], ['evidencia', `Evidencia (${selected.evidenceCount || 0})`], ['bitacora', `Bitácora (${(selected.comments || []).length})`]] as const).map(([k, l]) => (
                   <button
                     key={k}
                     onClick={() => setTab(k)}
-                    className="cg-focus relative px-3 py-2 text-sm font-semibold transition-colors"
+                    className="cg-focus relative shrink-0 whitespace-nowrap px-3 py-2 text-sm font-semibold transition-colors"
                     style={{ color: tab === k ? 'var(--brand-text)' : 'var(--ink-soft)' }}
                   >
                     {l}

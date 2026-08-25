@@ -90,7 +90,7 @@ export function NotificationsPanel({
       </PopoverTrigger>
 
       <PopoverContent
-        className="w-96 p-0"
+        className="w-96 max-w-[calc(100vw-1rem)] p-0"
         align="end"
         sideOffset={8}
       >
@@ -124,7 +124,7 @@ export function NotificationsPanel({
         </div>
 
         {/* Notification list */}
-        <ScrollArea className="h-[420px]">
+        <ScrollArea className="h-[min(420px,60vh)]">
           {visible.length === 0 ? (
             <div className="flex h-32 flex-col items-center justify-center gap-2 text-sm" style={{ color: 'var(--ink-faint)' }}>
               <Bell className="h-8 w-8 opacity-40" />

@@ -183,7 +183,7 @@ export default function ProfilePhotoCapture({ value, onChange, previewUrl }: Pro
             <button
               type="button"
               onClick={handleRemove}
-              className="cg-btn-bad cg-focus absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full transition-colors"
+              className="cg-btn-bad cg-focus absolute -right-1 -top-1 flex h-8 w-8 items-center justify-center rounded-full transition-colors"
               title="Eliminar foto"
             >
               <X className="w-3.5 h-3.5" />
@@ -231,7 +231,7 @@ export default function ProfilePhotoCapture({ value, onChange, previewUrl }: Pro
 
       {/* Camera Dialog */}
       <Dialog open={cameraOpen} onOpenChange={(open) => { if (!open) closeCamera(); }}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Camera className="brand-text h-5 w-5" />

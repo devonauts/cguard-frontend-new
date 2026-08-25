@@ -113,7 +113,11 @@ export function AuditTable({ head, children, flush = false }: {
 }) {
   return (
     <div className={cn('overflow-x-auto', flush && 'rounded-b-2xl')}>
-      <table className="w-full text-sm">
+      {/* `min-w` es lo que hace que el `overflow-x-auto` de arriba sirva de algo:
+          con sólo `w-full` las seis columnas se comprimían dentro de un teléfono
+          hasta partir cada celda en una tira vertical ilegible. Con un ancho
+          mínimo, la tabla se desplaza DENTRO de su marco y la página no. */}
+      <table className="w-full min-w-[760px] text-sm">
         <thead>
           <tr className="cg-eyebrow border-b text-left" style={{ borderColor: 'var(--hairline)' }}>
             {head}

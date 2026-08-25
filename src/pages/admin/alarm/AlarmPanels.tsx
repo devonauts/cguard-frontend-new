@@ -771,7 +771,7 @@ function ZonesManager({ panelId }: { panelId: string }) {
         />
       ) : (
         <div className="glass-flat overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full min-w-[760px] text-sm">
             <thead
               className="text-left text-xs uppercase tracking-wide"
               style={{ background: 'var(--glass-sunken)', color: 'var(--ink-faint)' }}
@@ -1077,7 +1077,7 @@ function ContactsManager({ panelId }: { panelId: string }) {
         />
       ) : (
         <div className="glass-flat overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full min-w-[700px] text-sm">
             <thead
               className="text-left text-xs uppercase tracking-wide"
               style={{ background: 'var(--glass-sunken)', color: 'var(--ink-faint)' }}

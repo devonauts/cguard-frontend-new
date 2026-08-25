@@ -327,7 +327,8 @@ export default function StationGuards({ station, stationId, postSiteId }: Props)
           </>
         }
         action={
-          <div className="flex items-center gap-2">
+          /* Los dos botones suman ~340 px: en un teléfono tienen que envolverse. */
+          <div className="flex flex-wrap items-center justify-end gap-2">
             <Button variant="brand" size="sm" className="rounded-full" onClick={() => setShowShiftModal(true)}>
               <UserPlus size={15} /> {t('station.guards.assign', 'Asignar vigilante')}
             </Button>
@@ -391,10 +392,10 @@ export default function StationGuards({ station, stationId, postSiteId }: Props)
                   <div className="text-xs text-muted-foreground">{a.positionName}</div>
                   <CoverageStrip work={a.workDays} type={a.type} />
                 </div>
-                <button onClick={() => openChange(a)} className="inline-flex items-center gap-1 rounded-md border border-border px-2.5 py-1.5 text-xs font-medium hover:bg-muted/40" title={t('station.guards.change', 'Cambiar')}>
+                <button onClick={() => openChange(a)} className="inline-flex shrink-0 items-center gap-1 rounded-md border border-border px-2.5 py-1.5 text-xs font-medium hover:bg-muted/40" title={t('station.guards.change', 'Cambiar')}>
                   <RefreshCw size={13} /> {t('station.guards.change', 'Cambiar')}
                 </button>
-                <button onClick={() => removeGuard(a)} className="cg-focus rounded-md p-1.5" style={{ color: 'var(--bad-text)' }} title={t('station.guards.remove', 'Quitar')}>
+                <button onClick={() => removeGuard(a)} className="cg-focus shrink-0 rounded-md p-1.5" style={{ color: 'var(--bad-text)' }} title={t('station.guards.remove', 'Quitar')}>
                   <Trash2 size={15} />
                 </button>
               </li>

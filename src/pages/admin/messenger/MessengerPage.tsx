@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback, useMemo, type ReactNode } fro
 import { useTranslation } from 'react-i18next';
 import AppLayout from "@/layouts/app-layout";
 import Breadcrumb from "@/components/ui/breadcrumb";
-import { MessageSquareText, Send, Plus, Search, Loader2, X, Check, CheckCheck, Paperclip, Play, Trash2, Users, Mic, UserPlus, RefreshCw, UserCircle2 } from "lucide-react";
+import { MessageSquareText, Send, Plus, Search, Loader2, X, Check, CheckCheck, Paperclip, Play, Trash2, Users, Mic, UserPlus, RefreshCw, UserCircle2, ArrowLeft } from "lucide-react";
 import { PageHeader, Modal, EmptyState, SkeletonCards, Segmented, StatusBadge, SmartImage } from "@/components/kit";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -227,7 +227,8 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
         />
         <div className="glass flex h-[calc(100vh-240px)] overflow-hidden">
           {/* Conversation list */}
-          <aside className="flex w-full max-w-xs flex-col border-r" style={{ borderColor: 'var(--hairline)' }}>
+          {/* En móvil sólo cabe un panel: se ve la lista, o la conversación abierta. */}
+          <aside className={`${selected ? 'hidden md:flex' : 'flex'} w-full flex-col border-r md:max-w-xs`} style={{ borderColor: 'var(--hairline)' }}>
             <div className="flex items-center justify-between gap-2 border-b p-3" style={{ borderColor: 'var(--hairline)' }}>
               <h2 className="text-sm font-bold">{pageTitle}</h2>
               <Button size="sm" variant="brand" onClick={() => setComposeOpen(true)}>
@@ -282,7 +283,7 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
           </aside>
 
           {/* Thread */}
-          <section className="flex min-w-0 flex-1 flex-col">
+          <section className={`${selected ? 'flex' : 'hidden md:flex'} min-w-0 flex-1 flex-col`}>
             {!selected ? (
               <div className="flex flex-1 flex-col items-center justify-center p-6">
                 <EmptyState
@@ -294,8 +295,17 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
             ) : (
               <>
                 <div className="flex items-center gap-3 border-b p-3" style={{ borderColor: 'var(--hairline)' }}>
+                  <button
+                    onClick={() => { setSelected(null); setMessages([]); }}
+                    title="Volver a la lista"
+                    aria-label="Volver a la lista"
+                    className="cg-focus -ml-1 grid h-9 w-9 shrink-0 place-items-center rounded-lg transition-colors hover:bg-muted md:hidden"
+                    style={{ color: 'var(--ink-soft)' }}
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                  </button>
                   <div
-                    className="grid h-9 w-9 place-items-center rounded-full border text-xs font-bold"
+                    className="grid h-9 w-9 shrink-0 place-items-center rounded-full border text-xs font-bold"
                     style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }}
                   >
                     {selected.isGroup ? <Users size={16} /> : (selected.recipientName || "?").slice(0, 2).toUpperCase()}

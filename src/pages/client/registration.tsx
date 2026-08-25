@@ -209,7 +209,7 @@ export default function ClientRegistration() {
     <button
       type="button"
       onClick={onToggle}
-      className="cg-focus absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1"
+      className="cg-focus absolute right-1.5 top-1/2 -translate-y-1/2 rounded-md p-2.5"
       style={{ color: 'var(--ink-faint)' }}
       aria-label={visible ? 'Ocultar contraseña' : 'Mostrar contraseña'}
     >

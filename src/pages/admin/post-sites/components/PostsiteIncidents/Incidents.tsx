@@ -606,8 +606,10 @@ export default function Incidents({ site }: { site?: SiteProp }) {
   return (
     <div ref={containerRef} className="space-y-4">
       <div className="glass p-4">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
+        {/* Filtros + acciones suman bastante más de 375 px: sin `flex-wrap`
+            la barra empujaba la página entera hacia la derecha en un teléfono. */}
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
             <Select value={actionSelectValue} onValueChange={(v) => {
               setActionSelectValue(v);
               if (v === 'eliminar') {
@@ -628,13 +630,13 @@ export default function Incidents({ site }: { site?: SiteProp }) {
               </SelectContent>
             </Select>
 
-            <div className="relative">
+            <div className="relative min-w-48 flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={16} />
               <Input
                 placeholder={t('incidents.searchPlaceholder') || 'Search incidents...'}
                 // local client-side filter
                 onChange={(e) => setSearchTerm((e.target as HTMLInputElement).value)}
-                className="pl-9 max-w-md"
+                className="w-full max-w-md pl-9"
               />
             </div>
 
@@ -684,7 +686,7 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                       </Select>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                       <div>
                         <label className="block text-sm font-medium text-foreground mb-2">Informador</label>
                         <Select value={filterInformer ?? '__none'} onValueChange={(v) => setFilterInformer(v === '__none' ? undefined : v)}>
@@ -734,7 +736,7 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
                       <label className="block text-sm font-medium text-foreground mb-2">{t('incidents.filterFields.createdFrom') || 'Created from'}</label>
                       <input type="date" className="mt-1 block w-full border rounded px-2 py-2" value={filterCreatedFrom || ''} onChange={(e) => setFilterCreatedFrom(e.target.value || undefined)} />
@@ -794,7 +796,9 @@ export default function Incidents({ site }: { site?: SiteProp }) {
           <SkeletonCards count={4} className="mt-4" />
         ) : (
           <>
-          <div className="mt-4 overflow-hidden rounded-lg border">
+          {/* `overflow-x-auto`, no `overflow-hidden`: siete columnas con fecha no
+              caben en un teléfono y lo que sobraba se recortaba sin poder verlo. */}
+          <div className="mt-4 overflow-x-auto rounded-lg border">
               <table className="min-w-full border-collapse text-left text-sm">
               <thead>
                 <tr className="border-b">
@@ -981,7 +985,7 @@ export default function Incidents({ site }: { site?: SiteProp }) {
             </table>
             </div>
 
-            <div className="mt-4 flex items-center justify-between">
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <Select onValueChange={(v) => { setLimit(Number(v)); setPage(1); }}>
                   <SelectTrigger className="w-[96px] h-9">

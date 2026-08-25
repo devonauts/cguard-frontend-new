@@ -312,7 +312,7 @@ function PtzPad({ cameraId }: { cameraId: string }) {
   if (!open) {
     return (
       <button onClick={() => setOpen(true)} title="Control PTZ"
-        className="absolute bottom-2 right-2 z-20 grid h-8 w-8 place-items-center rounded-lg bg-black/55 text-white/85 opacity-0 backdrop-blur transition-opacity hover:bg-black/75 group-hover:opacity-100">
+        className="absolute bottom-2 right-2 z-20 grid h-9 w-9 place-items-center rounded-lg bg-black/55 text-white/85 opacity-100 backdrop-blur transition-opacity hover:bg-black/75 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100">
         <Move size={15} />
       </button>
     );

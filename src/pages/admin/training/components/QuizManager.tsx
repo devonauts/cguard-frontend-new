@@ -106,7 +106,7 @@ export default function QuizManager({ courseId, quiz, passingScore, readOnly, on
       <FadeIn>
         <Section title="Cuestionario" icon={<ClipboardList />}>
           {quiz ? (
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2 font-medium">
                   <CheckCircle2 className="h-5 w-5" style={{ color: 'var(--ok-text)' }} /> Cuestionario configurado
@@ -143,7 +143,7 @@ export default function QuizManager({ courseId, quiz, passingScore, readOnly, on
   return (
     <FadeIn>
       <Section title="Editar cuestionario" icon={<ClipboardList />} contentClassName="space-y-4">
-        <div className="grid grid-cols-2 gap-3 max-w-md">
+        <div className="grid max-w-md grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="space-y-2">
             <Label>Puntaje para aprobar (%)</Label>
             <Input type="number" min={0} max={100} value={passPct} onChange={(e) => setPassPct(Number(e.target.value))} />
@@ -166,7 +166,7 @@ export default function QuizManager({ courseId, quiz, passingScore, readOnly, on
               <div className="flex items-start justify-between gap-2">
                 <Label className="pt-2">Pregunta {qi + 1}</Label>
                 {questions.length > 1 && (
-                  <button aria-label="Eliminar" className="p-1.5" style={{ color: 'var(--bad-text)' }} onClick={() => removeQuestion(qi)}><Trash2 className="h-4 w-4" /></button>
+                  <button aria-label="Eliminar" className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md" style={{ color: 'var(--bad-text)' }} onClick={() => removeQuestion(qi)}><Trash2 className="h-4 w-4" /></button>
                 )}
               </div>
               <Input placeholder="Enunciado de la pregunta" value={q.prompt} onChange={(e) => setQ(qi, { prompt: e.target.value })} />
@@ -179,10 +179,11 @@ export default function QuizManager({ courseId, quiz, passingScore, readOnly, on
                       checked={q.correctIndex === oi}
                       onChange={() => setQ(qi, { correctIndex: oi })}
                       title="Marcar como correcta"
+                      className="h-4 w-4 shrink-0 cursor-pointer"
                     />
                     <Input placeholder={`Opción ${oi + 1}`} value={o} onChange={(e) => setOption(qi, oi, e.target.value)} />
                     {q.options.length > 2 && (
-                      <button aria-label="Eliminar" className="p-1.5" style={{ color: 'var(--bad-text)' }} onClick={() => removeOption(qi, oi)}><Trash2 className="h-4 w-4" /></button>
+                      <button aria-label="Eliminar" className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md" style={{ color: 'var(--bad-text)' }} onClick={() => removeOption(qi, oi)}><Trash2 className="h-4 w-4" /></button>
                     )}
                   </div>
                 ))}

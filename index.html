@@ -2,9 +2,25 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
+    <!-- SIN `maximum-scale` NI `user-scalable=0`. Bloquear el pellizco es una
+         barrera de accesibilidad, y aquí pesa el doble: esto se usa en la calle,
+         con guantes, a contraluz y con gente que necesita agrandar una placa o
+         una coordenada para leerla. iOS además ignora el bloqueo desde hace
+         años, así que lo único que conseguía era romper el zoom en Android.
+         Ojo: al devolver el zoom, iOS vuelve a ampliar solo al enfocar un campo
+         de menos de 16 px — por eso glass.css fija 16 px en pantalla táctil.
+
+         TAMPOCO lleva `viewport-fit=cover`, y no es un olvido: dibujar bajo la
+         muesca exige que la cabecera reserve `env(safe-area-inset-top)`, y la
+         altura de la cabecera está codificada a mano en dos sitios más
+         (`app-layout.tsx` dimensiona `main` con `calc(100vh-56px)` y glass.css
+         pone `.cg-route-progress { top: 56px }`). Sin cambiar los tres a la vez,
+         `cover` mete la cabecera DEBAJO de la barra de estado en el iPhone con
+         muesca con la app instalada. El zoom se arregla hoy; el borde a borde
+         cuando esos tres puntos se toquen juntos. -->
     <meta
       name="viewport"
-      content="viewport-fit=cover, width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+      content="width=device-width, initial-scale=1.0"
     />
 
     <title>C-Guard Pro | Plataforma de Gestión de Seguridad Física</title>

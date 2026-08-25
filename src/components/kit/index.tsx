@@ -156,12 +156,17 @@ export function Section({ title, icon, action, children, className, contentClass
   return (
     <div className={cn(bare ? '' : flat ? 'glass-flat p-5' : 'glass p-5', className)}>
       {(title || action) && (
-        <div className={cn('flex items-center justify-between gap-3', bare ? 'mb-3' : 'mb-4')}>
+        /* Misma forma que `PageHeader`: la fila SALTA y la acción no se
+           encoge. Sin `flex-wrap`, una acción ancha —un desplegable más un
+           buscador— desbordaba la tarjeta a lo ancho en el teléfono. El
+           `gap-3` del envoltorio es el mismo de la fila, así que una acción de
+           varios hijos conserva su separación de siempre. */
+        <div className={cn('flex flex-wrap items-center justify-between gap-3', bare ? 'mb-3' : 'mb-4')}>
           <div className="flex min-w-0 items-center gap-2">
             {icon && <span className="[&_svg]:size-4" style={{ color: 'var(--brand-text)' }}>{icon}</span>}
             {title && <h3 className="truncate text-sm font-semibold tracking-tight">{title}</h3>}
           </div>
-          {action}
+          {action && <div className="flex shrink-0 flex-wrap items-center gap-3">{action}</div>}
         </div>
       )}
       <div className={contentClassName}>{children}</div>
@@ -315,7 +320,13 @@ export function Segmented<T extends string>({ value, onChange, options, classNam
   value: T; onChange: (v: T) => void; options: Array<{ value: T; label: React.ReactNode }>; className?: string;
 }) {
   return (
-    <div className={cn('glass-sunken inline-flex items-center gap-1 p-1', className)} role="tablist">
+    /* Con cinco opciones el riel medía ~500 px y ensanchaba la página entera
+       en el teléfono. Se desplaza por dentro en vez de crecer, igual que
+       `TabNav`: partir un riel de píldoras en dos líneas deja los extremos
+       redondeados colgando y se lee como un fallo. `min-w-0` hace falta
+       porque dentro de un flex el mínimo por defecto es el del CONTENIDO.
+       Con dos o tres opciones no cambia absolutamente nada. */
+    <div className={cn('glass-sunken inline-flex min-w-0 max-w-full items-center gap-1 overflow-x-auto p-1', className)} role="tablist">
       {options.map((o) => {
         const activo = o.value === value;
         return (
@@ -325,7 +336,7 @@ export function Segmented<T extends string>({ value, onChange, options, classNam
             role="tab"
             aria-selected={activo}
             onClick={() => onChange(o.value)}
-            className="cg-focus rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all duration-200"
+            className="cg-focus shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all duration-200"
             style={
               activo
                 ? { background: 'var(--brand)', color: 'var(--brand-ink)', boxShadow: '0 0 18px -6px var(--brand-glow)' }
@@ -410,7 +421,10 @@ export function Modal({ open, onOpenChange, title, description, icon, children, 
             </div>
           </DialogHeader>
         )}
-        <div className="max-h-[70vh] overflow-y-auto p-5">{children}</div>
+        {/* El cuerpo no puede pedir 70vh cuando la cabecera y el pie ya se han
+            llevado su parte: en una pantalla baja el pie quedaba recortado por
+            el `overflow-hidden` del diálogo. */}
+        <div className="max-h-[min(70vh,calc(90dvh-9rem))] overflow-y-auto p-5">{children}</div>
         {footer && (
           <DialogFooter className="border-t p-4" style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}>
             {footer}
@@ -843,7 +857,9 @@ export function Pagination({
   const ultima = Math.max(1, Math.ceil(total / Math.max(1, pageSize)));
   const desde = total === 0 ? 0 : (page - 1) * pageSize + 1;
   const hasta = Math.min(total, page * pageSize);
-  const flecha = 'cg-btn-glass cg-focus rounded-full px-3 py-1.5 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-45';
+  /* Alto mínimo de dedo: a 28 px de alto estos botones se fallaban con el
+     pulgar y la página saltaba de página sin querer. */
+  const flecha = 'cg-btn-glass cg-focus min-h-9 rounded-full px-3 py-1.5 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-45';
 
   /* Ventana de cinco números centrada en la página actual. Empezar siempre por
      el 1 —como hacía una de las dos versiones que había— deja los botones
@@ -883,7 +899,7 @@ export function Pagination({
             type="button"
             aria-current={n === page ? 'page' : undefined}
             onClick={() => onPageChange(n)}
-            className="cg-focus grid h-7 min-w-[28px] place-items-center rounded-full border px-2 text-xs font-semibold tabular-nums"
+            className="cg-focus grid h-9 min-w-9 place-items-center rounded-full border px-2 text-xs font-semibold tabular-nums"
             style={n === page
               ? { background: 'var(--brand)', color: 'var(--brand-ink)', borderColor: 'transparent' }
               : { borderColor: 'var(--hairline)' }}
