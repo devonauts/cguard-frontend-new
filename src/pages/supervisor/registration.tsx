@@ -184,8 +184,8 @@ export default function SupervisorRegistration() {
          retrasar\u00eda un formulario que el usuario est\u00e1 esperando. */
       splash={false}
       features={[
-        { icon: MapPin, label: 'Recorridos y patrullaje' },
-        { icon: Radio, label: 'Novedades del turno' },
+        { icon: MapPin, label: t('invite.supervisor.feature_patrol', 'Recorridos y patrullaje') },
+        { icon: Radio, label: t('invite.supervisor.feature_news', 'Novedades del turno') },
         { icon: Clock, label: 'Tu equipo, en directo' },
       ]}
     >
@@ -281,7 +281,7 @@ export default function SupervisorRegistration() {
               {errors.password && <p className="mt-1.5 text-xs" style={{ color: 'var(--bad-text)' }}>{errors.password}</p>}
             </div>
             <div>
-              <Etiqueta htmlFor="sup-confirmar">Confirmar contrase\u00f1a</Etiqueta>
+              <Etiqueta htmlFor="sup-confirmar">{t('invite.confirm_password', 'Confirmar contraseña')}</Etiqueta>
               <div className="relative">
                 <input
                   id="sup-confirmar"

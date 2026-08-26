@@ -7103,7 +7103,8 @@
   "categoriesnotloaded": "Sectors could not be loaded",
   "client": {
     "invite_not_found": "Invitation not found or invalid.",
-    "registration_title": "Client sign-up"
+    "registration_title": "Client sign-up",
+    "register": "Activate my account"
   },
   "customer": {
     "registration_title": "Client sign-up"
@@ -9525,6 +9526,18 @@
     },
     "select": "Select",
     "eyebrow_guard": "Invitation · Security team",
-    "step_of": "Step {{step}} of {{total}}"
+    "step_of": "Step {{step}} of {{total}}",
+    "go_to_login": "Go to sign in",
+    "confirm_password": "Confirm password",
+    "supervisor": {
+      "feature_patrol": "Routes and patrols",
+      "feature_news": "Shift incidents",
+      "feature_team": "Your team on the map"
+    },
+    "client": {
+      "subtitle": "Please finish signing up by choosing a password for your account.",
+      "feature_live": "Your service, live",
+      "feature_gps": "Patrols and posts with GPS"
+    }
   }
 }

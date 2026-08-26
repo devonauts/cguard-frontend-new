@@ -199,7 +199,7 @@ export default function ClientRegistration() {
         return 'Estás completando tu registro como Administrador. Por favor, ingresa una contraseña para tu cuenta.';
       }
     }
-    return 'Por favor, completa tu registro ingresando una contraseña para tu cuenta.';
+    return t('invite.client.subtitle', 'Por favor, completa tu registro ingresando una contraseña para tu cuenta.');
   };
 
   const empresa: string | undefined = fetched?.tenant?.name || undefined;
@@ -229,8 +229,8 @@ export default function ClientRegistration() {
          sólo retrasa lo que el usuario está esperando. */
       splash={false}
       features={[
-        { icon: ShieldCheck, label: 'Tu servicio, en directo' },
-        { icon: MapPin, label: 'Rondas y puestos con GPS' },
+        { icon: ShieldCheck, label: t('invite.client.feature_live', 'Tu servicio, en directo') },
+        { icon: MapPin, label: t('invite.client.feature_gps', 'Rondas y puestos con GPS') },
         { icon: Bell, label: 'Avisos de incidentes' },
       ]}
     >

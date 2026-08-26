@@ -5059,7 +5059,8 @@
   "categoriesnotloaded": "Não foi possível carregar os setores",
   "client": {
     "invite_not_found": "Convite não encontrado ou inválido.",
-    "registration_title": "Cadastro de cliente"
+    "registration_title": "Cadastro de cliente",
+    "register": "Ativar minha conta"
   },
   "customer": {
     "registration_title": "Cadastro de cliente"
@@ -7481,6 +7482,18 @@
     },
     "select": "Selecione",
     "eyebrow_guard": "Convite · Equipe de segurança",
-    "step_of": "Etapa {{step}} de {{total}}"
+    "step_of": "Etapa {{step}} de {{total}}",
+    "go_to_login": "Ir para o acesso",
+    "confirm_password": "Confirmar senha",
+    "supervisor": {
+      "feature_patrol": "Percursos e patrulhamento",
+      "feature_news": "Ocorrências do turno",
+      "feature_team": "Sua equipe no mapa"
+    },
+    "client": {
+      "subtitle": "Conclua seu cadastro escolhendo uma senha para sua conta.",
+      "feature_live": "Seu serviço, ao vivo",
+      "feature_gps": "Rondas e postos com GPS"
+    }
   }
 }

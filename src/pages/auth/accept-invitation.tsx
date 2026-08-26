@@ -172,7 +172,7 @@ export default function AcceptInvitation() {
             Pide a tu administrador que te reenvíe la invitación y vuelve a abrir el enlace del correo.
           </p>
           <button onClick={() => navigate("/login")} className={BOTON_PRINCIPAL}>
-            Ir a iniciar sesión <ArrowRight className="h-4 w-4" />
+            {t('invite.go_to_login', 'Ir a iniciar sesión')} <ArrowRight className="h-4 w-4" />
           </button>
         </div>
       </AuthShell>

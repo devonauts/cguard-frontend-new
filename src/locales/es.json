@@ -7103,7 +7103,8 @@
   "categoriesnotloaded": "No se pudieron cargar las Sectores",
   "client": {
     "invite_not_found": "Invitación no encontrada o inválida.",
-    "registration_title": "Registro de cliente"
+    "registration_title": "Registro de cliente",
+    "register": "Activar mi cuenta"
   },
   "customer": {
     "registration_title": "Registro de Cliente"
@@ -9525,6 +9526,18 @@
     },
     "select": "Seleccione",
     "eyebrow_guard": "Invitación · Equipo de seguridad",
-    "step_of": "Paso {{step}} de {{total}}"
+    "step_of": "Paso {{step}} de {{total}}",
+    "go_to_login": "Ir a iniciar sesión",
+    "confirm_password": "Confirmar contraseña",
+    "supervisor": {
+      "feature_patrol": "Recorridos y patrullaje",
+      "feature_news": "Novedades del turno",
+      "feature_team": "Tu equipo en el mapa"
+    },
+    "client": {
+      "subtitle": "Por favor, completa tu registro ingresando una contraseña para tu cuenta.",
+      "feature_live": "Tu servicio, en directo",
+      "feature_gps": "Rondas y puestos con GPS"
+    }
   }
 }
