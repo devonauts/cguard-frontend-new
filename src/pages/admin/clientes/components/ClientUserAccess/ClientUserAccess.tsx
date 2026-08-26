@@ -62,7 +62,7 @@ export default function ClientUserAccess({ client }: Props) {
 
   return (
     <div ref={containerRef} className="space-y-4">
-      <Section title="Usuarios con acceso" icon={<Users className="h-4 w-4" />}
+      <Section title={t('comun.usuariosConAcceso')} icon={<Users className="h-4 w-4" />}
         action={<Button size="sm" variant="brand" onClick={() => setInviteOpen(true)}><UserPlus className="mr-1.5 h-4 w-4" /> Invitar acceso</Button>}>
         <div className="mb-3 relative max-w-sm">
           <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -70,7 +70,7 @@ export default function ClientUserAccess({ client }: Props) {
         </div>
 
         {filtered.length === 0 ? (
-          <EmptyState icon={<Users className="h-5 w-5" />} title="Sin usuarios con acceso" description="Invita al titular o agrega accesos adicionales para que el cliente entre al portal y a la app Mi Seguridad." action={<Button size="sm" onClick={() => setInviteOpen(true)}><UserPlus className="mr-1.5 h-4 w-4" /> Invitar acceso</Button>} />
+          <EmptyState icon={<Users className="h-5 w-5" />} title={t('comun.sinUsuariosConAcceso')} description="Invita al titular o agrega accesos adicionales para que el cliente entre al portal y a la app Mi Seguridad." action={<Button size="sm" onClick={() => setInviteOpen(true)}><UserPlus className="mr-1.5 h-4 w-4" /> Invitar acceso</Button>} />
         ) : (
           <div className="divide-y">
             {filtered.map((u) => (
@@ -93,7 +93,7 @@ export default function ClientUserAccess({ client }: Props) {
       </Section>
 
       <Modal open={inviteOpen} onOpenChange={(o) => { if (!sending) setInviteOpen(o); }} title="Invitar acceso" icon={<UserPlus className="h-5 w-5" />}
-        footer={<><Button variant="outline" onClick={() => setInviteOpen(false)} disabled={sending}>Cancelar</Button><Button variant="brand" onClick={invite} disabled={sending || !form.email.trim()}>{sending ? <><Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> Enviando…</> : 'Enviar invitación'}</Button></>}>
+        footer={<><Button variant="outline" onClick={() => setInviteOpen(false)} disabled={sending}>{t('actions.cancel')}</Button><Button variant="brand" onClick={invite} disabled={sending || !form.email.trim()}>{sending ? <><Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> Enviando…</> : 'Enviar invitación'}</Button></>}>
         <div className="space-y-3">
           <LabeledField label="Correo de la persona"><input type="email" className={FIELD_CLS} placeholder="persona@empresa.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></LabeledField>
           <LabeledField label="Tipo de acceso">

@@ -28,14 +28,14 @@ export default function CategoryAssignDialog({ open, onOpenChange, targetIds, on
         setCategories(res.rows || []);
       } catch (e) {
         console.error(e);
-        toast.error("No se pudieron cargar las Sectores");
+        toast.error(t('ui.CategoryAssignDialog.noSePudieronCargarLas'));
       }
     })();
   }, [open]);
 
   const submit = async () => {
     if (!selected) {
-      toast.warning("Selecciona una categoría");
+      toast.warning(t('ui.CategoryAssignDialog.seleccionaUnaCategoria'));
       return;
     }
     if (!targetIds || targetIds.length === 0) return;
@@ -77,7 +77,7 @@ export default function CategoryAssignDialog({ open, onOpenChange, targetIds, on
           </div>
 
           <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+            <Button variant="outline" onClick={() => onOpenChange(false)}>{t('actions.cancel')}</Button>
             <Button onClick={submit} disabled={loading}>{loading ? 'Guardando...' : 'Guardar'}</Button>
           </div>
         </div>

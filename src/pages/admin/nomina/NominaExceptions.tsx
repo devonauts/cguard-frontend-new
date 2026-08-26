@@ -211,15 +211,15 @@ export default function NominaExceptions() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <Field label="Vigilante" value={selected.guard?.fullName || "—"} />
-                  <Field label="Puesto" value={selected.station?.stationName || "—"} />
+                  <Field label={t('comun.vigilante')} value={selected.guard?.fullName || "—"} />
+                  <Field label={t('comun.puesto')} value={selected.station?.stationName || "—"} />
                   <Field label="Detectado" value={fmtDateTime(selected.detectedAt)} />
-                  <Field label="Estado" value={<StatusPill status={selected.status} />} />
+                  <Field label={t('comun.estado')} value={<StatusPill status={selected.status} />} />
                 </div>
 
                 {selected.reason && (
                   <div>
-                    <p className="cg-eyebrow">Motivo</p>
+                    <p className="cg-eyebrow">{t('comun.motivo')}</p>
                     <p className="glass-sunken mt-1 whitespace-pre-wrap p-3" style={{ color: "var(--ink)" }}>{selected.reason}</p>
                   </div>
                 )}
@@ -231,7 +231,7 @@ export default function NominaExceptions() {
                       <CheckCircle2 className="size-3.5" style={{ color: "var(--ok-text)" }} /> Resolución
                     </p>
                     <div className="mt-2 grid grid-cols-2 gap-3">
-                      <Field label="Fecha" value={selected.resolvedAt ? fmtDateTime(selected.resolvedAt) : "—"} />
+                      <Field label={t('comun.fecha')} value={selected.resolvedAt ? fmtDateTime(selected.resolvedAt) : "—"} />
                       <Field label="Por" value={fullName(selected.resolvedBy) || "—"} />
                     </div>
                     {selected.resolutionNotes && (

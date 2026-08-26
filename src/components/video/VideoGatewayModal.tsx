@@ -113,7 +113,7 @@ export default function VideoGatewayModal({
         </div>
 
         <div className="flex items-center justify-end gap-2 border-t px-5 py-3" style={{ borderColor: "var(--hairline)", background: "var(--glass-sunken)" }}>
-          <button onClick={onClose} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-medium">Cancelar</button>
+          <button onClick={onClose} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-medium">{t('actions.cancel')}</button>
           <button onClick={save} disabled={saving} className="cg-btn-brand cg-focus inline-flex items-center gap-1.5 rounded-full px-5 py-2 text-sm font-semibold transition-[filter] hover:brightness-105 disabled:opacity-50">
             {saving && <Loader2 size={14} className="animate-spin" />} Guardar
           </button>

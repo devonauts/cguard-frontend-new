@@ -766,7 +766,7 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
                                     <Input
                                         value={form.email}
                                         onChange={e => setForm((s: any) => ({ ...s, email: e.target.value }))}
-                                        placeholder="correo@ejemplo.com"
+                                        placeholder={t('ui.TenantJoinModal.correoEjemploCom')}
                                         type="email"
                                     />
                                     {emailError && <p className="text-sm mt-1" style={{ color: "var(--bad-text)" }}>{emailError}</p>}
@@ -779,7 +779,7 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
                                     <Input
                                         value={form.website}
                                         onChange={e => setForm((s: any) => ({ ...s, website: e.target.value }))}
-                                        placeholder="empresa.com"
+                                        placeholder={t('comun.empresaCom')}
                                         type="url"
                                     />
                                     {websiteError && <p className="text-sm mt-1" style={{ color: "var(--bad-text)" }}>{websiteError}</p>}
@@ -890,7 +890,7 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
 
                                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                     <div>
-                                        <label className="text-sm">Ciudad</label>
+                                        <label className="text-sm">{t('comun.ciudad')}</label>
                                         <Input value={form.city} onChange={(e) => setForm((s: any) => ({ ...s, city: e.target.value }))} disabled={showAddressAutocomplete} />
                                     </div>
                                     <div>

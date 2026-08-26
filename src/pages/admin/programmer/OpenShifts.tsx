@@ -224,14 +224,14 @@ export default function OpenShifts() {
             value={stats.today}
             icon={<CalendarDays />}
             delta={stats.total > 0 ? { value: `${Math.round((stats.today / stats.total) * 100)} %`, direction: stats.today > 0 ? "down" : "flat" } : undefined}
-            hint="Del total abierto"
+            hint={t('ui.OpenShifts.delTotalAbierto')}
           />
           <MetricTile
             label="Esta semana"
             value={stats.thisWeek}
             icon={<CalendarRange />}
             delta={stats.total > 0 ? { value: `${Math.round((stats.thisWeek / stats.total) * 100)} %`, direction: stats.thisWeek > 0 ? "down" : "flat" } : undefined}
-            hint="Del total abierto"
+            hint={t('ui.OpenShifts.delTotalAbierto')}
           />
         </Stagger>
 
@@ -270,7 +270,7 @@ export default function OpenShifts() {
                   <div className="space-y-6 py-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="grid gap-2">
-                        <Label>Desde la Fecha</Label>
+                        <Label>{t('comun.desdeLaFecha')}</Label>
                         <Input
                           type="date"
                           value={filters.startDate}
@@ -278,7 +278,7 @@ export default function OpenShifts() {
                         />
                       </div>
                       <div className="grid gap-2">
-                        <Label>Hora</Label>
+                        <Label>{t('comun.hora')}</Label>
                         <Input
                           type="time"
                           value={filters.startTime}
@@ -289,7 +289,7 @@ export default function OpenShifts() {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="grid gap-2">
-                        <Label>Hasta la Fecha</Label>
+                        <Label>{t('comun.hastaLaFecha')}</Label>
                         <Input
                           type="date"
                           value={filters.endDate}
@@ -297,7 +297,7 @@ export default function OpenShifts() {
                         />
                       </div>
                       <div className="grid gap-2">
-                        <Label>Hora</Label>
+                        <Label>{t('comun.hora')}</Label>
                         <Input
                           type="time"
                           value={filters.endTime}
@@ -344,10 +344,10 @@ export default function OpenShifts() {
             <TableHeader style={{ background: "var(--glass-sunken)" }}>
               <TableRow>
                 <TableHead className="w-[50px]"><Checkbox /></TableHead>
-                <TableHead className="cg-eyebrow">Fecha</TableHead>
-                <TableHead className="cg-eyebrow">Puesto</TableHead>
-                <TableHead className="cg-eyebrow">Hora de inicio</TableHead>
-                <TableHead className="cg-eyebrow">Hora de fin</TableHead>
+                <TableHead className="cg-eyebrow">{t('comun.fecha')}</TableHead>
+                <TableHead className="cg-eyebrow">{t('comun.puesto')}</TableHead>
+                <TableHead className="cg-eyebrow">{t('comun.horaDeInicio')}</TableHead>
+                <TableHead className="cg-eyebrow">{t('comun.horaDeFin')}</TableHead>
                 <TableHead className="cg-eyebrow">{t("ui.OpenShifts.duracion", "Duración")}</TableHead>
                 <TableHead className="cg-eyebrow">{t("ui.OpenShifts.accion", "Acción")}</TableHead>
               </TableRow>
@@ -389,8 +389,7 @@ export default function OpenShifts() {
                           setGuardSearch("");
                         }}
                       >
-                        <UserCheck className="h-4 w-4 mr-1" /> Asignar vigilante
-                      </Button>
+                        <UserCheck className="h-4 w-4 mr-1" />{" "}{t('comun.asignarVigilante')}{" "}</Button>
                     </TableCell>
                   </TableRow>
                 ))
@@ -438,7 +437,7 @@ export default function OpenShifts() {
         onOpenChange={(open) => {
           if (!open) { setAssignTarget(null); setSelectedGuard(null); setGuardSearch(""); }
         }}
-        title="Asignar vigilante"
+        title={t('comun.asignarVigilante')}
         icon={<UserCheck />}
         footer={(
           <>
@@ -469,7 +468,7 @@ export default function OpenShifts() {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: "var(--ink-faint)" }} />
                 <Input
-                  placeholder="Buscar vigilante…"
+                  placeholder={t('comun.buscarVigilante')}
                   className="pl-9"
                   value={guardSearch}
                   onChange={(e) => setGuardSearch(e.target.value)}

@@ -92,7 +92,7 @@ export function ClientDetailsDialog({
                         {/* Información básica en dos columnas */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <p className="text-xs text-foreground/70 font-semibold">Nombre</p>
+                                <p className="text-xs text-foreground/70 font-semibold">{t('comun.nombre')}</p>
                                 <p className="text-sm">{client.name}</p>
                             </div>
                             {client.lastName && (
@@ -102,7 +102,7 @@ export function ClientDetailsDialog({
                                 </div>
                             )}
                             <div>
-                                <p className="text-xs text-foreground/70 font-semibold">Correo</p>
+                                <p className="text-xs text-foreground/70 font-semibold">{t('comun.correo')}</p>
                                 <p className="text-sm truncate">{client.email || "-"}</p>
                             </div>
                             <div>
@@ -140,7 +140,7 @@ export function ClientDetailsDialog({
                                     <p className="text-sm">{client.postalCode || "-"}</p>
                                 </div>
                                 <div>
-                                    <p className="text-xs text-foreground/70 font-semibold">Ciudad</p>
+                                    <p className="text-xs text-foreground/70 font-semibold">{t('comun.ciudad')}</p>
                                     <p className="text-sm">{client.city || "-"}</p>
                                 </div>
                                 <div>

@@ -8,6 +8,7 @@ import { ApiService } from '@/services/api/apiService';
 import { Section, EmptyState, SkeletonCards, StatusBadge, Modal, IconTile, SmartImage } from '@/components/kit';
 import { fileUrlFromPrivate } from '@/lib/fileUrl';
 import type { Station } from '@/types';
+import i18n from "@/i18n";
 
 interface StationDetail extends Station { name?: string }
 
@@ -335,7 +336,7 @@ function RondaDetailModal({ open, onOpenChange, tenantId, assignmentId, fallback
           <div className="absolute inset-0" style={{ background: 'oklch(0 0 0 / 0.72)' }} />
           <button
             type="button"
-            aria-label="Cerrar"
+            aria-label={i18n.t('actions.close')}
             className="cg-focus absolute right-4 top-4 z-10 rounded-full p-2"
             style={{ background: 'oklch(1 0 0 / 0.14)', color: 'oklch(1 0 0)' }}
             onClick={() => setPhoto(null)}

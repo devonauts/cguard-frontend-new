@@ -56,7 +56,7 @@ export default function RadioDispatch() {
         setEntries(s?.entries || []);
       } else { setRunning(null); setEntries([]); }
     } catch (e: any) {
-      if (e?.response?.status === 403) toast.error("No tienes permiso para el módulo de radio.");
+      if (e?.response?.status === 403) toast.error(t('ui.RadioDispatch.noTienesPermisoParaEl'));
     } finally { setLoading(false); }
   }, []);
 
@@ -69,18 +69,18 @@ export default function RadioDispatch() {
   const start = async (scope: "all" | "station", stationId?: string) => {
     setBusy(true);
     try { await radioCheckService.start(scope, stationId); toast.success("Pase iniciado"); await refresh(); }
-    catch { toast.error("No se pudo iniciar"); } finally { setBusy(false); }
+    catch { toast.error(t('ui.RadioDispatch.noSePudoIniciar')); } finally { setBusy(false); }
   };
   const cancel = async () => {
     if (!running) return; setBusy(true);
     try { await radioCheckService.cancelSession(running.id); await refresh(); } finally { setBusy(false); }
   };
   const escalate = async (entryId: string) => {
-    try { await radioCheckService.escalate(entryId); toast.success("Marcado como incidente"); await refresh(); } catch { /* ignore */ }
+    try { await radioCheckService.escalate(entryId); toast.success(t('ui.RadioDispatch.marcadoComoIncidente')); await refresh(); } catch { /* ignore */ }
   };
   const saveSettings = async () => {
-    try { const s = await radioCheckService.saveSettings(settings); setSettings(s); toast.success("Configuración guardada"); }
-    catch { toast.error("No se pudo guardar"); }
+    try { const s = await radioCheckService.saveSettings(settings); setSettings(s); toast.success(t('comun.configuracionGuardada')); }
+    catch { toast.error(t('comun.noSePudoGuardar')); }
   };
 
   const stations = data?.stations || [];
@@ -107,7 +107,7 @@ export default function RadioDispatch() {
       <PageHeader
         icon={<Radio />}
         title="Radio · Pase de novedades"
-        subtitle="Coordina el pase de novedades por puesto en tiempo real."
+        subtitle={t('ui.RadioDispatch.coordinaElPaseDeNovedades')}
         badges={
           <StatusBadge tone={connected ? "green" : "slate"}>
             {connected ? "En tiempo real" : "Reconectando…"}
@@ -139,12 +139,12 @@ export default function RadioDispatch() {
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={!!settings.enabled} onChange={(e) => setSettings({ ...settings, enabled: e.target.checked })} /> Activado</label>
             <label className="text-sm">Intervalo (min)<input type="number" min={1} value={settings.intervalMinutes ?? 35} onChange={(e) => setSettings({ ...settings, intervalMinutes: +e.target.value })} className="mt-1 w-full rounded-lg border border-border bg-background px-2 py-1.5" /></label>
-            <label className="text-sm">Espera/puesto (seg)<input type="number" min={30} value={settings.perStationTimeoutSeconds ?? 180} onChange={(e) => setSettings({ ...settings, perStationTimeoutSeconds: +e.target.value })} className="mt-1 w-full rounded-lg border border-border bg-background px-2 py-1.5" /></label>
-            <label className="text-sm">Hora inicio<input type="time" value={settings.activeHoursStart ?? ""} onChange={(e) => setSettings({ ...settings, activeHoursStart: e.target.value || null })} className="mt-1 w-full rounded-lg border border-border bg-background px-2 py-1.5" /></label>
-            <label className="text-sm">Hora fin<input type="time" value={settings.activeHoursEnd ?? ""} onChange={(e) => setSettings({ ...settings, activeHoursEnd: e.target.value || null })} className="mt-1 w-full rounded-lg border border-border bg-background px-2 py-1.5" /></label>
+            <label className="text-sm">{t('ui.RadioDispatch.esperaPuestoSeg')}<input type="number" min={30} value={settings.perStationTimeoutSeconds ?? 180} onChange={(e) => setSettings({ ...settings, perStationTimeoutSeconds: +e.target.value })} className="mt-1 w-full rounded-lg border border-border bg-background px-2 py-1.5" /></label>
+            <label className="text-sm">{t('comun.horaInicio')}<input type="time" value={settings.activeHoursStart ?? ""} onChange={(e) => setSettings({ ...settings, activeHoursStart: e.target.value || null })} className="mt-1 w-full rounded-lg border border-border bg-background px-2 py-1.5" /></label>
+            <label className="text-sm">{t('comun.horaFin')}<input type="time" value={settings.activeHoursEnd ?? ""} onChange={(e) => setSettings({ ...settings, activeHoursEnd: e.target.value || null })} className="mt-1 w-full rounded-lg border border-border bg-background px-2 py-1.5" /></label>
           </div>
-          <label className="mt-3 block text-sm">Mensaje al puesto<textarea rows={2} value={settings.promptText ?? ""} onChange={(e) => setSettings({ ...settings, promptText: e.target.value })} className="mt-1 w-full rounded-lg border border-border bg-background px-2 py-1.5 text-sm" /></label>
-          <Button variant="brand" size="sm" onClick={saveSettings} className="mt-3">Guardar</Button>
+          <label className="mt-3 block text-sm">{t('ui.RadioDispatch.mensajeAlPuesto')}<textarea rows={2} value={settings.promptText ?? ""} onChange={(e) => setSettings({ ...settings, promptText: e.target.value })} className="mt-1 w-full rounded-lg border border-border bg-background px-2 py-1.5 text-sm" /></label>
+          <Button variant="brand" size="sm" onClick={saveSettings} className="mt-3">{t('actions.save')}</Button>
         </Section>
       )}
 
@@ -160,7 +160,7 @@ export default function RadioDispatch() {
                   className={`rounded-lg px-3 py-1 font-mono text-lg font-bold tabular-nums ${
                     (remainingSec ?? 0) > 0 ? "bg-amber-500/20 text-amber-700" : "bg-red-500/15 text-red-600"
                   }`}
-                  title="Tiempo restante para completar el reporte"
+                  title={t('ui.RadioDispatch.tiempoRestanteParaCompletarEl')}
                 >
                   {(remainingSec ?? 0) > 0 ? `⏱ ${countdown}` : "Tiempo agotado"}
                 </span>
@@ -194,7 +194,7 @@ export default function RadioDispatch() {
                   </div>
                   {cc && <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${cc.cls}`}>{cc.label}</span>}
                   {badge && <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${badge.cls}`}>{badge.label}</span>}
-                  <Button className="shrink-0" variant="outline" size="icon" onClick={() => start("station", s.stationId)} disabled={busy || !!running} title="Llamar a este puesto"><Play size={13} /></Button>
+                  <Button className="shrink-0" variant="outline" size="icon" onClick={() => start("station", s.stationId)} disabled={busy || !!running} title={t('ui.RadioDispatch.llamarAEstePuesto')}><Play size={13} /></Button>
                 </div>
                 {e && (e.transcript || e.transcriptStatus === "pending" || e.hasAudio) && (
                   <div className="mt-2 space-y-1.5 border-t border-border pt-2">
@@ -203,7 +203,7 @@ export default function RadioDispatch() {
                       <RadioAudio audioUrl={e.audioUrl} />
                     )}
                     {st === "responded" && e.classification !== "incident" && (
-                      <button onClick={() => escalate(e.entryId || e.id)} className="flex items-center gap-1 text-[11px] text-red-600 hover:underline"><AlertTriangle size={12} /> Marcar como incidente</button>
+                      <button onClick={() => escalate(e.entryId || e.id)} className="flex items-center gap-1 text-[11px] text-red-600 hover:underline"><AlertTriangle size={12} />{" "}{t('ui.RadioDispatch.marcarComoIncidente')}</button>
                     )}
                   </div>
                 )}
@@ -211,7 +211,7 @@ export default function RadioDispatch() {
             );
           })}
           {!stations.length && (
-            <EmptyState icon={<Radio />} title="No hay puestos configurados." />
+            <EmptyState icon={<Radio />} title={t('ui.RadioDispatch.noHayPuestosConfigurados')} />
           )}
         </div>
       )}

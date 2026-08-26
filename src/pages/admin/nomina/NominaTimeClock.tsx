@@ -215,7 +215,7 @@ export default function NominaTimeClock() {
           <div className="mb-4 flex justify-center">
             <IconTile size="lg" className="brand-glow-sm"><Clock /></IconTile>
           </div>
-          <h1 className="font-display text-xl font-bold tracking-tight">Reloj de Asistencia</h1>
+          <h1 className="font-display text-xl font-bold tracking-tight">{t('ui.NominaTimeClock.relojDeAsistencia')}</h1>
 
           {loading ? (
             <div className="space-y-3 py-10">

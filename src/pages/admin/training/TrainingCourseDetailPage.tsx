@@ -90,7 +90,7 @@ export default function TrainingCourseDetailPage() {
   const saveMeta = async () => {
     if (!id) return;
     if (!meta.title.trim()) {
-      toast.error('El título es obligatorio.');
+      toast.error(t('comun.elTituloEsObligatorio'));
       return;
     }
     setSaving(true);
@@ -173,7 +173,7 @@ export default function TrainingCourseDetailPage() {
           {/* Cuatro pestañas no caben en un teléfono: el carril se desplaza
               DENTRO de su píldora en vez de ensanchar la página. */}
           <TabsList className="max-w-full justify-start overflow-x-auto [&>*]:shrink-0">
-            <TabsTrigger value="details">Detalles</TabsTrigger>
+            <TabsTrigger value="details">{t('ui.TrainingCourseDetailPage.detalles')}</TabsTrigger>
             <TabsTrigger value="lessons">Lecciones ({lessons.length})</TabsTrigger>
             <TabsTrigger value="quiz">Cuestionario</TabsTrigger>
             {canAssign && <TabsTrigger value="assign">Asignar</TabsTrigger>}
@@ -220,7 +220,7 @@ export default function TrainingCourseDetailPage() {
                     <Input type="number" min={0} disabled={readOnly} value={meta.pointsValue} onChange={(e) => setMeta({ ...meta, pointsValue: Number(e.target.value) })} />
                   </div>
                   <div className="space-y-2">
-                    <Label>Puntaje para aprobar (%)</Label>
+                    <Label>{t('comun.puntajeParaAprobar')}</Label>
                     <Input type="number" min={0} max={100} disabled={readOnly} value={meta.passingScore} onChange={(e) => setMeta({ ...meta, passingScore: Number(e.target.value) })} />
                   </div>
                 </div>

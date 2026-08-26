@@ -118,7 +118,7 @@ export default function PatrullaBoardPage() {
       // `changed: false` es un buen resultado, no un fallo: el orden manual ya
       // era el mejor. «Has ahorrado 0 km» ahí suena a que el botón no funcionó.
       if (r.changed === false) {
-        toast.success('La ruta ya estaba en el mejor orden posible. No hizo falta mover ninguna parada.');
+        toast.success(t('comun.laRutaYaEstabaEn'));
       } else if (ahorro?.hayAhorro) {
         const trozos: string[] = [];
         if (ahorro.km != null && ahorro.km >= 0.05) trozos.push(`-${fmtKm(ahorro.km)}`);
@@ -165,7 +165,7 @@ export default function PatrullaBoardPage() {
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                aria-label="Fecha"
+                aria-label={t('comun.fecha')}
                 className="cg-input cg-focus h-9 px-3 text-sm"
               />
               <Button variant="outline" onClick={() => navigate('/vehicle-patrol/routes')}>
@@ -222,7 +222,7 @@ export default function PatrullaBoardPage() {
                         <p className="truncate text-sm font-semibold text-foreground">{route.name}</p>
                         {done
                           ? <StatusBadge tone="ok">Completada</StatusBadge>
-                          : <StatusBadge tone="warn">Pendiente</StatusBadge>}
+                          : <StatusBadge tone="warn">{t('comun.pendiente')}</StatusBadge>}
                         {/* Compacta: en una tarjeta de rejilla no cabe la fecha,
                             y en la ficha de la ruta sí se enseña entera. */}
                         <InsigniaOptimizada optimizada={route.optimized} compacta />

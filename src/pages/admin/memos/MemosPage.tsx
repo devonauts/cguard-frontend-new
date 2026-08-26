@@ -87,7 +87,7 @@ export default function MemosPage() {
         if (mounted) setMemos(mapped);
       } catch (err) {
         console.error('Error cargando memos:', err);
-        toast.error('No se pudieron cargar los memos');
+        toast.error(t('ui.MemosPage.noSePudieronCargarLos'));
       } finally {
         if (mounted) setLoading(false);
       }
@@ -192,7 +192,7 @@ export default function MemosPage() {
 
   const handleCreate = async () => {
     if (!subject.trim()) {
-      toast.error('El asunto es obligatorio');
+      toast.error(t('comun.elAsuntoEsObligatorio'));
       return;
     }
 
@@ -378,7 +378,7 @@ export default function MemosPage() {
       render: (value) =>
         value
           ? <StatusBadge tone="ok">Aceptado</StatusBadge>
-          : <StatusBadge tone="warn">Pendiente</StatusBadge>,
+          : <StatusBadge tone="warn">{t('comun.pendiente')}</StatusBadge>,
     },
   ];
 
@@ -464,16 +464,16 @@ export default function MemosPage() {
 
                   <div className="mt-6 space-y-4">
                     <div className="space-y-2">
-                      <Label>Vigilante</Label>
+                      <Label>{t('comun.vigilante')}</Label>
                       <Select
                         value={filters.guardId ?? undefined}
                         onValueChange={(value) => setFilters({ ...filters, guardId: value === 'all' ? undefined : value })}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Todos" />
+                          <SelectValue placeholder={t('ui.MemosPage.todos')} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="all">Todos</SelectItem>
+                          <SelectItem value="all">{t('ui.MemosPage.todos')}</SelectItem>
                           {guards.map((guard) => (
                             <SelectItem key={guard.id} value={guard.id}>
                               {guard.name}
@@ -483,16 +483,16 @@ export default function MemosPage() {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label>Creado por</Label>
+                      <Label>{t('ui.MemosPage.creadoPor')}</Label>
                       <Select
                         value={filters.createdById ?? undefined}
                         onValueChange={(value) => setFilters({ ...filters, createdById: value === 'all' ? undefined : value })}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Todos" />
+                          <SelectValue placeholder={t('ui.MemosPage.todos')} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="all">Todos</SelectItem>
+                          <SelectItem value="all">{t('ui.MemosPage.todos')}</SelectItem>
                           {createdByUsers.map((user) => (
                             <SelectItem key={user.id} value={user.id}>
                               {user.name}
@@ -575,7 +575,7 @@ export default function MemosPage() {
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div>
-                <Label className="mb-2 block">Vigilante</Label>
+                <Label className="mb-2 block">{t('comun.vigilante')}</Label>
                 <Select value={guardId} onValueChange={(value) => setGuardId(value)}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Selecciona una vigilante" />
@@ -590,13 +590,13 @@ export default function MemosPage() {
                 </Select>
               </div>
               <div>
-                <Label className="mb-2 block">Estado</Label>
+                <Label className="mb-2 block">{t('comun.estado')}</Label>
                 <Select value={wasAccepted ? 'accepted' : 'pending'} onValueChange={(value) => setWasAccepted(value === 'accepted')}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Selecciona el estado" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="pending">Pendiente</SelectItem>
+                    <SelectItem value="pending">{t('comun.pendiente')}</SelectItem>
                     <SelectItem value="accepted">Aceptado</SelectItem>
                   </SelectContent>
                 </Select>
@@ -612,7 +612,7 @@ export default function MemosPage() {
             </div>
             <DialogFooter className="flex items-center justify-end gap-2">
               <DialogClose asChild>
-                <Button variant="outline">Cancelar</Button>
+                <Button variant="outline">{t('actions.cancel')}</Button>
               </DialogClose>
               <Button variant="brand" onClick={handleCreate} disabled={saving}>
                 {saving ? 'Guardando...' : 'Guardar Memo'}
@@ -631,9 +631,7 @@ export default function MemosPage() {
             </DialogHeader>
             <DialogFooter className="flex items-center justify-end gap-2">
               <DialogClose asChild>
-                <Button variant="outline" onClick={() => setMemoToDelete(null)}>
-                  Cancelar
-                </Button>
+                <Button variant="outline" onClick={() => setMemoToDelete(null)}>{" "}{t('actions.cancel')}{" "}</Button>
               </DialogClose>
               <Button variant="destructive" onClick={confirmDelete}>
                 Eliminar memo
@@ -656,15 +654,15 @@ export default function MemosPage() {
               </div>
               <div className="glass-sunken grid grid-cols-1 gap-4 p-4 sm:grid-cols-2">
                 <Field
-                  label="Vigilante"
+                  label={t('comun.vigilante')}
                   value={typeof viewMemo?.guardName === 'string' ? viewMemo?.guardName : viewMemo?.guardName?.name || '-'}
                 />
                 <Field
-                  label="Creado por"
+                  label={t('ui.MemosPage.creadoPor')}
                   value={typeof viewMemo?.createdBy === 'string' ? viewMemo?.createdBy : viewMemo?.createdBy?.name || '-'}
                 />
                 <Field
-                  label="Fecha"
+                  label={t('comun.fecha')}
                   value={viewMemo?.dateTime ? new Date(viewMemo.dateTime).toLocaleString() : '-'}
                   className="sm:col-span-2"
                 />
@@ -680,7 +678,7 @@ export default function MemosPage() {
             </div>
             <DialogFooter>
               <DialogClose asChild>
-                <Button>Cerrar</Button>
+                <Button>{t('actions.close')}</Button>
               </DialogClose>
             </DialogFooter>
           </DialogContent>

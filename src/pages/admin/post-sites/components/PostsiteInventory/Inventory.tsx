@@ -130,7 +130,7 @@ function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
       size="md"
       footer={(
         <>
-          <Button variant="outline" onClick={onClose} disabled={saving}>Cancelar</Button>
+          <Button variant="outline" onClick={onClose} disabled={saving}>{t('actions.cancel')}</Button>
           <Button variant="brand" onClick={handleAssign} disabled={saving || !selectedItem}>{saving ? 'Asignando...' : 'Asignar'}</Button>
         </>
       )}
@@ -183,7 +183,7 @@ function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
               <div className="space-y-2">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input className="pl-9" placeholder="Buscar vigilante..." value={guardSearch} onChange={(e) => setGuardSearch(e.target.value)} />
+                  <Input className="pl-9" placeholder={t('comun.buscarVigilante')} value={guardSearch} onChange={(e) => setGuardSearch(e.target.value)} />
                 </div>
                 {(loadingGuards || guards.length > 0) && (
                   <div className="border border-border rounded-lg max-h-32 overflow-y-auto">
@@ -210,7 +210,7 @@ function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
 
           {/* Notes */}
           <div className="space-y-1">
-            <Label>Notas (opcional)</Label>
+            <Label>{t('comun.notasOpcional')}</Label>
             <textarea className={`${FIELD_CLS_LG} resize-none`} rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Observaciones..." />
           </div>
       </div>
@@ -254,7 +254,7 @@ function ReturnModal({ assignment, onClose, onDone }: ReturnModalProps) {
       size="sm"
       footer={(
         <>
-          <Button variant="outline" onClick={onClose} disabled={saving}>Cancelar</Button>
+          <Button variant="outline" onClick={onClose} disabled={saving}>{t('actions.cancel')}</Button>
           <Button variant="brand" onClick={handleReturn} disabled={saving}>{saving ? 'Procesando...' : 'Confirmar devolución'}</Button>
         </>
       )}
@@ -269,7 +269,7 @@ function ReturnModal({ assignment, onClose, onDone }: ReturnModalProps) {
           </Select>
         </div>
         <div className="space-y-1">
-          <Label>Notas (opcional)</Label>
+          <Label>{t('comun.notasOpcional')}</Label>
           <textarea className={`${FIELD_CLS_LG} resize-none`} rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Observaciones..." />
         </div>
       </div>
@@ -378,7 +378,7 @@ export default function Inventory({ site }: { site?: PostSite }) {
               <thead className="border-b border-border">
                 <tr>
                   <th className="cg-eyebrow px-2 py-2">{t("ui.Inventory.articulo", "Artículo")}</th>
-                  <th className="cg-eyebrow px-2 py-2 hidden sm:table-cell">Tipo</th>
+                  <th className="cg-eyebrow px-2 py-2 hidden sm:table-cell">{t('comun.tipo')}</th>
                   <th className="cg-eyebrow px-2 py-2 hidden md:table-cell">{t("ui.Inventory.condicion", "Condición")}</th>
                   <th className="cg-eyebrow px-2 py-2">Responsable</th>
                   <th className="cg-eyebrow px-2 py-2 hidden lg:table-cell">Asignado</th>
@@ -406,7 +406,7 @@ export default function Inventory({ site }: { site?: PostSite }) {
                           <span className="flex items-center gap-1.5 text-foreground">
                             <User className="w-3.5 h-3.5 text-muted-foreground" />{getGuardName((a as any).assignedTo)}
                           </span>
-                        ) : <span className="text-muted-foreground text-xs">Sin asignar</span>}
+                        ) : <span className="text-muted-foreground text-xs">{t('comun.sinAsignar')}</span>}
                       </td>
                       <td className="px-2 py-2.5 text-muted-foreground text-xs hidden lg:table-cell">
                         {a.assignedAt ? new Date(a.assignedAt).toLocaleDateString() : '—'}

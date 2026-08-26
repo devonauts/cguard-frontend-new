@@ -687,8 +687,7 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
                               className="cg-focus mt-2 flex items-center gap-1 rounded text-[10px] font-semibold"
                               style={{ color: 'var(--bad-text)' }}
                             >
-                              <Plus size={10} /> Asignar vigilante
-                            </button>
+                              <Plus size={10} />{" "}{t('comun.asignarVigilante')}{" "}</button>
                           )}
                         </div>
                         );
@@ -1102,7 +1101,7 @@ function DayView({ date, coverage, dayEvents, guardColorMap, onAssign }: {
                     <span className="flex items-center gap-1 text-[11px] font-semibold" style={{ color: 'var(--bad-text)' }}>
                       {isNight ? <Moon size={11} /> : <Sun size={11} />} {slot.jornada.tipo} · sin asignar
                     </span>
-                    {height > 36 && <span className="inline-flex items-center gap-1 text-[10px] font-medium" style={{ color: 'var(--bad-text)' }}><Plus size={10} /> Asignar vigilante</span>}
+                    {height > 36 && <span className="inline-flex items-center gap-1 text-[10px] font-medium" style={{ color: 'var(--bad-text)' }}><Plus size={10} />{" "}{t('comun.asignarVigilante')}</span>}
                   </button>
                 );
               })}

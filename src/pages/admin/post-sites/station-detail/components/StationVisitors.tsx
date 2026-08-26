@@ -299,7 +299,7 @@ function VisitorFormModal({ open, initialData, stationId, onClose, onSaved }: {
             {/* Names */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1"><Label>Apellido <span style={{ color: 'var(--bad-text)' }}>*</span></Label><Input value={form.lastName} onChange={e => set('lastName', e.target.value)} placeholder={t("ui.StationVisitors.perezGarcia", "Pérez García")} /></div>
-              <div className="space-y-1"><Label>Nombre <span style={{ color: 'var(--bad-text)' }}>*</span></Label><Input value={form.firstName} onChange={e => set('firstName', e.target.value)} placeholder="Juan Carlos" /></div>
+              <div className="space-y-1"><Label>{t('comun.nombre')}{" "}<span style={{ color: 'var(--bad-text)' }}>*</span></Label><Input value={form.firstName} onChange={e => set('firstName', e.target.value)} placeholder="Juan Carlos" /></div>
             </div>
             {/* ID + NumPeople */}
             <div className="grid grid-cols-2 gap-3">
@@ -309,9 +309,9 @@ function VisitorFormModal({ open, initialData, stationId, onClose, onSaved }: {
             {/* Place */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <Label>Tipo de lugar</Label>
+                <Label>{t('ui.StationVisitors.tipoDeLugar')}</Label>
                 <Select value={form.placeTypeKind} onValueChange={v => set('placeTypeKind', v)}>
-                  <SelectTrigger><SelectValue placeholder="Tipo" /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder={t('comun.tipo')} /></SelectTrigger>
                   <SelectContent>{PLACE_TYPES.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
@@ -323,13 +323,13 @@ function VisitorFormModal({ open, initialData, stationId, onClose, onSaved }: {
               <div className="space-y-1"><Label>Salida</Label><Input type="datetime-local" value={form.exitTime} onChange={e => set('exitTime', e.target.value)} /></div>
             </div>
             {/* Reason */}
-            <div className="space-y-1"><Label>Motivo</Label><Input value={form.reason} onChange={e => set('reason', e.target.value)} placeholder="Visita a familiar, entrega, etc." /></div>
+            <div className="space-y-1"><Label>{t('comun.motivo')}</Label><Input value={form.reason} onChange={e => set('reason', e.target.value)} placeholder="Visita a familiar, entrega, etc." /></div>
             {/* Photo */}
             <div className="space-y-2">
-              <Label>Foto del visitante</Label>
+              <Label>{t('ui.StationVisitors.fotoDelVisitante')}</Label>
               {displayPhoto && (
                 <div className="relative w-24 h-24">
-                  <img src={displayPhoto} alt="Foto del visitante" className="h-24 w-24 rounded-lg border object-cover" style={{ borderColor: 'var(--hairline)' }} />
+                  <img src={displayPhoto} alt={t('ui.StationVisitors.fotoDelVisitante')} className="h-24 w-24 rounded-lg border object-cover" style={{ borderColor: 'var(--hairline)' }} />
                   <button type="button" aria-label="Quitar foto" onClick={() => { setPhotoBlob(null); setPhotoUrl(null); setExistingPhotoUrl(null); }} className="cg-btn-bad cg-focus absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full"><X size={12} /></button>
                 </div>
               )}
@@ -341,7 +341,7 @@ function VisitorFormModal({ open, initialData, stationId, onClose, onSaved }: {
             </div>
             {/* Actions */}
             <div className="flex gap-2 pt-1">
-              <Button variant="outline" onClick={onClose} disabled={saving} className="flex-1">Cancelar</Button>
+              <Button variant="outline" onClick={onClose} disabled={saving} className="flex-1">{t('actions.cancel')}</Button>
               <Button variant="brand" onClick={handleSave} disabled={saving || scanning} className="flex-1 gap-1">
                 {saving ? <Loader2 size={13} className="animate-spin" /> : <UserCheck size={13} />}
                 {isEdit ? 'Actualizar' : 'Registrar'}
@@ -423,12 +423,12 @@ export default function StationVisitors({ stationId }: Props) {
               <thead style={{ background: 'var(--glass-sunken)', borderBottom: '1px solid var(--hairline)' }}>
                 <tr>
                   <th className="cg-eyebrow px-2 py-2 w-10"></th>
-                  <th className="cg-eyebrow px-2 py-2">Nombre</th>
+                  <th className="cg-eyebrow px-2 py-2">{t('comun.nombre')}</th>
                   <th className="cg-eyebrow px-2 py-2">{t("ui.StationVisitors.cedula", "Cédula")}</th>
                   <th className="cg-eyebrow px-2 py-2">Lugar</th>
                   <th className="cg-eyebrow px-2 py-2">Entrada</th>
                   <th className="cg-eyebrow px-2 py-2">Salida</th>
-                  <th className="cg-eyebrow px-2 py-2">Vigilante</th>
+                  <th className="cg-eyebrow px-2 py-2">{t('comun.vigilante')}</th>
                   <th className="cg-eyebrow px-2 py-2 text-right">Acciones</th>
                 </tr>
               </thead>
@@ -460,8 +460,8 @@ export default function StationVisitors({ stationId }: Props) {
                       <td className="px-2 py-2.5">{guard}</td>
                       <td className="px-2 py-2.5 text-right">
                         <div className="flex items-center justify-end gap-1">
-                          <button onClick={() => { setEditRow(r); setFormOpen(true); }} className="cg-btn-ghost cg-focus rounded p-1.5" title="Editar" aria-label="Editar visitante"><Edit2 size={14} /></button>
-                          <button onClick={() => handleDelete(r.id)} disabled={deleting === r.id} className="cg-focus rounded p-1.5 disabled:opacity-40" style={{ color: 'var(--bad-text)' }} title="Eliminar" aria-label="Eliminar visitante">
+                          <button onClick={() => { setEditRow(r); setFormOpen(true); }} className="cg-btn-ghost cg-focus rounded p-1.5" title={t('actions.edit')} aria-label="Editar visitante"><Edit2 size={14} /></button>
+                          <button onClick={() => handleDelete(r.id)} disabled={deleting === r.id} className="cg-focus rounded p-1.5 disabled:opacity-40" style={{ color: 'var(--bad-text)' }} title={t('actions.delete')} aria-label="Eliminar visitante">
                             {deleting === r.id ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
                           </button>
                         </div>

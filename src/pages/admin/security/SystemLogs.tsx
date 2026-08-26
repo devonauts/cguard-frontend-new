@@ -123,7 +123,7 @@ export default function SystemLogs() {
               <EmptyState
                 className="border-0"
                 icon={<Inbox />}
-                title="Sin registros"
+                title={t('comun.sinRegistros')}
                 description={
                   q.trim() || action
                     ? "Ninguna acción coincide con la búsqueda o el filtro elegido."
@@ -137,8 +137,8 @@ export default function SystemLogs() {
                 <>
                   <th className="px-4 py-3">{t("ui.SystemLogs.accion", "Acción")}</th>
                   <th className="px-3 py-3">Registro</th>
-                  <th className="px-3 py-3">Usuario</th>
-                  <th className="px-3 py-3 text-right">Fecha</th>
+                  <th className="px-3 py-3">{t('comun.usuario')}</th>
+                  <th className="px-3 py-3 text-right">{t('comun.fecha')}</th>
                   <th className="px-2 py-3"></th>
                 </>
               }

@@ -2658,7 +2658,7 @@
     "tabs": {
       "overview": "Overview",
       "stations": "Stations",
-      "guards": "Officers",
+      "guards": "Guards",
       "tours": "Patrols",
       "incidents": "Incidents",
       "inventory": "Inventory",
@@ -7097,7 +7097,7 @@
       "schedule": "Schedule",
       "timeOff": "Time off"
     },
-    "roleLabel": "Officer"
+    "roleLabel": "Guard"
   },
   "notes": {
     "deleteError": "The notes could not be deleted",
@@ -7181,7 +7181,11 @@
       "calamidadDomestica": "Family emergency"
     },
     "Incidents": {
-      "masAcciones": "More actions"
+      "masAcciones": "More actions",
+      "todosLosInformadores": "All reporters",
+      "ticketCerrado": "Ticket closed",
+      "noSePudoCerrarEl": "Could not close ticket",
+      "tipoDeIncidente": "Incident Type"
     },
     "Inventory": {
       "accion": "Action",
@@ -7233,7 +7237,8 @@
       "formacionExigida": "Required training"
     },
     "ProfileUserForm": {
-      "espanol": "🇪🇸 Spanish"
+      "espanol": "🇪🇸 Spanish",
+      "contacto": "Contact"
     },
     "Routes": {
       "turnoDia": "Day shift",
@@ -7258,7 +7263,8 @@
       "toleranciaDeMarcacionDeEntrada": "Clock-in allowance",
       "turnoUbicacionYToleranciaDe": "Shift, location and clock-in allowance. \"Save\" applies the allowance.",
       "ubicacionYGeocerca": "Location and geofence",
-      "ubicacionYGeocerca2": "Location and geofence"
+      "ubicacionYGeocerca2": "Location and geofence",
+      "deTurnoAhora": "On shift now"
     },
     "StationShifts": {
       "dia": "Day",
@@ -7279,7 +7285,8 @@
       "numeroFijo": "Landline number",
       "numeroMovil": "Mobile number",
       "pais": "Country",
-      "telefonoFijo": "Landline"
+      "telefonoFijo": "Landline",
+      "correoEjemploCom": "email@example.com"
     },
     "Tenants": {
       "configuracion": "Settings"
@@ -7291,7 +7298,8 @@
       "creaUnaContrasenaSegura": "Create a strong password",
       "invitacionNoValida": "Invalid invitation",
       "lasContrasenasNoCoinciden": "The passwords don't match.",
-      "repiteLaContrasena": "Repeat the password"
+      "repiteLaContrasena": "Repeat the password",
+      "tuNombre": "Your name"
     },
     "header": {
       "comoPodemosAyudar": "How can we help?",
@@ -7319,7 +7327,9 @@
       "repiteLaContrasena": "Repeat the password",
       "telefonoMovil": "Mobile phone",
       "tuEmpresaActivaraTuCuenta": "Your company will activate your account and assign you to a post.",
-      "consigueloEnElAppStore": "Get it on the App Store"
+      "consigueloEnElAppStore": "Get it on the App Store",
+      "cuentaActivada": "Account activated!",
+      "yaPuedesCerrarEstaVentana": "You can close this window now."
     },
     "AddressAutocomplete": {
       "miUbicacion": "My location"
@@ -7339,7 +7349,14 @@
       "desempenoDeOperadores": "Operator performance",
       "porCategoria": "By category",
       "resolucionProm": "Avg. resolution",
-      "verificacionPorLlamada": "Verification by phone call"
+      "verificacionPorLlamada": "Verification by phone call",
+      "sinRegistrosParaExportar": "No records to export",
+      "tiemposDeRespuestaCumplimientoDe": "Response times, whether agreed deadlines were met, and how the operators performed.",
+      "superaronElPlazo": "missed the deadline",
+      "porPrioridad": "By priority",
+      "sinDespachos": "No dispatches",
+      "sinOperadores": "No operators",
+      "sinCasosAsignadosAOperadores": "No cases were assigned to operators in this period."
     },
     "AlarmCaseDetail": {
       "descripcion": "Description",
@@ -7349,7 +7366,17 @@
       "titulo": "Title",
       "unidadNombreONumeroDe": "Unit, name or contact number",
       "ultimaSenal": "Last signal",
-      "comunicacion": "Communication"
+      "comunicacion": "Communication",
+      "indiqueElDestinoDelDespacho": "Say where the dispatch is going",
+      "escribaUnaNota": "Write a note",
+      "elCasoSolicitadoNoExiste": "That case does not exist, or is no longer available.",
+      "estadoDelPanel": "Panel status",
+      "sinEventosRegistrados": "No events recorded",
+      "instruccionesParaElDespacho": "Instructions for the dispatch…",
+      "cerrarCaso": "Close case",
+      "detalleDelIncidente": "Incident details…",
+      "agregarNota": "Add Note",
+      "observacionesDelOperador": "Operator notes…"
     },
     "AlarmPanels": {
       "agenciaPsapPolicia": "Agency / PSAP (police)",
@@ -7370,13 +7397,33 @@
       "telefono": "Phone",
       "telefonoPsap": "PSAP phone",
       "enLinea": "Online",
-      "sinConexion": "Offline"
+      "sinConexion": "Offline",
+      "configuraLaConexionDelPanel": "Set up how the alarm panel connects to the monitoring center.",
+      "tipoDePanel": "Panel type",
+      "clienteOpcional": "Client (optional)",
+      "idDelCliente": "Client ID",
+      "sinZonasConfiguradas": "No zones set up",
+      "anadeLasZonasDelPanel": "Add the panel's zones so you know where each signal comes from.",
+      "eliminarZona": "Delete zone",
+      "elNombreDelContactoEs": "The contact name is required",
+      "contactoActualizado": "Contact updated",
+      "contactoAgregado": "Contact added",
+      "contactoEliminado": "Contact deleted",
+      "sinContactosDeAviso": "No call-out contacts",
+      "anadeAQuienHayQue": "Add who to call, and in what order, when an alarm comes in.",
+      "contactoEmpresaCom": "contact@company.com",
+      "eliminarContacto": "Delete contact",
+      "administraLosPanelesMonitoreadosSus": "Manage the monitored panels, their zones and their call-out contacts.",
+      "noHayPaneles": "There are no panels",
+      "agregaTuPrimerPanelDe": "Add your first alarm panel to start receiving signals.",
+      "eliminarPanel": "Delete panel"
     },
     "AlarmSignals": {
       "buscarPorCuentaCodigoZona": "Search by account, code, zone…",
       "codigo": "Code",
       "registroDeSenales": "Signal log",
-      "sinSenales": "No signals"
+      "sinSenales": "No signals",
+      "todoLoQueHanEnviado": "Everything the panels have sent, exactly as it arrived. It cannot be edited."
     },
     "App": {
       "paginaNoEncontrada": "Page not found"
@@ -7386,7 +7433,8 @@
       "esteCursoEsUnBorrador": "This course is a draft. Publish it before you can assign it.",
       "fechaLimiteOpcional": "Deadline (optional)",
       "tipoDeAsignacion": "Assignment type",
-      "vigilanteEspecifico": "A specific guard"
+      "vigilanteEspecifico": "A specific guard",
+      "buscarVigilante": "Search guard"
     },
     "AuditLogs": {
       "buscarPorUsuarioDireccionO": "Search by user, address or device…",
@@ -7402,7 +7450,8 @@
     "CategoryAssignDialog": {
       "categoria": "Category",
       "seleccionaLaCategoriaDestinoPara": "Choose the target category for the selected sites.",
-      "seleccionaUnaCategoria": "Choose a category"
+      "seleccionaUnaCategoria": "Choose a category",
+      "noSePudieronCargarLas": "Sectors could not be loaded"
     },
     "Checklist": {
       "informeDeListaDeVerificacion": "Checklist report",
@@ -7433,7 +7482,11 @@
       "jurisdiccion2": "Jurisdiction",
       "penalizacionPorIncumplimiento2": "Penalty for breach",
       "cancelacionAnticipada2": "Early cancellation",
-      "duracionMeses": "Duration (months)"
+      "duracionMeses": "Duration (months)",
+      "editarContrato": "Edit contract",
+      "tipoDeContrato": "Contract type",
+      "agregarServicio": "Add service",
+      "notasDelContrato": "Contract notes"
     },
     "ClientCoverage": {
       "abrirElDetalleDeLa": "Open the station detail",
@@ -7448,7 +7501,10 @@
       "sinAsignacion": "No assignment",
       "tocaElMapaParaFijar": "Tap the map to set the exact location of",
       "todosLosPuestosConTurno": "Every post with a shift is covered.",
-      "ultimaActividad": "Last activity"
+      "ultimaActividad": "Last activity",
+      "sinTurno": "No shift",
+      "estacionEliminada": "Station removed",
+      "sinEstaciones": "No posts"
     },
     "ClientDetailsDialog": {
       "codigoPostal": "Postcode",
@@ -7476,7 +7532,11 @@
       "resolucion": "Resolution",
       "sedeEstacion": "Site / station",
       "sinBitacora": "No log",
-      "noHayRegistrosEnLa": "There are no log entries for this incident."
+      "noHayRegistrosEnLa": "There are no log entries for this incident.",
+      "fechaHora": "Date / Time",
+      "reportadoPor": "Reported by",
+      "nuevoIncidente": "New Dispatch",
+      "incidente": "Dispatch"
     },
     "ClientPortal": {
       "comoFunciona": "How does it work?",
@@ -7491,11 +7551,13 @@
       "asignacion": "Assignment",
       "buscarSedePorNombreO": "Search site by name or address",
       "direccion": "Address",
-      "esteClienteAunNoTiene": "This client has no sites on record yet."
+      "esteClienteAunNoTiene": "This client has no sites on record yet.",
+      "inactiva": "Inactive"
     },
     "ClientProjects": {
       "eliminarEsteProyecto": "Delete this project?",
-      "estaAccionNoSePuede": "This cannot be undone."
+      "estaAccionNoSePuede": "This cannot be undone.",
+      "errorAlEliminar": "Error deleting"
     },
     "ClientReports": {
       "actividadesPorDia": "Activity per day",
@@ -7509,7 +7571,9 @@
       "noHayActividadEnEl": "No activity in this period.",
       "noHayIncidentesEnEl": "No incidents in this period.",
       "noHayIncidentesEnEl2": "No incidents in this period.",
-      "aunNoHayReportesOperativos": "No operational reports have been generated for this client in this period."
+      "aunNoHayReportesOperativos": "No operational reports have been generated for this client in this period.",
+      "programarReporte": "Schedule report",
+      "reporteDeIncidentes": "Incident reporting"
     },
     "ClientStaff": {
       "buscarPorNombreIdO": "Search by name, ID or station",
@@ -7565,10 +7629,13 @@
     },
     "DepartmentDialog": {
       "descripcion": "Description",
-      "queHaceEsteDepartamentoOpcional": "What this department does (optional)"
+      "queHaceEsteDepartamentoOpcional": "What this department does (optional)",
+      "sinResponsable": "No one assigned"
     },
     "DispatchPublicView": {
-      "noHayComentariosAun": "No comments yet"
+      "noHayComentariosAun": "No comments yet",
+      "ubicacionDelIncidente": "Incident Location",
+      "vigilanteAsignado": "Guard Assigned"
     },
     "DocPolicyAck": {
       "reconocimientoDeDocumentosYPoliticas": "Document and policy acknowledgement",
@@ -7620,7 +7687,8 @@
       "diasTrabajados": "Days worked"
     },
     "GuardCardsGrid": {
-      "sinAsignacion": "No assignment"
+      "sinAsignacion": "No assignment",
+      "sinVigilantes": "No guards"
     },
     "GuardDeviceFallReport": {
       "registrosDeAlertaDeCaida": "Man-down alert records",
@@ -7667,7 +7735,8 @@
     "LiveTracking": {
       "direccion": "Address",
       "hibrido": "Hybrid",
-      "satelite": "Satellite"
+      "satelite": "Satellite",
+      "todasLasRutas": "All routes"
     },
     "LoginHistory": {
       "buscarPorUsuarioDireccionO": "Search by user, address or device…",
@@ -7723,7 +7792,8 @@
     "NominaRecords": {
       "salidaSinUbicacion": "Clock-out without location",
       "ubicacion": "Location",
-      "marcacionAutomaticaOGpsNo": "Automatic clocking or GPS unavailable."
+      "marcacionAutomaticaOGpsNo": "Automatic clocking or GPS unavailable.",
+      "registrosDeAsistencia": "Attendance records"
     },
     "NominaSettings": {
       "alMultiploDe5Minutos": "To the nearest 5 minutes",
@@ -7733,10 +7803,16 @@
       "requerirValidacionDeGeocerca": "Require geofence validation",
       "permitirFueraDeGeocercaCon": "Allow outside the geofence (with approval)",
       "requerirAprobacionParaExcepciones": "Require approval for exceptions",
-      "bloquearRegistrosAlCerrarLa": "Lock records when payroll is closed"
+      "bloquearRegistrosAlCerrarLa": "Lock records when payroll is closed",
+      "domingo": "Sunday",
+      "lunes": "Monday",
+      "martes": "Tuesday",
+      "jueves": "Thursday",
+      "viernes": "Friday"
     },
     "NominaTimeClock": {
-      "dondeVasATrabajar": "Where will you be working?"
+      "dondeVasATrabajar": "Where will you be working?",
+      "relojDeAsistencia": "Time clock"
     },
     "Notification": {
       "configuracionDeAvisos": "Notification settings"
@@ -7765,14 +7841,20 @@
       "ruc13DigitosOCedula": "Tax ID (13 digits) or national ID (10 digits)",
       "rucCedula": "Tax ID / national ID",
       "teDamosLaBienvenidaA": "Welcome to CGuardPro!",
-      "telefono": "Phone"
+      "telefono": "Phone",
+      "nombreDeLaEmpresa": "Company name",
+      "logoDeLaEmpresa": "Company logo",
+      "correoEmpresaCom": "email@company.com",
+      "seleccionarZonaHoraria": "Select time zone",
+      "empresa": "Company"
     },
     "OpenShifts": {
       "accion": "Action",
       "duracion": "Duration",
       "elementosPorPagina": "Items per page",
       "paginaAnterior": "Previous page",
-      "paginaSiguiente": "Next page"
+      "paginaSiguiente": "Next page",
+      "delTotalAbierto": "Of all open cases"
     },
     "OperationSetupAlert": {
       "faltaLaConfiguracionOperativa": "The operational setup is missing"
@@ -7787,7 +7869,8 @@
       "telefonoDelSitio": "Site phone"
     },
     "PanicButtonLog": {
-      "registrosDelBotonDePanico": "Panic button records"
+      "registrosDelBotonDePanico": "Panic button records",
+      "alertasDePanicoYSos": "Panic and SOS alerts: where they came from, priority, acknowledgement and resolution."
     },
     "Passdowns": {
       "imagenes": "Images"
@@ -7843,7 +7926,8 @@
       "pais": "Country",
       "protocoloDeAccesoManejoDe": "Access protocol, handling visitors, emergencies, communication with supervisors…",
       "queTipoDeServicioEs": "What kind of service is this site?",
-      "ubicacionDelSitio": "Site location"
+      "ubicacionDelSitio": "Site location",
+      "fotoDelSitio": "Site photo"
     },
     "ProfilePhotoCapture": {
       "buenaIluminacionEviteSombrasY": "Good lighting — avoid shadows and backlight"
@@ -7853,21 +7937,45 @@
       "descripcionDelProyectoAlcanceObjetivos": "Project description, scope, goals…",
       "ejEventoAnual2026Investigacion": "e.g. Annual event 2026, Investigation #14",
       "informacionBasica": "Basic details",
-      "lugarUbicacion": "Place / location"
+      "lugarUbicacion": "Place / location",
+      "nombreDelProyecto": "Project name *",
+      "cliente": "Client *",
+      "fechaDeFin": "End date"
     },
     "RadioDevices": {
       "aunNoHayRadiosIp": "No IP radios yet",
       "contrasenaSip": "SIP password",
       "extensionTalkgroup": "Extension / talkgroup",
       "pasarelaRoipSipLaContrasena": "RoIP / SIP gateway. The SIP password is stored encrypted.",
-      "sinConexion": "Offline"
+      "sinConexion": "Offline",
+      "laIpHostDelRadio": "The radio's IP / host is required",
+      "conectaUnaPasarelaRoipSip": "Connect a RoIP / SIP gateway to link the physical radios with the app channel.",
+      "sinEnlacesAlAire": "No links on air",
+      "agregaLaPasarelaRoipSip": "Add the client's RoIP/SIP gateway with its IP and SIP credentials.",
+      "usuarioSip": "SIP user",
+      "dejaEnBlancoParaConservar": "Leave blank to keep the current one.",
+      "porDefectoElHost": "The host, by default",
+      "eliminarRadioIp": "Delete IP radio"
     },
     "RadioDispatch": {
       "configuracion": "Settings",
-      "paseAutomatico": "Automatic handover"
+      "paseAutomatico": "Automatic handover",
+      "noTienesPermisoParaEl": "You do not have permission for the radio module.",
+      "noSePudoIniciar": "It could not be started",
+      "marcadoComoIncidente": "Flagged as an incident",
+      "coordinaElPaseDeNovedades": "Run the shift handover post by post, live.",
+      "esperaPuestoSeg": "Wait per post (sec)",
+      "mensajeAlPuesto": "Message to the post",
+      "tiempoRestanteParaCompletarEl": "Time left to finish the report",
+      "llamarAEstePuesto": "Call this post",
+      "marcarComoIncidente": "Flag as an incident",
+      "noHayPuestosConfigurados": "There are no posts set up."
     },
     "RadioLiveChannelPanel": {
-      "uneteParaEscucharYHablar": "Join to listen and talk to the guards in real time (push-to-talk)."
+      "uneteParaEscucharYHablar": "Join to listen and talk to the guards in real time (push-to-talk).",
+      "canalAbiertoVozEnVivo": "Channel open (live voice)",
+      "salirDelCanal": "Leave the channel",
+      "puedesHablarCuandoQuierasEl": "You can speak whenever you want — the channel allows talking over."
     },
     "Reporting": {
       "analiticasDeOperaciones": "Operations analytics",
@@ -7937,7 +8045,8 @@
       "todosLosVigilantesEstanAsignados": "Every guard is assigned.",
       "todosLosVigilantesYaEstan": "Every guard is already assigned",
       "tusPuestosAunNoTienen": "Your posts don't have hours yet.",
-      "unFijoTrabajaLas24": "One permanent guard works the full 24 h and the other takes the next day. No days off and no relief guard."
+      "unFijoTrabajaLas24": "One permanent guard works the full 24 h and the other takes the next day. No days off and no relief guard.",
+      "asignacionRemovida": "Assignment removed"
     },
     "ScheduleTimeline": {
       "duracion": "Duration:",
@@ -7961,7 +8070,8 @@
       "cambialaParaMoverElDia": "— change it to move the day off.",
       "dejaloVacioParaUnaAsignacion": "Leave it empty for an open-ended assignment; set a date for temporary cover.",
       "rotacion": "Rotation",
-      "turnoUnico": "Single shift"
+      "turnoUnico": "Single shift",
+      "seleccionarVigilante": "Select a guard…"
     },
     "ShiftExchange": {
       "elementosPorPagina": "Items per page",
@@ -7978,7 +8088,9 @@
       "categoria": "Category",
       "categoria2": "Category",
       "dia": "Day",
-      "tituloDelTurno": "Shift title*"
+      "tituloDelTurno": "Shift title*",
+      "todas": "All",
+      "plantillasDeTurno": "Shift Templates"
     },
     "StationGeofencePolygon": {
       "area": "Area",
@@ -8000,7 +8112,9 @@
       "numeroDetalle": "Number / detail",
       "paginaAnterior": "Previous page",
       "paginaSiguiente": "Next page",
-      "perezGarcia": "Smith Jones"
+      "perezGarcia": "Smith Jones",
+      "fotoDelVisitante": "Visitor photo",
+      "tipoDeLugar": "Place type"
     },
     "StepIndicator": {
       "progresoDeConfiguracion": "Setup progress"
@@ -8058,7 +8172,8 @@
     "TaskApprovals": {
       "noHayTareasPendientesDe": "No tasks awaiting approval",
       "noHayTareasPendientesDe2": "No tasks awaiting approval",
-      "pendientesDeAprobacion": "Awaiting approval"
+      "pendientesDeAprobacion": "Awaiting approval",
+      "lasTareasQueLosClientes": "Tasks your clients create for their posts will show up here."
     },
     "TimeOff": {
       "capacitacion": "Training",
@@ -8068,7 +8183,8 @@
     },
     "TrackingHistory": {
       "hibrido": "Hybrid",
-      "satelite": "Satellite"
+      "satelite": "Satellite",
+      "seleccionarVigilante": "Seleccionar guardia"
     },
     "TrailMap": {
       "bateria": "Battery",
@@ -8173,7 +8289,10 @@
     "Visits": {
       "accion": "Action",
       "elementosPorPagina": "Items per page",
-      "vehiculo": "Vehicle"
+      "vehiculo": "Vehicle",
+      "noHayElementosSeleccionados": "No items selected",
+      "horaDeEntrada": "Clocked-In",
+      "horaDeSalida": "Clocked-Out"
     },
     "configuracion": {
       "espanol": "Spanish",
@@ -8208,6 +8327,83 @@
     "RouteDetailModal": {
       "vehiculo": "Vehicle",
       "dias": "Days"
+    },
+    "MemosPage": {
+      "todos": "All",
+      "creadoPor": "Created By",
+      "noSePudieronCargarLos": "The memos could not be loaded"
+    },
+    "EditRoutePage": {
+      "editarRuta": "Edit route"
+    },
+    "MessengerPage": {
+      "volverALaLista": "Back to the list"
+    },
+    "PassdownsPage": {
+      "pasesDeTurno": "Shift handovers"
+    },
+    "GuardDepartamentoPage": {
+      "noSePudoCargarEl": "Could not load guard"
+    },
+    "SupervisorPositionsPage": {
+      "nuevoPuesto": "New post",
+      "cargandoPuestos": "Loading posts…",
+      "ninguno": "None"
+    },
+    "SupervisorsPage": {
+      "nuevoSupervisor": "New supervisor"
+    },
+    "Visitors": {
+      "ajustaLaBusquedaORegistra": "Adjust your search, or register a new visitor."
+    },
+    "DispatchDetailsPage": {
+      "escribeUnComentario": "Please write a comment",
+      "noSePudoAgregarComentario": "Could not add comment",
+      "noSePudieronCargarDetalles": "The incident details could not be loaded",
+      "informacionCompletaComentariosYVigilantes": "Full details, comments and assigned guards."
+    },
+    "DispatchPrintablePage": {
+      "vistaImprimibleDelIncidente": "Printable view of the incident."
+    },
+    "DispatcherPage": {
+      "porDefectoElCorreoDe": "Your company's email by default",
+      "para": "To",
+      "correoEmpresaComSeparaVarios": "name@company.com (separate several with commas)"
+    },
+    "EditDispatchPage": {
+      "incidenteActualizado": "Incident updated",
+      "errorAlActualizarIncidente": "The incident could not be updated",
+      "editarIncidente": "Edit incident",
+      "actualizaLosDatosDelIncidente": "Update the incident details and the actions taken.",
+      "asignarVigilante": "Assign guard"
+    },
+    "NewDispatchPage": {
+      "errorAlCrearIncidente": "The incident could not be created",
+      "nuevoIncidente": "New incident",
+      "registraUnNuevoIncidenteY": "Log a new incident and notify the guard concerned.",
+      "vigilanteAInformar": "Guard to notify"
+    },
+    "NewSecurityGuardPage": {
+      "segundoNombre": "Middle Name",
+      "fechaDeNacimiento": "Date of birth"
+    },
+    "SecurityGuardsPage": {
+      "telefono": "Phone"
+    },
+    "GuardHorarioPage": {
+      "sinHorario": "No schedule"
+    },
+    "TenantsPage": {
+      "cargando": "Loading..."
+    },
+    "TrainingCourseDetailPage": {
+      "detalles": "Details (optional)"
+    },
+    "TrainingEnrollmentsPage": {
+      "sinAcceso": "No access"
+    },
+    "VehiclesPage": {
+      "vehiculo": "vehicle"
     }
   },
   "map": {
@@ -8303,7 +8499,7 @@
       "site": "Site",
       "station": "Post",
       "client": "Client",
-      "guard": "Officer",
+      "guard": "Guard",
       "supervisor": "Supervisor",
       "incident": "Incident",
       "vehicle": "Vehicle",
@@ -8348,5 +8544,151 @@
       "uncovered": "Uncovered",
       "idle": "No shift"
     }
+  },
+  "comun": {
+    "estado": "Status",
+    "nombre": "Name",
+    "vigilante": "Security Guard",
+    "tipo": "Categories",
+    "fecha": "Date",
+    "puesto": "Post Site",
+    "hora": "Time",
+    "pendiente": "Pending",
+    "puestoDeSeguridad": "Post site",
+    "ciudad": "City",
+    "supervisor": "Supervisor",
+    "notas": "Notes",
+    "total": "Total",
+    "desde": "From",
+    "hasta": "Until",
+    "cliente": "Client",
+    "seleccionar": "Select...",
+    "elNombreEsObligatorio": "Inventory name is required",
+    "todosLosEstados": "All statuses",
+    "correo": "Email",
+    "lista": "List",
+    "nombreReq": "Name*",
+    "turno": "Shift",
+    "horario": "Schedule",
+    "noSePudoEliminar": "It could not be deleted",
+    "estadoTodos": "Status: All",
+    "abierto": "Open",
+    "motivo": "Reason",
+    "asignarVigilante": "Assign Guard",
+    "delTotalDeSolicitudes": "Of all requests",
+    "usuario": "User",
+    "fechaDeNacimiento": "Birth date",
+    "estadoCivil": "Marital status",
+    "deLosRegistrosMostrados": "Of the records shown",
+    "sinSalidaRegistrada": "No clock-out recorded",
+    "tuCorreoCom": "you@company.com",
+    "elFinDebeSerPosterior": "The end must be after the start",
+    "noSePudoCopiarEl": "Could not copy link",
+    "crearIncidente": "Create incident",
+    "baja": "Low",
+    "media": "Medium",
+    "alta": "High",
+    "seleccionarTodos": "Select all",
+    "asistencia": "Attendance",
+    "sinActividad": "No activity",
+    "noSePudoGuardar": "Could not save",
+    "fechaDeInicio": "Start date",
+    "fechaDeVencimiento": "Expires On",
+    "tipoTodos": "Type: All",
+    "sinIncidentes": "No incidents",
+    "usuariosConAcceso": "Users with access",
+    "enTurno": "On shift",
+    "cerrado": "Closed",
+    "buscarVigilante": "Search guard…",
+    "notasInternas": "Internal Notes",
+    "todosLosVigilantes": "All guards",
+    "todosLosTipos": "All types",
+    "notasOpcional": "Notes (optional)",
+    "noHayRegistrosParaExportar": "There are no records to export",
+    "sinRegistros": "No records",
+    "sinAsignar": "Unassigned",
+    "horaInicio": "Start time",
+    "horaFin": "End time",
+    "eligeUnPuesto": "Choose a post",
+    "motivoOpcional": "Reason (optional)",
+    "desdeLaFecha": "From date",
+    "hastaLaFecha": "To date",
+    "horaDeInicio": "Start time",
+    "horaDeFin": "End time",
+    "noPudimosEncontrarNingunElemento": "We couldn't find any items matching your search",
+    "tipoDeSangre": "Blood type",
+    "empresaCom": "company.com",
+    "incidenteCreado": "Incident created",
+    "estadoActualizado": "Status updated",
+    "nombreCompleto": "Full name",
+    "eligeUnRol": "Choose a role",
+    "soloLoQueYoElija": "Only what I choose",
+    "elegirSedes": "Choose sites…",
+    "elegirClientes": "Choose clients…",
+    "idDelPuntoDeServicio": "Service point ID",
+    "activa": "Active",
+    "sinDatos": "No data",
+    "correoReq": "Email *",
+    "sinDocumentos": "No documents",
+    "turnoTodos": "Shift: All",
+    "turnoActual": "Current shift",
+    "verEnElMapa": "View on the map",
+    "sedeTodas": "Site: All",
+    "sinUsuariosConAcceso": "No users with access",
+    "seleccionaUnNegocio": "Select a business",
+    "eligeUnNegocioParaVer": "Choose a business to see its live command center.",
+    "ahoraMismoSobreElTerreno": "Right now, on the ground",
+    "sinCubrir": "Uncovered",
+    "detalleDelIncidente": "Incident details",
+    "clienteReq": "Client*",
+    "buscarCliente": "Search for a client...",
+    "puestoDeSeguridadReq": "Security post*",
+    "buscarSitio": "Search for a site...",
+    "tipoDeLlamador": "Caller type*",
+    "nombreDelLlamador": "Caller name*",
+    "detallesDelIncidente": "Incident Details",
+    "tipoDeIncidente": "Incident type*",
+    "buscarTipo": "Search for a type...",
+    "fechaDelIncidente": "Incident date*",
+    "horaDelIncidente": "Incident time*",
+    "detallesDelIncidenteReq": "Incident details*",
+    "noHayArchivosAdjuntos": "There are no attachments",
+    "seleccionaUnVigilante": "Select a guard",
+    "elAsuntoEsObligatorio": "A subject is required",
+    "configuracionGuardada": "Settings saved",
+    "sinVigilantesDisponibles": "No guards available",
+    "completeTodosLosCampos": "Fill in every field",
+    "unTurnoNoPuedeDurar": "A shift cannot last more than 24 hours",
+    "defineLaHoraDeInicio": "Set the start and end time",
+    "laDuracionDelTurnoDebe": "The shift length must divide the post's coverage exactly.",
+    "paraAlternarSinSacafrancoEl": "To alternate without a relief guard, the pattern cycle must be a multiple of its working days (e.g. 1-1, 2-2).",
+    "turnoPorVigilante": "Shift per guard",
+    "sacafrancoCubreLosDescansos": "A relief guard covers the breaks",
+    "alternanciaEntreFijosSinSacafranco": "Alternate between permanent guards (no relief guard)",
+    "noSePudoCargarLa": "The coverage could not be loaded",
+    "sinPuestos": "No posts",
+    "puestoDestino": "Destination post",
+    "turnoEliminado": "Shift deleted",
+    "eligeUnVigilante": "Choose a guard…",
+    "errorAlCrearLaSolicitud": "The request could not be created. Try again.",
+    "aprobado": "Approved",
+    "rechazado": "Rejected",
+    "esperandoUnaDecision": "Awaiting a decision",
+    "fechaDeSolicitud": "Request date",
+    "sinDepartamento": "No department",
+    "seleccionaUnCliente": "Select client",
+    "laRutaYaEstabaEn": "The route was already in the best possible order. No stop needed moving.",
+    "detalle": "Details",
+    "cargandoHorario": "Loading the schedule…",
+    "elTituloEsObligatorio": "The title is required.",
+    "puntajeParaAprobar": "Passing score (%)",
+    "todosLosVigilantesPlantilla": "All guards (whole roster)",
+    "vehiculoCreado": "Vehicle created",
+    "seleccionaUnSitio": "Select a site",
+    "noSePudoObtenerEl": "The full list could not be retrieved; the current page was exported instead",
+    "conLosFiltrosAplicados": "With the filters applied",
+    "dentroDeLasInstalaciones": "Inside the premises",
+    "conSalidaRegistrada": "With a clock-out recorded",
+    "sinTurnosProgramados": "No shifts scheduled."
   }
 }

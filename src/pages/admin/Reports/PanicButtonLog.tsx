@@ -45,7 +45,7 @@ export default function PanicButtonLog() {
   return (
     <DataReport<AlarmCase>
       title={t("ui.PanicButtonLog.registrosDelBotonDePanico", "Registros del Botón de Pánico")}
-      description="Alertas de pánico y SOS: origen, prioridad, reconocimiento y resolución."
+      description={t('ui.PanicButtonLog.alertasDePanicoYSos')}
       icon={Siren}
       // Un pánico va en `--bad` SIEMPRE, elija la empresa el acento que elija.
       tone="bad"

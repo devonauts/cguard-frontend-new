@@ -305,7 +305,7 @@ export default function VehiclesPage() {
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label>Estado</Label>
+                                            <Label>{t('comun.estado')}</Label>
                                             <Select
                                                 value={filters.status}
                                                 onValueChange={(v) =>
@@ -313,11 +313,11 @@ export default function VehiclesPage() {
                                                 }
                                             >
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder="Activo" />
+                                                    <SelectValue placeholder={t('common.active')} />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value="activo">Activo</SelectItem>
-                                                    <SelectItem value="inactivo">Inactivo</SelectItem>
+                                                    <SelectItem value="activo">{t('common.active')}</SelectItem>
+                                                    <SelectItem value="inactivo">{t('common.inactive')}</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                         </div>
@@ -337,7 +337,7 @@ export default function VehiclesPage() {
                 />
 
                 <Stagger className="grid gap-4 sm:grid-cols-3">
-                    <StatCard label="Total" value={count} icon={<Car />} accent="primary" />
+                    <StatCard label={t('comun.total')} value={count} icon={<Car />} accent="primary" />
                     <StatCard label="Activos" value={activos} icon={<CheckCircle2 />} accent="ok" hint={t("ui.Vehicles.enEstaPagina", "En esta página")} />
                     <StatCard label="Inactivos" value={inactivos} icon={<PauseCircle />} accent="neutral" hint={t("ui.Vehicles.enEstaPagina2", "En esta página")} />
                 </Stagger>
@@ -382,10 +382,8 @@ export default function VehiclesPage() {
                             <Checkbox
                                 checked={rows.length > 0 && selectedIds.length === rows.length}
                                 onCheckedChange={(c) => handleSelectAll(c === true)}
-                                aria-label="Seleccionar todos"
-                            />
-                            Seleccionar todos
-                        </label>
+                                aria-label={t('comun.seleccionarTodos')}
+                            />{" "}{t('comun.seleccionarTodos')}{" "}</label>
                     ) : undefined}
                     contentClassName={vista === 'lista' ? '-mx-5 -mb-5' : undefined}
                 >
@@ -397,7 +395,7 @@ export default function VehiclesPage() {
                         <div className={vista === 'lista' ? 'p-5' : undefined}>
                             <EmptyState
                                 icon={<Car />}
-                                title="No se encontraron resultados"
+                                title={t('kit.table.emptyTitle')}
                                 description="No hay vehículos que coincidan con los filtros."
                                 action={(
                                     <Button size="sm" variant="brand" asChild>
@@ -488,14 +486,14 @@ export default function VehiclesPage() {
                                             <Checkbox
                                                 checked={rows.length > 0 && selectedIds.length === rows.length}
                                                 onCheckedChange={(c) => handleSelectAll(c === true)}
-                                                aria-label="Seleccionar todos"
+                                                aria-label={t('comun.seleccionarTodos')}
                                             />
                                         </th>
                                         <th className="px-4 py-2 font-semibold">{t("ui.Vehicles.ano3", "Año")}</th>
                                         <th className="px-4 py-2 font-semibold">Marca</th>
                                         <th className="px-4 py-2 font-semibold">Modelo</th>
                                         <th className="px-4 py-2 font-semibold">Placa</th>
-                                        <th className="px-4 py-2 font-semibold">Estado</th>
+                                        <th className="px-4 py-2 font-semibold">{t('comun.estado')}</th>
                                         <th className="px-4 py-2 text-right" />
                                     </tr>
                                 </thead>
@@ -542,7 +540,7 @@ export default function VehiclesPage() {
                                         ¿Estás seguro de que deseas inactivar 1 vehículo(s)?
                                     </div>
                                     <AlertDialogFooter>
-                                        <AlertDialogCancel onClick={() => setArchiveConfirmId(null)}>Cancelar</AlertDialogCancel>
+                                        <AlertDialogCancel onClick={() => setArchiveConfirmId(null)}>{t('actions.cancel')}</AlertDialogCancel>
                                         <AlertDialogAction onClick={confirmArchive} className="cg-btn-bad" disabled={archiveLoading}>
                                             Confirmar
                                         </AlertDialogAction>
@@ -563,7 +561,7 @@ export default function VehiclesPage() {
                                 ¿Estás seguro de que deseas {bulkActionConfirm} {selectedIds.length} vehículo(s)?
                             </div>
                             <AlertDialogFooter>
-                                <AlertDialogCancel onClick={() => setBulkActionConfirm(null)}>Cancelar</AlertDialogCancel>
+                                <AlertDialogCancel onClick={() => setBulkActionConfirm(null)}>{t('actions.cancel')}</AlertDialogCancel>
                                 <AlertDialogAction
                                     onClick={async () => {
                                         if (!bulkActionConfirm) return;
@@ -640,7 +638,7 @@ export default function VehiclesPage() {
                                         >
                                             <img
                                                 src={detailsVehicle.imageUrl[0].downloadUrl || detailsVehicle.imageUrl[0].publicUrl}
-                                                alt="vehículo"
+                                                alt={t('ui.VehiclesPage.vehiculo')}
                                                 className="max-h-52 w-full object-cover"
                                             />
                                         </div>
@@ -688,7 +686,7 @@ export default function VehiclesPage() {
                             )}
 
                             <DialogFooter>
-                                <Button variant="outline" onClick={() => { setDetailsId(null); setDetailsVehicle(null); }}>Cerrar</Button>
+                                <Button variant="outline" onClick={() => { setDetailsId(null); setDetailsVehicle(null); }}>{t('actions.close')}</Button>
                             </DialogFooter>
                         </DialogContent>
                     </Dialog>
@@ -724,8 +722,8 @@ export default function VehiclesPage() {
                         <div className="tabular-nums">{start} - {end} de {count}</div>
 
                         <div className="flex items-center gap-2">
-                            <Button variant="outline" size="sm" onClick={handlePrevPage} disabled={page <= 1}>Anterior</Button>
-                            <Button variant="outline" size="sm" onClick={handleNextPage} disabled={page >= totalPages}>Siguiente</Button>
+                            <Button variant="outline" size="sm" onClick={handlePrevPage} disabled={page <= 1}>{t('kit.pagination.prev')}</Button>
+                            <Button variant="outline" size="sm" onClick={handleNextPage} disabled={page >= totalPages}>{t('kit.pagination.next')}</Button>
                         </div>
                     </div>
                 </Section>

@@ -69,7 +69,7 @@ export default function TrackingHistoryPage() {
   useEffect(() => { setPoints([]); setLoaded(false); setFocus(null); }, [guardId, from, to]);
 
   const loadTrail = useCallback(async () => {
-    if (!guardId) { toast.error("Selecciona un vigilante"); return; }
+    if (!guardId) { toast.error(t('comun.seleccionaUnVigilante')); return; }
     setLoading(true);
     try {
       const pts = await securityGuardService.trail(guardId, {
@@ -176,10 +176,10 @@ export default function TrackingHistoryPage() {
         <Section title="Filtros" icon={<MapPin />}>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
             <div className="lg:col-span-2">
-              <label className="cg-eyebrow mb-2 block">Vigilante</label>
+              <label className="cg-eyebrow mb-2 block">{t('comun.vigilante')}</label>
               <Select value={guardId} onValueChange={setGuardId}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar vigilante" />
+                  <SelectValue placeholder={t('ui.TrackingHistory.seleccionarVigilante')} />
                 </SelectTrigger>
                 <SelectContent>
                   {guards.map((g) => (
@@ -189,12 +189,12 @@ export default function TrackingHistoryPage() {
               </Select>
             </div>
             <div>
-              <label className="cg-eyebrow mb-2 block">Desde</label>
+              <label className="cg-eyebrow mb-2 block">{t('comun.desde')}</label>
               <input type="date" value={from} max={to} onChange={(e) => setFrom(e.target.value)}
                 className="cg-input w-full px-3 py-2 text-sm" />
             </div>
             <div>
-              <label className="cg-eyebrow mb-2 block">Hasta</label>
+              <label className="cg-eyebrow mb-2 block">{t('comun.hasta')}</label>
               <input type="date" value={to} min={from} onChange={(e) => setTo(e.target.value)}
                 className="cg-input w-full px-3 py-2 text-sm" />
             </div>
@@ -247,7 +247,7 @@ export default function TrackingHistoryPage() {
             <div className="hidden flex-[1] flex-col border-l bg-card sm:flex">
               <div className="flex border-b bg-muted/30 px-3 py-2.5 text-xs font-semibold text-foreground">
                 <span className="w-10">#</span>
-                <span className="flex-1">Hora</span>
+                <span className="flex-1">{t('comun.hora')}</span>
                 <span className="w-20 text-right">Velocidad</span>
                 <span className="w-10 text-right">Bat.</span>
               </div>

@@ -850,7 +850,7 @@ export default function ClientesPage() {
                   onChange={setViewMode}
                   options={[
                     { value: "cards", label: <span className="flex items-center gap-1.5"><LayoutGrid className="h-3.5 w-3.5" /> Tarjetas</span> },
-                    { value: "list", label: <span className="flex items-center gap-1.5"><ListIcon className="h-3.5 w-3.5" /> Lista</span> },
+                    { value: "list", label: <span className="flex items-center gap-1.5"><ListIcon className="h-3.5 w-3.5" />{" "}{t('comun.lista')}</span> },
                   ]}
                 />
 

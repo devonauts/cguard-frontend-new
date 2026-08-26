@@ -192,7 +192,7 @@ export default function SupervisorsPage() {
     {
       key: "isOnDuty", header: "Estado", render: (_v, r) =>
         r.isOnDuty
-          ? <StatusBadge tone="ok">En turno</StatusBadge>
+          ? <StatusBadge tone="ok">{t('comun.enTurno')}</StatusBadge>
           : <StatusBadge tone="neutral" dot={false}>Fuera</StatusBadge>,
     },
     { key: "email", header: "Correo", render: (_v, r) => <span className="text-xs" style={{ color: "var(--ink-soft)" }}>{r.email || "—"}</span> },
@@ -213,8 +213,7 @@ export default function SupervisorsPage() {
                   <MapPin className="mr-2 h-4 w-4" /> Puestos
                 </Button>
                 <Button variant="brand" onClick={() => setOpen(true)}>
-                  <Plus className="mr-2 h-4 w-4" /> Nuevo supervisor
-                </Button>
+                  <Plus className="mr-2 h-4 w-4" />{" "}{t('ui.SupervisorsPage.nuevoSupervisor')}{" "}</Button>
               </div>
             }
           />
@@ -260,7 +259,7 @@ export default function SupervisorsPage() {
                   onChange={setViewMode}
                   options={[
                     { value: "cards", label: <span className="flex items-center gap-1.5"><LayoutGrid className="h-3.5 w-3.5" /> Tarjetas</span> },
-                    { value: "list", label: <span className="flex items-center gap-1.5"><ListIcon className="h-3.5 w-3.5" /> Lista</span> },
+                    { value: "list", label: <span className="flex items-center gap-1.5"><ListIcon className="h-3.5 w-3.5" />{" "}{t('comun.lista')}</span> },
                   ]}
                 />
               </div>
@@ -276,7 +275,7 @@ export default function SupervisorsPage() {
                   ? "Los supervisores que des de alta aparecerán aquí con su zona, vehículo y estado en turno."
                   : "Prueba con otro texto de búsqueda o quita el filtro de las tarjetas de arriba."}
                 action={rows.length === 0
-                  ? <Button variant="brand" size="sm" onClick={() => setOpen(true)}><Plus className="mr-2 h-4 w-4" /> Nuevo supervisor</Button>
+                  ? <Button variant="brand" size="sm" onClick={() => setOpen(true)}><Plus className="mr-2 h-4 w-4" />{" "}{t('ui.SupervisorsPage.nuevoSupervisor')}</Button>
                   : undefined}
               />
             ) : viewMode === "list" ? (
@@ -311,7 +310,7 @@ export default function SupervisorsPage() {
                           <span className="truncate font-semibold text-foreground">{s.fullName || "—"}</span>
                           <div className="flex shrink-0 items-center gap-1">
                             {s.isOnDuty
-                              ? <StatusBadge tone="ok">En turno</StatusBadge>
+                              ? <StatusBadge tone="ok">{t('comun.enTurno')}</StatusBadge>
                               : <StatusBadge tone="neutral" dot={false}>Fuera</StatusBadge>}
                             {rowActions(s)}
                           </div>
@@ -354,18 +353,18 @@ export default function SupervisorsPage() {
       <Modal
         open={open}
         onOpenChange={setOpen}
-        title="Nuevo supervisor"
+        title={t('ui.SupervisorsPage.nuevoSupervisor')}
         icon={<UserPlus className="h-5 w-5" />}
         description="Crea el usuario con rol de supervisor y su perfil. Se enviará una invitación."
         footer={
           <>
-            <Button variant="outline" onClick={() => setOpen(false)} disabled={saving}>Cancelar</Button>
+            <Button variant="outline" onClick={() => setOpen(false)} disabled={saving}>{t('actions.cancel')}</Button>
             <Button variant="brand" onClick={submit} disabled={saving}>{saving ? "Creando…" : "Crear supervisor"}</Button>
           </>
         }
       >
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <Input placeholder="Correo *" type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} className="sm:col-span-2" />
+          <Input placeholder={t('comun.correoReq')} type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} className="sm:col-span-2" />
           <Input placeholder="Nombres" value={form.firstName} onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))} />
           <Input placeholder="Apellidos" value={form.lastName} onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))} />
           <Input placeholder={t("ui.Supervisors.cedulaId", "Cédula / ID")} value={form.governmentId} onChange={(e) => setForm((f) => ({ ...f, governmentId: e.target.value }))} />

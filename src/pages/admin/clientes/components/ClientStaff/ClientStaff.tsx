@@ -182,26 +182,26 @@ export default function ClientStaff({ client }: { client: Client }) {
               <input className={`${FIELD_CLS} pl-8`} placeholder={t("ui.ClientStaff.buscarPorNombreIdO", "Buscar por nombre, ID o estación")} value={q} onChange={(e) => resetPage(setQ)(e.target.value)} />
             </div>
             <select className={FIELD_CLS} value={sede} onChange={(e) => resetPage(setSede)(e.target.value)}>
-              <option value="todos">Sede: Todas</option>
+              <option value="todos">{t('comun.sedeTodas')}</option>
               {sedes.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
             <select className={FIELD_CLS} value={role} onChange={(e) => resetPage(setRole)(e.target.value)}>
               <option value="todos">Rol: Todos</option>
               <option value="vigilante">Guardia</option>
-              <option value="supervisor">Supervisor</option>
+              <option value="supervisor">{t('comun.supervisor')}</option>
               <option value="patrullero">Patrullero</option>
               <option value="operador">Operador</option>
             </select>
             <select className={FIELD_CLS} value={estado} onChange={(e) => resetPage(setEstado)(e.target.value)}>
-              <option value="todos">Estado: Todos</option>
-              <option value="en_turno">En turno</option>
+              <option value="todos">{t('comun.estadoTodos')}</option>
+              <option value="en_turno">{t('comun.enTurno')}</option>
               <option value="fuera_turno">Fuera de turno</option>
               <option value="descanso">Descanso</option>
               <option value="ausente">Ausente</option>
               <option value="en_ruta">En ruta</option>
             </select>
             <select className={FIELD_CLS} value={turno} onChange={(e) => resetPage(setTurno)(e.target.value)}>
-              <option value="todos">Turno: Todos</option>
+              <option value="todos">{t('comun.turnoTodos')}</option>
               <option value="Diurno">Diurno</option>
               <option value="Vespertino">Vespertino</option>
               <option value="Nocturno">Nocturno</option>
@@ -217,8 +217,8 @@ export default function ClientStaff({ client }: { client: Client }) {
                   <Th>Rol</Th>
                   <Th>{t("ui.ClientStaff.estacion", "Estación")}</Th>
                   <Th>Sede / Sitio</Th>
-                  <Th>Turno</Th>
-                  <Th>Estado</Th>
+                  <Th>{t('comun.turno')}</Th>
+                  <Th>{t('comun.estado')}</Th>
                   <Th>Inicio</Th>
                   <Th>{t("ui.ClientStaff.ultimaActividad", "Última actividad")}</Th>
                   <Th align="right">Acciones</Th>
@@ -258,15 +258,14 @@ export default function ClientStaff({ client }: { client: Client }) {
                         </td>
                         <td className="px-2 py-2.5">
                           <RowActions>
-                            <RowAction title="Ver detalle" onClick={() => openWorker(p)}><Eye className="h-3.5 w-3.5" /></RowAction>
+                            <RowAction title={t('common.viewDetail')} onClick={() => openWorker(p)}><Eye className="h-3.5 w-3.5" /></RowAction>
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <button title="Acciones" className="cg-focus rounded-md p-1.5 transition-opacity hover:opacity-70" style={{ color: 'var(--ink-soft)' }}><MoreVertical className="h-3.5 w-3.5" /></button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
                                 <DropdownMenuItem onClick={() => openWorker(p)}>
-                                  <Eye className="mr-2 h-3.5 w-3.5" /> Ver detalle
-                                </DropdownMenuItem>
+                                  <Eye className="mr-2 h-3.5 w-3.5" />{" "}{t('common.viewDetail')}{" "}</DropdownMenuItem>
                                 {p.role === 'vigilante' && (
                                   <DropdownMenuItem onClick={() => navigate(`/security-guards/edit/${p.id}`)}>
                                     <Pencil className="mr-2 h-3.5 w-3.5" /> Editar
@@ -329,7 +328,7 @@ export default function ClientStaff({ client }: { client: Client }) {
           </Section>
 
           <Section title={t("ui.ClientStaff.certificacionesProximasAVencer", "Certificaciones próximas a vencer")} icon={<ShieldCheck className="h-4 w-4" />}
-            action={<button onClick={() => navigate('/security-guards')} className="cg-focus rounded-md text-xs font-semibold hover:underline" style={{ color: 'var(--brand-text)' }}>Ver todas</button>}>
+            action={<button onClick={() => navigate('/security-guards')} className="cg-focus rounded-md text-xs font-semibold hover:underline" style={{ color: 'var(--brand-text)' }}>{t('common.viewAll')}</button>}>
             {certs.length === 0 ? (
               <div className="py-2 text-sm" style={{ color: 'var(--ok-text)' }}>{t("ui.ClientStaff.sinCertificacionesProximasAVencer", "Sin certificaciones próximas a vencer.")}</div>
             ) : (

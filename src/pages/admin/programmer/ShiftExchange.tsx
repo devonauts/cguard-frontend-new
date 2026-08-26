@@ -189,7 +189,7 @@ export default function ShiftExchange() {
       resetForm();
     } catch (err) {
       console.error("Failed to create shift exchange request", err);
-      toast.error("Error al crear la solicitud. Inténtelo de nuevo.");
+      toast.error(t('comun.errorAlCrearLaSolicitud'));
     } finally {
       setSaving(false);
     }
@@ -226,11 +226,11 @@ export default function ShiftExchange() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "pending":
-        return <StatusBadge tone="warn">Pendiente</StatusBadge>;
+        return <StatusBadge tone="warn">{t('comun.pendiente')}</StatusBadge>;
       case "approved":
-        return <StatusBadge tone="ok">Aprobado</StatusBadge>;
+        return <StatusBadge tone="ok">{t('comun.aprobado')}</StatusBadge>;
       case "rejected":
-        return <StatusBadge tone="bad">Rechazado</StatusBadge>;
+        return <StatusBadge tone="bad">{t('comun.rechazado')}</StatusBadge>;
       default:
         return <StatusBadge tone="neutral">{status}</StatusBadge>;
     }
@@ -258,21 +258,21 @@ export default function ShiftExchange() {
             value={stats.pending}
             icon={<Clock />}
             delta={totalSolicitudes > 0 ? { value: `${pctSolicitudes(stats.pending)} %`, direction: stats.pending > 0 ? "up" : "flat" } : undefined}
-            hint="Esperando una decisión"
+            hint={t('comun.esperandoUnaDecision')}
           />
           <MetricTile
             label="Aprobadas"
             value={stats.approved}
             icon={<ThumbsUp />}
             delta={totalSolicitudes > 0 ? { value: `${pctSolicitudes(stats.approved)} %`, direction: "up" } : undefined}
-            hint="Del total de solicitudes"
+            hint={t('comun.delTotalDeSolicitudes')}
           />
           <MetricTile
             label="Rechazadas"
             value={stats.rejected}
             icon={<ThumbsDown />}
             delta={totalSolicitudes > 0 ? { value: `${pctSolicitudes(stats.rejected)} %`, direction: stats.rejected > 0 ? "down" : "flat" } : undefined}
-            hint="Del total de solicitudes"
+            hint={t('comun.delTotalDeSolicitudes')}
           />
         </Stagger>
 
@@ -295,7 +295,7 @@ export default function ShiftExchange() {
             <div className="relative w-full md:w-80">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: "var(--ink-faint)" }} />
               <Input
-                placeholder="Buscar vigilante…"
+                placeholder={t('comun.buscarVigilante')}
                 className="pl-9"
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
@@ -322,7 +322,7 @@ export default function ShiftExchange() {
                       <Label>Vigilante solicitante*</Label>
                       <Select value={form.fromGuardId} onValueChange={(v) => setForm({ ...form, fromGuardId: v })}>
                         <SelectTrigger>
-                          <SelectValue placeholder="Seleccionar" />
+                          <SelectValue placeholder={t('kit.select.placeholder')} />
                         </SelectTrigger>
                         <SelectContent>
                           {guards.map((g) => (
@@ -336,7 +336,7 @@ export default function ShiftExchange() {
                       <Label>Vigilante receptor (opcional)</Label>
                       <Select value={form.toGuardId || SHIFT_EXCHANGE_ANY} onValueChange={(v) => setForm({ ...form, toGuardId: v === SHIFT_EXCHANGE_ANY ? "" : v })}>
                         <SelectTrigger>
-                          <SelectValue placeholder="Seleccionar" />
+                          <SelectValue placeholder={t('kit.select.placeholder')} />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value={SHIFT_EXCHANGE_ANY}>Cualquier vigilante</SelectItem>
@@ -348,7 +348,7 @@ export default function ShiftExchange() {
                     </div>
 
                     <div className="grid gap-2">
-                      <Label>Notas</Label>
+                      <Label>{t('comun.notas')}</Label>
                       <Textarea
                         rows={4}
                         value={form.notes}
@@ -381,10 +381,10 @@ export default function ShiftExchange() {
             <TableHeader style={{ background: "var(--glass-sunken)" }}>
               <TableRow>
                 <TableHead className="w-[50px]"><Checkbox /></TableHead>
-                <TableHead className="cg-eyebrow">Fecha de solicitud</TableHead>
+                <TableHead className="cg-eyebrow">{t('comun.fechaDeSolicitud')}</TableHead>
                 <TableHead className="cg-eyebrow">Enviada por</TableHead>
                 <TableHead className="cg-eyebrow">Enviada a</TableHead>
-                <TableHead className="cg-eyebrow">Estado</TableHead>
+                <TableHead className="cg-eyebrow">{t('comun.estado')}</TableHead>
                 <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
@@ -400,8 +400,8 @@ export default function ShiftExchange() {
                   <TableCell colSpan={6} className="h-[360px] text-center">
                     <EmptyState
                       icon={<ArrowLeftRight />}
-                      title="No se encontraron resultados"
-                      description="No pudimos encontrar ningún elemento que coincida con su búsqueda."
+                      title={t('kit.table.emptyTitle')}
+                      description={t('comun.noPudimosEncontrarNingunElemento')}
                       className="border-0 py-2"
                     />
                   </TableCell>

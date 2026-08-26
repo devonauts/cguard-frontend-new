@@ -321,7 +321,7 @@ export function CategoryManagerDialog({ open, onOpenChange, module, onChanged }:
                   </div>
                 </div>
                 <div className="flex gap-2 justify-end">
-                  <Button variant="outline" onClick={() => { setModalMode(undefined); setEditing(null); }}>Cancelar</Button>
+                  <Button variant="outline" onClick={() => { setModalMode(undefined); setEditing(null); }}>{t('actions.cancel')}</Button>
                   <Button
                     onClick={submitEdit}
                     className="disabled:pointer-events-none disabled:opacity-50">

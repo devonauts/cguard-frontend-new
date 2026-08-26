@@ -147,7 +147,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
       // name) — the station row is DELETE /station/:id.
       const tenantId = localStorage.getItem('tenantId') || '';
       await ApiService.delete(`/tenant/${tenantId}/station/${p.id}`);
-      toast.success('Estación eliminada');
+      toast.success(t('ui.ClientCoverage.estacionEliminada'));
       if (selectedId === p.id) setSelectedId(null);
       await load(sedeId, true);
     } catch (e: any) {
@@ -241,20 +241,20 @@ export default function ClientCoverage({ client }: { client: Client }) {
                 <input className={`${FIELD_CLS} pl-8`} placeholder={t("ui.ClientCoverage.buscarEstacionPorNombre", "Buscar estación por nombre")} value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} />
               </div>
               <select className={FIELD_CLS} value={estado} onChange={(e) => { setEstado(e.target.value); setPage(1); }}>
-                <option value="todos">Estado: Todos</option>
+                <option value="todos">{t('comun.estadoTodos')}</option>
                 <option value="cubierto">Cubierto</option>
                 <option value="parcial">Parcial</option>
                 <option value="asignado_sin_marcar">Asignado sin marcar</option>
                 <option value="sin_cobertura">Sin cobertura</option>
-                <option value="sin_turno">Sin turno</option>
+                <option value="sin_turno">{t('ui.ClientCoverage.sinTurno')}</option>
               </select>
               <select className={FIELD_CLS} value={tipo} onChange={(e) => { setTipo(e.target.value); setPage(1); }}>
-                <option value="todos">Tipo: Todos</option>
+                <option value="todos">{t('comun.tipoTodos')}</option>
                 <option value="fijo">Fijo</option>
                 <option value="patrulla">Patrulla</option>
               </select>
               <select className={FIELD_CLS} value={turno} onChange={(e) => { setTurno(e.target.value); setPage(1); }}>
-                <option value="todos">Turno: Todos</option>
+                <option value="todos">{t('comun.turnoTodos')}</option>
                 <option value="Diurno">Diurno</option>
                 <option value="Vespertino">Vespertino</option>
                 <option value="Nocturno">Nocturno</option>
@@ -263,21 +263,21 @@ export default function ClientCoverage({ client }: { client: Client }) {
                 <option value="nombre">Nombre A-Z</option>
                 <option value="cobertura_desc">Cobertura ↓</option>
                 <option value="cobertura_asc">Cobertura ↑</option>
-                <option value="estado">Estado</option>
+                <option value="estado">{t('comun.estado')}</option>
               </select>
             </div>
 
             {filtered.length === 0 ? (
-              <EmptyState icon={<LayoutGrid />} title="Sin estaciones" description="Esta sede no tiene estaciones que coincidan con los filtros." />
+              <EmptyState icon={<LayoutGrid />} title={t('ui.ClientCoverage.sinEstaciones')} description="Esta sede no tiene estaciones que coincidan con los filtros." />
             ) : (
               <TabTable minWidth={860}>
                   <THead className="[&>th]:whitespace-nowrap">
                       <Th>{t("ui.ClientCoverage.estacion", "Estación")}</Th>
-                      <Th>Tipo</Th>
-                      <Th>Turno actual</Th>
+                      <Th>{t('comun.tipo')}</Th>
+                      <Th>{t('comun.turnoActual')}</Th>
                       <Th>Guardias</Th>
                       <Th>Cobertura</Th>
-                      <Th>Estado</Th>
+                      <Th>{t('comun.estado')}</Th>
                       <Th>{t("ui.ClientCoverage.ultimaActividad", "Última actividad")}</Th>
                       <Th aria-label="Acciones" />
                   </THead>
@@ -294,7 +294,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
                               {/* Numbered pin: selects on the map (does NOT navigate) */}
                               <button
                                 onClick={(e) => { e.stopPropagation(); selectPuesto(p); }}
-                                title="Ver en el mapa"
+                                title={t('comun.verEnElMapa')}
                                 className="cg-focus grid h-6 w-6 shrink-0 place-items-center rounded-full text-[11px] font-bold transition-transform hover:scale-110"
                                 style={{ background: meta.dot, color: 'oklch(1 0 0)' }}>{n}</button>
                               <div className="min-w-0">
@@ -312,7 +312,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
                                 <div className="tabular-nums">{p.window}</div>
                                 {p.turno && <div className="text-xs" style={{ color: 'var(--ink-faint)' }}>{p.turno}</div>}
                               </div>
-                            ) : <span style={{ color: 'var(--ink-faint)' }}>Sin turno</span>}
+                            ) : <span style={{ color: 'var(--ink-faint)' }}>{t('ui.ClientCoverage.sinTurno')}</span>}
                           </td>
                           <td className="px-2 py-2.5">
                             <div className="font-medium tabular-nums">{p.onPost} / {p.required || 0}</div>
@@ -340,7 +340,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
                           <td className="px-2 py-2.5 whitespace-nowrap">
                             {p.lastActivity?.type === 'ronda' ? <span className="inline-flex items-center gap-1 text-xs font-semibold" style={{ color: 'var(--ok-text)' }}><RouteIcon className="h-3.5 w-3.5" /> Ronda activa</span>
                               : p.lastActivity?.type === 'checkin' ? <div><div className="tabular-nums">{p.lastActivity.time}</div><div className="text-xs" style={{ color: 'var(--ink-faint)' }}>Entrada marcada</div></div>
-                              : <span className="text-xs" style={{ color: 'var(--ink-faint)' }}>Sin actividad</span>}
+                              : <span className="text-xs" style={{ color: 'var(--ink-faint)' }}>{t('comun.sinActividad')}</span>}
                           </td>
                           <td className="px-2 py-2.5 text-right">
                             <DropdownMenu>
@@ -366,8 +366,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={() => selectPuesto(p)}>
-                                  <Locate className="mr-2 h-3.5 w-3.5" /> Ver en el mapa
-                                </DropdownMenuItem>
+                                  <Locate className="mr-2 h-3.5 w-3.5" />{" "}{t('comun.verEnElMapa')}{" "}</DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => { selectPuesto(p); setPlacing(true); }}>
                                   <Crosshair className="mr-2 h-3.5 w-3.5" /> Fijar ubicación en el mapa
                                 </DropdownMenuItem>
@@ -417,7 +416,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
                 {placing && (
                   <div className="mb-2 flex items-center gap-2 rounded-xl border px-3 py-2 text-xs" style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }}>
                     <Crosshair className="h-4 w-4" />{" "}{t("ui.ClientCoverage.tocaElMapaParaFijar", "Toca el mapa para fijar la ubicación exacta de")}{" "}<b>{selected?.name}</b>.
-                    <button onClick={() => setPlacing(false)} className="ml-auto font-medium underline">Cancelar</button>
+                    <button onClick={() => setPlacing(false)} className="ml-auto font-medium underline">{t('actions.cancel')}</button>
                   </div>
                 )}
                 <div className="overflow-hidden rounded-xl border" style={{ height: 380, borderColor: 'var(--hairline)' }}>

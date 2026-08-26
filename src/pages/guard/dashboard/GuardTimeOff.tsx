@@ -104,7 +104,7 @@ export default function GuardTimeOff() {
           <Section title="Nueva solicitud">
             <div className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">Tipo</label>
+                <label className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">{t('comun.tipo')}</label>
                 <select value={type} onChange={e => setType(e.target.value)} className="w-full h-9 px-2.5 border border-input bg-background rounded-lg text-sm">
                   <option value="vacaciones">Vacaciones</option>
                   <option value="enfermedad">Enfermedad</option>
@@ -115,20 +115,20 @@ export default function GuardTimeOff() {
               </div>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">Desde</label>
+                  <label className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">{t('comun.desde')}</label>
                   <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="w-full h-9 px-2.5 border border-input bg-background rounded-lg text-sm" />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">Hasta</label>
+                  <label className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">{t('comun.hasta')}</label>
                   <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="w-full h-9 px-2.5 border border-input bg-background rounded-lg text-sm" />
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">Motivo (opcional)</label>
+                <label className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">{t('comun.motivoOpcional')}</label>
                 <textarea value={reason} onChange={e => setReason(e.target.value)} rows={2} className="w-full px-2.5 py-2 border border-input bg-background rounded-lg text-sm resize-none" placeholder="Describe el motivo..." />
               </div>
               <div className="flex gap-2 justify-end pt-1">
-                <Button variant="outline" onClick={() => setShowForm(false)}>Cancelar</Button>
+                <Button variant="outline" onClick={() => setShowForm(false)}>{t('actions.cancel')}</Button>
                 <Button variant="brand" onClick={handleSubmit} disabled={saving}>
                   {saving ? <Loader2 size={16} className="animate-spin" /> : 'Enviar'}
                 </Button>

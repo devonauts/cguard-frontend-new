@@ -158,7 +158,7 @@ export default function ProjectForm({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nombre del proyecto *</FormLabel>
+                  <FormLabel>{t('ui.ProjectForm.nombreDelProyecto')}</FormLabel>
                   <FormControl>
                     <Input placeholder={t("ui.ProjectForm.ejEventoAnual2026Investigacion", "Ej. Evento anual 2026, Investigación #14")} {...field} />
                   </FormControl>
@@ -174,13 +174,13 @@ export default function ProjectForm({
                 name="clientAccountId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Cliente *</FormLabel>
+                    <FormLabel>{t('ui.ProjectForm.cliente')}</FormLabel>
                     <FormControl>
                       <select
                         className="cg-input flex h-10 w-full px-3 py-1 text-sm"
                         {...field}
                       >
-                        <option value="">Selecciona un cliente</option>
+                        <option value="">{t('comun.seleccionaUnCliente')}</option>
                         {clients.map((c) => (
                           <option key={c.id} value={c.id}>{c.label}</option>
                         ))}
@@ -221,7 +221,7 @@ export default function ProjectForm({
                 name="startDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Fecha de inicio</FormLabel>
+                    <FormLabel>{t('comun.fechaDeInicio')}</FormLabel>
                     <FormControl>
                       <Input type="date" {...field} value={field.value ?? ''} />
                     </FormControl>
@@ -234,7 +234,7 @@ export default function ProjectForm({
                 name="endDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Fecha de fin</FormLabel>
+                    <FormLabel>{t('ui.ProjectForm.fechaDeFin')}</FormLabel>
                     <FormControl>
                       <Input type="date" {...field} value={field.value ?? ''} />
                     </FormControl>
@@ -281,7 +281,7 @@ export default function ProjectForm({
               name="status"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Estado</FormLabel>
+                  <FormLabel>{t('comun.estado')}</FormLabel>
                   <FormControl>
                     <select
                       className={FIELD_CLS}
@@ -302,7 +302,7 @@ export default function ProjectForm({
               name="notes"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Notas internas</FormLabel>
+                  <FormLabel>{t('comun.notasInternas')}</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Notas privadas, instrucciones especiales…"

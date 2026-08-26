@@ -12,6 +12,7 @@ import { stationService } from '@/lib/api/stationService';
 import { toast } from 'sonner';
 import { StatusBadge, EmptyState, SkeletonCards, SmartImage } from '@/components/kit';
 import { MapPin, Phone, Mail, Building2, Globe, Tag, Pencil, Check, X, Shield, ShieldCheck, ShieldOff, Clock, UserCircle2 } from 'lucide-react';
+import i18n from "@/i18n";
 
 function formatDate(d?: string) {
     if (!d) return '-';
@@ -61,7 +62,7 @@ const RateRow = ({
                 <button onClick={onSave} disabled={saving} aria-label="Guardar tarifa" className="cg-focus rounded p-1 disabled:opacity-40" style={{ color: 'var(--ok-text)' }}>
                     <Check size={14} />
                 </button>
-                <button onClick={onCancel} disabled={saving} aria-label="Cancelar" className="cg-focus rounded p-1 disabled:opacity-40" style={{ color: 'var(--bad-text)' }}>
+                <button onClick={onCancel} disabled={saving} aria-label={i18n.t('actions.cancel')} className="cg-focus rounded p-1 disabled:opacity-40" style={{ color: 'var(--bad-text)' }}>
                     <X size={14} />
                 </button>
             </div>
@@ -75,7 +76,7 @@ const RateRow = ({
                 <button
                     onClick={onEdit}
                     className="cg-btn-ghost cg-focus grid h-8 w-8 place-items-center rounded transition-opacity md:h-auto md:w-auto md:p-0.5 md:opacity-0 md:group-hover:opacity-100"
-                    title="Editar"
+                    title={i18n.t('actions.edit')}
                     aria-label="Editar tarifa"
                 >
                     <Pencil size={12} />

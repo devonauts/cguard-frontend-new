@@ -143,7 +143,7 @@ export default function SacafrancoAssignModal({
           ) : candidates.length === 0 ? (
             <EmptyState
               icon={<Shield />}
-              title="Sin vigilantes disponibles"
+              title={t('comun.sinVigilantesDisponibles')}
               description="Todos los vigilantes tienen una rotación activa."
             />
           ) : candidates.map((g) => (

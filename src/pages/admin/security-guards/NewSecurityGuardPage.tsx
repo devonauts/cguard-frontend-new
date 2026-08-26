@@ -591,7 +591,7 @@ export default function NewSecurityGuardPage() {
                       )} />
                       <FormField control={createCtrl} name="middleName" render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Segundo Nombre</FormLabel>
+                          <FormLabel>{t('ui.NewSecurityGuardPage.segundoNombre')}</FormLabel>
                           <FormControl><Input placeholder="Opcional" {...field} /></FormControl>
                           <FormMessage />
                         </FormItem>
@@ -665,7 +665,7 @@ export default function NewSecurityGuardPage() {
                     <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
                       <FormField control={createCtrl} name="birthDate" render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Fecha de Nacimiento <span className="text-destructive">*</span></FormLabel>
+                          <FormLabel>{t('ui.NewSecurityGuardPage.fechaDeNacimiento')}{" "}<span className="text-destructive">*</span></FormLabel>
                           <FormControl><Input type="date" {...field} /></FormControl>
                           <FormMessage />
                         </FormItem>

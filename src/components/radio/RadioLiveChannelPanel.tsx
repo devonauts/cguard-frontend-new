@@ -64,7 +64,7 @@ export default function RadioLiveChannelPanel() {
     <div className="glass p-4">
       <div className="mb-3 flex items-center gap-2">
         <Radio size={16} style={{ color: "var(--brand-text)" }} />
-        <h2 className="flex-1 text-sm font-semibold">Canal abierto (voz en vivo)</h2>
+        <h2 className="flex-1 text-sm font-semibold">{t('ui.RadioLiveChannelPanel.canalAbiertoVozEnVivo')}</h2>
         {joined && (
           <span
             className="flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px]"
@@ -118,7 +118,7 @@ export default function RadioLiveChannelPanel() {
             <button
               onClick={leave}
               className="cg-btn-glass cg-focus rounded-lg p-2.5"
-              title="Salir del canal"
+              title={t('ui.RadioLiveChannelPanel.salirDelCanal')}
             ><LogOut size={16} /></button>
           </div>
 
@@ -136,7 +136,7 @@ export default function RadioLiveChannelPanel() {
               ))}
             </div>
           )}
-          {someoneElseTalking && <p className="text-center text-[11px]" style={{ color: "var(--ink-soft)" }}>Puedes hablar cuando quieras — el canal permite hablar encima.</p>}
+          {someoneElseTalking && <p className="text-center text-[11px]" style={{ color: "var(--ink-soft)" }}>{t('ui.RadioLiveChannelPanel.puedesHablarCuandoQuierasEl')}</p>}
           {shownHint && <p className="text-[11px]" style={{ color: "var(--bad-text)" }}>{shownHint}</p>}
         </div>
       )}

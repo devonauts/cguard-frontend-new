@@ -184,10 +184,10 @@ export default function GuardRatings() {
           <div className="w-full md:w-64">
             <Select value={guardFilter} onValueChange={(v) => { setGuardFilter(v); setPage(1); }}>
               <SelectTrigger>
-                <SelectValue placeholder="Todos los vigilantes" />
+                <SelectValue placeholder={t('comun.todosLosVigilantes')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos los vigilantes</SelectItem>
+                <SelectItem value="all">{t('comun.todosLosVigilantes')}</SelectItem>
                 {guards.map((g) => (
                   <SelectItem key={g.id} value={g.id}>{g.fullName}</SelectItem>
                 ))}
@@ -213,9 +213,9 @@ export default function GuardRatings() {
           <Table>
             <TableHeader style={{ background: 'var(--glass-sunken)' }}>
               <TableRow>
-                <TableHead className="cg-eyebrow">Fecha</TableHead>
-                <TableHead className="cg-eyebrow">Vigilante</TableHead>
-                <TableHead className="cg-eyebrow">Cliente</TableHead>
+                <TableHead className="cg-eyebrow">{t('comun.fecha')}</TableHead>
+                <TableHead className="cg-eyebrow">{t('comun.vigilante')}</TableHead>
+                <TableHead className="cg-eyebrow">{t('comun.cliente')}</TableHead>
                 <TableHead className="cg-eyebrow">{t("ui.GuardRatings.estacion", "Estación")}</TableHead>
                 <TableHead className="cg-eyebrow">{t("ui.GuardRatings.calificacion", "Calificación")}</TableHead>
                 <TableHead className="cg-eyebrow">Comentario</TableHead>

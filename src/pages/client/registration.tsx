@@ -152,7 +152,7 @@ export default function ClientRegistration() {
       await AuthService.signUp(payload);
       // A client is NOT a tenant web-admin — do NOT send them to /login (it fails
       // for them). Show a confirmation with the Mi Seguridad app + download links.
-      toast.success("¡Cuenta activada!");
+      toast.success(t('ui.registration.cuentaActivada'));
       setDone(true);
       try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch {}
     } catch (err: any) {
@@ -278,14 +278,14 @@ export default function ClientRegistration() {
 
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
-              <Etiqueta htmlFor="cliente-nombre">Nombre</Etiqueta>
+              <Etiqueta htmlFor="cliente-nombre">{t('comun.nombre')}</Etiqueta>
               <input
                 id="cliente-nombre"
                 className={CAMPO}
                 style={estiloError('name')}
                 value={name}
                 onChange={(e) => { setName(e.target.value); setErrors((p) => ({ ...p, name: undefined })); }}
-                placeholder="Nombre"
+                placeholder={t('comun.nombre')}
                 disabled={isLoading || lockedName}
                 aria-invalid={!!errors.name}
               />
@@ -300,7 +300,7 @@ export default function ClientRegistration() {
                 style={estiloError('email')}
                 value={email}
                 onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: undefined })); }}
-                placeholder="tu@correo.com"
+                placeholder={t('comun.tuCorreoCom')}
                 disabled={isLoading || lockedEmail}
                 aria-invalid={!!errors.email}
               />

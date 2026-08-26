@@ -1557,7 +1557,7 @@ export default function DispatcherPage() {
                         (() => {
                           const s = (r.status || '').toString().toLowerCase();
                           if (s === 'cerrado' || s === 'closed') {
-                            return <StatusBadge tone="ok">Cerrado</StatusBadge>;
+                            return <StatusBadge tone="ok">{t('comun.cerrado')}</StatusBadge>;
                           }
 
                           if (s === 'abierto' || s === 'open') {
@@ -1565,7 +1565,7 @@ export default function DispatcherPage() {
                             // fallo. Iba en `--bad`, el mismo rojo que un
                             // pánico: si todo lo normal es rojo, el rojo deja
                             // de avisar de nada.
-                            return <StatusBadge tone="warn">Abierto</StatusBadge>;
+                            return <StatusBadge tone="warn">{t('comun.abierto')}</StatusBadge>;
                           }
 
                           // Estado desconocido: píldora neutra con el valor tal cual.
@@ -1725,12 +1725,12 @@ export default function DispatcherPage() {
 
               <div>
                 <Label>Responder a (opcional)</Label>
-                <Input value={emailReplyTo} onChange={(e) => setEmailReplyTo(e.target.value)} placeholder="Por defecto, el correo de tu empresa" />
+                <Input value={emailReplyTo} onChange={(e) => setEmailReplyTo(e.target.value)} placeholder={t('ui.DispatcherPage.porDefectoElCorreoDe')} />
               </div>
 
               <div>
-                <Label>Para</Label>
-                <Input value={emailTo} onChange={(e) => setEmailTo(e.target.value)} placeholder="correo@empresa.com (separa varios con comas)" />
+                <Label>{t('ui.DispatcherPage.para')}</Label>
+                <Input value={emailTo} onChange={(e) => setEmailTo(e.target.value)} placeholder={t('ui.DispatcherPage.correoEmpresaComSeparaVarios')} />
               </div>
 
               <div>
@@ -1782,7 +1782,7 @@ export default function DispatcherPage() {
               </div>
 
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogCancel>{t('actions.cancel')}</AlertDialogCancel>
                 <AlertDialogAction className="cg-btn-brand" onClick={handleCreateShare} disabled={shareLoading}>
                   {shareLoading ? 'Creando...' : 'Generar y copiar'}
                 </AlertDialogAction>
@@ -1800,8 +1800,8 @@ export default function DispatcherPage() {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-              <AlertDialogAction className="cg-btn-bad" onClick={handleConfirmDelete}>Eliminar</AlertDialogAction>
+              <AlertDialogCancel>{t('actions.cancel')}</AlertDialogCancel>
+              <AlertDialogAction className="cg-btn-bad" onClick={handleConfirmDelete}>{t('actions.delete')}</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

@@ -7,6 +7,7 @@ import {
 
 import { cn } from "@/lib/utils";
 import { videoService, type Camera, type StreamInfo } from "@/lib/api/videoService";
+import i18n from "@/i18n";
 
 /* ── COLOR EN UN REPRODUCTOR DE VIDEO ────────────────────────────────
    Aquí el blanco NO se sustituye por tokens y es correcto que se quede:
@@ -326,7 +327,7 @@ function PtzPad({ cameraId }: { cameraId: string }) {
       <div className="grid grid-cols-3 grid-rows-3 gap-1">
         <span />{dirBtn(<ChevronUp size={16} />, { tilt: S }, "h-7 w-7")}<span />
         {dirBtn(<ChevronLeft size={16} />, { pan: -S }, "h-7 w-7")}
-        <button onClick={() => setOpen(false)} title="Cerrar" className="grid h-7 w-7 place-items-center rounded-md bg-black/40 text-white/50 hover:text-white"><Move size={13} /></button>
+        <button onClick={() => setOpen(false)} title={i18n.t('actions.close')} className="grid h-7 w-7 place-items-center rounded-md bg-black/40 text-white/50 hover:text-white"><Move size={13} /></button>
         {dirBtn(<ChevronRight size={16} />, { pan: S }, "h-7 w-7")}
         <span />{dirBtn(<ChevronDown size={16} />, { tilt: -S }, "h-7 w-7")}<span />
       </div>

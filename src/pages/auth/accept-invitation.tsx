@@ -202,14 +202,14 @@ export default function AcceptInvitation() {
         )}
 
         <div>
-          <Etiqueta>Nombre completo</Etiqueta>
-          <input className={CAMPO} value={name} onChange={(e) => setName(e.target.value)} placeholder="Tu nombre" disabled={submitting} />
+          <Etiqueta>{t('comun.nombreCompleto')}</Etiqueta>
+          <input className={CAMPO} value={name} onChange={(e) => setName(e.target.value)} placeholder={t('ui.acceptinvitation.tuNombre')} disabled={submitting} />
         </div>
 
         <div>
           <Etiqueta>{t("ui.acceptinvitation.correoElectronico", "Correo electrónico")}</Etiqueta>
           <div className="relative">
-            <input className={`${CAMPO} pr-11`} value={email} onChange={(e) => setEmail(e.target.value)} placeholder="tu@correo.com" disabled={submitting || lockedEmail} />
+            <input className={`${CAMPO} pr-11`} value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t('comun.tuCorreoCom')} disabled={submitting || lockedEmail} />
             {lockedEmail && <Building2 className="pointer-events-none absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />}
           </div>
         </div>

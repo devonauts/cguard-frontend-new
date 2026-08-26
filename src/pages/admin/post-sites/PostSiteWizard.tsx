@@ -998,7 +998,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id, pres
           <div className="glass overflow-hidden">
             <div className="flex items-center gap-3 border-b px-4 py-2.5" style={{ borderColor: 'var(--hairline)' }}>
               <IconTile size="sm"><Building2 /></IconTile>
-              <span className="cg-eyebrow">Cliente</span>
+              <span className="cg-eyebrow">{t('comun.cliente')}</span>
             </div>
             <div className="px-4 py-3">
               {selectedClientObj ? (
@@ -1154,7 +1154,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id, pres
                       <Input value={addressLine2} onChange={(e) => setAddressLine2(e.target.value)} placeholder="Apto., piso, referencia…" />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-foreground/70 mb-1">Ciudad</label>
+                      <label className="block text-xs font-medium text-foreground/70 mb-1">{t('comun.ciudad')}</label>
                       <Input value={city} onChange={(e) => setCity(e.target.value)} />
                     </div>
                     <div>
@@ -1206,7 +1206,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id, pres
           <div className="glass overflow-hidden">
             <div className="flex items-center gap-3 border-b px-4 py-2.5" style={{ borderColor: 'var(--hairline)' }}>
               <IconTile size="sm"><ImagePlus /></IconTile>
-              <span className="cg-eyebrow">Foto del sitio</span>
+              <span className="cg-eyebrow">{t('ui.PostSiteWizard.fotoDelSitio')}</span>
             </div>
             <div className="px-4 py-4">
               <label className="cursor-pointer block">
@@ -1221,7 +1221,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id, pres
                   style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}
                 >
                   {placePreview ? (
-                    <img src={placePreview} className="h-full w-full object-cover" alt="Foto del sitio" />
+                    <img src={placePreview} className="h-full w-full object-cover" alt={t('ui.PostSiteWizard.fotoDelSitio')} />
                   ) : (
                     <div className="flex flex-col items-center gap-1" style={{ color: 'var(--ink-faint)' }}>
                       <Upload size={20} />
@@ -1294,7 +1294,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id, pres
                   onChange={(e) => cfgSet('riskLevel', e.target.value)}
                   className="cg-input cg-focus flex h-9 w-full px-3 py-1 text-sm"
                 >
-                  <option value="">Seleccionar…</option>
+                  <option value="">{t('comun.seleccionar')}</option>
                   {[['low','Bajo'],['medium','Medio'],['high','Alto'],['critical','Crítico']].map(([v,l]) => (
                     <option key={v} value={v}>{l}</option>
                   ))}
@@ -1471,9 +1471,9 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id, pres
               </div>
             )}
             <div className="px-5 py-4 space-y-0">
-              <SummaryRow icon={<Building2 className="h-4 w-4" />} label="Cliente" value={selectedClientLabel ?? undefined} />
+              <SummaryRow icon={<Building2 className="h-4 w-4" />} label={t('comun.cliente')} value={selectedClientLabel ?? undefined} />
               <SummaryRow icon={<MapPin className="h-4 w-4" />} label={t("ui.PostSiteWizard.direccion", "Dirección")} value={address || undefined} />
-              <SummaryRow icon={<MapPin className="h-4 w-4" />} label="Ciudad" value={city || undefined} />
+              <SummaryRow icon={<MapPin className="h-4 w-4" />} label={t('comun.ciudad')} value={city || undefined} />
               <SummaryRow icon={<Shield className="h-4 w-4" />} label="Estaciones" value={stations.filter(s => s.name.trim()).length > 0 ? `${stations.filter(s => s.name.trim()).length} definida${stations.filter(s => s.name.trim()).length !== 1 ? 's' : ''}` : undefined} />
             </div>
           </div>

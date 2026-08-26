@@ -72,7 +72,7 @@ export default function DepartmentDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nombre*</FormLabel>
+                  <FormLabel>{t('comun.nombreReq')}</FormLabel>
                   <FormControl>
                     <Input placeholder="Ej. Operaciones" {...field} />
                   </FormControl>
@@ -110,11 +110,11 @@ export default function DepartmentDialog({
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Sin responsable" />
+                        <SelectValue placeholder={t('ui.DepartmentDialog.sinResponsable')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value={NONE}>Sin responsable</SelectItem>
+                      <SelectItem value={NONE}>{t('ui.DepartmentDialog.sinResponsable')}</SelectItem>
                       {managers.map((m) => (
                         <SelectItem key={m.id} value={m.id}>
                           {m.name}

@@ -75,7 +75,7 @@ const fmtD = (iso: string) => { const d = new Date(iso); return Number.isNaN(d.g
 /** Actividad diaria — la serie temporal de la pestaña. */
 function ActividadChart({ data }: { data: Array<{ date: string; value: number }> }) {
   const { t } = useTranslation();
-  if (!data || data.length < 2) return <EmptyState icon={<FileBarChart className="h-5 w-5" />} title="Sin datos" description={t("ui.ClientReports.noHayActividadEnEl", "No hay actividad en el período.")} />;
+  if (!data || data.length < 2) return <EmptyState icon={<FileBarChart className="h-5 w-5" />} title={t('comun.sinDatos')} description={t("ui.ClientReports.noHayActividadEnEl", "No hay actividad en el período.")} />;
   const dia = (iso: string) => new Date(iso).toLocaleDateString('es-EC', { day: '2-digit', month: 'short' });
   return (
     <AreaChart
@@ -160,7 +160,7 @@ export default function ClientReports({ client }: { client: Client & { companyNa
     try { await clientService.createReportSchedule(client.id, schedForm); toast.success('Reporte programado'); setSchedOpen(false); setSchedForm({ name: '', type: 'incidents', frequency: 'weekly' }); await load(true); }
     catch { toast.error('No se pudo programar'); } finally { setSaving(false); }
   };
-  const delSchedule = async (s: ProgramadoRow) => { if (!await confirmDialog({ message: `¿Eliminar "${s.name}"?`, tone: 'danger' })) return; try { await clientService.deleteReportSchedule(client.id, s.id); await load(true); } catch { toast.error('No se pudo eliminar'); } };
+  const delSchedule = async (s: ProgramadoRow) => { if (!await confirmDialog({ message: `¿Eliminar "${s.name}"?`, tone: 'danger' })) return; try { await clientService.deleteReportSchedule(client.id, s.id); await load(true); } catch { toast.error(t('comun.noSePudoEliminar')); } };
 
   if (loading && !data) return <TabLoading />;
 
@@ -172,7 +172,7 @@ export default function ClientReports({ client }: { client: Client & { companyNa
           <input type="date" className={`${FIELD_CLS} w-auto`} value={from} onChange={(e) => setFrom(e.target.value)} /><span className="text-muted-foreground">–</span>
           <input type="date" className={`${FIELD_CLS} w-auto`} value={to} onChange={(e) => setTo(e.target.value)} />
         </div>
-        <Button size="sm" variant="brand" onClick={() => setSchedOpen(true)}><CalendarClock className="mr-1.5 h-4 w-4" /> Programar reporte</Button>
+        <Button size="sm" variant="brand" onClick={() => setSchedOpen(true)}><CalendarClock className="mr-1.5 h-4 w-4" />{" "}{t('ui.ClientReports.programarReporte')}</Button>
       </div>
 
       {/* KPI row + cumplimiento */}
@@ -210,7 +210,7 @@ export default function ClientReports({ client }: { client: Client & { companyNa
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[2.2fr_1fr]">
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
           <Section title="Incidentes por tipo" icon={<AlertTriangle className="h-4 w-4" />}>
-            {porTipo.length === 0 ? <EmptyState icon={<AlertTriangle className="h-5 w-5" />} title="Sin incidentes" description={t("ui.ClientReports.noHayIncidentesEnEl", "No hay incidentes en el período.")} /> : (
+            {porTipo.length === 0 ? <EmptyState icon={<AlertTriangle className="h-5 w-5" />} title={t('comun.sinIncidentes')} description={t("ui.ClientReports.noHayIncidentesEnEl", "No hay incidentes en el período.")} /> : (
               <div className="flex items-center gap-3">
                 {/* Los tipos vienen ordenados por frecuencia: una rampa del acento
                     hacia el gris lo dice mejor que siete colores sin relación, y
@@ -224,7 +224,7 @@ export default function ClientReports({ client }: { client: Client & { companyNa
           </Section>
 
           <Section title="Incidentes por estado" icon={<ShieldCheck className="h-4 w-4" />}>
-            {porEstado.every((e) => e.count === 0) ? <EmptyState icon={<ShieldCheck className="h-5 w-5" />} title="Sin incidentes" description={t("ui.ClientReports.noHayIncidentesEnEl2", "No hay incidentes en el período.")} /> : (
+            {porEstado.every((e) => e.count === 0) ? <EmptyState icon={<ShieldCheck className="h-5 w-5" />} title={t('comun.sinIncidentes')} description={t("ui.ClientReports.noHayIncidentesEnEl2", "No hay incidentes en el período.")} /> : (
               <div className="space-y-3 pt-1">
                 {porEstado.map((e) => (
                   <div key={e.key}>
@@ -288,7 +288,7 @@ export default function ClientReports({ client }: { client: Client & { companyNa
         ) : (
           <TabTable>
               <THead>
-                <Th>Nombre del reporte</Th><Th>Tipo</Th><Th>{t("ui.ClientReports.sedeEstacion", "Sede / Estación")}</Th><Th>Generado por</Th><Th>Generado el</Th><Th>Formato</Th>
+                <Th>Nombre del reporte</Th><Th>{t('comun.tipo')}</Th><Th>{t("ui.ClientReports.sedeEstacion", "Sede / Estación")}</Th><Th>Generado por</Th><Th>Generado el</Th><Th>Formato</Th>
               </THead>
               <tbody>
                 {reportsList.map((r) => (
@@ -315,13 +315,13 @@ export default function ClientReports({ client }: { client: Client & { companyNa
       />
 
       {/* Schedule modal */}
-      <Modal open={schedOpen} onOpenChange={(o) => { if (!saving) setSchedOpen(o); }} title="Programar reporte" icon={<CalendarClock className="h-5 w-5" />}
-        footer={<><Button variant="outline" onClick={() => setSchedOpen(false)} disabled={saving}>Cancelar</Button><Button onClick={saveSchedule} disabled={saving || !schedForm.name.trim()}>{saving ? 'Guardando…' : 'Programar'}</Button></>}>
+      <Modal open={schedOpen} onOpenChange={(o) => { if (!saving) setSchedOpen(o); }} title={t('ui.ClientReports.programarReporte')} icon={<CalendarClock className="h-5 w-5" />}
+        footer={<><Button variant="outline" onClick={() => setSchedOpen(false)} disabled={saving}>{t('actions.cancel')}</Button><Button onClick={saveSchedule} disabled={saving || !schedForm.name.trim()}>{saving ? 'Guardando…' : 'Programar'}</Button></>}>
         <div className="space-y-3">
-          <LabeledField label="Nombre"><input className={FIELD_CLS} placeholder="Informe semanal de operaciones" value={schedForm.name} onChange={(e) => setSchedForm({ ...schedForm, name: e.target.value })} /></LabeledField>
+          <LabeledField label={t('comun.nombre')}><input className={FIELD_CLS} placeholder="Informe semanal de operaciones" value={schedForm.name} onChange={(e) => setSchedForm({ ...schedForm, name: e.target.value })} /></LabeledField>
           <LabeledField label="Reporte">
             <select className={FIELD_CLS} value={schedForm.type} onChange={(e) => setSchedForm({ ...schedForm, type: e.target.value })}>
-              <option value="incidents">Reporte de incidentes</option><option value="rounds">Reporte de rondas</option><option value="visitors">Reporte de visitas</option><option value="attendance">Reporte de asistencia</option><option value="coverage">Cumplimiento de estaciones</option><option value="guard-activity">Actividad por guardia</option>
+              <option value="incidents">{t('ui.ClientReports.reporteDeIncidentes')}</option><option value="rounds">Reporte de rondas</option><option value="visitors">Reporte de visitas</option><option value="attendance">Reporte de asistencia</option><option value="coverage">Cumplimiento de estaciones</option><option value="guard-activity">Actividad por guardia</option>
             </select>
           </LabeledField>
           <LabeledField label="Frecuencia">

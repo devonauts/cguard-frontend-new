@@ -578,7 +578,7 @@ export default function GuardAsignarSitiosPage() {
                   <IconTile tone="brand" size="sm"><MapPin /></IconTile>
                   <h3 className="text-base font-semibold tracking-tight">{t('guards.assignSites.modal.title', { defaultValue: 'Asignar puesto' })}</h3>
                 </div>
-                <Button variant="ghost" size="icon-sm" onClick={() => setAssignModalOpen(false)} aria-label="Cerrar"><X size={18} /></Button>
+                <Button variant="ghost" size="icon-sm" onClick={() => setAssignModalOpen(false)} aria-label={t('actions.close')}><X size={18} /></Button>
               </div>
 
               <div className="p-5 overflow-y-auto flex-1">

@@ -25,6 +25,7 @@ import { FileSearch, MessageSquarePlus } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { DirectoryOption, NamedEntity, DispatchComment, CommentAttachment } from './types';
+import i18n from "@/i18n";
 
 type ResourceType = 'request' | 'incident';
 
@@ -56,7 +57,7 @@ export function DispatchDetailsContent({ requestId, resourceTypeProp }: { reques
 
   // Handler extracted to avoid large inline JSX function
   const handleAddComment = async () => {
-    if (!newComment || newComment.trim() === '') { toast.error('Escribe un comentario'); return; }
+    if (!newComment || newComment.trim() === '') { toast.error(t('ui.DispatchDetailsPage.escribeUnComentario')); return; }
     try {
       const tenantId = localStorage.getItem('tenantId');
       if (!tenantId) { toast.error('Tenant no disponible'); return; }
@@ -145,7 +146,7 @@ export function DispatchDetailsContent({ requestId, resourceTypeProp }: { reques
       } 
 
     } catch (err) {
-      toast.error('No se pudo agregar comentario');
+      toast.error(t('ui.DispatchDetailsPage.noSePudoAgregarComentario'));
     } finally {
       setCommentsLoading(false);
     }
@@ -210,7 +211,7 @@ export function DispatchDetailsContent({ requestId, resourceTypeProp }: { reques
         // sonner toast does not have `warn`; use `error` and keep console warning for diagnostics
         // eslint-disable-next-line no-console
         console.warn('Failed to load dispatch details', e);
-        toast.error('No se pudieron cargar detalles del Incidente');
+        toast.error(t('ui.DispatchDetailsPage.noSePudieronCargarDetalles'));
       }
     };
 
@@ -581,8 +582,8 @@ export default function DispatchDetailsPage() {
       <PageContainer width="wide" className="px-6 pt-4">
         <PageHeader
           icon={<FileSearch />}
-          title="Detalle del Incidente"
-          subtitle="Información completa, comentarios y vigilantes asignados."
+          title={i18n.t('comun.detalleDelIncidente')}
+          subtitle={i18n.t('ui.DispatchDetailsPage.informacionCompletaComentariosYVigilantes')}
         />
         <DispatchDetailsContent requestId={id ?? null} />
       </PageContainer>

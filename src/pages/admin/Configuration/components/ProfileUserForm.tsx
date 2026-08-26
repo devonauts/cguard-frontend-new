@@ -404,7 +404,7 @@ export default function ProfileUserForm() {
         </Section>
 
         {/* ── Contacto ──────────────────────────────────────────────── */}
-        <Section title="Contacto" icon={<Mail />} contentClassName="grid gap-6 md:grid-cols-2">
+        <Section title={t('ui.ProfileUserForm.contacto')} icon={<Mail />} contentClassName="grid gap-6 md:grid-cols-2">
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2">
               <Label className="mb-0">{t('profile.email')}</Label>

@@ -88,7 +88,7 @@ export default function Coverage() {
       setLive(l);
       setEvents(e?.rows || []);
     } catch {
-      toast.error("No se pudo cargar la cobertura");
+      toast.error(t('comun.noSePudoCargarLa'));
     } finally {
       setLoading(false);
     }
@@ -364,7 +364,7 @@ export default function Coverage() {
 
         <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <MetricTile
-            label="Sin cubrir"
+            label={t('comun.sinCubrir')}
             value={summary.uncovered || 0}
             icon={<ShieldAlert />}
             delta={totalPuestos > 0 ? { value: `${pct(summary.uncovered || 0)} %`, direction: (summary.uncovered || 0) > 0 ? "down" : "flat" } : undefined}
@@ -406,7 +406,7 @@ export default function Coverage() {
         ) : tab === "board" ? (
           <Section title="Estado de los puestos">
             {!live?.stations.length ? (
-              <EmptyState icon={<ShieldCheck />} title="Sin puestos" description={t("ui.Coverage.todaviaNoHayPuestosConfigurados", "Todavía no hay puestos configurados.")} />
+              <EmptyState icon={<ShieldCheck />} title={t('comun.sinPuestos')} description={t("ui.Coverage.todaviaNoHayPuestosConfigurados", "Todavía no hay puestos configurados.")} />
             ) : (
               <Stagger className="grid gap-3 lg:grid-cols-2">
                 {live.stations.map((st) => <StationRow key={st.stationId} st={st} />)}
@@ -487,7 +487,7 @@ export default function Coverage() {
           icon={<CalendarRange />}
           footer={
             <>
-              <Button variant="outline" onClick={() => setRepOpen(false)}>Cancelar</Button>
+              <Button variant="outline" onClick={() => setRepOpen(false)}>{t('actions.cancel')}</Button>
               <Button onClick={submitReplacement} disabled={busy || !repOut || !repIn || !repFrom || !repTo}>
                 <UserPlus className="mr-1.5 size-4" /> Aplicar reemplazo
               </Button>
@@ -510,19 +510,19 @@ export default function Coverage() {
 
             <div className="grid gap-4 sm:grid-cols-3">
               <div>
-                <label className="cg-eyebrow mb-1.5 block">Desde</label>
+                <label className="cg-eyebrow mb-1.5 block">{t('comun.desde')}</label>
                 <input type="date" value={repFrom} max={repTo || undefined}
                   onChange={(e) => setRepFrom(e.target.value)}
                   className="w-full rounded-xl border border-[var(--hairline)] bg-[var(--glass-sunken)] px-3 py-2 text-sm text-[var(--ink)] outline-none" />
               </div>
               <div>
-                <label className="cg-eyebrow mb-1.5 block">Hasta</label>
+                <label className="cg-eyebrow mb-1.5 block">{t('comun.hasta')}</label>
                 <input type="date" value={repTo} min={repFrom || undefined}
                   onChange={(e) => setRepTo(e.target.value)}
                   className="w-full rounded-xl border border-[var(--hairline)] bg-[var(--glass-sunken)] px-3 py-2 text-sm text-[var(--ink)] outline-none" />
               </div>
               <div>
-                <label className="cg-eyebrow mb-1.5 block">Motivo</label>
+                <label className="cg-eyebrow mb-1.5 block">{t('comun.motivo')}</label>
                 <Select value={repReason} onValueChange={(v) => setRepReason(v as CoverageReason)}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
@@ -555,14 +555,14 @@ export default function Coverage() {
           icon={<ShieldAlert />}
           footer={
             <>
-              <Button variant="outline" onClick={() => setAbsenceFor(null)}>Cancelar</Button>
+              <Button variant="outline" onClick={() => setAbsenceFor(null)}>{t('actions.cancel')}</Button>
               <Button onClick={submitAbsence} disabled={busy}>Registrar</Button>
             </>
           }
         >
           <div className="space-y-4">
             <div>
-              <label className="cg-eyebrow mb-1.5 block">Motivo</label>
+              <label className="cg-eyebrow mb-1.5 block">{t('comun.motivo')}</label>
               <Select value={reason} onValueChange={(v) => setReason(v as CoverageReason)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -595,7 +595,7 @@ export default function Coverage() {
             {candidates == null ? (
               <SkeletonCards />
             ) : !candidates.length ? (
-              <EmptyState icon={<UserPlus />} title="Sin vigilantes disponibles" description={t("ui.Coverage.nadieEstaLibreEnEse", "Nadie está libre en ese horario.")} />
+              <EmptyState icon={<UserPlus />} title={t('comun.sinVigilantesDisponibles')} description={t("ui.Coverage.nadieEstaLibreEnEse", "Nadie está libre en ese horario.")} />
             ) : (
               candidates.map((c) => (
                 <button
@@ -632,16 +632,16 @@ export default function Coverage() {
           icon={<ArrowRightLeft />}
           footer={
             <>
-              <Button variant="outline" onClick={() => setTransferFor(null)}>Cancelar</Button>
+              <Button variant="outline" onClick={() => setTransferFor(null)}>{t('actions.cancel')}</Button>
               <Button onClick={submitTransfer} disabled={busy || !toStationId}>Trasladar</Button>
             </>
           }
         >
           <div className="space-y-4">
             <div>
-              <label className="cg-eyebrow mb-1.5 block">Puesto destino</label>
+              <label className="cg-eyebrow mb-1.5 block">{t('comun.puestoDestino')}</label>
               <Select value={toStationId} onValueChange={setToStationId}>
-                <SelectTrigger><SelectValue placeholder="Elige un puesto" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder={t('comun.eligeUnPuesto')} /></SelectTrigger>
                 <SelectContent>
                   {/* The live payload already carries every station the caller
                       may see, correctly tenant-scoped — no second fetch needed. */}
@@ -679,7 +679,7 @@ export default function Coverage() {
               )}
             </div>
             <div>
-              <label className="cg-eyebrow mb-1.5 block">Motivo (opcional)</label>
+              <label className="cg-eyebrow mb-1.5 block">{t('comun.motivoOpcional')}</label>
               <Textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2}
                 placeholder="Ej.: refuerzo por evento en el cliente" />
             </div>

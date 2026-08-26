@@ -14,6 +14,7 @@ import { useFileUrl } from "@/lib/fileUrl";
 import { useAudioRecorder } from "@/lib/useAudioRecorder";
 import { toast } from "sonner";
 import { confirmDialog } from "@/components/ui/confirmDialog";
+import i18n from "@/i18n";
 
 /**
  * Renders one message attachment (image/video). The attachment `url` is a raw
@@ -297,8 +298,8 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
                 <div className="flex items-center gap-3 border-b p-3" style={{ borderColor: 'var(--hairline)' }}>
                   <button
                     onClick={() => { setSelected(null); setMessages([]); }}
-                    title="Volver a la lista"
-                    aria-label="Volver a la lista"
+                    title={t('ui.MessengerPage.volverALaLista')}
+                    aria-label={t('ui.MessengerPage.volverALaLista')}
                     className="cg-focus -ml-1 grid h-9 w-9 shrink-0 place-items-center rounded-lg transition-colors hover:bg-muted md:hidden"
                     style={{ color: 'var(--ink-soft)' }}
                   >
@@ -435,7 +436,7 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
                         <span style={{ color: 'var(--ink-soft)' }}>Grabando nota de voz…</span>
                         <button
                           onClick={() => recorder.cancel()}
-                          title="Cancelar"
+                          title={t('actions.cancel')}
                           className="cg-focus ml-auto"
                           style={{ color: 'var(--bad-text)' }}
                         >
@@ -588,7 +589,7 @@ function ComposeDialog({ scope, onClose, onSent }: { scope: "operational" | "cli
       icon={<Plus className="h-5 w-5" />}
       footer={(
         <>
-          <Button variant="outline" onClick={onClose}>Cancelar</Button>
+          <Button variant="outline" onClick={onClose}>{i18n.t('actions.cancel')}</Button>
           {mode === "direct" ? (
             <Button onClick={sendDirect} disabled={!picked || !body.trim() || sending}>
               {sending ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />} Enviar
@@ -736,7 +737,7 @@ function MembersPanel({ conversation, onClose, onChanged }: { conversation: Conv
             <h3 className="truncate text-base font-bold">{conversation.recipientName}</h3>
             <p className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>{members.length} miembros</p>
           </div>
-          <button onClick={onClose} aria-label="Cerrar" className="cg-focus" style={{ color: 'var(--ink-soft)' }}><X size={18} /></button>
+          <button onClick={onClose} aria-label={t('actions.close')} className="cg-focus" style={{ color: 'var(--ink-soft)' }}><X size={18} /></button>
         </div>
         <div className="border-b p-3" style={{ borderColor: 'var(--hairline)' }}>
           <div className="relative">

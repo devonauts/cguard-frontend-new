@@ -12,6 +12,7 @@ import { Pencil, Mail, Loader2 } from 'lucide-react';
 import GuardsLayout from '@/layouts/GuardsLayout';
 import AppLayout from '@/layouts/app-layout';
 import type { GuardDetail } from '../../guardDetailTypes';
+import i18n from "@/i18n";
 
 /** The linked app user carried under `guard` on the securityGuard record. */
 interface ProfileUser {
@@ -119,7 +120,7 @@ const EditSelect = ({ label, value, field, onChange }: { label: string; value: s
       onChange={(e) => onChange(e.target.value)}
       className="cg-input flex h-9 w-full px-2 text-sm"
     >
-      <option value="">Seleccionar…</option>
+      <option value="">{i18n.t('comun.seleccionar')}</option>
       {(FIELD_OPTIONS[field] || []).map((o) => <option key={o} value={o}>{o}</option>)}
     </select>
   </div>

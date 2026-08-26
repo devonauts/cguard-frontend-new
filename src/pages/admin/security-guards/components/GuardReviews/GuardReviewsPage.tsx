@@ -92,7 +92,7 @@ export default function GuardReviewsPage() {
 
   const save = async () => {
     if (!action || !id) return;
-    if (!form.subject.trim()) { toast.error('El asunto es obligatorio'); return; }
+    if (!form.subject.trim()) { toast.error(t('comun.elAsuntoEsObligatorio')); return; }
     setSaving(true);
     try {
       await api.post(`/tenant/${tenantId}/memos`, {
@@ -202,7 +202,7 @@ export default function GuardReviewsPage() {
           size="md"
           footer={
             <>
-              <Button variant="outline" onClick={() => setAction(null)} disabled={saving}>Cancelar</Button>
+              <Button variant="outline" onClick={() => setAction(null)} disabled={saving}>{t('actions.cancel')}</Button>
               <Button onClick={save} disabled={saving}>
                 {saving ? <><Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> Guardando…</> : (action?.type === 'memo' ? 'Enviar memo' : 'Registrar')}
               </Button>

@@ -123,7 +123,7 @@ export default function NominaRecords() {
 
   // Export the current period's records to CSV (UTF-8 BOM so Excel reads accents).
   const exportCsv = () => {
-    if (!rows.length) { toast.error("No hay registros para exportar"); return; }
+    if (!rows.length) { toast.error(t('comun.noHayRegistrosParaExportar')); return; }
     const headers = [
       "Fecha", "Vigilante", "Puesto", "Programado inicio", "Programado fin",
       "Entrada", "Salida", "Horas", "Tarde (min)", "Extra (min)",
@@ -190,7 +190,7 @@ export default function NominaRecords() {
       render: (_v, r) => (
         <span className="flex items-center gap-1.5">
           {r.guardName?.fullName || "—"}
-          {r.role === "supervisor" && <ToneBadge tone="warn" dot={false}>Supervisor</ToneBadge>}
+          {r.role === "supervisor" && <ToneBadge tone="warn" dot={false}>{t('comun.supervisor')}</ToneBadge>}
           {r.role === "administrative" && <ToneBadge tone="info" dot={false}>Administrativo</ToneBadge>}
         </span>
       ),
@@ -272,7 +272,7 @@ export default function NominaRecords() {
       <PageContainer width="wide" className="p-4 sm:p-6">
         <PageHeader
           icon={<ClipboardCheck />}
-          title="Registros de Asistencia"
+          title={t('ui.NominaRecords.registrosDeAsistencia')}
           subtitle="Marcaciones de entrada / salida"
           actions={
             <Button variant="outline" onClick={exportCsv} className="gap-2">
@@ -298,7 +298,7 @@ export default function NominaRecords() {
             <button
               onClick={() => setAnchor((a) => shiftAnchor(period, a, -1))}
               className="cg-focus cg-btn-ghost rounded-full p-1"
-              aria-label="Anterior"
+              aria-label={t('kit.pagination.prev')}
             >
               <ChevronLeft className="size-4" />
             </button>
@@ -312,7 +312,7 @@ export default function NominaRecords() {
             <button
               onClick={() => setAnchor((a) => shiftAnchor(period, a, +1))}
               className="cg-focus cg-btn-ghost rounded-full p-1"
-              aria-label="Siguiente"
+              aria-label={t('kit.pagination.next')}
             >
               <ChevronRight className="size-4" />
             </button>
@@ -375,7 +375,7 @@ export default function NominaRecords() {
               emptyState={
                 <EmptyState
                   icon={<ClipboardList />}
-                  title="Sin registros"
+                  title={t('comun.sinRegistros')}
                   description="No hay marcaciones para los filtros seleccionados."
                 />
               }
@@ -426,7 +426,7 @@ export default function NominaRecords() {
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
-                  <Field label="Puesto" value={selected.stationName?.stationName || "—"} />
+                  <Field label={t('comun.puesto')} value={selected.stationName?.stationName || "—"} />
                   <Field label="Horas" value={<span className="tabular-nums">{fmtHours(selected.hoursWorked)}</span>} />
                   <Field label="Programado" value={<span className="tabular-nums">{fmtDateTime(selected.scheduledStart)}</span>} />
                   <Field label="Fin programado" value={<span className="tabular-nums">{fmtDateTime(selected.scheduledEnd)}</span>} />
@@ -435,7 +435,7 @@ export default function NominaRecords() {
                   <Field label="Tarde (min)" value={<span className="tabular-nums">{selected.lateMinutes || 0}</span>} />
                   <Field label="Extra (min)" value={<span className="tabular-nums">{selected.overtimeMinutes || 0}</span>} />
                   {selected.shiftSchedule && (
-                    <Field label="Turno" value={selected.shiftSchedule} />
+                    <Field label={t('comun.turno')} value={selected.shiftSchedule} />
                   )}
                   <Field label="Rondas" value={<span className="tabular-nums">{selected.numberOfPatrolsDuringShift ?? 0}</span>} />
                   <Field label="Incidentes" value={<span className="tabular-nums">{selected.numberOfIncidentsDurindShift ?? 0}</span>} />

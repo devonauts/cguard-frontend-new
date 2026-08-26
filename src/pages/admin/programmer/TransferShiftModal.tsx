@@ -124,16 +124,16 @@ export default function TransferShiftModal({
       icon={<ArrowRightLeft />}
       footer={
         <>
-          <Button variant="outline" onClick={close}>Cancelar</Button>
+          <Button variant="outline" onClick={close}>{t('actions.cancel')}</Button>
           <Button onClick={submit} disabled={busy || !toStationId}>Trasladar</Button>
         </>
       }
     >
       <div className="space-y-4">
         <div>
-          <label className="cg-eyebrow mb-1.5 block">Puesto destino</label>
+          <label className="cg-eyebrow mb-1.5 block">{t('comun.puestoDestino')}</label>
           <Select value={toStationId} onValueChange={setToStationId}>
-            <SelectTrigger><SelectValue placeholder="Elige un puesto" /></SelectTrigger>
+            <SelectTrigger><SelectValue placeholder={t('comun.eligeUnPuesto')} /></SelectTrigger>
             <SelectContent>
               {stations
                 .filter((s) => String(s.id) !== String(target?.stationId))
@@ -169,7 +169,7 @@ export default function TransferShiftModal({
         </div>
 
         <div>
-          <label className="cg-eyebrow mb-1.5 block">Motivo (opcional)</label>
+          <label className="cg-eyebrow mb-1.5 block">{t('comun.motivoOpcional')}</label>
           <Textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2}
             placeholder="Ej.: cubre falta en el otro puesto" />
         </div>

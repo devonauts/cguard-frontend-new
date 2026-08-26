@@ -140,7 +140,7 @@ export default function ClientIncidents({ client }: { client: Client }) {
 
   const changeStatus = async (ws: string) => {
     if (!selected) return;
-    try { await clientService.updateIncidentStatus(client.id, selected.id, ws); toast.success('Estado actualizado'); await load(true); }
+    try { await clientService.updateIncidentStatus(client.id, selected.id, ws); toast.success(t('comun.estadoActualizado')); await load(true); }
     catch { toast.error('No se pudo actualizar'); }
   };
 
@@ -158,7 +158,7 @@ export default function ClientIncidents({ client }: { client: Client }) {
           <span style={{ color: 'var(--ink-faint)' }}>–</span>
           <input type="date" className={`${FIELD_CLS} w-auto`} value={to} onChange={(e) => resetPage(setTo)(e.target.value)} />
         </div>
-        <Button size="sm" variant="brand" onClick={() => window.location.assign('/dispatch-tickets/new')}><AlertTriangle className="mr-1.5 h-4 w-4" /> Nuevo incidente</Button>
+        <Button size="sm" variant="brand" onClick={() => window.location.assign('/dispatch-tickets/new')}><AlertTriangle className="mr-1.5 h-4 w-4" />{" "}{t('ui.ClientIncidents.nuevoIncidente')}</Button>
       </div>
 
       {/* KPI row */}
@@ -180,25 +180,25 @@ export default function ClientIncidents({ client }: { client: Client }) {
               <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
               <input className={`${FIELD_CLS} pl-8`} placeholder={t("ui.ClientIncidents.buscarPorIdTituloO", "Buscar por ID, título o ubicación")} value={q} onChange={(e) => resetPage(setQ)(e.target.value)} />
             </div>
-            <select className={FIELD_CLS} value={sedeId} onChange={(e) => resetPage(setSedeId)(e.target.value)}><option value="">Sede: Todas</option>{sedes.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select>
+            <select className={FIELD_CLS} value={sedeId} onChange={(e) => resetPage(setSedeId)(e.target.value)}><option value="">{t('comun.sedeTodas')}</option>{sedes.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select>
             <select className={FIELD_CLS} value={puestoId} onChange={(e) => resetPage(setPuestoId)(e.target.value)}><option value="">{t("ui.ClientIncidents.estacionTodas", "Estación: Todas")}</option>{puestos.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select>
-            <select className={FIELD_CLS} value={tipo} onChange={(e) => resetPage(setTipo)(e.target.value)}><option value="">Tipo: Todos</option>{tipos.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select>
-            <select className={FIELD_CLS} value={estado} onChange={(e) => resetPage(setEstado)(e.target.value)}><option value="">Estado: Todos</option><option value="abierto">Abierto</option><option value="investigacion">{t("ui.ClientIncidents.enInvestigacion", "En investigación")}</option><option value="resuelto">Resuelto</option></select>
-            <select className={FIELD_CLS} value={prioridad} onChange={(e) => resetPage(setPrioridad)(e.target.value)}><option value="">Prioridad: Todas</option><option value="alta">Alta</option><option value="media">Media</option><option value="baja">Baja</option></select>
+            <select className={FIELD_CLS} value={tipo} onChange={(e) => resetPage(setTipo)(e.target.value)}><option value="">{t('comun.tipoTodos')}</option>{tipos.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select>
+            <select className={FIELD_CLS} value={estado} onChange={(e) => resetPage(setEstado)(e.target.value)}><option value="">{t('comun.estadoTodos')}</option><option value="abierto">{t('comun.abierto')}</option><option value="investigacion">{t("ui.ClientIncidents.enInvestigacion", "En investigación")}</option><option value="resuelto">Resuelto</option></select>
+            <select className={FIELD_CLS} value={prioridad} onChange={(e) => resetPage(setPrioridad)(e.target.value)}><option value="">Prioridad: Todas</option><option value="alta">{t('comun.alta')}</option><option value="media">{t('comun.media')}</option><option value="baja">{t('comun.baja')}</option></select>
           </div>
 
           {incidents.length === 0 ? (
-            <EmptyState icon={<AlertTriangle />} title="Sin incidentes" description="No hay incidentes para este cliente en el rango y filtros seleccionados." />
+            <EmptyState icon={<AlertTriangle />} title={t('comun.sinIncidentes')} description="No hay incidentes para este cliente en el rango y filtros seleccionados." />
           ) : (
             <TabTable>
                 <THead>
                   <Th>ID</Th>
-                  <Th>Fecha / Hora</Th>
-                  <Th>Incidente</Th>
+                  <Th>{t('ui.ClientIncidents.fechaHora')}</Th>
+                  <Th>{t('ui.ClientIncidents.incidente')}</Th>
                   <Th>{t("ui.ClientIncidents.sedeEstacion", "Sede / Estación")}</Th>
-                  <Th>Reportado por</Th>
+                  <Th>{t('ui.ClientIncidents.reportadoPor')}</Th>
                   <Th>Prioridad</Th>
-                  <Th>Estado</Th>
+                  <Th>{t('comun.estado')}</Th>
                   <Th>Respuesta</Th>
                   <Th>{t("ui.ClientIncidents.resolucion", "Resolución")}</Th>
                 </THead>
@@ -250,9 +250,9 @@ export default function ClientIncidents({ client }: { client: Client }) {
               <div className="glass-sunken grid grid-cols-2 gap-3 break-words p-3 text-sm [&>div]:min-w-0">
                 <div><div className="cg-eyebrow mb-0.5">Sede / Puesto</div><div className="font-medium">{selected.sedeName || '—'}</div><div className="text-xs" style={{ color: 'var(--ink-faint)' }}>{selected.puestoName || ''}</div></div>
                 <div><div className="cg-eyebrow mb-0.5">Prioridad</div>{selected.priority ? <StatusBadge tone={(PRIO[selected.priority] || PRIO.media).tone} dot={false}>{(PRIO[selected.priority] || PRIO.media).label}</StatusBadge> : <span style={{ color: 'var(--ink-faint)' }}>—</span>}</div>
-                <div><div className="cg-eyebrow mb-0.5">Fecha / Hora</div><div className="font-medium tabular-nums">{fmtDT(selected.date)}</div></div>
+                <div><div className="cg-eyebrow mb-0.5">{t('ui.ClientIncidents.fechaHora')}</div><div className="font-medium tabular-nums">{fmtDT(selected.date)}</div></div>
                 <div><div className="cg-eyebrow mb-0.5">Respuesta</div><div className="font-medium tabular-nums">{selected.responseMin != null ? `${selected.responseMin} min` : '—'}</div></div>
-                <div><div className="cg-eyebrow mb-0.5">Reportado por</div><div className="font-medium">{selected.reportedBy?.name || '—'}{selected.reportedBy?.role ? ` (${selected.reportedBy.role})` : ''}</div></div>
+                <div><div className="cg-eyebrow mb-0.5">{t('ui.ClientIncidents.reportadoPor')}</div><div className="font-medium">{selected.reportedBy?.name || '—'}{selected.reportedBy?.role ? ` (${selected.reportedBy.role})` : ''}</div></div>
                 <div><div className="cg-eyebrow mb-0.5">Asignado a</div><div className="font-medium">{selected.assignedName || 'Sin asignar'}</div></div>
               </div>
 

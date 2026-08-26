@@ -197,7 +197,7 @@ export default function TimeOff() {
       resetForm();
     } catch (err) {
       console.error("Failed to create time-off request", err);
-      toast.error("Error al crear la solicitud. Inténtelo de nuevo.");
+      toast.error(t('comun.errorAlCrearLaSolicitud'));
     } finally {
       setSaving(false);
     }
@@ -234,11 +234,11 @@ export default function TimeOff() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "pending":
-        return <StatusBadge tone="warn">Pendiente</StatusBadge>;
+        return <StatusBadge tone="warn">{t('comun.pendiente')}</StatusBadge>;
       case "approved":
-        return <StatusBadge tone="ok">Aprobado</StatusBadge>;
+        return <StatusBadge tone="ok">{t('comun.aprobado')}</StatusBadge>;
       case "rejected":
-        return <StatusBadge tone="bad">Rechazado</StatusBadge>;
+        return <StatusBadge tone="bad">{t('comun.rechazado')}</StatusBadge>;
       default:
         return <StatusBadge tone="neutral">{status}</StatusBadge>;
     }
@@ -266,21 +266,21 @@ export default function TimeOff() {
             value={stats.pending}
             icon={<Clock />}
             delta={totalPermisos > 0 ? { value: `${pctPermisos(stats.pending)} %`, direction: stats.pending > 0 ? "up" : "flat" } : undefined}
-            hint="Esperando una decisión"
+            hint={t('comun.esperandoUnaDecision')}
           />
           <MetricTile
             label="Aprobadas"
             value={stats.approved}
             icon={<ThumbsUp />}
             delta={totalPermisos > 0 ? { value: `${pctPermisos(stats.approved)} %`, direction: "up" } : undefined}
-            hint="Del total de solicitudes"
+            hint={t('comun.delTotalDeSolicitudes')}
           />
           <MetricTile
             label="Rechazadas"
             value={stats.rejected}
             icon={<ThumbsDown />}
             delta={totalPermisos > 0 ? { value: `${pctPermisos(stats.rejected)} %`, direction: stats.rejected > 0 ? "down" : "flat" } : undefined}
-            hint="Del total de solicitudes"
+            hint={t('comun.delTotalDeSolicitudes')}
           />
         </Stagger>
 
@@ -329,10 +329,10 @@ export default function TimeOff() {
                   <div className="grid gap-6 py-6">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="grid gap-2">
-                        <Label>Vigilante</Label>
+                        <Label>{t('comun.vigilante')}</Label>
                         <Select value={form.guard} onValueChange={(v) => setForm({ ...form, guard: v })}>
                           <SelectTrigger>
-                            <SelectValue placeholder="Seleccionar" />
+                            <SelectValue placeholder={t('kit.select.placeholder')} />
                           </SelectTrigger>
                           <SelectContent>
                             {guards.map((g) => (
@@ -345,7 +345,7 @@ export default function TimeOff() {
                         <Label>Tipo*</Label>
                         <Select value={form.type} onValueChange={(v) => setForm({ ...form, type: v })}>
                           <SelectTrigger>
-                            <SelectValue placeholder="Seleccionar" />
+                            <SelectValue placeholder={t('kit.select.placeholder')} />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="vacation">Vacaciones</SelectItem>
@@ -364,7 +364,7 @@ export default function TimeOff() {
                         <Input type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} />
                       </div>
                       <div className="grid gap-2">
-                        <Label>Hora</Label>
+                        <Label>{t('comun.hora')}</Label>
                         <Input type="time" value={form.startTime} onChange={(e) => setForm({ ...form, startTime: e.target.value })} />
                       </div>
                     </div>
@@ -375,7 +375,7 @@ export default function TimeOff() {
                         <Input type="date" value={form.endDate} onChange={(e) => setForm({ ...form, endDate: e.target.value })} />
                       </div>
                       <div className="grid gap-2">
-                        <Label>Hora</Label>
+                        <Label>{t('comun.hora')}</Label>
                         <Input type="time" value={form.endTime} onChange={(e) => setForm({ ...form, endTime: e.target.value })} />
                       </div>
                     </div>
@@ -432,12 +432,12 @@ export default function TimeOff() {
             <TableHeader style={{ background: "var(--glass-sunken)" }}>
               <TableRow>
                 <TableHead className="w-[50px]"><Checkbox /></TableHead>
-                <TableHead className="cg-eyebrow">Fecha de solicitud</TableHead>
-                <TableHead className="cg-eyebrow">Vigilante</TableHead>
-                <TableHead className="cg-eyebrow">Tipo</TableHead>
-                <TableHead className="cg-eyebrow">Desde</TableHead>
-                <TableHead className="cg-eyebrow">Hasta</TableHead>
-                <TableHead className="cg-eyebrow">Estado</TableHead>
+                <TableHead className="cg-eyebrow">{t('comun.fechaDeSolicitud')}</TableHead>
+                <TableHead className="cg-eyebrow">{t('comun.vigilante')}</TableHead>
+                <TableHead className="cg-eyebrow">{t('comun.tipo')}</TableHead>
+                <TableHead className="cg-eyebrow">{t('comun.desde')}</TableHead>
+                <TableHead className="cg-eyebrow">{t('comun.hasta')}</TableHead>
+                <TableHead className="cg-eyebrow">{t('comun.estado')}</TableHead>
                 <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
@@ -453,8 +453,8 @@ export default function TimeOff() {
                   <TableCell colSpan={8} className="h-[360px] text-center">
                     <EmptyState
                       icon={<CalendarOff />}
-                      title="No se encontraron resultados"
-                      description="No pudimos encontrar ningún elemento que coincida con su búsqueda."
+                      title={t('kit.table.emptyTitle')}
+                      description={t('comun.noPudimosEncontrarNingunElemento')}
                       className="border-0 py-2"
                     />
                   </TableCell>

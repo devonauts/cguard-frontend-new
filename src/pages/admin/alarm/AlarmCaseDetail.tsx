@@ -154,7 +154,7 @@ export default function AlarmCaseDetail() {
 
   const onDispatch = async () => {
     if (!dTarget.trim()) {
-      toast.error("Indique el destino del despacho");
+      toast.error(t('ui.AlarmCaseDetail.indiqueElDestinoDelDespacho'));
       return;
     }
     const ok = await runAction(
@@ -199,7 +199,7 @@ export default function AlarmCaseDetail() {
 
   const onNote = async () => {
     if (!noteText.trim()) {
-      toast.error("Escriba una nota");
+      toast.error(t('ui.AlarmCaseDetail.escribaUnaNota'));
       return;
     }
     const ok = await runAction(
@@ -231,7 +231,7 @@ export default function AlarmCaseDetail() {
           <EmptyState
             icon={<Siren />}
             title="Caso no encontrado"
-            description="El caso solicitado no existe o ya no está disponible."
+            description={t('ui.AlarmCaseDetail.elCasoSolicitadoNoExiste')}
             action={
               <Button variant="outline" onClick={() => navigate("/alarm/queue")}>
                 <ArrowLeft className="size-4" />
@@ -372,9 +372,7 @@ export default function AlarmCaseDetail() {
               disabled={busy || Boolean(data.incidentId)}
               onClick={() => setIncidentOpen(true)}
             >
-              <AlertTriangle className="size-4" />
-              Crear incidente
-            </Button>
+              <AlertTriangle className="size-4" />{" "}{t('comun.crearIncidente')}{" "}</Button>
             <Button
               variant="outline"
               size="sm"
@@ -418,7 +416,7 @@ export default function AlarmCaseDetail() {
                 <PanelField label="Panel" value={panel.name} />
                 <PanelField label="Cuenta" value={panel.accountNumber} mono />
                 <PanelField
-                  label="Tipo"
+                  label={t('comun.tipo')}
                   value={
                     panel.panelType
                       ? { intrusion: "Intrusión", fire: "Incendio", holdup: "Atraco", access: "Acceso", environmental: "Ambiental" }[panel.panelType] || panel.panelType
@@ -438,7 +436,7 @@ export default function AlarmCaseDetail() {
                       : null
                   }
                 />
-                <PanelField label="Estado del panel" value={panel.status} />
+                <PanelField label={t('ui.AlarmCaseDetail.estadoDelPanel')} value={panel.status} />
                 <PanelField label={t("ui.AlarmCaseDetail.ultimaSenal", "Última señal")} value={formatWhen(panel.lastSignalAt)} />
                 {panel.notes ? (
                   <div className="flex items-start gap-1.5 pt-1 text-muted-foreground">
@@ -469,7 +467,7 @@ export default function AlarmCaseDetail() {
             }
           >
             {sortedEvents.length === 0 ? (
-              <EmptyState className="border-0 py-6" icon={<FileText />} title="Sin eventos registrados" />
+              <EmptyState className="border-0 py-6" icon={<FileText />} title={t('ui.AlarmCaseDetail.sinEventosRegistrados')} />
             ) : (
               <ol className="relative space-y-4 border-l pl-5" style={{ borderColor: 'var(--hairline)' }}>
                 {sortedEvents.map((ev) => {
@@ -579,7 +577,7 @@ export default function AlarmCaseDetail() {
       >
         <div className="space-y-4">
           <div className="space-y-1.5">
-            <Label htmlFor="d-type">Tipo</Label>
+            <Label htmlFor="d-type">{t('comun.tipo')}</Label>
             <select
               id="d-type"
               className={selectClass}
@@ -608,7 +606,7 @@ export default function AlarmCaseDetail() {
               id="d-note"
               value={dNote}
               onChange={(e) => setDNote(e.target.value)}
-              placeholder="Instrucciones para el despacho…"
+              placeholder={t('ui.AlarmCaseDetail.instruccionesParaElDespacho')}
               rows={3}
             />
           </div>
@@ -618,7 +616,7 @@ export default function AlarmCaseDetail() {
       {/* Close */}
       <Modal
         open={closeOpen}
-        title="Cerrar caso"
+        title={t('ui.AlarmCaseDetail.cerrarCaso')}
         icon={<Lock className="size-4" />}
         onOpenChange={(o) => { if (!o) setCloseOpen(false); }}
         footer={
@@ -656,7 +654,7 @@ export default function AlarmCaseDetail() {
       {/* Incident */}
       <Modal
         open={incidentOpen}
-        title="Crear incidente"
+        title={t('comun.crearIncidente')}
         icon={<AlertTriangle className="size-4" />}
         onOpenChange={(o) => { if (!o) setIncidentOpen(false); }}
         footer={
@@ -687,7 +685,7 @@ export default function AlarmCaseDetail() {
               id="inc-desc"
               value={incDescription}
               onChange={(e) => setIncDescription(e.target.value)}
-              placeholder="Detalle del incidente…"
+              placeholder={t('ui.AlarmCaseDetail.detalleDelIncidente')}
               rows={4}
             />
           </div>
@@ -697,7 +695,7 @@ export default function AlarmCaseDetail() {
       {/* Note */}
       <Modal
         open={noteOpen}
-        title="Agregar nota"
+        title={t('ui.AlarmCaseDetail.agregarNota')}
         icon={<StickyNote className="size-4" />}
         onOpenChange={(o) => { if (!o) setNoteOpen(false); }}
         footer={
@@ -718,7 +716,7 @@ export default function AlarmCaseDetail() {
             id="note-text"
             value={noteText}
             onChange={(e) => setNoteText(e.target.value)}
-            placeholder="Observaciones del operador…"
+            placeholder={t('ui.AlarmCaseDetail.observacionesDelOperador')}
             rows={4}
           />
         </div>

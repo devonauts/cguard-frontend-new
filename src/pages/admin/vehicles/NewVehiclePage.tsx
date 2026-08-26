@@ -168,7 +168,7 @@ export default function NewVehiclePage() {
           payload.imageUrl = imageFileObj;
         }
         const resp = await vehicleService.create(payload);
-        toast.success('Vehículo creado');
+        toast.success(t('comun.vehiculoCreado'));
         console.log('Vehículo creado', resp);
         navigate('/vehicle-patrol/vehicles');
       }
@@ -383,7 +383,7 @@ export default function NewVehiclePage() {
                     <FormLabel>Propiedad <Obligatorio /></FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar" />
+                        <SelectValue placeholder={t('kit.select.placeholder')} />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="propio">Propio</SelectItem>
@@ -398,7 +398,7 @@ export default function NewVehiclePage() {
            </Section>
 
            {/* ── Notas ──────────────────────────────────────────────────── */}
-           <Section title="Notas" icon={<FileText />}>
+           <Section title={t('comun.notas')} icon={<FileText />}>
               <FormField
                 control={form.control}
                 name="description"
@@ -416,7 +416,7 @@ export default function NewVehiclePage() {
 
            <div className="flex items-center justify-end gap-2">
              <Button variant="outline" asChild>
-               <Link to="/vehicle-patrol/vehicles">Cancelar</Link>
+               <Link to="/vehicle-patrol/vehicles">{t('actions.cancel')}</Link>
              </Button>
              <Button
                type="submit"

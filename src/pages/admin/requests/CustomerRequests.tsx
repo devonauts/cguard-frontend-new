@@ -151,7 +151,7 @@ export default function CustomerRequests() {
             hint="Sobre el total recibido"
           />
           <MetricTile label="Atendidas" value={stats.closed} icon={<MailOpen />} hint="Solicitudes ya cerradas" />
-          <MetricTile label="Total" value={stats.total} icon={<Layers />} hint="Recibidas desde la app de clientes" />
+          <MetricTile label={t('comun.total')} value={stats.total} icon={<Layers />} hint="Recibidas desde la app de clientes" />
         </Stagger>
 
         {/* Barra de filtros */}
@@ -159,10 +159,10 @@ export default function CustomerRequests() {
           <div className="w-full md:w-52">
             <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v as "all" | "abierto" | "cerrado"); setPage(1); }}>
               <SelectTrigger>
-                <SelectValue placeholder="Todos los estados" />
+                <SelectValue placeholder={t('comun.todosLosEstados')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos los estados</SelectItem>
+                <SelectItem value="all">{t('comun.todosLosEstados')}</SelectItem>
                 <SelectItem value="abierto">Abierta</SelectItem>
                 <SelectItem value="cerrado">Atendida</SelectItem>
               </SelectContent>
@@ -189,12 +189,12 @@ export default function CustomerRequests() {
           <Table className="min-w-[880px]">
             <TableHeader style={{ background: "var(--glass-sunken)" }}>
               <TableRow>
-                <TableHead className="cg-eyebrow">Fecha</TableHead>
-                <TableHead className="cg-eyebrow">Cliente</TableHead>
+                <TableHead className="cg-eyebrow">{t('comun.fecha')}</TableHead>
+                <TableHead className="cg-eyebrow">{t('comun.cliente')}</TableHead>
                 <TableHead className="cg-eyebrow">Asunto</TableHead>
                 <TableHead className="cg-eyebrow">Mensaje</TableHead>
-                <TableHead className="cg-eyebrow">Puesto</TableHead>
-                <TableHead className="cg-eyebrow">Estado</TableHead>
+                <TableHead className="cg-eyebrow">{t('comun.puesto')}</TableHead>
+                <TableHead className="cg-eyebrow">{t('comun.estado')}</TableHead>
                 <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>

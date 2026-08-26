@@ -143,7 +143,7 @@ export default function SupervisorRegistration() {
         localStorage.removeItem("authToken");
         localStorage.removeItem("user");
       } catch { /* ignore */ }
-      toast.success("¡Cuenta activada!");
+      toast.success(t('ui.registration.cuentaActivada'));
       setDone(true);
       try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch {}
     } catch (err: any) {
@@ -222,7 +222,7 @@ export default function SupervisorRegistration() {
             </a>
           </div>
 
-          <p className="mt-5 text-xs" style={{ color: 'var(--ink-faint)' }}>Ya puedes cerrar esta ventana.</p>
+          <p className="mt-5 text-xs" style={{ color: 'var(--ink-faint)' }}>{t('ui.registration.yaPuedesCerrarEstaVentana')}</p>
         </FadeIn>
       ) : (
         <form className="space-y-5" onSubmit={handleSubmit}>
@@ -234,14 +234,14 @@ export default function SupervisorRegistration() {
 
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
-              <Etiqueta htmlFor="sup-nombre">Nombre</Etiqueta>
+              <Etiqueta htmlFor="sup-nombre">{t('comun.nombre')}</Etiqueta>
               <input
                 id="sup-nombre"
                 className={CAMPO}
                 style={estiloError('name')}
                 value={name}
                 onChange={(e) => { setName(e.target.value); setErrors((p) => ({ ...p, name: undefined })); }}
-                placeholder="Nombre"
+                placeholder={t('comun.nombre')}
                 disabled={isLoading || lockedName}
                 aria-invalid={!!errors.name}
               />
@@ -256,7 +256,7 @@ export default function SupervisorRegistration() {
                 style={estiloError('email')}
                 value={email}
                 onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: undefined })); }}
-                placeholder="tu@correo.com"
+                placeholder={t('comun.tuCorreoCom')}
                 disabled={isLoading || lockedEmail}
                 aria-invalid={!!errors.email}
               />

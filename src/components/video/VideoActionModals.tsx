@@ -20,6 +20,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { videoService, type Camera } from "@/lib/api/videoService";
+import i18n from "@/i18n";
 
 /* ------------------------------------------------------------------ */
 /* Shared shell                                                        */
@@ -82,7 +83,7 @@ function ModalShell({ open, onClose, title, icon, children, footer }: ModalShell
             onClick={onClose}
             className="cg-focus rounded-full p-1 transition-colors hover:bg-[var(--glass-sunken)]"
             style={{ color: "var(--ink-faint)" }}
-            aria-label="Cerrar"
+            aria-label={i18n.t('actions.close')}
           >
             <X className="size-5" />
           </button>
@@ -193,7 +194,7 @@ export function TrimShareModal({
       return;
     }
     if (new Date(endAt) <= new Date(startAt)) {
-      toast.error("El fin debe ser posterior al inicio");
+      toast.error(i18n.t('comun.elFinDebeSerPosterior'));
       return;
     }
     setBusy(true);
@@ -225,7 +226,7 @@ export function TrimShareModal({
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
       copyTimeoutRef.current = setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error("No se pudo copiar el enlace");
+      toast.error(i18n.t('comun.noSePudoCopiarEl'));
     }
   };
 
@@ -237,9 +238,7 @@ export function TrimShareModal({
       icon={<Scissors className="size-4" />}
       footer={
         shareUrl ? (
-          <Button variant="outline" onClick={onClose}>
-            Cerrar
-          </Button>
+          <Button variant="outline" onClick={onClose}>{" "}{i18n.t('actions.close')}{" "}</Button>
         ) : (
           <>
             <Button variant="outline" onClick={onClose} disabled={busy}>
@@ -403,7 +402,7 @@ export function CreateIncidentModal({
         setBusy(false);
         return;
       }
-      toast.success("Incidente creado");
+      toast.success(t('comun.incidenteCreado'));
       onCreated?.(incident);
       onClose();
     } catch (e: any) {
@@ -417,7 +416,7 @@ export function CreateIncidentModal({
     <ModalShell
       open={open}
       onClose={onClose}
-      title="Crear incidente"
+      title={t('comun.crearIncidente')}
       icon={<AlertTriangle className="size-4" />}
       footer={
         <>
@@ -425,9 +424,7 @@ export function CreateIncidentModal({
             Cancelar
           </Button>
           <GoldButton busy={busy} onClick={handleCreate}>
-            <AlertTriangle className="size-4" />
-            Crear incidente
-          </GoldButton>
+            <AlertTriangle className="size-4" />{" "}{t('comun.crearIncidente')}{" "}</GoldButton>
         </>
       }
     >
@@ -468,9 +465,9 @@ export function CreateIncidentModal({
             value={priority}
             onChange={(e) => setPriority(e.target.value as Priority)}
           >
-            <option value="baja">Baja</option>
-            <option value="media">Media</option>
-            <option value="alta">Alta</option>
+            <option value="baja">{t('comun.baja')}</option>
+            <option value="media">{t('comun.media')}</option>
+            <option value="alta">{t('comun.alta')}</option>
             <option value="critica">{t("ui.VideoActionModals.critica", "Crítica")}</option>
           </select>
         </div>

@@ -95,7 +95,7 @@ export default function PassdownsPage() {
       render: (_v, r) => (
         <span className="flex items-center gap-1.5 font-semibold">
           {r.stationName || ((r as any).channel === "supervisor" ? "Supervisión" : "—")}
-          {(r as any).channel === "supervisor" && <StatusBadge tone="warn" dot={false}>Supervisor</StatusBadge>}
+          {(r as any).channel === "supervisor" && <StatusBadge tone="warn" dot={false}>{t('comun.supervisor')}</StatusBadge>}
         </span>
       ),
     },
@@ -149,12 +149,12 @@ export default function PassdownsPage() {
         <PageContainer width="wide">
           <PageHeader
             icon={<ClipboardSignature />}
-            title="Pases de turno"
+            title={t('ui.PassdownsPage.pasesDeTurno')}
             subtitle="Entregas de turno de los vigilantes: novedades, consignas e imágenes del relevo."
           />
 
           <Section
-            title="Pases de turno"
+            title={t('ui.PassdownsPage.pasesDeTurno')}
             icon={<Repeat />}
             action={
               <Segmented<PassdownStatus | "all">
@@ -192,12 +192,12 @@ export default function PassdownsPage() {
         ) : (
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-              <Field label="Puesto" value={detail.stationName} />
+              <Field label={t('comun.puesto')} value={detail.stationName} />
               <Field label="Vigilante saliente" value={detail.outgoingGuardName} />
-              <Field label="Turno" value={detail.shiftLabel} />
+              <Field label={t('comun.turno')} value={detail.shiftLabel} />
               <Field label="Creado" value={fmtDate(detail.createdAt)} />
               <div className="min-w-0">
-                <div className="cg-eyebrow mb-1">Estado</div>
+                <div className="cg-eyebrow mb-1">{t('comun.estado')}</div>
                 <StatusPill status={detail.status} />
               </div>
               {detail.status === "received" && (
@@ -288,7 +288,7 @@ export default function PassdownsPage() {
                           {ins.wasItDone ? (
                             <StatusBadge tone="ok">Realizada</StatusBadge>
                           ) : (
-                            <StatusBadge tone="neutral">Pendiente</StatusBadge>
+                            <StatusBadge tone="neutral">{t('comun.pendiente')}</StatusBadge>
                           )}
                         </div>
                       </div>

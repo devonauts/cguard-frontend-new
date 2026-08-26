@@ -105,7 +105,7 @@ const Reports: React.FC<ReportsProps> = ({ onNavigate }) => {
         {sections.length === 0 ? (
           <EmptyState
             icon={<SearchX />}
-            title="Sin resultados"
+            title={t('kit.select.empty')}
             description={`Ningún informe coincide con “${query}”.`}
             action={
               <Button variant="outline" onClick={() => setQuery("")}>

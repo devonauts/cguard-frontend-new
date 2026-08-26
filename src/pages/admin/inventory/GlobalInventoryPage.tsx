@@ -171,7 +171,7 @@ export default function GlobalInventoryPage() {
     setForm((f) => ({ ...f, [k]: v } as InventoryItemInput));
 
   const handleSave = async () => {
-    if (!form.name.trim()) { toast.error('El nombre es obligatorio'); return; }
+    if (!form.name.trim()) { toast.error(t('comun.elNombreEsObligatorio')); return; }
     try {
       setSaving(true);
       const payload: InventoryItemInput = {
@@ -310,10 +310,10 @@ export default function GlobalInventoryPage() {
           </div>
           <Select value={filterType || '__all__'} onValueChange={(v) => { setPage(0); setFilterType(v === '__all__' ? '' : v); }}>
             <SelectTrigger className="w-44">
-              <SelectValue placeholder="Tipo" />
+              <SelectValue placeholder={t('comun.tipo')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="__all__">Todos los tipos</SelectItem>
+              <SelectItem value="__all__">{t('comun.todosLosTipos')}</SelectItem>
               {ITEM_TYPES.map((t) => (
                 <SelectItem key={t} value={t}>{ITEM_TYPE_LABELS[t]}</SelectItem>
               ))}
@@ -321,10 +321,10 @@ export default function GlobalInventoryPage() {
           </Select>
           <Select value={filterStatus || '__all__'} onValueChange={(v) => { setPage(0); setFilterStatus(v === '__all__' ? '' : v); }}>
             <SelectTrigger className="w-44">
-              <SelectValue placeholder="Estado" />
+              <SelectValue placeholder={t('comun.estado')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="__all__">Todos los estados</SelectItem>
+              <SelectItem value="__all__">{t('comun.todosLosEstados')}</SelectItem>
               {STATUSES.map((s) => (
                 <SelectItem key={s} value={s}>{ITEM_STATUS_LABELS[s]}</SelectItem>
               ))}
@@ -447,11 +447,11 @@ export default function GlobalInventoryPage() {
                 <thead className="border-b" style={{ background: 'var(--glass-sunken)' }}>
                   <tr>
                     <th className="w-10 px-4 py-3 text-left font-semibold" style={{ color: 'var(--ink-soft)' }}></th>
-                    <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--ink-soft)' }}>Nombre</th>
-                    <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--ink-soft)' }}>Tipo</th>
+                    <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--ink-soft)' }}>{t('comun.nombre')}</th>
+                    <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--ink-soft)' }}>{t('comun.tipo')}</th>
                     <th className="hidden px-4 py-3 text-left font-semibold sm:table-cell" style={{ color: 'var(--ink-soft)' }}>N.º de serie</th>
                     <th className="hidden px-4 py-3 text-left font-semibold md:table-cell" style={{ color: 'var(--ink-soft)' }}>{t("ui.GlobalInventory.condicion", "Condición")}</th>
-                    <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--ink-soft)' }}>Estado</th>
+                    <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--ink-soft)' }}>{t('comun.estado')}</th>
                     <th className="px-4 py-3 text-right font-semibold" style={{ color: 'var(--ink-soft)' }}>Acciones</th>
                   </tr>
                 </thead>
@@ -527,7 +527,7 @@ export default function GlobalInventoryPage() {
                                 />
                                 {item.notes && (
                                   <div className="col-span-2 min-w-0">
-                                    <div className="cg-eyebrow mb-0.5">Notas</div>
+                                    <div className="cg-eyebrow mb-0.5">{t('comun.notas')}</div>
                                     <div className="text-sm" style={{ color: 'var(--ink-soft)' }}>{item.notes}</div>
                                   </div>
                                 )}
@@ -623,8 +623,7 @@ export default function GlobalInventoryPage() {
             <div className="space-y-4">
               {/* Nombre */}
               <div className="space-y-1">
-                <Label htmlFor="inv-name">
-                  Nombre <span style={{ color: 'var(--bad-text)' }}>*</span>
+                <Label htmlFor="inv-name">{" "}{t('comun.nombre')}{" "}<span style={{ color: 'var(--bad-text)' }}>*</span>
                 </Label>
                 <Input
                   id="inv-name"
@@ -636,8 +635,7 @@ export default function GlobalInventoryPage() {
 
               {/* Tipo */}
               <div className="space-y-1">
-                <Label>
-                  Tipo <span style={{ color: 'var(--bad-text)' }}>*</span>
+                <Label>{" "}{t('comun.tipo')}{" "}<span style={{ color: 'var(--bad-text)' }}>*</span>
                 </Label>
                 <Select value={form.type} onValueChange={(v) => setField('type', v as ItemType)}>
                   <SelectTrigger>
@@ -702,7 +700,7 @@ export default function GlobalInventoryPage() {
                   </Select>
                 </div>
                 <div className="space-y-1">
-                  <Label>Estado</Label>
+                  <Label>{t('comun.estado')}</Label>
                   <Select value={form.status} onValueChange={(v) => setField('status', v as ItemStatus)}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -717,7 +715,7 @@ export default function GlobalInventoryPage() {
               {/* Vencimiento (sólo chaleco / arma) */}
               {(form.type === 'chaleco_antibalas' || form.type === 'arma') && (
                 <div className="space-y-1">
-                  <Label htmlFor="inv-exp">Fecha de vencimiento</Label>
+                  <Label htmlFor="inv-exp">{t('comun.fechaDeVencimiento')}</Label>
                   <div className="relative">
                     <CalendarClock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
                     <Input
@@ -733,7 +731,7 @@ export default function GlobalInventoryPage() {
 
               {/* Notas */}
               <div className="space-y-1">
-                <Label htmlFor="inv-notes">Notas (opcional)</Label>
+                <Label htmlFor="inv-notes">{t('comun.notasOpcional')}</Label>
                 <Textarea
                   id="inv-notes"
                   className="resize-none"
@@ -834,7 +832,7 @@ export default function GlobalInventoryPage() {
             className="glass-flat cg-focus absolute right-4 top-4 rounded-full p-2 transition-colors"
             style={{ color: 'var(--ink)' }}
             onClick={() => setLightboxSrc(null)}
-            aria-label="Cerrar"
+            aria-label={t('actions.close')}
           >
             <X className="h-6 w-6" />
           </button>

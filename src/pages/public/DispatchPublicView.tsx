@@ -250,7 +250,7 @@ export default function DispatchPublicView() {
                 </tr>
 
                 <tr className="border-b">
-                  <td className="py-3 px-4 text-xs font-medium text-muted-foreground">Ubicación del incidente</td>
+                  <td className="py-3 px-4 text-xs font-medium text-muted-foreground">{t('ui.DispatchPublicView.ubicacionDelIncidente')}</td>
                   <td className="py-3 px-4 text-sm text-foreground">{payload.location || payload.incidentLocation || '-'}</td>
                   <td className="py-3 px-4 text-xs font-medium text-muted-foreground">Dispatcher</td>
                   <td className="py-3 px-4 text-sm text-foreground">{(typeof payload.guardName === 'string' ? payload.guardName : (payload.guardName?.fullName || payload.guardName?.name)) || '-'}</td>
@@ -292,7 +292,7 @@ export default function DispatchPublicView() {
             </div>
           </Section>
 
-          <Section title="Vigilante asignado" icon={<ShieldAlert />}>
+          <Section title={t('ui.DispatchPublicView.vigilanteAsignado')} icon={<ShieldAlert />}>
             <div className="text-sm">
               <div className="overflow-x-auto rounded-xl border">
                 {/* `table-fixed w-full` repartía el ancho a partes iguales pase
@@ -304,7 +304,7 @@ export default function DispatchPublicView() {
                   <thead>
                     <tr className="bg-muted/40 text-left">
                       <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Guard</th>
-                      <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Estado</th>
+                      <th className="py-2 px-3 text-xs font-medium text-muted-foreground">{t('comun.estado')}</th>
                       <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Date/Time</th>
                     </tr>
                   </thead>

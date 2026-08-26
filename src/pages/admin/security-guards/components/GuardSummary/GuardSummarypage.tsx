@@ -321,7 +321,7 @@ export default function GuardSummary({ guard }: Props) {
               icon={<Gauge />}
             />
             <StatCard
-              label="Asistencia"
+              label={t('comun.asistencia')}
               value={stats.attendanceRate != null ? `${stats.attendanceRate}%` : '—'}
               hint={`${stats.shiftsWorked ?? 0}/${stats.shiftsScheduled ?? 0} turnos`}
               accent="info"
@@ -350,7 +350,7 @@ export default function GuardSummary({ guard }: Props) {
       {/* ── SCHEDULE SNAPSHOT (this week) ──────────────────────────────────── */}
       <Section title="Horario esta semana" icon={<CalendarDays className="h-4 w-4" />}>
         {scheduleLoading && schedule === null ? (
-          <div className="py-6 text-center text-sm" style={{ color: 'var(--ink-soft)' }}>Cargando horario…</div>
+          <div className="py-6 text-center text-sm" style={{ color: 'var(--ink-soft)' }}>{t('comun.cargandoHorario')}</div>
         ) : scheduleRows.length === 0 ? (
           <EmptyState
             icon={<CalendarDays className="h-5 w-5" />}

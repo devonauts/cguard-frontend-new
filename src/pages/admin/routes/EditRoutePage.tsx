@@ -128,7 +128,7 @@ export default function EditRoutePage() {
           ]}
         />
         <PageContainer width="wide" className="p-6">
-          <PageHeader icon={<RouteIcon />} title="Editar ruta" subtitle="Cargando ruta..." />
+          <PageHeader icon={<RouteIcon />} title={t('ui.EditRoutePage.editarRuta')} subtitle="Cargando ruta..." />
           <SkeletonCards count={4} />
         </PageContainer>
       </AppLayout>
@@ -145,7 +145,7 @@ export default function EditRoutePage() {
           ]}
         />
         <PageContainer width="wide" className="p-6">
-          <PageHeader icon={<RouteIcon />} title="Editar ruta" />
+          <PageHeader icon={<RouteIcon />} title={t('ui.EditRoutePage.editarRuta')} />
           <EmptyState icon={<AlertCircle />} title={t("ui.EditRoute.noSeEncontroLaRuta", "No se encontró la ruta")} description={t("ui.EditRoute.laRutaSolicitadaNoExiste", "La ruta solicitada no existe o no está disponible.")} />
         </PageContainer>
       </AppLayout>
@@ -163,7 +163,7 @@ export default function EditRoutePage() {
       <PageContainer width="wide" className="p-6">
         <PageHeader
           icon={<RouteIcon />}
-          title="Editar ruta"
+          title={t('ui.EditRoutePage.editarRuta')}
           subtitle={routeData?.name ? `Modifica «${routeData.name}»` : 'Modifica la configuración de la ruta'}
         />
         <RouteForm

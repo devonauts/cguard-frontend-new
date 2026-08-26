@@ -314,7 +314,7 @@ export default function Visitors() {
             return all.filter((r) => ids.includes(String(r.id)));
         } catch (e) {
             console.error('export full-set fetch failed', e);
-            toast.error('No se pudo obtener el listado completo; se exportó la página actual');
+            toast.error(t('comun.noSePudoObtenerEl'));
             return fromPage;
         }
     };
@@ -969,21 +969,21 @@ export default function Visitors() {
                         value={logsCount}
                         icon={<Users />}
                         accent="brand"
-                        hint="Con los filtros aplicados"
+                        hint={t('comun.conLosFiltrosAplicados')}
                     />
                     <StatCard
-                        label="Dentro de las instalaciones"
+                        label={t('comun.dentroDeLasInstalaciones')}
                         value={dentro}
                         icon={<LogIn />}
                         accent="ok"
-                        hint="De los registros mostrados"
+                        hint={t('comun.deLosRegistrosMostrados')}
                     />
                     <StatCard
-                        label="Con salida registrada"
+                        label={t('comun.conSalidaRegistrada')}
                         value={conSalida}
                         icon={<LogOut />}
                         accent="neutral"
-                        hint="De los registros mostrados"
+                        hint={t('comun.deLosRegistrosMostrados')}
                     />
                 </div>
 
@@ -1182,7 +1182,7 @@ export default function Visitors() {
                                         <th className="cg-eyebrow px-2 py-2">{t('visitantes.logTable.postSite') || 'Puesto de seguridad'}</th>
                                         <th className="cg-eyebrow px-2 py-2">{t('visitantes.logTable.station') || 'Estación'}</th>
                                         <th className="cg-eyebrow px-2 py-2">{t('visitantes.logTable.date') || 'Fecha'}</th>
-                                        <th className="cg-eyebrow px-2 py-2">Estado</th>
+                                        <th className="cg-eyebrow px-2 py-2">{t('comun.estado')}</th>
                                         <th className="cg-eyebrow px-2 py-2 text-right" />
                                     </tr>
                                 </thead>
@@ -1199,7 +1199,7 @@ export default function Visitors() {
                                                 <EmptyState
                                                     icon={<Users />}
                                                     title={t('visitantes.noLogs') || 'No se encontraron registros de bitácoras'}
-                                                    description="Ajusta la búsqueda o registra un visitante nuevo."
+                                                    description={t('ui.Visitors.ajustaLaBusquedaORegistra')}
                                                     className="border-0"
                                                 />
                                             </td>
@@ -1226,7 +1226,7 @@ export default function Visitors() {
                                                             {t('visitantes.logTable.exitTime') || 'Hora de salida'}: {formatDateTime(salidaDe(r))}
                                                         </StatusBadge>
                                                     ) : visitaVencida(r) ? (
-                                                        <StatusBadge tone="warn">Sin salida registrada</StatusBadge>
+                                                        <StatusBadge tone="warn">{t('comun.sinSalidaRegistrada')}</StatusBadge>
                                                     ) : (
                                                         <StatusBadge tone="ok" dot={false}>
                                                             <span className="cc-dot" style={{ background: 'var(--ok)' }} />
@@ -1264,7 +1264,7 @@ export default function Visitors() {
                             <EmptyState
                                 icon={<Users />}
                                 title={t('visitantes.noLogs') || 'No se encontraron registros de bitácoras'}
-                                description="Ajusta la búsqueda o registra un visitante nuevo."
+                                description={t('ui.Visitors.ajustaLaBusquedaORegistra')}
                             />
                         ) : (
                             logs.map((r) => (
@@ -1279,7 +1279,7 @@ export default function Visitors() {
                                                 {t('visitantes.logTable.exitTime') || 'Hora de salida'}: {formatDateTime(salidaDe(r))}
                                             </StatusBadge>
                                         ) : visitaVencida(r) ? (
-                                            <StatusBadge tone="warn">Sin salida registrada</StatusBadge>
+                                            <StatusBadge tone="warn">{t('comun.sinSalidaRegistrada')}</StatusBadge>
                                         ) : (
                                             <StatusBadge tone="ok" dot={false}>
                                                 <span className="cc-dot" style={{ background: 'var(--ok)' }} />
@@ -1388,12 +1388,10 @@ export default function Visitors() {
                                         {t('visitantes.logTable.exitTime') || 'Hora de salida'}: {formatDateTime(salidaDe(selectedLog))}
                                     </StatusBadge>
                                 ) : visitaVencida(selectedLog) ? (
-                                    <StatusBadge tone="warn">Sin salida registrada</StatusBadge>
+                                    <StatusBadge tone="warn">{t('comun.sinSalidaRegistrada')}</StatusBadge>
                                 ) : (
                                     <StatusBadge tone="ok" dot={false}>
-                                        <span className="cc-dot" style={{ background: 'var(--ok)' }} />
-                                        Dentro de las instalaciones
-                                    </StatusBadge>
+                                        <span className="cc-dot" style={{ background: 'var(--ok)' }} />{" "}{t('comun.dentroDeLasInstalaciones')}{" "}</StatusBadge>
                                 )}
                             </div>
                             <div className="glass-sunken grid grid-cols-2 gap-4 p-4">

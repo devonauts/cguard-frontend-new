@@ -189,7 +189,7 @@ export default function TaskTracking() {
           <div className="space-y-3">
             <Textarea placeholder="Describe la tarea…" value={form.taskToDo} onChange={(e) => setForm((f) => ({ ...f, taskToDo: e.target.value }))} />
             <Select value={form.stationId} onValueChange={(v) => setForm((f) => ({ ...f, stationId: v }))}>
-              <SelectTrigger><SelectValue placeholder="Puesto" /></SelectTrigger>
+              <SelectTrigger><SelectValue placeholder={t('comun.puesto')} /></SelectTrigger>
               <SelectContent>
                 {stations.map((s) => <SelectItem key={s.id} value={s.id}>{s.label}</SelectItem>)}
               </SelectContent>
@@ -199,15 +199,15 @@ export default function TaskTracking() {
               <Select value={form.priority} onValueChange={(v) => setForm((f) => ({ ...f, priority: v }))}>
                 <SelectTrigger><SelectValue placeholder="Prioridad" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="alta">Alta</SelectItem>
-                  <SelectItem value="media">Media</SelectItem>
-                  <SelectItem value="baja">Baja</SelectItem>
+                  <SelectItem value="alta">{t('comun.alta')}</SelectItem>
+                  <SelectItem value="media">{t('comun.media')}</SelectItem>
+                  <SelectItem value="baja">{t('comun.baja')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)} disabled={saving}>Cancelar</Button>
+            <Button variant="outline" onClick={() => setOpen(false)} disabled={saving}>{t('actions.cancel')}</Button>
             <Button onClick={submit} disabled={saving}>{saving ? "Creando…" : "Crear y asignar"}</Button>
           </DialogFooter>
         </DialogContent>
@@ -224,13 +224,13 @@ export default function TaskTracking() {
                 <p className="glass-sunken mt-1 whitespace-pre-wrap p-3 text-sm font-medium">{selected.taskToDo}</p>
               </div>
               <div className="grid grid-cols-2 gap-x-4 gap-y-3">
-                <DetailField label="Estado">
+                <DetailField label={t('comun.estado')}>
                   {(() => { const m = STATUS_META[selected.status] || STATUS_META.pending_approval; return <StatusBadge tone={m.tone}>{m.label}</StatusBadge>; })()}
                 </DetailField>
                 <DetailField label="Prioridad">
                   {(() => { const k = selected.priority || "media"; return <StatusBadge tone={PRIORITY_TONE[k] ?? "neutral"} dot={false}>{PRIORITY_LABEL[k] ?? k}</StatusBadge>; })()}
                 </DetailField>
-                <DetailField label="Puesto">{selected.taskBelongsToStation?.stationName || "—"}</DetailField>
+                <DetailField label={t('comun.puesto')}>{selected.taskBelongsToStation?.stationName || "—"}</DetailField>
                 <DetailField label="Origen">{selected.source === "client" ? "Cliente" : selected.source === "passdown" ? "Pase de turno" : selected.source === "staff" ? "Operación" : "—"}</DetailField>
                 <DetailField label={t("ui.TaskTracking.fechaLimite", "Fecha límite")}>{fmtDate(selected.dateToDoTheTask)}</DetailField>
                 <DetailField label="Creada">{fmtDate(selected.createdAt)}</DetailField>
@@ -253,7 +253,7 @@ export default function TaskTracking() {
                 <Button variant="brand" disabled={acting} onClick={() => doApproval("approve")}>{acting ? "…" : "Aprobar"}</Button>
               </>
             )}
-            <Button variant="outline" onClick={() => setSelected(null)} disabled={acting}>Cerrar</Button>
+            <Button variant="outline" onClick={() => setSelected(null)} disabled={acting}>{t('actions.close')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

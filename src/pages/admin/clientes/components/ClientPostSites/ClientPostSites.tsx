@@ -174,9 +174,9 @@ export default function ClientPostSites({ client }: { client: Client }) {
               <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t("ui.ClientPostSites.buscarSedePorNombreO", "Buscar sede por nombre o dirección")} className={`${FIELD_CLS} pl-8`} />
             </div>
             <select value={estado} onChange={(e) => setEstado(e.target.value)} className={FIELD_CLS}>
-              <option value="todos">Estado: Todos</option>
-              <option value="activa">Activa</option>
-              <option value="inactiva">Inactiva</option>
+              <option value="todos">{t('comun.estadoTodos')}</option>
+              <option value="activa">{t('comun.activa')}</option>
+              <option value="inactiva">{t('ui.ClientPostSites.inactiva')}</option>
             </select>
             <select value={ciudad} onChange={(e) => setCiudad(e.target.value)} className={FIELD_CLS}>
               <option value="todas">Ciudad: Todas</option>
@@ -193,11 +193,11 @@ export default function ClientPostSites({ client }: { client: Client }) {
                   <THead>
                     <Th>Sede</Th>
                     <Th>{t("ui.ClientPostSites.direccion", "Dirección")}</Th>
-                    <Th>Ciudad</Th>
+                    <Th>{t('comun.ciudad')}</Th>
                     {risk && <Th>Riesgo</Th>}
                     <Th>Guardias</Th>
                     <Th>Estaciones</Th>
-                    <Th>Estado</Th>
+                    <Th>{t('comun.estado')}</Th>
                     <Th title="Vigilantes asignados vs estaciones (no es cobertura en vivo)">{t("ui.ClientPostSites.asignacion", "Asignación")}</Th>
                     <Th aria-label="Acciones" />
                   </THead>
@@ -214,7 +214,7 @@ export default function ClientPostSites({ client }: { client: Client }) {
                           {/* Numbered pin: selects for the map/side panel (does NOT navigate) */}
                           <button
                             onClick={(e) => { e.stopPropagation(); setSelectedId(s.id); }}
-                            title="Ver en el mapa"
+                            title={t('comun.verEnElMapa')}
                             className="cg-focus flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold transition-transform hover:scale-110"
                             style={{ background: markerFill(markerRole(s)), color: 'oklch(1 0 0)' }}>{i + 1}</button>
                           <SmartImage
@@ -271,8 +271,7 @@ export default function ClientPostSites({ client }: { client: Client }) {
                               <BarChart3 className="mr-2 h-3.5 w-3.5" /> Dashboard de la sede
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => setSelectedId(s.id)}>
-                              <LocateFixed className="mr-2 h-3.5 w-3.5" /> Ver en el mapa
-                            </DropdownMenuItem>
+                              <LocateFixed className="mr-2 h-3.5 w-3.5" />{" "}{t('comun.verEnElMapa')}{" "}</DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={() => navigate(`/post-sites/${s.id}/edit`)}>
                               <Pencil className="mr-2 h-3.5 w-3.5" /> Editar

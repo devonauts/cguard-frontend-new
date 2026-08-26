@@ -158,7 +158,7 @@ export default function ShiftStatus() {
   const getStatusBadge = (status: ShiftStatusValue) => {
     switch (status) {
       case "pending":
-        return <StatusBadge tone="warn">Pendiente</StatusBadge>;
+        return <StatusBadge tone="warn">{t('comun.pendiente')}</StatusBadge>;
       case "in-progress":
         return <StatusBadge tone="info">En curso</StatusBadge>;
       case "completed":
@@ -223,11 +223,11 @@ export default function ShiftStatus() {
               onValueChange={(v) => { setStatusFilter(v as ShiftStatusValue | "all"); setPage(1); }}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Todos los estados" />
+                <SelectValue placeholder={t('comun.todosLosEstados')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos los estados</SelectItem>
-                <SelectItem value="pending">Pendiente</SelectItem>
+                <SelectItem value="all">{t('comun.todosLosEstados')}</SelectItem>
+                <SelectItem value="pending">{t('comun.pendiente')}</SelectItem>
                 <SelectItem value="in-progress">En Progreso</SelectItem>
                 <SelectItem value="completed">Completado</SelectItem>
                 <SelectItem value="cancelled">Cancelado</SelectItem>
@@ -268,7 +268,7 @@ export default function ShiftStatus() {
                   <div className="space-y-6 py-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="grid gap-2">
-                        <Label>Desde la Fecha</Label>
+                        <Label>{t('comun.desdeLaFecha')}</Label>
                         <Input
                           type="date"
                           value={filters.startDate}
@@ -276,7 +276,7 @@ export default function ShiftStatus() {
                         />
                       </div>
                       <div className="grid gap-2">
-                        <Label>Hora</Label>
+                        <Label>{t('comun.hora')}</Label>
                         <Input
                           type="time"
                           value={filters.startTime}
@@ -287,7 +287,7 @@ export default function ShiftStatus() {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="grid gap-2">
-                        <Label>Hasta la Fecha</Label>
+                        <Label>{t('comun.hastaLaFecha')}</Label>
                         <Input
                           type="date"
                           value={filters.endDate}
@@ -295,7 +295,7 @@ export default function ShiftStatus() {
                         />
                       </div>
                       <div className="grid gap-2">
-                        <Label>Hora</Label>
+                        <Label>{t('comun.hora')}</Label>
                         <Input
                           type="time"
                           value={filters.endTime}
@@ -342,12 +342,12 @@ export default function ShiftStatus() {
             <TableHeader style={{ background: "var(--glass-sunken)" }}>
               <TableRow>
                 <TableHead className="w-[50px]"><Checkbox /></TableHead>
-                <TableHead className="cg-eyebrow">Fecha</TableHead>
-                <TableHead className="cg-eyebrow">Vigilante</TableHead>
-                <TableHead className="cg-eyebrow">Puesto</TableHead>
-                <TableHead className="cg-eyebrow">Hora de inicio</TableHead>
-                <TableHead className="cg-eyebrow">Hora de fin</TableHead>
-                <TableHead className="cg-eyebrow">Estado</TableHead>
+                <TableHead className="cg-eyebrow">{t('comun.fecha')}</TableHead>
+                <TableHead className="cg-eyebrow">{t('comun.vigilante')}</TableHead>
+                <TableHead className="cg-eyebrow">{t('comun.puesto')}</TableHead>
+                <TableHead className="cg-eyebrow">{t('comun.horaDeInicio')}</TableHead>
+                <TableHead className="cg-eyebrow">{t('comun.horaDeFin')}</TableHead>
+                <TableHead className="cg-eyebrow">{t('comun.estado')}</TableHead>
                 <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
@@ -363,8 +363,8 @@ export default function ShiftStatus() {
                   <TableCell colSpan={8} className="h-[360px] text-center">
                     <EmptyState
                       icon={<ListChecks />}
-                      title="No se encontraron resultados"
-                      description="No pudimos encontrar ningún elemento que coincida con su búsqueda."
+                      title={t('kit.table.emptyTitle')}
+                      description={t('comun.noPudimosEncontrarNingunElemento')}
                       className="border-0 py-2"
                     />
                   </TableCell>

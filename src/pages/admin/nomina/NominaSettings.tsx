@@ -89,7 +89,7 @@ export default function NominaSettings() {
     try {
       const saved = await attendanceService.saveSettings((s ?? {}) as Record<string, unknown>);
       setS(saved);
-      toast.success("Configuración guardada");
+      toast.success(t('comun.configuracionGuardada'));
     } catch (e) {
       toast.error((e as { message?: string })?.message || "Error al guardar");
     } finally {
@@ -233,12 +233,12 @@ export default function NominaSettings() {
                     }
                     className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm"
                   >
-                    <option value="0">Domingo</option>
-                    <option value="1">Lunes</option>
-                    <option value="2">Martes</option>
+                    <option value="0">{t('ui.NominaSettings.domingo')}</option>
+                    <option value="1">{t('ui.NominaSettings.lunes')}</option>
+                    <option value="2">{t('ui.NominaSettings.martes')}</option>
                     <option value="3">{t("ui.NominaSettings.miercoles", "Miércoles")}</option>
-                    <option value="4">Jueves</option>
-                    <option value="5">Viernes</option>
+                    <option value="4">{t('ui.NominaSettings.jueves')}</option>
+                    <option value="5">{t('ui.NominaSettings.viernes')}</option>
                     <option value="6">{t("ui.NominaSettings.sabado", "Sábado")}</option>
                   </select>
                 </label>

@@ -102,7 +102,7 @@ export default function TrainingCoursesPage() {
 
   const handleCreate = async () => {
     if (!form.title.trim()) {
-      toast.error('El título es obligatorio.');
+      toast.error(t('comun.elTituloEsObligatorio'));
       return;
     }
     setSaving(true);
@@ -313,13 +313,13 @@ export default function TrainingCoursesPage() {
                 <Input type="number" min={0} value={form.pointsValue ?? 0} onChange={(e) => setForm({ ...form, pointsValue: Number(e.target.value) })} />
               </div>
               <div className="space-y-2">
-                <Label>Puntaje para aprobar (%)</Label>
+                <Label>{t('comun.puntajeParaAprobar')}</Label>
                 <Input type="number" min={0} max={100} value={form.passingScore ?? 70} onChange={(e) => setForm({ ...form, passingScore: Number(e.target.value) })} />
               </div>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpenForm(false)}>Cancelar</Button>
+            <Button variant="outline" onClick={() => setOpenForm(false)}>{t('actions.cancel')}</Button>
             <Button variant="brand" disabled={saving} onClick={handleCreate}>
               {saving ? 'Creando...' : 'Crear curso'}
             </Button>
@@ -337,8 +337,8 @@ export default function TrainingCoursesPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction className="cg-btn-bad" onClick={handleDelete}>Eliminar</AlertDialogAction>
+            <AlertDialogCancel>{t('actions.cancel')}</AlertDialogCancel>
+            <AlertDialogAction className="cg-btn-bad" onClick={handleDelete}>{t('actions.delete')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

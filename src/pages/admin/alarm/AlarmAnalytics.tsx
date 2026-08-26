@@ -18,6 +18,7 @@ import {
   Segmented,
 } from "@/components/kit";
 import { Button } from "@/components/ui/button";
+import i18n from "@/i18n";
 
 const PERIODS = [7, 30, 90, 365];
 
@@ -45,7 +46,7 @@ function toItems(obj: Record<string, number>, labeler?: (k: string) => string) {
 }
 
 function downloadCsv(rows: Record<string, unknown>[], filename: string) {
-  if (!rows.length) { toast.info("Sin registros para exportar"); return; }
+  if (!rows.length) { toast.info(i18n.t('ui.AlarmAnalytics.sinRegistrosParaExportar')); return; }
   const cols = Object.keys(rows[0]);
   const esc = (v: unknown) => {
     const s = v == null ? "" : String(v);
@@ -102,7 +103,7 @@ export default function AlarmAnalytics() {
         <PageHeader
           icon={<Activity />}
           title={t("ui.AlarmAnalytics.analisisDeMonitoreo", "Análisis de Monitoreo")}
-          subtitle="Tiempos de respuesta, cumplimiento de los plazos comprometidos y desempeño de los operadores."
+          subtitle={t('ui.AlarmAnalytics.tiemposDeRespuestaCumplimientoDe')}
           actions={
             <>
               <Segmented
@@ -131,7 +132,7 @@ export default function AlarmAnalytics() {
               <MetricCard icon={<Send size={16} />} accent={TONES.serie2} value={fmtDur(d.avgTtdSec)} label="Despacho prom." sub="tiempo a despachar" />
               <MetricCard icon={<TrendingUp size={16} />} accent={TONES.ok} value={fmtDur(d.avgTtrSec)} label={t("ui.AlarmAnalytics.resolucionProm", "Resolución prom.")} sub="tiempo a resolver" />
               <MetricCard icon={<ShieldCheck size={16} />} accent={TONES.ok} value={`${d.slaAckCompliance}%`} label="Plazos cumplidos" sub="reconocidos a tiempo" pct={d.slaAckCompliance} />
-              <MetricCard icon={<AlertTriangle size={16} />} accent={TONES.warn} value={`${d.escalationRate}%`} label="Tasa de escalado" sub="superaron el plazo" pct={d.escalationRate} />
+              <MetricCard icon={<AlertTriangle size={16} />} accent={TONES.warn} value={`${d.escalationRate}%`} label="Tasa de escalado" sub={t('ui.AlarmAnalytics.superaronElPlazo')} pct={d.escalationRate} />
               <MetricCard icon={<AlertTriangle size={16} />} accent={TONES.bad} value={`${d.falseRate}%`} label="Tasa de falsas" sub="falsas y reincidentes" pct={d.falseRate} />
               <MetricCard icon={<PhoneCall size={16} />} accent={TONES.info} value={d.ecvSatisfiedCases} label={t("ui.AlarmAnalytics.verificacionPorLlamada", "Verificación por llamada")} sub={`${d.totalCalls} llamadas`} />
             </Stagger>
@@ -151,13 +152,13 @@ export default function AlarmAnalytics() {
                     .map((i) => ({ ...i, tone: categoryTone(i.raw) }))}
                 />
               </Section>
-              <Section title="Por prioridad" icon={<BarChart3 size={16} />}>
+              <Section title={t('ui.AlarmAnalytics.porPrioridad')} icon={<BarChart3 size={16} />}>
                 <SeverityBars items={toItems(d.byPriority).map((i) => ({ ...i, tone: priorityTone(i.raw) }))} />
               </Section>
               <Section title="Despachos" icon={<Send size={16} />}>
                 <HBars
                   items={toItems(d.dispatchByType, (k) => ({ guard: "Vigilante", police: "Policía", fire: "Bomberos", medical: "Médico" }[k] || k))}
-                  color={TONES.info} empty="Sin despachos" />
+                  color={TONES.info} empty={t('ui.AlarmAnalytics.sinDespachos')} />
               </Section>
             </div>
 
@@ -166,8 +167,8 @@ export default function AlarmAnalytics() {
                 {(!d.operators || d.operators.length === 0) ? (
                   <EmptyState
                     icon={<Users />}
-                    title="Sin operadores"
-                    description="Sin casos asignados a operadores en el período."
+                    title={t('ui.AlarmAnalytics.sinOperadores')}
+                    description={t('ui.AlarmAnalytics.sinCasosAsignadosAOperadores')}
                   />
                 ) : (
                   <div className="overflow-x-auto">

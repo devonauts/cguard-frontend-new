@@ -205,7 +205,7 @@ export default function TenantsPage() {
 
             <div className="mt-2">
               {detailLoading ? (
-                <div>Cargando...</div>
+                <div>{t('ui.TenantsPage.cargando')}</div>
               ) : selectedTenant ? (
                 <div className="text-sm text-foreground">
                   {/* Helper rows */}
@@ -304,7 +304,7 @@ export default function TenantsPage() {
 
             <DialogFooter>
               <div className="flex gap-2">
-                <Button onClick={() => closeTenantModal()}>Cerrar</Button>
+                <Button onClick={() => closeTenantModal()}>{t('actions.close')}</Button>
               </div>
             </DialogFooter>
           </DialogContent>

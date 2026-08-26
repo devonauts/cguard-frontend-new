@@ -144,7 +144,7 @@ export default function ClientPortal({ client }: Props) {
       {/* Status KPIs */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Kpi icon={<Globe />} value={linked ? 'Vinculado' : 'Sin usuario'} label="Acceso al portal" accent={linked ? 'green' : 'slate'} />
-        <Kpi icon={<Users />} value={accessCount} label="Usuarios con acceso" accent="blue" />
+        <Kpi icon={<Users />} value={accessCount} label={t('comun.usuariosConAcceso')} accent="blue" />
         <Kpi icon={<Smartphone />} value="Mi Seguridad" label={t("ui.ClientPortal.appMovilDelCliente", "App móvil del cliente")} accent="primary" />
         <Kpi icon={<Mail />} value={email ? 'Con correo' : 'Sin correo'} label={email || 'Agrega un correo al cliente'} accent={email ? 'green' : 'orange'} />
       </div>
@@ -183,7 +183,7 @@ export default function ClientPortal({ client }: Props) {
                   <p className="font-semibold">{t("ui.ClientPortal.invitacionEnviada", "¡Invitación enviada!")}</p>
                   <p>Se envió la invitación {result.kind === 'app' ? 'a la app' : 'al portal'} a <strong>{result.recipient}</strong>. El cliente debe revisar su bandeja de entrada.</p>
                 </div>
-                <button onClick={() => setResult(null)} className="cg-focus rounded text-xs underline">Cerrar</button>
+                <button onClick={() => setResult(null)} className="cg-focus rounded text-xs underline">{t('actions.close')}</button>
               </div>
             )}
             {errorMsg && (
@@ -197,7 +197,7 @@ export default function ClientPortal({ client }: Props) {
               >
                 <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
                 <div className="flex-1 text-sm"><p className="font-semibold">Error al enviar</p><p>{errorMsg}</p></div>
-                <button onClick={() => setErrorMsg('')} className="cg-focus rounded text-xs underline">Cerrar</button>
+                <button onClick={() => setErrorMsg('')} className="cg-focus rounded text-xs underline">{t('actions.close')}</button>
               </div>
             )}
 
@@ -209,10 +209,10 @@ export default function ClientPortal({ client }: Props) {
             {(!email && !linked) && <p className="mt-2 text-xs" style={{ color: 'var(--warn-text)' }}>Este cliente no tiene correo ni usuario vinculado. Edita el cliente y agrega un correo para habilitar el acceso.</p>}
           </Section>
 
-          <Section title="Usuarios con acceso" icon={<Users />}
+          <Section title={t('comun.usuariosConAcceso')} icon={<Users />}
             action={<button onClick={() => navigate(`/clients/${client?.id}/user-access`)} className="cg-focus inline-flex items-center gap-1 rounded-md text-xs font-semibold hover:underline" style={{ color: 'var(--brand-text)' }}>Gestionar accesos <ArrowRight className="h-3.5 w-3.5" /></button>}>
             {accessCount === 0 ? (
-              <EmptyState icon={<Users />} title="Sin usuarios con acceso" description="Invita al titular o agrega accesos adicionales para que el cliente entre al portal y la app." />
+              <EmptyState icon={<Users />} title={t('comun.sinUsuariosConAcceso')} description="Invita al titular o agrega accesos adicionales para que el cliente entre al portal y la app." />
             ) : (
               <div className="divide-y" style={{ borderColor: 'var(--hairline)' }}>
                 {/* /access-users already includes the titular — only fall back
@@ -278,7 +278,7 @@ export default function ClientPortal({ client }: Props) {
 
       {/* Confirm modal */}
       <Modal open={!!confirm} onOpenChange={(o) => { if (!o && !sending) setConfirm(null); }} title={t("ui.ClientPortal.enviarInvitacion", "Enviar invitación")} icon={<Mail className="h-5 w-5" />} size="sm"
-        footer={<><Button variant="outline" onClick={() => setConfirm(null)} disabled={sending}>Cancelar</Button><Button variant="brand" onClick={() => confirm && send(confirm)} disabled={sending}>{sending ? <><Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> Enviando…</> : 'Enviar'}</Button></>}>
+        footer={<><Button variant="outline" onClick={() => setConfirm(null)} disabled={sending}>{t('actions.cancel')}</Button><Button variant="brand" onClick={() => confirm && send(confirm)} disabled={sending}>{sending ? <><Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> Enviando…</> : 'Enviar'}</Button></>}>
         <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t("ui.ClientPortal.seEnviaraUnaInvitacion", "Se enviará una invitación")}{" "}<b>{kindLabel}</b> a:</p>
         <div className="glass-sunken mt-3 px-4 py-3 text-center">
           <p className="text-sm font-semibold">{name}</p>

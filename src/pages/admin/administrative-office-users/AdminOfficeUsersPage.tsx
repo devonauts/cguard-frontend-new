@@ -670,7 +670,7 @@ export default function AdminOfficeUsersPage() {
               onChange={setViewMode}
               options={[
                 { value: "cards", label: <span className="flex items-center gap-1.5"><LayoutGrid className="h-3.5 w-3.5" /> Tarjetas</span> },
-                { value: "list", label: <span className="flex items-center gap-1.5"><ListIcon className="h-3.5 w-3.5" /> Lista</span> },
+                { value: "list", label: <span className="flex items-center gap-1.5"><ListIcon className="h-3.5 w-3.5" />{" "}{t('comun.lista')}</span> },
               ]}
             />
 
@@ -715,7 +715,7 @@ export default function AdminOfficeUsersPage() {
               <thead style={{ background: 'var(--glass-sunken)' }}>
                 <tr className="border-b" style={{ borderColor: 'var(--hairline)' }}>
                   <th className="px-4 py-3">
-                    <Checkbox disabled={!canManageUsers} checked={allOnPageSelected} onCheckedChange={(v) => handleSelectAllUsers(Boolean(v))} aria-label="Seleccionar todos" />
+                    <Checkbox disabled={!canManageUsers} checked={allOnPageSelected} onCheckedChange={(v) => handleSelectAllUsers(Boolean(v))} aria-label={t('comun.seleccionarTodos')} />
                   </th>
                   <th className="px-4 py-3 font-semibold">{t('adminOfficeUsers.table.headers.contactName', { defaultValue: 'Nombre de Contacto' })}</th>
                   <th className="px-4 py-3 font-semibold">{t('adminOfficeUsers.table.headers.email', { defaultValue: 'Correo Electrónico' })}</th>

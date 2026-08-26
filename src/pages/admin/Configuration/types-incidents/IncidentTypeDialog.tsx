@@ -48,7 +48,7 @@ export default function IncidentTypeDialog({ open, onOpenChange, title = "Nuevo 
             )}
           />
           <div className="flex items-center justify-end gap-2 border-t pt-4" style={{ borderColor: 'var(--hairline)' }}>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>{t('actions.cancel')}</Button>
             <Button type="submit" variant="brand" disabled={submitting} className="px-8 min-w-28">{submitting ? "Guardando…" : "Guardar"}</Button>
           </div>
         </form>

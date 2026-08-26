@@ -149,7 +149,7 @@ export default function AuditLogs() {
               <EmptyState
                 className="border-0"
                 icon={<Inbox />}
-                title="Sin registros"
+                title={t('comun.sinRegistros')}
                 description={q.trim() ? `Ningún evento coincide con “${q}”.` : "Todavía no hay eventos de seguridad."}
               />
             </div>
@@ -159,11 +159,11 @@ export default function AuditLogs() {
               head={
                 <>
                   <th className="px-4 py-3">Evento</th>
-                  <th className="px-3 py-3">Usuario</th>
+                  <th className="px-3 py-3">{t('comun.usuario')}</th>
                   <th className="px-3 py-3">{t("ui.AuditLogs.direccion", "Dirección")}</th>
                   <th className="px-3 py-3">Plataforma</th>
-                  <th className="px-3 py-3">Detalle</th>
-                  <th className="px-3 py-3 text-right">Fecha</th>
+                  <th className="px-3 py-3">{t('comun.detalle')}</th>
+                  <th className="px-3 py-3 text-right">{t('comun.fecha')}</th>
                 </>
               }
             >

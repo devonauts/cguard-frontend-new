@@ -219,7 +219,7 @@ export default function RoutesPage() {
                 />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="eliminar">Eliminar</SelectItem>
+                <SelectItem value="eliminar">{t('actions.delete')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -269,7 +269,7 @@ export default function RoutesPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Estado</Label>
+                    <Label>{t('comun.estado')}</Label>
                     <Select
                       value={filters.status}
                       onValueChange={(v) =>
@@ -280,11 +280,11 @@ export default function RoutesPage() {
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Activo" />
+                        <SelectValue placeholder={t('common.active')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="activo">Activo</SelectItem>
-                        <SelectItem value="inactivo">Inactivo</SelectItem>
+                        <SelectItem value="activo">{t('common.active')}</SelectItem>
+                        <SelectItem value="inactivo">{t('common.inactive')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -311,15 +311,15 @@ export default function RoutesPage() {
                   <Checkbox
                     checked={rows.length > 0 && selectedIds.length === rows.length}
                     onCheckedChange={(v) => toggleSelectAll(v === true)}
-                    aria-label="Seleccionar todo"
+                    aria-label={t('kit.table.selectAll')}
                   />
                 </th>
-                <th className="px-4 py-3 font-semibold">Nombre</th>
-                <th className="px-4 py-3 font-semibold">Puesto de seguridad</th>
-                <th className="px-4 py-3 font-semibold">Supervisor</th>
+                <th className="px-4 py-3 font-semibold">{t('comun.nombre')}</th>
+                <th className="px-4 py-3 font-semibold">{t('comun.puestoDeSeguridad')}</th>
+                <th className="px-4 py-3 font-semibold">{t('comun.supervisor')}</th>
                 <th className="px-4 py-3 font-semibold">{t("ui.Routes.vehiculo", "Vehículo")}</th>
-                <th className="px-4 py-3 font-semibold">Tipo</th>
-                <th className="px-4 py-3 font-semibold">Estado</th>
+                <th className="px-4 py-3 font-semibold">{t('comun.tipo')}</th>
+                <th className="px-4 py-3 font-semibold">{t('comun.estado')}</th>
                 <th className="px-4 py-3" />
               </tr>
             </thead>
@@ -333,7 +333,7 @@ export default function RoutesPage() {
                   <td colSpan={8} className="py-10">
                     <EmptyState
                       icon={<RouteIcon />}
-                      title="No se encontraron resultados"
+                      title={t('kit.table.emptyTitle')}
                       description="No pudimos encontrar ninguna ruta que coincida con tu búsqueda."
                     />
                   </td>
@@ -393,8 +393,8 @@ export default function RoutesPage() {
                   })()}</td>
                   <td className="px-4 py-3">
                     {(r.active === false)
-                      ? <StatusBadge tone="slate">Inactivo</StatusBadge>
-                      : <StatusBadge tone="green">Activo</StatusBadge>}
+                      ? <StatusBadge tone="slate">{t('common.inactive')}</StatusBadge>
+                      : <StatusBadge tone="green">{t('common.active')}</StatusBadge>}
                   </td>
                   <td className="px-4 py-3 text-right">
                     <Button variant="ghost" size="sm" style={{ color: 'var(--brand-text)' }} onClick={() => { setDetailId(r.id); setDetailOpen(true); }}>Ver</Button>

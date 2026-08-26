@@ -125,7 +125,7 @@ export default function GuardsLayout({ navKey, title, children }: Props) {
               <h1 className="truncate text-2xl font-bold tracking-tight text-foreground">{displayName}</h1>
               <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
                 {isSupervisor ? (
-                  <StatusBadge tone="info" dot={false}>Supervisor</StatusBadge>
+                  <StatusBadge tone="info" dot={false}>{t('comun.supervisor')}</StatusBadge>
                 ) : (
                   <StatusBadge tone={entity?.activated ? 'ok' : 'neutral'} dot={false}>
                     <ShieldCheck className="h-3 w-3" /> {entity?.activated ? t('guards.profile.access.statusActive', 'App activa') : t('guards.profile.access.statusPending', 'App pendiente')}

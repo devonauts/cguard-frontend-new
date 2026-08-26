@@ -235,7 +235,7 @@ export default function EditSecurityGuardPage() {
             <Section title="Datos personales" icon={<User />}>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Nombre *</label>
+                  <label className="block text-sm font-medium mb-1">{t('comun.nombreReq')}</label>
                   <Input name="firstName" value={form.firstName} onChange={handleChange} required />
                 </div>
                 <div>
@@ -243,7 +243,7 @@ export default function EditSecurityGuardPage() {
                   <Input name="lastName" value={form.lastName} onChange={handleChange} required />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Fecha de nacimiento</label>
+                  <label className="block text-sm font-medium mb-1">{t('comun.fechaDeNacimiento')}</label>
                   <Input name="birthDate" value={form.birthDate} onChange={handleChange} type="date" />
                 </div>
                 <div>
@@ -251,18 +251,18 @@ export default function EditSecurityGuardPage() {
                   <Input name="birthPlace" value={form.birthPlace} onChange={handleChange} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Estado civil</label>
+                  <label className="block text-sm font-medium mb-1">{t('comun.estadoCivil')}</label>
                   <select name="maritalStatus" value={form.maritalStatus} onChange={handleChange} className={selectClass}>
-                    <option value="">Seleccionar…</option>
+                    <option value="">{t('comun.seleccionar')}</option>
                     {["Soltero", "Casado", "Unión libre", "Divorciado"].map((o) => (
                       <option key={o} value={o}>{o}</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Tipo de sangre</label>
+                  <label className="block text-sm font-medium mb-1">{t('comun.tipoDeSangre')}</label>
                   <select name="bloodType" value={form.bloodType} onChange={handleChange} className={selectClass}>
-                    <option value="">Seleccionar…</option>
+                    <option value="">{t('comun.seleccionar')}</option>
                     {["A+", "A-", "AB+", "AB-", "O+", "O-", "B+", "B-"].map((o) => (
                       <option key={o} value={o}>{o}</option>
                     ))}
@@ -271,7 +271,7 @@ export default function EditSecurityGuardPage() {
                 <div>
                   <label className="block text-sm font-medium mb-1">{t("ui.EditSecurityGuard.instruccionAcademica", "Instrucción académica")}</label>
                   <select name="academicInstruction" value={form.academicInstruction} onChange={handleChange} className={selectClass}>
-                    <option value="">Seleccionar…</option>
+                    <option value="">{t('comun.seleccionar')}</option>
                     {["Secundaria", "Universitaria", "Universidad", "Especial", "Primaria"].map((o) => (
                       <option key={o} value={o}>{o}</option>
                     ))}
@@ -280,7 +280,7 @@ export default function EditSecurityGuardPage() {
                 <div>
                   <label className="block text-sm font-medium mb-1">{t("ui.EditSecurityGuard.genero", "Género")}</label>
                   <select name="gender" value={form.gender} onChange={handleChange} className={selectClass}>
-                    <option value="">Seleccionar…</option>
+                    <option value="">{t('comun.seleccionar')}</option>
                     {["Masculino", "Femenino"].map((o) => (
                       <option key={o} value={o}>{o}</option>
                     ))}

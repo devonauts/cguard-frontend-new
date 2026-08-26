@@ -59,7 +59,7 @@ export default function GuardSchedule() {
       {/* Upcoming Shifts */}
       <Section title={t('guard.schedule.upcoming', 'Próximos turnos')} icon={<Clock />}>
         {shifts.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Sin turnos programados.</p>
+          <p className="text-sm text-muted-foreground">{t('comun.sinTurnosProgramados')}</p>
         ) : (
           <div className="space-y-2.5">
             {shifts.map((s: any) => {

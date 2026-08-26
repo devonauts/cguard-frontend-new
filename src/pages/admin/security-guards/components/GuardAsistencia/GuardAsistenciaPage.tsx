@@ -87,7 +87,7 @@ export default function GuardAsistenciaPage() {
   }, [rows]);
 
   const exportCsv = () => {
-    if (!rows.length) { toast.error('No hay registros para exportar'); return; }
+    if (!rows.length) { toast.error(t('comun.noHayRegistrosParaExportar')); return; }
     const headers = ['Fecha', 'Puesto', 'Programado inicio', 'Programado fin', 'Entrada', 'Salida', 'Horas', 'Tarde (min)', 'Extra (min)', 'Fuera de geocerca', 'Estado', 'Aprobación'];
     const body = rows.map((r) => [
       r.punchInTime ? new Date(r.punchInTime).toLocaleDateString('es') : '',
@@ -159,12 +159,12 @@ export default function GuardAsistenciaPage() {
               <table className="min-w-full text-sm">
                 <thead>
                   <tr className="border-b border-border/50 text-xs uppercase tracking-wide text-muted-foreground">
-                    <th className="px-3 py-2.5 text-left font-semibold">Fecha</th>
-                    <th className="px-3 py-2.5 text-left font-semibold">Puesto</th>
+                    <th className="px-3 py-2.5 text-left font-semibold">{t('comun.fecha')}</th>
+                    <th className="px-3 py-2.5 text-left font-semibold">{t('comun.puesto')}</th>
                     <th className="px-3 py-2.5 text-left font-semibold">Entrada</th>
                     <th className="px-3 py-2.5 text-left font-semibold">Salida</th>
                     <th className="px-3 py-2.5 text-right font-semibold">Horas</th>
-                    <th className="px-3 py-2.5 text-left font-semibold">Estado</th>
+                    <th className="px-3 py-2.5 text-left font-semibold">{t('comun.estado')}</th>
                     <th className="px-3 py-2.5 text-left font-semibold">{t("ui.GuardAsistencia.aprobacion", "Aprobación")}</th>
                     <th className="px-3 py-2.5" />
                   </tr>

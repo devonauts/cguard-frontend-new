@@ -56,7 +56,7 @@ export default function GuardDepartamentoPage() {
       })
       .catch((err: any) => {
         console.error('Error cargando vigilante:', err);
-        toast.error('No se pudo cargar el vigilante');
+        toast.error(t('ui.GuardDepartamentoPage.noSePudoCargarEl'));
       })
       .finally(() => {
         if (mounted) setLoading(false);
@@ -125,7 +125,7 @@ export default function GuardDepartamentoPage() {
                 ) : (
                   <EmptyState
                     icon={<UserCircle2 />}
-                    title="Sin departamento"
+                    title={t('comun.sinDepartamento')}
                     description="Este vigilante aún no pertenece a ningún departamento interno."
                   />
                 )}
@@ -170,7 +170,7 @@ export default function GuardDepartamentoPage() {
               </div>
             </Section>
           ) : (
-            <EmptyState icon={<Building2 />} title="No se pudo cargar el vigilante" />
+            <EmptyState icon={<Building2 />} title={t('ui.GuardDepartamentoPage.noSePudoCargarEl')} />
           )}
         </PageContainer>
       </GuardsLayout>

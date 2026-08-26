@@ -591,9 +591,9 @@ export default function PostSiteKPIs({ site }: Props) {
                             <div className="flex items-start justify-between">
                               <div><strong>{t('postSites.KPI.descriptionLabel', 'DESCRIPTION :')}</strong> <span className="ml-4">{kpi.description}</span></div>
                               <div className="flex items-center gap-2 text-sm text-foreground/70">
-                                <button aria-label="Anterior" onClick={(e) => { e.stopPropagation(); prevMonth(); loadKpis(); }} className="p-1 rounded hover:bg-muted"><ChevronLeft size={16} /></button>
+                                <button aria-label={t('kit.pagination.prev')} onClick={(e) => { e.stopPropagation(); prevMonth(); loadKpis(); }} className="p-1 rounded hover:bg-muted"><ChevronLeft size={16} /></button>
                                 <div className="px-3 py-1 border rounded">{formatMonth(selectedMonth)}</div>
-                                <button aria-label="Siguiente" onClick={(e) => { e.stopPropagation(); nextMonth(); loadKpis(); }} className="p-1 rounded hover:bg-muted"><ChevronRight size={16} /></button>
+                                <button aria-label={t('kit.pagination.next')} onClick={(e) => { e.stopPropagation(); nextMonth(); loadKpis(); }} className="p-1 rounded hover:bg-muted"><ChevronRight size={16} /></button>
                               </div>
                             </div>
 

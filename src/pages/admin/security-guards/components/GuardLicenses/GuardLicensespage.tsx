@@ -542,7 +542,7 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
                         : t('guards.licenses.modal.title', { defaultValue: 'Add New License' })}
                     </h2>
                   </div>
-                  <Button variant="ghost" size="icon-sm" onClick={handleCloseModal} aria-label="Cerrar">
+                  <Button variant="ghost" size="icon-sm" onClick={handleCloseModal} aria-label={t('actions.close')}>
                     <X className="h-5 w-5" />
                   </Button>
                 </div>
@@ -706,7 +706,7 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
                     <Pencil className="h-4 w-4" />
                     {t('guards.licenses.details.edit', { defaultValue: 'Editar' })}
                   </button>
-                  <Button variant="ghost" size="icon-sm" onClick={closeDetails} aria-label="Cerrar"><X className="h-5 w-5" /></Button>
+                  <Button variant="ghost" size="icon-sm" onClick={closeDetails} aria-label={t('actions.close')}><X className="h-5 w-5" /></Button>
                 </div>
               </div>
 

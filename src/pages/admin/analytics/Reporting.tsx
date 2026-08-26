@@ -97,14 +97,14 @@ export default function Reporting() {
             <Section title={t("ui.Reporting.sitiosConMasIncidentes", "Sitios con más incidentes")} icon={<Building2 size={16} />}>
               <HBars items={data.topIncidentSites.map((s) => ({ label: s.site, count: s.count }))} color={GOLD} empty={t("ui.Reporting.sinIncidentesEnElPeriodo2", "Sin incidentes en el período.")} />
             </Section>
-            <Section title="Asistencia" icon={<Clock size={16} />}>
+            <Section title={t('comun.asistencia')} icon={<Clock size={16} />}>
               <AttendanceTiles attendance={data.attendance} />
             </Section>
           </div>
 
           <Section title="Resumen por sitio de servicio" icon={<Building2 size={16} />}>
             {data.perSite.length === 0 ? (
-              <EmptyState icon={<Building2 />} title="Sin actividad" description={t("ui.Reporting.sinActividadRegistradaEnEl", "Sin actividad registrada en el período.")} />
+              <EmptyState icon={<Building2 />} title={t('comun.sinActividad')} description={t("ui.Reporting.sinActividadRegistradaEnEl", "Sin actividad registrada en el período.")} />
             ) : (
               <PerSiteTable rows={data.perSite} limit={10} />
             )}

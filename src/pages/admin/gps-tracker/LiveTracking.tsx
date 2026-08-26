@@ -303,7 +303,7 @@ export default function LiveTrackingPage() {
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                aria-label="Fecha"
+                aria-label={t('comun.fecha')}
                 className="cg-input cg-focus h-9 px-3 text-sm"
               />
               <Sheet open={openFilter} onOpenChange={setOpenFilter}>
@@ -324,10 +324,10 @@ export default function LiveTrackingPage() {
                       <Label>Ruta</Label>
                       <Select value={routeFilter} onValueChange={setRouteFilter}>
                         <SelectTrigger>
-                          <SelectValue placeholder="Todas las rutas" />
+                          <SelectValue placeholder={t('ui.LiveTracking.todasLasRutas')} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="all">Todas las rutas</SelectItem>
+                          <SelectItem value="all">{t('ui.LiveTracking.todasLasRutas')}</SelectItem>
                           {routes.map((r) => (
                             <SelectItem key={r.id} value={String(r.id)}>
                               {r.name || r.id}
@@ -432,11 +432,11 @@ export default function LiveTrackingPage() {
               <thead className="bg-muted/30">
                 <tr className="border-b">
                   <th className="px-4 py-3 font-semibold">Ruta</th>
-                  <th className="px-4 py-3 font-semibold">Puesto de seguridad</th>
+                  <th className="px-4 py-3 font-semibold">{t('comun.puestoDeSeguridad')}</th>
                   <th className="px-4 py-3 font-semibold">{t("ui.LiveTracking.direccion", "Dirección")}</th>
                   <th className="px-4 py-3 font-semibold">Parada</th>
                   <th className="px-4 py-3 font-semibold">Pasadas</th>
-                  <th className="px-4 py-3 font-semibold">Estado</th>
+                  <th className="px-4 py-3 font-semibold">{t('comun.estado')}</th>
                 </tr>
               </thead>
 

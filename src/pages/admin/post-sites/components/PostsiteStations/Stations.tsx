@@ -721,7 +721,7 @@ export default function Stations({ site }: { site?: SiteProp }) {
                   onChange={(v) => setViewMode(v)}
                   options={[
                     { value: 'cards', label: <span className="flex items-center gap-1.5"><LayoutGrid className="h-3.5 w-3.5" /> Tarjetas</span> },
-                    { value: 'list', label: <span className="flex items-center gap-1.5"><ListIcon className="h-3.5 w-3.5" /> Lista</span> },
+                    { value: 'list', label: <span className="flex items-center gap-1.5"><ListIcon className="h-3.5 w-3.5" />{" "}{t('comun.lista')}</span> },
                   ]}
                 />
               </div>
@@ -886,7 +886,7 @@ export default function Stations({ site }: { site?: SiteProp }) {
           <div className="glass-raised pointer-events-auto relative z-70 max-h-[90vh] w-full overflow-y-auto sm:w-96" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between border-b p-6" style={{ borderColor: 'var(--hairline)' }}>
               <h2 className="font-display text-lg font-semibold">{t('postSites.stations.detailsTitle', 'Station details')}</h2>
-              <button onClick={() => setShowDetailModal(false)} aria-label="Cerrar" className="cg-btn-ghost cg-focus rounded-full p-2"><X className="h-4 w-4" /></button>
+              <button onClick={() => setShowDetailModal(false)} aria-label={t('actions.close')} className="cg-btn-ghost cg-focus rounded-full p-2"><X className="h-4 w-4" /></button>
             </div>
 
             <div className="p-6">
@@ -1056,7 +1056,7 @@ export default function Stations({ site }: { site?: SiteProp }) {
           <div className="glass-raised pointer-events-auto relative z-70 max-h-[90vh] w-full overflow-y-auto sm:w-96" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between border-b p-6" style={{ borderColor: 'var(--hairline)' }}>
               <h2 className="font-display text-lg font-semibold">{editingShiftId ? t('postSites.stations.editShift', 'Edit shift') : t('postSites.stations.createShift', 'Create shift')}</h2>
-              <button onClick={() => setShowShiftModal(false)} aria-label="Cerrar" className="cg-btn-ghost cg-focus rounded-full p-2"><X className="h-4 w-4" /></button>
+              <button onClick={() => setShowShiftModal(false)} aria-label={t('actions.close')} className="cg-btn-ghost cg-focus rounded-full p-2"><X className="h-4 w-4" /></button>
             </div>
 
             <div className="p-6 space-y-4">

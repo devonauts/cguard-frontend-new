@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { CalendarClock, Car, MapPin, Pencil, Check, IdCard, UserCog } from "lucide-react";
 import { Section, Field, EmptyState, SkeletonCards, PageContainer } from "@/components/kit";
 import { supervisorService, type Supervisor } from "@/lib/api/supervisorService";
+import i18n from "@/i18n";
 
 const WEEKDAYS = [
   { n: 1, label: "Lun" }, { n: 2, label: "Mar" }, { n: 3, label: "Mié" },
@@ -47,7 +48,7 @@ const EditSelect = ({ label, value, field, onChange }: { label: string; value: s
   <div>
     <div className="cg-eyebrow mb-1">{label}</div>
     <select value={value || ""} onChange={(e) => onChange(e.target.value)} className="cg-input cg-focus flex h-9 w-full px-2 text-sm">
-      <option value="">Seleccionar…</option>
+      <option value="">{i18n.t('comun.seleccionar')}</option>
       {(FIELD_OPTIONS[field] || []).map((o) => <option key={o} value={o}>{o}</option>)}
     </select>
   </div>
@@ -125,7 +126,7 @@ export default function SupervisorDetailPage() {
                     </Button>
                   ) : (
                     <>
-                      <Button variant="outline" size="sm" onClick={cancelEdit} disabled={saving}>Cancelar</Button>
+                      <Button variant="outline" size="sm" onClick={cancelEdit} disabled={saving}>{t('actions.cancel')}</Button>
                       <Button variant="brand" size="sm" onClick={save} disabled={saving}>
                         {saving
                           ? <span className="mr-2 h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
@@ -179,14 +180,14 @@ export default function SupervisorDetailPage() {
                       {editing ? (
                         <>
                           <EditText label={t("ui.SupervisorDetail.cedulaId", "Cédula / ID")} value={form.governmentId} onChange={(v) => setField("governmentId", v)} />
-                          <EditText label="Fecha de nacimiento" value={form.birthDate} onChange={(v) => setField("birthDate", v)} type="date" />
+                          <EditText label={t('comun.fechaDeNacimiento')} value={form.birthDate} onChange={(v) => setField("birthDate", v)} type="date" />
                           <EditText label="Lugar de nacimiento" value={form.birthPlace} onChange={(v) => setField("birthPlace", v)} />
                           <EditText label={t("ui.SupervisorDetail.direccion", "Dirección")} value={form.address} onChange={(v) => setField("address", v)} />
                         </>
                       ) : (
                         <>
                           <ReadField label={t("ui.SupervisorDetail.cedulaId2", "Cédula / ID")} value={sup.governmentId} />
-                          <ReadField label="Fecha de nacimiento" value={fmtDate(sup.birthDate)} />
+                          <ReadField label={t('comun.fechaDeNacimiento')} value={fmtDate(sup.birthDate)} />
                           <ReadField label="Lugar de nacimiento" value={sup.birthPlace} />
                           <ReadField label={t("ui.SupervisorDetail.direccion2", "Dirección")} value={sup.address} />
                         </>
@@ -199,8 +200,8 @@ export default function SupervisorDetailPage() {
                       {editing ? (
                         <>
                           <EditSelect label={t("ui.SupervisorDetail.genero", "Género")} field="gender" value={form.gender} onChange={(v) => setField("gender", v)} />
-                          <EditSelect label="Tipo de sangre" field="bloodType" value={form.bloodType} onChange={(v) => setField("bloodType", v)} />
-                          <EditSelect label="Estado civil" field="maritalStatus" value={form.maritalStatus} onChange={(v) => setField("maritalStatus", v)} />
+                          <EditSelect label={t('comun.tipoDeSangre')} field="bloodType" value={form.bloodType} onChange={(v) => setField("bloodType", v)} />
+                          <EditSelect label={t('comun.estadoCivil')} field="maritalStatus" value={form.maritalStatus} onChange={(v) => setField("maritalStatus", v)} />
                           <EditSelect label={t("ui.SupervisorDetail.instruccionAcademica", "Instrucción académica")} field="academicInstruction" value={form.academicInstruction} onChange={(v) => setField("academicInstruction", v)} />
                           <EditText label="Credencial" value={form.guardCredentials} onChange={(v) => setField("guardCredentials", v)} />
                           <EditText label={t("ui.SupervisorDetail.fechaDeContratacion", "Fecha de contratación")} value={form.hiringContractDate} onChange={(v) => setField("hiringContractDate", v)} type="date" />
@@ -208,8 +209,8 @@ export default function SupervisorDetailPage() {
                       ) : (
                         <>
                           <ReadField label={t("ui.SupervisorDetail.genero2", "Género")} value={sup.gender} />
-                          <ReadField label="Tipo de sangre" value={sup.bloodType} />
-                          <ReadField label="Estado civil" value={sup.maritalStatus} />
+                          <ReadField label={t('comun.tipoDeSangre')} value={sup.bloodType} />
+                          <ReadField label={t('comun.estadoCivil')} value={sup.maritalStatus} />
                           <ReadField label={t("ui.SupervisorDetail.instruccionAcademica2", "Instrucción académica")} value={sup.academicInstruction} />
                           <ReadField label="Credencial" value={sup.guardCredentials} />
                           <ReadField label={t("ui.SupervisorDetail.fechaDeContratacion2", "Fecha de contratación")} value={fmtDate(sup.hiringContractDate)} />

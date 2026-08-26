@@ -1069,7 +1069,7 @@ export default function Schedule() {
     if (!(await confirmDialog({ title: 'Eliminar turno', message: msg, confirmText: 'Eliminar', tone: 'danger' }))) return;
     try {
       await ApiService.delete(`/tenant/${tenantId}/shift/${s.id}`);
-      toast.success('Turno eliminado');
+      toast.success(t('comun.turnoEliminado'));
       fetchAll({ silent: true });
     } catch (e: any) {
       toast.error(e?.data?.message || e?.message || 'Error al eliminar');
@@ -1210,7 +1210,7 @@ export default function Schedule() {
 
   const saveAssignment = async () => {
     if (!assignTarget || !assignGuard) {
-      toast.error('Complete todos los campos');
+      toast.error(t('comun.completeTodosLosCampos'));
       return;
     }
     const isSacafranco = positions.find(p => p.id === assignTarget.positionId)?.type === 'sacafranco';
@@ -1291,7 +1291,7 @@ export default function Schedule() {
     if (!(await confirmDialog({ title: 'Remover asignación', message: '¿Remover esta asignación? Se eliminarán los turnos futuros generados.', confirmText: 'Remover', tone: 'danger' }))) return;
     try {
       await ApiService.delete(`/tenant/${tenantId}/guard-assignment/${assignmentId}`);
-      toast.success('Asignación removida');
+      toast.success(t('ui.Schedule.asignacionRemovida'));
       fetchAll();
     } catch (e: any) {
       toast.error(e?.message || 'Error');
@@ -1322,10 +1322,10 @@ export default function Schedule() {
   const saveStationConfig = async () => {
     if (!configStation) return;
     if (configType === 'custom') {
-      if (!cfgStart || !cfgEnd) { toast.error('Define la hora de inicio y fin'); return; }
-      if (cfgBlockHours && !cfgBlocksOk) { toast.error('La duración del turno debe dividir exactamente la cobertura del puesto.'); return; }
+      if (!cfgStart || !cfgEnd) { toast.error(t('comun.defineLaHoraDeInicio')); return; }
+      if (cfgBlockHours && !cfgBlocksOk) { toast.error(t('comun.laDuracionDelTurnoDebe')); return; }
       if (cfgRestCoverage === 'alternate' && !cfgAlternateOk) {
-        toast.error('Para alternar sin sacafranco, el ciclo del patrón debe ser múltiplo de sus días de trabajo (ej. 1-1, 2-2).');
+        toast.error(t('comun.paraAlternarSinSacafrancoEl'));
         return;
       }
     }
@@ -2019,7 +2019,7 @@ export default function Schedule() {
           <div className="flex items-center gap-2 mr-1">
             <IconTile size="sm"><CalendarDays /></IconTile>
             <div className="leading-tight">
-              <div className="font-display text-sm font-bold">Horario</div>
+              <div className="font-display text-sm font-bold">{t('comun.horario')}</div>
               <div className="hidden text-[10px] sm:block" style={{ color: 'var(--ink-soft)' }}>Rotaciones y coberturas</div>
             </div>
           </div>
@@ -2326,7 +2326,7 @@ export default function Schedule() {
                                       onClick={() => openAssignForm(station.id, pos.id)}
                                       className="cg-focus rounded-md p-1 transition-colors"
                                       style={tonePill('brand', 14)}
-                                      title="Asignar vigilante"
+                                      title={t('comun.asignarVigilante')}
                                     >
                                       <Plus size={12} />
                                     </button>
@@ -2673,7 +2673,7 @@ export default function Schedule() {
                           </div>
                           <div className="rounded-lg p-2 text-center" style={tonePill('brand', 14)}>
                             <div className="text-lg font-bold tabular-nums">{staffing.totalGuardsNeeded || 0}</div>
-                            <div className="text-[9px]" style={{ color: 'var(--ink-soft)' }}>Total</div>
+                            <div className="text-[9px]" style={{ color: 'var(--ink-soft)' }}>{t('comun.total')}</div>
                           </div>
                         </div>
                         <div className="grid grid-cols-2 gap-2 pt-1">
@@ -2900,7 +2900,7 @@ export default function Schedule() {
                 </p>
               </div>
               <div className="flex items-center justify-end gap-2 px-5 py-3" style={{ borderTop: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>
-                <button onClick={() => setSfCover(null)} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all">Cancelar</button>
+                <button onClick={() => setSfCover(null)} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all">{t('actions.cancel')}</button>
                 <button
                   onClick={saveSfCover}
                   disabled={sfCoverSaving || durH <= 0 || durH > 24}
@@ -2971,7 +2971,7 @@ export default function Schedule() {
                 <input
                   value={sfPickQuery}
                   onChange={e => setSfPickQuery(e.target.value)}
-                  placeholder="Buscar vigilante…"
+                  placeholder={t('comun.buscarVigilante')}
                   autoFocus
                   className="cg-input cg-focus w-full px-3 py-2 text-sm"
                 />
@@ -2999,7 +2999,7 @@ export default function Schedule() {
                   className="cg-focus text-[11px] font-semibold hover:underline"
                   style={{ color: 'var(--ink-soft)' }}
                 >Marcar novedad…</button>
-                <button onClick={() => { setSfPick(null); setSfPickQuery(''); }} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all">Cerrar</button>
+                <button onClick={() => { setSfPick(null); setSfPickQuery(''); }} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all">{t('actions.close')}</button>
               </div>
             </div>
           </div>
@@ -3061,7 +3061,7 @@ export default function Schedule() {
 
               {/* Guard */}
               <div>
-                <label className="cg-eyebrow mb-1.5 block">Vigilante</label>
+                <label className="cg-eyebrow mb-1.5 block">{t('comun.vigilante')}</label>
                 {(() => {
                   // ── QUIÉN PUEDE APARECER AQUÍ ────────────────────────────
                   // En ROTACIÓN, sólo quien no tenga ya una: un vigilante
@@ -3084,7 +3084,7 @@ export default function Schedule() {
 
                   return (
                     <select value={assignGuard} onChange={e => setAssignGuard(e.target.value)} className="cg-input cg-focus w-full px-3 py-2.5 text-sm">
-                      <option value="">Elige un vigilante…</option>
+                      <option value="">{t('comun.eligeUnVigilante')}</option>
                       {disponibles.map(g => (
                         <option key={g.id} value={g.id}>
                           {g.label}{assignMode === 'single' && conTurnoEseDia(g.id) ? ' · ya tiene turno ese día' : ''}
@@ -3163,7 +3163,7 @@ export default function Schedule() {
               })()}
             </div>
             <div className="flex items-center justify-end gap-2 px-5 py-3" style={{ borderTop: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>
-              <button onClick={() => { setShowAssignForm(false); setMoveFrom(null); }} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all">Cancelar</button>
+              <button onClick={() => { setShowAssignForm(false); setMoveFrom(null); }} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all">{t('actions.cancel')}</button>
               <button onClick={saveAssignment} disabled={assignSaving || !assignGuard} className="cg-btn-brand cg-focus rounded-full px-5 py-2 text-sm font-semibold transition-all disabled:opacity-40">
                 {assignSaving ? <Loader2 size={14} className="animate-spin" /> : (moveFrom ? 'Mover' : (assignMode === 'single' ? 'Cubrir el día' : 'Asignar a la rotación'))}
               </button>
@@ -3213,16 +3213,16 @@ export default function Schedule() {
                   </button>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="cg-eyebrow mb-1.5 block">Hora inicio</label>
+                      <label className="cg-eyebrow mb-1.5 block">{t('comun.horaInicio')}</label>
                       <input type="time" value={cfgStart} onChange={e => setCfgStart(e.target.value)} className="cg-input cg-focus w-full px-3 py-2 font-mono text-sm tabular-nums" />
                     </div>
                     <div>
-                      <label className="cg-eyebrow mb-1.5 block">Hora fin</label>
+                      <label className="cg-eyebrow mb-1.5 block">{t('comun.horaFin')}</label>
                       <input type="time" value={cfgEnd} onChange={e => setCfgEnd(e.target.value)} className="cg-input cg-focus w-full px-3 py-2 font-mono text-sm tabular-nums" />
                     </div>
                   </div>
                   <div>
-                    <label className="cg-eyebrow mb-1.5 block">Turno por vigilante</label>
+                    <label className="cg-eyebrow mb-1.5 block">{t('comun.turnoPorVigilante')}</label>
                     <select value={cfgBlockHours} onChange={e => setCfgBlockHours(e.target.value)} className="cg-input cg-focus w-full px-3 py-2 text-sm">
                       <option value="">Toda la jornada (1 fijo{cfgWinMin === 1440 ? ' · 24h' : ''})</option>
                       {[4, 6, 8, 12].map(h => {
@@ -3239,8 +3239,8 @@ export default function Schedule() {
                   <div>
                     <label className="cg-eyebrow mb-1.5 block">Cobertura de descansos</label>
                     <select value={cfgRestCoverage} onChange={e => setCfgRestCoverage(e.target.value as 'sacafranco' | 'alternate')} className="cg-input cg-focus w-full px-3 py-2 text-sm">
-                      <option value="sacafranco">Sacafranco cubre los descansos</option>
-                      <option value="alternate">Alternancia entre fijos (sin sacafranco)</option>
+                      <option value="sacafranco">{t('comun.sacafrancoCubreLosDescansos')}</option>
+                      <option value="alternate">{t('comun.alternanciaEntreFijosSinSacafranco')}</option>
                     </select>
                     {cfgRestCoverage === 'alternate' && (
                       <p className="mt-1.5 text-[11px]" style={{ color: cfgAlternateOk ? 'var(--ink-soft)' : 'var(--bad-text)' }}>
@@ -3268,7 +3268,7 @@ export default function Schedule() {
               />
             </div>
             <div className="flex items-center justify-end gap-2 px-5 py-3" style={{ borderTop: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>
-              <button onClick={() => setConfigStation(null)} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all">Cancelar</button>
+              <button onClick={() => setConfigStation(null)} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all">{t('actions.cancel')}</button>
               <button onClick={saveStationConfig} disabled={configSaving} className="cg-btn-brand cg-focus rounded-full px-5 py-2 text-sm font-semibold transition-all disabled:opacity-40">
                 {configSaving ? <Loader2 size={14} className="animate-spin" /> : 'Guardar'}
               </button>
@@ -3314,7 +3314,7 @@ export default function Schedule() {
               })()}
             </div>
             <div className="flex justify-end px-5 py-3" style={{ borderTop: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>
-              <button onClick={() => setOverrideTarget(null)} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all">Cerrar</button>
+              <button onClick={() => setOverrideTarget(null)} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all">{t('actions.close')}</button>
             </div>
           </div>
         </div>

@@ -732,7 +732,7 @@ export default function NewAdminUserPage() {
                       <Select value={field.value} onValueChange={field.onChange}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Elige un rol" />
+                            <SelectValue placeholder={t('comun.eligeUnRol')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -796,7 +796,7 @@ export default function NewAdminUserPage() {
                         background: acotado ? 'color-mix(in oklab, var(--brand) 8%, transparent)' : 'transparent',
                       }}
                     >
-                      <span className="block text-sm font-semibold">Solo lo que yo elija</span>
+                      <span className="block text-sm font-semibold">{t('comun.soloLoQueYoElija')}</span>
                       <span className="block text-xs" style={{ color: 'var(--ink-soft)' }}>
                         Para quien lleva unas cuentas concretas y no debe ver el resto.
                       </span>
@@ -820,7 +820,7 @@ export default function NewAdminUserPage() {
                                 value={(field.value as string[]) || []}
                                 onChange={(ids: string[]) => field.onChange(ids)}
                                 options={siteOptions}
-                                placeholder="Elegir sedes…"
+                                placeholder={t('comun.elegirSedes')}
                               />
                             </FormControl>
                             {(!field.value || (field.value as string[]).length === 0) && (
@@ -848,7 +848,7 @@ export default function NewAdminUserPage() {
                                 value={(field.value as string[]) || []}
                                 onChange={(ids: string[]) => field.onChange(ids)}
                                 options={clientOptions}
-                                placeholder="Elegir clientes…"
+                                placeholder={t('comun.elegirClientes')}
                               />
                             </FormControl>
                             <FormMessage />

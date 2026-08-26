@@ -128,7 +128,7 @@ export default function AlarmSignals() {
         <PageHeader
           icon={<Radio />}
           title={t("ui.AlarmSignals.registroDeSenales", "Registro de señales")}
-          subtitle="Todo lo que han enviado los paneles, tal cual llegó. No se puede modificar."
+          subtitle={t('ui.AlarmSignals.todoLoQueHanEnviado')}
           actions={
             <Button
               variant="outline"

@@ -182,7 +182,7 @@ export default function GuardDashboard() {
       <Section title={t('guard.dashboard.shifts', 'Turnos')} icon={<Clock />}>
         {currentShift ? (
           <div className="rounded-xl border p-3.5" style={{ borderColor: 'color-mix(in oklab, var(--ok) 34%, transparent)', background: 'color-mix(in oklab, var(--ok) 10%, transparent)' }}>
-            <StatusBadge tone="green">Turno actual</StatusBadge>
+            <StatusBadge tone="green">{t('comun.turnoActual')}</StatusBadge>
             <p className="mt-2 text-sm font-semibold text-foreground">{currentShift.station?.stationName || '-'}</p>
             <p className="text-xs text-muted-foreground">{fmtTime(currentShift.startTime)} — {fmtTime(currentShift.endTime)}</p>
           </div>
@@ -193,7 +193,7 @@ export default function GuardDashboard() {
             <p className="text-xs text-muted-foreground">{fmtTime(nextShift.startTime)} — {fmtTime(nextShift.endTime)}</p>
           </div>
         ) : (
-          <p className="text-sm text-muted-foreground">Sin turnos programados.</p>
+          <p className="text-sm text-muted-foreground">{t('comun.sinTurnosProgramados')}</p>
         )}
       </Section>
 

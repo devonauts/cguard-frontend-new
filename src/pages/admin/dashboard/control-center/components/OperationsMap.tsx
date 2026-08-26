@@ -773,13 +773,13 @@ export function OperationsMap({
             <div className="mt-2 hidden flex-wrap items-center gap-x-3 gap-y-1 border-t pt-2 sm:flex" style={{ borderColor: "var(--hairline)" }}>
               <span className="cc-map-key"><i style={{ color: "var(--ok)" }} />Cubierto</span>
               <span className="cc-map-key"><i style={{ color: "var(--warn)" }} />En riesgo</span>
-              <span className="cc-map-key"><i style={{ color: "var(--bad)" }} />Sin cubrir</span>
+              <span className="cc-map-key"><i style={{ color: "var(--bad)" }} />{t('comun.sinCubrir')}</span>
               {resumen.sinDatos > 0 && (
                 <span className="cc-map-key" title={t("ui.OperationsMap.puestosSinNingunaPosicionDe", "Puestos sin ninguna posición de GPS para confirmar cobertura")}>
                   <i style={{ color: "var(--ink-faint)" }} />Sin datos ({resumen.sinDatos})
                 </span>
               )}
-              <span className="cc-map-key"><i style={{ color: "var(--info)" }} />Supervisor</span>
+              <span className="cc-map-key"><i style={{ color: "var(--info)" }} />{t('comun.supervisor')}</span>
               <span className="cc-map-key"><i style={{ color: "var(--brand)" }} />Sede</span>
             </div>
           </div>

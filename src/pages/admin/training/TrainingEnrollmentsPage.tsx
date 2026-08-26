@@ -91,7 +91,7 @@ export default function TrainingEnrollmentsPage() {
     return (
       <AppLayout>
         <Breadcrumb items={[{ label: 'Panel de control', path: '/dashboard' }, { label: 'Entrenamiento' }]} />
-        <PageContainer width="wide" className="p-4 sm:p-6"><EmptyState icon={<Users />} title="Sin acceso" description="No tienes permiso para ver el progreso." /></PageContainer>
+        <PageContainer width="wide" className="p-4 sm:p-6"><EmptyState icon={<Users />} title={t('ui.TrainingEnrollmentsPage.sinAcceso')} description="No tienes permiso para ver el progreso." /></PageContainer>
       </AppLayout>
     );
   }
@@ -108,7 +108,7 @@ export default function TrainingEnrollmentsPage() {
       header: 'Vigilante',
       render: (_v, r) =>
         r.assignmentType === 'all_guards' && !r.guardId
-          ? <StatusBadge tone="neutral" dot={false}>Todos los vigilantes (plantilla)</StatusBadge>
+          ? <StatusBadge tone="neutral" dot={false}>{t('comun.todosLosVigilantesPlantilla')}</StatusBadge>
           : (r.guardName || '—'),
     },
     {
@@ -187,7 +187,7 @@ export default function TrainingEnrollmentsPage() {
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Todos los estados</SelectItem>
+                  <SelectItem value="all">{t('comun.todosLosEstados')}</SelectItem>
                   {Object.entries(ENROLLMENT_STATUS_LABELS).map(([v, l]) => (
                     <SelectItem key={v} value={v}>{l}</SelectItem>
                   ))}

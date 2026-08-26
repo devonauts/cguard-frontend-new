@@ -148,7 +148,7 @@ export default function ClientDocuments({ client }: { client: Client }) {
   const doDelete = async (d: DocRow) => {
     if (!await confirmDialog({ message: `¿Eliminar "${d.name}"?`, tone: 'danger' })) return;
     try { await clientService.deleteClientDocument(d.id); toast.success('Documento eliminado'); await load(true); }
-    catch { toast.error('No se pudo eliminar'); }
+    catch { toast.error(t('comun.noSePudoEliminar')); }
   };
 
   if (loading && !data) return <TabLoading />;
@@ -178,20 +178,20 @@ export default function ClientDocuments({ client }: { client: Client }) {
               <input className={`${FIELD_CLS} pl-8`} placeholder="Buscar por nombre, tipo o palabra clave…" value={q} onChange={(e) => resetPage(setQ)(e.target.value)} />
             </div>
             <select className={FIELD_CLS} value={category} onChange={(e) => resetPage(setCategory)(e.target.value)}><option value="">{t("ui.ClientDocuments.categoriaTodas", "Categoría: Todas")}</option>{categories.map((c) => <option key={c.name} value={c.name}>{c.name}</option>)}</select>
-            <select className={FIELD_CLS} value={type} onChange={(e) => resetPage(setType)(e.target.value)}><option value="">Tipo: Todos</option>{types.map((t) => <option key={t} value={t}>{t}</option>)}</select>
+            <select className={FIELD_CLS} value={type} onChange={(e) => resetPage(setType)(e.target.value)}><option value="">{t('comun.tipoTodos')}</option>{types.map((t) => <option key={t} value={t}>{t}</option>)}</select>
           </div>
 
           {docs.length === 0 ? (
-            <EmptyState icon={<Files />} title="Sin documentos" description="Sube el primer documento de este cliente (contratos, manuales, planos…)." action={<Button size="sm" onClick={() => setUploadOpen(true)}><Upload className="mr-1.5 h-4 w-4" /> Subir documento</Button>} />
+            <EmptyState icon={<Files />} title={t('comun.sinDocumentos')} description="Sube el primer documento de este cliente (contratos, manuales, planos…)." action={<Button size="sm" onClick={() => setUploadOpen(true)}><Upload className="mr-1.5 h-4 w-4" /> Subir documento</Button>} />
           ) : (
             <TabTable>
                 <THead>
                   <Th>Nombre del documento</Th>
                   <Th>{t("ui.ClientDocuments.categoria", "Categoría")}</Th>
-                  <Th>Tipo</Th>
+                  <Th>{t('comun.tipo')}</Th>
                   <Th>{t("ui.ClientDocuments.tamano", "Tamaño")}</Th>
                   <Th>Actualizado por</Th>
-                  <Th>Fecha</Th>
+                  <Th>{t('comun.fecha')}</Th>
                   <Th align="right">Acciones</Th>
                 </THead>
                 <tbody>
@@ -213,7 +213,7 @@ export default function ClientDocuments({ client }: { client: Client }) {
                         <td className="px-2 py-2.5">
                           <RowActions>
                             <RowAction title="Descargar" href={d.downloadUrl || undefined} disabled={!d.downloadUrl}><Download className="h-3.5 w-3.5" /></RowAction>
-                            <RowAction title="Eliminar" tone="bad" onClick={() => doDelete(d)}><Trash2 className="h-3.5 w-3.5" /></RowAction>
+                            <RowAction title={t('actions.delete')} tone="bad" onClick={() => doDelete(d)}><Trash2 className="h-3.5 w-3.5" /></RowAction>
                           </RowActions>
                         </td>
                       </Tr>
@@ -285,7 +285,7 @@ export default function ClientDocuments({ client }: { client: Client }) {
 
       {/* Upload modal */}
       <Modal open={uploadOpen} onOpenChange={(o) => { if (!uploading) setUploadOpen(o); }} title="Subir documento" icon={<Upload className="h-5 w-5" />}
-        footer={<><Button variant="outline" onClick={() => setUploadOpen(false)} disabled={uploading}>Cancelar</Button><Button onClick={doUpload} disabled={uploading || !pending.length}>{uploading ? 'Subiendo…' : `Subir ${pending.length || ''}`}</Button></>}>
+        footer={<><Button variant="outline" onClick={() => setUploadOpen(false)} disabled={uploading}>{t('actions.cancel')}</Button><Button onClick={doUpload} disabled={uploading || !pending.length}>{uploading ? 'Subiendo…' : `Subir ${pending.length || ''}`}</Button></>}>
         <div className="space-y-3">
           <LabeledField label={t("ui.ClientDocuments.categoria", "Categoría")}>
             <select className={FIELD_CLS} value={upCategory} onChange={(e) => setUpCategory(e.target.value)}>{CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}</select>

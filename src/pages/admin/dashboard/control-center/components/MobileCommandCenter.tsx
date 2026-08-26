@@ -145,8 +145,8 @@ export function MobileCommandCenter({
         <GlassPanel className="p-4">
           <EmptyState
             icon={<LayoutDashboard />}
-            title="Selecciona un negocio"
-            description="Elige un negocio para ver su centro de mando en tiempo real."
+            title={t('comun.seleccionaUnNegocio')}
+            description={t('comun.eligeUnNegocioParaVer')}
           />
         </GlassPanel>
       </div>
@@ -271,7 +271,7 @@ export function MobileCommandCenter({
             <Panel
               icon={<ShieldCheck />}
               title="Cobertura de puestos"
-              subtitle="Ahora mismo, sobre el terreno"
+              subtitle={t('comun.ahoraMismoSobreElTerreno')}
               action={<PanelLink to="/live-tracking">Ver en vivo</PanelLink>}
               bodyClassName="pt-1"
             >

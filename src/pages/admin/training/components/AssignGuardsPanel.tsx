@@ -127,7 +127,7 @@ export default function AssignGuardsPanel({ courseId, published }: Props) {
       key: 'guardName',
       header: 'Vigilante',
       render: (_v, e) => (e.assignmentType === 'all_guards' && !e.guardId
-        ? <StatusBadge tone="neutral" dot={false}>Todos los vigilantes (plantilla)</StatusBadge>
+        ? <StatusBadge tone="neutral" dot={false}>{t('comun.todosLosVigilantesPlantilla')}</StatusBadge>
         : (e.guardName || '—')),
     },
     {
@@ -182,14 +182,14 @@ export default function AssignGuardsPanel({ courseId, published }: Props) {
               <SelectTrigger className="w-64"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="individual">{t("ui.AssignGuardsPanel.vigilanteEspecifico", "Vigilante específico")}</SelectItem>
-                <SelectItem value="all_guards">Todos los vigilantes</SelectItem>
+                <SelectItem value="all_guards">{t('comun.todosLosVigilantes')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           {assignmentType === 'individual' && (
             <div className="space-y-2">
-              <Label>Buscar vigilante</Label>
+              <Label>{t('ui.AssignGuardsPanel.buscarVigilante')}</Label>
               {selected ? (
                 <div className="flex items-center gap-2">
                   <StatusBadge tone="neutral" dot={false}><Users className="h-3 w-3" /> {selected.name}</StatusBadge>

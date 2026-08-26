@@ -165,7 +165,7 @@ export default function ClientContract({ client }: { client: Client }) {
       toast.success('Contrato actualizado');
       setEditOpen(false);
       await load();
-    } catch { toast.error('No se pudo guardar'); } finally { setSaving(false); }
+    } catch { toast.error(t('comun.noSePudoGuardar')); } finally { setSaving(false); }
   };
 
   // ---- service modal --------------------------------------------------------
@@ -188,7 +188,7 @@ export default function ClientContract({ client }: { client: Client }) {
   const delSvc = async (s: ContractServiceRow) => {
     if (!await confirmDialog({ message: `¿Eliminar el servicio "${s.name}"?`, tone: 'danger' })) return;
     try { await clientService.deleteContractService(client.id, s.id); await load(); }
-    catch { toast.error('No se pudo eliminar'); }
+    catch { toast.error(t('comun.noSePudoEliminar')); }
   };
 
   // ---- renewal modal --------------------------------------------------------
@@ -203,12 +203,12 @@ export default function ClientContract({ client }: { client: Client }) {
       else await clientService.createContractRenewal(client.id, renForm);
       setRenOpen(false);
       await load();
-    } catch { toast.error('No se pudo guardar'); } finally { setSaving(false); }
+    } catch { toast.error(t('comun.noSePudoGuardar')); } finally { setSaving(false); }
   };
   const delRen = async (r: ContractRenewalRow) => {
     if (!await confirmDialog({ message: '¿Eliminar este periodo del historial?', tone: 'danger' })) return;
     try { await clientService.deleteContractRenewal(client.id, r.id); await load(); }
-    catch { toast.error('No se pudo eliminar'); }
+    catch { toast.error(t('comun.noSePudoEliminar')); }
   };
 
   if (loading) return <TabLoading />;
@@ -241,7 +241,7 @@ export default function ClientContract({ client }: { client: Client }) {
               <div className="mt-1 font-display text-2xl font-bold tabular-nums">{fmtDate(renewalDate)}</div>
             </div>
           </div>
-          <Button onClick={openEdit}><Pencil className="mr-2 h-4 w-4" /> Editar contrato</Button>
+          <Button onClick={openEdit}><Pencil className="mr-2 h-4 w-4" />{" "}{t('ui.ClientContract.editarContrato')}</Button>
         </div>
       </GlassPanel>
 
@@ -250,7 +250,7 @@ export default function ClientContract({ client }: { client: Client }) {
         <Section title={t("ui.ClientContract.informacionDelContrato", "Información del contrato")} icon={<FileText className="h-4 w-4" />}>
           <div className="space-y-2.5">
             <Field label={t("ui.ClientContract.numeroDeContrato", "Número de contrato")} value={orDash(c.contractNumber)} />
-            <Field label="Tipo de contrato" value={orDash(c.contractType)} />
+            <Field label={t('ui.ClientContract.tipoDeContrato')} value={orDash(c.contractType)} />
             <Field label="Moneda" value={orDash(c.currency)} />
             <Field label="Forma de pago" value={orDash(c.paymentTerms)} />
           </div>
@@ -258,8 +258,8 @@ export default function ClientContract({ client }: { client: Client }) {
 
         <Section title="Fechas" icon={<Calendar className="h-4 w-4" />}>
           <div className="space-y-2.5">
-            <Field label="Fecha de inicio" value={fmtDate(c.contractDate)} />
-            <Field label="Fecha de vencimiento" value={fmtDate(c.contractEndDate)} />
+            <Field label={t('comun.fechaDeInicio')} value={fmtDate(c.contractDate)} />
+            <Field label={t('comun.fechaDeVencimiento')} value={fmtDate(c.contractEndDate)} />
             <Field label={t("ui.ClientContract.duracion", "Duración")} value={derived.durationMonths != null ? `${derived.durationMonths} meses` : '—'} />
             <Field label={t("ui.ClientContract.renovacionAutomatica", "Renovación automática")} value={c.autoRenew ? `Sí${c.autoRenewDaysBefore ? ` (${c.autoRenewDaysBefore} días antes)` : ''}` : 'No'} />
           </div>
@@ -278,7 +278,7 @@ export default function ClientContract({ client }: { client: Client }) {
           {contractDocs.length === 0 ? (
             <EmptyState
               icon={<FileText className="h-5 w-5" />}
-              title="Sin documentos"
+              title={t('comun.sinDocumentos')}
               description="Sube el contrato firmado y anexos en la pestaña Documentos (categoría Contratos)."
             />
           ) : (
@@ -309,14 +309,14 @@ export default function ClientContract({ client }: { client: Client }) {
       <Section
         title="Servicios contratados"
         icon={<ClipboardCheck className="h-4 w-4" />}
-        action={<Button size="sm" variant="outline" onClick={() => openSvc()}><Plus className="mr-1.5 h-4 w-4" /> Agregar servicio</Button>}
+        action={<Button size="sm" variant="outline" onClick={() => openSvc()}><Plus className="mr-1.5 h-4 w-4" />{" "}{t('ui.ClientContract.agregarServicio')}</Button>}
       >
         {services.length === 0 ? (
           <EmptyState
             icon={<ClipboardCheck className="h-5 w-5" />}
             title={t("ui.ClientContract.aunNoHayServiciosContratados", "Aún no hay servicios contratados")}
             description="Agrega los servicios de este contrato. El uso se calcula en vivo desde la operación."
-            action={<Button size="sm" onClick={() => openSvc()}><Plus className="mr-1.5 h-4 w-4" /> Agregar servicio</Button>}
+            action={<Button size="sm" onClick={() => openSvc()}><Plus className="mr-1.5 h-4 w-4" />{" "}{t('ui.ClientContract.agregarServicio')}</Button>}
           />
         ) : (
           <TabTable>
@@ -327,7 +327,7 @@ export default function ClientContract({ client }: { client: Client }) {
                 <Th align="right">Contratado</Th>
                 <Th align="right">Utilizado (mes)</Th>
                 <Th>Cumplimiento</Th>
-                <Th>Estado</Th>
+                <Th>{t('comun.estado')}</Th>
                 <Th aria-label="Acciones" />
               </THead>
               <tbody>
@@ -402,7 +402,7 @@ export default function ClientContract({ client }: { client: Client }) {
           <p className="mt-3 text-xs text-muted-foreground">Objetivos acordados en el contrato.</p>
         </Section>
 
-        <Section title="Notas del contrato" icon={<StickyNote className="h-4 w-4" />}>
+        <Section title={t('ui.ClientContract.notasDelContrato')} icon={<StickyNote className="h-4 w-4" />}>
           {c.contractNotes
             ? <p className="whitespace-pre-line text-sm text-muted-foreground">{c.contractNotes}</p>
             : <EmptyState icon={<StickyNote className="h-5 w-5" />} title="Sin notas" description="Agrega notas del contrato al editarlo." />}
@@ -411,7 +411,7 @@ export default function ClientContract({ client }: { client: Client }) {
         <Section
           title="Historial de renovaciones"
           icon={<History className="h-4 w-4" />}
-          action={<Button size="sm" variant="outline" onClick={() => openRen()}><Plus className="mr-1.5 h-4 w-4" /> Agregar</Button>}
+          action={<Button size="sm" variant="outline" onClick={() => openRen()}><Plus className="mr-1.5 h-4 w-4" />{" "}{t('actions.add')}</Button>}
         >
           {renewals.length === 0 ? (
             <EmptyState icon={<History className="h-5 w-5" />} title="Sin historial" description="Registra los periodos del contrato." />
@@ -419,10 +419,10 @@ export default function ClientContract({ client }: { client: Client }) {
             <TabTable minWidth={560}>
                 <THead>
                   <Th>Periodo</Th>
-                  <Th>Desde</Th>
-                  <Th>Hasta</Th>
+                  <Th>{t('comun.desde')}</Th>
+                  <Th>{t('comun.hasta')}</Th>
                   <Th>{t("ui.ClientContract.duracion", "Duración")}</Th>
-                  <Th>Estado</Th>
+                  <Th>{t('comun.estado')}</Th>
                   <Th aria-label="Acciones" />
                 </THead>
                 <tbody>
@@ -448,15 +448,15 @@ export default function ClientContract({ client }: { client: Client }) {
       </div>
 
       {/* ---- Contract terms modal ---- */}
-      <Modal open={editOpen} onOpenChange={setEditOpen} title="Editar contrato" icon={<FileText className="h-5 w-5" />} size="lg"
-        footer={<><Button variant="outline" onClick={() => setEditOpen(false)}>Cancelar</Button><Button onClick={saveContract} disabled={saving}>{saving ? 'Guardando…' : 'Guardar'}</Button></>}>
+      <Modal open={editOpen} onOpenChange={setEditOpen} title={t('ui.ClientContract.editarContrato')} icon={<FileText className="h-5 w-5" />} size="lg"
+        footer={<><Button variant="outline" onClick={() => setEditOpen(false)}>{t('actions.cancel')}</Button><Button onClick={saveContract} disabled={saving}>{saving ? 'Guardando…' : 'Guardar'}</Button></>}>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <LabeledField label={t("ui.ClientContract.numeroDeContrato2", "Número de contrato")}><input className={FIELD_CLS} value={form.contractNumber} onChange={(e) => setForm({ ...form, contractNumber: e.target.value })} /></LabeledField>
-          <LabeledField label="Tipo de contrato"><input className={FIELD_CLS} placeholder="Servicio integral" value={form.contractType} onChange={(e) => setForm({ ...form, contractType: e.target.value })} /></LabeledField>
+          <LabeledField label={t('ui.ClientContract.tipoDeContrato')}><input className={FIELD_CLS} placeholder="Servicio integral" value={form.contractType} onChange={(e) => setForm({ ...form, contractType: e.target.value })} /></LabeledField>
           <LabeledField label="Moneda"><input className={FIELD_CLS} placeholder="USD" value={form.currency} onChange={(e) => setForm({ ...form, currency: e.target.value })} /></LabeledField>
           <LabeledField label="Forma de pago"><input className={FIELD_CLS} placeholder="Mensual" value={form.paymentTerms} onChange={(e) => setForm({ ...form, paymentTerms: e.target.value })} /></LabeledField>
-          <LabeledField label="Fecha de inicio"><input type="date" className={FIELD_CLS} value={form.contractDate || ''} onChange={(e) => setForm({ ...form, contractDate: e.target.value })} /></LabeledField>
-          <LabeledField label="Fecha de vencimiento"><input type="date" className={FIELD_CLS} value={form.contractEndDate || ''} onChange={(e) => setForm({ ...form, contractEndDate: e.target.value })} /></LabeledField>
+          <LabeledField label={t('comun.fechaDeInicio')}><input type="date" className={FIELD_CLS} value={form.contractDate || ''} onChange={(e) => setForm({ ...form, contractDate: e.target.value })} /></LabeledField>
+          <LabeledField label={t('comun.fechaDeVencimiento')}><input type="date" className={FIELD_CLS} value={form.contractEndDate || ''} onChange={(e) => setForm({ ...form, contractEndDate: e.target.value })} /></LabeledField>
           <LabeledField label={t("ui.ClientContract.renovacionAutomatica2", "Renovación automática")}>
             <div className="flex items-center gap-2 h-9">
               <input id="autoRenew" type="checkbox" className="h-4 w-4" checked={!!form.autoRenew} onChange={(e) => setForm({ ...form, autoRenew: e.target.checked })} />
@@ -474,13 +474,13 @@ export default function ClientContract({ client }: { client: Client }) {
             <LabeledField label="Rondas (%)"><input type="number" className={FIELD_CLS} value={form.slaRoundsTarget} onChange={(e) => setForm({ ...form, slaRoundsTarget: e.target.value })} /></LabeledField>
             <LabeledField label="Reportes (%)"><input type="number" className={FIELD_CLS} value={form.slaReportsTarget} onChange={(e) => setForm({ ...form, slaReportsTarget: e.target.value })} /></LabeledField>
           </div>
-          <LabeledField label="Notas del contrato" full><textarea rows={3} className={`${FIELD_CLS} h-auto py-2`} value={form.contractNotes} onChange={(e) => setForm({ ...form, contractNotes: e.target.value })} /></LabeledField>
+          <LabeledField label={t('ui.ClientContract.notasDelContrato')} full><textarea rows={3} className={`${FIELD_CLS} h-auto py-2`} value={form.contractNotes} onChange={(e) => setForm({ ...form, contractNotes: e.target.value })} /></LabeledField>
         </div>
       </Modal>
 
       {/* ---- Service modal ---- */}
       <Modal open={svcOpen} onOpenChange={setSvcOpen} title={svcForm?.id ? 'Editar servicio' : 'Agregar servicio'} icon={<ClipboardCheck className="h-5 w-5" />}
-        footer={<><Button variant="outline" onClick={() => setSvcOpen(false)}>Cancelar</Button><Button onClick={saveSvc} disabled={saving}>{saving ? 'Guardando…' : 'Guardar'}</Button></>}>
+        footer={<><Button variant="outline" onClick={() => setSvcOpen(false)}>{t('actions.cancel')}</Button><Button onClick={saveSvc} disabled={saving}>{saving ? 'Guardando…' : 'Guardar'}</Button></>}>
         {svcForm && (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <LabeledField label="Tipo de servicio" full>
@@ -492,7 +492,7 @@ export default function ClientContract({ client }: { client: Client }) {
                 {SERVICE_KEYS.map((k) => <option key={k} value={k}>{k === 'custom' ? 'Personalizado' : SERVICE_PRESETS[k].name}</option>)}
               </select>
             </LabeledField>
-            <LabeledField label="Nombre" full><input className={FIELD_CLS} value={svcForm.name} onChange={(e) => setSvcForm({ ...svcForm, name: e.target.value })} /></LabeledField>
+            <LabeledField label={t('comun.nombre')} full><input className={FIELD_CLS} value={svcForm.name} onChange={(e) => setSvcForm({ ...svcForm, name: e.target.value })} /></LabeledField>
             <LabeledField label={t("ui.ClientContract.descripcion", "Descripción")} full><input className={FIELD_CLS} value={svcForm.description || ''} onChange={(e) => setSvcForm({ ...svcForm, description: e.target.value })} /></LabeledField>
             <LabeledField label="Unidad"><input className={FIELD_CLS} placeholder={t("ui.ClientContract.estacionRondas", "Estación, Rondas…")} value={svcForm.unit || ''} onChange={(e) => setSvcForm({ ...svcForm, unit: e.target.value })} /></LabeledField>
             <LabeledField label="Cantidad contratada"><input type="number" className={FIELD_CLS} placeholder={t("ui.ClientContract.vacioIlimitado", "Vacío = ilimitado")} value={svcForm.contractedQty ?? ''} onChange={(e) => setSvcForm({ ...svcForm, contractedQty: e.target.value })} /></LabeledField>
@@ -503,16 +503,16 @@ export default function ClientContract({ client }: { client: Client }) {
 
       {/* ---- Renewal modal ---- */}
       <Modal open={renOpen} onOpenChange={setRenOpen} title={renForm?.id ? 'Editar periodo' : 'Agregar periodo'} icon={<History className="h-5 w-5" />}
-        footer={<><Button variant="outline" onClick={() => setRenOpen(false)}>Cancelar</Button><Button onClick={saveRen} disabled={saving}>{saving ? 'Guardando…' : 'Guardar'}</Button></>}>
+        footer={<><Button variant="outline" onClick={() => setRenOpen(false)}>{t('actions.cancel')}</Button><Button onClick={saveRen} disabled={saving}>{saving ? 'Guardando…' : 'Guardar'}</Button></>}>
         {renForm && (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <LabeledField label="Periodo" full><input className={FIELD_CLS} placeholder="Actual / Anterior" value={renForm.periodLabel} onChange={(e) => setRenForm({ ...renForm, periodLabel: e.target.value })} /></LabeledField>
-            <LabeledField label="Desde"><input type="date" className={FIELD_CLS} value={renForm.fromDate || ''} onChange={(e) => setRenForm({ ...renForm, fromDate: e.target.value })} /></LabeledField>
-            <LabeledField label="Hasta"><input type="date" className={FIELD_CLS} value={renForm.toDate || ''} onChange={(e) => setRenForm({ ...renForm, toDate: e.target.value })} /></LabeledField>
+            <LabeledField label={t('comun.desde')}><input type="date" className={FIELD_CLS} value={renForm.fromDate || ''} onChange={(e) => setRenForm({ ...renForm, fromDate: e.target.value })} /></LabeledField>
+            <LabeledField label={t('comun.hasta')}><input type="date" className={FIELD_CLS} value={renForm.toDate || ''} onChange={(e) => setRenForm({ ...renForm, toDate: e.target.value })} /></LabeledField>
             <LabeledField label={t("ui.ClientContract.duracionMeses", "Duración (meses)")}><input type="number" className={FIELD_CLS} value={renForm.durationMonths ?? ''} onChange={(e) => setRenForm({ ...renForm, durationMonths: e.target.value })} /></LabeledField>
-            <LabeledField label="Estado">
+            <LabeledField label={t('comun.estado')}>
               <select className={FIELD_CLS} value={renForm.status} onChange={(e) => setRenForm({ ...renForm, status: e.target.value })}>
-                <option value="active">Activo</option>
+                <option value="active">{t('common.active')}</option>
                 <option value="finished">Finalizado</option>
               </select>
             </LabeledField>

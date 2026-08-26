@@ -270,7 +270,7 @@ export default function SecurityGuardsPage() {
     const htmlRows = list
       .map((g) => `<tr><td>${escapeHtml(g.name)}</td><td>${escapeHtml(g.email)}</td><td>${escapeHtml(g.phone)}</td><td>${escapeHtml(g.status)}</td></tr>`)
       .join("\n");
-    const html = `<!doctype html><html><head><meta charset="utf-8"><title>Vigilantes</title><style>table{width:100%;border-collapse:collapse}td,th{border:1px solid;padding:8px}</style></head><body><h2>Vigilantes</h2><table><thead><tr><th>Nombre</th><th>Correo</th><th>Teléfono</th><th>Estado</th></tr></thead><tbody>${htmlRows}</tbody></table></body></html>`;
+    const html = `<!doctype html><html><head><meta charset="utf-8"><title>Vigilantes</title><style>table{width:100%;border-collapse:collapse}td,th{border:1px solid;padding:8px}</style></head><body><h2>Vigilantes</h2><table><thead><tr><th>{t('comun.nombre')}</th><th>{t('comun.correo')}</th><th>{t('ui.SecurityGuardsPage.telefono')}</th><th>{t('comun.estado')}</th></tr></thead><tbody>${htmlRows}</tbody></table></body></html>`;
     const w = window.open("", "_blank");
     if (!w) {
       toast.error(t('guards.list.toasts.printWindowOpenError', 'No se pudo abrir la ventana de impresión'));
@@ -531,12 +531,12 @@ export default function SecurityGuardsPage() {
   const renderStatus = useCallback((status: GuardStatus) => {
     switch (status) {
       case "Activo":
-        return <StatusBadge tone="ok">Activo</StatusBadge>;
+        return <StatusBadge tone="ok">{t('common.active')}</StatusBadge>;
       case "Pendiente":
-        return <StatusBadge tone="warn">Pendiente</StatusBadge>;
+        return <StatusBadge tone="warn">{t('comun.pendiente')}</StatusBadge>;
       case "Invitado":
         // Compatibilidad: el antiguo «Invitado» se muestra como «Pendiente».
-        return <StatusBadge tone="warn">Pendiente</StatusBadge>;
+        return <StatusBadge tone="warn">{t('comun.pendiente')}</StatusBadge>;
       case "Archivado":
         return <StatusBadge tone="neutral">Archivado</StatusBadge>;
       default:
@@ -623,7 +623,7 @@ export default function SecurityGuardsPage() {
       {/* Indicadores */}
       <div className="px-4 pb-2 pt-5 sm:px-6">
         <Stagger className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <StatCard icon={<Users />} accent="info" label="Total" value={guards.length} />
+          <StatCard icon={<Users />} accent="info" label={t('comun.total')} value={guards.length} />
           <StatCard icon={<ShieldCheck />} accent="ok" label="Activos" value={activeCount} />
           <StatCard icon={<Clock />} accent="warn" label="Pendientes" value={pendingCount} />
           <StatCard icon={<Archive />} accent="neutral" label="Archivados" value={archivedCount} />
@@ -752,7 +752,7 @@ export default function SecurityGuardsPage() {
                       <Label>{t('guards.list.filter.client', 'Cliente')}</Label>
                       <Select value={filterClient} onValueChange={(v) => setFilterClient(v)}>
                         <SelectTrigger>
-                          <SelectValue placeholder="Cliente" />
+                          <SelectValue placeholder={t('comun.cliente')} />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="todos">{t('guards.list.filter.clientAll', 'Todos')}</SelectItem>
@@ -772,7 +772,7 @@ export default function SecurityGuardsPage() {
                       <Label>{t('guards.list.filter.site', 'Puesto de seguridad')}</Label>
                       <Select value={filterSite} onValueChange={(v) => setFilterSite(v)}>
                         <SelectTrigger>
-                          <SelectValue placeholder="Puesto de seguridad" />
+                          <SelectValue placeholder={t('comun.puestoDeSeguridad')} />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="todos">{t('guards.list.filter.siteAll', 'Todos')}</SelectItem>
@@ -816,7 +816,7 @@ export default function SecurityGuardsPage() {
                 onChange={(v) => setViewMode(v)}
                 options={[
                   { value: 'cards' as const, label: <span className="flex items-center gap-1.5"><LayoutGrid className="h-3.5 w-3.5" /> Tarjetas</span> },
-                  { value: 'list' as const, label: <span className="flex items-center gap-1.5"><ListIcon className="h-3.5 w-3.5" /> Lista</span> },
+                  { value: 'list' as const, label: <span className="flex items-center gap-1.5"><ListIcon className="h-3.5 w-3.5" />{" "}{t('comun.lista')}</span> },
                 ]}
               />
 
@@ -1042,7 +1042,7 @@ export default function SecurityGuardsPage() {
                                       toast.success("Enlace de registro copiado");
                                     } catch (err) {
                                       if (import.meta.env.DEV) console.error(err);
-                                      toast.error("No se pudo copiar el enlace");
+                                      toast.error(t('comun.noSePudoCopiarEl'));
                                     }
                                   }}
                                 >
@@ -1984,7 +1984,7 @@ export default function SecurityGuardsPage() {
           </div>
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline">Cancelar</Button>
+              <Button variant="outline">{t('actions.cancel')}</Button>
             </DialogClose>
             <Button
               variant="brand"

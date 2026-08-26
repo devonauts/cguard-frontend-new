@@ -261,8 +261,8 @@ export default function RouteDetailModal({ open, onOpenChange, routeId }: Props)
       description={loading ? 'Cargando...' : route ? `Información de ${route.name || route.id}` : 'Sin datos'}
       footer={
         <div className="flex w-full justify-end gap-2">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cerrar</Button>
-          <Button variant="brand" onClick={handleEdit}><Pencil className="size-4" />Editar</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>{t('actions.close')}</Button>
+          <Button variant="brand" onClick={handleEdit}><Pencil className="size-4" />{t('actions.edit')}</Button>
         </div>
       }
     >
@@ -276,16 +276,16 @@ export default function RouteDetailModal({ open, onOpenChange, routeId }: Props)
       {!loading && route && (
         <div className="space-y-5">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Field label="Nombre" value={route.name || '—'} />
-            <Field label="Tipo" value={route.continuous ? 'Continua' : 'Programada'} />
-            <Field label="Supervisor" value={supervisorValue} />
+            <Field label={t('comun.nombre')} value={route.name || '—'} />
+            <Field label={t('comun.tipo')} value={route.continuous ? 'Continua' : 'Programada'} />
+            <Field label={t('comun.supervisor')} value={supervisorValue} />
             <Field label={t("ui.RouteDetailModal.vehiculo", "Vehículo")} value={vehicleValue} />
             {/* Mismo tono que la lista de rutas, que ya pintaba «Activo» en
                 verde. Aquí iba en el acento de marca: el mismo estado tenía dos
                 colores según por dónde se entrara, y gastaba el acento en un
                 dato que no es un aviso. */}
             <Field
-              label="Estado"
+              label={t('comun.estado')}
               value={(
                 <StatusBadge tone={route.completed ? 'ok' : (route.active === false ? 'neutral' : 'ok')}>
                   {route.completed ? 'Completada' : (route.active === false ? 'Inactivo' : 'Activo')}
@@ -297,11 +297,11 @@ export default function RouteDetailModal({ open, onOpenChange, routeId }: Props)
               value={`${route.windowStart ? new Date(route.windowStart).toLocaleDateString() : '—'} — ${route.windowEnd ? new Date(route.windowEnd).toLocaleDateString() : '—'}`}
             />
             <Field
-              label="Hora de Inicio"
+              label={t('comun.horaDeInicio')}
               value={(route.windowStart ? new Date(route.windowStart).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : route.startTime) || '—'}
             />
             <Field
-              label="Hora de Fin"
+              label={t('comun.horaDeFin')}
               value={(route.windowEnd ? new Date(route.windowEnd).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : route.endTime) || '—'}
             />
             {route.days && route.days.length > 0 && (
@@ -363,7 +363,7 @@ export default function RouteDetailModal({ open, onOpenChange, routeId }: Props)
                 ))}
               </div>
             ) : (
-              <EmptyState icon={<MapPin />} title="Sin puestos" description="Esta ruta no tiene puestos definidos." />
+              <EmptyState icon={<MapPin />} title={t('comun.sinPuestos')} description="Esta ruta no tiene puestos definidos." />
             )}
           </div>
         </div>

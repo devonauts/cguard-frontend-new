@@ -86,11 +86,11 @@ export default function PostSiteDetailsDialog({ open, onOpenChange, siteId }: Pr
           <div className="space-y-2">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <p className="text-xs text-foreground/70 font-semibold">Nombre</p>
+                <p className="text-xs text-foreground/70 font-semibold">{t('comun.nombre')}</p>
                 <p className="text-sm">{(site as any).companyName || site.name}</p>
               </div>
               <div>
-                <p className="text-xs text-foreground/70 font-semibold">Horario</p>
+                <p className="text-xs text-foreground/70 font-semibold">{t('comun.horario')}</p>
                 <p className="text-sm">{(site as any).stationSchedule ?? ((site as any).scheduleLabel) ?? '-'}</p>
               </div>
               <div>
@@ -98,7 +98,7 @@ export default function PostSiteDetailsDialog({ open, onOpenChange, siteId }: Pr
                 <p className="text-sm">{(site as any).description || "-"}</p>
               </div>
               <div>
-                <p className="text-xs text-foreground/70 font-semibold">Correo</p>
+                <p className="text-xs text-foreground/70 font-semibold">{t('comun.correo')}</p>
                 <p className="text-sm truncate">{(site as any).contactEmail ?? site.email ?? "-"}</p>
               </div>
               <div>
@@ -123,11 +123,11 @@ export default function PostSiteDetailsDialog({ open, onOpenChange, siteId }: Pr
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                       <div>
-                        <p className="text-xs text-foreground/70 font-semibold">Nombre</p>
+                        <p className="text-xs text-foreground/70 font-semibold">{t('comun.nombre')}</p>
                         <p className="text-sm">{(site as any).clientAccount.name || '-'} {(site as any).clientAccount.lastName || ''}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-foreground/70 font-semibold">Correo</p>
+                        <p className="text-xs text-foreground/70 font-semibold">{t('comun.correo')}</p>
                         <p className="text-sm">{(site as any).clientAccount.email || '-'}</p>
                       </div>
                       <div>
@@ -178,7 +178,7 @@ export default function PostSiteDetailsDialog({ open, onOpenChange, siteId }: Pr
                     <p className="text-sm">{(site as any).postalCode || "-"}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-foreground/70 font-semibold">Ciudad</p>
+                    <p className="text-xs text-foreground/70 font-semibold">{t('comun.ciudad')}</p>
                     <p className="text-sm">{(site as any).city || "-"}</p>
                   </div>
                   <div>
@@ -206,7 +206,7 @@ export default function PostSiteDetailsDialog({ open, onOpenChange, siteId }: Pr
                 Cerrar
               </Button>
               <Button size="sm" className="bg-primary hover:bg-primary/90" asChild>
-                <Link to={`/post-sites/${site.id}/edit`}>Editar</Link>
+                <Link to={`/post-sites/${site.id}/edit`}>{t('actions.edit')}</Link>
               </Button>
             </div>
           </div>

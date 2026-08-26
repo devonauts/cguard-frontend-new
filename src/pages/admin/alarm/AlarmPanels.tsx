@@ -302,7 +302,7 @@ function PanelModal({
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim()) {
-      toast.error("El nombre es obligatorio");
+      toast.error(t('comun.elNombreEsObligatorio'));
       return;
     }
     const payload: Partial<AlarmPanel> & { dc09Key?: string; psapAgency?: string | null; psapPhone?: string | null; asapOri?: string | null } = {
@@ -352,7 +352,7 @@ function PanelModal({
       open={open}
       onOpenChange={(o) => { if (!o) onClose(); }}
       title={editing ? "Editar panel" : "Agregar panel"}
-      description="Configura la conexión del panel de alarma con la central receptora."
+      description={t('ui.AlarmPanels.configuraLaConexionDelPanel')}
       icon={<ShieldAlert className="h-5 w-5" />}
       size="lg"
       footer={
@@ -375,7 +375,7 @@ function PanelModal({
         <form id="alarm-panel-form" onSubmit={onSubmit} className="space-y-4">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="sm:col-span-2">
-              <Label htmlFor="ap-name">Nombre *</Label>
+              <Label htmlFor="ap-name">{t('comun.nombreReq')}</Label>
               <Input
                 id="ap-name"
                 value={form.name}
@@ -411,7 +411,7 @@ function PanelModal({
             </div>
 
             <div>
-              <Label htmlFor="ap-type">Tipo de panel</Label>
+              <Label htmlFor="ap-type">{t('ui.AlarmPanels.tipoDePanel')}</Label>
               <NativeSelect
                 id="ap-type"
                 value={form.panelType}
@@ -551,7 +551,7 @@ function PanelModal({
                 id="ap-postSite"
                 value={form.postSiteId}
                 onChange={(e) => set("postSiteId", e.target.value)}
-                placeholder="ID del punto de servicio"
+                placeholder={t('comun.idDelPuntoDeServicio')}
               />
             </div>
 
@@ -566,19 +566,19 @@ function PanelModal({
             </div>
 
             <div>
-              <Label htmlFor="ap-customer">Cliente (opcional)</Label>
+              <Label htmlFor="ap-customer">{t('ui.AlarmPanels.clienteOpcional')}</Label>
               <Input
                 id="ap-customer"
                 value={form.customerId}
                 onChange={(e) => set("customerId", e.target.value)}
-                placeholder="ID del cliente"
+                placeholder={t('ui.AlarmPanels.idDelCliente')}
               />
             </div>
 
             <div className="hidden sm:block" />
 
             <div className="sm:col-span-2">
-              <Label htmlFor="ap-notes">Notas</Label>
+              <Label htmlFor="ap-notes">{t('comun.notas')}</Label>
               <Textarea
                 id="ap-notes"
                 value={form.notes}
@@ -766,8 +766,8 @@ function ZonesManager({ panelId }: { panelId: string }) {
       ) : zones.length === 0 ? (
         <EmptyState
           icon={<RadioTower />}
-          title="Sin zonas configuradas"
-          description="Añade las zonas del panel para saber de dónde viene cada señal."
+          title={t('ui.AlarmPanels.sinZonasConfiguradas')}
+          description={t('ui.AlarmPanels.anadeLasZonasDelPanel')}
         />
       ) : (
         <div className="glass-flat overflow-x-auto">
@@ -778,11 +778,11 @@ function ZonesManager({ panelId }: { panelId: string }) {
             >
               <tr>
                 <th className="px-3 py-2">Zona</th>
-                <th className="px-3 py-2">Nombre</th>
-                <th className="px-3 py-2">Tipo</th>
+                <th className="px-3 py-2">{t('comun.nombre')}</th>
+                <th className="px-3 py-2">{t('comun.tipo')}</th>
                 <th className="px-3 py-2">{t("ui.AlarmPanels.particion", "Partición")}</th>
                 <th className="px-3 py-2">{t("ui.AlarmPanels.camara", "Cámara")}</th>
-                <th className="px-3 py-2">Estado</th>
+                <th className="px-3 py-2">{t('comun.estado')}</th>
                 <th className="px-3 py-2 text-right">Acciones</th>
               </tr>
             </thead>
@@ -802,7 +802,7 @@ function ZonesManager({ panelId }: { panelId: string }) {
                     {z.bypassed ? (
                       <KitStatusBadge tone="warn">Anulada</KitStatusBadge>
                     ) : (
-                      <KitStatusBadge tone="ok" dot={false}>Activa</KitStatusBadge>
+                      <KitStatusBadge tone="ok" dot={false}>{t('comun.activa')}</KitStatusBadge>
                     )}
                   </td>
                   <td className="px-3 py-2">
@@ -810,7 +810,7 @@ function ZonesManager({ panelId }: { panelId: string }) {
                       <Button
                         size="icon"
                         variant="ghost"
-                        title="Editar"
+                        title={t('actions.edit')}
                         onClick={() => startEdit(z)}
                       >
                         <Pencil className="h-4 w-4" />
@@ -818,7 +818,7 @@ function ZonesManager({ panelId }: { panelId: string }) {
                       <Button
                         size="icon"
                         variant="ghost"
-                        title="Eliminar"
+                        title={t('actions.delete')}
                         style={{ color: 'var(--bad-text)' }}
                         onClick={() => setDeleteTarget(z)}
                       >
@@ -850,9 +850,7 @@ function ZonesManager({ panelId }: { panelId: string }) {
           />
         </div>
         <div>
-          <Label htmlFor="z-name" className="text-xs">
-            Nombre
-          </Label>
+          <Label htmlFor="z-name" className="text-xs">{" "}{t('comun.nombre')}{" "}</Label>
           <Input
             id="z-name"
             value={form.name}
@@ -861,9 +859,7 @@ function ZonesManager({ panelId }: { panelId: string }) {
           />
         </div>
         <div>
-          <Label htmlFor="z-type" className="text-xs">
-            Tipo
-          </Label>
+          <Label htmlFor="z-type" className="text-xs">{" "}{t('comun.tipo')}{" "}</Label>
           <NativeSelect
             id="z-type"
             value={form.type}
@@ -929,7 +925,7 @@ function ZonesManager({ panelId }: { panelId: string }) {
 
       <ConfirmDelete
         open={!!deleteTarget}
-        title="Eliminar zona"
+        title={t('ui.AlarmPanels.eliminarZona')}
         message={`¿Seguro que deseas eliminar la zona ${deleteTarget?.name || deleteTarget?.zoneNumber || ""}? Esta acción no se puede deshacer.`}
         busy={deleting}
         onCancel={() => setDeleteTarget(null)}
@@ -1014,7 +1010,7 @@ function ContactsManager({ panelId }: { panelId: string }) {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim()) {
-      toast.error("El nombre del contacto es obligatorio");
+      toast.error(t('ui.AlarmPanels.elNombreDelContactoEs'));
       return;
     }
     const n = parseInt(form.callOrder, 10);
@@ -1031,10 +1027,10 @@ function ContactsManager({ panelId }: { panelId: string }) {
     try {
       if (editingId) {
         await alarmService.updateContact(editingId, payload);
-        toast.success("Contacto actualizado");
+        toast.success(t('ui.AlarmPanels.contactoActualizado'));
       } else {
         await alarmService.createContact(panelId, payload);
-        toast.success("Contacto agregado");
+        toast.success(t('ui.AlarmPanels.contactoAgregado'));
       }
       resetForm();
       await load();
@@ -1050,7 +1046,7 @@ function ContactsManager({ panelId }: { panelId: string }) {
     setDeleting(true);
     try {
       await alarmService.deleteContact(deleteTarget.id);
-      toast.success("Contacto eliminado");
+      toast.success(t('ui.AlarmPanels.contactoEliminado'));
       setContacts((prev) => prev.filter((c) => c.id !== deleteTarget.id));
       if (editingId === deleteTarget.id) resetForm();
       setDeleteTarget(null);
@@ -1072,8 +1068,8 @@ function ContactsManager({ panelId }: { panelId: string }) {
       ) : contacts.length === 0 ? (
         <EmptyState
           icon={<Users />}
-          title="Sin contactos de aviso"
-          description="Añade a quién hay que llamar, y en qué orden, cuando entre una alarma."
+          title={t('ui.AlarmPanels.sinContactosDeAviso')}
+          description={t('ui.AlarmPanels.anadeAQuienHayQue')}
         />
       ) : (
         <div className="glass-flat overflow-x-auto">
@@ -1084,7 +1080,7 @@ function ContactsManager({ panelId }: { panelId: string }) {
             >
               <tr>
                 <th className="px-3 py-2">Orden</th>
-                <th className="px-3 py-2">Nombre</th>
+                <th className="px-3 py-2">{t('comun.nombre')}</th>
                 <th className="px-3 py-2">{t("ui.AlarmPanels.telefono", "Teléfono")}</th>
                 <th className="px-3 py-2">Email</th>
                 <th className="px-3 py-2">Autoridad</th>
@@ -1108,7 +1104,7 @@ function ContactsManager({ panelId }: { panelId: string }) {
                       <Button
                         size="icon"
                         variant="ghost"
-                        title="Editar"
+                        title={t('actions.edit')}
                         onClick={() => startEdit(c)}
                       >
                         <Pencil className="h-4 w-4" />
@@ -1116,7 +1112,7 @@ function ContactsManager({ panelId }: { panelId: string }) {
                       <Button
                         size="icon"
                         variant="ghost"
-                        title="Eliminar"
+                        title={t('actions.delete')}
                         style={{ color: 'var(--bad-text)' }}
                         onClick={() => setDeleteTarget(c)}
                       >
@@ -1137,9 +1133,7 @@ function ContactsManager({ panelId }: { panelId: string }) {
         className="mt-3 grid grid-cols-1 gap-3 rounded-md border bg-muted/20 p-3 sm:grid-cols-2 lg:grid-cols-3"
       >
         <div>
-          <Label htmlFor="c-name" className="text-xs">
-            Nombre *
-          </Label>
+          <Label htmlFor="c-name" className="text-xs">{" "}{t('comun.nombreReq')}{" "}</Label>
           <Input
             id="c-name"
             value={form.name}
@@ -1167,7 +1161,7 @@ function ContactsManager({ panelId }: { panelId: string }) {
             type="email"
             value={form.email}
             onChange={(e) => set("email", e.target.value)}
-            placeholder="contacto@empresa.com"
+            placeholder={t('ui.AlarmPanels.contactoEmpresaCom')}
           />
         </div>
         <div>
@@ -1228,7 +1222,7 @@ function ContactsManager({ panelId }: { panelId: string }) {
 
       <ConfirmDelete
         open={!!deleteTarget}
-        title="Eliminar contacto"
+        title={t('ui.AlarmPanels.eliminarContacto')}
         message={`¿Seguro que deseas eliminar a ${deleteTarget?.name || "este contacto"}? Esta acción no se puede deshacer.`}
         busy={deleting}
         onCancel={() => setDeleteTarget(null)}
@@ -1344,7 +1338,7 @@ export default function AlarmPanels() {
         <PageHeader
           icon={<ShieldAlert />}
           title="Paneles de alarma"
-          subtitle="Administra los paneles monitoreados, sus zonas y contactos de aviso."
+          subtitle={t('ui.AlarmPanels.administraLosPanelesMonitoreadosSus')}
           actions={
             <>
               <Button asChild variant="outline">
@@ -1363,7 +1357,7 @@ export default function AlarmPanels() {
 
         {/* Summary */}
         <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <StatCard label="Total" value={counts.total} icon={<ShieldAlert />} accent="neutral" />
+          <StatCard label={t('comun.total')} value={counts.total} icon={<ShieldAlert />} accent="neutral" />
           <StatCard label={t("ui.AlarmPanels.enLinea", "En línea")} value={counts.online} icon={<Wifi />} accent="ok" />
           <StatCard label="Armados" value={counts.armed} icon={<ShieldAlert />} accent="warn" />
           <StatCard label={t("ui.AlarmPanels.sinConexion", "Sin conexión")} value={counts.offline} icon={<WifiOff />} accent="bad" />
@@ -1375,8 +1369,8 @@ export default function AlarmPanels() {
         ) : panels.length === 0 ? (
           <EmptyState
             icon={<ShieldAlert />}
-            title="No hay paneles"
-            description="Agrega tu primer panel de alarma para comenzar a recibir señales."
+            title={t('ui.AlarmPanels.noHayPaneles')}
+            description={t('ui.AlarmPanels.agregaTuPrimerPanelDe')}
             action={
               <Button variant="brand" onClick={openCreate}>
                 <Plus className="mr-1.5 h-4 w-4" />
@@ -1414,7 +1408,7 @@ export default function AlarmPanels() {
                             ]}
                           </KitStatusBadge>
                           {p.active === false && (
-                            <KitStatusBadge tone="neutral" dot={false}>Inactivo</KitStatusBadge>
+                            <KitStatusBadge tone="neutral" dot={false}>{t('common.inactive')}</KitStatusBadge>
                           )}
                         </div>
                         <div className="mt-0.5 truncate text-sm" style={{ color: 'var(--ink-soft)' }}>
@@ -1443,7 +1437,7 @@ export default function AlarmPanels() {
                       <Button
                         size="icon"
                         variant="ghost"
-                        title="Editar"
+                        title={t('actions.edit')}
                         onClick={() => openEdit(p)}
                       >
                         <Pencil className="h-4 w-4" />
@@ -1451,7 +1445,7 @@ export default function AlarmPanels() {
                       <Button
                         size="icon"
                         variant="ghost"
-                        title="Eliminar"
+                        title={t('actions.delete')}
                         style={{ color: 'var(--bad-text)' }}
                         onClick={() => setDeleteTarget(p)}
                       >
@@ -1477,7 +1471,7 @@ export default function AlarmPanels() {
 
       <ConfirmDelete
         open={!!deleteTarget}
-        title="Eliminar panel"
+        title={t('ui.AlarmPanels.eliminarPanel')}
         message={`¿Seguro que deseas eliminar ${deleteTarget?.name || "este panel"}? Se eliminarán también sus zonas y contactos. Esta acción no se puede deshacer.`}
         busy={deleting}
         onCancel={() => setDeleteTarget(null)}

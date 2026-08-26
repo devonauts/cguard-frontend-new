@@ -322,13 +322,13 @@ export default function ScheduleTimeline({
 
   const saveBlock = async () => {
     if (!blockModal) return;
-    if (!blockModal.stationId) { toast.error('Elige un puesto'); return; }
+    if (!blockModal.stationId) { toast.error(t('comun.eligeUnPuesto')); return; }
     if (!blockModal.guardId) { toast.error('Elige un vigilante'); return; }
     const start = wallStrToDate(blockModal.startStr, tz);
     const end = wallStrToDate(blockModal.endStr, tz);
     if (!start || !end) { toast.error('Fechas inválidas'); return; }
-    if (end <= start) { toast.error('El fin debe ser posterior al inicio'); return; }
-    if (end.getTime() - start.getTime() > 24 * 3600000) { toast.error('Un turno no puede durar más de 24 horas'); return; }
+    if (end <= start) { toast.error(t('comun.elFinDebeSerPosterior')); return; }
+    if (end.getTime() - start.getTime() > 24 * 3600000) { toast.error(t('comun.unTurnoNoPuedeDurar')); return; }
     const station = stationById.get(blockModal.stationId);
     setBlockSaving(true);
     try {
@@ -393,7 +393,7 @@ export default function ScheduleTimeline({
     setDeleting(true);
     try {
       await ApiService.delete(`/tenant/${tenantId}/shift/${target.id}`);
-      toast.success('Turno eliminado');
+      toast.success(t('comun.turnoEliminado'));
       setDetail(null);
       onChanged();
     } catch (e: any) {
@@ -682,7 +682,7 @@ export default function ScheduleTimeline({
               </div>
               <div className="p-5 space-y-4">
                 <div>
-                  <label className="cg-eyebrow mb-1.5 block">Puesto</label>
+                  <label className="cg-eyebrow mb-1.5 block">{t('comun.puesto')}</label>
                   <select
                     value={blockModal.stationId}
                     onChange={e => setBlockModal(m => m ? { ...m, stationId: e.target.value } : m)}
@@ -716,17 +716,17 @@ export default function ScheduleTimeline({
                   <Clock size={12} />
                   {hours > 0
                     ? <span>{t("ui.ScheduleTimeline.duracion", "Duración:")}{" "}<b className="tabular-nums" style={{ color: 'var(--ink)' }}>{hours % 1 === 0 ? hours : hours.toFixed(1)}h</b>{hours === 24 ? ' (turno completo)' : ''} · hora de la empresa</span>
-                    : <span className="font-medium" style={{ color: 'var(--bad-text)' }}>El fin debe ser posterior al inicio</span>}
+                    : <span className="font-medium" style={{ color: 'var(--bad-text)' }}>{t('comun.elFinDebeSerPosterior')}</span>}
                   {hours > 24 && <span className="font-medium" style={{ color: 'var(--bad-text)' }}>{t("ui.ScheduleTimeline.maximo24h", "· máximo 24h")}</span>}
                 </div>
                 <div>
-                  <label className="cg-eyebrow mb-1.5 block">Vigilante</label>
+                  <label className="cg-eyebrow mb-1.5 block">{t('comun.vigilante')}</label>
                   <select
                     value={blockModal.guardId}
                     onChange={e => setBlockModal(m => m ? { ...m, guardId: e.target.value } : m)}
                     className={inputCls}
                   >
-                    <option value="">Elige un vigilante…</option>
+                    <option value="">{t('comun.eligeUnVigilante')}</option>
                     {guardsPool.map(g => <option key={g.id} value={g.id}>{g.label}</option>)}
                   </select>
                   {!editing && (
@@ -737,7 +737,7 @@ export default function ScheduleTimeline({
                 </div>
               </div>
               <div className="flex items-center justify-end gap-2 px-5 py-3" style={{ borderTop: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>
-                <button onClick={() => setBlockModal(null)} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all">Cancelar</button>
+                <button onClick={() => setBlockModal(null)} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all">{t('actions.cancel')}</button>
                 <button
                   onClick={saveBlock}
                   disabled={blockSaving || !blockModal.guardId || !blockModal.stationId || hours <= 0 || hours > 24}
@@ -769,7 +769,7 @@ export default function ScheduleTimeline({
           >
             <div className="glass-raised mx-4 w-full max-w-xs overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--hairline)' }}>
-                <h4 className="text-sm font-semibold">Turno</h4>
+                <h4 className="text-sm font-semibold">{t('comun.turno')}</h4>
                 <button onClick={() => setDetail(null)} className="cg-btn-ghost cg-focus rounded-lg p-1.5"><X size={15} /></button>
               </div>
               <div className="space-y-2.5 p-5 text-sm">
@@ -814,7 +814,7 @@ export default function ScheduleTimeline({
                   >
                     <Pencil size={13} /> Editar
                   </button>
-                  <button onClick={() => setDetail(null)} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all">Cerrar</button>
+                  <button onClick={() => setDetail(null)} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all">{t('actions.close')}</button>
                 </div>
               </div>
             </div>

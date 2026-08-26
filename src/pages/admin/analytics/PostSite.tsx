@@ -31,7 +31,7 @@ export default function PostSite() {
 
           <Section title={t("ui.PostSite.desempenoPorSitioDeServicio", "Desempeño por sitio de servicio")} icon={<Building2 size={16} />}>
             {data.perSite.length === 0 ? (
-              <EmptyState icon={<Building2 />} title="Sin actividad" description={t("ui.PostSite.sinActividadRegistradaEnEl", "Sin actividad registrada en el período.")} />
+              <EmptyState icon={<Building2 />} title={t('comun.sinActividad')} description={t("ui.PostSite.sinActividadRegistradaEnEl", "Sin actividad registrada en el período.")} />
             ) : (
               <PerSiteTable rows={data.perSite} showShifts />
             )}

@@ -32,7 +32,7 @@ export default function SupervisorCoveragePage() {
     supervisorService
       .getCoverage(id)
       .then((res) => setPositions((res?.positions ?? []) as CoveragePosition[]))
-      .catch(() => toast.error('No se pudo cargar la cobertura'))
+      .catch(() => toast.error(t('comun.noSePudoCargarLa')))
       .finally(() => setLoading(false));
   }, [id]);
   useEffect(load, [load]);
@@ -84,7 +84,7 @@ export default function SupervisorCoveragePage() {
                         value={p.rotationStyleName}
                       />
                       <Field
-                        label={<span className="inline-flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> Turno</span>}
+                        label={<span className="inline-flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" />{" "}{t('comun.turno')}</span>}
                         value={p.window}
                       />
                     </div>

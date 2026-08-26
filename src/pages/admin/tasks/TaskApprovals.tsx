@@ -109,7 +109,7 @@ export default function TaskApprovals() {
               <EmptyState
                 icon={<Inbox />}
                 title={t("ui.TaskApprovals.noHayTareasPendientesDe", "No hay tareas pendientes de aprobación")}
-                description="Las tareas que los clientes creen para sus puestos aparecerán aquí."
+                description={t('ui.TaskApprovals.lasTareasQueLosClientes')}
               />
             ) : (
               <DataTable
@@ -119,7 +119,7 @@ export default function TaskApprovals() {
                   <EmptyState
                     icon={<Inbox />}
                     title={t("ui.TaskApprovals.noHayTareasPendientesDe2", "No hay tareas pendientes de aprobación")}
-                    description="Las tareas que los clientes creen para sus puestos aparecerán aquí."
+                    description={t('ui.TaskApprovals.lasTareasQueLosClientes')}
                   />
                 }
               />

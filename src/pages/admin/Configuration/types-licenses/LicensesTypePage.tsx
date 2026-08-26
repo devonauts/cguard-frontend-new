@@ -79,7 +79,7 @@ export default function LicenseTypePage() {
           onToggleStatus={async (row: LicenseTypeRow) => {
             try {
               await licenseTypeService.update(row.id, { status: row.status === 'active' ? 'inactive' : 'active' });
-              toast.success('Estado actualizado');
+              toast.success(t('comun.estadoActualizado'));
               await fetchData();
             } catch (e: any) {
               toast.error(e?.message || 'Error al actualizar estado');

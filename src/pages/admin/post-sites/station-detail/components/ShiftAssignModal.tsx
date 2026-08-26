@@ -194,10 +194,10 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
 
     // ── Turno único (one-off ad-hoc shift) ────────────────────────────────────
     if (assignMode === 'single') {
-      if (!shiftStart || !shiftEnd) { toast.error('Complete todos los campos'); return; }
+      if (!shiftStart || !shiftEnd) { toast.error(t('comun.completeTodosLosCampos')); return; }
       const start = new Date(shiftStart); const end = new Date(shiftEnd);
       if (end <= start) { toast.error('La hora de fin debe ser posterior al inicio'); return; }
-      if ((end.getTime() - start.getTime()) > 24 * 60 * 60 * 1000) { toast.error('Un turno no puede durar más de 24 horas'); return; }
+      if ((end.getTime() - start.getTime()) > 24 * 60 * 60 * 1000) { toast.error(t('comun.unTurnoNoPuedeDurar')); return; }
       const current = await fetchCurrentShifts();
       setSaving(true);
       try {
@@ -246,11 +246,11 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
       onOpenChange={(o) => { if (!o) onClose(); }}
       size="md"
       icon={<UserPlus className="h-5 w-5" />}
-      title="Asignar vigilante"
+      title={t('comun.asignarVigilante')}
       description="Programa la cobertura del turno de este puesto"
       footer={
         <>
-          <Button variant="outline" onClick={onClose}>Cancelar</Button>
+          <Button variant="outline" onClick={onClose}>{t('actions.cancel')}</Button>
           <Button onClick={saveShift} disabled={saving || !shiftGuard || (assignMode === 'rotation' && !selectedPositionId)}>
             {saving ? <Loader2 size={14} className="animate-spin" /> : <UserPlus size={14} />}
             {assignMode === 'rotation' ? 'Asignar rotación' : 'Crear turno'}
@@ -269,12 +269,12 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
             ]}
           />
 
-          <LabeledField label="Vigilante">
+          <LabeledField label={t('comun.vigilante')}>
             {loadingGuards ? (
-              <div className="flex items-center gap-2 py-3 text-xs text-muted-foreground"><Loader2 size={12} className="animate-spin" /> Cargando…</div>
+              <div className="flex items-center gap-2 py-3 text-xs text-muted-foreground"><Loader2 size={12} className="animate-spin" />{" "}{t('common.loading')}</div>
             ) : (
               <select value={shiftGuard} onChange={(e) => setShiftGuard(e.target.value)} className={FIELD_CLS_LG}>
-                <option value="">Seleccionar vigilante…</option>
+                <option value="">{t('ui.ShiftAssignModal.seleccionarVigilante')}</option>
                 {availableGuards.map((g) => <option key={g.id} value={g.id}>{g.label}</option>)}
               </select>
             )}
@@ -286,7 +286,7 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
           {assignMode === 'rotation' ? (
             <>
               {/* Puesto (Vigilante): assign to a position — the engine staggers day/night. */}
-              <LabeledField label="Puesto">
+              <LabeledField label={t('comun.puesto')}>
                 {positionOptions.length === 0 ? (
                   <div className="rounded-xl px-3 py-2 text-xs" style={{ background: 'color-mix(in oklab, var(--warn) 12%, transparent)', color: 'var(--warn-text)' }}>Configura primero el horario de la estación (Vista general › Horario del turno) para crear los puestos.</div>
                 ) : (

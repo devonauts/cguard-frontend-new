@@ -324,7 +324,7 @@ export default function OnboardingWizard({
             <button
               type="button"
               onClick={snoozeAndClose}
-              aria-label="Cerrar"
+              aria-label={t('actions.close')}
               className="ml-auto rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
@@ -348,7 +348,7 @@ export default function OnboardingWizard({
           {step === 1 && (
             <div className="space-y-4 animate-in fade-in-50 duration-300">
               <div className="space-y-1.5">
-                <Label>Nombre de la empresa <span style={{ color: "var(--bad-text)" }}>*</span></Label>
+                <Label>{t('ui.OnboardingWizard.nombreDeLaEmpresa')}{" "}<span style={{ color: "var(--bad-text)" }}>*</span></Label>
                 <Input
                   value={form.name}
                   onChange={(e) => set({ name: e.target.value })}
@@ -381,7 +381,7 @@ export default function OnboardingWizard({
 
               {/* Logo */}
               <div className="space-y-1.5">
-                <Label>Logo de la empresa <span style={{ color: "var(--bad-text)" }}>*</span></Label>
+                <Label>{t('ui.OnboardingWizard.logoDeLaEmpresa')}{" "}<span style={{ color: "var(--bad-text)" }}>*</span></Label>
                 <div className="flex flex-wrap items-center gap-4">
                   <div className="relative">
                     <div className="grid h-20 w-20 place-items-center overflow-hidden rounded-2xl border-2 border-dashed border-border bg-muted">
@@ -440,7 +440,7 @@ export default function OnboardingWizard({
                     type="email"
                     value={form.email}
                     onChange={(e) => set({ email: e.target.value })}
-                    placeholder="correo@empresa.com"
+                    placeholder={t('ui.OnboardingWizard.correoEmpresaCom')}
                   />
                   {form.email && !emailValid && (
                     <p className="text-xs" style={{ color: "var(--bad-text)" }}>{t("ui.OnboardingWizard.correoElectronicoInvalido", "Correo electrónico inválido.")}</p>
@@ -494,7 +494,7 @@ export default function OnboardingWizard({
               {showManualAddress && (
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div className="space-y-1.5">
-                    <Label>Ciudad</Label>
+                    <Label>{t('comun.ciudad')}</Label>
                     <Input value={form.city} onChange={(e) => set({ city: e.target.value })} />
                   </div>
                   <div className="space-y-1.5">
@@ -513,7 +513,7 @@ export default function OnboardingWizard({
                   <Label>Zona horaria <span style={{ color: "var(--bad-text)" }}>*</span></Label>
                   <Select value={form.timezone} onValueChange={(v) => set({ timezone: v })}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Seleccionar zona horaria" />
+                      <SelectValue placeholder={t('ui.OnboardingWizard.seleccionarZonaHoraria')} />
                     </SelectTrigger>
                     <SelectContent className="max-h-64">
                       {TIMEZONE_OPTIONS.map((tz) => (
@@ -539,7 +539,7 @@ export default function OnboardingWizard({
                     type="url"
                     value={form.website}
                     onChange={(e) => set({ website: e.target.value })}
-                    placeholder="empresa.com"
+                    placeholder={t('comun.empresaCom')}
                   />
                 </div>
               </div>
@@ -713,16 +713,16 @@ function ReviewStep({
 
       <div className="rounded-xl border border-border bg-card divide-y divide-border px-4">
         <div className="flex items-center justify-between py-2">
-          <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Empresa</span>
-          <button type="button" onClick={() => onEdit(1)} className="text-xs font-medium text-primary hover:underline">Editar</button>
+          <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t('ui.OnboardingWizard.empresa')}</span>
+          <button type="button" onClick={() => onEdit(1)} className="text-xs font-medium text-primary hover:underline">{t('actions.edit')}</button>
         </div>
         <ReviewRow label={t("ui.OnboardingWizard.rucCedula", "RUC / Cédula")} value={form.taxNumber} />
         <div className="flex items-center justify-between py-2">
           <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("ui.OnboardingWizard.contactoYUbicacion", "Contacto y ubicación")}</span>
-          <button type="button" onClick={() => onEdit(2)} className="text-xs font-medium text-primary hover:underline">Editar</button>
+          <button type="button" onClick={() => onEdit(2)} className="text-xs font-medium text-primary hover:underline">{t('actions.edit')}</button>
         </div>
         <ReviewRow label={t("ui.OnboardingWizard.telefono", "Teléfono")} value={form.phone} />
-        <ReviewRow label="Correo" value={form.email} />
+        <ReviewRow label={t('comun.correo')} value={form.email} />
         <ReviewRow label={t("ui.OnboardingWizard.direccion", "Dirección")} value={form.address} />
         <ReviewRow label="Zona horaria" value={tzLabel} />
         {form.website && <ReviewRow label="Sitio web" value={form.website} />}

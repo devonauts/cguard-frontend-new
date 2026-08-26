@@ -141,7 +141,7 @@ export default function Register() {
             <input
               id="email"
               type="email"
-              placeholder="tu@correo.com"
+              placeholder={t('comun.tuCorreoCom')}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleRegister()}

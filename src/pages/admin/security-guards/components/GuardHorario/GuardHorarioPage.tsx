@@ -85,7 +85,7 @@ export default function GuardHorarioPage() {
       <GuardsLayout navKey="keep-safe" title="guards.nav.horario">
         <div className="mx-auto max-w-5xl pb-24">
           <Section
-            title="Horario"
+            title={t('comun.horario')}
             icon={<CalendarDays className="h-4 w-4" />}
             action={
               <div className="flex items-center gap-1.5">
@@ -98,11 +98,11 @@ export default function GuardHorarioPage() {
             }
           >
             {loading && !data ? (
-              <div className="py-8 text-center text-sm" style={{ color: 'var(--ink-soft)' }}>Cargando horario…</div>
+              <div className="py-8 text-center text-sm" style={{ color: 'var(--ink-soft)' }}>{t('comun.cargandoHorario')}</div>
             ) : rows.length === 0 ? (
               <EmptyState
                 icon={<CalendarDays className="h-5 w-5" />}
-                title="Sin horario"
+                title={t('ui.GuardHorarioPage.sinHorario')}
                 description="Este vigilante no tiene puestos con rotación configurada."
               />
             ) : (

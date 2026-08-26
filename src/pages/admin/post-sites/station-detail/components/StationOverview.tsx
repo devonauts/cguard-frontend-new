@@ -213,13 +213,13 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
   const updateHorario = async () => {
     if (!turno) { toast.error('Selecciona un turno'); return; }
     if (turno === 'custom' && (!customStart || !customEnd)) {
-      toast.error('Define la hora de inicio y fin'); return;
+      toast.error(t('comun.defineLaHoraDeInicio')); return;
     }
     if (turno === 'custom' && blockHours && !blocksOk) {
-      toast.error('La duración del turno debe dividir exactamente la cobertura del puesto.'); return;
+      toast.error(t('comun.laDuracionDelTurnoDebe')); return;
     }
     if (turno === 'custom' && restCoverage === 'alternate' && !alternateOk) {
-      toast.error('Para alternar sin sacafranco, el ciclo del patrón debe ser múltiplo de sus días de trabajo (ej. 1-1, 2-2).'); return;
+      toast.error(t('comun.paraAlternarSinSacafrancoEl')); return;
     }
     const scheduleType = turnoToScheduleType(turno);
     const currentType = station.scheduleType || '';
@@ -319,7 +319,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
         <Stagger className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           <StatCard
             icon={<ShieldCheck />}
-            label="De turno ahora"
+            label={t('ui.StationOverview.deTurnoAhora')}
             accent={openNow.length ? 'ok' : 'bad'}
             value={recentShifts === null ? '…' : openNow.length}
             hint={openNow.length ? openNow.map((r) => r.guardName?.fullName || 'Vigilante').join(', ') : 'Nadie fichado'}
@@ -328,7 +328,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
           <StatCard icon={<Activity />} label="Marcaciones hoy" value={recentShifts === null ? '…' : todayCount} />
           <StatCard
             icon={<Clock />}
-            label="Horario"
+            label={t('comun.horario')}
             accent="brand"
             value={turnoInfo ? turnoInfo.label : 'Sin configurar'}
             hint={turnoInfo ? turnoInfo.sub : 'Usa Editar para asignarlo'}
@@ -351,7 +351,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
             }
           >
             {recentShifts === null ? (
-              <div className="py-8 text-center text-sm" style={{ color: 'var(--ink-soft)' }}>Cargando…</div>
+              <div className="py-8 text-center text-sm" style={{ color: 'var(--ink-soft)' }}>{t('common.loading')}</div>
             ) : rows.length === 0 ? (
               <div className="py-8 text-center text-sm" style={{ color: 'var(--ink-soft)' }}>
                 Aún no hay marcaciones en este puesto.
@@ -436,7 +436,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
                     </span>
                     <span className="min-w-0 flex-1 truncate text-sm font-medium">{gname}</span>
                     {onNow && (
-                      <span className="relative flex h-2.5 w-2.5" title="De turno ahora">
+                      <span className="relative flex h-2.5 w-2.5" title={t('ui.StationOverview.deTurnoAhora')}>
                         <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60" style={{ background: 'var(--ok)' }} />
                         <span className="relative inline-flex h-2.5 w-2.5 rounded-full" style={{ background: 'var(--ok)' }} />
                       </span>
@@ -507,15 +507,15 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
           {turno === 'custom' && (
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Hora inicio</label>
+                <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">{t('comun.horaInicio')}</label>
                 <input type="time" value={customStart} onChange={(e) => setCustomStart(e.target.value)} className="cg-input cg-focus w-full px-3 py-2 font-mono text-sm" />
               </div>
               <div>
-                <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Hora fin</label>
+                <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">{t('comun.horaFin')}</label>
                 <input type="time" value={customEnd} onChange={(e) => setCustomEnd(e.target.value)} className="cg-input cg-focus w-full px-3 py-2 font-mono text-sm" />
               </div>
               <div className="col-span-2">
-                <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Turno por vigilante</label>
+                <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">{t('comun.turnoPorVigilante')}</label>
                 <select value={blockHours} onChange={(e) => setBlockHours(e.target.value)} className="cg-input cg-focus w-full px-3 py-2 text-sm">
                   <option value="">Toda la jornada (1 fijo)</option>
                   {[4, 6, 8, 12].map((h) => {
@@ -532,8 +532,8 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
               <div className="col-span-2">
                 <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Cobertura de descansos</label>
                 <select value={restCoverage} onChange={(e) => setRestCoverage(e.target.value as any)} className="cg-input cg-focus w-full px-3 py-2 text-sm">
-                  <option value="sacafranco">Sacafranco cubre los descansos</option>
-                  <option value="alternate">Alternancia entre fijos (sin sacafranco)</option>
+                  <option value="sacafranco">{t('comun.sacafrancoCubreLosDescansos')}</option>
+                  <option value="alternate">{t('comun.alternanciaEntreFijosSinSacafranco')}</option>
                 </select>
                 {restCoverage === 'alternate' && rotStyle && (
                   <p className={`mt-1.5 text-[11px] ${alternateOk ? 'text-muted-foreground' : 'text-destructive'}`}>
@@ -615,7 +615,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
                 max="240"
                 value={clockInEarlyBufferMin}
                 onChange={(e) => setClockInEarlyBufferMin(e.target.value)}
-                placeholder="Por defecto"
+                placeholder={t('common.default')}
                 className="cg-input cg-focus w-full px-3 py-2 text-sm"
               />
             </div>
@@ -627,7 +627,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
                 max="240"
                 value={clockInLateGraceMin}
                 onChange={(e) => setClockInLateGraceMin(e.target.value)}
-                placeholder="Por defecto"
+                placeholder={t('common.default')}
                 className="cg-input cg-focus w-full px-3 py-2 text-sm"
               />
             </div>

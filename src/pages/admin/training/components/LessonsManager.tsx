@@ -215,7 +215,7 @@ export default function LessonsManager({ courseId, lessons, readOnly, onChange }
         icon={<BookOpen />}
         footer={
           <>
-            <Button variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
+            <Button variant="outline" onClick={() => setOpen(false)}>{t('actions.cancel')}</Button>
             <Button variant="brand" disabled={saving} onClick={handleSave}>
               {saving ? 'Guardando...' : 'Guardar'}
             </Button>
@@ -246,13 +246,13 @@ export default function LessonsManager({ courseId, lessons, readOnly, onChange }
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label>Recursos (PDF, documentos)</Label>
-                <Button type="button" size="sm" variant="outline" onClick={addResource}><Plus className="h-3 w-3 mr-1" /> Agregar</Button>
+                <Button type="button" size="sm" variant="outline" onClick={addResource}><Plus className="h-3 w-3 mr-1" />{" "}{t('actions.add')}</Button>
               </div>
               {form.resources.map((r, i) => (
                 /* Nombre + URL + papelera no caben en una fila de teléfono:
                    se apilan hasta `sm`. */
                 <div key={i} className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                  <Input placeholder="Nombre" value={r.name} onChange={(e) => updateResource(i, { name: e.target.value })} />
+                  <Input placeholder={t('comun.nombre')} value={r.name} onChange={(e) => updateResource(i, { name: e.target.value })} />
                   <Input placeholder="URL" value={r.url} onChange={(e) => updateResource(i, { url: e.target.value })} />
                   <button aria-label="Eliminar recurso" className="inline-flex h-9 w-9 shrink-0 items-center justify-center self-end rounded-md sm:self-auto" style={{ color: 'var(--bad-text)' }} onClick={() => removeResource(i)}><Trash2 className="h-4 w-4" /></button>
                 </div>
@@ -268,8 +268,8 @@ export default function LessonsManager({ courseId, lessons, readOnly, onChange }
             <AlertDialogDescription>{t("ui.LessonsManager.estaAccionNoSePuede", "Esta acción no se puede deshacer.")}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction className="cg-btn-bad" onClick={handleDelete}>Eliminar</AlertDialogAction>
+            <AlertDialogCancel>{t('actions.cancel')}</AlertDialogCancel>
+            <AlertDialogAction className="cg-btn-bad" onClick={handleDelete}>{t('actions.delete')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

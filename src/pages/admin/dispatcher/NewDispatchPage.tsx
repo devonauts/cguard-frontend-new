@@ -1026,7 +1026,7 @@ export default function NewDispatchPage() {
       const created = (resp && (resp.data && (resp.data.data || resp.data)) ) || resp;
 
       // Show success toast
-      toast.success('Incidente creado');
+      toast.success(t('comun.incidenteCreado'));
 
       // If frontend provided attachments, upload them to storage and create attachment metadata linked to the incident
       try {
@@ -1071,7 +1071,7 @@ export default function NewDispatchPage() {
         const msg = ((error as { message?: string } | null)?.message) || 'Error al crear Incidente';
         toast.error(msg);
       } catch (e) {
-        toast.error('Error al crear Incidente');
+        toast.error(t('ui.NewDispatchPage.errorAlCrearIncidente'));
       }
     }
   };
@@ -1168,8 +1168,8 @@ export default function NewDispatchPage() {
       <PageContainer width="wide" className="px-6 pt-4">
         <PageHeader
           icon={<ClipboardPlus />}
-          title="Nuevo Incidente"
-          subtitle="Registra un nuevo incidente y notifica al vigilante correspondiente."
+          title={t('ui.NewDispatchPage.nuevoIncidente')}
+          subtitle={t('ui.NewDispatchPage.registraUnNuevoIncidenteY')}
         />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -1182,7 +1182,7 @@ export default function NewDispatchPage() {
                       name="clientId"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Cliente*</FormLabel>
+                          <FormLabel>{t('comun.clienteReq')}</FormLabel>
                           <Select onValueChange={field.onChange} value={field.value} onOpenChange={(open) => {
                             if (open) {
                               setTimeout(() => clienteInputRef.current?.focus(), 50);
@@ -1191,13 +1191,13 @@ export default function NewDispatchPage() {
                             }
                           }}>
                             <SelectTrigger>
-                              <SelectValue placeholder="Seleccionar" />
+                              <SelectValue placeholder={t('kit.select.placeholder')} />
                             </SelectTrigger>
                             <SelectContent>
                               <div className="px-2 py-2">
                                 <Input
                                   ref={(el) => (clienteInputRef.current = el)}
-                                  placeholder="Buscar cliente..."
+                                  placeholder={t('comun.buscarCliente')}
                                   value={clienteFilter}
                                   onChange={(e) => setClienteFilter(e.target.value)}
                                 />
@@ -1221,7 +1221,7 @@ export default function NewDispatchPage() {
                       name="siteId"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Puesto de seguridad*</FormLabel>
+                          <FormLabel>{t('comun.puestoDeSeguridadReq')}</FormLabel>
                           <Select onValueChange={(v) => { field.onChange(v); fetchStationsFor(v); }} value={field.value} onOpenChange={(open) => {
                             if (open) {
                               setTimeout(() => sitioInputRef.current?.focus(), 50);
@@ -1230,13 +1230,13 @@ export default function NewDispatchPage() {
                             }
                           }}>
                             <SelectTrigger>
-                              <SelectValue placeholder="Seleccionar" />
+                              <SelectValue placeholder={t('kit.select.placeholder')} />
                             </SelectTrigger>
                             <SelectContent>
                               <div className="px-2 py-2">
                                 <Input
                                   ref={(el) => (sitioInputRef.current = el)}
-                                  placeholder="Buscar sitio..."
+                                  placeholder={t('comun.buscarSitio')}
                                   value={sitioFilter}
                                   onChange={(e) => setSitioFilter(e.target.value)}
                                 />
@@ -1262,7 +1262,7 @@ export default function NewDispatchPage() {
                       name="clientId"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Cliente</FormLabel>
+                          <FormLabel>{t('comun.cliente')}</FormLabel>
                           <FormControl>
                             <Input {...field} value={field.value ?? (prefillClientName || (clientes.find(c => c.id === form.getValues('clientId'))?.name) || '')} disabled />
                           </FormControl>
@@ -1275,7 +1275,7 @@ export default function NewDispatchPage() {
                       name="siteId"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Puesto de seguridad</FormLabel>
+                          <FormLabel>{t('comun.puestoDeSeguridad')}</FormLabel>
                           <FormControl>
                             <Input {...field} value={field.value ?? (prefillSiteName || (sitios && sitios[0] && sitios[0].name) || '')} disabled />
                           </FormControl>
@@ -1335,7 +1335,7 @@ export default function NewDispatchPage() {
                 name="guardId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Vigilante a Informar</FormLabel>
+                    <FormLabel>{t('ui.NewDispatchPage.vigilanteAInformar')}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value} onOpenChange={(open) => {
                       if (open) {
                         setTimeout(() => guardInputRef.current?.focus(), 50);
@@ -1344,13 +1344,13 @@ export default function NewDispatchPage() {
                       }
                     }}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar" />
+                        <SelectValue placeholder={t('kit.select.placeholder')} />
                       </SelectTrigger>
                       <SelectContent>
                         <div className="px-2 py-2">
                           <Input
                             ref={(el) => (guardInputRef.current = el)}
-                            placeholder="Buscar vigilante..."
+                            placeholder={t('comun.buscarVigilante')}
                             value={guardFilter}
                             onChange={(e) => setGuardFilter(e.target.value)}
                           />
@@ -1398,7 +1398,7 @@ export default function NewDispatchPage() {
                       }
                     }}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar" />
+                        <SelectValue placeholder={t('kit.select.placeholder')} />
                       </SelectTrigger>
                       <SelectContent>
                         {prioridades.map((p) => (
@@ -1418,10 +1418,10 @@ export default function NewDispatchPage() {
                 name="callerType"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Tipo de Llamador*</FormLabel>
+                    <FormLabel>{t('comun.tipoDeLlamador')}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar" />
+                        <SelectValue placeholder={t('kit.select.placeholder')} />
                       </SelectTrigger>
                       <SelectContent>
                         {tiposLlamador.map((t) => (
@@ -1441,7 +1441,7 @@ export default function NewDispatchPage() {
                 name="callerName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nombre del llamador*</FormLabel>
+                    <FormLabel>{t('comun.nombreDelLlamador')}</FormLabel>
                     <FormControl>
                       <Input {...field} onChange={(e) => { setCallerNameEdited(true); field.onChange(e); }} />
                     </FormControl>
@@ -1452,7 +1452,7 @@ export default function NewDispatchPage() {
             </div>
             </Section>
 
-            <Section title="Detalles del incidente" icon={<FileText />}>
+            <Section title={t('comun.detallesDelIncidente')} icon={<FileText />}>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <FormField
                   control={form.control}
@@ -1473,16 +1473,16 @@ export default function NewDispatchPage() {
                   name="incidentType"
                   render={({ field }) => (
                     <FormItem className="md:col-span-1">
-                      <FormLabel>Tipo de Incidente*</FormLabel>
+                      <FormLabel>{t('comun.tipoDeIncidente')}</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <SelectTrigger>
-                          <SelectValue placeholder="Seleccionar" />
+                          <SelectValue placeholder={t('kit.select.placeholder')} />
                         </SelectTrigger>
                         <SelectContent>
                           <div className="px-2 py-2">
                             <Input
                               ref={(el) => (tipoInputRef.current = el)}
-                              placeholder="Buscar tipo..."
+                              placeholder={t('comun.buscarTipo')}
                               value={tipoFilter}
                               onChange={(e) => setTipoFilter(e.target.value)}
                             />
@@ -1523,7 +1523,7 @@ export default function NewDispatchPage() {
                           }
                         }}
                       >
-                        <FormLabel>Fecha del Incidente*</FormLabel>
+                        <FormLabel>{t('comun.fechaDelIncidente')}</FormLabel>
                         <FormControl>
                           <Input
                             type="date"
@@ -1560,7 +1560,7 @@ export default function NewDispatchPage() {
                           }
                         }}
                       >
-                        <FormLabel>Hora del Incidente*</FormLabel>
+                        <FormLabel>{t('comun.horaDelIncidente')}</FormLabel>
                         <FormControl>
                           <Input
                             type="time"
@@ -1583,7 +1583,7 @@ export default function NewDispatchPage() {
                   name="incidentDetails"
                   render={({ field }) => (
                     <FormItem className="md:col-span-2">
-                      <FormLabel>Detalles del incidente*</FormLabel>
+                      <FormLabel>{t('comun.detallesDelIncidenteReq')}</FormLabel>
                       <FormControl>
                         <Textarea rows={4} {...field} />
                       </FormControl>
@@ -1615,7 +1615,7 @@ export default function NewDispatchPage() {
                 name="internalNotes"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Notas internas</FormLabel>
+                    <FormLabel>{t('comun.notasInternas')}</FormLabel>
                     <FormControl>
                       <Textarea rows={3} {...field} />
                     </FormControl>
@@ -1670,7 +1670,7 @@ export default function NewDispatchPage() {
 
                         <div className="flex min-w-0 flex-1 flex-col gap-1">
                           {attachments.length === 0 ? (
-                            <span className="text-sm text-muted-foreground">No hay archivos adjuntos</span>
+                            <span className="text-sm text-muted-foreground">{t('comun.noHayArchivosAdjuntos')}</span>
                           ) : (
                             attachments.map((f, idx) => (
                               <div key={idx} className="flex min-w-0 items-center gap-2">
@@ -1708,7 +1708,7 @@ export default function NewDispatchPage() {
 
             <FadeIn className="flex items-center justify-end gap-2">
               <Button variant="outline" asChild>
-                <Link to="/dispatch-tickets">Cancelar</Link>
+                <Link to="/dispatch-tickets">{t('actions.cancel')}</Link>
               </Button>
               <Button
                 type="submit"

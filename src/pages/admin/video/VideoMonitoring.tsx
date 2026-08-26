@@ -36,6 +36,7 @@ import {
   CreateIncidentModal,
   DispatchModal,
 } from "@/components/video/VideoActionModals";
+import i18n from "@/i18n";
 
 
 type ModalKind = "trim" | "incident" | "dispatch" | null;
@@ -169,7 +170,7 @@ function CameraTile({
           />
           <TileButton
             icon={<AlertTriangle className="size-3.5" />}
-            label="Crear incidente"
+            label={i18n.t('comun.crearIncidente')}
             onClick={() => onAction("incident", camera)}
           />
           <TileButton

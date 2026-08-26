@@ -65,7 +65,7 @@ export default function SupervisorPositionsPage() {
   };
 
   const create = async () => {
-    if (!form.name.trim()) { toast.error("El nombre es obligatorio"); return; }
+    if (!form.name.trim()) { toast.error(t('comun.elNombreEsObligatorio')); return; }
     setSaving(true);
     try {
       await supervisorPositionService.create({
@@ -116,7 +116,7 @@ export default function SupervisorPositionsPage() {
             icon={<MapPin />}
             title="Puestos de supervisor"
             subtitle="Configura los puestos (turno + rotación) y asigna supervisores. La rotación del puesto define el horario — el supervisor la sigue."
-            actions={<Button variant="brand" onClick={() => setOpen(true)}><Plus className="mr-2 h-4 w-4" /> Nuevo puesto</Button>}
+            actions={<Button variant="brand" onClick={() => setOpen(true)}><Plus className="mr-2 h-4 w-4" />{" "}{t('ui.SupervisorPositionsPage.nuevoPuesto')}</Button>}
           />
 
           <div className="mb-4 grid grid-cols-2 gap-3 sm:max-w-md">
@@ -132,7 +132,7 @@ export default function SupervisorPositionsPage() {
                 icon={<MapPin />}
                 title={t("ui.SupervisorPositions.aunNoHayPuestosDe", "Aún no hay puestos de supervisor")}
                 description="Crea el primero (p. ej. «Aguila2»): defines su turno y su rotación, y los supervisores asignados la siguen."
-                action={<Button variant="brand" size="sm" onClick={() => setOpen(true)}><Plus className="mr-2 h-4 w-4" /> Nuevo puesto</Button>}
+                action={<Button variant="brand" size="sm" onClick={() => setOpen(true)}><Plus className="mr-2 h-4 w-4" />{" "}{t('ui.SupervisorPositionsPage.nuevoPuesto')}</Button>}
               />
             </Section>
           ) : (
@@ -146,7 +146,7 @@ export default function SupervisorPositionsPage() {
                       style={{ color: "var(--ink-faint)" }}
                       onMouseEnter={(e) => { e.currentTarget.style.color = "var(--bad-text)"; }}
                       onMouseLeave={(e) => { e.currentTarget.style.color = "var(--ink-faint)"; }}
-                      title="Eliminar"
+                      title={t('actions.delete')}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -160,7 +160,7 @@ export default function SupervisorPositionsPage() {
 
                   <div className="cg-eyebrow mb-2">Supervisores asignados</div>
                   <div className="mb-3 flex flex-wrap gap-1.5">
-                    {p.assignments.length === 0 && <span className="text-sm" style={{ color: "var(--ink-soft)" }}>Ninguno</span>}
+                    {p.assignments.length === 0 && <span className="text-sm" style={{ color: "var(--ink-soft)" }}>{t('ui.SupervisorPositionsPage.ninguno')}</span>}
                     {p.assignments.map((a) => (
                       <StatusBadge key={a.id} tone="neutral" dot={false}>
                         <Users className="h-3 w-3" />{a.supervisorName || a.supervisorUserId}
@@ -219,7 +219,7 @@ export default function SupervisorPositionsPage() {
                     </div>
                     {stationEdit === p.id ? (
                       <div className="max-h-56 space-y-1 overflow-y-auto pr-1">
-                        {stations.length === 0 && <p className="text-xs" style={{ color: "var(--ink-soft)" }}>Cargando puestos…</p>}
+                        {stations.length === 0 && <p className="text-xs" style={{ color: "var(--ink-soft)" }}>{t('ui.SupervisorPositionsPage.cargandoPuestos')}</p>}
                         {stations.map((s) => {
                           const on = p.stationIds.includes(s.id);
                           return (
@@ -262,7 +262,7 @@ export default function SupervisorPositionsPage() {
 
       <Modal open={open} onOpenChange={setOpen} title="Nuevo puesto de supervisor" icon={<MapPin className="h-5 w-5" />}
         description="Configura el turno y la rotación (día/noche). Los supervisores asignados siguen esta rotación."
-        footer={<><Button variant="outline" onClick={() => setOpen(false)} disabled={saving}>Cancelar</Button><Button variant="brand" onClick={create} disabled={saving}>{saving ? "Creando…" : "Crear puesto"}</Button></>}>
+        footer={<><Button variant="outline" onClick={() => setOpen(false)} disabled={saving}>{t('actions.cancel')}</Button><Button variant="brand" onClick={create} disabled={saving}>{saving ? "Creando…" : "Crear puesto"}</Button></>}>
         <div className="space-y-4">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Input placeholder="Nombre (p. ej. Aguila2) *" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
@@ -290,7 +290,7 @@ export default function SupervisorPositionsPage() {
           <div>
             <label className="cg-eyebrow mb-1 block">Puestos bajo protección ({form.stationIds.length})</label>
             <div className="glass-sunken max-h-48 space-y-1 overflow-y-auto p-1">
-              {stations.length === 0 && <p className="p-2 text-xs" style={{ color: "var(--ink-faint)" }}>Cargando puestos…</p>}
+              {stations.length === 0 && <p className="p-2 text-xs" style={{ color: "var(--ink-faint)" }}>{t('ui.SupervisorPositionsPage.cargandoPuestos')}</p>}
               {stations.map((s) => {
                 const on = form.stationIds.includes(s.id);
                 return (

@@ -26,6 +26,7 @@ import { toast } from 'sonner';
 import { PageContainer, PageHeader, Modal, StatusBadge } from '@/components/kit';
 import { Printer, MessageSquarePlus } from 'lucide-react';
 import type { DirectoryOption, NamedEntity, DispatchComment, CommentAttachment } from './types';
+import i18n from "@/i18n";
 
 export function DispatchDetailsContent({ requestId }: { requestId?: string | null }) {
   const { t } = useTranslation();
@@ -548,8 +549,8 @@ export default function DispatchDetailsPage() {
       <PageContainer width="wide" className="px-6 pt-4">
         <PageHeader
           icon={<Printer />}
-          title="Detalle del Incidente"
-          subtitle="Vista imprimible del incidente."
+          title={i18n.t('comun.detalleDelIncidente')}
+          subtitle={i18n.t('ui.DispatchPrintablePage.vistaImprimibleDelIncidente')}
         />
         <DispatchDetailsContent requestId={id ?? null} />
       </PageContainer>

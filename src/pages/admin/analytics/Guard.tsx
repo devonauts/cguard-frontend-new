@@ -9,6 +9,7 @@ import { analyticsService, PerfLeaderboard, GuardPerformance } from "@/lib/api/a
 import { Stagger, EmptyState, StatusBadge, SkeletonBlock } from "@/components/kit";
 import { MeterBar } from "@/components/charts";
 import { CHART_VARS, alphaVar } from "@/lib/chartColors";
+import i18n from "@/i18n";
 
 /** Tramos de desempeño. Son ESTADOS (bien/regular/mal), así que van con los
  *  colores semánticos, que el sistema deja fijos aunque cambie el acento.
@@ -33,7 +34,7 @@ function ScoreBadge({ score, tier, enabled = true }: { score: number | null; tie
   // importa: la primera es una decisión de la empresa, la segunda un vacío que
   // se llena solo trabajando.
   if (!enabled) return <StatusBadge tone="neutral" dot={false}>Sin medir</StatusBadge>;
-  if (score == null) return <StatusBadge tone="neutral" dot={false}>Sin datos</StatusBadge>;
+  if (score == null) return <StatusBadge tone="neutral" dot={false}>{i18n.t('comun.sinDatos')}</StatusBadge>;
   return (
     <StatusBadge tone={t.tone} dot={false} className="text-sm font-bold">
       {score}<span className="text-[10px] font-medium opacity-80">/100</span>
@@ -149,10 +150,10 @@ export default function Guard() {
                   <thead className="border-b text-xs uppercase tracking-wide text-muted-foreground">
                     <tr>
                       <th className="px-3 py-2 text-left font-semibold">#</th>
-                      <th className="px-3 py-2 text-left font-semibold">Vigilante</th>
+                      <th className="px-3 py-2 text-left font-semibold">{t('comun.vigilante')}</th>
                       <th className="px-3 py-2 text-left font-semibold">{t("ui.Guard.puntuacion", "Puntuación")}</th>
                       <th className="px-3 py-2 text-left font-semibold">Nivel</th>
-                      <th className="px-3 py-2 text-right font-semibold">Asistencia</th>
+                      <th className="px-3 py-2 text-right font-semibold">{t('comun.asistencia')}</th>
                       <th className="px-3 py-2 text-right font-semibold">Faltas</th>
                       <th className="px-3 py-2 text-right font-semibold">Atrasos</th>
                       <th className="px-3 py-2"></th>

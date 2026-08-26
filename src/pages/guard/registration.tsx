@@ -640,7 +640,7 @@ export default function GuardRegistration() {
               </div>
             </div>
           </div>
-          <p className="mt-6 text-xs text-muted-foreground">Ya puedes cerrar esta ventana.</p>
+          <p className="mt-6 text-xs text-muted-foreground">{t('ui.registration.yaPuedesCerrarEstaVentana')}</p>
         </div>
       ) : (
       <form className="space-y-3" onSubmit={handleSubmit}>
@@ -679,8 +679,8 @@ export default function GuardRegistration() {
         {step === 1 && (
           <div className="grid grid-cols-1 gap-x-4 gap-y-4 md:grid-cols-2">
             <div>
-              <label className={labelClass}>Nombre<span style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
-              <Input className={formControl} style={errorStyle('firstName')} value={firstName} onChange={(e: any) => { setFirstName(e.target.value); setErrors((p) => ({ ...p, firstName: undefined })); }} placeholder="Nombre" disabled={isLoading || lockedFirstName} />
+              <label className={labelClass}>{t('comun.nombre')}<span style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
+              <Input className={formControl} style={errorStyle('firstName')} value={firstName} onChange={(e: any) => { setFirstName(e.target.value); setErrors((p) => ({ ...p, firstName: undefined })); }} placeholder={t('comun.nombre')} disabled={isLoading || lockedFirstName} />
               {errors.firstName && <div className="mt-1 text-sm" style={{ color: 'var(--bad-text)' }}>{errors.firstName}</div>}
             </div>
             <div>
@@ -704,7 +704,7 @@ export default function GuardRegistration() {
               {errors.governmentId && <div className="mt-1 text-sm" style={{ color: 'var(--bad-text)' }}>{errors.governmentId}</div>}
             </div>
             <div>
-              <label className={labelClass}>Fecha de nacimiento<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
+              <label className={labelClass}>{t('comun.fechaDeNacimiento')}<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
               <Input className={formControl} style={errorStyle('birthDate')} type="date" value={birthDate} onChange={(e: any) => { setBirthDate(e.target.value); setErrors((p) => ({ ...p, birthDate: undefined })); }} disabled={isLoading} />
               {errors.birthDate && <div className="mt-1 text-sm" style={{ color: 'var(--bad-text)' }}>{errors.birthDate}</div>}
             </div>
@@ -722,7 +722,7 @@ export default function GuardRegistration() {
               </select>
             </div>
             <div>
-              <label className={labelClass}>Estado civil<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
+              <label className={labelClass}>{t('comun.estadoCivil')}<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
               <select value={maritalStatus} onChange={(e) => setMaritalStatus(e.target.value)} className={formControl} style={errorStyle('maritalStatus')} disabled={isLoading}>
                 <option value="">Seleccione</option>
                 <option value="Soltero">Soltero</option>
@@ -820,7 +820,7 @@ export default function GuardRegistration() {
           </div>
           <div className="ml-auto flex gap-2">
             {step < totalSteps && (
-              <button type="button" onClick={handleNext} className="cg-btn-brand cg-focus rounded-full px-7 py-2.5 text-sm font-semibold transition-all motion-reduce:transition-none">Siguiente</button>
+              <button type="button" onClick={handleNext} className="cg-btn-brand cg-focus rounded-full px-7 py-2.5 text-sm font-semibold transition-all motion-reduce:transition-none">{t('kit.pagination.next')}</button>
             )}
             {step === totalSteps && (
               <button type="submit" disabled={isLoading} className="cg-btn-brand cg-focus inline-flex items-center gap-2 rounded-full px-7 py-2.5 text-sm font-semibold transition-all motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-60">

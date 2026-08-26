@@ -739,7 +739,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
       // `changed: false` NO es un fallo: es que el orden manual ya era el bueno.
       // Decir «has ahorrado 0 km» ahí suena a que el botón no hizo nada.
       if (r.changed === false) {
-        toast.success('La ruta ya estaba en el mejor orden posible. No hizo falta mover ninguna parada.');
+        toast.success(t('comun.laRutaYaEstabaEn'));
       } else if (nuevoAhorro?.hayAhorro) {
         const trozos: string[] = [];
         if (nuevoAhorro.km != null && nuevoAhorro.km >= 0.05) trozos.push(`-${fmtKm(nuevoAhorro.km)}`);
@@ -896,7 +896,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nombre*</FormLabel>
+              <FormLabel>{t('comun.nombreReq')}</FormLabel>
               <FormControl>
                 <Input placeholder="Nombre de la ruta" {...field} />
               </FormControl>
@@ -937,7 +937,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
                   name="dateFrom"
                   render={({ field }) => (
                     <FormItem className="md:col-span-2">
-                      <FormLabel>Desde</FormLabel>
+                      <FormLabel>{t('comun.desde')}</FormLabel>
                       <FormControl>
                         <Input type="date" {...field} />
                       </FormControl>
@@ -950,7 +950,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
                   name="startTime"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Hora de Inicio</FormLabel>
+                      <FormLabel>{t('comun.horaDeInicio')}</FormLabel>
                       <FormControl>
                         <Input type="time" {...field} />
                       </FormControl>
@@ -963,7 +963,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
                   name="endTime"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Hora de Fin</FormLabel>
+                      <FormLabel>{t('comun.horaDeFin')}</FormLabel>
                       <FormControl>
                         <Input type="time" {...field} />
                       </FormControl>
@@ -976,7 +976,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
                   name="dateTo"
                   render={({ field }) => (
                     <FormItem className="md:col-span-2">
-                      <FormLabel>Hasta</FormLabel>
+                      <FormLabel>{t('comun.hasta')}</FormLabel>
                       <FormControl>
                         <Input type="date" {...field} />
                       </FormControl>
@@ -1231,7 +1231,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
                 <thead style={{ background: 'var(--glass-sunken)' }}>
                   <tr className="border-b" style={{ borderColor: 'var(--hairline)' }}>
                     <th className="px-4 py-3 font-semibold">#</th>
-                    <th className="px-4 py-3 font-semibold">Puesto de seguridad</th>
+                    <th className="px-4 py-3 font-semibold">{t('comun.puestoDeSeguridad')}</th>
                     <th className="px-4 py-3 font-semibold">{t("ui.RouteForm.direccion", "Dirección")}</th>
                     <th className="px-4 py-3 font-semibold">Pasadas</th>
                     <th className="px-4 py-3 font-semibold">{t("ui.RouteForm.duracionMin", "Duración (min)")}</th>

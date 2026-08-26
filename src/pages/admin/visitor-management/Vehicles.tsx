@@ -141,7 +141,7 @@ export default function Vehicles() {
                 vin: form.vin.trim() || null,
                 description: form.description.trim() || null,
             });
-            toast.success("Vehículo creado");
+            toast.success(t('comun.vehiculoCreado'));
             setForm({ ...emptyForm });
             setErrors({});
             setIsAddOpen(false);
@@ -226,7 +226,7 @@ export default function Vehicles() {
                                     <SelectValue placeholder={t("ui.Vehicles.accion", "Acción")} />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="eliminar">Eliminar</SelectItem>
+                                    <SelectItem value="eliminar">{t('actions.delete')}</SelectItem>
                                 </SelectContent>
                             </Select>
                             <Button variant="brand" onClick={() => setIsAddOpen(true)}>
@@ -454,8 +454,8 @@ export default function Vehicles() {
                                     <td colSpan={6} className="py-8">
                                         <EmptyState
                                             icon={<Car />}
-                                            title="No se encontraron resultados"
-                                            description="No pudimos encontrar ningún elemento que coincida con su búsqueda"
+                                            title={t('kit.table.emptyTitle')}
+                                            description={t('comun.noPudimosEncontrarNingunElemento')}
                                             className="border-0"
                                         />
                                     </td>

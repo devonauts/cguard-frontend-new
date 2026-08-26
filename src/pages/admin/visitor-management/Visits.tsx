@@ -295,7 +295,7 @@ export default function Visits() {
             return (resp?.rows as VisitLogRow[]) || rows;
         } catch (e) {
             console.error("Error fetching full export set", e);
-            toast.error("No se pudo obtener el listado completo; se exportó la página actual");
+            toast.error(t('comun.noSePudoObtenerEl'));
             return rows;
         }
     };
@@ -303,7 +303,7 @@ export default function Visits() {
     const handleDeleteSelected = async () => {
         const ids = Object.keys(selected).filter((k) => selected[k]);
         if (!ids.length) {
-            toast.error("No hay elementos seleccionados");
+            toast.error(t('ui.Visits.noHayElementosSeleccionados'));
             return;
         }
         if (
@@ -348,7 +348,7 @@ export default function Visits() {
     const handleExportExcel = async () => {
         const subjects = await exportSubjects();
         if (!subjects.length) {
-            toast.error("No hay registros para exportar");
+            toast.error(t('comun.noHayRegistrosParaExportar'));
             return;
         }
         try {
@@ -450,7 +450,7 @@ export default function Visits() {
                                 <SelectValue placeholder={t("ui.Visits.accion", "Acción")} />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="eliminar">Eliminar</SelectItem>
+                                <SelectItem value="eliminar">{t('actions.delete')}</SelectItem>
                             </SelectContent>
                         </Select>
                     }
@@ -462,21 +462,21 @@ export default function Visits() {
                         value={count}
                         icon={<ClipboardList />}
                         accent="brand"
-                        hint="Con los filtros aplicados"
+                        hint={t('comun.conLosFiltrosAplicados')}
                     />
                     <StatCard
-                        label="Dentro de las instalaciones"
+                        label={t('comun.dentroDeLasInstalaciones')}
                         value={dentro}
                         icon={<LogIn />}
                         accent="ok"
-                        hint="De los registros mostrados"
+                        hint={t('comun.deLosRegistrosMostrados')}
                     />
                     <StatCard
-                        label="Con salida registrada"
+                        label={t('comun.conSalidaRegistrada')}
                         value={conSalida}
                         icon={<LogOut />}
                         accent="neutral"
-                        hint="De los registros mostrados"
+                        hint={t('comun.deLosRegistrosMostrados')}
                     />
                 </div>
 
@@ -512,7 +512,7 @@ export default function Visits() {
 
                                 <form className="mt-6 space-y-5" onSubmit={aplicarFiltros}>
                                     <div className="space-y-2">
-                                        <Label className="text-xs">Cliente</Label>
+                                        <Label className="text-xs">{t('comun.cliente')}</Label>
                                         <Select
                                             value={filters.clientId}
                                             onValueChange={(v) =>
@@ -520,7 +520,7 @@ export default function Visits() {
                                             }
                                         >
                                             <SelectTrigger className="h-10 text-xs">
-                                                <SelectValue placeholder="Selecciona un cliente" />
+                                                <SelectValue placeholder={t('comun.seleccionaUnCliente')} />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 {clients.map((c) => (
@@ -533,7 +533,7 @@ export default function Visits() {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label className="text-xs">Puesto de seguridad</Label>
+                                        <Label className="text-xs">{t('comun.puestoDeSeguridad')}</Label>
                                         <Select
                                             value={filters.siteId}
                                             onValueChange={(v) =>
@@ -542,7 +542,7 @@ export default function Visits() {
                                             disabled={sites.length === 0}
                                         >
                                             <SelectTrigger className="h-10 text-xs">
-                                                <SelectValue placeholder="Selecciona un sitio" />
+                                                <SelectValue placeholder={t('comun.seleccionaUnSitio')} />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 {sites.map((p) => (
@@ -555,7 +555,7 @@ export default function Visits() {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label className="text-xs">Vigilante</Label>
+                                        <Label className="text-xs">{t('comun.vigilante')}</Label>
                                         <Select
                                             value={filters.guardId}
                                             onValueChange={(v) =>
@@ -564,7 +564,7 @@ export default function Visits() {
                                             disabled={guards.length === 0}
                                         >
                                             <SelectTrigger className="h-10 text-xs">
-                                                <SelectValue placeholder="Selecciona un vigilante" />
+                                                <SelectValue placeholder={t('comun.seleccionaUnVigilante')} />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 {guards.map((g) => (
@@ -578,7 +578,7 @@ export default function Visits() {
 
                                     <div className="grid grid-cols-2 gap-3">
                                         <div className="space-y-2">
-                                            <Label className="text-xs">Desde la Fecha</Label>
+                                            <Label className="text-xs">{t('comun.desdeLaFecha')}</Label>
                                             <Input
                                                 type="date"
                                                 className="h-10 text-xs"
@@ -589,7 +589,7 @@ export default function Visits() {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="text-xs">Hora</Label>
+                                            <Label className="text-xs">{t('comun.hora')}</Label>
                                             <Input
                                                 type="time"
                                                 className="h-10 text-xs"
@@ -603,7 +603,7 @@ export default function Visits() {
 
                                     <div className="grid grid-cols-2 gap-3">
                                         <div className="space-y-2">
-                                            <Label className="text-xs">Hasta la Fecha</Label>
+                                            <Label className="text-xs">{t('comun.hastaLaFecha')}</Label>
                                             <Input
                                                 type="date"
                                                 className="h-10 text-xs"
@@ -614,7 +614,7 @@ export default function Visits() {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="text-xs">Hora</Label>
+                                            <Label className="text-xs">{t('comun.hora')}</Label>
                                             <Input
                                                 type="time"
                                                 className="h-10 text-xs"
@@ -687,11 +687,11 @@ export default function Visits() {
                                         onCheckedChange={(v) => selectAll(Boolean(v))}
                                     />
                                 </th>
-                                <th className="cg-eyebrow px-2 py-2">Nombre</th>
+                                <th className="cg-eyebrow px-2 py-2">{t('comun.nombre')}</th>
                                 <th className="cg-eyebrow px-2 py-2">{t("ui.Visits.vehiculo", "Vehículo")}</th>
-                                <th className="cg-eyebrow px-2 py-2">Hora de entrada</th>
-                                <th className="cg-eyebrow px-2 py-2">Hora de salida</th>
-                                <th className="cg-eyebrow px-2 py-2">Puesto de seguridad</th>
+                                <th className="cg-eyebrow px-2 py-2">{t('ui.Visits.horaDeEntrada')}</th>
+                                <th className="cg-eyebrow px-2 py-2">{t('ui.Visits.horaDeSalida')}</th>
+                                <th className="cg-eyebrow px-2 py-2">{t('comun.puestoDeSeguridad')}</th>
                                 <th className="cg-eyebrow px-2 py-2">Registrado por</th>
                                 <th className="cg-eyebrow px-2 py-2">Salido por</th>
                             </tr>
@@ -709,8 +709,8 @@ export default function Visits() {
                                     <td colSpan={8} className="py-8">
                                         <EmptyState
                                             icon={<ClipboardList />}
-                                            title="No se encontraron resultados"
-                                            description="No pudimos encontrar ningún elemento que coincida con su búsqueda"
+                                            title={t('kit.table.emptyTitle')}
+                                            description={t('comun.noPudimosEncontrarNingunElemento')}
                                             className="border-0"
                                         />
                                     </td>
@@ -733,7 +733,7 @@ export default function Visits() {
                                             {r.exitTime ? (
                                                 formatDateTime(r.exitTime)
                                             ) : visitaVencida(r) ? (
-                                                <StatusBadge tone="warn">Sin salida registrada</StatusBadge>
+                                                <StatusBadge tone="warn">{t('comun.sinSalidaRegistrada')}</StatusBadge>
                                             ) : (
                                                 <StatusBadge tone="ok" dot={false}>
                                                     <span

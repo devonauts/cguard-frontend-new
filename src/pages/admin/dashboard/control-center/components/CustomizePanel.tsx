@@ -53,7 +53,7 @@ export function CustomizePanel({
           </div>
           <button
             onClick={onClose}
-            aria-label="Cerrar"
+            aria-label={t('actions.close')}
             className="cg-btn-ghost cg-focus grid size-9 place-items-center rounded-full"
           >
             <X className="size-4" />

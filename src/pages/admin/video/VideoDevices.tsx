@@ -244,7 +244,7 @@ export default function VideoDevices() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim()) {
-      toast.error("El nombre es obligatorio");
+      toast.error(t('comun.elNombreEsObligatorio'));
       return;
     }
     setSaving(true);
@@ -351,7 +351,7 @@ export default function VideoDevices() {
 
         {/* Summary */}
         <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <StatCard label="Total" value={devices.length} icon={<Video />} accent="primary" />
+          <StatCard label={t('comun.total')} value={devices.length} icon={<Video />} accent="primary" />
           <StatCard label={t("ui.VideoDevices.enLinea", "En línea")} value={counts.online} icon={<Wifi />} accent="ok" />
           <StatCard label={t("ui.VideoDevices.sinConexion", "Sin conexión")} value={counts.offline} icon={<WifiOff />} accent="bad" />
           <StatCard label="Desconocido" value={counts.unknown} icon={<Server />} accent="neutral" />
@@ -446,7 +446,7 @@ export default function VideoDevices() {
                       <Button
                         size="icon"
                         variant="ghost"
-                        title="Editar"
+                        title={t('actions.edit')}
                         onClick={() => openEdit(d)}
                       >
                         <Pencil className="h-4 w-4" />
@@ -454,7 +454,7 @@ export default function VideoDevices() {
                       <Button
                         size="icon"
                         variant="ghost"
-                        title="Eliminar"
+                        title={t('actions.delete')}
                         style={{ color: 'var(--bad-text)' }}
                         onClick={() => setDeleteTarget(d)}
                       >
@@ -484,7 +484,7 @@ export default function VideoDevices() {
           <form onSubmit={onSubmit} className="space-y-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
-                <Label htmlFor="vd-name">Nombre *</Label>
+                <Label htmlFor="vd-name">{t('comun.nombreReq')}</Label>
                 <Input
                   id="vd-name"
                   value={form.name}
@@ -509,7 +509,7 @@ export default function VideoDevices() {
                 <div>
                   <Label htmlFor="vd-relay">Sitio relay</Label>
                   <Select value={form.relaySiteId} onValueChange={(v) => set("relaySiteId", v)}>
-                    <SelectTrigger id="vd-relay"><SelectValue placeholder="Selecciona un sitio" /></SelectTrigger>
+                    <SelectTrigger id="vd-relay"><SelectValue placeholder={t('comun.seleccionaUnSitio')} /></SelectTrigger>
                     <SelectContent>
                       {relaySites.map((s) => (
                         <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
@@ -526,7 +526,7 @@ export default function VideoDevices() {
               )}
 
               <div>
-                <Label htmlFor="vd-type">Tipo</Label>
+                <Label htmlFor="vd-type">{t('comun.tipo')}</Label>
                 <Select value={form.type} onValueChange={(v) => set("type", v as DeviceType)}>
                   <SelectTrigger id="vd-type">
                     <SelectValue />
@@ -613,7 +613,7 @@ export default function VideoDevices() {
               </div>
 
               <div>
-                <Label htmlFor="vd-username">Usuario</Label>
+                <Label htmlFor="vd-username">{t('comun.usuario')}</Label>
                 <Input
                   id="vd-username"
                   value={form.username}
@@ -655,7 +655,7 @@ export default function VideoDevices() {
                   id="vd-postSite"
                   value={form.postSiteId}
                   onChange={(e) => set("postSiteId", e.target.value)}
-                  placeholder="ID del punto de servicio"
+                  placeholder={t('comun.idDelPuntoDeServicio')}
                 />
               </div>
 
@@ -670,7 +670,7 @@ export default function VideoDevices() {
               </div>
 
               <div className="sm:col-span-2">
-                <Label htmlFor="vd-notes">Notas</Label>
+                <Label htmlFor="vd-notes">{t('comun.notas')}</Label>
                 <Textarea
                   id="vd-notes"
                   value={form.notes}
@@ -687,9 +687,7 @@ export default function VideoDevices() {
                 variant="outline"
                 onClick={() => setDialogOpen(false)}
                 disabled={saving}
-              >
-                Cancelar
-              </Button>
+              >{" "}{t('actions.cancel')}{" "}</Button>
               <Button type="submit" variant="brand" disabled={saving}>
                 {saving && <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />}
                 {editing ? "Guardar cambios" : "Agregar dispositivo"}
@@ -714,7 +712,7 @@ export default function VideoDevices() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleting}>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel disabled={deleting}>{t('actions.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={(e) => {
                 e.preventDefault();

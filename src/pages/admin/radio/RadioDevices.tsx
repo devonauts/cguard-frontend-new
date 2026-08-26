@@ -153,11 +153,11 @@ export default function RadioDevices() {
 
   const save = async () => {
     if (!form.name.trim()) {
-      toast.error("El nombre es obligatorio");
+      toast.error(t('comun.elNombreEsObligatorio'));
       return;
     }
     if (!form.host.trim()) {
-      toast.error("La IP / host del radio es obligatoria");
+      toast.error(t('ui.RadioDevices.laIpHostDelRadio'));
       return;
     }
     const payload: any = {
@@ -242,7 +242,7 @@ export default function RadioDevices() {
         <PageHeader
           icon={<Radio />}
           title="Radios IP"
-          subtitle="Conecta una pasarela RoIP / SIP para enlazar los radios físicos con el canal de la app."
+          subtitle={t('ui.RadioDevices.conectaUnaPasarelaRoipSip')}
           badges={(
             counts.registered > 0 ? (
               /* La misma píldora que el kit ya calcula: la página la pintaba a
@@ -252,7 +252,7 @@ export default function RadioDevices() {
                 {counts.registered === 1 ? 'Un enlace al aire' : `${counts.registered} enlaces al aire`}
               </StatusBadge>
             ) : (
-              <StatusBadge tone="neutral">Sin enlaces al aire</StatusBadge>
+              <StatusBadge tone="neutral">{t('ui.RadioDevices.sinEnlacesAlAire')}</StatusBadge>
             )
           )}
           actions={(
@@ -264,7 +264,7 @@ export default function RadioDevices() {
 
         {/* Summary */}
         <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          <StatCard label="Total" value={counts.total} icon={<Radio />} accent="primary" />
+          <StatCard label={t('comun.total')} value={counts.total} icon={<Radio />} accent="primary" />
           <StatCard label="Registrados" value={counts.registered} icon={<Wifi />} accent="ok" />
           <StatCard label={t("ui.RadioDevices.sinConexion", "Sin conexión")} value={counts.offline} icon={<WifiOff />} accent="neutral" />
         </Stagger>
@@ -284,7 +284,7 @@ export default function RadioDevices() {
           <EmptyState
             icon={<Radio />}
             title={t("ui.RadioDevices.aunNoHayRadiosIp", "Aún no hay radios IP")}
-            description="Agrega la pasarela RoIP/SIP del cliente con su IP y credenciales SIP."
+            description={t('ui.RadioDevices.agregaLaPasarelaRoipSip')}
             action={(
               <Button variant="brand" onClick={openNew}>
                 <Plus className="mr-2 h-4 w-4" />Agregar radio IP
@@ -314,7 +314,7 @@ export default function RadioDevices() {
                       <div className="flex flex-wrap items-center gap-2">
                         <p className="truncate font-semibold text-foreground">{d.name}</p>
                         <DeviceStatusBadge health={badge.health} label={badge.label} />
-                        {!d.active && <StatusBadge tone="neutral" dot={false}>Inactivo</StatusBadge>}
+                        {!d.active && <StatusBadge tone="neutral" dot={false}>{t('common.inactive')}</StatusBadge>}
                       </div>
                       <p className="mt-0.5 truncate text-xs" style={{ color: 'var(--ink-soft)' }}>
                         {d.host || "—"}:{d.sipPort ?? 5060} · {String(d.transport || "udp").toUpperCase()}
@@ -333,8 +333,7 @@ export default function RadioDevices() {
                           <Pencil className="mr-1.5 h-3.5 w-3.5" />Editar
                         </Button>
                         <Button size="sm" variant="ghost" style={{ color: 'var(--bad-text)' }} onClick={() => setDeleteTarget(d)}>
-                          <Trash2 className="mr-1.5 h-3.5 w-3.5" />Eliminar
-                        </Button>
+                          <Trash2 className="mr-1.5 h-3.5 w-3.5" />{t('actions.delete')}{" "}</Button>
                       </div>
                     </div>
                   </div>
@@ -355,7 +354,7 @@ export default function RadioDevices() {
 
           <div className="grid gap-3 py-2">
             <div className="grid gap-1.5">
-              <Label>Nombre *</Label>
+              <Label>{t('comun.nombreReq')}</Label>
               <Input value={form.name} onChange={(e) => set({ name: e.target.value })} placeholder="Radio Central Norte" />
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -387,7 +386,7 @@ export default function RadioDevices() {
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="grid gap-1.5">
-                <Label>Usuario SIP</Label>
+                <Label>{t('ui.RadioDevices.usuarioSip')}</Label>
                 <Input value={form.sipUsername} onChange={(e) => set({ sipUsername: e.target.value })} autoComplete="off" />
               </div>
               <div className="grid gap-1.5">
@@ -400,13 +399,13 @@ export default function RadioDevices() {
                   placeholder={editing?.sipPasswordConfigured ? "•••• (sin cambios)" : ""}
                 />
                 {editing?.sipPasswordConfigured && (
-                  <p className="text-[11px] text-muted-foreground">Deja en blanco para conservar la actual.</p>
+                  <p className="text-[11px] text-muted-foreground">{t('ui.RadioDevices.dejaEnBlancoParaConservar')}</p>
                 )}
               </div>
             </div>
             <div className="grid gap-1.5">
               <Label>Dominio / Registrar (opcional)</Label>
-              <Input value={form.sipDomain} onChange={(e) => set({ sipDomain: e.target.value })} placeholder="Por defecto: el host" />
+              <Input value={form.sipDomain} onChange={(e) => set({ sipDomain: e.target.value })} placeholder={t('ui.RadioDevices.porDefectoElHost')} />
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="grid gap-1.5">
@@ -419,7 +418,7 @@ export default function RadioDevices() {
               </div>
             </div>
             <div className="grid gap-1.5">
-              <Label>Notas</Label>
+              <Label>{t('comun.notas')}</Label>
               <Textarea value={form.notes} onChange={(e) => set({ notes: e.target.value })} rows={2} />
             </div>
             <label className="glass-sunken flex cursor-pointer items-center gap-2.5 p-3 text-sm">
@@ -445,7 +444,7 @@ export default function RadioDevices() {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" disabled={saving} onClick={() => setDialogOpen(false)}>Cancelar</Button>
+            <Button variant="outline" disabled={saving} onClick={() => setDialogOpen(false)}>{t('actions.cancel')}</Button>
             <Button variant="brand" disabled={saving} onClick={save}>
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {editing ? "Guardar" : "Agregar"}
@@ -458,14 +457,14 @@ export default function RadioDevices() {
       <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Eliminar radio IP</AlertDialogTitle>
+            <AlertDialogTitle>{t('ui.RadioDevices.eliminarRadioIp')}</AlertDialogTitle>
             <AlertDialogDescription>
               ¿Eliminar “{deleteTarget?.name}”? El puente dejará de conectarlo.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="cg-btn-bad">Eliminar</AlertDialogAction>
+            <AlertDialogCancel>{t('actions.cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="cg-btn-bad">{t('actions.delete')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

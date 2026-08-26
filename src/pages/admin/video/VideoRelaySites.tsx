@@ -66,7 +66,7 @@ export default function VideoRelaySites() {
   useEffect(load, []);
 
   const create = async () => {
-    if (!name.trim()) { toast.error("El nombre es obligatorio"); return; }
+    if (!name.trim()) { toast.error(t('comun.elNombreEsObligatorio')); return; }
     setSaving(true);
     try {
       await videoService.createRelaySite({ name: name.trim(), notes: notes.trim() || undefined });
@@ -181,8 +181,7 @@ export default function VideoRelaySites() {
                         <KeyRound className="mr-1.5 h-3.5 w-3.5" />Regenerar clave
                       </Button>
                       <Button size="sm" variant="ghost" style={{ color: 'var(--bad-text)' }} onClick={() => setDeleteTarget(s)}>
-                        <Trash2 className="mr-1.5 h-3.5 w-3.5" />Eliminar
-                      </Button>
+                        <Trash2 className="mr-1.5 h-3.5 w-3.5" />{t('actions.delete')}{" "}</Button>
                     </div>
                   </div>
                 </GlassPanel>
@@ -201,16 +200,16 @@ export default function VideoRelaySites() {
           </DialogHeader>
           <div className="grid gap-3 py-2">
             <div className="grid gap-1.5">
-              <Label>Nombre *</Label>
+              <Label>{t('comun.nombreReq')}</Label>
               <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="BAS - Guayaquil" />
             </div>
             <div className="grid gap-1.5">
-              <Label>Notas</Label>
+              <Label>{t('comun.notas')}</Label>
               <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" disabled={saving} onClick={() => setNewOpen(false)}>Cancelar</Button>
+            <Button variant="outline" disabled={saving} onClick={() => setNewOpen(false)}>{t('actions.cancel')}</Button>
             <Button disabled={saving} onClick={create} variant="brand">
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Crear
             </Button>
@@ -274,8 +273,8 @@ export default function VideoRelaySites() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="cg-btn-bad">Eliminar</AlertDialogAction>
+            <AlertDialogCancel>{t('actions.cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="cg-btn-bad">{t('actions.delete')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

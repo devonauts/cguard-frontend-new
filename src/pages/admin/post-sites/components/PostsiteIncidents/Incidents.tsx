@@ -129,7 +129,7 @@ export default function Incidents({ site }: { site?: SiteProp }) {
       toast.success('Link copiado al portapapeles');
     } catch (err) {
       console.error('Copy failed', err);
-      toast.error('No se pudo copiar el enlace');
+      toast.error(t('comun.noSePudoCopiarEl'));
     }
   };
 
@@ -143,10 +143,10 @@ export default function Incidents({ site }: { site?: SiteProp }) {
       if (!tenantId) throw new Error('Tenant missing');
       await ApiService.put(`/tenant/${tenantId}/incident/${it.id}`, { data: { status: 'cerrado', workStatus: 'closed' } });
       setIncidents((prev) => prev.map((p) => (p.id === it.id ? { ...p, status: 'cerrado', workStatus: 'closed' } : p)));
-      toast.success('Ticket cerrado');
+      toast.success(t('ui.Incidents.ticketCerrado'));
     } catch (err) {
       console.error('Close ticket failed', err);
-      toast.error('No se pudo cerrar el ticket');
+      toast.error(t('ui.Incidents.noSePudoCerrarEl'));
     }
   };
 
@@ -626,7 +626,7 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                 <SelectValue placeholder={t('incidents.actionsPlaceholder') || 'Actions'} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="eliminar">Eliminar</SelectItem>
+                <SelectItem value="eliminar">{t('actions.delete')}</SelectItem>
               </SelectContent>
             </Select>
 
@@ -691,10 +691,10 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                         <label className="block text-sm font-medium text-foreground mb-2">Informador</label>
                         <Select value={filterInformer ?? '__none'} onValueChange={(v) => setFilterInformer(v === '__none' ? undefined : v)}>
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Todos los informadores" />
+                            <SelectValue placeholder={t('ui.Incidents.todosLosInformadores')} />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="__none">Todos los informadores</SelectItem>
+                            <SelectItem value="__none">{t('ui.Incidents.todosLosInformadores')}</SelectItem>
                             {/* Assigned guards for the post site */}
                             {(assignedGuards || []).length ? (assignedGuards || []).map((g: any) => (
                               <SelectItem key={`guard-${g.id || g.guardId || g.userId || g.securityGuardId}`} value={String(g.id || g.guardId || g.userId || g.securityGuardId)}>{g.fullName || g.name || g.guardName || (g.user && (g.user.fullName || g.user.firstName)) || g.id}</SelectItem>
@@ -718,13 +718,13 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-foreground mb-2">Tipo de incidente</label>
+                        <label className="block text-sm font-medium text-foreground mb-2">{t('ui.Incidents.tipoDeIncidente')}</label>
                         <Select value={filterIncidentTypeId ?? '__none'} onValueChange={(v) => setFilterIncidentTypeId(v === '__none' ? undefined : v)}>
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Todos los tipos" />
+                            <SelectValue placeholder={t('comun.todosLosTipos')} />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="__none">Todos los tipos</SelectItem>
+                            <SelectItem value="__none">{t('comun.todosLosTipos')}</SelectItem>
                             {(incidentTypes || []).length ? (incidentTypes || []).map((it: any) => (
                               <SelectItem key={it.id} value={String(it.id)}>{it.name || it.id}</SelectItem>
                             )) : (
@@ -883,16 +883,16 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                               const ws = ((it as any).workStatus || '').toString();
                               if (ws === 'inProgress') return <StatusBadge tone="amber">En progreso</StatusBadge>;
                               if (ws === 'resolved') return <StatusBadge tone="green">Resuelto</StatusBadge>;
-                              if (ws === 'closed') return <StatusBadge tone="green">Cerrado</StatusBadge>;
-                              if (ws === 'open') return <StatusBadge tone="red">Abierto</StatusBadge>;
+                              if (ws === 'closed') return <StatusBadge tone="green">{t('comun.cerrado')}</StatusBadge>;
+                              if (ws === 'open') return <StatusBadge tone="red">{t('comun.abierto')}</StatusBadge>;
 
                               const s = (it.status || '').toString().toLowerCase();
                               if (s === 'cerrado' || s === 'closed') {
-                                return <StatusBadge tone="green">Cerrado</StatusBadge>;
+                                return <StatusBadge tone="green">{t('comun.cerrado')}</StatusBadge>;
                               }
 
                               if (s === 'abierto' || s === 'open') {
-                                return <StatusBadge tone="red">Abierto</StatusBadge>;
+                                return <StatusBadge tone="red">{t('comun.abierto')}</StatusBadge>;
                               }
 
                               return <StatusBadge tone="slate">{it.status || '-'}</StatusBadge>;

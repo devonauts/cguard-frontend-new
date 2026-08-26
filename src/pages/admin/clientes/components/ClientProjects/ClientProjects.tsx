@@ -52,7 +52,7 @@ export default function ClientProjects({ client }: Props) {
       setDeleteTargetId(undefined);
       loadProjects();
     } catch {
-      toast.error('Error al eliminar');
+      toast.error(t('ui.ClientProjects.errorAlEliminar'));
     }
   };
 
@@ -103,10 +103,10 @@ export default function ClientProjects({ client }: Props) {
               <thead>
                 <tr className="border-b">
                   <th className="cg-eyebrow px-2 py-2">Proyecto</th>
-                  <th className="cg-eyebrow px-2 py-2">Tipo</th>
+                  <th className="cg-eyebrow px-2 py-2">{t('comun.tipo')}</th>
                   <th className="cg-eyebrow px-2 py-2">Inicio</th>
                   <th className="cg-eyebrow px-2 py-2">Fin</th>
-                  <th className="cg-eyebrow px-2 py-2">Estado</th>
+                  <th className="cg-eyebrow px-2 py-2">{t('comun.estado')}</th>
                   <th className="cg-eyebrow px-2 py-2 text-right">Acciones</th>
                 </tr>
               </thead>
@@ -187,7 +187,7 @@ export default function ClientProjects({ client }: Props) {
             <AlertDialogDescription>{t("ui.ClientProjects.estaAccionNoSePuede", "Esta acción no se puede deshacer.")}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>{t('actions.cancel')}</AlertDialogCancel>
             <AlertDialogAction className="cg-btn-bad" onClick={handleDelete}>
               Eliminar
             </AlertDialogAction>
