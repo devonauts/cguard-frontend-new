@@ -60,6 +60,8 @@ function SedesAsignadas({ userId }: { userId: string }) {
   const [elegidas, setElegidas] = useState<string[]>([]);
   const [cargando, setCargando] = useState(true);
   const [guardando, setGuardando] = useState(false);
+  // Los roles ACTUALES, para devolverlos tal cual al guardar. Ver abajo.
+  const [roles, setRoles] = useState<string[] | null>(null);
 
   useEffect(() => {
     let vivo = true;
@@ -74,6 +76,9 @@ function SedesAsignadas({ userId }: { userId: string }) {
         const u: any = (usuario as any)?.data ?? usuario;
         const crudas = u?.postSiteIds ?? u?.postSites ?? u?.assignedPostSites ?? [];
         setElegidas(Array.isArray(crudas) ? crudas.map((x: any) => String(x?.id ?? x)).filter(Boolean) : []);
+        const rolesCrudos = u?.roles ?? u?.role ?? u?.rolesList ?? [];
+        const lista = Array.isArray(rolesCrudos) ? rolesCrudos : [rolesCrudos];
+        setRoles(lista.map((r: any) => String(r?.name ?? r?.slug ?? r?.id ?? r)).filter(Boolean));
       } catch {
         // Un fallo aquí no puede tumbar la ficha entera: la sección se queda
         // vacía y el resto del supervisor se sigue viendo.
@@ -85,9 +90,20 @@ function SedesAsignadas({ userId }: { userId: string }) {
   }, [userId]);
 
   const guardar = async () => {
+    // ── LOS ROLES VIAJAN AUNQUE NO SE TOQUEN ────────────────────────────
+    // `PUT /user/:id` no es un parche: `userEditor` pasa `data.roles` a
+    // `TenantUserRepository.updateRoles` tal cual, y si no viene, los BORRA.
+    // Comprobado contra producción: un PUT con sólo `postSiteIds` dejó al
+    // supervisor de la empresa demo con `roles: []` — y sin rol, el portero
+    // de canal ya no le deja entrar a su propia app. Se reenvían los que
+    // tenía para que guardar sedes no le quite el puesto de trabajo.
+    if (roles === null) {
+      toast.error(t("ui.SupervisorDetail.sedesSinRoles", "Aún no se cargaron los datos del supervisor"));
+      return;
+    }
     setGuardando(true);
     try {
-      await userService.updateUser(userId, { postSiteIds: elegidas } as any);
+      await userService.updateUser(userId, { roles, postSiteIds: elegidas } as any);
       toast.success(t("ui.SupervisorDetail.sedesGuardadas", "Sedes guardadas"));
     } catch {
       toast.error(t("ui.SupervisorDetail.sedesError", "No se pudieron guardar las sedes"));
@@ -116,7 +132,7 @@ function SedesAsignadas({ userId }: { userId: string }) {
               Sin ninguna sede marcada seguirá viendo TODO.
             </p>
           )}
-          <Button className="mt-3" size="sm" onClick={guardar} disabled={guardando}>
+          <Button className="mt-3" size="sm" onClick={guardar} disabled={guardando || roles === null}>
             {guardando ? "Guardando…" : "Guardar sedes"}
           </Button>
         </>
