@@ -5,6 +5,8 @@ import { openEventStream } from "@/lib/api/eventStream";
 import securityGuardService from "@/lib/api/securityGuardService";
 import { supervisorService } from "@/lib/api/supervisorService";
 import tenantService from "@/services/tenant.service";
+import { useAuth } from "@/contexts/AuthContext";
+import { hasMinAuthority, AUTHORITY } from "@/lib/access";
 import { resolveDefaultCenter, companyCenter } from "./defaultCenter";
 import type {
   ControlCenterData, DashboardStats, Kpi, MapEntity, MapEntityMeta, MonthPoint,
@@ -158,6 +160,15 @@ export function useControlCenter(intervalSec = 15): ControlCenterData & { refres
     acquisitionTrend: [], activity: [], health: { sseConnected: false, onlineDevices: 0, lastSync: "" },
     counts: {}, loading: true, error: null, gaps: [],
   });
+  // El panel ejecutivo (/dashboard/stats) agrega facturación y la cartera de
+  // clientes completa: el backend le pone un piso de DIRECCIÓN (staffTierGuard,
+  // AUTHORITY.MANAGEMENT). Despachadores, vigilantes y clientes que abrían el
+  // Centro de Control lo pedían igual y se comían un 403 por carga — invisible
+  // aquí (lo tragaba `safe`), pero dejaba un error con traza en el log del
+  // servidor cada vez. Si no alcanza el piso, ni se pide: los KPIs de esa
+  // tarjeta ya tienen su camino de respaldo.
+  const { user } = useAuth();
+  const puedeVerPanelEjecutivo = hasMinAuthority(user, AUTHORITY.MANAGEMENT, tenantId());
   const sseRef = useRef<EventSource | null>(null);
   const locSeqRef = useRef(0);
   const [tick, setTick] = useState(0);
@@ -170,7 +181,7 @@ export function useControlCenter(intervalSec = 15): ControlCenterData & { refres
     (async () => {
       const gaps: string[] = [];
       const [stats, active, stationsR, postsR, clientsR, guardsR, incidentsR, openIncR, usersR, tenantR, eventsR, opsR, supsR] = await Promise.all([
-        safe<DashboardStats>(get("/dashboard/stats"), {}),
+        puedeVerPanelEjecutivo ? safe<DashboardStats>(get("/dashboard/stats"), {}) : Promise.resolve({} as DashboardStats),
         safe(securityGuardService.activeLocations(), null as any),
         safe(get("/station?limit=500"), null),
         safe(get("/post-site?limit=500"), null),
@@ -445,7 +456,11 @@ export function useControlCenter(intervalSec = 15): ControlCenterData & { refres
         .catch(() => { /* never blocks the dashboard */ });
     })();
     return () => { alive = false; };
-  }, [tick]);
+    // `puedeVerPanelEjecutivo` va en las dependencias a propósito: el usuario
+    // llega de forma asíncrona, así que en el primer render es `false` incluso
+    // para un administrador. Sin esto, quien SÍ tiene nivel se quedaría sin
+    // los KPIs ejecutivos hasta recargar.
+  }, [tick, puedeVerPanelEjecutivo]);
 
   // ── live polling of on-duty guard locations ─────────────────────────────
   useEffect(() => {
