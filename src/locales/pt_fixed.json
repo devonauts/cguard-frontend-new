@@ -4076,7 +4076,9 @@
     "phone_label": "Telefone",
     "phone_placeholder": "99 123 4567",
     "phone_invalid": "Esse telefone não parece válido. Verifique o país e o número.",
-    "captcha_pending": "Confirme que não é um robô para continuar."
+    "captcha_pending": "Confirme que não é um robô para continuar.",
+    "send_reset": "Enviar link",
+    "honeypot_label": "Não preencher"
   },
   "billing": {
     "activate": "Ativar assinatura",

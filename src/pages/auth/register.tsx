@@ -228,7 +228,7 @@ export default function Register() {
 
         <div aria-hidden="true" className="absolute left-[-9999px] top-0 h-0 w-0 overflow-hidden">
 
-          <label htmlFor="companyWebsite">No rellenar</label>
+          <label htmlFor="companyWebsite">{t('auth.honeypot_label', { defaultValue: 'No rellenar' })}</label>
 
           <input
 

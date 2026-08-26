@@ -364,7 +364,9 @@
     "phone_label": "Teléfono",
     "phone_placeholder": "99 123 4567",
     "phone_invalid": "Ese teléfono no parece válido. Revisa el país y el número.",
-    "captcha_pending": "Confirma que no eres un robot para continuar."
+    "captcha_pending": "Confirma que no eres un robot para continuar.",
+    "send_reset": "Enviar enlace",
+    "honeypot_label": "No rellenar"
   },
   "billing": {
     "title": "Estado de la suscripción",
