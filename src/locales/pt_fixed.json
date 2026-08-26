@@ -2300,7 +2300,8 @@
       "guardApp": "app do vigilante",
       "thePerson": "A pessoa",
       "loadError": "Não foi possível carregar as funções disponíveis.",
-      "error": "Não foi possível mudar a função."
+      "error": "Não foi possível mudar a função.",
+      "hasBothRoles": "Atualmente tem os dois papéis. Ao escolher um, ficará apenas com esse."
     }
   },
   "clients": {

@@ -2099,7 +2099,8 @@
       "guardApp": "la app del vigilante",
       "thePerson": "La persona",
       "loadError": "No se pudieron cargar los roles disponibles.",
-      "error": "No se pudo cambiar el rol."
+      "error": "No se pudo cambiar el rol.",
+      "hasBothRoles": "Ahora tiene los dos papeles. Al elegir uno, se quedará sólo con ese."
     }
   },
   "header": {

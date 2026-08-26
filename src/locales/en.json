@@ -2099,7 +2099,8 @@
       "guardApp": "the guard app",
       "thePerson": "This person",
       "loadError": "Could not load the available roles.",
-      "error": "Could not change the role."
+      "error": "Could not change the role.",
+      "hasBothRoles": "They currently hold both roles. Picking one leaves them with only that one."
     }
   },
   "header": {
