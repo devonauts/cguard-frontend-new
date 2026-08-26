@@ -47,7 +47,7 @@ export default function CategoryAssignDialog({ open, onOpenChange, targetIds, on
       onDone?.();
     } catch (e) {
       console.error(e);
-      toast.error("Error al asignar categoría");
+      toast.error(t('ui.CategoryAssignDialog.errorAlAsignarCategoria'));
     } finally {
       setLoading(false);
     }

@@ -42,6 +42,11 @@ import RotationStyleSelect from "@/components/schedule/RotationStyleSelect";
 import ContextMenu, { CtxItem, CtxMenuState } from "./ContextMenu";
 import TransferShiftModal, { TransferTarget } from "./TransferShiftModal";
 import { stationLabel } from "@/lib/stationName";
+import {
+  type Tone, tonePill, toneCard,
+  OVERRIDE_TONE, CODE_LABEL, CODE_ORDER, codeFill, codePill, codeCard,
+} from './codeTones';
+
 import type {
   RotationStyle,
   StationPosition,
@@ -229,22 +234,6 @@ const VIEW_KEY = 'programador.horario.view';
    (`brand` / `ok` / `warn` / `bad` / `info` / `neutral`) y el relleno sale de
    los tokens, así que el mismo código se lee bien en claro y en oscuro y sigue
    funcionando cuando el usuario cambia el acento.                              */
-type Tone = 'brand' | 'ok' | 'warn' | 'bad' | 'info' | 'neutral';
-
-const toneFill = (t: Tone) => (t === 'brand' ? 'var(--brand)' : t === 'neutral' ? 'var(--ink-faint)' : `var(--${t})`);
-const toneInk = (t: Tone) => (t === 'brand' ? 'var(--brand-text)' : t === 'neutral' ? 'var(--ink-soft)' : `var(--${t}-text)`);
-
-/** Píldora tenue del papel: fondo mezclado con el lienzo + tinta legible. */
-const tonePill = (t: Tone, fill = 15): React.CSSProperties => ({
-  background: `color-mix(in oklab, ${toneFill(t)} ${fill}%, transparent)`,
-  color: toneInk(t),
-});
-/** Igual, con filo — para lo que tiene que separarse del fondo. */
-const toneCard = (t: Tone, fill = 12, edge = 30): React.CSSProperties => ({
-  ...tonePill(t, fill),
-  border: `1px solid color-mix(in oklab, ${toneFill(t)} ${edge}%, transparent)`,
-});
-
 const POSITION_TONE: Record<string, { tone: Tone; icon: LucideIcon }> = {
   fijo: { tone: 'warn', icon: Sun },
   sacafranco: { tone: 'ok', icon: Shield },
@@ -258,41 +247,6 @@ const POSITION_TONE: Record<string, { tone: Tone; icon: LucideIcon }> = {
 const GUARD_HUE_STEPS = [0, 150, 60, 210, 105, 255, 30, 180, 300, 135];
 const guardHueColor = (i: number) =>
   `oklch(0.66 0.15 calc(var(--brand-h) + ${GUARD_HUE_STEPS[i % GUARD_HUE_STEPS.length]}))`;
-
-/** Códigos tipados del Horario → papel del sistema. Vacaciones no son «morado»:
- *  son una ausencia aprobada, y por eso van en verde; una falta va en rojo pase
- *  lo que pase con el acento. */
-const OVERRIDE_TONE: Record<string, Tone> = {
-  V: 'ok',       // vacaciones aprobadas
-  PM: 'warn',    // permiso
-  F: 'bad',      // falta
-  '24': 'brand', // turno completo — lo más fuerte de la rejilla
-  D: 'brand',    // diurno
-  N: 'info',     // nocturno
-  L: 'neutral',  // libre
-};
-
-/** El nombre de cada código, en un solo sitio. La leyenda, el selector de
- *  novedades y los rótulos emergentes de la rejilla salen todos de aquí: si un
- *  código cambia de nombre, cambia en los tres a la vez. */
-const CODE_LABEL: Record<string, string> = {
-  D: 'Diurno', N: 'Nocturno', L: 'Libre',
-  V: 'Vacaciones', PM: 'Permiso', F: 'Falta', '24': '24 horas',
-};
-
-/** Orden de lectura de la leyenda. */
-const CODE_ORDER = ['D', 'N', 'L', 'V', 'PM', 'F', '24'] as const;
-
-/* La celda y la leyenda tienen que salir del MISMO sitio, si no el usuario
-   aprende un color en la leyenda y ve otro en la rejilla. Una sola función
-   decide el relleno de un código; el 24 va más denso porque es turno completo. */
-const codeFill = (code: string) => (code === '24' ? 26 : 18);
-/** Píldora de un código tipado — leyenda, celda de fijo, celda de sacafranco. */
-const codePill = (code: string): React.CSSProperties =>
-  tonePill(OVERRIDE_TONE[code] ?? 'neutral', codeFill(code));
-/** Igual, con filo — el selector de novedades. */
-const codeCard = (code: string): React.CSSProperties =>
-  toneCard(OVERRIDE_TONE[code] ?? 'neutral', codeFill(code), 30);
 
 /* Tintes de columna. Hoy y domingo se pintan en la cabecera congelada Y en el
    cuerpo; con dos valores sueltos la cabecera salía más densa que su propia
@@ -490,7 +444,7 @@ export default function Schedule() {
       hasLoadedRef.current = true;
     } catch (e: any) {
       console.error('[Scheduler] fetch error', e);
-      toast.error('Error al cargar horario');
+      toast.error(t('ui.Schedule.errorAlCargarHorario'));
     } finally {
       if (silent) setRefreshing(false); else setLoading(false);
     }
@@ -1055,7 +1009,7 @@ export default function Schedule() {
       await ApiService.post(`/tenant/${tenantId}/shift`, {
         data: { startTime: start.toISOString(), endTime: end.toISOString(), station: s.stationId, guard: s.guardId, postSiteId: stationsById.get(s.stationId)?.postSiteId },
       });
-      toast.success('Turno duplicado al día siguiente');
+      toast.success(t('ui.Schedule.turnoDuplicadoAlDiaSiguiente'));
       fetchAll({ silent: true });
     } catch (e: any) {
       toast.error(e?.data?.message || e?.message || 'Error al duplicar');
@@ -1343,7 +1297,7 @@ export default function Schedule() {
           restCoverage: configType === 'custom' ? cfgRestCoverage : undefined,
         },
       });
-      toast.success('Estación configurada');
+      toast.success(t('ui.Schedule.estacionConfigurada'));
       setConfigStation(null);
       fetchAll();
     } catch (e: any) {
@@ -1358,7 +1312,7 @@ export default function Schedule() {
       await ApiService.post(`/tenant/${tenantId}/station/${stationId}/positions`, {
         data: { name: 'Sacafranco', type: 'sacafranco', startTime: '07:00', endTime: '19:00', guardsNeeded: 1, sortOrder: 99 },
       });
-      toast.success('Posición sacafranco agregada');
+      toast.success(t('ui.Schedule.posicionSacafrancoAgregada'));
       fetchAll();
     } catch (e: any) {
       toast.error(e?.message || 'Error');
@@ -1369,7 +1323,7 @@ export default function Schedule() {
     if (!(await confirmDialog({ title: 'Eliminar posición', message: '¿Eliminar esta posición?', confirmText: 'Eliminar', tone: 'danger' }))) return;
     try {
       await ApiService.delete(`/tenant/${tenantId}/station/${stationId}/positions/${positionId}`);
-      toast.success('Posición eliminada');
+      toast.success(t('ui.Schedule.posicionEliminada'));
       fetchAll();
     } catch (e: any) {
       toast.error(e?.message || 'Error al eliminar');
@@ -1619,7 +1573,7 @@ export default function Schedule() {
   const applyCodeToSelection = useCallback(async (type: string) => {
     const cells = cellsInSelection();
     if (!cells.length) {
-      toast.info('Selecciona celdas de un puesto con vigilante asignado');
+      toast.info(t('ui.Schedule.seleccionaCeldasDeUnPuesto'));
       return;
     }
     // Single cell + L on a fijo → keep the full "rephase from this libre" flow.
@@ -1933,7 +1887,7 @@ export default function Schedule() {
           <div
             className="flex flex-1 cursor-pointer items-center justify-center rounded border border-dashed"
             style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}
-            title="Puesto sin vigilante — doble clic para asignar"
+            title={t('ui.Schedule.puestoSinVigilanteDobleClic')}
             onDoubleClick={() => openAssignForm(station.id, pos.id, dateStr)}
           >
             <span className="text-[10px] font-bold" style={{ color: 'var(--ink-faint)' }}>·</span>
@@ -2078,7 +2032,7 @@ export default function Schedule() {
             <EmptyState
               icon={<MapPin />}
               title={t("ui.Schedule.todaviaNoHayPuestosConfigurados", "Todavía no hay puestos configurados")}
-              description="Crea un puesto desde la sección de Puestos y el horario aparecerá aquí."
+              description={t('ui.Schedule.creaUnPuestoDesdeLa')}
             />
           </div>
         ) : (
@@ -2352,7 +2306,7 @@ export default function Schedule() {
                         {!hasPositions && (
                           <div className="grid" style={{ gridTemplateColumns: gridCols, borderTop: '1px solid var(--hairline)' }}>
                             <div className="col-span-full px-4 py-4 text-center">
-                              <p className="mb-2 text-xs" style={{ color: 'var(--ink-soft)' }}>Este puesto no tiene posiciones configuradas</p>
+                              <p className="mb-2 text-xs" style={{ color: 'var(--ink-soft)' }}>{t('ui.Schedule.estePuestoNoTienePosiciones')}</p>
                               <Button size="sm" variant="outline" className="text-xs" onClick={() => configureStation(station)}>
                                 Configurar posiciones
                               </Button>
@@ -2431,7 +2385,7 @@ export default function Schedule() {
                                     onClick={() => removeAssignment(posAssignments[0].id)}
                                     className="cg-focus cursor-grab rounded px-1.5 py-0.5 text-[9px] font-semibold active:cursor-grabbing"
                                     style={tonePill('ok', 14)}
-                                    title="Arrastra para mover · Clic para quitar"
+                                    title={t('ui.Schedule.arrastraParaMoverClicPara')}
                                   >
                                     {primerNombre(posAssignments[0].guard)} ×
                                   </button>
@@ -2441,7 +2395,7 @@ export default function Schedule() {
                                     onClick={() => openAssignForm(pos.stationId, pos.id)}
                                     className="cg-focus rounded-md p-1 transition-colors"
                                     style={tonePill('ok', 14)}
-                                    title="Asignar vigilante sacafranco"
+                                    title={t('ui.Schedule.asignarVigilanteSacafranco')}
                                   >
                                     <Plus size={12} />
                                   </button>
@@ -2578,7 +2532,7 @@ export default function Schedule() {
                       <p className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>{t("ui.Schedule.todosLosVigilantesEstanAsignados", "Todos los vigilantes están asignados.")}</p>
                     ) : (
                       <>
-                        <p className="mb-2 text-[10px]" style={{ color: 'var(--ink-soft)' }}>Arrastra un vigilante a un puesto del horario.</p>
+                        <p className="mb-2 text-[10px]" style={{ color: 'var(--ink-soft)' }}>{t('ui.Schedule.arrastraUnVigilanteAUn')}</p>
                         <div className="flex max-h-[180px] flex-wrap gap-1.5 overflow-y-auto">
                           {unassignedGuards.map(g => (
                             /* Ficha arrastrable: cristal PLANO (se repiten) y
@@ -2799,11 +2753,11 @@ export default function Schedule() {
               {view === 'month' ? (
                 <>
                   <span className="font-medium" style={{ color: 'var(--ink-soft)' }}>{selInfo || 'Clic en una celda para seleccionar'}</span>
-                  <span className="hidden md:inline"><b>Clic derecho</b>: editar/duplicar/eliminar turno y novedades · Escribe <b>D N L V F P 2</b> para novedad · <b>Supr</b>{" "}{t("ui.Schedule.borraArrastraUnDia", "borra · Arrastra un día")}{" "}<b>L del sacafranco</b> sobre un L del puesto para cubrirlo · <b>{t("ui.Schedule.reAvPag", "Re/Av Pág")}</b> cambia mes</span>
+                  <span className="hidden md:inline"><b>Clic derecho</b>{t('ui.Schedule.editarDuplicarEliminarTurnoY')}{" "}<b>D N L V F P 2</b>{" "}{t('ui.Schedule.paraNovedad')}{" "}<b>Supr</b>{" "}{t("ui.Schedule.borraArrastraUnDia", "borra · Arrastra un día")}{" "}<b>{t('ui.Schedule.lDelSacafranco')}</b>{" "}{t('ui.Schedule.sobreUnLDelPuesto')}{" "}<b>{t("ui.Schedule.reAvPag", "Re/Av Pág")}</b> cambia mes</span>
                 </>
               ) : (
                 <span className="font-medium" style={{ color: 'var(--ink-soft)' }}>
-                  Arrastra sobre la fila de un puesto para <b>dibujar un bloque de trabajo</b> (p. ej. 07:00 → 07:00 del día siguiente) · Clic en un bloque: detalle / eliminar · Suelta un vigilante del panel sobre la línea · <b>{t("ui.Schedule.reAvPag2", "Re/Av Pág")}</b> cambia {view === 'week' ? 'de semana' : 'de día'}
+                  Arrastra sobre la fila de un puesto para <b>{t('ui.Schedule.dibujarUnBloqueDeTrabajo')}</b> (p. ej. 07:00 → 07:00 del día siguiente) · Clic en un bloque: detalle / eliminar · Suelta un vigilante del panel sobre la línea · <b>{t("ui.Schedule.reAvPag2", "Re/Av Pág")}</b> cambia {view === 'week' ? 'de semana' : 'de día'}
                 </span>
               )}
               <span className="flex-1" />
@@ -2848,7 +2802,7 @@ export default function Schedule() {
             <div className="glass-raised mx-4 w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--hairline)' }}>
                 <div>
-                  <h4 className="text-sm font-semibold">Cubrir con sacafranco</h4>
+                  <h4 className="text-sm font-semibold">{t('ui.Schedule.cubrirConSacafranco')}</h4>
                   <p className="mt-0.5 text-[11px]" style={{ color: 'var(--ink-soft)' }}>
                     {sfCover.sfName} → {stationLabel(sfCover.station)} · {fechaHuman}
                   </p>
@@ -2896,7 +2850,7 @@ export default function Schedule() {
                   <Clock size={12} />
                   Duración: <b className="tabular-nums" style={{ color: 'var(--ink)' }}>{durH % 1 === 0 ? durH : durH.toFixed(1)}h</b>
                   {nextDay && <span>{t("ui.Schedule.terminaAlDiaSiguiente", "· termina al día siguiente")}</span>}
-                  <span>· hora de la empresa</span>
+                  <span>{t('ui.Schedule.horaDeLaEmpresa')}</span>
                 </p>
               </div>
               <div className="flex items-center justify-end gap-2 px-5 py-3" style={{ borderTop: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>
@@ -2961,7 +2915,7 @@ export default function Schedule() {
             <div className="glass-raised mx-4 w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--hairline)' }}>
                 <div className="min-w-0">
-                  <h4 className="text-sm font-semibold">¿Quién cubre este día?</h4>
+                  <h4 className="text-sm font-semibold">{t('ui.Schedule.quienCubreEsteDia')}</h4>
                   <p className="mt-0.5 truncate text-[11px]" style={{ color: 'var(--ink-soft)' }}>{stationLabel(station)} · {fecha}</p>
                 </div>
                 <button onClick={() => { setSfPick(null); setSfPickQuery(''); }} className="cg-btn-ghost cg-focus rounded-lg p-1.5"><X size={15} /></button>
@@ -2985,7 +2939,7 @@ export default function Schedule() {
                 )}
                 {libres.map(fila)}
                 {resto.length > 0 && libres.length > 0 && (
-                  <p className="cg-eyebrow px-1 pt-2">Ya tienen algo ese día</p>
+                  <p className="cg-eyebrow px-1 pt-2">{t('ui.Schedule.yaTienenAlgoEseDia')}</p>
                 )}
                 {/* Se enseñan, y se pueden elegir: a veces hay que mover a
                     alguien de puesto y quien decide eso es quien mira, no la
@@ -3100,10 +3054,10 @@ export default function Schedule() {
                   </p>
                 )}
                 {assignMode === 'rotation' && positions.find(p => p.id === assignTarget?.positionId)?.type === 'sacafranco' && (
-                  <p className="mt-1 text-[10px]" style={{ color: 'var(--ok-text)' }}>Sacafranco: puede cubrir varios puestos</p>
+                  <p className="mt-1 text-[10px]" style={{ color: 'var(--ok-text)' }}>{t('ui.Schedule.sacafrancoPuedeCubrirVariosPuestos')}</p>
                 )}
                 {assignMode === 'rotation' && positions.find(p => p.id === assignTarget?.positionId)?.type === 'fijo' && (
-                  <p className="mt-1 text-[10px]" style={{ color: 'var(--warn-text)' }}>Fijo: exclusivo de este puesto</p>
+                  <p className="mt-1 text-[10px]" style={{ color: 'var(--warn-text)' }}>{t('ui.Schedule.fijoExclusivoDeEstePuesto')}</p>
                 )}
               </div>
 
@@ -3181,7 +3135,7 @@ export default function Schedule() {
               <button onClick={() => setConfigStation(null)} className="cg-btn-ghost cg-focus rounded-lg p-1.5"><X size={15} /></button>
             </div>
             <div className="p-5 space-y-4">
-              <label className="cg-eyebrow mb-2 block">Tipo de cobertura</label>
+              <label className="cg-eyebrow mb-2 block">{t('ui.Schedule.tipoDeCobertura')}</label>
               <div className="grid grid-cols-2 gap-2">
                 {[
                   { value: '24h', label: '24 Horas', desc: 'Fijo 1 + Fijo 2 + Sacafranco' },
@@ -3462,7 +3416,7 @@ export default function Schedule() {
                     <div className="flex flex-col items-center justify-center py-10 text-center">
                       <CheckCircle2 size={28} className="mb-2" style={{ color: 'var(--ok-text)' }} />
                       <p className="text-sm font-semibold">{t("ui.Schedule.elHorarioYaEstaAl", "El horario ya está al día")}</p>
-                      <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>No hay cambios que aplicar.</p>
+                      <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>{t('ui.Schedule.noHayCambiosQueAplicar')}</p>
                     </div>
                   );
                 }

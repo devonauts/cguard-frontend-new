@@ -219,12 +219,12 @@ export default function VehiclesPage() {
         setArchiveLoading(true);
         try {
             await vehicleService.update(archiveConfirmId, { active: false });
-            toast.success('Vehículo inactivado');
+            toast.success(t('ui.VehiclesPage.vehiculoInactivado'));
             setArchiveConfirmId(null);
             await load();
         } catch (err) {
             console.error('Error archivando vehículo', err);
-            toast.error('Error inactivando vehículo');
+            toast.error(t('ui.VehiclesPage.errorInactivandoVehiculo'));
         } finally {
             setArchiveLoading(false);
         }
@@ -258,7 +258,7 @@ export default function VehiclesPage() {
                 <PageHeader
                     icon={<Car />}
                     title={t("ui.Vehicles.vehiculos2", "Vehículos")}
-                    subtitle="Flota de la empresa y su estado operativo"
+                    subtitle={t('ui.VehiclesPage.flotaDeLaEmpresaY')}
                     badges={(
                         <>
                             <StatusBadge tone="brand">{count} en la flota</StatusBadge>
@@ -396,7 +396,7 @@ export default function VehiclesPage() {
                             <EmptyState
                                 icon={<Car />}
                                 title={t('kit.table.emptyTitle')}
-                                description="No hay vehículos que coincidan con los filtros."
+                                description={t('ui.VehiclesPage.noHayVehiculosQueCoincidan')}
                                 action={(
                                     <Button size="sm" variant="brand" asChild>
                                         <Link to="/vehicle-patrol/vehicles/add-vehicle">
@@ -573,7 +573,7 @@ export default function VehiclesPage() {
                                                     return r && r.active === false;
                                                 });
                                                 if (idsToDelete.length === 0) {
-                                                    toast.info('No hay registros inactivos para eliminar');
+                                                    toast.info(t('ui.VehiclesPage.noHayRegistrosInactivosPara'));
                                                 } else {
                                                     await vehicleService.destroy(idsToDelete);
                                                     toast.success(`${idsToDelete.length} vehículo(s) eliminados`);
@@ -581,7 +581,7 @@ export default function VehiclesPage() {
                                             } else {
                                                 const active = bulkActionConfirm === 'activar';
                                                 await Promise.all(selectedIds.map((id) => vehicleService.update(id, { active })));
-                                                toast.success('Acción ejecutada');
+                                                toast.success(t('ui.VehiclesPage.accionEjecutada'));
                                             }
                                             setSelectedIds([]);
                                             setSelectedAction(null);
@@ -589,7 +589,7 @@ export default function VehiclesPage() {
                                             await load();
                                         } catch (err) {
                                             console.error('Error ejecutando acción masiva', err);
-                                            toast.error('Error ejecutando la acción');
+                                            toast.error(t('ui.VehiclesPage.errorEjecutandoLaAccion'));
                                         } finally {
                                             setBulkActionLoading(false);
                                         }
@@ -680,7 +680,7 @@ export default function VehiclesPage() {
                                     <EmptyState
                                         icon={<Car />}
                                         title={t("ui.Vehicles.sinInformacion", "Sin información")}
-                                        description="No se encontró información del vehículo."
+                                        description={t('ui.VehiclesPage.noSeEncontroInformacionDel')}
                                     />
                                 </div>
                             )}

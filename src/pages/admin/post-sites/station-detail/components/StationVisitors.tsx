@@ -237,14 +237,14 @@ function VisitorFormModal({ open, initialData, stationId, onClose, onSaved }: {
       if (r.lastName) set('lastName', r.lastName);
       if (r.idNumber) set('idNumber', r.idNumber);
       (!r.firstName && !r.lastName && !r.idNumber)
-        ? toast.warning('No se pudo extraer información. Complete manualmente.')
-        : toast.success('Datos extraídos de la cédula.');
-    } catch { toast.error('Error al procesar la imagen del ID.'); }
+        ? toast.warning(t('ui.StationVisitors.noSePudoExtraerInformacion'))
+        : toast.success(t('ui.StationVisitors.datosExtraidosDeLaCedula'));
+    } catch { toast.error(t('ui.StationVisitors.errorAlProcesarLaImagen')); }
     finally { setScanning(false); }
   };
 
   const handleSave = async () => {
-    if (!form.firstName.trim() || !form.lastName.trim()) { toast.error('Nombre y apellido son obligatorios.'); return; }
+    if (!form.firstName.trim() || !form.lastName.trim()) { toast.error(t('ui.StationVisitors.nombreYApellidoSonObligatorios')); return; }
     setSaving(true);
     try {
       let idPhotoMeta: any[] | undefined;
@@ -323,7 +323,7 @@ function VisitorFormModal({ open, initialData, stationId, onClose, onSaved }: {
               <div className="space-y-1"><Label>Salida</Label><Input type="datetime-local" value={form.exitTime} onChange={e => set('exitTime', e.target.value)} /></div>
             </div>
             {/* Reason */}
-            <div className="space-y-1"><Label>{t('comun.motivo')}</Label><Input value={form.reason} onChange={e => set('reason', e.target.value)} placeholder="Visita a familiar, entrega, etc." /></div>
+            <div className="space-y-1"><Label>{t('comun.motivo')}</Label><Input value={form.reason} onChange={e => set('reason', e.target.value)} placeholder={t('ui.StationVisitors.visitaAFamiliarEntregaEtc')} /></div>
             {/* Photo */}
             <div className="space-y-2">
               <Label>{t('ui.StationVisitors.fotoDelVisitante')}</Label>
@@ -413,7 +413,7 @@ export default function StationVisitors({ stationId }: Props) {
         <div className="px-5 pb-5">
           <EmptyState
             icon={<UserCheck />}
-            title="No hay visitantes registrados para este puesto."
+            title={t('ui.StationVisitors.noHayVisitantesRegistradosPara')}
           />
         </div>
       ) : (
@@ -460,8 +460,8 @@ export default function StationVisitors({ stationId }: Props) {
                       <td className="px-2 py-2.5">{guard}</td>
                       <td className="px-2 py-2.5 text-right">
                         <div className="flex items-center justify-end gap-1">
-                          <button onClick={() => { setEditRow(r); setFormOpen(true); }} className="cg-btn-ghost cg-focus rounded p-1.5" title={t('actions.edit')} aria-label="Editar visitante"><Edit2 size={14} /></button>
-                          <button onClick={() => handleDelete(r.id)} disabled={deleting === r.id} className="cg-focus rounded p-1.5 disabled:opacity-40" style={{ color: 'var(--bad-text)' }} title={t('actions.delete')} aria-label="Eliminar visitante">
+                          <button onClick={() => { setEditRow(r); setFormOpen(true); }} className="cg-btn-ghost cg-focus rounded p-1.5" title={t('actions.edit')} aria-label={t('ui.StationVisitors.editarVisitante')}><Edit2 size={14} /></button>
+                          <button onClick={() => handleDelete(r.id)} disabled={deleting === r.id} className="cg-focus rounded p-1.5 disabled:opacity-40" style={{ color: 'var(--bad-text)' }} title={t('actions.delete')} aria-label={t('ui.StationVisitors.eliminarVisitante')}>
                             {deleting === r.id ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
                           </button>
                         </div>

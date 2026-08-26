@@ -105,7 +105,7 @@ export default function VideoRelaySites() {
   const regenToken = async (s: RelaySite) => {
     try {
       await videoService.updateRelaySite(s.id, { regenToken: true });
-      toast.success("Token regenerado — vuelve a descargar el relay");
+      toast.success(t('ui.VideoRelaySites.tokenRegeneradoVuelveADescargar'));
       load();
     } catch (e) {
       toast.error((e as Error)?.message || "No se pudo regenerar el token");
@@ -130,11 +130,10 @@ export default function VideoRelaySites() {
         <PageHeader
           icon={<Server />}
           title="Sitios remotos (Relay)"
-          subtitle="Para DVR/NVR detrás de NAT en otra red o país. El sitio empuja sus cámaras a la nube; no se abren puertos."
+          subtitle={t('ui.VideoRelaySites.paraDvrNvrDetrasDe')}
           actions={
             <Button onClick={() => setNewOpen(true)} variant="brand">
-              <Plus className="mr-2 h-4 w-4" /> Nuevo sitio relay
-            </Button>
+              <Plus className="mr-2 h-4 w-4" />{" "}{t('ui.VideoRelaySites.nuevoSitioRelay')}{" "}</Button>
           }
         />
 
@@ -143,7 +142,7 @@ export default function VideoRelaySites() {
         ) : error ? (
           <EmptyState
             icon={<RefreshCw />}
-            title="No se pudieron cargar los sitios"
+            title={t('ui.VideoRelaySites.noSePudieronCargarLos')}
             description={error}
             action={
               <Button variant="outline" onClick={load}>
@@ -155,7 +154,7 @@ export default function VideoRelaySites() {
           <EmptyState
             icon={<Server />}
             title={t("ui.VideoRelaySites.aunNoHaySitiosRemotos", "Aún no hay sitios remotos")}
-            description="Crea un sitio, descarga su relay (docker-compose) y ejecútalo en un equipo del sitio donde está el DVR."
+            description={t('ui.VideoRelaySites.creaUnSitioDescargaSu')}
           />
         ) : (
           <Stagger className="grid gap-3 lg:grid-cols-2">
@@ -195,7 +194,7 @@ export default function VideoRelaySites() {
       <Dialog open={newOpen} onOpenChange={(o) => { if (!saving) { setNewOpen(o); if (!o) { setName(""); setNotes(""); } } }}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Nuevo sitio relay</DialogTitle>
+            <DialogTitle>{t('ui.VideoRelaySites.nuevoSitioRelay')}</DialogTitle>
             <DialogDescription>{t("ui.VideoRelaySites.seGeneraraUnaClaveDe", "Se generará una clave de sitio y un token de publicación (cifrado).")}</DialogDescription>
           </DialogHeader>
           <div className="grid gap-3 py-2">
@@ -267,7 +266,7 @@ export default function VideoRelaySites() {
       <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Eliminar sitio relay</AlertDialogTitle>
+            <AlertDialogTitle>{t('ui.VideoRelaySites.eliminarSitioRelay')}</AlertDialogTitle>
             <AlertDialogDescription>
               ¿Eliminar “{deleteTarget?.name}”? Los dispositivos que lo usen dejarán de transmitir.
             </AlertDialogDescription>

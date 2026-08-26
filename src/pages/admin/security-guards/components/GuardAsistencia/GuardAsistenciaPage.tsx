@@ -122,7 +122,7 @@ export default function GuardAsistenciaPage() {
         </div>
 
         <Section
-          title="Hoja de asistencia"
+          title={t('ui.GuardAsistenciaPage.hojaDeAsistencia')}
           icon={<CalendarClock className="h-4 w-4" />}
           action={
             <div className="flex flex-wrap items-center gap-2">
@@ -153,7 +153,7 @@ export default function GuardAsistenciaPage() {
           {loading ? (
             <SkeletonCards count={4} />
           ) : rows.length === 0 ? (
-            <EmptyState icon={<CalendarClock />} title="Sin marcaciones" description={`Este vigilante no registró asistencia en ${rangeLabel(period, anchor)}.`} />
+            <EmptyState icon={<CalendarClock />} title={t('ui.GuardAsistenciaPage.sinMarcaciones')} description={`Este vigilante no registró asistencia en ${rangeLabel(period, anchor)}.`} />
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full text-sm">
@@ -180,7 +180,7 @@ export default function GuardAsistenciaPage() {
                       <td className="px-3 py-2.5"><StatusBadge status={r.status} approval={r.approvalStatus} /></td>
                       <td className="px-3 py-2.5"><ApprovalBadge status={r.approvalStatus} /></td>
                       <td className="px-3 py-2.5 text-right">
-                        <Link to={`/nomina/records?focus=${r.id}`} className="inline-flex items-center gap-1 text-xs brand-text hover:underline" title="Ver en Asistencia">
+                        <Link to={`/nomina/records?focus=${r.id}`} className="inline-flex items-center gap-1 text-xs brand-text hover:underline" title={t('ui.GuardAsistenciaPage.verEnAsistencia')}>
                           Detalle <ExternalLink className="h-3 w-3" />
                         </Link>
                       </td>

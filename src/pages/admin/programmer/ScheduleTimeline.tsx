@@ -323,10 +323,10 @@ export default function ScheduleTimeline({
   const saveBlock = async () => {
     if (!blockModal) return;
     if (!blockModal.stationId) { toast.error(t('comun.eligeUnPuesto')); return; }
-    if (!blockModal.guardId) { toast.error('Elige un vigilante'); return; }
+    if (!blockModal.guardId) { toast.error(t('ui.ScheduleTimeline.eligeUnVigilante')); return; }
     const start = wallStrToDate(blockModal.startStr, tz);
     const end = wallStrToDate(blockModal.endStr, tz);
-    if (!start || !end) { toast.error('Fechas inválidas'); return; }
+    if (!start || !end) { toast.error(t('ui.ScheduleTimeline.fechasInvalidas')); return; }
     if (end <= start) { toast.error(t('comun.elFinDebeSerPosterior')); return; }
     if (end.getTime() - start.getTime() > 24 * 3600000) { toast.error(t('comun.unTurnoNoPuedeDurar')); return; }
     const station = stationById.get(blockModal.stationId);
@@ -342,7 +342,7 @@ export default function ScheduleTimeline({
             postSiteId: station?.postSiteId,
           },
         });
-        toast.success('Turno actualizado');
+        toast.success(t('ui.ScheduleTimeline.turnoActualizado'));
       } else {
         // Same semantics as the station "Turno único": clear this guard's
         // overlapping shifts first so the drawn block replaces, not duplicates.
@@ -495,7 +495,7 @@ export default function ScheduleTimeline({
                         style={{ color: isToday ? 'var(--brand-text)' : 'var(--ink)' }}
                       >
                         {DAYS_ES[day.getDay()]} {day.getDate()} <span className="font-normal" style={{ color: 'var(--ink-faint)' }}>{day.toLocaleDateString('es', { month: 'short' })}</span>
-                        {view === 'day' && di === 1 && <span className="ml-1 text-[9px] font-normal" style={{ color: 'var(--ink-faint)' }}>(siguiente)</span>}
+                        {view === 'day' && di === 1 && <span className="ml-1 text-[9px] font-normal" style={{ color: 'var(--ink-faint)' }}>{t('ui.ScheduleTimeline.siguiente')}</span>}
                       </div>
                       {/* Estación sub-columns */}
                       <div className="absolute left-0 right-0 bottom-0 flex" style={{ height: 22 }}>
@@ -688,7 +688,7 @@ export default function ScheduleTimeline({
                     onChange={e => setBlockModal(m => m ? { ...m, stationId: e.target.value } : m)}
                     className={inputCls}
                   >
-                    <option value="">Elige un puesto…</option>
+                    <option value="">{t('ui.ScheduleTimeline.eligeUnPuesto')}</option>
                     {stations.map(s => <option key={s.id} value={s.id}>{stationLabel(s)}</option>)}
                   </select>
                 </div>

@@ -39,7 +39,7 @@ export default function ClientUserAccess({ client }: Props) {
 
   const invite = async () => {
     const email = form.email.trim();
-    if (!email) { toast.error('Ingresa un correo'); return; }
+    if (!email) { toast.error(t('ui.ClientUserAccess.ingresaUnCorreo')); return; }
     setSending(true);
     try {
       if (form.channel === 'portal') await clientService.sendClientPortalInvitation(client.id, email);
@@ -52,10 +52,10 @@ export default function ClientUserAccess({ client }: Props) {
   };
 
   const revoke = async (u: AccessUser) => {
-    if (u.isTitular || !u.pivotId) { toast.error('El acceso del titular se gestiona editando el cliente.'); return; }
+    if (u.isTitular || !u.pivotId) { toast.error(t('ui.ClientUserAccess.elAccesoDelTitularSe')); return; }
     if (!await confirmDialog({ message: `¿Revocar el acceso de ${u.name}?`, tone: 'danger' })) return;
     try { await clientService.revokeClientAccess(client.id, u.pivotId); toast.success('Acceso revocado'); await load(); }
-    catch { toast.error('No se pudo revocar'); }
+    catch { toast.error(t('ui.ClientUserAccess.noSePudoRevocar')); }
   };
 
   if (loading) return <TabLoading count={2} />;
@@ -66,11 +66,11 @@ export default function ClientUserAccess({ client }: Props) {
         action={<Button size="sm" variant="brand" onClick={() => setInviteOpen(true)}><UserPlus className="mr-1.5 h-4 w-4" /> Invitar acceso</Button>}>
         <div className="mb-3 relative max-w-sm">
           <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <input className={`${FIELD_CLS} pl-8`} placeholder="Buscar por nombre o correo" value={query} onChange={(e) => setQuery(e.target.value)} />
+          <input className={`${FIELD_CLS} pl-8`} placeholder={t('ui.ClientUserAccess.buscarPorNombreOCorreo')} value={query} onChange={(e) => setQuery(e.target.value)} />
         </div>
 
         {filtered.length === 0 ? (
-          <EmptyState icon={<Users className="h-5 w-5" />} title={t('comun.sinUsuariosConAcceso')} description="Invita al titular o agrega accesos adicionales para que el cliente entre al portal y a la app Mi Seguridad." action={<Button size="sm" onClick={() => setInviteOpen(true)}><UserPlus className="mr-1.5 h-4 w-4" /> Invitar acceso</Button>} />
+          <EmptyState icon={<Users className="h-5 w-5" />} title={t('comun.sinUsuariosConAcceso')} description={t('ui.ClientUserAccess.invitaAlTitularOAgrega')} action={<Button size="sm" onClick={() => setInviteOpen(true)}><UserPlus className="mr-1.5 h-4 w-4" /> Invitar acceso</Button>} />
         ) : (
           <div className="divide-y">
             {filtered.map((u) => (
@@ -95,8 +95,8 @@ export default function ClientUserAccess({ client }: Props) {
       <Modal open={inviteOpen} onOpenChange={(o) => { if (!sending) setInviteOpen(o); }} title="Invitar acceso" icon={<UserPlus className="h-5 w-5" />}
         footer={<><Button variant="outline" onClick={() => setInviteOpen(false)} disabled={sending}>{t('actions.cancel')}</Button><Button variant="brand" onClick={invite} disabled={sending || !form.email.trim()}>{sending ? <><Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> Enviando…</> : 'Enviar invitación'}</Button></>}>
         <div className="space-y-3">
-          <LabeledField label="Correo de la persona"><input type="email" className={FIELD_CLS} placeholder="persona@empresa.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></LabeledField>
-          <LabeledField label="Tipo de acceso">
+          <LabeledField label={t('ui.ClientUserAccess.correoDeLaPersona')}><input type="email" className={FIELD_CLS} placeholder={t('ui.ClientUserAccess.personaEmpresaCom')} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></LabeledField>
+          <LabeledField label={t('ui.ClientUserAccess.tipoDeAcceso')}>
             <div className="grid grid-cols-2 gap-2">
               {([['app', 'App Mi Seguridad'], ['portal', 'Portal web']] as const).map(([canal, etiqueta]) => {
                 const activo = form.channel === canal;

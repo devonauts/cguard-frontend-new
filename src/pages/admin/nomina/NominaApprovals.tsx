@@ -134,7 +134,7 @@ export default function NominaApprovals() {
     { key: "scheduledStart", header: "Inicio de turno", render: (_v, r) => (
       r.scheduledStart
         ? <span className="text-xs tabular-nums" style={{ color: "var(--ink-soft)" }}>{fmtDateTime(r.scheduledStart)}</span>
-        : <span className="text-xs tabular-nums" style={{ color: "var(--ink-soft)" }}>{fmtDateTime(r.createdAt)} <span className="opacity-60">(sin turno programado)</span></span>
+        : <span className="text-xs tabular-nums" style={{ color: "var(--ink-soft)" }}>{fmtDateTime(r.createdAt)} <span className="opacity-60">{t('ui.NominaApprovals.sinTurnoProgramado')}</span></span>
     ) },
     { key: "lateBy", header: "Retraso", render: (_v, r) => <span className="text-xs font-semibold tabular-nums" style={{ color: "var(--warn-text)" }}>{lateBy(r.scheduledStart, r.createdAt)}</span> },
     { key: "reason", header: "Motivo", render: (_v, r) => <span className="text-xs" style={{ color: "var(--ink-soft)" }}>{r.reason || "—"}</span> },
@@ -205,7 +205,7 @@ export default function NominaApprovals() {
         <PageHeader
           icon={<CheckCircle2 />}
           title="Aprobaciones"
-          subtitle="Entradas tardías, salidas anticipadas y correcciones pendientes"
+          subtitle={t('ui.NominaApprovals.entradasTardiasSalidasAnticipadasY')}
           badges={
             !loading && (
               <StatusBadge tone={ciRows.length + coRows.length + rows.length > 0 ? "warn" : "ok"}>
@@ -234,7 +234,7 @@ export default function NominaApprovals() {
                   <EmptyState
                     icon={<Inbox />}
                     title={t("ui.NominaApprovals.sinSolicitudesDeEntradaTardia", "Sin solicitudes de entrada tardía")}
-                    description="Las solicitudes de entrada fuera de horario aparecerán aquí."
+                    description={t('ui.NominaApprovals.lasSolicitudesDeEntradaFuera')}
                   />
                 }
               />
@@ -252,8 +252,8 @@ export default function NominaApprovals() {
                 emptyState={
                   <EmptyState
                     icon={<Inbox />}
-                    title="Sin solicitudes de salida anticipada"
-                    description="Las solicitudes de salida antes del fin de turno aparecerán aquí."
+                    title={t('ui.NominaApprovals.sinSolicitudesDeSalidaAnticipada')}
+                    description={t('ui.NominaApprovals.lasSolicitudesDeSalidaAntes')}
                   />
                 }
               />
@@ -271,8 +271,8 @@ export default function NominaApprovals() {
                 emptyState={
                   <EmptyState
                     icon={<Inbox />}
-                    title="Sin correcciones pendientes"
-                    description="Las correcciones de marcaciones enviadas para revisión aparecerán aquí."
+                    title={t('ui.NominaApprovals.sinCorreccionesPendientes')}
+                    description={t('ui.NominaApprovals.lasCorreccionesDeMarcacionesEnviadas')}
                   />
                 }
               />

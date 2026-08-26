@@ -452,7 +452,7 @@ export default function EditAdminUserPage() {
   };
 
   const useCurrentLocationAsOffice = () => {
-    if (!navigator.geolocation) return toast.error("Geolocalización no disponible");
+    if (!navigator.geolocation) return toast.error(t('ui.EditAdminUserPage.geolocalizacionNoDisponible'));
     navigator.geolocation.getCurrentPosition(
       (p) => setOffice((o) => ({ ...o, lat: String(p.coords.latitude), lng: String(p.coords.longitude) })),
       (e) => toast.error(e.message || "No se pudo obtener la ubicación"),
@@ -726,7 +726,7 @@ export default function EditAdminUserPage() {
                 {permsOpen && (
                   <div className="mt-4 space-y-3">
                     <Input
-                      placeholder="Buscar permisos..."
+                      placeholder={t('ui.EditAdminUserPage.buscarPermisos')}
                       value={permQuery}
                       onChange={(e) => setPermQuery(e.target.value)}
                     />

@@ -144,33 +144,33 @@ export default function NominaSettings() {
 
   return (
     <AppLayout>
-      <SettingsLayout navKey="configuracion" title="Asistencia / Time & Attendance">
+      <SettingsLayout navKey="configuracion" title={t('ui.NominaSettings.asistenciaTimeAttendance')}>
         {loading || !s ? (
           <SkeletonCards count={4} />
         ) : (
           <FadeIn className="space-y-4 pb-28">
             <SettingsSection title="General" icon={<SlidersHorizontal />}>
-              <Toggle label="Reloj de asistencia habilitado" path="general.timeClockEnabled" />
+              <Toggle label={t('ui.NominaSettings.relojDeAsistenciaHabilitado')} path="general.timeClockEnabled" />
               <Toggle label="Requerir selfie al marcar" path="general.requireSelfie" />
-              <Toggle label="Requerir notas en excepciones" path="general.requireNotesOnException" />
+              <Toggle label={t('ui.NominaSettings.requerirNotasEnExcepciones')} path="general.requireNotesOnException" />
             </SettingsSection>
 
             <SettingsSection title="Ventanas de tiempo (minutos)" icon={<Timer />}>
               <Num label="Entrada anticipada permitida" path="windows.earlyClockInMin" />
               <Num label="Tolerancia de retraso (gracia)" path="windows.lateGraceMin" />
               <Num label="Umbral de salida anticipada" path="windows.earlyClockoutThresholdMin" />
-              <Num label="Umbral sin marcar salida" path="windows.missedClockoutThresholdMin" />
+              <Num label={t('ui.NominaSettings.umbralSinMarcarSalida')} path="windows.missedClockoutThresholdMin" />
               <Num label="Umbral inasistencia (no-show)" path="windows.noShowThresholdMin" />
             </SettingsSection>
 
             <SettingsSection title="Geocerca" icon={<MapPinned />}>
-              <Num label="Radio por defecto (m)" path="geofence.defaultRadiusM" />
+              <Num label={t('ui.NominaSettings.radioPorDefectoM')} path="geofence.defaultRadiusM" />
               <Toggle label={t("ui.NominaSettings.requerirValidacionDeGeocerca", "Requerir validación de geocerca")} path="geofence.requireValidation" />
               <Toggle label={t("ui.NominaSettings.permitirFueraDeGeocercaCon", "Permitir fuera de geocerca (con aprobación)")} path="geofence.allowOutsideWithApproval" />
             </SettingsSection>
 
             <SettingsSection title="Notificaciones" icon={<BellRing />}>
-              <Toggle label="Notificar solo al supervisor asignado al puesto" path="notifications.assignedSupervisorsOnly" />
+              <Toggle label={t('ui.NominaSettings.notificarSoloAlSupervisorAsignado')} path="notifications.assignedSupervisorsOnly" />
               {/* El backend YA enviaba a estos correos (attendanceService y el
                   barrido nocturno los leen); lo que faltaba era el campo para
                   escribirlos. Un ajuste funcional e inalcanzable es el problema
@@ -192,7 +192,7 @@ export default function NominaSettings() {
                       ),
                     )
                   }
-                  placeholder="operaciones@empresa.com, rrhh@empresa.com"
+                  placeholder={t('ui.NominaSettings.operacionesEmpresaComRrhhEmpresa')}
                   className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm"
                 />
                 <span className="mt-1 block text-xs" style={{ color: "var(--ink-faint)" }}>
@@ -209,7 +209,7 @@ export default function NominaSettings() {
 
             <SettingsSection title="Periodo y horas extra" icon={<CalendarRange />}>
               <label className="block">
-                <span className="cg-eyebrow">Periodo del timesheet</span>
+                <span className="cg-eyebrow">{t('ui.NominaSettings.periodoDelTimesheet')}</span>
                 <select
                   value={s.payroll?.periodType || "biweekly"}
                   onChange={(e) => setS((p) => set(p as NominaSettings, "payroll.periodType", e.target.value))}
@@ -225,7 +225,7 @@ export default function NominaSettings() {
                   contar la semana. Lo lee `periodoVigente` en el backend. */}
               {(s.payroll?.periodType || "biweekly") === "weekly" && (
                 <label className="block">
-                  <span className="cg-eyebrow">La semana empieza el</span>
+                  <span className="cg-eyebrow">{t('ui.NominaSettings.laSemanaEmpiezaEl')}</span>
                   <select
                     value={String(s.payroll?.startDayOfWeek ?? 1)}
                     onChange={(e) =>
@@ -243,13 +243,13 @@ export default function NominaSettings() {
                   </select>
                 </label>
               )}
-              <Num label="Umbral de horas extra (h/turno)" path="payroll.overtimeThresholdHours" />
+              <Num label={t('ui.NominaSettings.umbralDeHorasExtraH')} path="payroll.overtimeThresholdHours" />
               {/* No existía: se acumulaban segundos exactos y un informe de
                   quince días daba cifras como 172,37 h, que hay que redondear a
                   mano en una hoja de cálculo — donde se pierde el rastro de
                   quién ajustó qué. */}
               <label className="block">
-                <span className="text-sm font-medium">Redondear las horas del informe</span>
+                <span className="text-sm font-medium">{t('ui.NominaSettings.redondearLasHorasDelInforme')}</span>
                 <p className="mt-0.5 text-xs" style={{ color: "var(--ink-faint)" }}>
                   Se aplica al total de cada persona, no a cada marcación: así el redondeo no
                   se acumula turno a turno. Déjalo en «Sin redondear» para conservar los
@@ -262,11 +262,11 @@ export default function NominaSettings() {
                     setS((p) => set(p as NominaSettings, "payroll.roundingMinutes", Number(e.target.value)))
                   }
                 >
-                  <option value="0">Sin redondear</option>
+                  <option value="0">{t('ui.NominaSettings.sinRedondear')}</option>
                   <option value="5">{t("ui.NominaSettings.alMultiploDe5Minutos", "Al múltiplo de 5 minutos")}</option>
-                  <option value="15">Al cuarto de hora</option>
-                  <option value="30">A la media hora</option>
-                  <option value="60">A la hora</option>
+                  <option value="15">{t('ui.NominaSettings.alCuartoDeHora')}</option>
+                  <option value="30">{t('ui.NominaSettings.aLaMediaHora')}</option>
+                  <option value="60">{t('ui.NominaSettings.aLaHora')}</option>
                 </select>
               </label>
             </SettingsSection>
@@ -282,7 +282,7 @@ export default function NominaSettings() {
                 hasta rehacerlo pensando en cualquier país. Esto es la
                 ESTIMACIÓN del planificador, y la pantalla lo dice para que nadie
                 crea que de aquí sale una liquidación. */}
-            <SettingsSection title="Costos del horario" icon={<CalendarRange />}>
+            <SettingsSection title={t('ui.NominaSettings.costosDelHorario')} icon={<CalendarRange />}>
               <p className="mb-3 text-xs" style={{ color: "var(--ink-faint)" }}>
                 Sirven para estimar el costo de un horario ANTES de publicarlo. Sin una
                 tarifa, ese panel muestra cero. No se usan para liquidar sueldos.
@@ -300,11 +300,11 @@ export default function NominaSettings() {
                   Código de tres letras: USD, MXN, COP…
                 </span>
               </label>
-              <Num label="Tarifa por hora (por defecto)" path="payroll.defaultHourlyRate" />
-              <Num label="Multiplicador de hora extra" path="payroll.overtimeMultiplier" />
+              <Num label={t('ui.NominaSettings.tarifaPorHoraPorDefecto')} path="payroll.defaultHourlyRate" />
+              <Num label={t('ui.NominaSettings.multiplicadorDeHoraExtra')} path="payroll.overtimeMultiplier" />
               <Num label="Recargo nocturno (0.25 = 25 %)" path="payroll.nightSurchargePct" />
-              <Num label="La noche empieza a las (hora local)" path="payroll.nightStartHour" />
-              <Num label="La noche termina a las (hora local)" path="payroll.nightEndHour" />
+              <Num label={t('ui.NominaSettings.laNocheEmpiezaALas')} path="payroll.nightStartHour" />
+              <Num label={t('ui.NominaSettings.laNocheTerminaALas')} path="payroll.nightEndHour" />
             </SettingsSection>
 
             <div className="fixed bottom-6 right-6 z-10">

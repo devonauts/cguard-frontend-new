@@ -84,7 +84,7 @@ export default function SubscriptionDetailsModule() {
         if (active) setData(summary);
       } catch {
         if (active)
-          toast.error("No se pudo cargar la suscripción");
+          toast.error(t('ui.SubscriptionDetailsModule.noSePudoCargarLa'));
       } finally {
         if (active) setLoading(false);
       }
@@ -118,7 +118,7 @@ export default function SubscriptionDetailsModule() {
       <PageHeader
         icon={<CreditCard />}
         title={t("ui.SubscriptionDetailsModule.suscripcion", "Suscripción")}
-        subtitle="Gestiona tu plan, periodo de facturación y módulos contratados."
+        subtitle={t('ui.SubscriptionDetailsModule.gestionaTuPlanPeriodoDe')}
       />
 
       {/* Banner */}

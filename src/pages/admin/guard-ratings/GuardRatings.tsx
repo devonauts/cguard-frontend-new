@@ -155,7 +155,7 @@ export default function GuardRatings() {
         <PageHeader
           icon={<Star />}
           title="Control de Calidad"
-          subtitle="Calificaciones de los clientes hacia cada vigilante. Úsalas para generar memos u observaciones y mejorar el servicio."
+          subtitle={t('ui.GuardRatings.calificacionesDeLosClientesHacia')}
         />
 
         {/* Stats */}
@@ -198,7 +198,7 @@ export default function GuardRatings() {
           <div className="relative w-full md:w-80">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
-              placeholder="Buscar por vigilante, cliente o comentario..."
+              placeholder={t('ui.GuardRatings.buscarPorVigilanteClienteO')}
               className="pl-9"
               value={searchQuery}
               onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
@@ -234,7 +234,7 @@ export default function GuardRatings() {
                     <EmptyState
                       icon={<AlertCircle />}
                       title={t("ui.GuardRatings.noSePudoCargarLa", "No se pudo cargar la información")}
-                      description="Ocurrió un error al obtener las calificaciones."
+                      description={t('ui.GuardRatings.ocurrioUnErrorAlObtener')}
                       className="border-0"
                       action={
                         <Button variant="outline" onClick={fetchRecords}>
@@ -249,8 +249,8 @@ export default function GuardRatings() {
                   <TableCell colSpan={6} className="p-0">
                     <EmptyState
                       icon={<Star />}
-                      title="No hay calificaciones"
-                      description="Las calificaciones enviadas por los clientes aparecerán aquí."
+                      title={t('ui.GuardRatings.noHayCalificaciones')}
+                      description={t('ui.GuardRatings.lasCalificacionesEnviadasPorLos')}
                       className="border-0"
                     />
                   </TableCell>

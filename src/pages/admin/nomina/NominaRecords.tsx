@@ -343,7 +343,7 @@ export default function NominaRecords() {
                 className="cg-focus bg-transparent text-sm outline-none"
                 style={{ color: "var(--ink)" }}
               >
-                <option value="">Todos los departamentos</option>
+                <option value="">{t('ui.NominaRecords.todosLosDepartamentos')}</option>
                 {departments.map((d) => (
                   <option key={d.id} value={d.id}>{d.name}</option>
                 ))}
@@ -376,7 +376,7 @@ export default function NominaRecords() {
                 <EmptyState
                   icon={<ClipboardList />}
                   title={t('comun.sinRegistros')}
-                  description="No hay marcaciones para los filtros seleccionados."
+                  description={t('ui.NominaRecords.noHayMarcacionesParaLos')}
                 />
               }
             />
@@ -396,7 +396,7 @@ export default function NominaRecords() {
                 {(() => {
                   if (!selfieUrl) {
                     return (
-                      <EmptyState icon={<ImageOff />} title="Sin selfie de entrada" className="py-8" />
+                      <EmptyState icon={<ImageOff />} title={t('ui.NominaRecords.sinSelfieDeEntrada')} className="py-8" />
                     );
                   }
                   return (
@@ -502,7 +502,7 @@ export default function NominaRecords() {
                           lng={Number(selected.punchInLongitude)}
                           zoom={16}
                           height="200px"
-                          alt="Ubicación de la marcación de entrada"
+                          alt={t('ui.NominaRecords.ubicacionDeLaMarcacionDe')}
                           polygon={selected.stationName?.geofencePolygon || undefined}
                           radiusMeters={
                             !selected.stationName?.geofencePolygon && selected.stationName?.geofenceRadius
@@ -548,7 +548,7 @@ export default function NominaRecords() {
                           lng={Number(selected.punchOutLongitude)}
                           zoom={16}
                           height="200px"
-                          alt="Ubicación de la marcación de salida"
+                          alt={t('ui.NominaRecords.ubicacionDeLaMarcacionDe')}
                           polygon={selected.stationName?.geofencePolygon || undefined}
                           radiusMeters={
                             !selected.stationName?.geofencePolygon && selected.stationName?.geofenceRadius

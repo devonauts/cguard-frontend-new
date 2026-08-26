@@ -149,7 +149,7 @@ export default function ClientStaff({ client }: { client: Client }) {
   // Quitar de la estación: elimina la asignación activa (guardAssignment) —
   // el vigilante vuelve al grupo sin asignación y sus turnos futuros se borran.
   const removeFromStation = async (p: PersonnelRow) => {
-    if (!p.assignmentId) { toast.error('Este trabajador no tiene una asignación activa que quitar.'); return; }
+    if (!p.assignmentId) { toast.error(t('ui.ClientStaff.esteTrabajadorNoTieneUna')); return; }
     const ok = await confirmDialog({
       title: 'Quitar de la estación',
       message: `¿Quitar a ${p.name} de "${p.puesto || 'su estación'}"? Volverá al grupo de vigilantes sin asignación y se eliminarán sus turnos futuros generados.`,
@@ -186,7 +186,7 @@ export default function ClientStaff({ client }: { client: Client }) {
               {sedes.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
             <select className={FIELD_CLS} value={role} onChange={(e) => resetPage(setRole)(e.target.value)}>
-              <option value="todos">Rol: Todos</option>
+              <option value="todos">{t('ui.ClientStaff.rolTodos')}</option>
               <option value="vigilante">Guardia</option>
               <option value="supervisor">{t('comun.supervisor')}</option>
               <option value="patrullero">Patrullero</option>
@@ -195,7 +195,7 @@ export default function ClientStaff({ client }: { client: Client }) {
             <select className={FIELD_CLS} value={estado} onChange={(e) => resetPage(setEstado)(e.target.value)}>
               <option value="todos">{t('comun.estadoTodos')}</option>
               <option value="en_turno">{t('comun.enTurno')}</option>
-              <option value="fuera_turno">Fuera de turno</option>
+              <option value="fuera_turno">{t('ui.ClientStaff.fueraDeTurno')}</option>
               <option value="descanso">Descanso</option>
               <option value="ausente">Ausente</option>
               <option value="en_ruta">En ruta</option>
@@ -209,7 +209,7 @@ export default function ClientStaff({ client }: { client: Client }) {
           </div>
 
           {personal.length === 0 ? (
-            <EmptyState icon={<Users className="h-5 w-5" />} title="Sin personal" description="No hay personal que coincida con los filtros para este cliente." />
+            <EmptyState icon={<Users className="h-5 w-5" />} title={t('ui.ClientStaff.sinPersonal')} description={t('ui.ClientStaff.noHayPersonalQueCoincida')} />
           ) : (
             <TabTable>
                 <THead>
@@ -312,7 +312,7 @@ export default function ClientStaff({ client }: { client: Client }) {
             </div>
           </Section>
 
-          <Section title="Cobertura por turno" icon={<ShieldCheck className="h-4 w-4" />}>
+          <Section title={t('ui.ClientStaff.coberturaPorTurno')} icon={<ShieldCheck className="h-4 w-4" />}>
             <div className="space-y-3">
               {coberturaTurno.map((t) => (
                 <div key={t.key}>
@@ -323,7 +323,7 @@ export default function ClientStaff({ client }: { client: Client }) {
                   <MeterBar height={8} pct={t.pct} ariaLabel={t.label} tone={t.pct >= 90 ? 'ok' : t.pct >= 60 ? 'warn' : 'bad'} />
                 </div>
               ))}
-              {coberturaTurno.length === 0 && <p className="text-sm text-muted-foreground">Sin turnos configurados.</p>}
+              {coberturaTurno.length === 0 && <p className="text-sm text-muted-foreground">{t('ui.ClientStaff.sinTurnosConfigurados')}</p>}
             </div>
           </Section>
 
@@ -353,7 +353,7 @@ export default function ClientStaff({ client }: { client: Client }) {
 
           <Section title={`Ausencias hoy (${ausencias.length})`} icon={<UserX className="h-4 w-4" />}>
             {ausencias.length === 0 ? (
-              <div className="py-2 text-sm" style={{ color: 'var(--ok-text)' }}>Sin ausencias hoy.</div>
+              <div className="py-2 text-sm" style={{ color: 'var(--ok-text)' }}>{t('ui.ClientStaff.sinAusenciasHoy')}</div>
             ) : (
               <div className="divide-y">
                 {ausencias.map((a) => (

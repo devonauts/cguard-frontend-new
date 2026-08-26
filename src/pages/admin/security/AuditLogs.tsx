@@ -61,7 +61,7 @@ export default function AuditLogs() {
       a.remove();
       URL.revokeObjectURL(url);
     } catch {
-      toast.error("No se pudo descargar el registro.");
+      toast.error(t('ui.AuditLogs.noSePudoDescargarEl'));
     } finally {
       setBajando(false);
     }
@@ -92,7 +92,7 @@ export default function AuditLogs() {
         <PageHeader
           icon={<ShieldCheck />}
           title="Registro de seguridad"
-          subtitle="Inicios y cierres de sesión, intentos fallidos y eventos de dispositivos."
+          subtitle={t('ui.AuditLogs.iniciosYCierresDeSesion')}
           badges={
             !loading && !error ? (
               <>
@@ -135,7 +135,7 @@ export default function AuditLogs() {
               <EmptyState
                 className="border-0"
                 icon={<AlertTriangle />}
-                title="No se pudo cargar el registro de seguridad"
+                title={t('ui.AuditLogs.noSePudoCargarEl')}
                 description="Vuelve a intentarlo en unos segundos."
                 action={
                   <Button variant="outline" className="gap-2" onClick={load}>

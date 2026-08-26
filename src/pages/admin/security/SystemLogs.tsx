@@ -89,8 +89,8 @@ export default function SystemLogs() {
       <PageContainer width="wide" className="px-4 pt-4 sm:px-6 sm:pt-6">
         <PageHeader
           icon={<ScrollText />}
-          title="Registros del Sistema"
-          subtitle="Todas las acciones (creaciones, cambios y eliminaciones) de esta empresa — quién, qué y cuándo."
+          title={t('ui.SystemLogs.registrosDelSistema')}
+          subtitle={t('ui.SystemLogs.todasLasAccionesCreacionesCambios')}
           badges={
             !primeraCarga ? (
               <StatusBadge tone="neutral" dot={false}>

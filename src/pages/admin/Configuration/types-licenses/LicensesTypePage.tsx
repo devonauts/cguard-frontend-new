@@ -52,7 +52,7 @@ export default function LicenseTypePage() {
       kind="table"
       icon={<IdCard />}
       title={t('licenseTypes.page.title', { defaultValue: 'Tipos de Licencia' })}
-      subtitle="Los permisos y licencias que tu personal puede solicitar o acreditar."
+      subtitle={t('ui.LicensesTypePage.losPermisosYLicenciasQue')}
       badges={
         !loading && total > 0 ? (
           <StatusBadge tone="neutral">{total} {total === 1 ? 'tipo' : 'tipos'}</StatusBadge>
@@ -89,7 +89,7 @@ export default function LicenseTypePage() {
             if (!ids?.length) return;
             try {
               await licenseTypeService.destroy(ids);
-              toast.success('Tipo(s) de licencia eliminado(s)');
+              toast.success(t('ui.LicensesTypePage.tipoSDeLicenciaEliminado'));
               await fetchData();
             } catch (e: any) {
               toast.error(e?.message || 'Error al eliminar');
@@ -105,10 +105,10 @@ export default function LicenseTypePage() {
             try {
               if (edit) {
                 await licenseTypeService.update(edit.id, { name: values.name });
-                toast.success('Tipo de licencia actualizado');
+                toast.success(t('ui.LicensesTypePage.tipoDeLicenciaActualizado'));
               } else {
                 await licenseTypeService.create({ name: values.name });
-                toast.success('Tipo de licencia creado');
+                toast.success(t('ui.LicensesTypePage.tipoDeLicenciaCreado'));
               }
               setOpen(false);
               setEdit(null);

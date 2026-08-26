@@ -25,7 +25,7 @@ export default function Reporting() {
   return (
     <AnalyticsShell
       title={t("ui.Reporting.analiticasDeOperaciones", "Analíticas de Operaciones")}
-      subtitle="Indicadores clave del servicio de vigilante para tu operación."
+      subtitle={t('ui.Reporting.indicadoresClaveDelServicioDe')}
       days={days} setDays={setDays} loading={loading} error={error} reload={reload}
     >
       {data && k && (
@@ -91,7 +91,7 @@ export default function Reporting() {
           </div>
 
           <div className="grid gap-4 lg:grid-cols-3">
-            <Section title="Incidentes por prioridad" icon={<AlertTriangle size={16} />}>
+            <Section title={t('ui.Reporting.incidentesPorPrioridad')} icon={<AlertTriangle size={16} />}>
               <HBars items={data.incidentsByPriority} color={TONES.bad} empty={t("ui.Reporting.sinIncidentesEnElPeriodo", "Sin incidentes en el período.")} />
             </Section>
             <Section title={t("ui.Reporting.sitiosConMasIncidentes", "Sitios con más incidentes")} icon={<Building2 size={16} />}>
@@ -102,7 +102,7 @@ export default function Reporting() {
             </Section>
           </div>
 
-          <Section title="Resumen por sitio de servicio" icon={<Building2 size={16} />}>
+          <Section title={t('ui.Reporting.resumenPorSitioDeServicio')} icon={<Building2 size={16} />}>
             {data.perSite.length === 0 ? (
               <EmptyState icon={<Building2 />} title={t('comun.sinActividad')} description={t("ui.Reporting.sinActividadRegistradaEnEl", "Sin actividad registrada en el período.")} />
             ) : (

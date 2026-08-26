@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { ImportarHojaDeVida } from "@/components/security-guards/ImportarHojaDeVida";
 import { clientDisplayName } from '@/lib/clientName';
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -49,7 +50,7 @@ import { clientService } from "@/lib/api/clientService";
 import { securityGuardService } from "@/lib/api/securityGuardService";
 import { stationService } from "@/lib/api/stationService";
 import { usePermissions } from '@/hooks/usePermissions';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import AddressAutocomplete from "@/components/maps/AddressAutocomplete";
 import ProfilePhotoCapture from "./components/ProfilePhotoCapture";
@@ -103,6 +104,7 @@ const emptyDocs = (): GuardDocuments => ({
 export default function NewSecurityGuardPage() {
   const { hasPermission } = usePermissions();
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation()
 
   useEffect(() => {
@@ -275,6 +277,31 @@ export default function NewSecurityGuardPage() {
 
   // Document files state (outside zod — File objects)
   const [guardDocs, setGuardDocs] = useState<GuardDocuments>(emptyDocs());
+  // La hoja de vida que se importó, para adjuntarla al expediente al guardar.
+  // Vive aparte de `guardDocs` porque ése tiene ranuras con nombre fijo y ésta
+  // es un documento más, no una de ellas.
+  const [hojaDeVida, setHojaDeVida] = useState<File | null>(null);
+
+  /**
+   * Llegar aquí DESDE VIGIA con la hoja de vida ya leída.
+   *
+   * El widget manda los campos por el estado de navegación y esta pantalla los
+   * vuelca en el formulario y salta a la pestaña de crear perfil. Se hace una
+   * sola vez: `navigate(replace)` limpia el estado para que recargar la página
+   * o volver atrás no vuelva a rellenar encima de lo que se haya escrito.
+   */
+  useEffect(() => {
+    const desdeVigia = (location.state as any)?.hojaDeVida;
+    if (!desdeVigia) return;
+    setActiveTab("create_profile");
+    Object.entries(desdeVigia).forEach(([campo, valor]) => {
+      if (valor === undefined || valor === "") return;
+      setCreateValue(campo as never, valor as never, { shouldDirty: true });
+    });
+    const archivo = (location.state as any)?.hojaDeVidaArchivo;
+    if (archivo instanceof File) setHojaDeVida(archivo);
+    navigate(location.pathname, { replace: true, state: null });
+  }, [location.state]);
   const [uploading, setUploading] = useState(false);
 
   const setDoc = (key: keyof GuardDocuments) => (val: any) =>
@@ -353,10 +380,34 @@ export default function NewSecurityGuardPage() {
         ...(famObj?.fileToken ? { familyViolenceCertificateToken: famObj.fileToken } : {}),
       };
 
-      await securityGuardService.create(payload);
+      const creado: any = await securityGuardService.create(payload);
       toast.success(t('guards.new.toasts.profile_created_sent'));
+
+      // La hoja de vida que se importó queda ARCHIVADA en el expediente. Va
+      // después de crear porque hasta aquí no existe el vigilante al que
+      // colgarla, y va en su propio `try` porque el alta YA está hecha: perder
+      // el adjunto es un fastidio, tumbar el alta con un error después de haber
+      // creado a la persona es mucho peor.
+      const idCreado = creado?.id || creado?.data?.id || null;
+      if (hojaDeVida && idCreado) {
+        try {
+          const subido = await securityGuardService.uploadFileToStorage(hojaDeVida, 'securityGuardDocument');
+          await securityGuardService.addDocuments(idCreado, [{
+            name: hojaDeVida.name,
+            sizeInBytes: subido?.sizeInBytes ?? hojaDeVida.size,
+            privateUrl: subido?.privateUrl ?? null,
+          }]);
+        } catch (err) {
+          console.warn('[GuardCreate] no se pudo archivar la hoja de vida', err);
+          toast.warning('Creamos el vigilante, pero no pudimos archivar la hoja de vida.', {
+            description: 'Súbela desde su ficha, en Documentos.',
+          });
+        }
+      }
+
       createForm.reset();
       setGuardDocs(emptyDocs());
+      setHojaDeVida(null);
       navigate('/security-guards');
     } catch (e: any) {
       console.error('[NewSecurityGuardPage] createProfile error <-', e);
@@ -566,6 +617,25 @@ export default function NewSecurityGuardPage() {
                 {t('guards.new.create.description')}
               </p>
 
+              {/* El atajo: subir el CV y que rellene lo que se pueda en vez de
+                  teclear quince campos. Va ARRIBA del formulario porque es lo
+                  primero que hace quien tiene el papel del candidato delante. */}
+              <ImportarHojaDeVida
+                className="mt-4"
+                onDatos={(campos) => {
+                  // `shouldDirty` para que el formulario sepa que hay cambios
+                  // sin guardar; `shouldValidate` no, porque validar un
+                  // formulario a medio rellenar lo llena de rojo antes de que
+                  // nadie haya escrito nada.
+                  (Object.entries(campos) as Array<[keyof typeof campos, unknown]>)
+                    .forEach(([campo, valor]) => {
+                      if (valor === undefined || valor === "") return;
+                      setCreateValue(campo as never, valor as never, { shouldDirty: true });
+                    });
+                }}
+                onArchivo={(archivo) => setHojaDeVida(archivo)}
+              />
+
               <Form {...createForm}>
                 <form className="mt-6 space-y-6" onSubmit={submitCreate(onSubmitCreate)}>
 
@@ -584,7 +654,7 @@ export default function NewSecurityGuardPage() {
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                       <FormField control={createCtrl} name="firstName" render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Nombre(s) <span className="text-destructive">*</span></FormLabel>
+                          <FormLabel>{t('ui.NewSecurityGuardPage.nombreS')}{" "}<span className="text-destructive">*</span></FormLabel>
                           <FormControl><Input placeholder="Ej. Carlos" {...field} /></FormControl>
                           <FormMessage />
                         </FormItem>
@@ -626,11 +696,11 @@ export default function NewSecurityGuardPage() {
                       )} />
                       <FormField control={createCtrl} name="bloodType" render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Tipo de Sangre <span className="text-destructive">*</span></FormLabel>
+                          <FormLabel>{t('ui.NewSecurityGuardPage.tipoDeSangre')}{" "}<span className="text-destructive">*</span></FormLabel>
                           <Select onValueChange={field.onChange} value={field.value ?? ""}>
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="Seleccionar tipo de sangre" />
+                                <SelectValue placeholder={t('ui.NewSecurityGuardPage.seleccionarTipoDeSangre')} />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -644,11 +714,11 @@ export default function NewSecurityGuardPage() {
                       )} />
                       <FormField control={createCtrl} name="maritalStatus" render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Estado Civil <span className="text-destructive">*</span></FormLabel>
+                          <FormLabel>{t('ui.NewSecurityGuardPage.estadoCivil')}{" "}<span className="text-destructive">*</span></FormLabel>
                           <Select onValueChange={field.onChange} value={field.value ?? ""}>
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="Seleccionar estado civil" />
+                                <SelectValue placeholder={t('ui.NewSecurityGuardPage.seleccionarEstadoCivil')} />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -699,13 +769,13 @@ export default function NewSecurityGuardPage() {
                   </Section>
 
                   {/* ── Section 2: Contact & Address ─────────────────────────── */}
-                  <Section title="Contacto y Domicilio" icon={<Phone />}>
+                  <Section title={t('ui.NewSecurityGuardPage.contactoYDomicilio')} icon={<Phone />}>
 
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                       <FormField control={createCtrl} name="email" render={({ field }) => (
                         <FormItem>
                           <FormLabel>{t("ui.NewSecurityGuard.correoElectronico", "Correo Electrónico")}{" "}<span className="text-destructive">*</span></FormLabel>
-                          <FormControl><Input type="email" placeholder="vigilante@ejemplo.com" {...field} /></FormControl>
+                          <FormControl><Input type="email" placeholder={t('ui.NewSecurityGuardPage.vigilanteEjemploCom')} {...field} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )} />
@@ -762,7 +832,7 @@ export default function NewSecurityGuardPage() {
                       <div>
                         <DocumentUpload
                           label={t("ui.NewSecurityGuard.imagenDeIdentificacion", "Imagen de Identificación")}
-                          description="Foto o escaneo del documento de identidad"
+                          description={t('ui.NewSecurityGuardPage.fotoOEscaneoDelDocumento')}
                           value={guardDocs.identificationImage ?? null}
                           onChange={setDoc("identificationImage") as (f: any) => void}
                         />
@@ -793,19 +863,19 @@ export default function NewSecurityGuardPage() {
                     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                       <DocumentUpload
                         label="Certificado AFIS"
-                        description="Sistema automatizado de identificación de huellas"
+                        description={t('ui.NewSecurityGuardPage.sistemaAutomatizadoDeIdentificacionDe')}
                         value={guardDocs.afisCertificate ?? null}
                         onChange={setDoc("afisCertificate") as (f: any) => void}
                       />
                       <DocumentUpload
                         label={t("ui.NewSecurityGuard.certificadoMedico", "Certificado Médico")}
-                        description="Certificado médico vigente"
+                        description={t('ui.NewSecurityGuardPage.certificadoMedicoVigente')}
                         value={guardDocs.medicalCertificate ?? null}
                         onChange={setDoc("medicalCertificate") as (f: any) => void}
                       />
                       <DocumentUpload
                         label={t("ui.NewSecurityGuard.certificadoPsicologico", "Certificado Psicológico")}
-                        description="Evaluación psicológica actualizada"
+                        description={t('ui.NewSecurityGuardPage.evaluacionPsicologicaActualizada')}
                         value={guardDocs.psychologicalCertificate ?? null}
                         onChange={setDoc("psychologicalCertificate") as (f: any) => void}
                       />
@@ -817,13 +887,13 @@ export default function NewSecurityGuardPage() {
                       />
                       <DocumentUpload
                         label={t("ui.NewSecurityGuard.certificacionNivel1", "Certificación Nivel 1")}
-                        description="Certificación de vigilante nivel 1"
+                        description={t('ui.NewSecurityGuardPage.certificacionDeVigilanteNivel1')}
                         value={guardDocs.certificationLevel1 ?? null}
                         onChange={setDoc("certificationLevel1") as (f: any) => void}
                       />
                       <DocumentUpload
                         label={t("ui.NewSecurityGuard.certificacionNivel2", "Certificación Nivel 2")}
-                        description="Certificación de vigilante nivel 2"
+                        description={t('ui.NewSecurityGuardPage.certificacionDeVigilanteNivel2')}
                         value={guardDocs.certificationLevel2 ?? null}
                         onChange={setDoc("certificationLevel2") as (f: any) => void}
                       />

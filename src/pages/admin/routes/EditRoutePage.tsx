@@ -128,7 +128,7 @@ export default function EditRoutePage() {
           ]}
         />
         <PageContainer width="wide" className="p-6">
-          <PageHeader icon={<RouteIcon />} title={t('ui.EditRoutePage.editarRuta')} subtitle="Cargando ruta..." />
+          <PageHeader icon={<RouteIcon />} title={t('ui.EditRoutePage.editarRuta')} subtitle={t('ui.EditRoutePage.cargandoRuta')} />
           <SkeletonCards count={4} />
         </PageContainer>
       </AppLayout>

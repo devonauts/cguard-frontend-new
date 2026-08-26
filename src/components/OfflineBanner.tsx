@@ -49,7 +49,7 @@ export default function OfflineBanner() {
           type="button"
           onClick={() => void flush()}
           className="ml-2 rounded-full bg-white/20 px-2.5 py-0.5 text-[11.5px] font-bold hover:bg-white/30"
-          title="Enviar ahora"
+          title={t('ui.OfflineBanner.enviarAhora')}
         >
           {pending} {pending === 1 ? "cambio pendiente" : "cambios pendientes"}
         </button>

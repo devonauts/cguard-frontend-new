@@ -81,7 +81,7 @@ export default function SupervisorDetailPage() {
     setLoading(true);
     supervisorService.get(id)
       .then(hydrate)
-      .catch(() => toast.error("No se pudo cargar el supervisor"))
+      .catch(() => toast.error(t('ui.SupervisorDetailPage.noSePudoCargarEl')))
       .finally(() => setLoading(false));
   }, [id]);
   useEffect(load, [load]);
@@ -109,7 +109,7 @@ export default function SupervisorDetailPage() {
 
   return (
     <AppLayout>
-      <GuardsLayout navKey="supervisors" title="Perfil del supervisor">
+      <GuardsLayout navKey="supervisors" title={t('ui.SupervisorDetailPage.perfilDelSupervisor')}>
         <PageContainer>
           {loading ? (
             <SkeletonCards count={2} />
@@ -219,7 +219,7 @@ export default function SupervisorDetailPage() {
                     </div>
                   </Section>
 
-                  <Section title="Cobertura y horario" icon={<CalendarClock />}>
+                  <Section title={t('ui.SupervisorDetailPage.coberturaYHorario')} icon={<CalendarClock />}>
                     <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
                       La zona y los puestos que cubre este supervisor, y su horario generado, se ven en sus pestañas dedicadas.
                     </p>
@@ -257,8 +257,8 @@ export default function SupervisorDetailPage() {
           ) : (
             <EmptyState
               icon={<UserCog />}
-              title="Supervisor no encontrado"
-              description="Puede que se haya dado de baja o que el enlace ya no sea válido."
+              title={t('ui.SupervisorDetailPage.supervisorNoEncontrado')}
+              description={t('ui.SupervisorDetailPage.puedeQueSeHayaDado')}
             />
           )}
         </PageContainer>

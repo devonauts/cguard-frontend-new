@@ -3,9 +3,10 @@ import guardsNav from '@/data/guards-nav.json';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams, useLocation, useNavigate } from 'react-router-dom';
 import {
-  ChevronRight, Pencil, Mail, Phone, IdCard, MapPin, ShieldCheck,
+  ChevronRight, Pencil, Mail, Phone, IdCard, MapPin, ShieldCheck, ArrowRightLeft,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { PromoteDialog } from '@/pages/admin/security-guards/components/PromoteDialog';
 import { Avatar, StatusBadge, TabNav } from '@/components/kit';
 import securityGuardService from '@/lib/api/securityGuardService';
 import { supervisorService } from '@/lib/api/supervisorService';
@@ -30,6 +31,9 @@ export default function GuardsLayout({ navKey, title, children }: Props) {
   const { t } = useTranslation();
   const cfg: any = (guardsNav as any)[navKey] || null;
   const { id } = useParams();
+  // Diálogo de promoción. El id de la URL es el de la FICHA; el rol vive en la
+  // membresía, así que hace falta el id de USUARIO — se guarda al cargar.
+  const [promoverAbierto, setPromoverAbierto] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const isSupervisor = navKey === 'supervisors';
@@ -51,6 +55,7 @@ export default function GuardsLayout({ navKey, title, children }: Props) {
             onDuty: !!s.isOnDuty,
             email: s.email, phone: s.phoneNumber, code: s.governmentId,
             role: 'Supervisor', zone: s.zone,
+            userId: s.userId || s.supervisorUserId || id,
           });
         } else {
           const d: any = await securityGuardService.get(id);
@@ -67,6 +72,7 @@ export default function GuardsLayout({ navKey, title, children }: Props) {
             email: g?.email, phone: g?.phoneNumber || g?.phone,
             code: d?.employeeCode || d?.guardNumber || g?.guardNumber || null,
             role: g?.role || null,
+            userId: g?.guardId || d?.guardId || null,
           });
         }
       } catch { /* header stays sparse */ }
@@ -151,10 +157,25 @@ export default function GuardsLayout({ navKey, title, children }: Props) {
               <Button variant="outline" size="sm" onClick={() => navigate(editTarget)}>
                 <Pencil className="mr-1 h-4 w-4" /> {t('common.edit', 'Editar')}
               </Button>
+              {/* Promover / devolver al campo. Va junto a «Editar» porque es una
+                  acción sobre la PERSONA, no sobre una de sus pestañas. */}
+              {entity?.userId && (
+                <Button variant="outline" size="sm" onClick={() => setPromoverAbierto(true)}>
+                  <ArrowRightLeft className="mr-1 h-4 w-4" /> {t('guards.promote.button', 'Cambiar de rol')}
+                </Button>
+              )}
             </div>
           )}
         </div>
       </div>
+
+      <PromoteDialog
+        userId={(entity as any)?.userId || null}
+        personName={entity?.name}
+        open={promoverAbierto}
+        onOpenChange={setPromoverAbierto}
+        onDone={() => window.location.reload()}
+      />
 
       {/* Pestañas de la ficha — la pieza del kit, igual que en cliente y puesto. */}
       <TabNav

@@ -122,7 +122,7 @@ export default function GuardReviewsPage() {
             <StatCard
               icon={<Star />}
               accent="warn"
-              label="Promedio del vigilante"
+              label={t('ui.GuardReviewsPage.promedioDelVigilante')}
               value={average != null ? average.toFixed(2) : '—'}
               hint={average != null ? <Stars value={average} /> : undefined}
             />
@@ -158,7 +158,7 @@ export default function GuardReviewsPage() {
               <EmptyState
                 icon={<Star className="h-5 w-5" />}
                 title={t("ui.GuardReviews.sinResenasTodavia", "Sin reseñas todavía")}
-                description="Cuando un cliente califique a este vigilante desde su app, la reseña aparecerá aquí."
+                description={t('ui.GuardReviewsPage.cuandoUnClienteCalifiqueA')}
               />
             ) : (
               <div className="space-y-3">
@@ -227,7 +227,7 @@ export default function GuardReviewsPage() {
                 onChange={(e) => setForm({ ...form, content: e.target.value })}
                 rows={6}
                 className="cg-input w-full resize-none px-3 py-2 text-sm leading-relaxed"
-                placeholder="Detalle para conversar con el vigilante…"
+                placeholder={t('ui.GuardReviewsPage.detalleParaConversarConEl')}
               />
             </div>
           </div>

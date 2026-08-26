@@ -753,7 +753,7 @@ export default function Stations({ site }: { site?: SiteProp }) {
                       <thead>
                         <tr style={{ borderBottom: '1px solid var(--hairline)' }}>
                           <th className="cg-eyebrow px-2 py-2 sticky top-0 z-20 w-12" style={{ background: 'var(--glass-solid)' }}>
-                            <input type="checkbox" className="h-4 w-4" style={{ accentColor: 'var(--brand)' }} aria-label="Seleccionar todas las estaciones" checked={selectedIds.length === stations.length && stations.length > 0} onChange={() => {
+                            <input type="checkbox" className="h-4 w-4" style={{ accentColor: 'var(--brand)' }} aria-label={t('ui.Stations.seleccionarTodasLasEstaciones')} checked={selectedIds.length === stations.length && stations.length > 0} onChange={() => {
                               if (selectedIds.length === stations.length) setSelectedIds([]);
                               else setSelectedIds(stations.map(s => s.id || s.stationId || ''));
                             }} />

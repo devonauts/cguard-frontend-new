@@ -44,9 +44,20 @@ for (const [rel, usos] of porArchivo) {
     const llamada = `t('${u.clave}')`;
     let n = 0;
 
-    // 1. NODO DE TEXTO. Se conserva el espacio como {" "} — sin eso, un
-    //    «Nombre <span>*</span>» queda pegado: «Nombre*».
-    src = src.replace(new RegExp(`>(\\s*)${T}(\\s*)<`, 'g'), (m, izq, der) => {
+    // 1. NODO DE TEXTO. Dos cuidados:
+    //    · El espacio se conserva como {" "} — sin eso, «Nombre <span>*</span>»
+    //      queda pegado: «Nombre*».
+    //    · NO se sustituye dentro de una cadena entrecomillada. El patrón
+    //      `>texto<` también casa dentro de un literal con HTML —
+    //      'No encontramos<br />notas que coincidan<br />…'— y ahí meter {t(…)}
+    //      parte el archivo. Se comprueba contando comillas antes del punto.
+    src = src.replace(new RegExp(`>(\\s*)${T}(\\s*)<`, 'g'), (m, izq, der, pos) => {
+      const inicioLinea = src.lastIndexOf('\n', pos) + 1;
+      const antes = src.slice(inicioLinea, pos).replace(/\\./g, '');
+      const dentroDeCadena = ((antes.match(/'/g) || []).length % 2) === 1
+                          || ((antes.match(/"/g) || []).length % 2) === 1
+                          || ((antes.match(/`/g) || []).length % 2) === 1;
+      if (dentroDeCadena) return m;
       n++;
       return `>${izq.includes(' ') || izq.includes('\n') ? '{" "}' : ''}{${llamada}}${der.includes(' ') || der.includes('\n') ? '{" "}' : ''}<`;
     });

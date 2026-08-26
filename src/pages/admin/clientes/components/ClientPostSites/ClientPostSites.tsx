@@ -179,7 +179,7 @@ export default function ClientPostSites({ client }: { client: Client }) {
               <option value="inactiva">{t('ui.ClientPostSites.inactiva')}</option>
             </select>
             <select value={ciudad} onChange={(e) => setCiudad(e.target.value)} className={FIELD_CLS}>
-              <option value="todas">Ciudad: Todas</option>
+              <option value="todas">{t('ui.ClientPostSites.ciudadTodas')}</option>
               {cities.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
@@ -187,7 +187,7 @@ export default function ClientPostSites({ client }: { client: Client }) {
           {loading ? (
             <SkeletonCards count={2} />
           ) : filtered.length === 0 ? (
-            <EmptyState icon={<Building2 />} title="Sin sedes" description={t("ui.ClientPostSites.esteClienteAunNoTiene", "Este cliente aún no tiene sedes registradas.")} />
+            <EmptyState icon={<Building2 />} title={t('ui.ClientPostSites.sinSedes')} description={t("ui.ClientPostSites.esteClienteAunNoTiene", "Este cliente aún no tiene sedes registradas.")} />
           ) : (
             <TabTable minWidth={640}>
                   <THead>
@@ -207,7 +207,7 @@ export default function ClientPostSites({ client }: { client: Client }) {
                       key={s.id}
                       selected={selectedId === s.id}
                       onClick={() => navigate(`/post-sites/${s.id}`)}
-                      title="Abrir el detalle de la sede"
+                      title={t('ui.ClientPostSites.abrirElDetalleDeLa')}
                     >
                       <td className="px-2 py-2.5">
                         <div className="flex items-center gap-2.5">
@@ -323,9 +323,9 @@ export default function ClientPostSites({ client }: { client: Client }) {
           )}
         </Section>
 
-        <Section title="Detalles de la sede seleccionada" icon={<Building2 />}>
+        <Section title={t('ui.ClientPostSites.detallesDeLaSedeSeleccionada')} icon={<Building2 />}>
           {!selected ? (
-            <EmptyState icon={<Building2 />} title="Selecciona una sede" description="Toca una fila para ver su detalle." />
+            <EmptyState icon={<Building2 />} title={t('ui.ClientPostSites.seleccionaUnaSede')} description={t('ui.ClientPostSites.tocaUnaFilaParaVer')} />
           ) : (
             <div className="space-y-4">
               <div className="flex items-start gap-3">

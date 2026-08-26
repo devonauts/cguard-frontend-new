@@ -13,13 +13,13 @@ export default function PostSite() {
   return (
     <AnalyticsShell
       title={t("ui.PostSite.analiticasPorSitioDeServicio", "Analíticas por Sitio de Servicio")}
-      subtitle="Desempeño operativo de cada sitio: cobertura, rondas, ubicación e incidentes."
+      subtitle={t('ui.PostSite.desempenoOperativoDeCadaSitio')}
       days={days} setDays={setDays} loading={loading} error={error} reload={reload}
     >
       {data && k && (
         <>
           <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <MetricCard icon={<Building2 size={16} />} accent={GOLD} value={data.perSite.length} label="Sitios con actividad" sub={t("ui.PostSite.enElPeriodo", "en el período")} />
+            <MetricCard icon={<Building2 size={16} />} accent={GOLD} value={data.perSite.length} label={t('ui.PostSite.sitiosConActividad')} sub={t("ui.PostSite.enElPeriodo", "en el período")} />
             <MetricCard icon={<ClipboardCheck size={16} />} accent={TONES.info} value={`${k.coveragePct}%`} label="Cobertura promedio" sub={`${k.shiftsCovered}/${k.shiftsTotal}`} pct={k.coveragePct} />
             <MetricCard icon={<MapPin size={16} />} accent={TONES.serie2} value={`${k.locationCompliancePct}%`} label={t("ui.PostSite.cumplimientoDeUbicacion", "Cumplimiento de ubicación")} sub={`${k.scansValid}/${k.scansTotal} escaneos`} pct={k.locationCompliancePct} />
             <MetricCard icon={<AlertTriangle size={16} />} accent={TONES.bad} value={k.incidentsTotal} label="Incidentes" sub={`${k.incidentsOpen} abiertos`} />

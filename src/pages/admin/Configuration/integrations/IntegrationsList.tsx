@@ -34,7 +34,7 @@ export default function IntegrationsList() {
           <PageHeader
             icon={<Plug />}
             title="Conexiones y API"
-            subtitle="Conectar C-Guard Pro con otros sistemas de tu empresa."
+            subtitle={t('ui.IntegrationsList.conectarCGuardProCon')}
           />
 
           <EmptyState

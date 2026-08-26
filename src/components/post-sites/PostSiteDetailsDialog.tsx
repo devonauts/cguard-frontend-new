@@ -68,7 +68,7 @@ export default function PostSiteDetailsDialog({ open, onOpenChange, siteId }: Pr
       <DialogContent className="max-h-[90vh] w-full max-w-4xl overflow-y-auto p-4">
         <div className="bg-muted/30 p-2 border-b">
           <DialogHeader>
-            <DialogTitle className="text-center">Detalles del Sitio</DialogTitle>
+            <DialogTitle className="text-center">{t('ui.PostSiteDetailsDialog.detallesDelSitio')}</DialogTitle>
             <DialogDescription>
               Información detallada del Puesto de seguridad seleccionada.
             </DialogDescription>
@@ -113,7 +113,7 @@ export default function PostSiteDetailsDialog({ open, onOpenChange, siteId }: Pr
               {(site as any).clientAccount && (
                 <div className="sm:col-span-3 border-t pt-3">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-sm font-semibold mb-2 text-foreground">Cliente Asociado</h4>
+                    <h4 className="text-sm font-semibold mb-2 text-foreground">{t('ui.PostSiteDetailsDialog.clienteAsociado')}</h4>
                     <button type="button" className="text-xs text-muted-foreground" onClick={() => setClientCollapsed(!clientCollapsed)}>
                       {clientCollapsed ? 'Mostrar' : 'Ocultar'}
                     </button>

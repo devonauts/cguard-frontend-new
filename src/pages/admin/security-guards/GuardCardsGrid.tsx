@@ -100,7 +100,7 @@ export default function GuardCardsGrid({
   const { t } = useTranslation();
     if (loading) return <SkeletonCards count={8} className="sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" />;
     if (!guards.length) {
-        return <EmptyState icon={<ShieldCheck />} title={t('ui.GuardCardsGrid.sinVigilantes')} description="Crea tu primer vigilante con “Nuevo Vigilante”." />;
+        return <EmptyState icon={<ShieldCheck />} title={t('ui.GuardCardsGrid.sinVigilantes')} description={t('ui.GuardCardsGrid.creaTuPrimerVigilanteCon')} />;
     }
 
     return (

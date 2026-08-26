@@ -100,7 +100,7 @@ export function CustomizePanel({
 
         {/* ── Mapa ────────────────────────────────────────────────────────── */}
         <Group icon={<MapPin className="size-4" />} title="Mapa">
-          <Row label="Estilo del mapa">
+          <Row label={t('ui.CustomizePanel.estiloDelMapa')}>
             <select
               value={p.mapTheme}
               onChange={(e) => set({ mapTheme: e.target.value as DashboardPrefs["mapTheme"] })}
@@ -152,7 +152,7 @@ export function CustomizePanel({
           })}
         </Group>
 
-        <Group icon={<Palette className="size-4" />} title="Colores de estado / severidad">
+        <Group icon={<Palette className="size-4" />} title={t('ui.CustomizePanel.coloresDeEstadoSeveridad')}>
           {(Object.keys(p.statusColors) as LiveStatus[]).map((k) => (
             <Row key={k} label={STATUS_LABEL[k]}>
               <ColorInput value={p.statusColors[k]} onChange={(v) => set({ statusColors: { ...p.statusColors, [k]: v } })} />
@@ -167,7 +167,7 @@ export function CustomizePanel({
           </Row>
           <Toggle label="Exigir foto en punto de control" checked={p.requirePhotoCheckpoint} onChange={(v) => set({ requirePhotoCheckpoint: v })} />
           <Toggle label="Exigir GPS en punto de control" checked={p.requireGpsCheckpoint} onChange={(v) => set({ requireGpsCheckpoint: v })} />
-          <Toggle label="Exigir escaneo QR en ronda" checked={p.requireQrRonda} onChange={(v) => set({ requireQrRonda: v })} />
+          <Toggle label={t('ui.CustomizePanel.exigirEscaneoQrEnRonda')} checked={p.requireQrRonda} onChange={(v) => set({ requireQrRonda: v })} />
           <Row label="Radio de geocerca (m)"><NumInput value={p.geofenceRadius} min={20} max={2000} onChange={(v) => set({ geofenceRadius: v })} /></Row>
           <Row label={t("ui.CustomizePanel.umbralPuntoDeControlTardio", "Umbral punto de control tardío (min)")}><NumInput value={p.lateCheckpointThresholdMin} min={1} max={120} onChange={(v) => set({ lateCheckpointThresholdMin: v })} /></Row>
           <Row label={t("ui.CustomizePanel.avisoDispositivoSinConexionMin", "Aviso dispositivo sin conexión (min)")}><NumInput value={p.offlineDeviceWarningMin} min={1} max={120} onChange={(v) => set({ offlineDeviceWarningMin: v })} /></Row>

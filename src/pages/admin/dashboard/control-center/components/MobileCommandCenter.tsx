@@ -199,7 +199,7 @@ export function MobileCommandCenter({
             type="button"
             onClick={onCustomize}
             title="Personalizar"
-            aria-label="Personalizar el panel"
+            aria-label={t('ui.MobileCommandCenter.personalizarElPanel')}
             className="cg-tarjeta-mapa cg-focus pointer-events-auto grid size-11 shrink-0 place-items-center"
             style={{ color: "var(--brand-text)" }}
           >

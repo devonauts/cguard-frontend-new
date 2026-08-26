@@ -126,7 +126,7 @@ export default function GuardDepartamentoPage() {
                   <EmptyState
                     icon={<UserCircle2 />}
                     title={t('comun.sinDepartamento')}
-                    description="Este vigilante aún no pertenece a ningún departamento interno."
+                    description={t('ui.GuardDepartamentoPage.esteVigilanteAunNoPertenece')}
                   />
                 )}
 
@@ -143,7 +143,7 @@ export default function GuardDepartamentoPage() {
                       <div className="flex items-center gap-2 max-w-md">
                         <Select value={pendingId} onValueChange={setPendingId}>
                           <SelectTrigger className="flex-1">
-                            <SelectValue placeholder="Selecciona un departamento" />
+                            <SelectValue placeholder={t('ui.GuardDepartamentoPage.seleccionaUnDepartamento')} />
                           </SelectTrigger>
                           <SelectContent>
                             {activeDepts.map((d) => (

@@ -176,7 +176,7 @@ export default function TimeOff() {
 
   const handleCreate = async () => {
     if (!form.type || !form.startDate || !form.endDate || !form.reason) {
-      toast.error("Faltan campos: tipo, desde, hasta y motivo");
+      toast.error(t('ui.TimeOff.faltanCamposTipoDesdeHasta'));
       return;
     }
     setSaving(true);
@@ -256,7 +256,7 @@ export default function TimeOff() {
         <PageHeader
           icon={<CalendarOff />}
           title="Tiempo libre"
-          subtitle="Solicitudes de vacaciones, enfermedad y permisos del personal."
+          subtitle={t('ui.TimeOff.solicitudesDeVacacionesEnfermedadY')}
         />
 
         {/* KPIs */}
@@ -304,7 +304,7 @@ export default function TimeOff() {
             <div className="relative w-full md:w-80">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: "var(--ink-faint)" }} />
               <Input
-                placeholder="Buscar vigilante, tipo o motivo"
+                placeholder={t('ui.TimeOff.buscarVigilanteTipoOMotivo')}
                 className="pl-9"
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
@@ -321,7 +321,7 @@ export default function TimeOff() {
                 </SheetTrigger>
                 <SheetContent className="w-full sm:w-[540px] overflow-y-auto">
                   <SheetHeader className="relative">
-                    <SheetTitle>Nueva solicitud de tiempo libre</SheetTitle>
+                    <SheetTitle>{t('ui.TimeOff.nuevaSolicitudDeTiempoLibre')}</SheetTitle>
                     <Button variant="ghost" size="icon" className="absolute right-0 top-0" onClick={() => setIsNewRequestOpen(false)}>
                       <X className="h-4 w-4" />
                     </Button>
@@ -342,7 +342,7 @@ export default function TimeOff() {
                         </Select>
                       </div>
                       <div className="grid gap-2">
-                        <Label>Tipo*</Label>
+                        <Label>{t('ui.TimeOff.tipo')}</Label>
                         <Select value={form.type} onValueChange={(v) => setForm({ ...form, type: v })}>
                           <SelectTrigger>
                             <SelectValue placeholder={t('kit.select.placeholder')} />
@@ -360,7 +360,7 @@ export default function TimeOff() {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="grid gap-2">
-                        <Label>Desde*</Label>
+                        <Label>{t('ui.TimeOff.desde')}</Label>
                         <Input type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} />
                       </div>
                       <div className="grid gap-2">
@@ -371,7 +371,7 @@ export default function TimeOff() {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="grid gap-2">
-                        <Label>Hasta*</Label>
+                        <Label>{t('ui.TimeOff.hasta')}</Label>
                         <Input type="date" value={form.endDate} onChange={(e) => setForm({ ...form, endDate: e.target.value })} />
                       </div>
                       <div className="grid gap-2">
@@ -381,9 +381,9 @@ export default function TimeOff() {
                     </div>
 
                     <div className="grid gap-2">
-                      <Label>Motivo*</Label>
+                      <Label>{t('ui.TimeOff.motivo')}</Label>
                       <Input
-                        placeholder="Describe el motivo…"
+                        placeholder={t('ui.TimeOff.describeElMotivo')}
                         value={form.reason}
                         onChange={(e) => setForm({ ...form, reason: e.target.value })}
                       />

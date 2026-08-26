@@ -179,8 +179,8 @@ export default function ShiftStatus() {
       <PageContainer width="wide" className="px-4 lg:px-6">
         <PageHeader
           icon={<ListChecks />}
-          title="Estado de turnos"
-          subtitle="Seguimiento del progreso de los turnos: pendientes, en curso y completados."
+          title={t('ui.ShiftStatus.estadoDeTurnos')}
+          subtitle={t('ui.ShiftStatus.seguimientoDelProgresoDeLos')}
         />
 
         {/* KPIs */}
@@ -190,7 +190,7 @@ export default function ShiftStatus() {
             value={stats.pending}
             icon={<Clock />}
             delta={totalTurnos > 0 ? { value: `${pctTurnos(stats.pending)} %`, direction: "flat" } : undefined}
-            hint="Aún no empiezan"
+            hint={t('ui.ShiftStatus.aunNoEmpiezan')}
           />
           <MetricTile
             label="En curso"
@@ -204,14 +204,14 @@ export default function ShiftStatus() {
             value={stats.completed}
             icon={<CheckCircle2 />}
             delta={totalTurnos > 0 ? { value: `${pctTurnos(stats.completed)} %`, direction: "up" } : undefined}
-            hint="Turnos ya cerrados"
+            hint={t('ui.ShiftStatus.turnosYaCerrados')}
           />
           <MetricTile
             label="Cancelados"
             value={stats.cancelled}
             icon={<XCircle />}
             delta={totalTurnos > 0 ? { value: `${pctTurnos(stats.cancelled)} %`, direction: stats.cancelled > 0 ? "down" : "flat" } : undefined}
-            hint="Quedaron sin vigilante"
+            hint={t('ui.ShiftStatus.quedaronSinVigilante')}
           />
         </Stagger>
 
@@ -239,7 +239,7 @@ export default function ShiftStatus() {
             <div className="relative w-full md:w-80">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: "var(--ink-faint)" }} />
               <Input
-                placeholder="Buscar vigilante o puesto"
+                placeholder={t('ui.ShiftStatus.buscarVigilanteOPuesto')}
                 className="pl-9"
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}

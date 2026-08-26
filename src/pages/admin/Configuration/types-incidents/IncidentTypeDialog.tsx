@@ -32,7 +32,7 @@ export default function IncidentTypeDialog({ open, onOpenChange, title = "Nuevo 
       onOpenChange={onOpenChange}
       icon={<AlertTriangle />}
       title={title}
-      description="Asigna un nombre para identificar el tipo de incidente."
+      description={t('ui.IncidentTypeDialog.asignaUnNombreParaIdentificar')}
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -41,7 +41,7 @@ export default function IncidentTypeDialog({ open, onOpenChange, title = "Nuevo 
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nombre del incidente</FormLabel>
+                <FormLabel>{t('ui.IncidentTypeDialog.nombreDelIncidente')}</FormLabel>
                 <FormControl><Input placeholder={t("ui.IncidentTypeDialog.pEjRoboLesionAlarma", "p. ej. Robo, Lesión, Alarma de incendio…")} {...field} /></FormControl>
                 <FormMessage />
               </FormItem>

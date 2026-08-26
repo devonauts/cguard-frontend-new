@@ -12,7 +12,7 @@ const Notification = () => {
       kind="table"
       icon={<Bell />}
       title={t("ui.Notification.configuracionDeAvisos", "Configuración de avisos")}
-      subtitle="Elige por qué vía te llega cada tipo de aviso: panel, correo o SMS."
+      subtitle={t('ui.NotificationPage.eligePorQueViaTe')}
     >
       <NotificationForm />
     </SettingsPageShell>

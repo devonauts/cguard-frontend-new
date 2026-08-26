@@ -172,7 +172,7 @@ export default function ShiftExchange() {
 
   const handleCreate = async () => {
     if (!form.fromGuardId) {
-      toast.error("Elige el vigilante que solicita el cambio");
+      toast.error(t('ui.ShiftExchange.eligeElVigilanteQueSolicita'));
       return;
     }
     setSaving(true);
@@ -312,14 +312,14 @@ export default function ShiftExchange() {
                 </SheetTrigger>
                 <SheetContent className="w-full sm:w-[540px] overflow-y-auto">
                   <SheetHeader className="relative">
-                    <SheetTitle>Nueva solicitud de intercambio</SheetTitle>
+                    <SheetTitle>{t('ui.ShiftExchange.nuevaSolicitudDeIntercambio')}</SheetTitle>
                     <Button variant="ghost" size="icon" className="absolute right-0 top-0" onClick={() => setIsNewRequestOpen(false)}>
                       <X className="h-4 w-4" />
                     </Button>
                   </SheetHeader>
                   <div className="grid gap-6 py-6">
                     <div className="grid gap-2">
-                      <Label>Vigilante solicitante*</Label>
+                      <Label>{t('ui.ShiftExchange.vigilanteSolicitante')}</Label>
                       <Select value={form.fromGuardId} onValueChange={(v) => setForm({ ...form, fromGuardId: v })}>
                         <SelectTrigger>
                           <SelectValue placeholder={t('kit.select.placeholder')} />
@@ -333,13 +333,13 @@ export default function ShiftExchange() {
                     </div>
 
                     <div className="grid gap-2">
-                      <Label>Vigilante receptor (opcional)</Label>
+                      <Label>{t('ui.ShiftExchange.vigilanteReceptorOpcional')}</Label>
                       <Select value={form.toGuardId || SHIFT_EXCHANGE_ANY} onValueChange={(v) => setForm({ ...form, toGuardId: v === SHIFT_EXCHANGE_ANY ? "" : v })}>
                         <SelectTrigger>
                           <SelectValue placeholder={t('kit.select.placeholder')} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value={SHIFT_EXCHANGE_ANY}>Cualquier vigilante</SelectItem>
+                          <SelectItem value={SHIFT_EXCHANGE_ANY}>{t('ui.ShiftExchange.cualquierVigilante')}</SelectItem>
                           {guards.map((g) => (
                             <SelectItem key={g.userId} value={g.userId}>{g.fullName}</SelectItem>
                           ))}
@@ -353,7 +353,7 @@ export default function ShiftExchange() {
                         rows={4}
                         value={form.notes}
                         onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                        placeholder="Describe los detalles del intercambio…"
+                        placeholder={t('ui.ShiftExchange.describeLosDetallesDelIntercambio')}
                       />
                     </div>
                   </div>
@@ -382,7 +382,7 @@ export default function ShiftExchange() {
               <TableRow>
                 <TableHead className="w-[50px]"><Checkbox /></TableHead>
                 <TableHead className="cg-eyebrow">{t('comun.fechaDeSolicitud')}</TableHead>
-                <TableHead className="cg-eyebrow">Enviada por</TableHead>
+                <TableHead className="cg-eyebrow">{t('ui.ShiftExchange.enviadaPor')}</TableHead>
                 <TableHead className="cg-eyebrow">Enviada a</TableHead>
                 <TableHead className="cg-eyebrow">{t('comun.estado')}</TableHead>
                 <TableHead className="w-[50px]"></TableHead>

@@ -52,8 +52,8 @@ export default function SupervisorCoveragePage() {
           ) : !positions || positions.length === 0 ? (
             <EmptyState
               icon={<MapPin />}
-              title="Sin cobertura asignada"
-              description="Este supervisor no está asignado a ningún puesto."
+              title={t('ui.SupervisorCoveragePage.sinCoberturaAsignada')}
+              description={t('ui.SupervisorCoveragePage.esteSupervisorNoEstaAsignado')}
               action={manageBtn}
             />
           ) : (

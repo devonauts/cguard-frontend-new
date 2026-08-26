@@ -225,11 +225,11 @@ export default function OnboardingWizard({
   // ── Finish ───────────────────────────────────────────────────────────────
   const handleFinish = async () => {
     if (!tenant?.id) {
-      toast.error("No se encontró la empresa. Recarga la página e inténtalo de nuevo.");
+      toast.error(t('ui.OnboardingWizard.noSeEncontroLaEmpresa'));
       return;
     }
     if (!step2Valid || !step3Valid) {
-      toast.error("Completa todos los campos requeridos.");
+      toast.error(t('ui.OnboardingWizard.completaTodosLosCamposRequeridos'));
       return;
     }
     setSubmitting(true);
@@ -271,7 +271,7 @@ export default function OnboardingWizard({
       // re-resolves the new values instead of showing the stale/placeholder one.
       invalidateTenantBranding();
       await onRefresh();
-      toast.success("¡Configuración completada! Bienvenido a CGuardPro.");
+      toast.success(t('ui.OnboardingWizard.configuracionCompletadaBienvenidoACguardpro'));
       // El momento de máxima intención: recién configurado, CRM vacío. VigIA
       // toma la mano — los 13 registros muertos en dashboards vacíos son el
       // porqué de esta línea.
@@ -352,7 +352,7 @@ export default function OnboardingWizard({
                 <Input
                   value={form.name}
                   onChange={(e) => set({ name: e.target.value })}
-                  placeholder="Mi Empresa de Seguridad"
+                  placeholder={t('ui.OnboardingWizard.miEmpresaDeSeguridad')}
                 />
               </div>
               <div className="space-y-1.5">
@@ -526,7 +526,7 @@ export default function OnboardingWizard({
                     onClick={() => {
                       const tz = tzFromText(form.country, form.address);
                       if (tz) { set({ timezone: tz }); toast.success(`Zona horaria detectada: ${tz}`); }
-                      else toast.info("No se pudo detectar; selecciónala manualmente.");
+                      else toast.info(t('ui.OnboardingWizard.noSePudoDetectarSeleccionala'));
                     }}
                     className="text-xs font-medium text-primary hover:underline"
                   >

@@ -111,7 +111,7 @@ export default function CustomerRequests() {
       toast.success(status === "cerrado" ? "Solicitud marcada como atendida" : "Solicitud reabierta");
     } catch (err) {
       console.error("Failed to update request status", err);
-      toast.error("Error al actualizar la solicitud. Inténtelo de nuevo.");
+      toast.error(t('ui.CustomerRequests.errorAlActualizarLaSolicitud'));
     }
   };
 
@@ -138,7 +138,7 @@ export default function CustomerRequests() {
         <PageHeader
           icon={<Inbox />}
           title="Solicitudes de clientes"
-          subtitle="Mensajes y solicitudes enviadas desde la app de clientes"
+          subtitle={t('ui.CustomerRequests.mensajesYSolicitudesEnviadasDesde')}
         />
 
         {/* Stats */}
@@ -148,10 +148,10 @@ export default function CustomerRequests() {
             value={stats.open}
             icon={<MailQuestion />}
             delta={stats.total > 0 ? { value: `${Math.round((stats.open / stats.total) * 100)} %`, direction: stats.open > 0 ? "up" : "flat" } : undefined}
-            hint="Sobre el total recibido"
+            hint={t('ui.CustomerRequests.sobreElTotalRecibido')}
           />
-          <MetricTile label="Atendidas" value={stats.closed} icon={<MailOpen />} hint="Solicitudes ya cerradas" />
-          <MetricTile label={t('comun.total')} value={stats.total} icon={<Layers />} hint="Recibidas desde la app de clientes" />
+          <MetricTile label="Atendidas" value={stats.closed} icon={<MailOpen />} hint={t('ui.CustomerRequests.solicitudesYaCerradas')} />
+          <MetricTile label={t('comun.total')} value={stats.total} icon={<Layers />} hint={t('ui.CustomerRequests.recibidasDesdeLaAppDe')} />
         </Stagger>
 
         {/* Barra de filtros */}
@@ -172,7 +172,7 @@ export default function CustomerRequests() {
           <div className="relative w-full md:w-80">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: "var(--ink-faint)" }} />
             <Input
-              placeholder="Buscar por asunto, cliente o puesto…"
+              placeholder={t('ui.CustomerRequests.buscarPorAsuntoClienteO')}
               className="pl-9"
               value={searchQuery}
               onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
@@ -211,7 +211,7 @@ export default function CustomerRequests() {
                     <EmptyState
                       icon={<AlertCircle />}
                       title={t("ui.CustomerRequests.noSePudoCargarLa", "No se pudo cargar la información")}
-                      description="Ocurrió un error al obtener las solicitudes."
+                      description={t('ui.CustomerRequests.ocurrioUnErrorAlObtener')}
                       action={
                         <Button variant="outline" onClick={fetchRecords}>
                           <RotateCcw className="mr-2 h-4 w-4" /> Reintentar
@@ -226,8 +226,8 @@ export default function CustomerRequests() {
                   <TableCell colSpan={7} className="h-[400px] text-center">
                     <EmptyState
                       icon={<Inbox />}
-                      title="No hay solicitudes de clientes"
-                      description="Las solicitudes enviadas desde la app de clientes aparecerán aquí."
+                      title={t('ui.CustomerRequests.noHaySolicitudesDeClientes')}
+                      description={t('ui.CustomerRequests.lasSolicitudesEnviadasDesdeLa')}
                       className="border-0"
                     />
                   </TableCell>

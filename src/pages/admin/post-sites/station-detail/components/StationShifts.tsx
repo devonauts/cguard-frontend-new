@@ -490,7 +490,7 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
       } else if (ev.id) {
         await ApiService.delete(`/tenant/${tenantId}/shift?ids=${encodeURIComponent(ev.id)}`);
       }
-      toast.success('Vigilante removido del puesto');
+      toast.success(t('ui.StationShifts.vigilanteRemovidoDelPuesto'));
       setSelectedShift(null);
       loadShifts();
     } catch (e: any) {
@@ -571,11 +571,11 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
           </div>
 
           <div className="flex items-center gap-1">
-            <button onClick={() => navigate(-1)} aria-label="Periodo anterior" className="cg-btn-ghost cg-focus rounded-lg p-1.5 transition-colors">
+            <button onClick={() => navigate(-1)} aria-label={t('ui.StationShifts.periodoAnterior')} className="cg-btn-ghost cg-focus rounded-lg p-1.5 transition-colors">
               <ChevronLeft size={16} />
             </button>
             <h3 className="select-none text-center text-sm font-semibold sm:min-w-[200px]">{title}</h3>
-            <button onClick={() => navigate(1)} aria-label="Periodo siguiente" className="cg-btn-ghost cg-focus rounded-lg p-1.5 transition-colors">
+            <button onClick={() => navigate(1)} aria-label={t('ui.StationShifts.periodoSiguiente')} className="cg-btn-ghost cg-focus rounded-lg p-1.5 transition-colors">
               <ChevronRight size={16} />
             </button>
           </div>
@@ -1048,7 +1048,7 @@ function DayView({ date, coverage, dayEvents, guardColorMap, onAssign }: {
       )}
 
       {slots.length === 0 && dayEvents.length === 0 ? (
-        <EmptyState icon={<Calendar />} title={t("ui.StationShifts.diaLibre", "Día libre")} description="Sin horario programado para esta fecha." />
+        <EmptyState icon={<Calendar />} title={t("ui.StationShifts.diaLibre", "Día libre")} description={t('ui.StationShifts.sinHorarioProgramadoParaEsta')} />
       ) : (
         <div className="max-h-[600px] overflow-y-auto pr-1">
           <div className="relative flex" style={{ height: H }}>

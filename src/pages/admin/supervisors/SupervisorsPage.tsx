@@ -86,7 +86,7 @@ export default function SupervisorsPage() {
 
   const submit = async () => {
     if (!form.email.trim()) {
-      toast.error("El correo es obligatorio");
+      toast.error(t('ui.SupervisorsPage.elCorreoEsObligatorio'));
       return;
     }
     setSaving(true);
@@ -107,9 +107,9 @@ export default function SupervisorsPage() {
       // no se creó — decir "invitación enviada" haría esperar un correo de
       // registro que no va a llegar (recibe uno de "te dieron acceso").
       if ((sup as any)?.linkedExistingAccount) {
-        toast.success("Este correo ya tenía cuenta en CGuardPro: se le dio acceso a tu empresa. Entrará a la app con su contraseña actual.", { duration: 8000 });
+        toast.success(t('ui.SupervisorsPage.esteCorreoYaTeniaCuenta'), { duration: 8000 });
       } else {
-        toast.success("Supervisor creado y enviada la invitación");
+        toast.success(t('ui.SupervisorsPage.supervisorCreadoYEnviadaLa'));
       }
       setOpen(false);
       setForm({ email: "", firstName: "", lastName: "", governmentId: "", phoneNumber: "", zone: "", assignedVehicle: "", turnoStart: "", turnoEnd: "" });
@@ -150,7 +150,7 @@ export default function SupervisorsPage() {
     if (!await confirmDialog({ message: `¿Eliminar a ${name}? Perderá el acceso a este negocio. Esta acción no se puede deshacer.`, tone: 'danger' })) return;
     try {
       await supervisorService.remove(s.id);
-      toast.success("Supervisor eliminado");
+      toast.success(t('ui.SupervisorsPage.supervisorEliminado'));
       load();
     } catch (e: any) {
       toast.error(e?.message || "No se pudo eliminar el supervisor");
@@ -206,7 +206,7 @@ export default function SupervisorsPage() {
           <PageHeader
             icon={<ShieldCheck />}
             title="Supervisores"
-            subtitle="Gestiona los supervisores de seguridad: perfil, zona, vehículo y estado en turno."
+            subtitle={t('ui.SupervisorsPage.gestionaLosSupervisoresDeSeguridad')}
             actions={
               <div className="flex flex-wrap gap-2">
                 <Button variant="outline" onClick={() => navigate("/supervisor-positions")}>
@@ -355,7 +355,7 @@ export default function SupervisorsPage() {
         onOpenChange={setOpen}
         title={t('ui.SupervisorsPage.nuevoSupervisor')}
         icon={<UserPlus className="h-5 w-5" />}
-        description="Crea el usuario con rol de supervisor y su perfil. Se enviará una invitación."
+        description={t('ui.SupervisorsPage.creaElUsuarioConRol')}
         footer={
           <>
             <Button variant="outline" onClick={() => setOpen(false)} disabled={saving}>{t('actions.cancel')}</Button>
@@ -374,7 +374,7 @@ export default function SupervisorsPage() {
         </div>
 
         <div className="glass-sunken mt-4 p-3">
-          <p className="mb-2 text-sm font-semibold text-foreground">Turno del supervisor</p>
+          <p className="mb-2 text-sm font-semibold text-foreground">{t('ui.SupervisorsPage.turnoDelSupervisor')}</p>
           <p className="mb-2 text-xs" style={{ color: "var(--ink-soft)" }}>{t("ui.Supervisors.diasYHorarioQueEl", "Días y horario que el supervisor debe cumplir (opcional; también editable luego).")}</p>
           <div className="mb-3 flex flex-wrap gap-1.5">
             {WEEKDAYS.map((d) => {

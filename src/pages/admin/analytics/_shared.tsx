@@ -11,6 +11,7 @@ import {
 } from "@/components/kit";
 import { BarChart, MeterBar } from "@/components/charts";
 import { CHART_VARS, alphaVar } from "@/lib/chartColors";
+import i18n from "@/i18n";
 
 /**
  * `hover:text-[var(--brand-text)]` y NO `hover:text-primary`.
@@ -147,7 +148,7 @@ export function AnalyticsShell({
           <div className="glass flex flex-col items-start gap-3 p-6 sm:flex-row sm:items-center">
             <IconTile tone="bad"><AlertTriangle /></IconTile>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold">No se pudieron cargar los indicadores</p>
+              <p className="text-sm font-semibold">{i18n.t('ui.shared.noSePudieronCargarLos')}</p>
               <p className="mt-0.5 text-sm" style={{ color: "var(--ink-soft)" }}>{error}</p>
             </div>
             <Button variant="outline" size="sm" className="gap-2 sm:shrink-0" onClick={reload}>

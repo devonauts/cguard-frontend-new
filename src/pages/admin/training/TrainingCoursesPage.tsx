@@ -82,7 +82,7 @@ export default function TrainingCoursesPage() {
       setCourses(res.rows);
     } catch (err) {
       console.error(err);
-      toast.error('No se pudieron cargar los cursos.');
+      toast.error(t('ui.TrainingCoursesPage.noSePudieronCargarLos'));
     } finally {
       setLoading(false);
     }
@@ -114,7 +114,7 @@ export default function TrainingCoursesPage() {
       navigate(`/training/courses/${created.id}`);
     } catch (err) {
       console.error(err);
-      toast.error('No se pudo crear el curso.');
+      toast.error(t('ui.TrainingCoursesPage.noSePudoCrearEl'));
     } finally {
       setSaving(false);
     }
@@ -129,7 +129,7 @@ export default function TrainingCoursesPage() {
       load();
     } catch (err) {
       console.error(err);
-      toast.error('No se pudo eliminar el curso.');
+      toast.error(t('ui.TrainingCoursesPage.noSePudoEliminarEl'));
     }
   };
 
@@ -140,8 +140,8 @@ export default function TrainingCoursesPage() {
         <PageContainer width="wide" className="p-4 sm:p-6">
           <EmptyState
             icon={<BookOpen />}
-            title="Sin acceso a los cursos"
-            description="No tienes permiso para ver los cursos de entrenamiento."
+            title={t('ui.TrainingCoursesPage.sinAccesoALosCursos')}
+            description={t('ui.TrainingCoursesPage.noTienesPermisoParaVer')}
           />
         </PageContainer>
       </AppLayout>
@@ -202,15 +202,13 @@ export default function TrainingCoursesPage() {
         <PageHeader
           icon={<GraduationCap />}
           title="Cursos de Entrenamiento"
-          subtitle="Crea cursos profesionales, agrega lecciones y cuestionarios, y asígnalos a tus vigilantes."
+          subtitle={t('ui.TrainingCoursesPage.creaCursosProfesionalesAgregaLecciones')}
           actions={canCreate ? (
             <Button
               variant="brand"
               onClick={() => { setForm(emptyForm); setOpenForm(true); }}
             >
-              <Plus className="h-4 w-4 mr-1" />
-              Nuevo curso
-            </Button>
+              <Plus className="h-4 w-4 mr-1" />{" "}{t('ui.TrainingCoursesPage.nuevoCurso')}{" "}</Button>
           ) : undefined}
         />
 
@@ -223,7 +221,7 @@ export default function TrainingCoursesPage() {
         {/* La barra de filtros del sistema: una sola superficie de cristal, con
             el buscador y los filtros dentro. Antes era una fila de divs suelta
             con su propio gris y su propia altura. */}
-        <TableToolbar search={<TableSearch value={search} onChange={setSearch} placeholder="Buscar cursos" />}>
+        <TableToolbar search={<TableSearch value={search} onChange={setSearch} placeholder={t('ui.TrainingCoursesPage.buscarCursos')} />}>
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
             <SelectTrigger className="w-full sm:w-48">
               <SelectValue placeholder={t("ui.TrainingCourses.categoria", "Categoría")} />
@@ -254,13 +252,12 @@ export default function TrainingCoursesPage() {
             emptyState={
               <EmptyState
                 icon={<GraduationCap />}
-                title="No se encontraron cursos"
-                description="Crea tu primer curso de entrenamiento para tus vigilantes."
+                title={t('ui.TrainingCoursesPage.noSeEncontraronCursos')}
+                description={t('ui.TrainingCoursesPage.creaTuPrimerCursoDe')}
                 className="border-0"
                 action={canCreate ? (
                   <Button variant="brand" onClick={() => { setForm(emptyForm); setOpenForm(true); }}>
-                    <Plus /> Nuevo curso
-                  </Button>
+                    <Plus />{" "}{t('ui.TrainingCoursesPage.nuevoCurso')}{" "}</Button>
                 ) : undefined}
               />
             }
@@ -276,7 +273,7 @@ export default function TrainingCoursesPage() {
             grande queda a partir de `sm`. */}
         <DialogContent className="max-h-[90vh] w-full max-w-[calc(100%-2rem)] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Nuevo curso</DialogTitle>
+            <DialogTitle>{t('ui.TrainingCoursesPage.nuevoCurso')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-2">

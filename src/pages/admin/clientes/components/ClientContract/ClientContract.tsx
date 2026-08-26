@@ -176,14 +176,14 @@ export default function ClientContract({ client }: { client: Client }) {
     setSvcOpen(true);
   };
   const saveSvc = async () => {
-    if (!svcForm?.name?.trim()) { toast.error('Nombre del servicio requerido'); return; }
+    if (!svcForm?.name?.trim()) { toast.error(t('ui.ClientContract.nombreDelServicioRequerido')); return; }
     setSaving(true);
     try {
       if (svcForm.id) await clientService.updateContractService(client.id, svcForm.id, svcForm);
       else await clientService.createContractService(client.id, svcForm);
       setSvcOpen(false);
       await load();
-    } catch { toast.error('No se pudo guardar el servicio'); } finally { setSaving(false); }
+    } catch { toast.error(t('ui.ClientContract.noSePudoGuardarEl')); } finally { setSaving(false); }
   };
   const delSvc = async (s: ContractServiceRow) => {
     if (!await confirmDialog({ message: `¿Eliminar el servicio "${s.name}"?`, tone: 'danger' })) return;
@@ -222,7 +222,7 @@ export default function ClientContract({ client }: { client: Client }) {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
             <div>
-              <div className="cg-eyebrow">Estado del contrato</div>
+              <div className="cg-eyebrow">{t('ui.ClientContract.estadoDelContrato')}</div>
               <div className="mt-1"><StatusBadge tone={c.active ? 'ok' : 'neutral'}>{c.active ? 'Activo' : 'Inactivo'}</StatusBadge></div>
             </div>
             <div>
@@ -274,12 +274,12 @@ export default function ClientContract({ client }: { client: Client }) {
           </div>
         </Section>
 
-        <Section title="Documentos del contrato" icon={<ClipboardList className="h-4 w-4" />}>
+        <Section title={t('ui.ClientContract.documentosDelContrato')} icon={<ClipboardList className="h-4 w-4" />}>
           {contractDocs.length === 0 ? (
             <EmptyState
               icon={<FileText className="h-5 w-5" />}
               title={t('comun.sinDocumentos')}
-              description="Sube el contrato firmado y anexos en la pestaña Documentos (categoría Contratos)."
+              description={t('ui.ClientContract.subeElContratoFirmadoY')}
             />
           ) : (
             <div className="divide-y">
@@ -315,7 +315,7 @@ export default function ClientContract({ client }: { client: Client }) {
           <EmptyState
             icon={<ClipboardCheck className="h-5 w-5" />}
             title={t("ui.ClientContract.aunNoHayServiciosContratados", "Aún no hay servicios contratados")}
-            description="Agrega los servicios de este contrato. El uso se calcula en vivo desde la operación."
+            description={t('ui.ClientContract.agregaLosServiciosDeEste')}
             action={<Button size="sm" onClick={() => openSvc()}><Plus className="mr-1.5 h-4 w-4" />{" "}{t('ui.ClientContract.agregarServicio')}</Button>}
           />
         ) : (
@@ -364,8 +364,8 @@ export default function ClientContract({ client }: { client: Client }) {
                       </td>
                       <td className="px-2 py-2.5">
                         <RowActions>
-                          <RowAction title="Editar servicio" onClick={() => openSvc(s)}><Pencil className="h-3.5 w-3.5" /></RowAction>
-                          <RowAction title="Eliminar servicio" tone="bad" onClick={() => delSvc(s)}><Trash2 className="h-3.5 w-3.5" /></RowAction>
+                          <RowAction title={t('ui.ClientContract.editarServicio')} onClick={() => openSvc(s)}><Pencil className="h-3.5 w-3.5" /></RowAction>
+                          <RowAction title={t('ui.ClientContract.eliminarServicio')} tone="bad" onClick={() => delSvc(s)}><Trash2 className="h-3.5 w-3.5" /></RowAction>
                         </RowActions>
                       </td>
                     </Tr>
@@ -387,25 +387,25 @@ export default function ClientContract({ client }: { client: Client }) {
           icon={<Gauge className="h-4 w-4" />}
           hint={diff == null ? 'Define horas contratadas' : diff < 0 ? 'Por debajo de lo contratado' : 'Dentro / sobre lo contratado'}
         />
-        <StatCard label="Cumplimiento de rondas" value={derived.roundsCompliance != null ? `${derived.roundsCompliance}%` : '—'} icon={<ClipboardCheck className="h-4 w-4" />} hint="Rondas del mes vs. contratado" />
+        <StatCard label="Cumplimiento de rondas" value={derived.roundsCompliance != null ? `${derived.roundsCompliance}%` : '—'} icon={<ClipboardCheck className="h-4 w-4" />} hint={t('ui.ClientContract.rondasDelMesVsContratado')} />
       </div>
 
       {/* Row 3 — SLA, notas, historial */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <Section title="Acuerdo de nivel de servicio (SLA)" icon={<Gauge className="h-4 w-4" />}>
           <div className="grid grid-cols-2 gap-4">
-            <SlaCell icon={<Wifi className="h-4 w-4" />} label="Uptime del servicio" value={c.slaUptimeTarget} suffix="%" />
+            <SlaCell icon={<Wifi className="h-4 w-4" />} label={t('ui.ClientContract.uptimeDelServicio')} value={c.slaUptimeTarget} suffix="%" />
             <SlaCell icon={<Timer className="h-4 w-4" />} label="Tiempo de respuesta" value={c.slaResponseMinutes} suffix=" min" />
             <SlaCell icon={<ClipboardCheck className="h-4 w-4" />} label="Cumplimiento de rondas" value={c.slaRoundsTarget} suffix="%" actual={derived.roundsCompliance} />
             <SlaCell icon={<FileText className="h-4 w-4" />} label="Reportes entregados" value={c.slaReportsTarget} suffix="%" />
           </div>
-          <p className="mt-3 text-xs text-muted-foreground">Objetivos acordados en el contrato.</p>
+          <p className="mt-3 text-xs text-muted-foreground">{t('ui.ClientContract.objetivosAcordadosEnElContrato')}</p>
         </Section>
 
         <Section title={t('ui.ClientContract.notasDelContrato')} icon={<StickyNote className="h-4 w-4" />}>
           {c.contractNotes
             ? <p className="whitespace-pre-line text-sm text-muted-foreground">{c.contractNotes}</p>
-            : <EmptyState icon={<StickyNote className="h-5 w-5" />} title="Sin notas" description="Agrega notas del contrato al editarlo." />}
+            : <EmptyState icon={<StickyNote className="h-5 w-5" />} title={t('ui.ClientContract.sinNotas')} description={t('ui.ClientContract.agregaNotasDelContratoAl')} />}
         </Section>
 
         <Section
@@ -414,7 +414,7 @@ export default function ClientContract({ client }: { client: Client }) {
           action={<Button size="sm" variant="outline" onClick={() => openRen()}><Plus className="mr-1.5 h-4 w-4" />{" "}{t('actions.add')}</Button>}
         >
           {renewals.length === 0 ? (
-            <EmptyState icon={<History className="h-5 w-5" />} title="Sin historial" description="Registra los periodos del contrato." />
+            <EmptyState icon={<History className="h-5 w-5" />} title={t('ui.ClientContract.sinHistorial')} description={t('ui.ClientContract.registraLosPeriodosDelContrato')} />
           ) : (
             <TabTable minWidth={560}>
                 <THead>
@@ -435,8 +435,8 @@ export default function ClientContract({ client }: { client: Client }) {
                       <td className="px-2 py-2.5"><StatusBadge tone={r.status === 'active' ? 'green' : 'slate'}>{r.status === 'active' ? 'Activo' : 'Finalizado'}</StatusBadge></td>
                       <td className="px-2 py-2.5">
                         <RowActions>
-                          <RowAction title="Editar periodo" onClick={() => openRen(r)}><Pencil className="h-3.5 w-3.5" /></RowAction>
-                          <RowAction title="Eliminar periodo" tone="bad" onClick={() => delRen(r)}><Trash2 className="h-3.5 w-3.5" /></RowAction>
+                          <RowAction title={t('ui.ClientContract.editarPeriodo')} onClick={() => openRen(r)}><Pencil className="h-3.5 w-3.5" /></RowAction>
+                          <RowAction title={t('ui.ClientContract.eliminarPeriodo')} tone="bad" onClick={() => delRen(r)}><Trash2 className="h-3.5 w-3.5" /></RowAction>
                         </RowActions>
                       </td>
                     </Tr>
@@ -483,7 +483,7 @@ export default function ClientContract({ client }: { client: Client }) {
         footer={<><Button variant="outline" onClick={() => setSvcOpen(false)}>{t('actions.cancel')}</Button><Button onClick={saveSvc} disabled={saving}>{saving ? 'Guardando…' : 'Guardar'}</Button></>}>
         {svcForm && (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <LabeledField label="Tipo de servicio" full>
+            <LabeledField label={t('ui.ClientContract.tipoDeServicio')} full>
               <select className={FIELD_CLS} value={svcForm.serviceKey}
                 onChange={(e) => {
                   const k = e.target.value; const p = SERVICE_PRESETS[k];
@@ -506,7 +506,7 @@ export default function ClientContract({ client }: { client: Client }) {
         footer={<><Button variant="outline" onClick={() => setRenOpen(false)}>{t('actions.cancel')}</Button><Button onClick={saveRen} disabled={saving}>{saving ? 'Guardando…' : 'Guardar'}</Button></>}>
         {renForm && (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <LabeledField label="Periodo" full><input className={FIELD_CLS} placeholder="Actual / Anterior" value={renForm.periodLabel} onChange={(e) => setRenForm({ ...renForm, periodLabel: e.target.value })} /></LabeledField>
+            <LabeledField label="Periodo" full><input className={FIELD_CLS} placeholder={t('ui.ClientContract.actualAnterior')} value={renForm.periodLabel} onChange={(e) => setRenForm({ ...renForm, periodLabel: e.target.value })} /></LabeledField>
             <LabeledField label={t('comun.desde')}><input type="date" className={FIELD_CLS} value={renForm.fromDate || ''} onChange={(e) => setRenForm({ ...renForm, fromDate: e.target.value })} /></LabeledField>
             <LabeledField label={t('comun.hasta')}><input type="date" className={FIELD_CLS} value={renForm.toDate || ''} onChange={(e) => setRenForm({ ...renForm, toDate: e.target.value })} /></LabeledField>
             <LabeledField label={t("ui.ClientContract.duracionMeses", "Duración (meses)")}><input type="number" className={FIELD_CLS} value={renForm.durationMonths ?? ''} onChange={(e) => setRenForm({ ...renForm, durationMonths: e.target.value })} /></LabeledField>

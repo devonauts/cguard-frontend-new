@@ -449,7 +449,7 @@ export default function AddStationPage() {
                     : { background: 'color-mix(in oklab, var(--bad) 12%, transparent)', color: 'var(--bad-text)' }}
                 >
                   {alternateOk
-                    ? <>{t("ui.AddStation.patron", "Patrón")}{" "}<strong>{rotWork}-{rotCycle - rotWork}</strong>: cada bloque lo comparten <strong>{guardsPerBlock} fijos alternando</strong> (uno trabaja mientras el otro descansa) — <strong>sin sacafranco</strong>. Total: {requiredGuards} fijo{requiredGuards > 1 ? 's' : ''}.</>
+                    ? <>{t("ui.AddStation.patron", "Patrón")}{" "}<strong>{rotWork}-{rotCycle - rotWork}</strong>{t('ui.AddStationPage.cadaBloqueLoComparten')}{" "}<strong>{guardsPerBlock} fijos alternando</strong>{" "}{t('ui.AddStationPage.unoTrabajaMientrasElOtro')}{" "}<strong>{t('ui.AddStationPage.sinSacafranco')}</strong>. Total: {requiredGuards} fijo{requiredGuards > 1 ? 's' : ''}.</>
                     : <>El patrón {rotWork}-{rotCycle - rotWork} no permite alternancia exacta: el ciclo ({rotCycle}) debe ser múltiplo de los días de trabajo ({rotWork}). Usa 1-1, 2-2, 3-3…</>}
                 </p>
               )}

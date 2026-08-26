@@ -298,7 +298,7 @@ export default function TenantsPage() {
                   })()}
                 </div>
               ) : (
-                <div>No hay datos</div>
+                <div>{t('ui.TenantsPage.noHayDatos')}</div>
               )}
             </div>
 

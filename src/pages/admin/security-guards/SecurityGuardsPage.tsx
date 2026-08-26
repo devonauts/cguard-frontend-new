@@ -1035,7 +1035,7 @@ export default function SecurityGuardsPage() {
                                           ? `${window.location.origin}/guard/registration?code=${encodeURIComponent(inviteCode)}`
                                           : null);
                                       if (!link) {
-                                        toast.error("No hay enlace de registro disponible para este vigilante");
+                                        toast.error(t('ui.SecurityGuardsPage.noHayEnlaceDeRegistro'));
                                         return;
                                       }
                                       await navigator.clipboard.writeText(link);

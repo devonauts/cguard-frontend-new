@@ -31,7 +31,7 @@ export default function EditSecurityGuardPage() {
     if (!hasPermission('securityGuardEdit')) {
       if (!toastAndRedirected.current) {
         toastAndRedirected.current = true;
-        toast.error('No tienes permiso para editar vigilantes');
+        toast.error(t('ui.EditSecurityGuardPage.noTienesPermisoParaEditar'));
         navigate('/security-guards');
       }
     }
@@ -210,8 +210,8 @@ export default function EditSecurityGuardPage() {
 
         <PageHeader
           icon={<UserCog />}
-          title="Editar vigilante"
-          subtitle="Actualiza los datos personales, de contacto e identificación del vigilante."
+          title={t('ui.EditSecurityGuardPage.editarVigilante')}
+          subtitle={t('ui.EditSecurityGuardPage.actualizaLosDatosPersonalesDe')}
         />
 
         {error && (
@@ -290,7 +290,7 @@ export default function EditSecurityGuardPage() {
             </Section>
 
             {/* ── Contacto y domicilio ─────────────────────────────── */}
-            <Section title="Contacto y domicilio" icon={<Phone />}>
+            <Section title={t('ui.EditSecurityGuardPage.contactoYDomicilio')} icon={<Phone />}>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
                   <label className="block text-sm font-medium mb-1">{t("ui.EditSecurityGuard.correoElectronico", "Correo Electrónico *")}</label>
@@ -319,12 +319,12 @@ export default function EditSecurityGuardPage() {
                   <Input name="hiringContractDate" value={form.hiringContractDate} onChange={handleChange} type="date" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Tarifa por hora (US$)</label>
+                  <label className="block text-sm font-medium mb-1">{t('ui.EditSecurityGuardPage.tarifaPorHoraUs')}</label>
                   <Input name="hourlyRate" value={form.hourlyRate} onChange={handleChange} type="number" step="0.01" min="0" placeholder="3.50" />
-                  <p className="mt-1 text-xs" style={{ color: "var(--ink-faint)" }}>Con esto, el resumen de nómina calcula el costo en dólares (extra ×1.5, festivos con su recargo).</p>
+                  <p className="mt-1 text-xs" style={{ color: "var(--ink-faint)" }}>{t('ui.EditSecurityGuardPage.conEstoElResumenDe')}</p>
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium mb-1">Credenciales del vigilante</label>
+                  <label className="block text-sm font-medium mb-1">{t('ui.EditSecurityGuardPage.credencialesDelVigilante')}</label>
                   <Input name="guardCredentials" value={form.guardCredentials} onChange={handleChange} />
                 </div>
               </div>

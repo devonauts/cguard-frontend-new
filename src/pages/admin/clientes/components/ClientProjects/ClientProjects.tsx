@@ -89,8 +89,8 @@ export default function ClientProjects({ client }: Props) {
         ) : projects.length === 0 ? (
           <EmptyState
             icon={<FolderKanban />}
-            title="Sin proyectos"
-            description="No hay proyectos para este cliente todavía."
+            title={t('ui.ClientProjects.sinProyectos')}
+            description={t('ui.ClientProjects.noHayProyectosParaEste')}
             action={
               <Button variant="brand" size="sm" onClick={() => { setEditingId(undefined); setOpenForm(true); }}>
                 <Plus className="h-4 w-4 mr-1" /> Nuevo proyecto

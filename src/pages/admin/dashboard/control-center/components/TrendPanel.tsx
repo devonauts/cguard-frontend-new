@@ -69,7 +69,7 @@ export function TrendPanel({ incidents, response, acquisition, className }: {
           </span>
           {s.suffix && <span className="mb-0.5 text-sm font-semibold" style={{ color: "var(--ink-faint)" }}>{s.suffix.trim()}</span>}
           {cambio != null && <MovePill cambio={cambio} mejorSi={s.mejorSi} />}
-          <span className="mb-1 text-[11px]" style={{ color: "var(--ink-faint)" }}>vs. mes anterior</span>
+          <span className="mb-1 text-[11px]" style={{ color: "var(--ink-faint)" }}>{t('ui.TrendPanel.vsMesAnterior')}</span>
         </div>
         <Segmented
           value={serie}

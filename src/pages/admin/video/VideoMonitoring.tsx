@@ -138,10 +138,10 @@ function CameraTile({
     const snap = streamRef.current?.snapshotUrl || camera.snapshotUrl;
     if (snap && /^https?:\/\//i.test(snap)) {
       window.open(snap, "_blank", "noopener,noreferrer");
-      toast.success("Captura abierta en una pestaña");
+      toast.success(i18n.t('ui.VideoMonitoring.capturaAbiertaEnUnaPestana'));
       return;
     }
-    toast.error("No hay captura disponible para esta cámara");
+    toast.error(i18n.t('ui.VideoMonitoring.noHayCapturaDisponiblePara'));
   };
 
   return (
@@ -310,7 +310,7 @@ export default function VideoMonitoring() {
         <PageHeader
           icon={<MonitorPlay />}
           title="Monitoreo de video"
-          subtitle="Vigilancia en vivo de todas las cámaras conectadas."
+          subtitle={t('ui.VideoMonitoring.vigilanciaEnVivoDeTodas')}
           badges={
             loading ? null : enLinea > 0 ? (
               /* Misma píldora que el kit ya calcula; estaba pintada a mano sólo
@@ -336,9 +336,9 @@ export default function VideoMonitoring() {
             className={selectClass}
             value={deviceFilter}
             onChange={(e) => setDeviceFilter(e.target.value)}
-            aria-label="Filtrar por equipo grabador"
+            aria-label={t('ui.VideoMonitoring.filtrarPorEquipoGrabador')}
           >
-            <option value="">Todos los equipos</option>
+            <option value="">{t('ui.VideoMonitoring.todosLosEquipos')}</option>
             {devices.map((d) => (
               <option key={d.id} value={d.id}>
                 {d.name}
@@ -351,9 +351,9 @@ export default function VideoMonitoring() {
               className={selectClass}
               value={siteFilter}
               onChange={(e) => setSiteFilter(e.target.value)}
-              aria-label="Filtrar por puesto"
+              aria-label={t('ui.VideoMonitoring.filtrarPorPuesto')}
             >
-              <option value="">Todos los puestos</option>
+              <option value="">{t('ui.VideoMonitoring.todosLosPuestos')}</option>
               {siteOptions.map((s) => (
                 <option key={s} value={s}>
                   Puesto {s.slice(0, 8)}

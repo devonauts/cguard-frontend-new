@@ -152,7 +152,7 @@ export default function GuardDashboard() {
               <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
                 <XCircle size={30} />
               </div>
-              <p className="text-sm font-semibold text-foreground">Sin entrada activa</p>
+              <p className="text-sm font-semibold text-foreground">{t('ui.GuardDashboard.sinEntradaActiva')}</p>
               {stations.length > 0 && (
                 <div className="mt-5 space-y-2">
                   {stations.map((st: any) => (

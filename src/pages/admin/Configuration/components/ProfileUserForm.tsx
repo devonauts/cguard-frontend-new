@@ -205,7 +205,7 @@ export default function ProfileUserForm() {
           }
         }
       } catch {
-        toast.error("No se pudo cargar tu perfil.");
+        toast.error(t('ui.ProfileUserForm.noSePudoCargarTu'));
       } finally {
         if (mounted) setLoading(false);
       }
@@ -297,13 +297,13 @@ export default function ProfileUserForm() {
           didUpdate = true;
         } catch (err) {
           console.error('Avatar upload failed', err);
-          toast.error('No se pudo subir el avatar.');
+          toast.error(t('ui.ProfileUserForm.noSePudoSubirEl'));
         }
       }
       if (didUpdate) {
         toast.success("Perfil actualizado correctamente.");
       } else {
-        toast.success("No hubo cambios para guardar.");
+        toast.success(t('ui.ProfileUserForm.noHuboCambiosParaGuardar'));
       }
     } catch (e) {
       toast.error((e as ApiError)?.response?.data?.message ?? "Error al guardar el perfil.");
@@ -325,21 +325,21 @@ export default function ProfileUserForm() {
   const handleVerifyEmail = async () => {
     try {
       await AccountService.sendVerifyEmail(email);
-      toast.success("Se envió un correo de verificación.");
+      toast.success(t('ui.ProfileUserForm.seEnvioUnCorreoDe'));
     } catch {
-      toast.error("No se pudo enviar el correo de verificación.");
+      toast.error(t('ui.ProfileUserForm.noSePudoEnviarEl'));
     }
   };
 
   const handleChangeEmail = async () => {
     if (!password || !newEmail) {
-      toast.error("Por favor completa todos los campos.");
+      toast.error(t('ui.ProfileUserForm.porFavorCompletaTodosLos'));
       return;
     }
 
     try {
       await AccountService.changeEmail({ password, newEmail });
-      toast.success("Correo actualizado correctamente. Verifica tu nuevo correo.");
+      toast.success(t('ui.ProfileUserForm.correoActualizadoCorrectamenteVerificaTu'));
       setEmail(newEmail);
       setEmailVerified(false);
       setShowEmailModal(false);
@@ -352,12 +352,12 @@ export default function ProfileUserForm() {
 
   const handleVerifyPhone = async () => {
     if (!verificationCode) {
-      toast.error("Por favor ingresa el código de verificación.");
+      toast.error(t('ui.ProfileUserForm.porFavorIngresaElCodigo'));
       return;
     }
 
     try {
-      toast.success("Número verificado correctamente.");
+      toast.success(t('ui.ProfileUserForm.numeroVerificadoCorrectamente'));
       setShowPhoneVerifyModal(false);
       setVerificationCode("");
     } catch (e) {
@@ -367,7 +367,7 @@ export default function ProfileUserForm() {
 
   const handleSendVerificationCode = async () => {
     try {
-      toast.success("Código de verificación enviado.");
+      toast.success(t('ui.ProfileUserForm.codigoDeVerificacionEnviado'));
       setShowPhoneVerifyModal(true);
     } catch (e) {
       toast.error((e as ApiError)?.response?.data?.message ?? "Error al enviar el código.");
@@ -531,7 +531,7 @@ export default function ProfileUserForm() {
               type="email"
               value={newEmail}
               onChange={(e) => setNewEmail(e.target.value)}
-              placeholder="nuevo@correo.com"
+              placeholder={t('ui.ProfileUserForm.nuevoCorreoCom')}
             />
           </div>
         </div>

@@ -16,7 +16,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Send, X, Loader2, Check, Ban, Hand, MessageSquarePlus, History, ArrowLeft, Trash2 } from "lucide-react";
+import { Send, X, Loader2, Check, Ban, Hand, MessageSquarePlus, History, ArrowLeft, Trash2, Paperclip } from "lucide-react";
 import api from "@/lib/api";
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
@@ -234,12 +234,73 @@ export default function VigiaWidget() {
 
   if (!localStorage.getItem("authToken") || !tenantId()) return null;
 
+  // Lo último que se leyó de una hoja de vida, a la espera de que alguien lo
+  // abra en el formulario de alta.
+  const [cvPendiente, setCvPendiente] = useState<{ campos: any; archivo: File } | null>(null);
+  const cvInput = useRef<HTMLInputElement>(null);
+
   const llamar = async (body: any): Promise<any> => {
     // 60s: un turno con varias consultas tarda más que los 15s globales de
     // axios — y abortar en el cliente mientras el servidor sigue era el modo
     // de fallo más caro (reintento = pagar el turno dos veces).
     const resp: any = await api.post(`/tenant/${tenantId()}/assistant/chat`, body, { timeout: 60000, toast: { silentError: true } } as any);
     return resp && resp.data !== undefined ? resp.data : resp;
+  };
+
+  /**
+   * ADJUNTAR UNA HOJA DE VIDA desde el chat.
+   *
+   * Se lee aquí mismo y el resultado se cuenta en la conversación, con un botón
+   * para abrir el alta ya rellena. VigIA NO da de alta a nadie por su cuenta:
+   * enseña lo que leyó y deja que una persona lo revise en el formulario, que
+   * es donde están las validaciones de verdad.
+   */
+  const adjuntarHojaDeVida = async (archivo: File) => {
+    if (ocupado) return;
+    setAviso(null);
+    setPropuesta(null);
+    setMsgs((m) => [...m, {
+      role: "user",
+      content: t("vigia.cvSent", "Hoja de vida: {{n}}", { n: archivo.name }),
+    }]);
+    setOcupado(true);
+    try {
+      const { hojaDeVidaService, aCamposDelFormulario } = await import("@/lib/api/hojaDeVidaService");
+      const r = await hojaDeVidaService.leer(archivo);
+      const campos = aCamposDelFormulario(r.datos);
+      const leidos = Object.values(r.datos).filter(
+        (v) => v !== null && v !== "" && !(Array.isArray(v) && v.length === 0),
+      ).length;
+
+      if (!leidos) {
+        setMsgs((m) => [...m, { role: "assistant", content: t("vigia.cvEmpty",
+          "No pude sacar datos de ese archivo. Comprueba que se lea bien, o llena la ficha a mano.") }]);
+        return;
+      }
+
+      const resumen = [
+        campos.firstName || campos.lastName ? `Nombre: ${[campos.firstName, campos.middleName, campos.lastName].filter(Boolean).join(" ")}` : null,
+        campos.identificationNumber ? `Documento: ${campos.identificationNumber}` : null,
+        campos.birthDate ? `Nacimiento: ${campos.birthDate}` : null,
+        campos.email ? `Correo: ${campos.email}` : null,
+        campos.phone ? `Teléfono: ${campos.phone}` : null,
+      ].filter(Boolean).join("\n");
+
+      setMsgs((m) => [...m, { role: "assistant", content:
+        `${t("vigia.cvRead", "Esto es lo que leí:")}\n\n${resumen}\n\n` +
+        (r.faltantes.includes("contacto")
+          ? t("vigia.cvNoContact", "No encontré correo ni teléfono: sin uno de los dos no se le puede invitar.")
+          : t("vigia.cvReview", "Ábrelo para revisarlo y guardarlo.")) }]);
+
+      // Los datos viajan en memoria hasta la pantalla de alta: no se guardan en
+      // ningún sitio mientras tanto, que es dato personal de alguien que
+      // todavía no es empleado.
+      setCvPendiente({ campos, archivo });
+    } catch (e: any) {
+      setAviso(e?.message || t("vigia.cvError", "No pudimos leer la hoja de vida."));
+    } finally {
+      setOcupado(false);
+    }
   };
 
   const enviar = async () => {
@@ -488,6 +549,42 @@ export default function VigiaWidget() {
             ))}
 
             {/* Tarjeta de propuesta: el modelo propone, la persona decide. */}
+            {/* Lo leído de una hoja de vida, con la única acción que tiene
+                sentido: abrirlo en el formulario donde se revisa y se guarda.
+                Deliberadamente NO hay un «crear» aquí — el alta tiene reglas
+                (cliente, puesto, tipo de vigilante) que este panel no pregunta. */}
+            {cvPendiente && (
+              <div className="rounded-2xl border px-3 py-3" style={{ borderColor: "var(--brand)", background: "color-mix(in oklab, var(--brand) 8%, transparent)" }}>
+                <p className="mb-2 text-xs font-bold uppercase tracking-wide" style={{ color: "var(--brand-text)" }}>
+                  {t("vigia.cvTitle", "Hoja de vida leída")}
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      const pendiente = cvPendiente;
+                      setCvPendiente(null);
+                      setOpen(false);
+                      navigate("/security-guards/new", {
+                        state: { hojaDeVida: pendiente.campos, hojaDeVidaArchivo: pendiente.archivo },
+                      });
+                    }}
+                    className="cg-focus flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2 text-sm font-bold transition-[filter] hover:brightness-110"
+                    style={{ background: "var(--brand)", color: "var(--brand-ink)" }}
+                  >
+                    <Check size={15} />
+                    {t("vigia.cvOpen", "Abrir el alta con estos datos")}
+                  </button>
+                  <button
+                    onClick={() => setCvPendiente(null)}
+                    className="cg-focus rounded-xl px-3 py-2 text-sm"
+                    style={{ color: "var(--muted-foreground)" }}
+                  >
+                    {t("actions.discard", "Descartar")}
+                  </button>
+                </div>
+              </div>
+            )}
+
             {propuesta && (
               <div className="rounded-2xl border px-3 py-3" style={{ borderColor: "var(--brand)", background: "color-mix(in oklab, var(--brand) 8%, transparent)" }}>
                 <p className="mb-2 text-xs font-bold uppercase tracking-wide" style={{ color: "var(--brand-text)" }}>
@@ -547,6 +644,27 @@ export default function VigiaWidget() {
               disabled={ocupado}
               aria-label={t("vigia.inputAria", "Mensaje para VigIA")}
             />
+            <input
+              ref={cvInput}
+              type="file"
+              accept=".pdf,image/*"
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                e.target.value = "";   // permite volver a elegir el mismo archivo
+                if (f) void adjuntarHojaDeVida(f);
+              }}
+            />
+            <button
+              onClick={() => cvInput.current?.click()}
+              disabled={ocupado}
+              aria-label={t("vigia.attachCv", "Adjuntar hoja de vida")}
+              title={t("vigia.attachCv", "Adjuntar hoja de vida")}
+              className="cg-focus rounded-xl p-2 transition-colors hover:bg-[var(--glass-hover)] disabled:opacity-40"
+              style={{ color: "var(--muted-foreground)" }}
+            >
+              <Paperclip size={16} />
+            </button>
             <button
               onClick={enviar}
               disabled={ocupado || !texto.trim()}

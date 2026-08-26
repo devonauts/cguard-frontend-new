@@ -152,13 +152,13 @@ export default function ClientReports({ client }: { client: Client & { companyNa
 
   const doExport = async (type: string) => {
     setExporting(type);
-    try { await clientService.exportClientReport(client.id, type, from, to); toast.success('Exportación descargada'); }
-    catch { toast.error('No se pudo exportar'); } finally { setExporting(''); }
+    try { await clientService.exportClientReport(client.id, type, from, to); toast.success(t('ui.ClientReports.exportacionDescargada')); }
+    catch { toast.error(t('ui.ClientReports.noSePudoExportar')); } finally { setExporting(''); }
   };
   const saveSchedule = async () => {
     setSaving(true);
-    try { await clientService.createReportSchedule(client.id, schedForm); toast.success('Reporte programado'); setSchedOpen(false); setSchedForm({ name: '', type: 'incidents', frequency: 'weekly' }); await load(true); }
-    catch { toast.error('No se pudo programar'); } finally { setSaving(false); }
+    try { await clientService.createReportSchedule(client.id, schedForm); toast.success(t('ui.ClientReports.reporteProgramado')); setSchedOpen(false); setSchedForm({ name: '', type: 'incidents', frequency: 'weekly' }); await load(true); }
+    catch { toast.error(t('ui.ClientReports.noSePudoProgramar')); } finally { setSaving(false); }
   };
   const delSchedule = async (s: ProgramadoRow) => { if (!await confirmDialog({ message: `¿Eliminar "${s.name}"?`, tone: 'danger' })) return; try { await clientService.deleteReportSchedule(client.id, s.id); await load(true); } catch { toast.error(t('comun.noSePudoEliminar')); } };
 
@@ -209,7 +209,7 @@ export default function ClientReports({ client }: { client: Client & { companyNa
       {/* Gráficos + columna derecha */}
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[2.2fr_1fr]">
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-          <Section title="Incidentes por tipo" icon={<AlertTriangle className="h-4 w-4" />}>
+          <Section title={t('ui.ClientReports.incidentesPorTipo')} icon={<AlertTriangle className="h-4 w-4" />}>
             {porTipo.length === 0 ? <EmptyState icon={<AlertTriangle className="h-5 w-5" />} title={t('comun.sinIncidentes')} description={t("ui.ClientReports.noHayIncidentesEnEl", "No hay incidentes en el período.")} /> : (
               <div className="flex items-center gap-3">
                 {/* Los tipos vienen ordenados por frecuencia: una rampa del acento
@@ -223,7 +223,7 @@ export default function ClientReports({ client }: { client: Client & { companyNa
             )}
           </Section>
 
-          <Section title="Incidentes por estado" icon={<ShieldCheck className="h-4 w-4" />}>
+          <Section title={t('ui.ClientReports.incidentesPorEstado')} icon={<ShieldCheck className="h-4 w-4" />}>
             {porEstado.every((e) => e.count === 0) ? <EmptyState icon={<ShieldCheck className="h-5 w-5" />} title={t('comun.sinIncidentes')} description={t("ui.ClientReports.noHayIncidentesEnEl2", "No hay incidentes en el período.")} /> : (
               <div className="space-y-3 pt-1">
                 {porEstado.map((e) => (
@@ -263,7 +263,7 @@ export default function ClientReports({ client }: { client: Client & { companyNa
 
           <Section title="Reportes programados" icon={<CalendarClock className="h-4 w-4" />}
             action={<button onClick={() => setSchedOpen(true)} className="cg-focus inline-flex items-center gap-1 rounded-md text-xs font-semibold hover:underline" style={{ color: 'var(--brand-text)' }}><Plus className="h-3.5 w-3.5" /> Programar</button>}>
-            {programados.length === 0 ? <EmptyState icon={<CalendarClock className="h-5 w-5" />} title="Sin reportes programados" description="Programa un reporte recurrente por correo." /> : (
+            {programados.length === 0 ? <EmptyState icon={<CalendarClock className="h-5 w-5" />} title={t('ui.ClientReports.sinReportesProgramados')} description={t('ui.ClientReports.programaUnReporteRecurrentePor')} /> : (
               <div className="divide-y">
                 {programados.map((s) => (
                   <div key={s.id} className="flex items-start justify-between gap-2 py-2.5">
@@ -278,17 +278,17 @@ export default function ClientReports({ client }: { client: Client & { companyNa
       </div>
 
       {/* Todos los reportes */}
-      <Section title="Todos los reportes" icon={<FileText className="h-4 w-4" />}>
+      <Section title={t('ui.ClientReports.todosLosReportes')} icon={<FileText className="h-4 w-4" />}>
         <div className="mb-3 relative max-w-sm">
           <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <input className={`${FIELD_CLS} pl-8`} placeholder="Buscar reporte por nombre…" value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} />
+          <input className={`${FIELD_CLS} pl-8`} placeholder={t('ui.ClientReports.buscarReportePorNombre')} value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} />
         </div>
         {reportsList.length === 0 ? (
-          <EmptyState icon={<FileText className="h-5 w-5" />} title="Sin reportes" description={t("ui.ClientReports.aunNoHayReportesOperativos", "Aún no hay reportes operativos generados para este cliente en el período.")} />
+          <EmptyState icon={<FileText className="h-5 w-5" />} title={t('ui.ClientReports.sinReportes')} description={t("ui.ClientReports.aunNoHayReportesOperativos", "Aún no hay reportes operativos generados para este cliente en el período.")} />
         ) : (
           <TabTable>
               <THead>
-                <Th>Nombre del reporte</Th><Th>{t('comun.tipo')}</Th><Th>{t("ui.ClientReports.sedeEstacion", "Sede / Estación")}</Th><Th>Generado por</Th><Th>Generado el</Th><Th>Formato</Th>
+                <Th>{t('ui.ClientReports.nombreDelReporte')}</Th><Th>{t('comun.tipo')}</Th><Th>{t("ui.ClientReports.sedeEstacion", "Sede / Estación")}</Th><Th>{t('ui.ClientReports.generadoPor')}</Th><Th>{t('ui.ClientReports.generadoEl')}</Th><Th>Formato</Th>
               </THead>
               <tbody>
                 {reportsList.map((r) => (
@@ -318,15 +318,15 @@ export default function ClientReports({ client }: { client: Client & { companyNa
       <Modal open={schedOpen} onOpenChange={(o) => { if (!saving) setSchedOpen(o); }} title={t('ui.ClientReports.programarReporte')} icon={<CalendarClock className="h-5 w-5" />}
         footer={<><Button variant="outline" onClick={() => setSchedOpen(false)} disabled={saving}>{t('actions.cancel')}</Button><Button onClick={saveSchedule} disabled={saving || !schedForm.name.trim()}>{saving ? 'Guardando…' : 'Programar'}</Button></>}>
         <div className="space-y-3">
-          <LabeledField label={t('comun.nombre')}><input className={FIELD_CLS} placeholder="Informe semanal de operaciones" value={schedForm.name} onChange={(e) => setSchedForm({ ...schedForm, name: e.target.value })} /></LabeledField>
-          <LabeledField label="Reporte">
+          <LabeledField label={t('comun.nombre')}><input className={FIELD_CLS} placeholder={t('ui.ClientReports.informeSemanalDeOperaciones')} value={schedForm.name} onChange={(e) => setSchedForm({ ...schedForm, name: e.target.value })} /></LabeledField>
+          <LabeledField label={t('ui.ClientReports.reporte')}>
             <select className={FIELD_CLS} value={schedForm.type} onChange={(e) => setSchedForm({ ...schedForm, type: e.target.value })}>
-              <option value="incidents">{t('ui.ClientReports.reporteDeIncidentes')}</option><option value="rounds">Reporte de rondas</option><option value="visitors">Reporte de visitas</option><option value="attendance">Reporte de asistencia</option><option value="coverage">Cumplimiento de estaciones</option><option value="guard-activity">Actividad por guardia</option>
+              <option value="incidents">{t('ui.ClientReports.reporteDeIncidentes')}</option><option value="rounds">{t('ui.ClientReports.reporteDeRondas')}</option><option value="visitors">{t('ui.ClientReports.reporteDeVisitas')}</option><option value="attendance">{t('ui.ClientReports.reporteDeAsistencia')}</option><option value="coverage">Cumplimiento de estaciones</option><option value="guard-activity">{t('ui.ClientReports.actividadPorGuardia')}</option>
             </select>
           </LabeledField>
           <LabeledField label="Frecuencia">
             <select className={FIELD_CLS} value={schedForm.frequency} onChange={(e) => setSchedForm({ ...schedForm, frequency: e.target.value })}>
-              <option value="daily">Diario (07:00)</option><option value="weekly">Semanal (lunes 08:00)</option><option value="monthly">{t("ui.ClientReports.mensualDia10900", "Mensual (día 1, 09:00)")}</option>
+              <option value="daily">Diario (07:00)</option><option value="weekly">{t('ui.ClientReports.semanalLunes0800')}</option><option value="monthly">{t("ui.ClientReports.mensualDia10900", "Mensual (día 1, 09:00)")}</option>
             </select>
           </LabeledField>
         </div>

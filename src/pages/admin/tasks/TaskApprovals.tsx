@@ -41,7 +41,7 @@ export default function TaskApprovals() {
     setBusy(true);
     try {
       await taskService.approve(r.id);
-      toast.success("Tarea aprobada — enviada a los vigilantes del puesto");
+      toast.success(t('ui.TaskApprovals.tareaAprobadaEnviadaALos'));
       load();
     } catch (e: any) {
       toast.error(e?.message || "Error");
@@ -97,8 +97,8 @@ export default function TaskApprovals() {
         <PageContainer width="wide">
           <PageHeader
             icon={<ClipboardCheck />}
-            title="Tareas por aprobar"
-            subtitle="Tareas creadas por los clientes para sus puestos. Apruébalas para enviarlas a los vigilantes."
+            title={t('ui.TaskApprovals.tareasPorAprobar')}
+            subtitle={t('ui.TaskApprovals.tareasCreadasPorLosClientes')}
             badges={!loading ? <StatusBadge tone={rows.length > 0 ? "warn" : "ok"}>{rows.length > 0 ? `${rows.length} pendientes` : "Nada pendiente"}</StatusBadge> : undefined}
           />
 

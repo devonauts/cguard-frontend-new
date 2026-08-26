@@ -94,7 +94,7 @@ export function CommandBar({
           <button
             type="button"
             onClick={onFullMap}
-            title="Abrir el mapa a pantalla completa"
+            title={t('ui.CommandBar.abrirElMapaAPantalla')}
             className="cg-btn-glass cg-focus inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold"
           >
             <Maximize2 className="size-3.5" />

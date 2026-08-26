@@ -201,7 +201,7 @@ export default function ClientesPage() {
       const tenantId = localStorage.getItem('tenantId');
       if (!tenantId) {
         if (!tenantMissingNotifiedRef.current) {
-          toast.error("El usuario debe estar vinculado a una empresa para continuar");
+          toast.error(t('ui.ClientsPage.elUsuarioDebeEstarVinculado'));
           tenantMissingNotifiedRef.current = true;
         }
         if (mine === loadClientsSeqRef.current) { setClients([]); setTotalCount(0); }
@@ -1281,7 +1281,7 @@ export default function ClientesPage() {
                     >
                       <p className="font-medium">{t("ui.Clients.comoFunciona", "¿Cómo funciona?")}</p>
                       <ul className="list-disc list-inside space-y-0.5">
-                        <li>El cliente recibe un correo con un enlace de acceso</li>
+                        <li>{t('ui.ClientsPage.elClienteRecibeUnCorreo')}</li>
                         <li>{t("ui.Clients.haceClicEnElEnlace", "Hace clic en el enlace y establece su contraseña")}</li>
                         <li>{t("ui.Clients.iniciaSesionEnLaApp", "Inicia sesión en la app con su correo y contraseña")}</li>
                       </ul>

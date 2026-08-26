@@ -155,7 +155,7 @@ export default function NominaExceptions() {
         <PageHeader
           icon={<AlertTriangle />}
           title="Excepciones"
-          subtitle="Desviaciones de asistencia — registro e historial de operación"
+          subtitle={t('ui.NominaExceptions.desviacionesDeAsistenciaRegistroE')}
         />
 
         <Toolbar>
@@ -186,7 +186,7 @@ export default function NominaExceptions() {
                 <EmptyState
                   icon={<PartyPopper />}
                   title={status === "open" ? "Sin excepciones abiertas" : "Sin excepciones"}
-                  description="No hay desviaciones de asistencia para los filtros seleccionados."
+                  description={t('ui.NominaExceptions.noHayDesviacionesDeAsistencia')}
                 />
               }
             />
@@ -232,7 +232,7 @@ export default function NominaExceptions() {
                     </p>
                     <div className="mt-2 grid grid-cols-2 gap-3">
                       <Field label={t('comun.fecha')} value={selected.resolvedAt ? fmtDateTime(selected.resolvedAt) : "—"} />
-                      <Field label="Por" value={fullName(selected.resolvedBy) || "—"} />
+                      <Field label={t('ui.NominaExceptions.por')} value={fullName(selected.resolvedBy) || "—"} />
                     </div>
                     {selected.resolutionNotes && (
                       <p className="glass-sunken mt-2 whitespace-pre-wrap p-3" style={{ color: "var(--ink)" }}>{selected.resolutionNotes}</p>

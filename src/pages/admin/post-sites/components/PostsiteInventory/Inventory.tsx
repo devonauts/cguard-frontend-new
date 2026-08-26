@@ -104,7 +104,7 @@ function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
   useEffect(() => { const t = setTimeout(() => searchGuards(guardSearch), 300); return () => clearTimeout(t); }, [guardSearch, searchGuards]);
 
   const handleAssign = async () => {
-    if (!selectedItem) { toast.error('Selecciona un artículo'); return; }
+    if (!selectedItem) { toast.error(t('ui.Inventory.seleccionaUnArticulo')); return; }
     try {
       setSaving(true);
       await inventoryAssignmentService.create({
@@ -170,7 +170,7 @@ function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
 
           {/* Guard */}
           <div className="space-y-2">
-            <Label>Responsable (vigilante)</Label>
+            <Label>{t('ui.Inventory.responsableVigilante')}</Label>
             {selectedGuard ? (
               <div className="flex items-center justify-between bg-muted/30 border border-border rounded-lg px-3 py-2">
                 <div className="flex items-center gap-2">
@@ -236,7 +236,7 @@ function ReturnModal({ assignment, onClose, onDone }: ReturnModalProps) {
         conditionAtReturn: CONDITION_MAP[condKey],
         returnNotes: notes || undefined,
       });
-      toast.success('Artículo devuelto correctamente');
+      toast.success(t('ui.Inventory.articuloDevueltoCorrectamente'));
       onDone();
     } catch (e: any) {
       toast.error(e?.response?.data?.message || e?.message || 'Error al devolver');
@@ -354,7 +354,7 @@ export default function Inventory({ site }: { site?: PostSite }) {
       {assignments.length > 0 && (
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input className="pl-9" placeholder="Buscar por nombre, tipo, vigilante..." value={query} onChange={(e) => setQuery(e.target.value)} />
+          <Input className="pl-9" placeholder={t('ui.Inventory.buscarPorNombreTipoVigilante')} value={query} onChange={(e) => setQuery(e.target.value)} />
         </div>
       )}
 

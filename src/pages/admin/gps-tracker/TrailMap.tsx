@@ -15,6 +15,7 @@ import {
   type Parada, type PuntoRecorrido,
 } from "./trackGeometry";
 import "@/styles/map.css";
+import i18n from "@/i18n";
 
 /** Un ping del GPS. Se re-exporta desde la geometría para no partir el tipo en
  *  dos: la página del historial lo importa desde aquí desde siempre. */
@@ -536,7 +537,7 @@ export default function TrailMap({
                   <div className="cc-map-metric">{duracion(analisis.ms)}</div>
                 </div>
                 <div className="hidden sm:block">
-                  <div className="cc-map-eyebrow">Vel. media</div>
+                  <div className="cc-map-eyebrow">{i18n.t('ui.TrailMap.velMedia')}</div>
                   <div className="cc-map-metric">{analisis.velMediaKmh.toFixed(1)}
                     <span style={{ color: "var(--ink-faint)", fontWeight: 600, fontSize: 11 }}> km/h</span>
                   </div>
@@ -593,7 +594,7 @@ export default function TrailMap({
                   onClick={() => { setReproduciendo(false); setT(t0); }}
                   className="cg-focus hidden size-8 flex-none place-items-center rounded-full sm:grid"
                   style={{ border: "1px solid var(--hairline)", color: "var(--ink-soft)" }}
-                  aria-label="Volver al inicio del recorrido"
+                  aria-label={i18n.t('ui.TrailMap.volverAlInicioDelRecorrido')}
                   title="Volver al inicio"
                 >
                   <RotateCcw className="size-3.5" />
@@ -613,7 +614,7 @@ export default function TrailMap({
                   step={1000}
                   value={Math.max(0, Math.min(rango, t - t0))}
                   onChange={(e) => { setReproduciendo(false); setT(t0 + Number(e.target.value)); }}
-                  aria-label="Instante del recorrido"
+                  aria-label={i18n.t('ui.TrailMap.instanteDelRecorrido')}
                   className="h-1.5 min-w-0 flex-1 cursor-pointer appearance-none rounded-full"
                   style={{ accentColor: "var(--brand)", background: "var(--hairline)" }}
                 />

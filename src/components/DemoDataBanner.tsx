@@ -86,12 +86,12 @@ export default function DemoDataBanner() {
       const tenantId = localStorage.getItem("tenantId");
       await ApiService.post(`/tenant/${tenantId}/demo-data/disable`, {});
       sessionStorage.removeItem(CACHE_KEY);
-      toast.success("Datos de ejemplo retirados. Esta es ya tu operación real.");
+      toast.success(t('ui.DemoDataBanner.datosDeEjemploRetiradosEsta'));
       // Recarga completa: todas las listas y contadores llevan datos de ejemplo
       // en caché y recargar es más honesto que perseguir cada query.
       setTimeout(() => window.location.reload(), 800);
     } catch {
-      toast.error("No pudimos quitar los datos de ejemplo. Inténtalo de nuevo.");
+      toast.error(t('ui.DemoDataBanner.noPudimosQuitarLosDatos'));
       setRemoving(false);
     }
   };

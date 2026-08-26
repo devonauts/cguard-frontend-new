@@ -79,7 +79,7 @@ export default function TrainingCourseDetailPage() {
       });
     } catch (err) {
       console.error(err);
-      toast.error('No se pudo cargar el curso.');
+      toast.error(t('ui.TrainingCourseDetailPage.noSePudoCargarEl'));
     } finally {
       setLoading(false);
     }
@@ -110,7 +110,7 @@ export default function TrainingCourseDetailPage() {
       load();
     } catch (err) {
       console.error(err);
-      toast.error('No se pudo actualizar el curso.');
+      toast.error(t('ui.TrainingCourseDetailPage.noSePudoActualizarEl'));
     } finally {
       setSaving(false);
     }
@@ -131,7 +131,7 @@ export default function TrainingCourseDetailPage() {
           <EmptyState
             icon={<GraduationCap />}
             title="Curso no encontrado"
-            description="El curso que buscas no existe o no está disponible."
+            description={t('ui.TrainingCourseDetailPage.elCursoQueBuscasNo')}
           />
         </PageContainer>
       </AppLayout>
@@ -181,7 +181,7 @@ export default function TrainingCourseDetailPage() {
 
           {/* DETAILS */}
           <TabsContent value="details" className="mt-4">
-            <Section title="Detalles del curso" icon={<GraduationCap />} contentClassName="max-w-2xl space-y-4">
+            <Section title={t('ui.TrainingCourseDetailPage.detallesDelCurso')} icon={<GraduationCap />} contentClassName="max-w-2xl space-y-4">
                 <div className="space-y-2">
                   <Label>{t("ui.TrainingCourseDetail.titulo", "Título *")}</Label>
                   <Input disabled={readOnly} value={meta.title} onChange={(e) => setMeta({ ...meta, title: e.target.value })} />
@@ -238,7 +238,7 @@ export default function TrainingCourseDetailPage() {
                 <div className="glass-sunken flex items-center justify-between p-3">
                   <div>
                     <Label className="cursor-pointer">Publicado</Label>
-                    <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>Los cursos publicados pueden asignarse a los vigilantes.</p>
+                    <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>{t('ui.TrainingCourseDetailPage.losCursosPublicadosPuedenAsignarse')}</p>
                   </div>
                   <Switch checked={meta.published} disabled={readOnly} onCheckedChange={(v) => setMeta({ ...meta, published: v })} />
                 </div>

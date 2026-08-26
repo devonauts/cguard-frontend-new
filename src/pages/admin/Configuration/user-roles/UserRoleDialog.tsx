@@ -75,7 +75,7 @@ export default function UserRoleDialog({
       open={open}
       onOpenChange={onOpenChange}
       title={title}
-      description="Proporcione un nombre y, opcionalmente, una breve descripción para el rol."
+      description={t('ui.UserRoleDialog.proporcioneUnNombreYOpcionalmente')}
       icon={<ShieldCheck />}
     >
         <Form {...form}>
@@ -90,7 +90,7 @@ export default function UserRoleDialog({
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Nombre del Rol"
+                      placeholder={t('ui.UserRoleDialog.nombreDelRol')}
                       {...field}
                       aria-invalid={!!form.formState.errors.name}
                     />
@@ -109,7 +109,7 @@ export default function UserRoleDialog({
                   <FormControl>
                     <Textarea
                       rows={5}
-                      placeholder="Describe el rol (opcional)"
+                      placeholder={t('ui.UserRoleDialog.describeElRolOpcional')}
                       {...field}
                       aria-invalid={!!form.formState.errors.description}
                     />

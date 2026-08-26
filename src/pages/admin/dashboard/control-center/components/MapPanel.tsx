@@ -32,7 +32,7 @@ export function MapPanel({ entities, prefs, defaultCenter, live, onFull, height 
           type="button"
           onClick={onFull}
           title={t("ui.MapPanel.abrirEnPantallaCompletaNueva", "Abrir en pantalla completa (nueva pestaña)")}
-          aria-label="Abrir el mapa en pantalla completa"
+          aria-label={t('ui.MapPanel.abrirElMapaEnPantalla')}
           className="cg-btn-glass cg-focus grid size-8 place-items-center rounded-full"
         >
           <Maximize2 className="size-3.5" />

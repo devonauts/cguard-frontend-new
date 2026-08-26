@@ -166,7 +166,7 @@ export default function Vehicles() {
     const handleBulkAction = async (action: string) => {
         if (action !== "eliminar") return;
         if (selectedIds.length === 0) {
-            toast.error("Selecciona al menos un vehículo");
+            toast.error(t('ui.Vehicles.seleccionaAlMenosUnVehiculo'));
             return;
         }
         if (
@@ -181,12 +181,12 @@ export default function Vehicles() {
 
         try {
             await vehicleService.destroy(selectedIds);
-            toast.success("Vehículo(s) eliminado(s)");
+            toast.success(t('ui.Vehicles.vehiculoSEliminadoS'));
             setSelectedIds([]);
             refetch();
         } catch (err) {
             console.error("Error eliminando vehículos", err);
-            toast.error("Error eliminando vehículos");
+            toast.error(t('ui.Vehicles.errorEliminandoVehiculos'));
         }
     };
 
@@ -208,7 +208,7 @@ export default function Vehicles() {
                 <PageHeader
                     icon={<Car />}
                     title={t("ui.Vehicles.vehiculos", "Vehículos")}
-                    subtitle="Registro de vehículos de visitantes y de la empresa"
+                    subtitle={t('ui.Vehicles.registroDeVehiculosDeVisitantes')}
                     badges={
                         <>
                             <StatusBadge tone="neutral">
@@ -342,8 +342,8 @@ export default function Vehicles() {
                                                 <SelectValue placeholder={t("ui.Vehicles.seleccionaUnaOpcion", "Selecciona una opción")} />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="empresa">Propiedad de la empresa</SelectItem>
-                                                <SelectItem value="vigilante">Propiedad del vigilante</SelectItem>
+                                                <SelectItem value="empresa">{t('ui.Vehicles.propiedadDeLaEmpresa')}</SelectItem>
+                                                <SelectItem value="vigilante">{t('ui.Vehicles.propiedadDelVigilante')}</SelectItem>
                                                 <SelectItem value="alquilado">Alquilado</SelectItem>
                                             </SelectContent>
                                         </Select>

@@ -46,7 +46,7 @@ export default function VideoGatewayModal({
   };
 
   const copyYaml = async () => {
-    try { await navigator.clipboard.writeText(yaml); toast.success("Configuración go2rtc copiada"); } catch { /* ignore */ }
+    try { await navigator.clipboard.writeText(yaml); toast.success(t('ui.VideoGatewayModal.configuracionGo2rtcCopiada')); } catch { /* ignore */ }
   };
 
   const inputCls = "cg-input cg-focus w-full px-3 py-2.5 text-sm";
@@ -76,9 +76,9 @@ export default function VideoGatewayModal({
 
         <div className="flex-1 space-y-4 overflow-y-auto p-5">
           <div>
-            <label className="cg-eyebrow mb-1.5 block">URL base del gateway (go2rtc)</label>
+            <label className="cg-eyebrow mb-1.5 block">{t('ui.VideoGatewayModal.urlBaseDelGatewayGo2rtc')}</label>
             <input className={inputCls} value={base} onChange={(e) => setBase(e.target.value)} placeholder="https://gateway.tu-dominio.com  (o http://IP-del-bridge:1984)" />
-            <p className="mt-1 text-[11px]" style={{ color: "var(--ink-faint)" }}>Donde corre go2rtc — en la nube (si el DVR es accesible por DDNS) o un bridge en sitio.</p>
+            <p className="mt-1 text-[11px]" style={{ color: "var(--ink-faint)" }}>{t('ui.VideoGatewayModal.dondeCorreGo2rtcEnLa')}</p>
           </div>
           <div>
             <label className="cg-eyebrow mb-1.5 block">Formato</label>
@@ -108,7 +108,7 @@ export default function VideoGatewayModal({
             ) : (
               <pre className="max-h-40 overflow-auto whitespace-pre-wrap rounded-lg p-2 text-[11px]" style={{ background: "var(--glass-solid)", color: "var(--ink-soft)" }}>{yaml || "Sincroniza las cámaras del dispositivo primero."}</pre>
             )}
-            <p className="mt-1.5 text-[11px]" style={{ color: "var(--ink-faint)" }}>Despliega go2rtc con este config; toma el RTSP del DVR y lo sirve al CRM.</p>
+            <p className="mt-1.5 text-[11px]" style={{ color: "var(--ink-faint)" }}>{t('ui.VideoGatewayModal.despliegaGo2rtcConEsteConfig')}</p>
           </div>
         </div>
 

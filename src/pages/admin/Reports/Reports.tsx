@@ -74,7 +74,7 @@ const Reports: React.FC<ReportsProps> = ({ onNavigate }) => {
       <input
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Buscar un informe…"
+        placeholder={t('ui.Reports.buscarUnInforme')}
         className="cg-input w-full py-2.5 pl-10 pr-9 text-sm"
       />
       {query && (

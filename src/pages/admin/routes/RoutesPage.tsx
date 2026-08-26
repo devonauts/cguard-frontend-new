@@ -149,7 +149,7 @@ export default function RoutesPage() {
     // state on routes yet, so they are not offered.
     if (action !== 'eliminar') return;
     if (selectedIds.length === 0) {
-      toast.error('Selecciona al menos una ruta.');
+      toast.error(t('ui.RoutesPage.seleccionaAlMenosUnaRuta'));
       return;
     }
     if (
@@ -187,7 +187,7 @@ export default function RoutesPage() {
         <PageHeader
           icon={<RouteIcon />}
           title="Rutas"
-          subtitle="Define y gestiona las rutas de patrullaje vehicular de tus puestos."
+          subtitle={t('ui.RoutesPage.defineYGestionaLasRutas')}
           actions={(
             <Button variant="brand" asChild>
               <Link to={(() => {
@@ -229,7 +229,7 @@ export default function RoutesPage() {
               <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 className="w-full pl-9 sm:w-72"
-                placeholder="Buscar ruta"
+                placeholder={t('ui.RoutesPage.buscarRuta')}
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
               />
@@ -263,7 +263,7 @@ export default function RoutesPage() {
                       <SelectContent>
                         <SelectItem value="default">Default</SelectItem>
                         <SelectItem value="turno-dia">{t("ui.Routes.turnoDia", "Turno día")}</SelectItem>
-                        <SelectItem value="turno-noche">Turno noche</SelectItem>
+                        <SelectItem value="turno-noche">{t('ui.RoutesPage.turnoNoche')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -334,7 +334,7 @@ export default function RoutesPage() {
                     <EmptyState
                       icon={<RouteIcon />}
                       title={t('kit.table.emptyTitle')}
-                      description="No pudimos encontrar ninguna ruta que coincida con tu búsqueda."
+                      description={t('ui.RoutesPage.noPudimosEncontrarNingunaRuta')}
                     />
                   </td>
                 </tr>
@@ -345,7 +345,7 @@ export default function RoutesPage() {
                     <Checkbox
                       checked={selectedIds.includes(r.id)}
                       onCheckedChange={(v) => toggleSelectOne(r.id, v === true)}
-                      aria-label="Seleccionar ruta"
+                      aria-label={t('ui.RoutesPage.seleccionarRuta')}
                     />
                   </td>
                   <td className="px-4 py-3 font-medium">

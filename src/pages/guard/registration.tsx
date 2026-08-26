@@ -635,7 +635,7 @@ export default function GuardRegistration() {
             <div className="flex items-start gap-3 rounded-xl border border-border bg-muted/30 p-3.5">
               <Smartphone className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
               <div>
-                <p className="text-sm font-semibold text-foreground">Descarga la app de vigilante</p>
+                <p className="text-sm font-semibold text-foreground">{t('ui.registration.descargaLaAppDeVigilante')}</p>
                 <p className="text-xs text-muted-foreground">{t("ui.registration.googlePlayAppStoreInicia", "Google Play · App Store. Inicia sesión cuando tu cuenta esté activa.")}</p>
               </div>
             </div>

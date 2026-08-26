@@ -167,7 +167,7 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
       setConversations((cs) => cs.filter((c) => c.id !== id));
       setSelected(null);
       setMessages([]);
-      toast.success("Conversación eliminada");
+      toast.success(t('ui.MessengerPage.conversacionEliminada'));
     } catch (e: any) {
       toast.error(e?.data?.message || e?.message || "No se pudo eliminar la conversación");
     }
@@ -222,8 +222,7 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
           subtitle={isClient ? "Conversaciones con tus clientes." : "Conversaciones con vigilantes, supervisores y grupos por puesto."}
           actions={
             <Button variant="brand" onClick={() => setComposeOpen(true)}>
-              <Plus size={15} className="mr-1.5" /> Nuevo
-            </Button>
+              <Plus size={15} className="mr-1.5" />{" "}{t('ui.MessengerPage.nuevo')}{" "}</Button>
           }
         />
         <div className="glass flex h-[calc(100vh-240px)] overflow-hidden">
@@ -233,8 +232,7 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
             <div className="flex items-center justify-between gap-2 border-b p-3" style={{ borderColor: 'var(--hairline)' }}>
               <h2 className="text-sm font-bold">{pageTitle}</h2>
               <Button size="sm" variant="brand" onClick={() => setComposeOpen(true)}>
-                <Plus size={14} className="mr-1" /> Nuevo
-              </Button>
+                <Plus size={14} className="mr-1" />{" "}{t('ui.MessengerPage.nuevo')}{" "}</Button>
             </div>
             <div className="flex-1 space-y-2 overflow-auto p-2">
               {loadingList ? (
@@ -290,7 +288,7 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
                 <EmptyState
                   icon={<MessageSquareText />}
                   title={t("ui.Messenger.ningunaConversacionAbierta", "Ninguna conversación abierta")}
-                  description="Selecciona una conversación de la lista o crea una nueva."
+                  description={t('ui.MessengerPage.seleccionaUnaConversacionDeLa')}
                 />
               </div>
             ) : (
@@ -321,7 +319,7 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
                   {selected.isGroup && (
                     <button
                       onClick={() => setMembersOpen(true)}
-                      title="Miembros del grupo"
+                      title={t('ui.MessengerPage.miembrosDelGrupo')}
                       className="cg-focus ml-auto grid h-9 w-9 place-items-center rounded-lg transition-colors hover:bg-muted"
                       style={{ color: 'var(--ink-soft)' }}
                     >
@@ -448,7 +446,7 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
                         value={draft}
                         onChange={(e) => setDraft(e.target.value)}
                         onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); onSend(); } }}
-                        placeholder="Escribe un mensaje…"
+                        placeholder={t('ui.MessengerPage.escribeUnMensaje')}
                         rows={1}
                         className="cg-input max-h-32 min-h-[40px] flex-1 resize-none px-3.5 py-2 text-sm"
                       />
@@ -585,7 +583,7 @@ function ComposeDialog({ scope, onClose, onSent }: { scope: "operational" | "cli
     <Modal
       open
       onOpenChange={(o) => { if (!o) onClose(); }}
-      title="Nuevo"
+      title={i18n.t('ui.MessengerPage.nuevo')}
       icon={<Plus className="h-5 w-5" />}
       footer={(
         <>
@@ -642,7 +640,7 @@ function ComposeDialog({ scope, onClose, onSent }: { scope: "operational" | "cli
             </>
           ) : (
             <>
-              <input value={groupName} onChange={(e) => setGroupName(e.target.value)} placeholder="Nombre del grupo" className="cg-input w-full px-3 py-2 text-sm" />
+              <input value={groupName} onChange={(e) => setGroupName(e.target.value)} placeholder={i18n.t('ui.MessengerPage.nombreDelGrupo')} className="cg-input w-full px-3 py-2 text-sm" />
               {site ? (
                 <div className="glass-flat glass-brand flex items-center justify-between px-3 py-2">
                   <span className="text-sm font-medium">Puesto: {site.label}</span>
@@ -652,7 +650,7 @@ function ComposeDialog({ scope, onClose, onSent }: { scope: "operational" | "cli
                 <div>
                   <div className="relative">
                     <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
-                    <input value={siteQ} onChange={(e) => setSiteQ(e.target.value)} placeholder="Buscar puesto/sitio…" className="cg-input w-full py-2 pl-9 pr-3 text-sm" />
+                    <input value={siteQ} onChange={(e) => setSiteQ(e.target.value)} placeholder={i18n.t('ui.MessengerPage.buscarPuestoSitio')} className="cg-input w-full py-2 pl-9 pr-3 text-sm" />
                   </div>
                   {siteResults.length > 0 && (
                     <div className="mt-2 max-h-44 overflow-auto rounded-xl border" style={{ borderColor: 'var(--hairline)' }}>
@@ -661,7 +659,7 @@ function ComposeDialog({ scope, onClose, onSent }: { scope: "operational" | "cli
                       ))}
                     </div>
                   )}
-                  <p className="mt-1.5 text-[11px]" style={{ color: 'var(--ink-soft)' }}>Los vigilantes asignados a este puesto se añaden automáticamente y el grupo se mantiene al día con las asignaciones.</p>
+                  <p className="mt-1.5 text-[11px]" style={{ color: 'var(--ink-soft)' }}>{i18n.t('ui.MessengerPage.losVigilantesAsignadosAEste')}</p>
                 </div>
               )}
               <label className="flex items-center gap-2 text-sm">
@@ -720,7 +718,7 @@ function MembersPanel({ conversation, onClose, onChanged }: { conversation: Conv
   };
   const resync = async () => {
     setBusy(true);
-    try { const res = await messageService.resyncMembers(conversation.id); setMembers(res?.rows || []); onChanged(); toast.success("Miembros actualizados desde las asignaciones"); }
+    try { const res = await messageService.resyncMembers(conversation.id); setMembers(res?.rows || []); onChanged(); toast.success(t('ui.MessengerPage.miembrosActualizadosDesdeLasAsignaciones')); }
     catch (e: any) { toast.error(e?.data?.message || e?.message || "No se pudo sincronizar"); }
     finally { setBusy(false); }
   };
@@ -761,8 +759,8 @@ function MembersPanel({ conversation, onClose, onChanged }: { conversation: Conv
           ) : members.length === 0 ? (
             <EmptyState
               icon={<Users />}
-              title="El grupo no tiene miembros"
-              description="Añade vigilantes con el buscador o sincroniza con las asignaciones del puesto."
+              title={t('ui.MessengerPage.elGrupoNoTieneMiembros')}
+              description={t('ui.MessengerPage.anadeVigilantesConElBuscador')}
             />
           ) : (
             members.map((m) => (

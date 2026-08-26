@@ -96,7 +96,7 @@ export default function TaskTracking() {
 
   const submit = async () => {
     if (!form.taskToDo.trim() || !form.stationId || !form.deadline) {
-      toast.error("Completa tarea, puesto y fecha límite");
+      toast.error(t('ui.TaskTracking.completaTareaPuestoYFecha'));
       return;
     }
     setSaving(true);
@@ -107,7 +107,7 @@ export default function TaskTracking() {
         dateToDoTheTask: new Date(form.deadline).toISOString(),
         priority: form.priority as "alta" | "media" | "baja",
       });
-      toast.success("Tarea creada y enviada a los vigilantes del puesto");
+      toast.success(t('ui.TaskTracking.tareaCreadaYEnviadaA'));
       setOpen(false);
       load();
     } catch (e: any) {
@@ -144,11 +144,10 @@ export default function TaskTracking() {
           <PageHeader
             icon={<CheckSquare />}
             title="Tareas"
-            subtitle="Seguimiento de tareas de los puestos: por aprobar, en curso y completadas."
+            subtitle={t('ui.TaskTracking.seguimientoDeTareasDeLos')}
             actions={
               <Button variant="brand" onClick={openDialog}>
-                <Plus className="mr-2 h-4 w-4" /> Nueva tarea
-              </Button>
+                <Plus className="mr-2 h-4 w-4" />{" "}{t('ui.TaskTracking.nuevaTarea')}{" "}</Button>
             }
           />
 
@@ -173,8 +172,8 @@ export default function TaskTracking() {
                 emptyState={
                   <EmptyState
                     icon={<ListChecks />}
-                    title="No hay tareas"
-                    description="Las tareas de los puestos aparecerán aquí en cuanto se creen."
+                    title={t('ui.TaskTracking.noHayTareas')}
+                    description={t('ui.TaskTracking.lasTareasDeLosPuestos')}
                   />
                 }
               />
@@ -185,9 +184,9 @@ export default function TaskTracking() {
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
-          <DialogHeader><DialogTitle>Nueva tarea</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{t('ui.TaskTracking.nuevaTarea')}</DialogTitle></DialogHeader>
           <div className="space-y-3">
-            <Textarea placeholder="Describe la tarea…" value={form.taskToDo} onChange={(e) => setForm((f) => ({ ...f, taskToDo: e.target.value }))} />
+            <Textarea placeholder={t('ui.TaskTracking.describeLaTarea')} value={form.taskToDo} onChange={(e) => setForm((f) => ({ ...f, taskToDo: e.target.value }))} />
             <Select value={form.stationId} onValueChange={(v) => setForm((f) => ({ ...f, stationId: v }))}>
               <SelectTrigger><SelectValue placeholder={t('comun.puesto')} /></SelectTrigger>
               <SelectContent>
@@ -216,7 +215,7 @@ export default function TaskTracking() {
       {/* Task detail */}
       <Dialog open={!!selected} onOpenChange={(o) => { if (!o) setSelected(null); }}>
         <DialogContent className="max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Detalle de la tarea</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{t('ui.TaskTracking.detalleDeLaTarea')}</DialogTitle></DialogHeader>
           {selected && (
             <div className="space-y-4">
               <div>

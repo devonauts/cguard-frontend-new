@@ -115,7 +115,7 @@ export default function ClientPortal({ client }: Props) {
       await clientService.updateClient(String(client.id), { portalSettings: siguiente } as any);
     } catch {
       setPortal(portal); // se revierte: la casilla no puede mentir sobre lo guardado
-      toast.error('No se pudo guardar. Inténtalo de nuevo.');
+      toast.error(t('ui.ClientPortal.noSePudoGuardarIntentalo'));
     } finally {
       setGuardandoPortal(false);
     }
@@ -152,7 +152,7 @@ export default function ClientPortal({ client }: Props) {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.3fr_1fr]">
         {/* LEFT — access + actions */}
         <div className="space-y-4">
-          <Section title="Acceso al portal del cliente" icon={<KeyRound />}>
+          <Section title={t('ui.ClientPortal.accesoAlPortalDelCliente')} icon={<KeyRound />}>
             {/* Titular */}
             <div className="glass-sunken flex items-center gap-3 p-3">
               <div
@@ -181,7 +181,7 @@ export default function ClientPortal({ client }: Props) {
                 <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" />
                 <div className="flex-1 text-sm">
                   <p className="font-semibold">{t("ui.ClientPortal.invitacionEnviada", "¡Invitación enviada!")}</p>
-                  <p>Se envió la invitación {result.kind === 'app' ? 'a la app' : 'al portal'} a <strong>{result.recipient}</strong>. El cliente debe revisar su bandeja de entrada.</p>
+                  <p>Se envió la invitación {result.kind === 'app' ? 'a la app' : 'al portal'} a <strong>{result.recipient}</strong>{t('ui.ClientPortal.elClienteDebeRevisarSu')}</p>
                 </div>
                 <button onClick={() => setResult(null)} className="cg-focus rounded text-xs underline">{t('actions.close')}</button>
               </div>
@@ -196,7 +196,7 @@ export default function ClientPortal({ client }: Props) {
                 }}
               >
                 <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
-                <div className="flex-1 text-sm"><p className="font-semibold">Error al enviar</p><p>{errorMsg}</p></div>
+                <div className="flex-1 text-sm"><p className="font-semibold">{t('ui.ClientPortal.errorAlEnviar')}</p><p>{errorMsg}</p></div>
                 <button onClick={() => setErrorMsg('')} className="cg-focus rounded text-xs underline">{t('actions.close')}</button>
               </div>
             )}
@@ -204,15 +204,15 @@ export default function ClientPortal({ client }: Props) {
             {/* Actions */}
             <div className="mt-3 flex flex-wrap gap-2">
               <Button variant="brand" onClick={() => setConfirm('portal')} disabled={!email && !linked}><Mail className="mr-1.5 h-4 w-4" /> {linked ? 'Reenviar invitación al portal' : 'Enviar invitación al portal'}</Button>
-              <Button variant="outline" onClick={() => setConfirm('app')} disabled={!email && !linked}><Smartphone className="mr-1.5 h-4 w-4" /> Invitar a la app Mi Seguridad</Button>
+              <Button variant="outline" onClick={() => setConfirm('app')} disabled={!email && !linked}><Smartphone className="mr-1.5 h-4 w-4" />{" "}{t('ui.ClientPortal.invitarALaAppMi')}</Button>
             </div>
-            {(!email && !linked) && <p className="mt-2 text-xs" style={{ color: 'var(--warn-text)' }}>Este cliente no tiene correo ni usuario vinculado. Edita el cliente y agrega un correo para habilitar el acceso.</p>}
+            {(!email && !linked) && <p className="mt-2 text-xs" style={{ color: 'var(--warn-text)' }}>{t('ui.ClientPortal.esteClienteNoTieneCorreo')}</p>}
           </Section>
 
           <Section title={t('comun.usuariosConAcceso')} icon={<Users />}
             action={<button onClick={() => navigate(`/clients/${client?.id}/user-access`)} className="cg-focus inline-flex items-center gap-1 rounded-md text-xs font-semibold hover:underline" style={{ color: 'var(--brand-text)' }}>Gestionar accesos <ArrowRight className="h-3.5 w-3.5" /></button>}>
             {accessCount === 0 ? (
-              <EmptyState icon={<Users />} title={t('comun.sinUsuariosConAcceso')} description="Invita al titular o agrega accesos adicionales para que el cliente entre al portal y la app." />
+              <EmptyState icon={<Users />} title={t('comun.sinUsuariosConAcceso')} description={t('ui.ClientPortal.invitaAlTitularOAgrega')} />
             ) : (
               <div className="divide-y" style={{ borderColor: 'var(--hairline)' }}>
                 {/* /access-users already includes the titular — only fall back

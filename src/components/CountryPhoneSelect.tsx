@@ -156,7 +156,7 @@ export default function CountryPhoneSelect({
           <Command>
             <CommandInput placeholder={t("ui.CountryPhoneSelect.buscarPaisOCodigo", "Buscar país o código…")} />
             <CommandList className="max-h-80">
-              <CommandEmpty>No se encontraron resultados.</CommandEmpty>
+              <CommandEmpty>{t('ui.CountryPhoneSelect.noSeEncontraronResultados')}</CommandEmpty>
               <CommandGroup>
                 {countries.map((c) => (
                   <CommandItem

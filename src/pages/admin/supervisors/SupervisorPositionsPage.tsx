@@ -74,7 +74,7 @@ export default function SupervisorPositionsPage() {
         endTime: form.endTime || undefined, guardsNeeded: Number(form.guardsNeeded) || 1,
         stationIds: form.stationIds,
       });
-      toast.success("Puesto creado");
+      toast.success(t('ui.SupervisorPositionsPage.puestoCreado'));
       setOpen(false);
       setForm({ name: "", zone: "", scheduleType: "24h", rotationStyleId: "", startTime: "07:00", endTime: "19:00", guardsNeeded: 2, stationIds: [] });
       load();
@@ -89,7 +89,7 @@ export default function SupervisorPositionsPage() {
       setRows((prev) => prev.map((p) => (p.id === posId ? updated : p)));
       setAssignSel((s) => ({ ...s, [posId]: "" }));
       setOffsetSel((s) => ({ ...s, [posId]: "" }));
-      toast.success("Supervisor asignado");
+      toast.success(t('ui.SupervisorPositionsPage.supervisorAsignado'));
     } catch (e: any) { toast.error(e?.message || "No se pudo asignar"); }
   };
 
@@ -114,7 +114,7 @@ export default function SupervisorPositionsPage() {
         <PageContainer width="wide">
           <PageHeader
             icon={<MapPin />}
-            title="Puestos de supervisor"
+            title={t('ui.SupervisorPositionsPage.puestosDeSupervisor')}
             subtitle="Configura los puestos (turno + rotación) y asigna supervisores. La rotación del puesto define el horario — el supervisor la sigue."
             actions={<Button variant="brand" onClick={() => setOpen(true)}><Plus className="mr-2 h-4 w-4" />{" "}{t('ui.SupervisorPositionsPage.nuevoPuesto')}</Button>}
           />
@@ -131,7 +131,7 @@ export default function SupervisorPositionsPage() {
               <EmptyState
                 icon={<MapPin />}
                 title={t("ui.SupervisorPositions.aunNoHayPuestosDe", "Aún no hay puestos de supervisor")}
-                description="Crea el primero (p. ej. «Aguila2»): defines su turno y su rotación, y los supervisores asignados la siguen."
+                description={t('ui.SupervisorPositionsPage.creaElPrimeroPEj')}
                 action={<Button variant="brand" size="sm" onClick={() => setOpen(true)}><Plus className="mr-2 h-4 w-4" />{" "}{t('ui.SupervisorPositionsPage.nuevoPuesto')}</Button>}
               />
             </Section>
@@ -176,7 +176,7 @@ export default function SupervisorPositionsPage() {
                           onClick={() => unassign(p.id, a.id)}
                           className="cg-focus rounded-full transition-colors hover:[color:var(--bad-text)]"
                           style={{ color: "var(--ink-soft)" }}
-                          aria-label="Quitar supervisor"
+                          aria-label={t('ui.SupervisorPositionsPage.quitarSupervisor')}
                         >
                           <X className="h-3 w-3" />
                         </button>
@@ -187,7 +187,7 @@ export default function SupervisorPositionsPage() {
                   <div className="flex flex-wrap items-center gap-2">
                     <select value={assignSel[p.id] || ""} onChange={(e) => setAssignSel((s) => ({ ...s, [p.id]: e.target.value }))}
                       className="cg-input cg-focus h-9 flex-1 px-2 text-sm sm:max-w-xs">
-                      <option value="">Asignar supervisor…</option>
+                      <option value="">{t('ui.SupervisorPositionsPage.asignarSupervisor')}</option>
                       {sups.filter((s) => !p.assignments.some((a) => a.supervisorUserId === s.id)).map((s) => (
                         <option key={s.id} value={s.id}>{s.fullName}</option>
                       ))}
@@ -250,7 +250,7 @@ export default function SupervisorPositionsPage() {
                         ))}
                       </div>
                     ) : (
-                      <p className="text-sm" style={{ color: "var(--ink-soft)" }}>Ninguno. Usa «Editar» para asignar puestos.</p>
+                      <p className="text-sm" style={{ color: "var(--ink-soft)" }}>{t('ui.SupervisorPositionsPage.ningunoUsaEditarParaAsignar')}</p>
                     )}
                   </div>
                 </ListSection>
@@ -260,16 +260,16 @@ export default function SupervisorPositionsPage() {
         </PageContainer>
       </div>
 
-      <Modal open={open} onOpenChange={setOpen} title="Nuevo puesto de supervisor" icon={<MapPin className="h-5 w-5" />}
-        description="Configura el turno y la rotación (día/noche). Los supervisores asignados siguen esta rotación."
+      <Modal open={open} onOpenChange={setOpen} title={t('ui.SupervisorPositionsPage.nuevoPuestoDeSupervisor')} icon={<MapPin className="h-5 w-5" />}
+        description={t('ui.SupervisorPositionsPage.configuraElTurnoYLa')}
         footer={<><Button variant="outline" onClick={() => setOpen(false)} disabled={saving}>{t('actions.cancel')}</Button><Button variant="brand" onClick={create} disabled={saving}>{saving ? "Creando…" : "Crear puesto"}</Button></>}>
         <div className="space-y-4">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Input placeholder="Nombre (p. ej. Aguila2) *" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
+            <Input placeholder={t('ui.SupervisorPositionsPage.nombrePEjAguila2')} value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
             <Input placeholder="Zona / sector" value={form.zone} onChange={(e) => setForm((f) => ({ ...f, zone: e.target.value }))} />
           </div>
           <div>
-            <label className="cg-eyebrow mb-1 block">Tipo de turno</label>
+            <label className="cg-eyebrow mb-1 block">{t('ui.SupervisorPositionsPage.tipoDeTurno')}</label>
             <select value={form.scheduleType} onChange={(e) => setForm((f) => ({ ...f, scheduleType: e.target.value }))}
               className="cg-input cg-focus h-9 w-full px-2 text-sm">
               {SCHEDULE_TYPES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}

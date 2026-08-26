@@ -158,7 +158,7 @@ export default function NominaTimeClock() {
     });
 
   const doClockIn = async () => {
-    if (mode === "guard" && !stationId) return toast.error("Selecciona un puesto");
+    if (mode === "guard" && !stationId) return toast.error(t('ui.NominaTimeClock.seleccionaUnPuesto'));
     setBusy(true);
     try {
       // Guards require coords (server geofence). Staff: coords optional; still
@@ -170,7 +170,7 @@ export default function NominaTimeClock() {
       // de personal de oficina va por otro endpoint que no la pide.
       let selfiePhoto: string | undefined;
       if (mode === "guard" && exigeSelfie) {
-        toast.info("Mira a la cámara…");
+        toast.info(t('ui.NominaTimeClock.miraALaCamara'));
         const foto = await capturarSelfie();
         selfiePhoto = await attendanceService.uploadClockInSelfie(foto);
       }
@@ -227,7 +227,7 @@ export default function NominaTimeClock() {
             <div className="mt-4">
               <EmptyState
                 icon={<UserX />}
-                title="Reloj de asistencia"
+                title={t('ui.NominaTimeClock.relojDeAsistencia')}
                 description="Tu cuenta no puede registrar asistencia desde aquí. Si eres personal administrativo y necesitas marcar tu horario, pide a un administrador que te habilite el reloj."
                 className="border-none py-6"
               />
@@ -285,7 +285,7 @@ export default function NominaTimeClock() {
                     onChange={(e) => setStationId(e.target.value)}
                     className="cg-input cg-focus mt-1.5 w-full px-3 py-2.5 text-sm"
                   >
-                    {stations.length === 0 && <option value="">Sin puestos asignados</option>}
+                    {stations.length === 0 && <option value="">{t('ui.NominaTimeClock.sinPuestosAsignados')}</option>}
                     {stations.map((s) => (
                       <option key={s.id} value={s.id}>{s.stationName || s.name || s.id}</option>
                     ))}

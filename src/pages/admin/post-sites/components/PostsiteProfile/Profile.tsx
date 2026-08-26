@@ -59,7 +59,7 @@ const RateRow = ({
                     disabled={saving}
                     placeholder="0.00"
                 />
-                <button onClick={onSave} disabled={saving} aria-label="Guardar tarifa" className="cg-focus rounded p-1 disabled:opacity-40" style={{ color: 'var(--ok-text)' }}>
+                <button onClick={onSave} disabled={saving} aria-label={i18n.t('ui.Profile.guardarTarifa')} className="cg-focus rounded p-1 disabled:opacity-40" style={{ color: 'var(--ok-text)' }}>
                     <Check size={14} />
                 </button>
                 <button onClick={onCancel} disabled={saving} aria-label={i18n.t('actions.cancel')} className="cg-focus rounded p-1 disabled:opacity-40" style={{ color: 'var(--bad-text)' }}>
@@ -77,7 +77,7 @@ const RateRow = ({
                     onClick={onEdit}
                     className="cg-btn-ghost cg-focus grid h-8 w-8 place-items-center rounded transition-opacity md:h-auto md:w-auto md:p-0.5 md:opacity-0 md:group-hover:opacity-100"
                     title={i18n.t('actions.edit')}
-                    aria-label="Editar tarifa"
+                    aria-label={i18n.t('ui.Profile.editarTarifa')}
                 >
                     <Pencil size={12} />
                 </button>
@@ -317,7 +317,7 @@ export default function PostSiteProfile({ site }: { site?: any }) {
                         if (!hayAlgo) return null;
                         return (
                             <div className="glass-sunken mb-5 space-y-3 p-4">
-                                <h4 className="cg-eyebrow">Condiciones del servicio</h4>
+                                <h4 className="cg-eyebrow">{t('ui.Profile.condicionesDelServicio')}</h4>
                                 {cfg.riskLevel && <InfoRow label="Nivel de riesgo" value={String(cfg.riskLevel)} />}
                                 {cfg.stationsRequired ? (
                                     <InfoRow label="Puestos requeridos" value={String(cfg.stationsRequired)} />
@@ -343,7 +343,7 @@ export default function PostSiteProfile({ site }: { site?: any }) {
                                 ) : null}
                                 {cfg.postInstructions && (
                                     <div>
-                                        <p className="cg-eyebrow mb-1">Consignas del puesto</p>
+                                        <p className="cg-eyebrow mb-1">{t('ui.Profile.consignasDelPuesto')}</p>
                                         <p className="whitespace-pre-line text-sm leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
                                             {String(cfg.postInstructions)}
                                         </p>
@@ -479,7 +479,7 @@ export default function PostSiteProfile({ site }: { site?: any }) {
                         <div className="p-6"><SkeletonCards count={2} /></div>
                     ) : (
                         <div className="p-6">
-                            <EmptyState icon={<Shield />} title="No hay estaciones registradas para esta sede." />
+                            <EmptyState icon={<Shield />} title={t('ui.Profile.noHayEstacionesRegistradasPara')} />
                         </div>
                     )
                 ) : (

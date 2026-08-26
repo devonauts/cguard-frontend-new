@@ -90,9 +90,9 @@ export default function GuardHorarioPage() {
             action={
               <div className="flex items-center gap-1.5">
                 <span className="hidden text-xs sm:inline" style={{ color: 'var(--ink-soft)' }}>{rangeLabel}</span>
-                <Button variant="outline" size="icon-sm" onClick={() => shiftWindow(-14)} title="Quincena anterior"><ChevronLeft className="h-4 w-4" /></Button>
+                <Button variant="outline" size="icon-sm" onClick={() => shiftWindow(-14)} title={t('ui.GuardHorarioPage.quincenaAnterior')}><ChevronLeft className="h-4 w-4" /></Button>
                 <Button variant="outline" size="sm" onClick={() => setStart(undefined)}>Hoy</Button>
-                <Button variant="outline" size="icon-sm" onClick={() => shiftWindow(14)} title="Quincena siguiente"><ChevronRight className="h-4 w-4" /></Button>
+                <Button variant="outline" size="icon-sm" onClick={() => shiftWindow(14)} title={t('ui.GuardHorarioPage.quincenaSiguiente')}><ChevronRight className="h-4 w-4" /></Button>
                 <Button variant="outline" size="icon-sm" onClick={() => load()} title="Actualizar"><RefreshCw className="h-4 w-4" /></Button>
               </div>
             }
@@ -103,7 +103,7 @@ export default function GuardHorarioPage() {
               <EmptyState
                 icon={<CalendarDays className="h-5 w-5" />}
                 title={t('ui.GuardHorarioPage.sinHorario')}
-                description="Este vigilante no tiene puestos con rotación configurada."
+                description={t('ui.GuardHorarioPage.esteVigilanteNoTienePuestos')}
               />
             ) : (
               <>
@@ -111,7 +111,7 @@ export default function GuardHorarioPage() {
                   <table className="w-full border-collapse text-sm">
                     <thead>
                       <tr>
-                        <th className="cg-eyebrow sticky left-0 z-10 min-w-[220px] border-b px-2 py-2 text-left" style={{ background: 'var(--glass-solid)', borderColor: 'var(--hairline)' }}>Puesto · Cliente</th>
+                        <th className="cg-eyebrow sticky left-0 z-10 min-w-[220px] border-b px-2 py-2 text-left" style={{ background: 'var(--glass-solid)', borderColor: 'var(--hairline)' }}>{t('ui.GuardHorarioPage.puestoCliente')}</th>
                         {days.map((d) => (
                           <th
                             key={d.date}
@@ -165,7 +165,7 @@ export default function GuardHorarioPage() {
                       <span className="grid h-4 w-4 place-items-center rounded text-[10px] font-bold" style={CELL[k].style}>{CELL[k].label}</span> {label}
                     </span>
                   ))}
-                  <span className="inline-flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full" style={{ background: 'var(--warn)' }} /> Cubre otro vigilante</span>
+                  <span className="inline-flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full" style={{ background: 'var(--warn)' }} />{" "}{t('ui.GuardHorarioPage.cubreOtroVigilante')}</span>
                   <span className="ml-auto">{t("ui.GuardHorario.laRotacionSeConfiguraEn", "La rotación se configura en la estación.")}</span>
                 </div>
               </>

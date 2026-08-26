@@ -257,7 +257,7 @@ export default function RouteDetailModal({ open, onOpenChange, routeId }: Props)
       onOpenChange={(v) => { if (!v) onOpenChange(false); else onOpenChange(true); }}
       size="lg"
       icon={<Route />}
-      title="Detalle de la Ruta"
+      title={t('ui.RouteDetailModal.detalleDeLaRuta')}
       description={loading ? 'Cargando...' : route ? `Información de ${route.name || route.id}` : 'Sin datos'}
       footer={
         <div className="flex w-full justify-end gap-2">
@@ -315,7 +315,7 @@ export default function RouteDetailModal({ open, onOpenChange, routeId }: Props)
               lista: es lo primero que se pregunta quien abre una ruta. */}
           <div className="space-y-3">
             <div className="flex items-center justify-between gap-3">
-              <div className="cg-eyebrow">Orden del recorrido</div>
+              <div className="cg-eyebrow">{t('ui.RouteDetailModal.ordenDelRecorrido')}</div>
               <InsigniaOptimizada optimizada={route.optimized} optimizadaEn={route.optimizedAt} />
             </div>
             <PanelAhorro ahorro={ahorro} optimizadaEn={route.optimizedAt} />
@@ -363,7 +363,7 @@ export default function RouteDetailModal({ open, onOpenChange, routeId }: Props)
                 ))}
               </div>
             ) : (
-              <EmptyState icon={<MapPin />} title={t('comun.sinPuestos')} description="Esta ruta no tiene puestos definidos." />
+              <EmptyState icon={<MapPin />} title={t('comun.sinPuestos')} description={t('ui.RouteDetailModal.estaRutaNoTienePuestos')} />
             )}
           </div>
         </div>

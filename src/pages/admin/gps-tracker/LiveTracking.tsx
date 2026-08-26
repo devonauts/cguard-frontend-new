@@ -296,7 +296,7 @@ export default function LiveTrackingPage() {
         <PageHeader
           icon={<MapPinned />}
           title="Seguimiento en vivo"
-          subtitle="Vigilantes y supervisores en servicio, sobre las paradas de las rutas de patrulla del día."
+          subtitle={t('ui.LiveTracking.vigilantesYSupervisoresEnServicio')}
           actions={
             <div className="flex flex-wrap items-center gap-2">
               <input
@@ -345,7 +345,7 @@ export default function LiveTrackingPage() {
                     </label>
 
                     <div className="space-y-2 border-t pt-4">
-                      <Label>Personal en el mapa</Label>
+                      <Label>{t('ui.LiveTracking.personalEnElMapa')}</Label>
                       <label className="flex items-center gap-2 cursor-pointer">
                         <Checkbox checked={verVigilantes} onCheckedChange={(v) => setVerVigilantes(Boolean(v))} />
                         <span className="text-sm text-foreground">Vigilantes</span>
@@ -375,7 +375,7 @@ export default function LiveTrackingPage() {
           <div className="flex flex-wrap items-end gap-4">
             {/* Tipo de mapa */}
             <div>
-              <p className="text-xs text-muted-foreground mb-1">Tipo de Mapa</p>
+              <p className="text-xs text-muted-foreground mb-1">{t('ui.LiveTracking.tipoDeMapa')}</p>
               <Select value={mapType} onValueChange={(v) => setMapType(v as typeof mapType)}>
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Hoja de Ruta" />

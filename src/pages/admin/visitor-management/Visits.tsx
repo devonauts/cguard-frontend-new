@@ -376,7 +376,7 @@ export default function Visits() {
     const buildAndPrint = async (title: string) => {
         const subjects = await exportSubjects();
         if (!subjects.length) {
-            toast.error("No hay registros para imprimir");
+            toast.error(t('ui.Visits.noHayRegistrosParaImprimir'));
             return;
         }
         const headerCells = exportKeys.map((h) => `<th>${escapeHtml(h)}</th>`).join("");
@@ -417,7 +417,7 @@ export default function Visits() {
             w.focus();
             setTimeout(() => w.print(), 500);
         } else {
-            toast.error("No se pudo abrir ventana para imprimir");
+            toast.error(t('ui.Visits.noSePudoAbrirVentana'));
         }
     };
 
@@ -488,7 +488,7 @@ export default function Visits() {
                             />
                             <Input
                                 className="w-full pl-9"
-                                placeholder="Buscar registro de visitas"
+                                placeholder={t('ui.Visits.buscarRegistroDeVisitas')}
                                 value={search}
                                 onChange={(e) => {
                                     setSearch(e.target.value);
@@ -692,8 +692,8 @@ export default function Visits() {
                                 <th className="cg-eyebrow px-2 py-2">{t('ui.Visits.horaDeEntrada')}</th>
                                 <th className="cg-eyebrow px-2 py-2">{t('ui.Visits.horaDeSalida')}</th>
                                 <th className="cg-eyebrow px-2 py-2">{t('comun.puestoDeSeguridad')}</th>
-                                <th className="cg-eyebrow px-2 py-2">Registrado por</th>
-                                <th className="cg-eyebrow px-2 py-2">Salido por</th>
+                                <th className="cg-eyebrow px-2 py-2">{t('ui.Visits.registradoPor')}</th>
+                                <th className="cg-eyebrow px-2 py-2">{t('ui.Visits.salidoPor')}</th>
                             </tr>
                         </thead>
 

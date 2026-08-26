@@ -119,7 +119,7 @@ export default function TransferShiftModal({
     <Modal
       open={!!target}
       onOpenChange={(o) => !o && close()}
-      title="Trasladar a otro puesto"
+      title={t('ui.TransferShiftModal.trasladarAOtroPuesto')}
       description={`${target?.guardName || ""}${target?.stationName ? ` · desde ${target.stationName}` : ""}`}
       icon={<ArrowRightLeft />}
       footer={
@@ -171,7 +171,7 @@ export default function TransferShiftModal({
         <div>
           <label className="cg-eyebrow mb-1.5 block">{t('comun.motivoOpcional')}</label>
           <Textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2}
-            placeholder="Ej.: cubre falta en el otro puesto" />
+            placeholder={t('ui.TransferShiftModal.ejCubreFaltaEnEl')} />
         </div>
 
         {/* The traslado ends by itself — say so, or the natural assumption is

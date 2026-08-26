@@ -101,7 +101,7 @@ export default function GuardTimeOff() {
       {/* New Request Form */}
       {showForm && (
         <FadeIn>
-          <Section title="Nueva solicitud">
+          <Section title={t('ui.GuardTimeOff.nuevaSolicitud')}>
             <div className="space-y-3">
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">{t('comun.tipo')}</label>
@@ -125,7 +125,7 @@ export default function GuardTimeOff() {
               </div>
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">{t('comun.motivoOpcional')}</label>
-                <textarea value={reason} onChange={e => setReason(e.target.value)} rows={2} className="w-full px-2.5 py-2 border border-input bg-background rounded-lg text-sm resize-none" placeholder="Describe el motivo..." />
+                <textarea value={reason} onChange={e => setReason(e.target.value)} rows={2} className="w-full px-2.5 py-2 border border-input bg-background rounded-lg text-sm resize-none" placeholder={t('ui.GuardTimeOff.describeElMotivo')} />
               </div>
               <div className="flex gap-2 justify-end pt-1">
                 <Button variant="outline" onClick={() => setShowForm(false)}>{t('actions.cancel')}</Button>
@@ -142,7 +142,7 @@ export default function GuardTimeOff() {
       {rows.length === 0 ? (
         <EmptyState
           icon={<CalendarOff />}
-          title="Sin solicitudes"
+          title={t('ui.GuardTimeOff.sinSolicitudes')}
           description="No tienes solicitudes de permiso."
         />
       ) : (

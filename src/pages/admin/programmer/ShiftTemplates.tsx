@@ -162,7 +162,7 @@ export default function ShiftTemplates() {
 
   const handleSave = async () => {
     if (!form.templateName.trim() || !form.startTime || !form.endTime) {
-      toast.error("Título, hora de inicio y hora de fin son obligatorios");
+      toast.error(t('ui.ShiftTemplates.tituloHoraDeInicioY'));
       return;
     }
     const payload: ShiftTemplateInput = {
@@ -226,7 +226,7 @@ export default function ShiftTemplates() {
         <PageHeader
           icon={<LayoutTemplate />}
           title={t('ui.ShiftTemplates.plantillasDeTurno')}
-          subtitle="Define plantillas reutilizables para crear turnos rápidamente."
+          subtitle={t('ui.ShiftTemplates.definePlantillasReutilizablesParaCrear')}
         />
 
         {/* Barra de filtros */}
@@ -235,7 +235,7 @@ export default function ShiftTemplates() {
             <div className="relative w-full md:w-80">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: "var(--ink-faint)" }} />
               <Input
-                placeholder="Buscar plantilla de turno"
+                placeholder={t('ui.ShiftTemplates.buscarPlantillaDeTurno')}
                 className="pl-9"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -274,7 +274,7 @@ export default function ShiftTemplates() {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="grid gap-2">
-                        <Label>Hora de inicio*</Label>
+                        <Label>{t('ui.ShiftTemplates.horaDeInicio')}</Label>
                         <Input
                           type="time"
                           value={form.startTime}
@@ -282,7 +282,7 @@ export default function ShiftTemplates() {
                         />
                       </div>
                       <div className="grid gap-2">
-                        <Label>Hora de fin*</Label>
+                        <Label>{t('ui.ShiftTemplates.horaDeFin')}</Label>
                         <Input
                           type="time"
                           value={form.endTime}
@@ -293,7 +293,7 @@ export default function ShiftTemplates() {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="grid gap-2">
-                        <Label>Repetir turno</Label>
+                        <Label>{t('ui.ShiftTemplates.repetirTurno')}</Label>
                         <Select value={form.repeatShift} onValueChange={(v) => setForm({ ...form, repeatShift: v })}>
                           <SelectTrigger><SelectValue placeholder={t('kit.select.placeholder')} /></SelectTrigger>
                           <SelectContent>
@@ -304,7 +304,7 @@ export default function ShiftTemplates() {
                         </Select>
                       </div>
                       <div className="grid gap-2">
-                        <Label>Repetir por</Label>
+                        <Label>{t('ui.ShiftTemplates.repetirPor')}</Label>
                         <Select value={form.repeatBy} onValueChange={(v) => setForm({ ...form, repeatBy: v })}>
                           <SelectTrigger><SelectValue placeholder={t('kit.select.placeholder')} /></SelectTrigger>
                           <SelectContent>
@@ -482,7 +482,7 @@ export default function ShiftTemplates() {
             <TableHeader style={{ background: "var(--glass-sunken)" }}>
               <TableRow>
                 <TableHead className="w-[50px]"><Checkbox /></TableHead>
-                <TableHead className="cg-eyebrow">Nombre de la plantilla</TableHead>
+                <TableHead className="cg-eyebrow">{t('ui.ShiftTemplates.nombreDeLaPlantilla')}</TableHead>
                 <TableHead className="cg-eyebrow">{t('comun.horaDeInicio')}</TableHead>
                 <TableHead className="cg-eyebrow">{t('comun.horaDeFin')}</TableHead>
                 <TableHead className="cg-eyebrow">{t('comun.puestoDeSeguridad')}</TableHead>
@@ -496,7 +496,7 @@ export default function ShiftTemplates() {
                   <TableCell colSpan={7} className="h-[300px] text-center">
                     <div className="flex flex-col items-center justify-center gap-3" style={{ color: "var(--ink-soft)" }}>
                       <Loader2 className="h-8 w-8 animate-spin" style={{ color: "var(--brand-text)" }} />
-                      <p className="text-sm">Cargando plantillas…</p>
+                      <p className="text-sm">{t('ui.ShiftTemplates.cargandoPlantillas')}</p>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -505,8 +505,8 @@ export default function ShiftTemplates() {
                   <TableCell colSpan={7} className="h-[300px] text-center">
                     <EmptyState
                       icon={<LayoutTemplate />}
-                      title="No hay plantillas"
-                      description="Crea tu primera plantilla de turno con el botón de arriba."
+                      title={t('ui.ShiftTemplates.noHayPlantillas')}
+                      description={t('ui.ShiftTemplates.creaTuPrimeraPlantillaDe')}
                       className="border-0 py-2"
                     />
                   </TableCell>

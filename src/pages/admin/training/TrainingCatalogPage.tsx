@@ -30,7 +30,7 @@ export default function TrainingCatalogPage() {
       setCourses(res.rows.filter((c) => c.isAddon));
     } catch (err) {
       console.error(err);
-      toast.error('No se pudo cargar el catálogo.');
+      toast.error(t('ui.TrainingCatalogPage.noSePudoCargarEl'));
     } finally {
       setLoading(false);
     }
@@ -49,7 +49,7 @@ export default function TrainingCatalogPage() {
           <EmptyState
             icon={<Lock />}
             title={t("ui.TrainingCatalog.sinAccesoAlCatalogo", "Sin acceso al catálogo")}
-            description="No tienes permiso para ver el catálogo."
+            description={t('ui.TrainingCatalogPage.noTienesPermisoParaVer')}
           />
         </PageContainer>
       </AppLayout>
@@ -69,16 +69,16 @@ export default function TrainingCatalogPage() {
       <PageContainer width="wide" className="p-4 sm:p-6">
         <PageHeader
           icon={<GraduationCap />}
-          title="Cursos de la plataforma"
-          subtitle="Cursos addon otorgados a tu empresa por C-Guard Pro. Son de solo lectura, pero puedes asignarlos a tus vigilantes."
+          title={t('ui.TrainingCatalogPage.cursosDeLaPlataforma')}
+          subtitle={t('ui.TrainingCatalogPage.cursosAddonOtorgadosATu')}
         />
 
         {loading && <SkeletonCards count={6} className="lg:grid-cols-3" />}
         {!loading && courses.length === 0 && (
           <EmptyState
             icon={<GraduationCap />}
-            title="Sin cursos addon"
-            description="Tu empresa aún no tiene cursos addon otorgados."
+            title={t('ui.TrainingCatalogPage.sinCursosAddon')}
+            description={t('ui.TrainingCatalogPage.tuEmpresaAunNoTiene')}
           />
         )}
 

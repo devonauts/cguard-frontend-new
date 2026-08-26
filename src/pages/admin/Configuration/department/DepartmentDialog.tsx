@@ -62,7 +62,7 @@ export default function DepartmentDialog({
       open={open}
       onOpenChange={onOpenChange}
       title={title}
-      description="Los departamentos organizan a tu equipo interno (Operaciones, Talento Humano, Nómina…)."
+      description={t('ui.DepartmentDialog.losDepartamentosOrganizanATu')}
       icon={<Building2 />}
     >
         <Form {...form}>

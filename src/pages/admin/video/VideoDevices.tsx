@@ -335,7 +335,7 @@ export default function VideoDevices() {
         <PageHeader
           icon={<Video />}
           title="Dispositivos de video"
-          subtitle="Conecta y administra tus DVR, NVR y cámaras de videovigilancia."
+          subtitle={t('ui.VideoDevices.conectaYAdministraTusDvr')}
           actions={
             <>
               <Button asChild variant="outline">
@@ -363,8 +363,8 @@ export default function VideoDevices() {
         ) : devices.length === 0 ? (
           <EmptyState
             icon={<Video />}
-            title="No hay dispositivos"
-            description="Agrega tu primer DVR, NVR o cámara para comenzar la videovigilancia."
+            title={t('ui.VideoDevices.noHayDispositivos')}
+            description={t('ui.VideoDevices.agregaTuPrimerDvrNvr')}
             action={
               <Button variant="brand" onClick={openCreate}>
                 <Plus className="mr-1.5 h-4 w-4" />
@@ -704,7 +704,7 @@ export default function VideoDevices() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Eliminar dispositivo</AlertDialogTitle>
+            <AlertDialogTitle>{t('ui.VideoDevices.eliminarDispositivo')}</AlertDialogTitle>
             <AlertDialogDescription>
               ¿Seguro que deseas eliminar{" "}
               <span className="font-semibold">{deleteTarget?.name}</span>? Esta acción no

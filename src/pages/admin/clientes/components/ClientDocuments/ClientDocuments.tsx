@@ -163,8 +163,8 @@ export default function ClientDocuments({ client }: { client: Client }) {
 
       {/* KPI row */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <KpiTile icon={<Files />} value={kpis.total ?? 0} label="Total de documentos" accent="primary" />
-        <KpiTile icon={<CalendarPlus />} value={kpis.uploadedThisMonth ?? 0} label="Subidos este mes" accent="green" />
+        <KpiTile icon={<Files />} value={kpis.total ?? 0} label={t('ui.ClientDocuments.totalDeDocumentos')} accent="primary" />
+        <KpiTile icon={<CalendarPlus />} value={kpis.uploadedThisMonth ?? 0} label={t('ui.ClientDocuments.subidosEsteMes')} accent="green" />
         <KpiTile icon={<FolderOpen />} value={kpis.categoriesCount ?? 0} label={t("ui.ClientDocuments.categorias", "Categorías")} accent="blue" />
         <KpiTile icon={<HardDrive />} value={kpis.storageUsedLabel ?? '0 B'} label={`de ${kpis.capLabel ?? '100 GB'}`} accent="orange" bar={kpis.usedPct ?? 0} barTone={(kpis.usedPct ?? 0) >= 90 ? 'bad' : (kpis.usedPct ?? 0) >= 75 ? 'warn' : 'ok'} sub={<span className="text-xs" style={{ color: 'var(--ink-soft)' }}>{kpis.usedPct ?? 0}%</span>} />
       </div>
@@ -175,22 +175,22 @@ export default function ClientDocuments({ client }: { client: Client }) {
           <div className="mb-3 flex flex-wrap items-center gap-2">
             <div className="relative min-w-[200px] flex-1">
               <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
-              <input className={`${FIELD_CLS} pl-8`} placeholder="Buscar por nombre, tipo o palabra clave…" value={q} onChange={(e) => resetPage(setQ)(e.target.value)} />
+              <input className={`${FIELD_CLS} pl-8`} placeholder={t('ui.ClientDocuments.buscarPorNombreTipoO')} value={q} onChange={(e) => resetPage(setQ)(e.target.value)} />
             </div>
             <select className={FIELD_CLS} value={category} onChange={(e) => resetPage(setCategory)(e.target.value)}><option value="">{t("ui.ClientDocuments.categoriaTodas", "Categoría: Todas")}</option>{categories.map((c) => <option key={c.name} value={c.name}>{c.name}</option>)}</select>
             <select className={FIELD_CLS} value={type} onChange={(e) => resetPage(setType)(e.target.value)}><option value="">{t('comun.tipoTodos')}</option>{types.map((t) => <option key={t} value={t}>{t}</option>)}</select>
           </div>
 
           {docs.length === 0 ? (
-            <EmptyState icon={<Files />} title={t('comun.sinDocumentos')} description="Sube el primer documento de este cliente (contratos, manuales, planos…)." action={<Button size="sm" onClick={() => setUploadOpen(true)}><Upload className="mr-1.5 h-4 w-4" /> Subir documento</Button>} />
+            <EmptyState icon={<Files />} title={t('comun.sinDocumentos')} description={t('ui.ClientDocuments.subeElPrimerDocumentoDe')} action={<Button size="sm" onClick={() => setUploadOpen(true)}><Upload className="mr-1.5 h-4 w-4" /> Subir documento</Button>} />
           ) : (
             <TabTable>
                 <THead>
-                  <Th>Nombre del documento</Th>
+                  <Th>{t('ui.ClientDocuments.nombreDelDocumento')}</Th>
                   <Th>{t("ui.ClientDocuments.categoria", "Categoría")}</Th>
                   <Th>{t('comun.tipo')}</Th>
                   <Th>{t("ui.ClientDocuments.tamano", "Tamaño")}</Th>
-                  <Th>Actualizado por</Th>
+                  <Th>{t('ui.ClientDocuments.actualizadoPor')}</Th>
                   <Th>{t('comun.fecha')}</Th>
                   <Th align="right">Acciones</Th>
                 </THead>
@@ -262,7 +262,7 @@ export default function ClientDocuments({ client }: { client: Client }) {
           </Section>
 
           <Section title="Actividad reciente" icon={<Clock />}>
-            {activity.length === 0 ? <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>Sin actividad reciente.</p> : (
+            {activity.length === 0 ? <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t('ui.ClientDocuments.sinActividadReciente')}</p> : (
               <div className="space-y-3">
                 {activity.map((a) => (
                   <div key={a.id} className="flex items-start justify-between gap-3 text-sm">

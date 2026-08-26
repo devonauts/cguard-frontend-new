@@ -132,7 +132,7 @@ export default function NewVehiclePage() {
           );
         } catch (err) {
           console.error('Error uploading vehicle image', err);
-          toast.error('Error subiendo imagen del vehículo');
+          toast.error(t('ui.NewVehiclePage.errorSubiendoImagenDelVehiculo'));
           // continue without image
           imageFileObj = null;
         }
@@ -148,7 +148,7 @@ export default function NewVehiclePage() {
           updatePayload.imageUrl = imageFileObj;
         }
         const resp = await vehicleService.update(editingId, updatePayload);
-        toast.success('Vehículo actualizado');
+        toast.success(t('ui.NewVehiclePage.vehiculoActualizado'));
         console.log('Vehículo actualizado', resp);
         navigate('/vehicle-patrol/vehicles');
       } else {
@@ -200,7 +200,7 @@ export default function NewVehiclePage() {
         <PageHeader
           icon={<Car />}
           title={isEditing ? "Editar vehículo" : "Nuevo vehículo"}
-          subtitle="Registra los datos del vehículo de patrullaje"
+          subtitle={t('ui.NewVehiclePage.registraLosDatosDelVehiculo')}
         />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -388,7 +388,7 @@ export default function NewVehiclePage() {
                       <SelectContent>
                         <SelectItem value="propio">Propio</SelectItem>
                         <SelectItem value="alquilado">Alquilado</SelectItem>
-                        <SelectItem value="cliente">Del cliente</SelectItem>
+                        <SelectItem value="cliente">{t('ui.NewVehiclePage.delCliente')}</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

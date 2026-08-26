@@ -127,13 +127,13 @@ export default function SacafrancoAssignModal({
       size="lg"
       icon={<Shield className="h-5 w-5" />}
       title="Asignar sacafranco"
-      description="Cubre los días de descanso de los fijos. Más disponibles primero."
+      description={t('ui.SacafrancoAssignModal.cubreLosDiasDeDescanso')}
     >
       <div className="space-y-3">
         {/* Legend */}
         <div className="flex flex-wrap items-center gap-4 text-[10px]" style={{ color: 'var(--ink-soft)' }}>
           <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded-sm" style={{ background: 'color-mix(in oklab, var(--bad) 45%, transparent)' }} />{" "}{t("ui.SacafrancoAssignModal.diaACubrirDescansoDel", "Día a cubrir (descanso del fijo)")}</span>
-          <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded-sm" style={{ background: 'color-mix(in oklab, var(--warn) 55%, transparent)' }} /> Ocupado en otro puesto</span>
+          <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded-sm" style={{ background: 'color-mix(in oklab, var(--warn) 55%, transparent)' }} />{" "}{t('ui.SacafrancoAssignModal.ocupadoEnOtroPuesto')}</span>
           <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded-sm" style={{ background: 'color-mix(in oklab, var(--ok) 45%, transparent)' }} /> Libre</span>
         </div>
 
@@ -144,7 +144,7 @@ export default function SacafrancoAssignModal({
             <EmptyState
               icon={<Shield />}
               title={t('comun.sinVigilantesDisponibles')}
-              description="Todos los vigilantes tienen una rotación activa."
+              description={t('ui.SacafrancoAssignModal.todosLosVigilantesTienenUna')}
             />
           ) : candidates.map((g) => (
             <div key={g.id} className="glass-flat p-3">

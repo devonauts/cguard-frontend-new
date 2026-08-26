@@ -158,7 +158,7 @@ export default function PatrullaBoardPage() {
         <PageHeader
           icon={<Car />}
           title="Patrulla vehicular"
-          subtitle="Rutas que el supervisor debe recorrer y su estado del día."
+          subtitle={t('ui.PatrullaBoardPage.rutasQueElSupervisorDebe')}
           actions={(
             <>
               <input
@@ -203,7 +203,7 @@ export default function PatrullaBoardPage() {
           <EmptyState
             icon={<RouteIcon />}
             title={showAll ? 'No hay rutas creadas' : 'No hay rutas programadas para este día'}
-            description="Crea una patrulla vehicular con sus paradas (sitios de clientes) para empezar."
+            description={t('ui.PatrullaBoardPage.creaUnaPatrullaVehicularCon')}
           />
         ) : (
           <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">

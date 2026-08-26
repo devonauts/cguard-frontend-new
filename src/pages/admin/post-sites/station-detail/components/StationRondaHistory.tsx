@@ -130,7 +130,7 @@ function geoBadge(validLocation: boolean | null, distanceMeters: number | null, 
   if (validLocation === false) {
     return <StatusBadge tone="bad" dot={false}><MapPinOff size={11} /> Fuera de rango{sufijo}</StatusBadge>;
   }
-  return <StatusBadge tone="neutral" dot={false}><HelpCircle size={11} /> Sin verificar</StatusBadge>;
+  return <StatusBadge tone="neutral" dot={false}><HelpCircle size={11} />{" "}{i18n.t('ui.StationRondaHistory.sinVerificar')}</StatusBadge>;
 }
 
 // ── Detail modal ────────────────────────────────────────────────────────────
@@ -186,7 +186,7 @@ function RondaDetailModal({ open, onOpenChange, tenantId, assignmentId, fallback
         ) : error ? (
           <div className="text-sm" style={{ color: 'var(--bad-text)' }}>{error}</div>
         ) : !detail ? (
-          <EmptyState icon={<Route />} title="Sin datos de la ronda" />
+          <EmptyState icon={<Route />} title={i18n.t('ui.StationRondaHistory.sinDatosDeLaRonda')} />
         ) : (
           <div className="space-y-4">
             {/* Header meta */}
@@ -210,7 +210,7 @@ function RondaDetailModal({ open, onOpenChange, tenantId, assignmentId, fallback
 
             {/* Checkpoints */}
             {detail.checkpoints.length === 0 ? (
-              <EmptyState icon={<Flag />} title="Esta ronda no tiene puntos de control." />
+              <EmptyState icon={<Flag />} title={i18n.t('ui.StationRondaHistory.estaRondaNoTienePuntos')} />
             ) : (
               <ul className="space-y-2">
                 {detail.checkpoints.map((c) => {
@@ -308,7 +308,7 @@ function RondaDetailModal({ open, onOpenChange, tenantId, assignmentId, fallback
                               >
                                 <SmartImage
                                   src={url}
-                                  alt="Foto del escaneo"
+                                  alt={i18n.t('ui.StationRondaHistory.fotoDelEscaneo')}
                                   rounded="rounded-none"
                                   className="h-28 w-40"
                                   onError={(e) => {
@@ -345,7 +345,7 @@ function RondaDetailModal({ open, onOpenChange, tenantId, assignmentId, fallback
           </button>
           <img
             src={photo}
-            alt="Foto de la ronda"
+            alt={i18n.t('ui.StationRondaHistory.fotoDeLaRonda')}
             className="relative z-10 max-h-[85vh] max-w-full rounded-xl object-contain shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           />

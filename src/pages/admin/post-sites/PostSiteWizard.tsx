@@ -57,6 +57,7 @@ import { useClientSelection } from '@/contexts/ClientSelectionContext';
 import { getServiceType } from '@/lib/serviceTypes';
 import { ImagePlus, Upload } from 'lucide-react';
 import { Section, EmptyState, IconTile } from '@/components/kit';
+import i18n from "@/i18n";
 
 // ─── types ────────────────────────────────────────────────────────────────────
 
@@ -358,7 +359,7 @@ function JornadaRow({
         value={jornada.nombre}
         onChange={(e) => onChange({ nombre: e.target.value })}
         className="h-7 min-w-32 flex-1 text-xs font-medium border-0 bg-transparent px-0 focus-visible:ring-0 shadow-none"
-        placeholder="Nombre del turno"
+        placeholder={i18n.t('ui.PostSiteWizard.nombreDelTurno')}
       />
       {/* Times */}
       <div className="flex items-center gap-1 shrink-0">
@@ -438,13 +439,13 @@ function StationRow({
         <Input
           value={draft.name}
           onChange={(e) => onChange({ name: e.target.value })}
-          placeholder="Nombre del puesto *"
+          placeholder={t('ui.PostSiteWizard.nombreDelPuesto')}
           className="font-semibold flex-1"
         />
         <button
           type="button"
           onClick={onRemove}
-          aria-label="Quitar puesto"
+          aria-label={t('ui.PostSiteWizard.quitarPuesto')}
           className="cg-focus shrink-0 rounded-md transition-colors"
           style={{ color: 'var(--bad-text)' }}
         >
@@ -684,7 +685,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id, pres
           if (loadedStations.length > 0) setStations(loadedStations);
         } catch {}
       } catch (e) {
-        toast.error('Error al cargar el sitio');
+        toast.error(t('ui.PostSiteWizard.errorAlCargarElSitio'));
         navigate('/post-sites');
       } finally {
         setLoadingEdit(false);
@@ -816,7 +817,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id, pres
       await ApiService.put(`/tenant/${tenantId}/post-site/${postSiteId}`, { data: { logo: [obj] } });
       invalidateEntity("stations");
     } catch {
-      toast.error('La foto del sitio no se pudo guardar');
+      toast.error(t('ui.PostSiteWizard.laFotoDelSitioNo'));
     }
   };
 
@@ -838,10 +839,10 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id, pres
       setCreatedId(newId);
       if (newId) {
         try { await syncStationRecords(newId);
-      invalidateEntity("stations"); } catch { toast.error('El sitio fue creado pero algunas estaciones fallaron'); }
+      invalidateEntity("stations"); } catch { toast.error(t('ui.PostSiteWizard.elSitioFueCreadoPero')); }
         try { await uploadSitePhoto(newId); } catch { /* already toasted inside */ }
       }
-      toast.success('Puesto de vigilancia creado');
+      toast.success(t('ui.PostSiteWizard.puestoDeVigilanciaCreado'));
       setStep(6);
     } catch (e: any) {
       toast.error(e?.response?.data?.message ?? e?.message ?? 'Error al crear el sitio');
@@ -1029,7 +1030,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id, pres
                   onChange={(e) => setClientId(e.target.value)}
                   className="cg-input cg-focus flex h-9 w-full px-3 py-1 text-sm"
                 >
-                  <option value="">— Seleccionar cliente —</option>
+                  <option value="">{t('ui.PostSiteWizard.seleccionarCliente')}</option>
                   {clients.map((c) => (
                     <option key={c.id} value={c.id}>{c.name}</option>
                   ))}
@@ -1225,7 +1226,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id, pres
                   ) : (
                     <div className="flex flex-col items-center gap-1" style={{ color: 'var(--ink-faint)' }}>
                       <Upload size={20} />
-                      <span className="text-[11px]">Subir foto del sitio</span>
+                      <span className="text-[11px]">{t('ui.PostSiteWizard.subirFotoDelSitio')}</span>
                     </div>
                   )}
                 </div>
@@ -1269,7 +1270,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id, pres
               value={equipment}
               customItems={customEquipment}
               onChange={(sel, cust) => { setEquipment(sel); setCustomEquipment(cust); }}
-              placeholder="Agregar otro equipo…"
+              placeholder={t('ui.PostSiteWizard.agregarOtroEquipo')}
             />
           </Section>
 
@@ -1375,8 +1376,8 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id, pres
             {stations.length === 0 ? (
               <EmptyState
                 icon={<Shield />}
-                title="Sin estaciones definidas"
-                description="Puedes añadirlas ahora o desde el perfil del sitio."
+                title={t('ui.PostSiteWizard.sinEstacionesDefinidas')}
+                description={t('ui.PostSiteWizard.puedesAnadirlasAhoraODesde')}
               />
             ) : (
               stations.map((s, i) => (
@@ -1400,7 +1401,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id, pres
           </div>
 
           {/* Status */}
-          <Section title="Estado del sitio">
+          <Section title={t('ui.PostSiteWizard.estadoDelSitio')}>
             <div className="flex max-w-xs gap-2">
               {(['active', 'inactive'] as const).map((s) => {
                 const sel = status === s;
@@ -1450,7 +1451,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id, pres
       return (
         <div className="space-y-5">
           <div>
-            <h2 className="font-display mb-1 text-xl font-bold">Revisar y crear</h2>
+            <h2 className="font-display mb-1 text-xl font-bold">{t('ui.PostSiteWizard.revisarYCrear')}</h2>
             <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t("ui.PostSiteWizard.compruebaLaInformacionAntesDe", "Comprueba la información antes de crear el puesto de vigilancia.")}</p>
           </div>
 
@@ -1549,7 +1550,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id, pres
                         ))}
                       </div>
                     ) : (
-                      <p className="mt-1 text-xs" style={{ color: 'var(--ink-faint)' }}>Sin jornadas definidas</p>
+                      <p className="mt-1 text-xs" style={{ color: 'var(--ink-faint)' }}>{t('ui.PostSiteWizard.sinJornadasDefinidas')}</p>
                     )}
                   </div>
                 ))}

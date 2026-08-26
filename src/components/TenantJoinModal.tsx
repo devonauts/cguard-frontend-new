@@ -133,7 +133,7 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
             }
             // Refresh profile until backend reflects the new tenant assignment.
             await refreshProfileAndSignIn();
-            toast.success('Invitación aceptada. Ya estás vinculado a la empresa');
+            toast.success(t('ui.TenantJoinModal.invitacionAceptadaYaEstasVinculado'));
             // prevent scheduled reopen when closing after successful accept
             try { suppressReopen.current = true; } catch {}
             onOpenChange(false);
@@ -597,7 +597,7 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
             }
             // Refresh profile until backend reflects the new tenant assignment.
             await refreshProfileAndSignIn();
-            toast.success('Empresa creada y vinculada correctamente');
+            toast.success(t('ui.TenantJoinModal.empresaCreadaYVinculadaCorrectamente'));
             // prevent scheduled reopen when closing after successful create
             try { suppressReopen.current = true; } catch {}
             onOpenChange(false);
@@ -913,7 +913,7 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
 
                             <div className="flex flex-wrap items-center justify-between gap-3 mt-2">
                                 <div className="flex flex-col gap-2">
-                                    <Button variant="destructive" onClick={clearDraft} disabled={loading}>Borrar borrador</Button>
+                                    <Button variant="destructive" onClick={clearDraft} disabled={loading}>{t('ui.TenantJoinModal.borrarBorrador')}</Button>
                                 </div>
                                 <div className="flex justify-end gap-3">
                                     <Button variant="ghost" onClick={() => closeWithoutReopen()} disabled={loading}>{t('actions.cancel')}</Button>

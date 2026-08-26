@@ -177,7 +177,7 @@ export default function AdminUserDetailPage() {
         {loading ? (
           <SkeletonCards count={2} />
         ) : !user ? (
-          <EmptyState icon={<UserCog />} title="Usuario no encontrado" description="No se pudo cargar este usuario de oficina." />
+          <EmptyState icon={<UserCog />} title={t('ui.AdminUserDetailPage.usuarioNoEncontrado')} description={t('ui.AdminUserDetailPage.noSePudoCargarEste')} />
         ) : tab === 'perfil' ? (
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
             <div className="lg:col-span-2">
@@ -187,7 +187,7 @@ export default function AdminUserDetailPage() {
                   <Field label={t("ui.AdminUserDetail.correoElectronico", "Correo electrónico")} value={user.email} />
                   <Field label={t("ui.AdminUserDetail.telefono", "Teléfono")} value={user.phoneNumber || user.phone} />
                   <Field label="Rol de acceso" value={roleName} />
-                  <Field label="Miembro desde" value={fmtDate(user.createdAt)} />
+                  <Field label={t('ui.AdminUserDetailPage.miembroDesde')} value={fmtDate(user.createdAt)} />
                   <Field label={t('comun.estado')} value={status.label} />
                 </div>
               </Section>
@@ -233,7 +233,7 @@ export default function AdminUserDetailPage() {
                       ))}
                       {overrides.grant.length > 12 && <span className="text-[11px]" style={{ color: 'var(--ink-faint)' }}>+{overrides.grant.length - 12} más</span>}
                     </div>
-                  ) : <p className="mt-1 text-xs" style={{ color: 'var(--ink-soft)' }}>Sin permisos adicionales al rol.</p>}
+                  ) : <p className="mt-1 text-xs" style={{ color: 'var(--ink-soft)' }}>{t('ui.AdminUserDetailPage.sinPermisosAdicionalesAlRol')}</p>}
                 </GlassPanel>
                 <GlassPanel flat className="p-4">
                   <div className="flex items-center gap-2 text-sm font-semibold" style={{ color: 'var(--bad-text)' }}>

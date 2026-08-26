@@ -59,7 +59,7 @@ export default function TrackingHistoryPage() {
             .filter((g) => g.id),
         );
       } catch {
-        toast.error("No se pudo cargar la lista de vigilantes");
+        toast.error(t('ui.TrackingHistory.noSePudoCargarLa'));
       }
     })();
   }, []);
@@ -79,9 +79,9 @@ export default function TrackingHistoryPage() {
       });
       setPoints(pts);
       setLoaded(true);
-      if (!pts.length) toast.info("Sin recorrido registrado en ese rango");
+      if (!pts.length) toast.info(t('ui.TrackingHistory.sinRecorridoRegistradoEnEse'));
     } catch {
-      toast.error("No se pudo cargar el recorrido");
+      toast.error(t('ui.TrackingHistory.noSePudoCargarEl'));
     } finally {
       setLoading(false);
     }
@@ -163,7 +163,7 @@ export default function TrackingHistoryPage() {
         <PageHeader
           icon={<History />}
           title="Historial de seguimiento"
-          subtitle="Reproduce el recorrido GPS real de tus vigilantes por rango de fechas."
+          subtitle={t('ui.TrackingHistory.reproduceElRecorridoGpsReal')}
           actions={
             <Button variant="outline" onClick={exportCsv} disabled={!points.length}>
               <FileSpreadsheet className="size-4" />
@@ -236,8 +236,8 @@ export default function TrackingHistoryPage() {
                 <div className="flex h-full items-center justify-center">
                   <EmptyState
                     icon={<MapIcon />}
-                    title="Selecciona un vigilante y un rango"
-                    description="Elige un vigilante y las fechas, luego pulsa «Ver recorrido» para dibujar su ruta GPS."
+                    title={t('ui.TrackingHistory.seleccionaUnVigilanteYUn')}
+                    description={t('ui.TrackingHistory.eligeUnVigilanteYLas')}
                     className="border-none py-0"
                   />
                 </div>

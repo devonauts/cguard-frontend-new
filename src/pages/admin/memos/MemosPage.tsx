@@ -197,7 +197,7 @@ export default function MemosPage() {
     }
 
     if (!guardId) {
-      toast.error('Selecciona la vigilante para el memo');
+      toast.error(t('ui.MemosPage.seleccionaLaVigilanteParaEl'));
       return;
     }
 
@@ -302,7 +302,7 @@ export default function MemosPage() {
 
   const handleExport = async (format: 'pdf' | 'excel') => {
     if (!selectedIds.length) {
-      toast.error('Selecciona al menos un memo para exportar');
+      toast.error(t('ui.MemosPage.seleccionaAlMenosUnMemo'));
       return;
     }
 
@@ -331,7 +331,7 @@ export default function MemosPage() {
   const handleBulkAction = async (value: string) => {
     if (value !== 'deleteSelected') return;
     if (!selectedIds.length) {
-      toast.error('Selecciona al menos un memo.');
+      toast.error(t('ui.MemosPage.seleccionaAlMenosUnMemo'));
       return;
     }
 
@@ -406,7 +406,7 @@ export default function MemosPage() {
         <PageHeader
           icon={<Megaphone />}
           title="Memos"
-          subtitle="Lista de memos del equipo de seguridad."
+          subtitle={t('ui.MemosPage.listaDeMemosDelEquipo')}
           badges={
             selectedIds.length > 0 ? (
               <StatusBadge tone="brand">{selectedIds.length} seleccionados</StatusBadge>
@@ -414,32 +414,31 @@ export default function MemosPage() {
           }
           actions={
             <Button variant="brand" onClick={() => setCreateOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" /> Nuevo Memo
-            </Button>
+              <Plus className="mr-2 h-4 w-4" />{" "}{t('ui.MemosPage.nuevoMemo')}{" "}</Button>
           }
         />
 
         <div className="grid gap-4 sm:grid-cols-3">
           <StatCard label="Memos" value={memos.length} icon={<Megaphone />} accent="brand" />
           <StatCard
-            label="Con acuse de lectura"
+            label={t('ui.MemosPage.conAcuseDeLectura')}
             value={aceptados}
             icon={<CheckCheck />}
             accent="ok"
-            hint="El vigilante confirmó haberlo leído"
+            hint={t('ui.MemosPage.elVigilanteConfirmoHaberloLeido')}
           />
           <StatCard
             label="Pendientes de acuse"
             value={pendientes}
             icon={<Clock />}
             accent="warn"
-            hint="Todavía sin confirmar"
+            hint={t('ui.MemosPage.todaviaSinConfirmar')}
           />
         </div>
 
         <TableToolbar
           leading={<BulkActionsSelect key={bulkKey} actions={bulkActions} onChange={handleBulkAction} />}
-          search={<TableSearch value={query} onChange={setQuery} placeholder="Buscar memo…" />}
+          search={<TableSearch value={query} onChange={setQuery} placeholder={t('ui.MemosPage.buscarMemo')} />}
         >
               <Segmented
                 value={filters.status || 'all'}
@@ -557,8 +556,8 @@ export default function MemosPage() {
             emptyState={
               <EmptyState
                 icon={<FileText />}
-                title="No se encontraron memos"
-                description="Ajusta la búsqueda o crea un nuevo memo."
+                title={t('ui.MemosPage.noSeEncontraronMemos')}
+                description={t('ui.MemosPage.ajustaLaBusquedaOCrea')}
               />
             }
           />
@@ -568,7 +567,7 @@ export default function MemosPage() {
         <Dialog open={createOpen} onOpenChange={setCreateOpen}>
           <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Nuevo Memo</DialogTitle>
+              <DialogTitle>{t('ui.MemosPage.nuevoMemo')}</DialogTitle>
               <DialogDescription>
                 Crea un memo rápido para el equipo de seguridad.
               </DialogDescription>
@@ -578,7 +577,7 @@ export default function MemosPage() {
                 <Label className="mb-2 block">{t('comun.vigilante')}</Label>
                 <Select value={guardId} onValueChange={(value) => setGuardId(value)}>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Selecciona una vigilante" />
+                    <SelectValue placeholder={t('ui.MemosPage.seleccionaUnaVigilante')} />
                   </SelectTrigger>
                   <SelectContent>
                     {guards.map((guard) => (
@@ -593,7 +592,7 @@ export default function MemosPage() {
                 <Label className="mb-2 block">{t('comun.estado')}</Label>
                 <Select value={wasAccepted ? 'accepted' : 'pending'} onValueChange={(value) => setWasAccepted(value === 'accepted')}>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Selecciona el estado" />
+                    <SelectValue placeholder={t('ui.MemosPage.seleccionaElEstado')} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="pending">{t('comun.pendiente')}</SelectItem>
@@ -607,7 +606,7 @@ export default function MemosPage() {
               </div>
               <div>
                 <Label className="mb-2 block">Contenido</Label>
-                <Textarea value={content} onChange={(e) => setContent(e.target.value)} rows={6} placeholder="Detalles del memo" />
+                <Textarea value={content} onChange={(e) => setContent(e.target.value)} rows={6} placeholder={t('ui.MemosPage.detallesDelMemo')} />
               </div>
             </div>
             <DialogFooter className="flex items-center justify-end gap-2">
@@ -643,7 +642,7 @@ export default function MemosPage() {
         <Dialog open={viewOpen} onOpenChange={setViewOpen}>
           <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Detalle del Memo</DialogTitle>
+              <DialogTitle>{t('ui.MemosPage.detalleDelMemo')}</DialogTitle>
               <DialogDescription>{t("ui.Memos.revisaLaInformacionDelMemo", "Revisa la información del memo seleccionado.")}</DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">

@@ -157,10 +157,10 @@ export default function Incidents({ site }: { site?: SiteProp }) {
       // Backend expects bulk-delete via query param `ids[]`; use that for single-id delete
       await ApiService.delete(`/tenant/${tenantId}/incident?ids[]=${encodeURIComponent(it.id)}`);
       setIncidents((prev) => prev.filter((p) => p.id !== it.id));
-      toast.success('Incidente eliminado');
+      toast.success(t('ui.Incidents.incidenteEliminado'));
     } catch (err) {
       console.error('Delete incident failed', err);
-      toast.error('No se pudo eliminar el incidente');
+      toast.error(t('ui.Incidents.noSePudoEliminarEl'));
     }
   };
 
@@ -594,7 +594,7 @@ export default function Incidents({ site }: { site?: SiteProp }) {
       navigate('/dispatch-tickets/new', { state: { duplicate: dup } });
     } catch (err) {
       console.error('Error creating dispatch from incident', err);
-      toast.error('No se pudo iniciar creación de Incidente');
+      toast.error(t('ui.Incidents.noSePudoIniciarCreacion'));
     }
   }
 
@@ -614,7 +614,7 @@ export default function Incidents({ site }: { site?: SiteProp }) {
               setActionSelectValue(v);
               if (v === 'eliminar') {
                 if (!selectedIds || selectedIds.length === 0) {
-                  toast.error('Seleccione al menos un elemento');
+                  toast.error(t('ui.Incidents.seleccioneAlMenosUnElemento'));
                   setActionSelectValue('');
                   return;
                 }
@@ -699,7 +699,7 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                             {(assignedGuards || []).length ? (assignedGuards || []).map((g: any) => (
                               <SelectItem key={`guard-${g.id || g.guardId || g.userId || g.securityGuardId}`} value={String(g.id || g.guardId || g.userId || g.securityGuardId)}>{g.fullName || g.name || g.guardName || (g.user && (g.user.fullName || g.user.firstName)) || g.id}</SelectItem>
                             )) : (
-                              <SelectItem value="__no_informers" disabled>No hay informadores</SelectItem>
+                              <SelectItem value="__no_informers" disabled>{t('ui.Incidents.noHayInformadores')}</SelectItem>
                             )}
                             {/* Client as informer option */}
                             {site && (site.client || site.clientId) ? (
@@ -728,7 +728,7 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                             {(incidentTypes || []).length ? (incidentTypes || []).map((it: any) => (
                               <SelectItem key={it.id} value={String(it.id)}>{it.name || it.id}</SelectItem>
                             )) : (
-                              <SelectItem value="__no_types" disabled>No hay tipos</SelectItem>
+                              <SelectItem value="__no_types" disabled>{t('ui.Incidents.noHayTipos')}</SelectItem>
                             )}
                           </SelectContent>
                         </Select>

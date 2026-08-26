@@ -195,7 +195,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
       setPlacing(false);
       await load(sedeId, true);
       setCenterReq((n) => n + 1);
-    } catch { toast.error('No se pudo fijar la ubicación'); }
+    } catch { toast.error(t('ui.ClientCoverage.noSePudoFijarLa')); }
   };
 
   const sede = sedes.find((s) => s.id === sedeId);
@@ -234,7 +234,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.15fr_1fr]">
         {/* LEFT — filters + table */}
         <div className="space-y-4">
-          <Section title="Estaciones del sitio" icon={<LayoutGrid />}>
+          <Section title={t('ui.ClientCoverage.estacionesDelSitio')} icon={<LayoutGrid />}>
             <div className="mb-3 flex flex-wrap items-center gap-2">
               <div className="relative min-w-[180px] flex-1">
                 <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
@@ -244,8 +244,8 @@ export default function ClientCoverage({ client }: { client: Client }) {
                 <option value="todos">{t('comun.estadoTodos')}</option>
                 <option value="cubierto">Cubierto</option>
                 <option value="parcial">Parcial</option>
-                <option value="asignado_sin_marcar">Asignado sin marcar</option>
-                <option value="sin_cobertura">Sin cobertura</option>
+                <option value="asignado_sin_marcar">{t('ui.ClientCoverage.asignadoSinMarcar')}</option>
+                <option value="sin_cobertura">{t('ui.ClientCoverage.sinCobertura')}</option>
                 <option value="sin_turno">{t('ui.ClientCoverage.sinTurno')}</option>
               </select>
               <select className={FIELD_CLS} value={tipo} onChange={(e) => { setTipo(e.target.value); setPage(1); }}>
@@ -260,7 +260,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
                 <option value="Nocturno">Nocturno</option>
               </select>
               <select className={FIELD_CLS} value={orden} onChange={(e) => setOrden(e.target.value)}>
-                <option value="nombre">Nombre A-Z</option>
+                <option value="nombre">{t('ui.ClientCoverage.nombreAZ')}</option>
                 <option value="cobertura_desc">Cobertura ↓</option>
                 <option value="cobertura_asc">Cobertura ↑</option>
                 <option value="estado">{t('comun.estado')}</option>
@@ -268,7 +268,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
             </div>
 
             {filtered.length === 0 ? (
-              <EmptyState icon={<LayoutGrid />} title={t('ui.ClientCoverage.sinEstaciones')} description="Esta sede no tiene estaciones que coincidan con los filtros." />
+              <EmptyState icon={<LayoutGrid />} title={t('ui.ClientCoverage.sinEstaciones')} description={t('ui.ClientCoverage.estaSedeNoTieneEstaciones')} />
             ) : (
               <TabTable minWidth={860}>
                   <THead className="[&>th]:whitespace-nowrap">
@@ -338,7 +338,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
                           </td>
                           <td className="px-2 py-2.5"><StatusBadge tone={meta.tone} className="whitespace-nowrap">{meta.label}</StatusBadge></td>
                           <td className="px-2 py-2.5 whitespace-nowrap">
-                            {p.lastActivity?.type === 'ronda' ? <span className="inline-flex items-center gap-1 text-xs font-semibold" style={{ color: 'var(--ok-text)' }}><RouteIcon className="h-3.5 w-3.5" /> Ronda activa</span>
+                            {p.lastActivity?.type === 'ronda' ? <span className="inline-flex items-center gap-1 text-xs font-semibold" style={{ color: 'var(--ok-text)' }}><RouteIcon className="h-3.5 w-3.5" />{" "}{t('ui.ClientCoverage.rondaActiva')}</span>
                               : p.lastActivity?.type === 'checkin' ? <div><div className="tabular-nums">{p.lastActivity.time}</div><div className="text-xs" style={{ color: 'var(--ink-faint)' }}>Entrada marcada</div></div>
                               : <span className="text-xs" style={{ color: 'var(--ink-faint)' }}>{t('comun.sinActividad')}</span>}
                           </td>
@@ -394,7 +394,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
         {/* RIGHT — map + summaries */}
         <div className="space-y-4">
           <Section
-            title="Mapa del sitio"
+            title={t('ui.ClientCoverage.mapaDelSitio')}
             icon={<MapPin />}
             action={
               <div className="flex items-center gap-1">
@@ -410,7 +410,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
             }
           >
             {mapMarkers.length === 0 && !mapCenter ? (
-              <EmptyState icon={<MapPin />} title="Sin ubicaciones" description="Ninguna estación de esta sede tiene coordenadas. Selecciona una estación y usa “Fijar ubicación exacta”." />
+              <EmptyState icon={<MapPin />} title={t('ui.ClientCoverage.sinUbicaciones')} description={t('ui.ClientCoverage.ningunaEstacionDeEstaSede')} />
             ) : (
               <>
                 {placing && (
@@ -469,7 +469,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
           )}
 
           {/* Resumen de cobertura por turno */}
-          <Section title="Resumen de cobertura por turno" icon={<Shield />}>
+          <Section title={t('ui.ClientCoverage.resumenDeCoberturaPorTurno')} icon={<Shield />}>
             <div className="space-y-3">
               {turnoSummary.map((t) => (
                 <div key={t.key}>
@@ -481,7 +481,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
                 </div>
               ))}
               <div className="flex items-center justify-between border-t pt-3" style={{ borderColor: 'var(--hairline)' }}>
-                <span className="font-medium">Cobertura general del sitio</span>
+                <span className="font-medium">{t('ui.ClientCoverage.coberturaGeneralDelSitio')}</span>
                 <span
                   className="font-display text-lg font-bold tabular-nums"
                   style={{ color: (data?.generalPct ?? 0) >= 90 ? 'var(--ok-text)' : 'var(--warn-text)' }}

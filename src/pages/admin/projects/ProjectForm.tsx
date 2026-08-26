@@ -97,7 +97,7 @@ export default function ProjectForm({
           notes: p.notes ?? '',
         });
       }).catch(() => {
-        toast.error('No se pudo cargar el proyecto');
+        toast.error(t('ui.ProjectForm.noSePudoCargarEl'));
       });
     }
   }, [mode, projectId]);
@@ -136,7 +136,7 @@ export default function ProjectForm({
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 
           {/* ── Tipo de proyecto ─────────────────────────── */}
-          <Section title="Tipo de proyecto" icon={<Layers />}>
+          <Section title={t('ui.ProjectForm.tipoDeProyecto')} icon={<Layers />}>
             <Controller
               control={form.control}
               name="type"
@@ -274,7 +274,7 @@ export default function ProjectForm({
           </Section>
 
           {/* ── Estado y notas ───────────────────────────── */}
-          <Section title="Estado y notas" icon={<ClipboardList />} contentClassName="space-y-4">
+          <Section title={t('ui.ProjectForm.estadoYNotas')} icon={<ClipboardList />} contentClassName="space-y-4">
 
             <FormField
               control={form.control}
@@ -305,7 +305,7 @@ export default function ProjectForm({
                   <FormLabel>{t('comun.notasInternas')}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Notas privadas, instrucciones especiales…"
+                      placeholder={t('ui.ProjectForm.notasPrivadasInstruccionesEspeciales')}
                       rows={3}
                       {...field}
                       value={field.value ?? ''}

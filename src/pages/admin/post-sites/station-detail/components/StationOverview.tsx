@@ -211,7 +211,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
   // shifts, so it only runs when the horario actually changed and after a
   // confirm (it clears existing assignments at this station).
   const updateHorario = async () => {
-    if (!turno) { toast.error('Selecciona un turno'); return; }
+    if (!turno) { toast.error(t('ui.StationOverview.seleccionaUnTurno')); return; }
     if (turno === 'custom' && (!customStart || !customEnd)) {
       toast.error(t('comun.defineLaHoraDeInicio')); return;
     }
@@ -227,7 +227,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
     const unchangedCustom = turno !== 'custom'
       || (!blockHours && restCoverage === 'sacafranco' && customStart === (station.startingTimeInDay || '') && customEnd === (station.finishTimeInDay || ''));
     const unchangedRotation = (rotationStyleId || '') === (station.rotationStyleId || '');
-    if (unchangedType && unchangedCustom && unchangedRotation) { toast.info('El horario no cambió'); return; }
+    if (unchangedType && unchangedCustom && unchangedRotation) { toast.info(t('ui.StationOverview.elHorarioNoCambio')); return; }
     if (!(await confirmDialog({ message: 'Cambiar el horario reconfigura los puestos del turno. Si hay vigilantes asignados a esta estación, deberán reasignarse. ¿Continuar?', confirmText: 'Continuar' }))) return;
     setSavingHorario(true);
     try {
@@ -242,7 +242,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
           restCoverage: turno === 'custom' ? restCoverage : undefined,
         },
       });
-      toast.success('Horario actualizado. Los puestos del turno se reconfiguraron.');
+      toast.success(t('ui.StationOverview.horarioActualizadoLosPuestosDel'));
       // Tell the Turnos tab to re-derive its coverage sketch from the new
       // positions immediately (no manual reload / no stale day+night sketch).
       try { window.dispatchEvent(new CustomEvent('station-horario-changed', { detail: { stationId } })); } catch { /* noop */ }
@@ -259,7 +259,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
     const latNum = Number(editLat);
     const lngNum = Number(editLng);
     if (!editLat.trim() || !editLng.trim() || !Number.isFinite(latNum) || !Number.isFinite(lngNum)) {
-      toast.error('Define la ubicación: busca la dirección, usa la del sitio o arrastra el pin.');
+      toast.error(t('ui.StationOverview.defineLaUbicacionBuscaLa'));
       return;
     }
     setSavingLoc(true);
@@ -273,7 +273,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
         },
       });
       invalidateEntity("stations");
-      toast.success('Ubicación y geocerca actualizadas');
+      toast.success(t('ui.StationOverview.ubicacionYGeocercaActualizadas'));
     } catch (e: any) {
       toast.error(e?.message || 'Error al guardar la ubicación');
     } finally {
@@ -376,7 +376,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
                           {r.punchOutTime ? (
                             <span className="flex items-center gap-1"><LogOut className="h-3 w-3" style={{ color: 'var(--bad-text)' }} />{fmtHM(r.punchOutTime)}</span>
                           ) : (
-                            <span className="font-medium" style={{ color: 'var(--ok-text)' }}>en turno</span>
+                            <span className="font-medium" style={{ color: 'var(--ok-text)' }}>{t('ui.StationOverview.enTurno')}</span>
                           )}
                         </p>
                       </div>
@@ -458,7 +458,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
         {/* Edit header */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b px-6 py-4" style={{ borderColor: 'var(--hairline)', background: 'var(--brand-wash)' }}>
           <div>
-            <h3 className="text-sm font-semibold">Configurar puesto</h3>
+            <h3 className="text-sm font-semibold">{t('ui.StationOverview.configurarPuesto')}</h3>
             <p className="mt-0.5 text-xs" style={{ color: 'var(--ink-soft)' }}>{t("ui.StationOverview.turnoUbicacionYToleranciaDe", "Turno, ubicación y tolerancia de marcación. «Guardar» aplica la tolerancia.")}</p>
           </div>
           <div className="flex items-center gap-2">
@@ -483,7 +483,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
         <div className="space-y-3 border-t p-6" style={{ borderColor: 'var(--hairline)' }}>
           <div className="flex items-center gap-2">
             <Clock size={16} style={{ color: 'var(--brand-text)' }} />
-            <h3 className="text-sm font-semibold text-foreground">Horario del turno</h3>
+            <h3 className="text-sm font-semibold text-foreground">{t('ui.StationOverview.horarioDelTurno')}</h3>
           </div>
           <p className="text-xs text-muted-foreground">
             Define el turno del puesto. Los vigilantes asignados a esta estación seguirán este horario. También editable en Programador › Horario.
@@ -517,7 +517,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
               <div className="col-span-2">
                 <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">{t('comun.turnoPorVigilante')}</label>
                 <select value={blockHours} onChange={(e) => setBlockHours(e.target.value)} className="cg-input cg-focus w-full px-3 py-2 text-sm">
-                  <option value="">Toda la jornada (1 fijo)</option>
+                  <option value="">{t('ui.StationOverview.todaLaJornada1Fijo')}</option>
                   {[4, 6, 8, 12].map((h) => {
                     const fits = winMin > 0 && winMin % (h * 60) === 0;
                     const k = fits ? winMin / (h * 60) : 0;

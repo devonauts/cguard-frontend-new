@@ -441,7 +441,7 @@ export default function AddressAutocomplete({
   // ── Geolocation (no reverse-geocoding — just move the pin) ─────────────────
   const handleUseCurrentLocation = () => {
     if (!navigator.geolocation) {
-      toast.error('La geolocalización no está soportada en este navegador');
+      toast.error(t('ui.AddressAutocomplete.laGeolocalizacionNoEstaSoportada'));
       return;
     }
     navigator.geolocation.getCurrentPosition(
@@ -478,7 +478,7 @@ export default function AddressAutocomplete({
       },
       (error) => {
         console.error('[AddressAutocomplete] Geolocation error:', error);
-        toast.error('No se pudo obtener la ubicación actual');
+        toast.error(t('ui.AddressAutocomplete.noSePudoObtenerLa'));
       },
       { enableHighAccuracy: true, timeout: 10000 },
     );
@@ -500,7 +500,7 @@ export default function AddressAutocomplete({
     return (
       <div className="flex items-center gap-2 rounded-md border p-4" style={{ borderColor: 'var(--hairline)' }}>
         <Loader2 className="h-4 w-4 animate-spin" />
-        <span className="text-sm text-muted-foreground">Cargando el mapa…</span>
+        <span className="text-sm text-muted-foreground">{t('ui.AddressAutocomplete.cargandoElMapa')}</span>
       </div>
     );
   }

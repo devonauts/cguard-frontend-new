@@ -926,7 +926,7 @@ export default function ClientForm({
                           )}
                           {accessPeople.map((p, i) => (
                             <div key={i} className="glass-sunken grid grid-cols-1 gap-2 p-3 sm:grid-cols-12">
-                              <input value={p.name} onChange={(e) => updateAccessPerson(i, { name: e.target.value })} placeholder="Nombre completo *" className={`${FIELD_CLS_LG} sm:col-span-4`} />
+                              <input value={p.name} onChange={(e) => updateAccessPerson(i, { name: e.target.value })} placeholder={t('ui.ClientForm.nombreCompleto')} className={`${FIELD_CLS_LG} sm:col-span-4`} />
                               <input value={p.email} onChange={(e) => updateAccessPerson(i, { email: e.target.value })} type="email" placeholder={t('comun.correoReq')} className={`${FIELD_CLS_LG} sm:col-span-4`} />
                               <input value={p.relationship} onChange={(e) => updateAccessPerson(i, { relationship: e.target.value })} placeholder={personType === 'PJ' ? 'Cargo (ej: Encargado)' : 'Relación (ej: hijo)'} className={`${FIELD_CLS_LG} sm:col-span-3`} />
                               <button type="button" onClick={() => removeAccessPerson(i)} className="cg-focus grid place-items-center rounded-lg transition-opacity hover:opacity-70 sm:col-span-1" style={{ color: 'var(--bad-text)' }} aria-label="Quitar"><Trash2 size={15} /></button>

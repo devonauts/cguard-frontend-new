@@ -186,11 +186,11 @@ export function TrimShareModal({
 
   const handleCreate = async () => {
     if (!camera?.id) {
-      toast.error("No hay cámara seleccionada");
+      toast.error(i18n.t('ui.VideoActionModals.noHayCamaraSeleccionada'));
       return;
     }
     if (!startAt || !endAt) {
-      toast.error("Indique inicio y fin del clip");
+      toast.error(i18n.t('ui.VideoActionModals.indiqueInicioYFinDel'));
       return;
     }
     if (new Date(endAt) <= new Date(startAt)) {
@@ -208,7 +208,7 @@ export function TrimShareModal({
       const share = await videoService.shareClip(clip.id);
       setShareUrl(share.url);
       setExpiresAt(share.expiresAt);
-      toast.success("Enlace para el cliente generado");
+      toast.success(i18n.t('ui.VideoActionModals.enlaceParaElClienteGenerado'));
       onShared?.(share);
     } catch (e: any) {
       toast.error(e?.data?.message || e?.message || "No se pudo generar el clip");
@@ -264,7 +264,7 @@ export function TrimShareModal({
             <Label htmlFor="clip-label">Etiqueta</Label>
             <Input
               id="clip-label"
-              placeholder="Ej. Incidente en acceso principal"
+              placeholder={i18n.t('ui.VideoActionModals.ejIncidenteEnAccesoPrincipal')}
               value={label}
               onChange={(e) => setLabel(e.target.value)}
             />
@@ -367,7 +367,7 @@ export function CreateIncidentModal({
 
   const handleCreate = async () => {
     if (!title.trim()) {
-      toast.error("Indique un título para el incidente");
+      toast.error(t('ui.VideoActionModals.indiqueUnTituloParaEl'));
       return;
     }
     setBusy(true);
@@ -398,7 +398,7 @@ export function CreateIncidentModal({
         });
         incident = await videoService.eventToIncident(ev.id, body);
       } else {
-        toast.error("No hay origen para crear el incidente");
+        toast.error(t('ui.VideoActionModals.noHayOrigenParaCrear'));
         setBusy(false);
         return;
       }
@@ -451,7 +451,7 @@ export function CreateIncidentModal({
           <Textarea
             id="inc-desc"
             rows={4}
-            placeholder="Detalles del incidente…"
+            placeholder={t('ui.VideoActionModals.detallesDelIncidente')}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
@@ -514,7 +514,7 @@ export function DispatchModal({
         eventId,
         note: note.trim() || undefined,
       });
-      toast.success("Supervisor notificado");
+      toast.success(t('ui.VideoActionModals.supervisorNotificado'));
       onDispatched?.(result);
       onClose();
     } catch (e: any) {
@@ -551,7 +551,7 @@ export function DispatchModal({
         ) : null}
 
         <div className="space-y-1.5">
-          <Label htmlFor="dispatch-note">Nota para el supervisor</Label>
+          <Label htmlFor="dispatch-note">{t('ui.VideoActionModals.notaParaElSupervisor')}</Label>
           <Textarea
             id="dispatch-note"
             rows={4}

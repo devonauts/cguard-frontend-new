@@ -65,7 +65,7 @@ export default function MisAvisosPage() {
         const { data } = await api.get(`/tenant/${tenantId()}/me/notification-prefs`);
         setPrefs((data && data.prefs) || {});
       } catch {
-        toast.error("No se pudieron cargar tus preferencias.");
+        toast.error(t('ui.MisAvisosPage.noSePudieronCargarTus'));
       } finally {
         setLoading(false);
       }
@@ -84,7 +84,7 @@ export default function MisAvisosPage() {
     try {
       const { data } = await api.put(`/tenant/${tenantId()}/me/notification-prefs`, { prefs });
       setPrefs((data && data.prefs) || {});
-      toast.success("Guardado. Aplica desde el próximo aviso.");
+      toast.success(t('ui.MisAvisosPage.guardadoAplicaDesdeElProximo'));
     } catch (e: any) {
       toast.error(e?.response?.data?.message || "No se pudo guardar.");
     } finally {
@@ -99,7 +99,7 @@ export default function MisAvisosPage() {
           <PageHeader
             icon={<BellRing />}
             title="Mis avisos"
-            subtitle="Qué quieres recibir tú, y por dónde. No afecta a nadie más de tu empresa."
+            subtitle={t('ui.MisAvisosPage.queQuieresRecibirTuY')}
           />
 
           {loading ? (

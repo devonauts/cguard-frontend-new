@@ -71,7 +71,7 @@ export default function LoginHistory() {
         <PageHeader
           icon={<History />}
           title={t("ui.LoginHistory.historialDeInicioDeSesion", "Historial de Inicio de Sesión")}
-          subtitle="Inicios y cierres de sesión, intentos fallidos y eventos de dispositivos de esta empresa."
+          subtitle={t('ui.LoginHistory.iniciosYCierresDeSesion')}
           badges={
             !primeraCarga ? (
               <StatusBadge tone="neutral" dot={false}>
@@ -104,7 +104,7 @@ export default function LoginHistory() {
               <EmptyState
                 className="border-0"
                 icon={<Inbox />}
-                title="Sin eventos"
+                title={t('ui.LoginHistory.sinEventos')}
                 description={
                   q.trim() || filter
                     ? "Ningún evento coincide con la búsqueda o el filtro elegido."

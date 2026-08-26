@@ -184,7 +184,7 @@ export default function ProfilePhotoCapture({ value, onChange, previewUrl }: Pro
               type="button"
               onClick={handleRemove}
               className="cg-btn-bad cg-focus absolute -right-1 -top-1 flex h-8 w-8 items-center justify-center rounded-full transition-colors"
-              title="Eliminar foto"
+              title={t('ui.ProfilePhotoCapture.eliminarFoto')}
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -248,13 +248,13 @@ export default function ProfilePhotoCapture({ value, onChange, previewUrl }: Pro
               color: 'var(--info-text)',
             }}
           >
-            <p className="font-semibold mb-1 flex items-center gap-1.5"><ClipboardList className="h-4 w-4" /> Instrucciones para la foto:</p>
+            <p className="font-semibold mb-1 flex items-center gap-1.5"><ClipboardList className="h-4 w-4" />{" "}{t('ui.ProfilePhotoCapture.instruccionesParaLaFoto')}</p>
             <ul className="list-disc list-inside space-y-0.5 text-xs">
-              <li>El vigilante debe vestir <strong>uniforme completo</strong> y presentable</li>
-              <li>Use un fondo <strong>neutro</strong> (pared blanca o gris)</li>
-              <li>La foto debe mostrar <strong>rostro y parte superior del cuerpo</strong></li>
+              <li>{t('ui.ProfilePhotoCapture.elVigilanteDebeVestir')}{" "}<strong>uniforme completo</strong> y presentable</li>
+              <li>{t('ui.ProfilePhotoCapture.useUnFondo')}{" "}<strong>neutro</strong> (pared blanca o gris)</li>
+              <li>{t('ui.ProfilePhotoCapture.laFotoDebeMostrar')}{" "}<strong>{t('ui.ProfilePhotoCapture.rostroYParteSuperiorDel')}</strong></li>
               <li>{t("ui.ProfilePhotoCapture.buenaIluminacionEviteSombrasY", "Buena iluminación — evite sombras y contraluz")}</li>
-              <li>No use lentes oscuros ni cubiertas en la cabeza</li>
+              <li>{t('ui.ProfilePhotoCapture.noUseLentesOscurosNi')}</li>
             </ul>
           </div>
 

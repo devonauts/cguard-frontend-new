@@ -86,7 +86,7 @@ export default function LessonsManager({ courseId, lessons, readOnly, onChange }
 
   const handleSave = async () => {
     if (!form.title.trim()) {
-      toast.error('El título de la lección es obligatorio.');
+      toast.error(t('ui.LessonsManager.elTituloDeLaLeccion'));
       return;
     }
     const payload: TrainingLessonInput = {
@@ -101,16 +101,16 @@ export default function LessonsManager({ courseId, lessons, readOnly, onChange }
     try {
       if (editing) {
         await trainingCourseService.updateLesson(editing.id, payload);
-        toast.success('Lección actualizada.');
+        toast.success(t('ui.LessonsManager.leccionActualizada'));
       } else {
         await trainingCourseService.createLesson(courseId, payload);
-        toast.success('Lección agregada.');
+        toast.success(t('ui.LessonsManager.leccionAgregada'));
       }
       setOpen(false);
       onChange();
     } catch (err) {
       console.error(err);
-      toast.error('No se pudo guardar la lección.');
+      toast.error(t('ui.LessonsManager.noSePudoGuardarLa'));
     } finally {
       setSaving(false);
     }
@@ -120,12 +120,12 @@ export default function LessonsManager({ courseId, lessons, readOnly, onChange }
     if (!deleteId) return;
     try {
       await trainingCourseService.removeLesson(deleteId);
-      toast.success('Lección eliminada.');
+      toast.success(t('ui.LessonsManager.leccionEliminada'));
       setDeleteId(null);
       onChange();
     } catch (err) {
       console.error(err);
-      toast.error('No se pudo eliminar la lección.');
+      toast.error(t('ui.LessonsManager.noSePudoEliminarLa'));
     }
   };
 
@@ -141,7 +141,7 @@ export default function LessonsManager({ courseId, lessons, readOnly, onChange }
       onChange();
     } catch (err) {
       console.error(err);
-      toast.error('No se pudo reordenar.');
+      toast.error(t('ui.LessonsManager.noSePudoReordenar'));
     }
   };
 
@@ -160,7 +160,7 @@ export default function LessonsManager({ courseId, lessons, readOnly, onChange }
         <EmptyState
           icon={<BookOpen />}
           title={t("ui.LessonsManager.noHayLeccionesTodavia", "No hay lecciones todavía")}
-          description="Agrega lecciones con video, texto y recursos para construir el curso."
+          description={t('ui.LessonsManager.agregaLeccionesConVideoTexto')}
           action={
             !readOnly ? (
               <Button variant="brand" onClick={openNew}>
@@ -254,7 +254,7 @@ export default function LessonsManager({ courseId, lessons, readOnly, onChange }
                 <div key={i} className="flex flex-col gap-2 sm:flex-row sm:items-center">
                   <Input placeholder={t('comun.nombre')} value={r.name} onChange={(e) => updateResource(i, { name: e.target.value })} />
                   <Input placeholder="URL" value={r.url} onChange={(e) => updateResource(i, { url: e.target.value })} />
-                  <button aria-label="Eliminar recurso" className="inline-flex h-9 w-9 shrink-0 items-center justify-center self-end rounded-md sm:self-auto" style={{ color: 'var(--bad-text)' }} onClick={() => removeResource(i)}><Trash2 className="h-4 w-4" /></button>
+                  <button aria-label={t('ui.LessonsManager.eliminarRecurso')} className="inline-flex h-9 w-9 shrink-0 items-center justify-center self-end rounded-md sm:self-auto" style={{ color: 'var(--bad-text)' }} onClick={() => removeResource(i)}><Trash2 className="h-4 w-4" /></button>
                 </div>
               ))}
             </div>

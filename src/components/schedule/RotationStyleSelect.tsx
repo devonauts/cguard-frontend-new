@@ -99,7 +99,7 @@ export default function RotationStyleSelect({
         setStyles((prev) => (prev.some((p) => p.id === created.id) ? prev : [...prev, created]));
         onChange(created.id);
         setCustom(false);
-        toast.success('Patrón de rotación creado');
+        toast.success(t('ui.RotationStyleSelect.patronDeRotacionCreado'));
       }
     } catch (e: any) {
       toast.error(e?.message || 'No se pudo crear el patrón');
@@ -116,7 +116,7 @@ export default function RotationStyleSelect({
       </div>
 
       {loading ? (
-        <div className="flex items-center gap-2 text-xs text-muted-foreground"><Loader2 size={13} className="animate-spin" /> Cargando patrones…</div>
+        <div className="flex items-center gap-2 text-xs text-muted-foreground"><Loader2 size={13} className="animate-spin" />{" "}{t('ui.RotationStyleSelect.cargandoPatrones')}</div>
       ) : (
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {options.map((s) => (
@@ -130,7 +130,7 @@ export default function RotationStyleSelect({
               <div className="text-[10px] text-muted-foreground">{describe(s)}</div>
             </button>
           ))}
-          {!options.length && <div className="col-span-full text-xs text-muted-foreground">No hay patrones. Crea uno con “Personalizado”.</div>}
+          {!options.length && <div className="col-span-full text-xs text-muted-foreground">{t('ui.RotationStyleSelect.noHayPatronesCreaUno')}</div>}
         </div>
       )}
 

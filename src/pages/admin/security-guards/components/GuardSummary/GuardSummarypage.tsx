@@ -252,7 +252,7 @@ export default function GuardSummary({ guard }: Props) {
           <EmptyState
             icon={<MapPin className="h-5 w-5" />}
             title={t("ui.GuardSummary.sinAsignacion", "Sin asignación")}
-            description="Este vigilante todavía no tiene una estación o puesto asignado. Asígnalo desde la pestaña “Puesto y estaciones”."
+            description={t('ui.GuardSummarypage.esteVigilanteTodaviaNoTiene')}
           />
         ) : (
           <div className="grid gap-3 sm:grid-cols-2">
@@ -309,7 +309,7 @@ export default function GuardSummary({ guard }: Props) {
           <EmptyState
             icon={<Gauge />}
             title={t("ui.GuardSummary.sinDatosDeDesempeno", "Sin datos de desempeño")}
-            description="Aún no hay datos suficientes para calcular el desempeño de este vigilante."
+            description={t('ui.GuardSummarypage.aunNoHayDatosSuficientes')}
           />
         ) : (
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -348,14 +348,14 @@ export default function GuardSummary({ guard }: Props) {
       </Section>
 
       {/* ── SCHEDULE SNAPSHOT (this week) ──────────────────────────────────── */}
-      <Section title="Horario esta semana" icon={<CalendarDays className="h-4 w-4" />}>
+      <Section title={t('ui.GuardSummarypage.horarioEstaSemana')} icon={<CalendarDays className="h-4 w-4" />}>
         {scheduleLoading && schedule === null ? (
           <div className="py-6 text-center text-sm" style={{ color: 'var(--ink-soft)' }}>{t('comun.cargandoHorario')}</div>
         ) : scheduleRows.length === 0 ? (
           <EmptyState
             icon={<CalendarDays className="h-5 w-5" />}
             title={t("ui.GuardSummary.sinRotacionConfigurada", "Sin rotación configurada")}
-            description="Este vigilante no tiene una rotación de turnos configurada en su estación."
+            description={t('ui.GuardSummarypage.esteVigilanteNoTieneUna')}
           />
         ) : (
           <>

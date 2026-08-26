@@ -117,11 +117,11 @@ export default function AcceptInvitation() {
       setPhase("signing-in");
       const result = await signIn({ email, password });
       if (result?.success) {
-        toast.success("¡Cuenta activada! Bienvenido.");
+        toast.success(t('ui.acceptinvitation.cuentaActivadaBienvenido'));
         navigate("/dashboard", { replace: true });
       } else {
         // Account created but auto-login failed — send them to login.
-        toast.success("Cuenta activada. Inicia sesión para continuar.");
+        toast.success(t('ui.acceptinvitation.cuentaActivadaIniciaSesionPara'));
         navigate("/login", { replace: true });
       }
     } catch (err: any) {
@@ -151,7 +151,7 @@ export default function AcceptInvitation() {
       >
         <div className="flex flex-col items-center gap-4 py-8">
           <Loader2 className="h-9 w-9 animate-spin" style={{ color: 'var(--brand-text)' }} />
-          <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>Un momento…</p>
+          <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t('ui.acceptinvitation.unMomento')}</p>
         </div>
       </AuthShell>
     );
@@ -164,7 +164,7 @@ export default function AcceptInvitation() {
         showFeatures={false}
         eyebrow="Invitación"
         title={t("ui.acceptinvitation.invitacionNoValida", "Invitación no válida")}
-        subtitle="El enlace no existe, ya se usó o caducó."
+        subtitle={t('ui.acceptinvitation.elEnlaceNoExisteYa')}
       >
         <div className="flex flex-col items-center gap-4 py-2 text-center">
           <IconTile tone="bad" size="lg"><AlertCircle /></IconTile>
@@ -187,7 +187,7 @@ export default function AcceptInvitation() {
       width="lg"
       logoUrl={tenantLogo}
       brandName={tenantName}
-      title="Activa tu cuenta"
+      title={t('ui.acceptinvitation.activaTuCuenta')}
       subtitle={
         role
           ? `Te han invitado como ${role}${tenantName ? ` en ${tenantName}` : ''}. Crea tu contraseña y entra al panel.`

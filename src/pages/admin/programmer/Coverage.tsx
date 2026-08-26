@@ -145,7 +145,7 @@ export default function Coverage() {
       await load();
       return true;
     } catch {
-      toast.error("No se pudo completar la acción");
+      toast.error(t('ui.Coverage.noSePudoCompletarLa'));
     } finally {
       setBusy(false);
     }
@@ -368,27 +368,27 @@ export default function Coverage() {
             value={summary.uncovered || 0}
             icon={<ShieldAlert />}
             delta={totalPuestos > 0 ? { value: `${pct(summary.uncovered || 0)} %`, direction: (summary.uncovered || 0) > 0 ? "down" : "flat" } : undefined}
-            hint="Puestos sin nadie presente"
+            hint={t('ui.Coverage.puestosSinNadiePresente')}
           />
           <MetricTile
             label="En riesgo"
             value={summary.at_risk || 0}
             icon={<Clock />}
             delta={totalPuestos > 0 ? { value: `${pct(summary.at_risk || 0)} %`, direction: (summary.at_risk || 0) > 0 ? "down" : "flat" } : undefined}
-            hint="El turno empezó y no hay marcación"
+            hint={t('ui.Coverage.elTurnoEmpezoYNo')}
           />
           <MetricTile
             label="Cubiertos"
             value={summary.covered || 0}
             icon={<ShieldCheck />}
             delta={totalPuestos > 0 ? { value: `${pct(summary.covered || 0)} %`, direction: "up" } : undefined}
-            hint="Vigilante presente en el puesto"
+            hint={t('ui.Coverage.vigilantePresenteEnElPuesto')}
           />
           <MetricTile
             label="Novedades abiertas"
             value={openEvents.length}
             icon={<ArrowRightLeft />}
-            hint="Ausencias aún sin reemplazo"
+            hint={t('ui.Coverage.ausenciasAunSinReemplazo')}
           />
         </Stagger>
 
@@ -404,7 +404,7 @@ export default function Coverage() {
         {loading ? (
           <SkeletonCards />
         ) : tab === "board" ? (
-          <Section title="Estado de los puestos">
+          <Section title={t('ui.Coverage.estadoDeLosPuestos')}>
             {!live?.stations.length ? (
               <EmptyState icon={<ShieldCheck />} title={t('comun.sinPuestos')} description={t("ui.Coverage.todaviaNoHayPuestosConfigurados", "Todavía no hay puestos configurados.")} />
             ) : (
@@ -416,7 +416,7 @@ export default function Coverage() {
         ) : (
           <Section title="Novedades registradas">
             {!events.length ? (
-              <EmptyState icon={<ShieldCheck />} title="Sin novedades" description={t("ui.Coverage.noSeHanRegistradoNovedades", "No se han registrado novedades en el período.")} />
+              <EmptyState icon={<ShieldCheck />} title={t('ui.Coverage.sinNovedades')} description={t("ui.Coverage.noSeHanRegistradoNovedades", "No se han registrado novedades en el período.")} />
             ) : (
               <div className="space-y-2">
                 {events.map((ev) => (
@@ -482,8 +482,8 @@ export default function Coverage() {
         <Modal
           open={repOpen}
           onOpenChange={(o) => { if (!o) setRepOpen(false); }}
-          title="Reemplazo por vacaciones o permiso"
-          description="El titular sale por un rango; el reemplazo cubre todo el periodo, figura en la estación y puede usar la app."
+          title={t('ui.Coverage.reemplazoPorVacacionesOPermiso')}
+          description={t('ui.Coverage.elTitularSalePorUn')}
           icon={<CalendarRange />}
           footer={
             <>
@@ -497,7 +497,7 @@ export default function Coverage() {
           <div className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <label className="cg-eyebrow mb-1.5 block">Vigilante que sale</label>
+                <label className="cg-eyebrow mb-1.5 block">{t('ui.Coverage.vigilanteQueSale')}</label>
                 <GuardTypeahead value={repOut} onSelect={setRepOut}
                   excludeGuardId={repIn?.guardId} placeholder={t("ui.Coverage.quienTomaVacacionesPermiso", "Quién toma vacaciones/permiso")} />
               </div>
@@ -577,7 +577,7 @@ export default function Coverage() {
               </p>
             </div>
             <div>
-              <label className="cg-eyebrow mb-1.5 block">Detalle (opcional)</label>
+              <label className="cg-eyebrow mb-1.5 block">{t('ui.Coverage.detalleOpcional')}</label>
               <Textarea value={note} onChange={(e) => setNote(e.target.value)} rows={3}
                 placeholder={t("ui.Coverage.ejLlamoSeLeDano", "Ej.: llamó, se le dañó la moto en la vía")} />
             </div>
@@ -681,7 +681,7 @@ export default function Coverage() {
             <div>
               <label className="cg-eyebrow mb-1.5 block">{t('comun.motivoOpcional')}</label>
               <Textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2}
-                placeholder="Ej.: refuerzo por evento en el cliente" />
+                placeholder={t('ui.Coverage.ejRefuerzoPorEventoEn')} />
             </div>
             {/* The single most important thing to state plainly: the traslado
                 ENDS BY ITSELF. It moves only the turnos in the range, so the
@@ -700,7 +700,7 @@ export default function Coverage() {
             <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
               El vigilante podrá marcar entrada en el puesto destino y recibirá sus
               recordatorios de turno allí, como cualquier turno normal. El puesto que deja
-              queda visible como <strong>sin cubrir</strong> hasta que se asigne un reemplazo.
+              queda visible como <strong>{t('ui.Coverage.sinCubrir')}</strong> hasta que se asigne un reemplazo.
             </p>
           </div>
         </Modal>

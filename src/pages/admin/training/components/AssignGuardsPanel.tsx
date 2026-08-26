@@ -94,11 +94,11 @@ export default function AssignGuardsPanel({ courseId, published }: Props) {
 
   const handleAssign = async () => {
     if (!published) {
-      toast.error('Publica el curso antes de asignarlo.');
+      toast.error(t('ui.AssignGuardsPanel.publicaElCursoAntesDe'));
       return;
     }
     if (assignmentType === 'individual' && !selected) {
-      toast.error('Selecciona un vigilante.');
+      toast.error(t('ui.AssignGuardsPanel.seleccionaUnVigilante'));
       return;
     }
     setAssigning(true);
@@ -198,7 +198,7 @@ export default function AssignGuardsPanel({ courseId, published }: Props) {
               ) : (
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
-                  <Input className="pl-9" placeholder="Nombre del vigilante" value={query} onChange={(e) => setQuery(e.target.value)} />
+                  <Input className="pl-9" placeholder={t('ui.AssignGuardsPanel.nombreDelVigilante')} value={query} onChange={(e) => setQuery(e.target.value)} />
                   {(options.length > 0 || searching) && (
                     <div className="glass-raised absolute z-10 mt-1 w-full overflow-hidden">
                       {searching && <div className="px-3 py-2 text-sm" style={{ color: 'var(--ink-soft)' }}>Buscando…</div>}
@@ -239,7 +239,7 @@ export default function AssignGuardsPanel({ courseId, published }: Props) {
             <EmptyState
               icon={<Users />}
               title={t("ui.AssignGuardsPanel.aunNoHayVigilantesAsignados", "Aún no hay vigilantes asignados")}
-              description="Asigna el curso arriba y el progreso aparecerá aquí."
+              description={t('ui.AssignGuardsPanel.asignaElCursoArribaY')}
               className="border-0"
             />
           }

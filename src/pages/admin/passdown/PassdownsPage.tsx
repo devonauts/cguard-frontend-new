@@ -22,6 +22,7 @@ import passdownService, {
   type PassdownDetail,
   type PassdownStatus,
 } from "@/lib/api/passdownService";
+import i18n from "@/i18n";
 
 function fmtDate(s?: string | null): string {
   if (!s) return "—";
@@ -45,7 +46,7 @@ function StatusPill({ status }: { status: PassdownStatus }) {
   return status === "received" ? (
     <StatusBadge tone="ok">Recibido</StatusBadge>
   ) : (
-    <StatusBadge tone="warn">Pendiente de recibir</StatusBadge>
+    <StatusBadge tone="warn">{i18n.t('ui.PassdownsPage.pendienteDeRecibir')}</StatusBadge>
   );
 }
 
@@ -150,7 +151,7 @@ export default function PassdownsPage() {
           <PageHeader
             icon={<ClipboardSignature />}
             title={t('ui.PassdownsPage.pasesDeTurno')}
-            subtitle="Entregas de turno de los vigilantes: novedades, consignas e imágenes del relevo."
+            subtitle={t('ui.PassdownsPage.entregasDeTurnoDeLos')}
           />
 
           <Section
@@ -169,8 +170,8 @@ export default function PassdownsPage() {
             ) : rows.length === 0 ? (
               <EmptyState
                 icon={<ClipboardSignature />}
-                title="No hay pases de turno"
-                description="Cuando los vigilantes registren la entrega de su turno, aparecerán aquí."
+                title={t('ui.PassdownsPage.noHayPasesDeTurno')}
+                description={t('ui.PassdownsPage.cuandoLosVigilantesRegistrenLa')}
               />
             ) : (
               <DataTable columns={columns} data={rows} onRowClick={openDetail} />
@@ -183,7 +184,7 @@ export default function PassdownsPage() {
         open={detailOpen}
         onOpenChange={setDetailOpen}
         icon={<ClipboardSignature />}
-        title="Pase de turno"
+        title={t('ui.PassdownsPage.paseDeTurno')}
         description={detail?.shiftLabel || undefined}
         size="lg"
       >
@@ -193,7 +194,7 @@ export default function PassdownsPage() {
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
               <Field label={t('comun.puesto')} value={detail.stationName} />
-              <Field label="Vigilante saliente" value={detail.outgoingGuardName} />
+              <Field label={t('ui.PassdownsPage.vigilanteSaliente')} value={detail.outgoingGuardName} />
               <Field label={t('comun.turno')} value={detail.shiftLabel} />
               <Field label="Creado" value={fmtDate(detail.createdAt)} />
               <div className="min-w-0">
@@ -202,7 +203,7 @@ export default function PassdownsPage() {
               </div>
               {detail.status === "received" && (
                 <Field
-                  label="Recibido por"
+                  label={t('ui.PassdownsPage.recibidoPor')}
                   value={
                     detail.receivedByName
                       ? `${detail.receivedByName}${detail.receivedAt ? ` · ${fmtDate(detail.receivedAt)}` : ""}`
@@ -296,7 +297,7 @@ export default function PassdownsPage() {
                   })}
                 </div>
               ) : (
-                <p className="text-sm" style={{ color: "var(--ink-soft)" }}>Sin consignas registradas.</p>
+                <p className="text-sm" style={{ color: "var(--ink-soft)" }}>{t('ui.PassdownsPage.sinConsignasRegistradas')}</p>
               )}
             </div>
           </div>

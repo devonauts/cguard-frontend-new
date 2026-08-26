@@ -190,23 +190,23 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
   };
 
   const saveShift = async () => {
-    if (!shiftGuard) { toast.error('Seleccione un vigilante'); return; }
+    if (!shiftGuard) { toast.error(t('ui.ShiftAssignModal.seleccioneUnVigilante')); return; }
 
     // ── Turno único (one-off ad-hoc shift) ────────────────────────────────────
     if (assignMode === 'single') {
       if (!shiftStart || !shiftEnd) { toast.error(t('comun.completeTodosLosCampos')); return; }
       const start = new Date(shiftStart); const end = new Date(shiftEnd);
-      if (end <= start) { toast.error('La hora de fin debe ser posterior al inicio'); return; }
+      if (end <= start) { toast.error(t('ui.ShiftAssignModal.laHoraDeFinDebe')); return; }
       if ((end.getTime() - start.getTime()) > 24 * 60 * 60 * 1000) { toast.error(t('comun.unTurnoNoPuedeDurar')); return; }
       const current = await fetchCurrentShifts();
       setSaving(true);
       try {
         await deleteOverlappingShifts(current, start, end);
         await ApiService.post(`/tenant/${tenantId}/shift`, { data: { startTime: start.toISOString(), endTime: end.toISOString(), station: stationId, guard: shiftGuard, postSiteId } });
-        toast.success('Turno creado');
+        toast.success(t('ui.ShiftAssignModal.turnoCreado'));
         onSaved(start);
       } catch (e: any) {
-        if (isBenignSlotConflict(e)) { toast.success('El vigilante ya estaba asignado a ese turno'); onSaved(start); }
+        if (isBenignSlotConflict(e)) { toast.success(t('ui.ShiftAssignModal.elVigilanteYaEstabaAsignado')); onSaved(start); }
         else toast.error(e?.data?.message || e?.message || 'Error al crear turno');
       } finally { setSaving(false); }
       return;
@@ -216,7 +216,7 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
     // The guard is assigned to a station POSITION (Vigilante 1/2). The engine
     // generates the staggered rotation (one starts day, the other night, swapping
     // each cycle) from the station's patrón de rotación. Same path as Programador.
-    if (!selectedPositionId) { toast.error('Seleccione el puesto (Vigilante)'); return; }
+    if (!selectedPositionId) { toast.error(t('ui.ShiftAssignModal.seleccioneElPuestoVigilante')); return; }
     const pos = positions.find((p: PositionRow) => p.id === selectedPositionId);
     const isRelief = (pos?.type || 'fijo') === 'sacafranco';
     setSaving(true);
@@ -233,7 +233,7 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
           isRelief,
         },
       });
-      toast.success('Vigilante asignado · si es fijo, la rotación se genera automáticamente; los sacafrancos se colocan a mano en Programador › Horario');
+      toast.success(t('ui.ShiftAssignModal.vigilanteAsignadoSiEsFijo'));
       onSaved(new Date(rotationStartDate + 'T12:00:00'));
     } catch (e: any) {
       toast.error(e?.data?.message || e?.message || 'Error al asignar');
@@ -247,7 +247,7 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
       size="md"
       icon={<UserPlus className="h-5 w-5" />}
       title={t('comun.asignarVigilante')}
-      description="Programa la cobertura del turno de este puesto"
+      description={t('ui.ShiftAssignModal.programaLaCoberturaDelTurno')}
       footer={
         <>
           <Button variant="outline" onClick={onClose}>{t('actions.cancel')}</Button>
@@ -279,7 +279,7 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
               </select>
             )}
             {!loadingGuards && availableGuards.length === 0 && (
-              <p className="mt-1.5 text-[11px]" style={{ color: 'var(--warn-text)' }}>Todos los vigilantes ya tienen una asignación activa. Libera uno o crea un nuevo vigilante.</p>
+              <p className="mt-1.5 text-[11px]" style={{ color: 'var(--warn-text)' }}>{t('ui.ShiftAssignModal.todosLosVigilantesYaTienen')}</p>
             )}
           </LabeledField>
 
@@ -288,7 +288,7 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
               {/* Puesto (Vigilante): assign to a position — the engine staggers day/night. */}
               <LabeledField label={t('comun.puesto')}>
                 {positionOptions.length === 0 ? (
-                  <div className="rounded-xl px-3 py-2 text-xs" style={{ background: 'color-mix(in oklab, var(--warn) 12%, transparent)', color: 'var(--warn-text)' }}>Configura primero el horario de la estación (Vista general › Horario del turno) para crear los puestos.</div>
+                  <div className="rounded-xl px-3 py-2 text-xs" style={{ background: 'color-mix(in oklab, var(--warn) 12%, transparent)', color: 'var(--warn-text)' }}>{t('ui.ShiftAssignModal.configuraPrimeroElHorarioDe')}</div>
                 ) : (
                   <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                     {positionOptions.map((p) => (
@@ -308,11 +308,11 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
                     ))}
                   </div>
                 )}
-                <p className="mt-1.5 text-[11px] text-muted-foreground">Los vigilantes alternan día y noche según el horario de la estación. El ciclo arranca en su <b>fecha de inicio</b>{" "}{t("ui.ShiftAssignModal.cambialaParaMoverElDia", "— cámbiala para mover el día de descanso.")}</p>
+                <p className="mt-1.5 text-[11px] text-muted-foreground">{t('ui.ShiftAssignModal.losVigilantesAlternanDiaY')}{" "}<b>{t('ui.ShiftAssignModal.fechaDeInicio')}</b>{" "}{t("ui.ShiftAssignModal.cambialaParaMoverElDia", "— cámbiala para mover el día de descanso.")}</p>
               </LabeledField>
 
               {/* Fecha de inicio = la fase de la rotación (día-0 del ciclo). */}
-              <LabeledField label="Fecha de inicio del turno">
+              <LabeledField label={t('ui.ShiftAssignModal.fechaDeInicioDelTurno')}>
                 <input type="date" value={rotationStartDate} onChange={(e) => setRotationStartDate(e.target.value)} className={FIELD_CLS_LG} />
                 {restPreview && (
                   <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border px-3 py-2" style={{ borderColor: 'var(--brand-line)', background: 'var(--brand-wash)' }}>
@@ -327,10 +327,10 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
                     </span>
                   </div>
                 )}
-                <p className="mt-1 text-[10px] text-muted-foreground/70">Para escalonar dos vigilantes en un puesto 24h, dales fechas de inicio distintas.</p>
+                <p className="mt-1 text-[10px] text-muted-foreground/70">{t('ui.ShiftAssignModal.paraEscalonarDosVigilantesEn')}</p>
               </LabeledField>
 
-              <LabeledField label="Hasta (opcional)">
+              <LabeledField label={t('ui.ShiftAssignModal.hastaOpcional')}>
                 <input type="date" value={rotationEndDate} min={rotationStartDate} onChange={(e) => setRotationEndDate(e.target.value)} className={FIELD_CLS_LG} />
                 <p className="mt-1 text-[10px] text-muted-foreground/70">{t("ui.ShiftAssignModal.dejaloVacioParaUnaAsignacion", "Déjalo vacío para una asignación indefinida; pon una fecha para una cobertura temporal.")}</p>
               </LabeledField>

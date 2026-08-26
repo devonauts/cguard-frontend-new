@@ -79,7 +79,7 @@ export default function StationRoster({ stationId, tenantId, events, guardColorM
   return (
     <div className="mb-3">
       <div className="mb-2 flex items-center justify-between px-1">
-        <h4 className="cg-eyebrow">Equipo del puesto</h4>
+        <h4 className="cg-eyebrow">{t('ui.StationRoster.equipoDelPuesto')}</h4>
         <div className="flex items-center gap-2.5 text-[9px]" style={{ color: 'var(--ink-soft)' }}>
           <span className="inline-flex items-center gap-0.5"><Sun size={9} style={{ color: 'var(--warn-text)' }} />{" "}{t("ui.StationRoster.dia", "Día")}</span>
           <span className="inline-flex items-center gap-0.5"><Moon size={9} style={{ color: 'var(--info-text)' }} /> Noche</span>

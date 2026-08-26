@@ -110,6 +110,23 @@ export const securityGuardService = {
     return resp && resp.data !== undefined ? resp.data : resp;
   },
 
+  /**
+   * A qué roles se puede mover a esta persona, y qué hay que saber antes
+   * (turno abierto, asignaciones activas, y cuánto historial se conserva).
+   * El id es el del USUARIO, porque el rol vive en la membresía.
+   */
+  async roleOptions(userId: string) {
+    const tenantId = getTenantId();
+    const resp = await api.get(`/tenant/${tenantId}/staff/${userId}/role-options`);
+    return (resp as any)?.data ?? resp;
+  },
+  /** Mueve a la persona al rol indicado conservando su expediente. */
+  async changeRole(userId: string, role: string) {
+    const tenantId = getTenantId();
+    const resp = await api.post(`/tenant/${tenantId}/staff/${userId}/change-role`, { role });
+    return (resp as any)?.data ?? resp;
+  },
+
   async list(params?: Record<string, unknown>) {
     const tenantId = getTenantId();
     const qs = params ? `?${new URLSearchParams(params as Record<string, string>).toString()}` : "";

@@ -118,7 +118,7 @@ export default function StationHero({
             });
             invalidateEntity("stations");
             onRenamed(newName);
-            toast.success("Puesto renombrado");
+            toast.success(t('ui.StationHero.puestoRenombrado'));
             setEditing(false);
         } catch (e: any) {
             toast.error(e?.message || "No se pudo renombrar");
@@ -174,7 +174,7 @@ export default function StationHero({
                                     <h2 className="font-display min-w-0 truncate text-xl font-bold leading-tight">{name}</h2>
                                     {canEdit && (
                                         <button
-                                            aria-label="Renombrar puesto"
+                                            aria-label={t('ui.StationHero.renombrarPuesto')}
                                             className="cg-btn-ghost cg-focus rounded-md p-1"
                                             onClick={() => {
                                                 setDraft(name);

@@ -185,10 +185,10 @@ export default function GlobalInventoryPage() {
       };
       if (editingItem) {
         await inventoryItemService.update(editingItem.id, payload);
-        toast.success('Artículo actualizado');
+        toast.success(t('ui.GlobalInventoryPage.articuloActualizado'));
       } else {
         await inventoryItemService.create(payload);
-        toast.success('Artículo creado');
+        toast.success(t('ui.GlobalInventoryPage.articuloCreado'));
       }
       closeModal();
       load();
@@ -232,7 +232,7 @@ export default function GlobalInventoryPage() {
     try {
       setDeleting(true);
       await inventoryItemService.delete([deleteTarget.id]);
-      toast.success('Artículo eliminado');
+      toast.success(t('ui.GlobalInventoryPage.articuloEliminado'));
       setDeleteTarget(null);
       load();
     } catch (e) {
@@ -280,7 +280,7 @@ export default function GlobalInventoryPage() {
         <PageHeader
           icon={<Package />}
           title="Inventario Global"
-          subtitle="Catálogo de equipos y recursos de la empresa"
+          subtitle={t('ui.GlobalInventoryPage.catalogoDeEquiposYRecursos')}
           badges={(
             <>
               <StatusBadge tone="brand">{total} artículo{total !== 1 ? 's' : ''}</StatusBadge>
@@ -298,7 +298,7 @@ export default function GlobalInventoryPage() {
           <StatCard label={t("ui.GlobalInventory.articulos", "Artículos")} value={total} icon={<Package />} accent="primary" />
           <StatCard label="Disponibles" value={disponibles} icon={<CheckCircle2 />} accent="ok" hint={t("ui.GlobalInventory.enEstaPagina", "En esta página")} />
           <StatCard label="En mantenimiento" value={enMantenimiento} icon={<Wrench />} accent="warn" hint={t("ui.GlobalInventory.enEstaPagina2", "En esta página")} />
-          <StatCard label="En mal estado" value={dañados} icon={<AlertTriangle />} accent="bad" hint={t("ui.GlobalInventory.enEstaPagina3", "En esta página")} />
+          <StatCard label={t('ui.GlobalInventoryPage.enMalEstado')} value={dañados} icon={<AlertTriangle />} accent="bad" hint={t("ui.GlobalInventory.enEstaPagina3", "En esta página")} />
         </Stagger>
 
         {/* Filtros */}
@@ -306,7 +306,7 @@ export default function GlobalInventoryPage() {
           {/* `TableSearch` del kit: mismo campo, misma lupa y además el botón
               de borrar la búsqueda, que la copia a mano no tenía. */}
           <div className="min-w-48 flex-1">
-            <TableSearch value={query} onChange={setQuery} placeholder="Buscar por nombre…" />
+            <TableSearch value={query} onChange={setQuery} placeholder={t('ui.GlobalInventoryPage.buscarPorNombre')} />
           </div>
           <Select value={filterType || '__all__'} onValueChange={(v) => { setPage(0); setFilterType(v === '__all__' ? '' : v); }}>
             <SelectTrigger className="w-44">

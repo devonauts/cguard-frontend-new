@@ -33,7 +33,7 @@ function ScoreBadge({ score, tier, enabled = true }: { score: number | null; tie
   // «No se le mide» y «no hay datos» son cosas distintas, y la diferencia
   // importa: la primera es una decisión de la empresa, la segunda un vacío que
   // se llena solo trabajando.
-  if (!enabled) return <StatusBadge tone="neutral" dot={false}>Sin medir</StatusBadge>;
+  if (!enabled) return <StatusBadge tone="neutral" dot={false}>{i18n.t('ui.Guard.sinMedir')}</StatusBadge>;
   if (score == null) return <StatusBadge tone="neutral" dot={false}>{i18n.t('comun.sinDatos')}</StatusBadge>;
   return (
     <StatusBadge tone={t.tone} dot={false} className="text-sm font-bold">
@@ -92,7 +92,7 @@ export default function Guard() {
   return (
     <AnalyticsShell
       title={t("ui.Guard.analiticasDeVigilantes", "Analíticas de Vigilantes")}
-      subtitle="Puntuación de desempeño (mismo algoritmo de la app) y asistencia de tu personal."
+      subtitle={t('ui.Guard.puntuacionDeDesempenoMismoAlgoritmo')}
       days={ops.days} setDays={ops.setDays} loading={ops.loading} error={ops.error}
       reload={() => { ops.reload(); loadLb(ops.days); }}
     >
@@ -143,7 +143,7 @@ export default function Guard() {
                 description="La medición está desactivada para toda la empresa en Configuración › Vigilantes en turno. Mientras siga así, nadie tiene puntuación."
               />
             ) : !lb || lb.guards.length === 0 ? (
-              <EmptyState icon={<Award />} title="Sin evaluaciones" description="No hay vigilantes para evaluar." />
+              <EmptyState icon={<Award />} title={t('ui.Guard.sinEvaluaciones')} description={t('ui.Guard.noHayVigilantesParaEvaluar')} />
             ) : (
               <div className="overflow-x-auto">
                 <table className="min-w-full text-sm">
@@ -192,7 +192,7 @@ export default function Guard() {
           </Section>
 
           {/* Attendance summary (raw) */}
-          <Section title="Asistencia (registros de la app)" icon={<Timer size={16} />}>
+          <Section title={t('ui.Guard.asistenciaRegistrosDeLaApp')} icon={<Timer size={16} />}>
             <AttendanceTiles attendance={ops.data.attendance} className="grid grid-cols-2 gap-3 sm:grid-cols-4" />
           </Section>
 

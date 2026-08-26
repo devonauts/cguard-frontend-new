@@ -693,7 +693,7 @@ export default function NewAdminUserPage() {
                     <FormItem>
                       <FormLabel>{t('adminOfficeUsers.newUser.form.nameLabel', { defaultValue: 'Nombre*' })}</FormLabel>
                       <FormControl>
-                        <Input placeholder="Nombre y apellido" {...field} />
+                        <Input placeholder={t('ui.NewAdminUserPage.nombreYApellido')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -707,7 +707,7 @@ export default function NewAdminUserPage() {
                     <FormItem>
                       <FormLabel>{t('adminOfficeUsers.newUser.form.emailLabel', { defaultValue: 'Correo Electrónico*' })}</FormLabel>
                       <FormControl>
-                        <Input placeholder="nombre@empresa.com" {...field} />
+                        <Input placeholder={t('ui.NewAdminUserPage.nombreEmpresaCom')} {...field} />
                       </FormControl>
                       <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>
                         Aquí le llega la invitación para crear su contraseña.

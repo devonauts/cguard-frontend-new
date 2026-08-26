@@ -141,7 +141,7 @@ export default function DispatchPublicView() {
       <EmptyState
         icon={<ShieldAlert />}
         title="No disponible"
-        description="Este enlace no existe o ha expirado."
+        description={t('ui.DispatchPublicView.esteEnlaceNoExisteO')}
         className="bg-card max-w-sm"
       />
     </div>
@@ -217,7 +217,7 @@ export default function DispatchPublicView() {
             se estrujen a una letra por línea— la tabla se lee entera y el
             desplazamiento se queda DENTRO de la tarjeta, sin arrastrar la
             página. */}
-        <Section title="Datos del despacho" icon={<FileText />} contentClassName="overflow-x-auto rounded-xl border">
+        <Section title={t('ui.DispatchPublicView.datosDelDespacho')} icon={<FileText />} contentClassName="overflow-x-auto rounded-xl border">
           <div className="text-sm">
             <table className="w-full min-w-[640px] text-sm border-collapse">
               <tbody>

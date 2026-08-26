@@ -193,6 +193,7 @@ import RequireGlobalAdmin from "./components/RequireGlobalAdmin";
 
 import { ClientSelectionProvider } from "./contexts/ClientSelectionContext";
 import CoBrowseAgent from "./components/cobrowse/CoBrowseAgent";
+import i18n from "@/i18n";
 
 function normalizeInviteToken(value: string | null | undefined) {
   return value && value !== 'null' && value !== 'undefined' ? value : undefined;
@@ -284,7 +285,7 @@ export default function App() {
           <CoBrowseAgent />
           <BrowserRouter>
             <PersistentChrome>
-            <Suspense fallback={<><ProgresoDeRuta /><div style={{minHeight:"60vh",display:"flex",alignItems:"center",justifyContent:"center"}}><div className="animate-spin" aria-label="Cargando" style={{width:28,height:28,border:"3px solid var(--border,#e5e7eb)",borderTopColor:"var(--primary,#C8860A)",borderRadius:"50%"}}/></div></>}>
+            <Suspense fallback={<><ProgresoDeRuta /><div style={{minHeight:"60vh",display:"flex",alignItems:"center",justifyContent:"center"}}><div className="animate-spin" aria-label={i18n.t('ui.App.cargando')} style={{width:28,height:28,border:"3px solid var(--border,#e5e7eb)",borderTopColor:"var(--primary,#C8860A)",borderRadius:"50%"}}/></div></>}>
             <AppErrorBoundary scope="routes">
             <Routes>
               {/* Enlace público de video compartido (cliente, sin login) */}

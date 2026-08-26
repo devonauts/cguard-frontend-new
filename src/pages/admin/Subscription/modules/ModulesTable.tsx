@@ -56,7 +56,7 @@ export default function ModulesTable({
           <EmptyState
             icon={<FileX />}
             title={t("ui.ModulesTable.sinModulosContratados", "Sin módulos contratados")}
-            description="Todavía no has activado ningún módulo adicional."
+            description={t('ui.ModulesTable.todaviaNoHasActivadoNingun')}
             className="border-0"
           />
         }

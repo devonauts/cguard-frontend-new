@@ -712,7 +712,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
   const optimizar = async () => {
     if (!routeId) return;
     if (recorridoSucio) {
-      toast.info('Guarda primero los cambios: la optimización trabaja sobre la ruta guardada.');
+      toast.info(t('ui.RouteForm.guardaPrimeroLosCambiosLa'));
       return;
     }
     if (
@@ -776,7 +776,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
   const trazarPorCalles = async () => {
     if (!routeId) return;
     if (recorridoSucio) {
-      toast.info('Guarda primero los cambios para trazar el recorrido real.');
+      toast.info(t('ui.RouteForm.guardaPrimeroLosCambiosPara'));
       return;
     }
     if (
@@ -898,7 +898,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
             <FormItem>
               <FormLabel>{t('comun.nombreReq')}</FormLabel>
               <FormControl>
-                <Input placeholder="Nombre de la ruta" {...field} />
+                <Input placeholder={t('ui.RouteForm.nombreDeLaRuta')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -1033,10 +1033,10 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
           name="supervisorId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Asignar Supervisor*</FormLabel>
+              <FormLabel>{t('ui.RouteForm.asignarSupervisor')}</FormLabel>
               <Select value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar supervisor">
+                  <SelectValue placeholder={t('ui.RouteForm.seleccionarSupervisor')}>
                     {(() => {
                       const id = String(field.value || '');
                       const found = supervisors.find((x) => String(x.id) === id);
@@ -1086,7 +1086,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
           name="siteIds"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Seleccionar Puestos de Vigilancia*</FormLabel>
+              <FormLabel>{t('ui.RouteForm.seleccionarPuestosDeVigilancia')}</FormLabel>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
@@ -1106,7 +1106,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="w-[320px]">
                   {sites.length === 0 ? (
-                    <div className="p-3 text-sm text-muted-foreground">No hay puestos disponibles</div>
+                    <div className="p-3 text-sm text-muted-foreground">{t('ui.RouteForm.noHayPuestosDisponibles')}</div>
                   ) : (
                     sites.map((s) => {
                       const checked = (field.value || []).includes(s.id);
@@ -1135,7 +1135,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
         </Section>
 
         <Section
-          title="Inicio y fin del recorrido"
+          title={t('ui.RouteForm.inicioYFinDelRecorrido')}
           icon={<Milestone />}
           contentClassName="space-y-4"
         >
@@ -1212,7 +1212,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
             <EmptyState
               icon={<MapPin />}
               title={t("ui.RouteForm.todaviaNoHayRecorridoQue", "Todavía no hay recorrido que dibujar")}
-              description="Elige puestos de vigilancia con ubicación y el mapa mostrará el orden y el sentido de la ruta."
+              description={t('ui.RouteForm.eligePuestosDeVigilanciaCon')}
             />
           )}
 

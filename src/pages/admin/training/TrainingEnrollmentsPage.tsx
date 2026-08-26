@@ -62,7 +62,7 @@ export default function TrainingEnrollmentsPage() {
       setRows(res.rows);
     } catch (err) {
       console.error(err);
-      toast.error('No se pudo cargar el progreso.');
+      toast.error(t('ui.TrainingEnrollmentsPage.noSePudoCargarEl'));
     } finally {
       setLoading(false);
     }
@@ -81,7 +81,7 @@ export default function TrainingEnrollmentsPage() {
       setDetail(d);
     } catch (err) {
       console.error(err);
-      toast.error('No se pudo cargar el detalle.');
+      toast.error(t('ui.TrainingEnrollmentsPage.noSePudoCargarEl'));
     } finally {
       setDetailLoading(false);
     }
@@ -91,7 +91,7 @@ export default function TrainingEnrollmentsPage() {
     return (
       <AppLayout>
         <Breadcrumb items={[{ label: 'Panel de control', path: '/dashboard' }, { label: 'Entrenamiento' }]} />
-        <PageContainer width="wide" className="p-4 sm:p-6"><EmptyState icon={<Users />} title={t('ui.TrainingEnrollmentsPage.sinAcceso')} description="No tienes permiso para ver el progreso." /></PageContainer>
+        <PageContainer width="wide" className="p-4 sm:p-6"><EmptyState icon={<Users />} title={t('ui.TrainingEnrollmentsPage.sinAcceso')} description={t('ui.TrainingEnrollmentsPage.noTienesPermisoParaVer')} /></PageContainer>
       </AppLayout>
     );
   }
@@ -193,7 +193,7 @@ export default function TrainingEnrollmentsPage() {
                   ))}
                 </SelectContent>
               </Select>
-              <Button variant="outline" onClick={() => navigate(`/training/courses/${courseId}`)}>Editar curso</Button>
+              <Button variant="outline" onClick={() => navigate(`/training/courses/${courseId}`)}>{t('ui.TrainingEnrollmentsPage.editarCurso')}</Button>
             </>
           }
         />
@@ -213,8 +213,8 @@ export default function TrainingEnrollmentsPage() {
             emptyState={
               <EmptyState
                 icon={<Users />}
-                title="No hay inscripciones"
-                description="Cuando asignes este curso a un vigilante, su progreso aparecerá aquí."
+                title={t('ui.TrainingEnrollmentsPage.noHayInscripciones')}
+                description={t('ui.TrainingEnrollmentsPage.cuandoAsignesEsteCursoA')}
                 className="border-0"
               />
             }
@@ -225,7 +225,7 @@ export default function TrainingEnrollmentsPage() {
       <Sheet open={!!detail || detailLoading} onOpenChange={(o) => { if (!o) { setDetail(null); } }}>
         <SheetContent side="right" className="w-full overflow-y-auto sm:max-w-md">
           <SheetHeader>
-            <SheetTitle>Detalle de progreso</SheetTitle>
+            <SheetTitle>{t('ui.TrainingEnrollmentsPage.detalleDeProgreso')}</SheetTitle>
           </SheetHeader>
           {detailLoading && <div className="mt-6"><SkeletonCards count={2} className="sm:grid-cols-1" /></div>}
           {detail && (
@@ -242,7 +242,7 @@ export default function TrainingEnrollmentsPage() {
                 Cuestionario:{' '}
                 {detail.quizPassed
                   ? <span className="font-medium tabular-nums" style={{ color: 'var(--ok-text)' }}>Aprobado{detail.quizScore != null ? ` (${detail.quizScore}%)` : ''}</span>
-                  : <span style={{ color: 'var(--ink-soft)' }}>No aprobado</span>}
+                  : <span style={{ color: 'var(--ink-soft)' }}>{t('ui.TrainingEnrollmentsPage.noAprobado')}</span>}
               </div>
               <div>
                 <h4 className="mb-2 text-sm font-semibold tracking-tight">Lecciones</h4>

@@ -141,7 +141,7 @@ export default function ClientIncidents({ client }: { client: Client }) {
   const changeStatus = async (ws: string) => {
     if (!selected) return;
     try { await clientService.updateIncidentStatus(client.id, selected.id, ws); toast.success(t('comun.estadoActualizado')); await load(true); }
-    catch { toast.error('No se pudo actualizar'); }
+    catch { toast.error(t('ui.ClientIncidents.noSePudoActualizar')); }
   };
 
   const resetPage = (fn: (v: string) => void) => (v: string) => { fn(v); setPage(1); };
@@ -163,7 +163,7 @@ export default function ClientIncidents({ client }: { client: Client }) {
 
       {/* KPI row */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-7">
-        <KpiTile icon={<AlertTriangle />} value={kpis.total ?? 0} label="Total de incidentes" accent="primary" />
+        <KpiTile icon={<AlertTriangle />} value={kpis.total ?? 0} label={t('ui.ClientIncidents.totalDeIncidentes')} accent="primary" />
         <KpiTile icon={<ShieldAlert />} value={kpis.abiertos ?? 0} label="Incidentes abiertos" accent={(kpis.abiertos ?? 0) > 0 ? 'red' : 'slate'} sub={<StatusBadge tone={(kpis.abiertos ?? 0) > 0 ? 'bad' : 'neutral'} dot={false}>{kpis.abiertosPct ?? 0}%</StatusBadge>} />
         <KpiTile icon={<Search />} value={kpis.investigacion ?? 0} label={t("ui.ClientIncidents.enInvestigacion", "En investigación")} accent="orange" sub={<StatusBadge tone="warn" dot={false}>{kpis.investigacionPct ?? 0}%</StatusBadge>} />
         <KpiTile icon={<CheckCircle2 />} value={kpis.resueltos ?? 0} label="Resueltos" accent="green" sub={<StatusBadge tone="ok" dot={false}>{kpis.resueltosPct ?? 0}%</StatusBadge>} />
@@ -184,11 +184,11 @@ export default function ClientIncidents({ client }: { client: Client }) {
             <select className={FIELD_CLS} value={puestoId} onChange={(e) => resetPage(setPuestoId)(e.target.value)}><option value="">{t("ui.ClientIncidents.estacionTodas", "Estación: Todas")}</option>{puestos.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select>
             <select className={FIELD_CLS} value={tipo} onChange={(e) => resetPage(setTipo)(e.target.value)}><option value="">{t('comun.tipoTodos')}</option>{tipos.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select>
             <select className={FIELD_CLS} value={estado} onChange={(e) => resetPage(setEstado)(e.target.value)}><option value="">{t('comun.estadoTodos')}</option><option value="abierto">{t('comun.abierto')}</option><option value="investigacion">{t("ui.ClientIncidents.enInvestigacion", "En investigación")}</option><option value="resuelto">Resuelto</option></select>
-            <select className={FIELD_CLS} value={prioridad} onChange={(e) => resetPage(setPrioridad)(e.target.value)}><option value="">Prioridad: Todas</option><option value="alta">{t('comun.alta')}</option><option value="media">{t('comun.media')}</option><option value="baja">{t('comun.baja')}</option></select>
+            <select className={FIELD_CLS} value={prioridad} onChange={(e) => resetPage(setPrioridad)(e.target.value)}><option value="">{t('ui.ClientIncidents.prioridadTodas')}</option><option value="alta">{t('comun.alta')}</option><option value="media">{t('comun.media')}</option><option value="baja">{t('comun.baja')}</option></select>
           </div>
 
           {incidents.length === 0 ? (
-            <EmptyState icon={<AlertTriangle />} title={t('comun.sinIncidentes')} description="No hay incidentes para este cliente en el rango y filtros seleccionados." />
+            <EmptyState icon={<AlertTriangle />} title={t('comun.sinIncidentes')} description={t('ui.ClientIncidents.noHayIncidentesParaEste')} />
           ) : (
             <TabTable>
                 <THead>
@@ -233,7 +233,7 @@ export default function ClientIncidents({ client }: { client: Client }) {
         {/* RIGHT — incident detail */}
         <div>
           {!selected ? (
-            <Section title="Detalle del incidente" icon={<FileText />}><EmptyState icon={<FileText />} title="Selecciona un incidente" description="Elige un incidente de la lista para ver su detalle." /></Section>
+            <Section title={t('ui.ClientIncidents.detalleDelIncidente')} icon={<FileText />}><EmptyState icon={<FileText />} title={t('ui.ClientIncidents.seleccionaUnIncidente')} description={t('ui.ClientIncidents.eligeUnIncidenteDeLa')} /></Section>
           ) : (
             <GlassPanel className="space-y-4 p-5">
               <div className="flex items-start justify-between gap-3">
@@ -248,7 +248,7 @@ export default function ClientIncidents({ client }: { client: Client }) {
               </div>
 
               <div className="glass-sunken grid grid-cols-2 gap-3 break-words p-3 text-sm [&>div]:min-w-0">
-                <div><div className="cg-eyebrow mb-0.5">Sede / Puesto</div><div className="font-medium">{selected.sedeName || '—'}</div><div className="text-xs" style={{ color: 'var(--ink-faint)' }}>{selected.puestoName || ''}</div></div>
+                <div><div className="cg-eyebrow mb-0.5">{t('ui.ClientIncidents.sedePuesto')}</div><div className="font-medium">{selected.sedeName || '—'}</div><div className="text-xs" style={{ color: 'var(--ink-faint)' }}>{selected.puestoName || ''}</div></div>
                 <div><div className="cg-eyebrow mb-0.5">Prioridad</div>{selected.priority ? <StatusBadge tone={(PRIO[selected.priority] || PRIO.media).tone} dot={false}>{(PRIO[selected.priority] || PRIO.media).label}</StatusBadge> : <span style={{ color: 'var(--ink-faint)' }}>—</span>}</div>
                 <div><div className="cg-eyebrow mb-0.5">{t('ui.ClientIncidents.fechaHora')}</div><div className="font-medium tabular-nums">{fmtDT(selected.date)}</div></div>
                 <div><div className="cg-eyebrow mb-0.5">Respuesta</div><div className="font-medium tabular-nums">{selected.responseMin != null ? `${selected.responseMin} min` : '—'}</div></div>
@@ -296,7 +296,7 @@ export default function ClientIncidents({ client }: { client: Client }) {
               {tab === 'evidencia' && (
                 <div>
                   {evidence.length === 0 ? (
-                    <EmptyState icon={<Paperclip />} title="Sin evidencia" description={selected.evidenceCount ? 'Cargando…' : 'Este incidente no tiene evidencia adjunta.'} />
+                    <EmptyState icon={<Paperclip />} title={t('ui.ClientIncidents.sinEvidencia')} description={selected.evidenceCount ? 'Cargando…' : 'Este incidente no tiene evidencia adjunta.'} />
                   ) : (
                     <div className="grid grid-cols-3 gap-2">
                       {evidence.map((e) => (

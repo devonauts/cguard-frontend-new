@@ -197,19 +197,19 @@ export default function SupervisorRegistration() {
           </div>
           <p className="text-sm leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
             Tu cuenta con <strong style={{ color: 'var(--ink)' }}>{empresa || 'tu empresa de seguridad'}</strong> est\u00e1 lista.
-            Descarga la <strong style={{ color: 'var(--ink)' }}>app de supervisor</strong> para gestionar tus recorridos, tu equipo y las novedades desde tu tel\u00e9fono.
+            Descarga la <strong style={{ color: 'var(--ink)' }}>{t('ui.registration.appDeSupervisor')}</strong> para gestionar tus recorridos, tu equipo y las novedades desde tu tel\u00e9fono.
           </p>
 
           <div className="mt-6 space-y-3 text-left">
             <PasoSiguiente
               icon={<Smartphone />}
-              title="Descarga la app de supervisor"
-              description="Inicia sesi\u00f3n con el correo y la contrase\u00f1a que acabas de crear."
+              title={t('ui.registration.descargaLaAppDeSupervisor')}
+              description={t('ui.registration.iniciaSesiU00f3nConEl')}
             />
             <PasoSiguiente
               icon={<Clock />}
-              title="Espera la asignaci\u00f3n"
-              description="Tu empresa te asignar\u00e1 tu zona y tu equipo de vigilantes."
+              title={t('ui.registration.esperaLaAsignaciU00f3n')}
+              description={t('ui.registration.tuEmpresaTeAsignarU00e1')}
             />
           </div>
 
@@ -248,7 +248,7 @@ export default function SupervisorRegistration() {
               {errors.name && <p className="mt-1.5 text-xs" style={{ color: 'var(--bad-text)' }}>{errors.name}</p>}
             </div>
             <div>
-              <Etiqueta htmlFor="sup-email">Correo electr\u00f3nico</Etiqueta>
+              <Etiqueta htmlFor="sup-email">{t('ui.registration.correoElectrU00f3nico')}</Etiqueta>
               <input
                 id="sup-email"
                 type="email"
@@ -290,7 +290,7 @@ export default function SupervisorRegistration() {
                   type={showConfirm ? 'text' : 'password'}
                   value={confirm}
                   onChange={(e) => { setConfirm(e.target.value); setErrors((p) => ({ ...p, confirm: undefined })); }}
-                  placeholder="Repite la contrase\u00f1a"
+                  placeholder={t('ui.registration.repiteLaContraseU00f1a')}
                   disabled={isLoading}
                   aria-invalid={!!errors.confirm}
                 />

@@ -34,7 +34,7 @@ export default function VigiaUsagePage() {
         const resp: any = await api.get(`/tenant/${tenantId()}/assistant/usage`);
         setDatos(resp && resp.data !== undefined ? resp.data : resp);
       } catch {
-        toast.error("No se pudo cargar el uso del asistente.");
+        toast.error(t('ui.VigiaUsagePage.noSePudoCargarEl'));
       } finally {
         setLoading(false);
       }
@@ -63,14 +63,14 @@ export default function VigiaUsagePage() {
     <SettingsPageShell
       icon={<Bot />}
       title="Asistente VigIA"
-      subtitle="Cuánto se usa, cuánto cuesta y qué acciones ha ejecutado."
+      subtitle={t('ui.VigiaUsagePage.cuantoSeUsaCuantoCuesta')}
     >
       {loading ? (
         <SkeletonCards count={4} className="grid-cols-2 sm:grid-cols-4" />
       ) : !datos ? null : (
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-            <StatCard label="Mensajes este mes" value={String(datos.mes?.mensajes ?? 0)} icon={<MessageSquare />} />
+            <StatCard label={t('ui.VigiaUsagePage.mensajesEsteMes')} value={String(datos.mes?.mensajes ?? 0)} icon={<MessageSquare />} />
             <StatCard
               label="Mensajes gratis restantes (aprox.)"
               value={`≈${(() => {
@@ -84,7 +84,7 @@ export default function VigiaUsagePage() {
               accent={(datos.mes?.gratisRestanteCents ?? 0) > 0 ? "ok" : "neutral"}
               icon={<Bot />}
             />
-            <StatCard label="Cobrado del saldo (mes)" value={dinero(datos.mes?.cobradoCents ?? 0)} icon={<Wallet />} />
+            <StatCard label={t('ui.VigiaUsagePage.cobradoDelSaldoMes')} value={dinero(datos.mes?.cobradoCents ?? 0)} icon={<Wallet />} />
             <StatCard label="Saldo disponible" value={dinero(datos.saldoCents ?? 0)} accent={(datos.saldoCents ?? 0) > 0 ? "ok" : "warn"} icon={<Wallet />} />
           </div>
 

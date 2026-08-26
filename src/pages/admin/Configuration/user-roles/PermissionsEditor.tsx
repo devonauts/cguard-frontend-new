@@ -127,7 +127,7 @@ export default function PermissionsEditor({ value, onChange, query = "", readOnl
       </div>
 
       {Object.keys(filteredGrouped).length === 0 ? (
-        <div className="text-sm" style={{ color: "var(--ink-soft)" }}>No se encontraron permisos</div>
+        <div className="text-sm" style={{ color: "var(--ink-soft)" }}>{t('ui.PermissionsEditor.noSeEncontraronPermisos')}</div>
       ) : (
         Object.keys(filteredGrouped)
           .filter((g) => !HIDDEN_GROUPS.has(g))

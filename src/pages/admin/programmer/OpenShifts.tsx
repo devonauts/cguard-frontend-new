@@ -213,12 +213,12 @@ export default function OpenShifts() {
         <PageHeader
           icon={<CalendarClock />}
           title="Turnos abiertos"
-          subtitle="Turnos sin vigilante asignado · asígnalos al personal disponible."
+          subtitle={t('ui.OpenShifts.turnosSinVigilanteAsignadoAsignalos')}
         />
 
         {/* KPIs */}
         <Stagger className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <MetricTile label="Total abiertos" value={stats.total} icon={<CalendarClock />} hint="Turnos sin vigilante" />
+          <MetricTile label={t('ui.OpenShifts.totalAbiertos')} value={stats.total} icon={<CalendarClock />} hint={t('ui.OpenShifts.turnosSinVigilante')} />
           <MetricTile
             label="Hoy"
             value={stats.today}
@@ -227,7 +227,7 @@ export default function OpenShifts() {
             hint={t('ui.OpenShifts.delTotalAbierto')}
           />
           <MetricTile
-            label="Esta semana"
+            label={t('ui.OpenShifts.estaSemana')}
             value={stats.thisWeek}
             icon={<CalendarRange />}
             delta={stats.total > 0 ? { value: `${Math.round((stats.thisWeek / stats.total) * 100)} %`, direction: stats.thisWeek > 0 ? "down" : "flat" } : undefined}
@@ -241,7 +241,7 @@ export default function OpenShifts() {
             <div className="relative w-full md:w-80">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: "var(--ink-faint)" }} />
               <Input
-                placeholder="Buscar puesto o fecha"
+                placeholder={t('ui.OpenShifts.buscarPuestoOFecha')}
                 className="pl-9"
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
@@ -364,8 +364,8 @@ export default function OpenShifts() {
                   <TableCell colSpan={7} className="h-[360px] text-center">
                     <EmptyState
                       icon={<CalendarClock />}
-                      title="No hay turnos abiertos"
-                      description="Todos los turnos tienen vigilante asignado o no hay turnos en el período seleccionado."
+                      title={t('ui.OpenShifts.noHayTurnosAbiertos')}
+                      description={t('ui.OpenShifts.todosLosTurnosTienenVigilante')}
                       className="border-0 py-2"
                     />
                   </TableCell>
