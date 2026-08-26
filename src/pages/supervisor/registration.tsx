@@ -186,7 +186,7 @@ export default function SupervisorRegistration() {
       features={[
         { icon: MapPin, label: t('invite.supervisor.feature_patrol', 'Recorridos y patrullaje') },
         { icon: Radio, label: t('invite.supervisor.feature_news', 'Novedades del turno') },
-        { icon: Clock, label: 'Tu equipo, en directo' },
+        { icon: Clock, label: t('invite.supervisor.feature_team_live', 'Tu equipo, en directo') },
       ]}
     >
       {done ? (

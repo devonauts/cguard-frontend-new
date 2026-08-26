@@ -9532,12 +9532,14 @@
     "supervisor": {
       "feature_patrol": "Routes and patrols",
       "feature_news": "Shift incidents",
-      "feature_team": "Your team on the map"
+      "feature_team": "Your team on the map",
+      "feature_team_live": "Your team, live"
     },
     "client": {
       "subtitle": "Please finish signing up by choosing a password for your account.",
       "feature_live": "Your service, live",
-      "feature_gps": "Patrols and posts with GPS"
+      "feature_gps": "Patrols and posts with GPS",
+      "feature_alerts": "Incident alerts"
     }
   }
 }

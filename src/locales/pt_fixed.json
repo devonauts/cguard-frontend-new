@@ -7488,12 +7488,14 @@
     "supervisor": {
       "feature_patrol": "Percursos e patrulhamento",
       "feature_news": "Ocorrências do turno",
-      "feature_team": "Sua equipe no mapa"
+      "feature_team": "Sua equipe no mapa",
+      "feature_team_live": "Sua equipe, ao vivo"
     },
     "client": {
       "subtitle": "Conclua seu cadastro escolhendo uma senha para sua conta.",
       "feature_live": "Seu serviço, ao vivo",
-      "feature_gps": "Rondas e postos com GPS"
+      "feature_gps": "Rondas e postos com GPS",
+      "feature_alerts": "Avisos de ocorrências"
     }
   }
 }

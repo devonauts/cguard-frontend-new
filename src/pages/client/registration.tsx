@@ -231,7 +231,7 @@ export default function ClientRegistration() {
       features={[
         { icon: ShieldCheck, label: t('invite.client.feature_live', 'Tu servicio, en directo') },
         { icon: MapPin, label: t('invite.client.feature_gps', 'Rondas y puestos con GPS') },
-        { icon: Bell, label: 'Avisos de incidentes' },
+        { icon: Bell, label: t('invite.client.feature_alerts', 'Avisos de incidentes') },
       ]}
     >
       {done ? (

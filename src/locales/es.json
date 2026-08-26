@@ -9532,12 +9532,14 @@
     "supervisor": {
       "feature_patrol": "Recorridos y patrullaje",
       "feature_news": "Novedades del turno",
-      "feature_team": "Tu equipo en el mapa"
+      "feature_team": "Tu equipo en el mapa",
+      "feature_team_live": "Tu equipo, en directo"
     },
     "client": {
       "subtitle": "Por favor, completa tu registro ingresando una contraseña para tu cuenta.",
       "feature_live": "Tu servicio, en directo",
-      "feature_gps": "Rondas y puestos con GPS"
+      "feature_gps": "Rondas y puestos con GPS",
+      "feature_alerts": "Avisos de incidentes"
     }
   }
 }
