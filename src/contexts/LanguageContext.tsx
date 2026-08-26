@@ -31,15 +31,20 @@ const LANGUAGES = {
  * ════════════════════════════════════════════════════════════════════════════
  * EL IDIOMA DEL CRM — se comporta como una app móvil con la config del teléfono.
  *
- * Por defecto el CRM MUESTRA el idioma del NAVEGADOR (`navigator.languages`, el
- * equivalente a la config de idioma del sistema), igual que la app del vigilante
- * sigue la config del teléfono. NO se detecta por IP: dónde estás no dice en qué
- * idioma lees — alguien en Miami puede querer español y alguien en Quito, inglés.
+ * En automático, el idioma sale de DÓNDE ESTÁ la persona (su IP), igual que el
+ * sitio público: quien entra desde Perú lee español y quien entra desde Texas
+ * lee inglés, sin tocar nada. La objeción de siempre —que el país no dice en qué
+ * idioma lees— la resuelve el punto 1: dentro del CRM se elige, la elección gana
+ * SIEMPRE y viaja con la cuenta a cualquier equipo.
  *
  * Prioridad:
  *   1. Elección en Configuración › Idioma (es|en|pt). Gana siempre.
- *   2. Idioma del navegador (es | en | pt).
- *   3. Español, si el navegador está en algo que no tenemos.
+ *   2. País de la IP (GET /website/locale, el mismo que usa el sitio público).
+ *   3. Idioma del navegador, mientras la IP no ha contestado o no dice nada.
+ *   4. Español.
+ *
+ * El país se cachea en el navegador 30 días: sin eso, cada carga esperaría a la
+ * red para saber en qué idioma pintar, y se vería el parpadeo.
  *
  * DÓNDE SE GUARDA, Y POR QUÉ EN DOS SITIOS:
  *   · localStorage → para que el PRIMER pintado ya salga en tu idioma, sin
@@ -98,6 +103,39 @@ const detectBrowser = (): Language | null => {
     return null;
 };
 
+/**
+ * El idioma que dio la IP, cacheado en este navegador.
+ *
+ * Se guarda con fecha porque una IP viaja: quien se muda o se va de viaje no
+ * puede quedarse con el idioma de hace medio año. 30 días es el equilibrio
+ * entre no preguntar en cada carga y no congelar el idioma para siempre.
+ */
+const IP_CACHE_KEY = 'app_language_ip';
+const IP_CACHE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+
+const ipCacheado = (): Language | null => {
+    try {
+        const crudo = localStorage.getItem(IP_CACHE_KEY);
+        if (!crudo) return null;
+        const { idioma, ts } = JSON.parse(crudo) || {};
+        if (!ts || Date.now() - ts > IP_CACHE_TTL_MS) return null;
+        return norm(idioma);
+    } catch { return null; }
+};
+
+/** Pregunta al servidor por el país de la IP. Nunca lanza; null si no se sabe. */
+const idiomaPorIp = async (): Promise<Language | null> => {
+    try {
+        const resp: any = await api.get('/website/locale', { toast: { silentError: true } } as any);
+        const d = resp && resp.data !== undefined ? resp.data : resp;
+        const m = norm(d?.idioma);
+        if (m) {
+            try { localStorage.setItem(IP_CACHE_KEY, JSON.stringify({ idioma: m, pais: d?.pais || null, ts: Date.now() })); } catch { /* nada */ }
+        }
+        return m;
+    } catch { return null; }
+};
+
 /** La elección guardada en ESTE navegador. */
 const storedChoice = (): LanguageChoice => {
     try {
@@ -115,21 +153,24 @@ const storedChoice = (): LanguageChoice => {
     return 'auto';
 };
 
-/** El idioma del PRIMER pintado (síncrono): elección → navegador → español. */
+/** El automático, con lo que se sabe SIN red: IP cacheada → navegador → español. */
+const autoSinRed = (): Language => ipCacheado() || detectBrowser() || 'es';
+
+/** El idioma del PRIMER pintado (síncrono): elección → automático sin red. */
 const resolveInitial = (): Language => {
     const c = storedChoice();
     if (c !== 'auto') return c;
-    return detectBrowser() || 'es';
+    return autoSinRed();
 };
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
     const [language, setLanguageState] = useState<Language>(resolveInitial);
     const [choice, setChoiceState] = useState<LanguageChoice>(storedChoice);
-    const detected = detectBrowser() || 'es';
+    const detected = autoSinRed();
 
     /** Aplica una elección: pinta, guarda en el navegador y la manda a la cuenta. */
     const setChoice = (next: LanguageChoice) => {
-        const efectivo: Language = next === 'auto' ? (detectBrowser() || 'es') : next;
+        const efectivo: Language = next === 'auto' ? autoSinRed() : next;
         setChoiceState(next);
         setLanguageState(efectivo);
         try {
@@ -157,7 +198,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
         // Primero, lo que sabe este navegador (ya pintado por resolveInitial).
         const local = storedChoice();
-        const efectivoLocal: Language = local === 'auto' ? (detectBrowser() || 'es') : local;
+        const efectivoLocal: Language = local === 'auto' ? autoSinRed() : local;
         setChoiceState(local);
         setLanguageState(efectivoLocal);
         void setAppLanguage(efectivoLocal);
@@ -165,6 +206,28 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
             localStorage.setItem('app_language', efectivoLocal);
             localStorage.setItem('language', efectivoLocal);
         } catch { /* nada */ }
+
+        // En AUTOMÁTICO y sin caché de IP: se le pregunta al servidor de dónde
+        // viene esta persona y se repinta si hace falta. Va después del pintado
+        // local a propósito — nadie debe mirar una pantalla en blanco esperando
+        // a que conteste la red, y con la caché esto sólo ocurre la primera vez.
+        //
+        // Se pide SIEMPRE que no haya elección, con o sin sesión: la pantalla de
+        // acceso es justo donde más importa (es lo primero que ve un prospecto)
+        // y este endpoint es público.
+        if (local === 'auto' && !ipCacheado()) {
+            void idiomaPorIp().then((porIp) => {
+                if (!porIp) return;
+                // Si mientras tanto la persona eligió, no se le pisa.
+                if (storedChoice() !== 'auto') return;
+                setLanguageState(porIp);
+                void setAppLanguage(porIp);
+                try {
+                    localStorage.setItem('app_language', porIp);
+                    localStorage.setItem('language', porIp);
+                } catch { /* nada */ }
+            });
+        }
 
         // Después, la CUENTA — que es la que manda cuando hay elección, porque es
         // la que sigue a la persona entre equipos.
