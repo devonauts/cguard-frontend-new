@@ -36,7 +36,12 @@ type Puesto = {
   coverage: { needed: number; assigned: number; missing: number };
   supervisors: Supervisor[];
 };
-type Rejilla = { positions: Puesto[]; totals: { positions: number; supervisors: number; missing: number } };
+type SinPuesto = { userId: string; name: string };
+type Rejilla = {
+  positions: Puesto[];
+  unassigned?: SinPuesto[];
+  totals: { positions: number; supervisors: number; missing: number; unassigned?: number };
+};
 
 const tenantId = () => localStorage.getItem('tenantId') || '';
 
@@ -85,7 +90,14 @@ export default function SupervisionSection({
   }, [datos]);
 
   if (cargando && !datos) return null;
-  if (!datos || !datos.positions.length) return null;
+  if (!datos) return null;
+
+  const sinPuesto = datos.unassigned || [];
+  // Una empresa con supervisores y SIN puestos tiene que ver la sección igual:
+  // si no se pinta nada, parece que la función no existe — cuando lo que falta
+  // es crear el puesto. Sólo se calla del todo si no hay ni puestos ni
+  // supervisores, que es la única empresa a la que esto no le concierne.
+  if (!datos.positions.length && !sinPuesto.length) return null;
 
   const faltan = datos.totals.missing;
 
@@ -103,13 +115,14 @@ export default function SupervisionSection({
           </button>
           <ShieldCheck size={14} style={{ color: 'var(--brand-text)' }} />
           <span className="truncate text-xs font-semibold uppercase tracking-wide">Supervisión</span>
-          {faltan > 0 && (
+          {(faltan > 0 || sinPuesto.length > 0) && (
             <span
               className="ml-auto inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold"
               style={{ background: 'color-mix(in oklab, var(--warn) 16%, transparent)', color: 'var(--warn-text)' }}
               title="Puestos de supervisión sin cubrir"
             >
-              <AlertTriangle size={11} /> faltan {faltan}
+              <AlertTriangle size={11} />
+              {faltan > 0 ? `faltan ${faltan}` : `${sinPuesto.length} sin puesto`}
             </span>
           )}
           <Link
@@ -124,6 +137,39 @@ export default function SupervisionSection({
           <div key={i} className="last:border-r-0" style={{ borderRight: '1px solid var(--hairline)' }} />
         ))}
       </div>
+
+      {/* Supervisores con rol y sin puesto: el caso real de 3 de las 4 empresas
+          que tienen supervisores. Es lo que hay que resolver, así que se dice. */}
+      {abierta && sinPuesto.length > 0 && (
+        <div className="grid" style={{ gridTemplateColumns: gridCols, borderTop: '1px solid var(--hairline)' }}>
+          <div
+            className="sticky left-0 z-20 flex items-center gap-2 px-4 py-2"
+            style={{ background: 'var(--card)' }}
+          >
+            <AlertTriangle size={13} style={{ color: 'var(--warn-text)', flexShrink: 0 }} />
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-xs font-medium" style={{ color: 'var(--warn-text)' }}>
+                {sinPuesto.length === 1
+                  ? '1 supervisor sin puesto'
+                  : `${sinPuesto.length} supervisores sin puesto`}
+              </p>
+              <p className="truncate text-[11px]" style={{ color: 'var(--ink-faint)' }}>
+                {sinPuesto.map((u) => u.name).join(' · ')}
+              </p>
+            </div>
+            <Link
+              to="/supervisor-positions"
+              className="cg-focus shrink-0 rounded px-2 py-0.5 text-[11px] font-semibold hover:underline"
+              style={{ color: 'var(--brand-text)' }}
+            >
+              Crear puesto
+            </Link>
+          </div>
+          {monthDays.map((_, i) => (
+            <div key={i} style={{ borderRight: '1px solid var(--hairline)' }} />
+          ))}
+        </div>
+      )}
 
       {abierta && datos.positions.map((p) => (
         <div key={p.id}>
