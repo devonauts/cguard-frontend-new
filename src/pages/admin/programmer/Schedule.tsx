@@ -42,8 +42,10 @@ import RotationStyleSelect from "@/components/schedule/RotationStyleSelect";
 import ContextMenu, { CtxItem, CtxMenuState } from "./ContextMenu";
 import TransferShiftModal, { TransferTarget } from "./TransferShiftModal";
 import { stationLabel } from "@/lib/stationName";
+import SupervisionSection from './SupervisionSection';
+
 import {
-  type Tone, tonePill, toneCard,
+  type Tone, tonePill, toneCard, toneInk,
   OVERRIDE_TONE, CODE_LABEL, CODE_ORDER, codeFill, codePill, codeCard,
 } from './codeTones';
 
@@ -2131,6 +2133,21 @@ export default function Schedule() {
                       );
                     })}
                   </div>
+
+                  {/* SUPERVISIÓN — arriba del todo, con la misma rejilla.
+                      Todo su código vive en `SupervisionSection`: este fichero
+                      ya pasa de 2.700 líneas y la supervisión corre sobre OTRO
+                      motor (nunca toca `shift`/`guardShift`). */}
+                  <SupervisionSection
+                    monthDays={monthDays}
+                    gridCols={gridCols}
+                    tintFor={(d) => {
+                      const hoy = tzToday();
+                      const ds = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                      if (ds === hoy) return TINT_TODAY;
+                      return d.getDay() === 0 ? TINT_SUNDAY : undefined;
+                    }}
+                  />
 
                   {/* Station rows */}
                   {stations.map(station => {

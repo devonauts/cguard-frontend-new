@@ -1,0 +1,215 @@
+import { useEffect, useMemo, useState } from 'react';
+import { ChevronDown, ChevronRight, ShieldCheck, AlertTriangle, Settings2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ApiService } from '@/services/api/apiService';
+import { codePill, CODE_LABEL } from './codeTones';
+
+/**
+ * ────────────────────────────────────────────────────────────────────────────
+ * LA SUPERVISIÓN, ARRIBA DEL TODO Y CON FORMA DE ESTACIÓN
+ *
+ * El puesto de supervisión ya tenía rotación, gente asignada y motor propio,
+ * pero vivía en OTRA pantalla (Supervisores › Puestos). El resultado medido en
+ * producción: un puesto creado y cuatro supervisores sin asignar. La máquina
+ * funcionaba; nadie entraba a usarla.
+ *
+ * Aquí se pinta con la MISMA rejilla, la MISMA geometría de columnas y LOS
+ * MISMOS códigos (D/N/L/V/PM/F) que los vigilantes — importados de `codeTones`,
+ * no copiados, para que un cambio de paleta no deje la supervisión pintando de
+ * otro color el mismo permiso.
+ *
+ * Es un componente aparte a propósito: `Schedule.tsx` pasa de 2.700 líneas y se
+ * edita a menudo. Todo lo de supervisión vive aquí y allí sólo hay una línea.
+ *
+ * Sólo LECTURA por ahora: los datos salen de `/supervision/grid`, que ya
+ * respeta las novedades. Asignar y configurar sigue en Puestos, enlazado desde
+ * la cabecera — enseñar un control que no escribe sería peor que no enseñarlo.
+ * ────────────────────────────────────────────────────────────────────────────
+ */
+
+type Dia = { date: string; code: string };
+type Supervisor = { assignmentId: string; userId: string | null; name: string; isRelief: boolean; days: Dia[] };
+type Puesto = {
+  id: string; name: string; zone: string | null;
+  startTime: string | null; endTime: string | null;
+  rotationStyle: { id: string; name: string } | null;
+  coverage: { needed: number; assigned: number; missing: number };
+  supervisors: Supervisor[];
+};
+type Rejilla = { positions: Puesto[]; totals: { positions: number; supervisors: number; missing: number } };
+
+const tenantId = () => localStorage.getItem('tenantId') || '';
+
+export default function SupervisionSection({
+  monthDays,
+  gridCols,
+  tintFor,
+}: {
+  /** Los MISMOS días que pinta la hoja — así las columnas cuadran solas. */
+  monthDays: Date[];
+  gridCols: string;
+  /** Tinte de columna (hoy / domingo) que ya calcula la hoja. */
+  tintFor?: (day: Date, index: number) => string | undefined;
+}) {
+  const [abierta, setAbierta] = useState(true);
+  const [datos, setDatos] = useState<Rejilla | null>(null);
+  const [cargando, setCargando] = useState(true);
+
+  const desde = monthDays.length ? ymd(monthDays[0]) : '';
+  const hasta = monthDays.length ? ymd(monthDays[monthDays.length - 1]) : '';
+
+  useEffect(() => {
+    if (!desde || !hasta) return;
+    let vivo = true;
+    setCargando(true);
+    ApiService.get(`/tenant/${tenantId()}/supervision/grid?from=${desde}&to=${hasta}`)
+      .then((r: any) => { if (vivo) setDatos((r && (r.positions ? r : r.data)) || null); })
+      // Un fallo aquí no puede tumbar el Horario de vigilantes: la sección
+      // simplemente no se pinta.
+      .catch(() => vivo && setDatos(null))
+      .finally(() => vivo && setCargando(false));
+    return () => { vivo = false; };
+  }, [desde, hasta]);
+
+  /** Índice por fecha, para no recorrer el array en cada celda (365 columnas). */
+  const porFecha = useMemo(() => {
+    const m = new Map<string, Map<string, string>>();
+    for (const p of datos?.positions || []) {
+      for (const s of p.supervisors) {
+        const dm = new Map<string, string>();
+        for (const d of s.days) dm.set(d.date, d.code);
+        m.set(s.assignmentId, dm);
+      }
+    }
+    return m;
+  }, [datos]);
+
+  if (cargando && !datos) return null;
+  if (!datos || !datos.positions.length) return null;
+
+  const faltan = datos.totals.missing;
+
+  return (
+    <div style={{ borderBottom: '2px solid var(--hairline)' }}>
+      {/* Cabecera de la sección */}
+      <div className="grid" style={{ gridTemplateColumns: gridCols, background: 'var(--glass-sunken)' }}>
+        <div className="sticky left-0 z-20 flex items-center gap-2 px-4 py-2" style={{ background: 'var(--glass-sunken)' }}>
+          <button
+            onClick={() => setAbierta((v) => !v)}
+            className="cg-btn-ghost cg-focus rounded p-0.5"
+            aria-label={abierta ? 'Contraer supervisión' : 'Expandir supervisión'}
+          >
+            {abierta ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+          </button>
+          <ShieldCheck size={14} style={{ color: 'var(--brand-text)' }} />
+          <span className="truncate text-xs font-semibold uppercase tracking-wide">Supervisión</span>
+          {faltan > 0 && (
+            <span
+              className="ml-auto inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold"
+              style={{ background: 'color-mix(in oklab, var(--warn) 16%, transparent)', color: 'var(--warn-text)' }}
+              title="Puestos de supervisión sin cubrir"
+            >
+              <AlertTriangle size={11} /> faltan {faltan}
+            </span>
+          )}
+          <Link
+            to="/supervisor-positions"
+            className="cg-btn-ghost cg-focus rounded p-1"
+            title="Configurar puestos de supervisión"
+          >
+            <Settings2 size={14} />
+          </Link>
+        </div>
+        {monthDays.map((_, i) => (
+          <div key={i} className="last:border-r-0" style={{ borderRight: '1px solid var(--hairline)' }} />
+        ))}
+      </div>
+
+      {abierta && datos.positions.map((p) => (
+        <div key={p.id}>
+          {/* Fila del puesto */}
+          <div className="grid" style={{ gridTemplateColumns: gridCols, borderTop: '1px solid var(--hairline)' }}>
+            <div className="sticky left-0 z-20 flex items-center gap-2 px-4 py-2" style={{ background: 'var(--card)' }}>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium">{p.name}</p>
+                <p className="truncate text-[11px]" style={{ color: 'var(--ink-faint)' }}>
+                  {[p.zone, p.rotationStyle?.name, p.startTime && p.endTime ? `${p.startTime}–${p.endTime}` : null]
+                    .filter(Boolean)
+                    .join(' · ')}
+                </p>
+              </div>
+              <span
+                className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold tabular-nums"
+                style={
+                  p.coverage.missing > 0
+                    ? { background: 'color-mix(in oklab, var(--warn) 16%, transparent)', color: 'var(--warn-text)' }
+                    : { background: 'color-mix(in oklab, var(--ok) 14%, transparent)', color: 'var(--ok-text)' }
+                }
+                title="Supervisores asignados vs. necesarios"
+              >
+                {p.coverage.assigned}/{p.coverage.needed}
+              </span>
+            </div>
+            {monthDays.map((d, i) => (
+              <div key={i} style={{ borderRight: '1px solid var(--hairline)', background: tintFor?.(d, i) }} />
+            ))}
+          </div>
+
+          {/* Una fila por supervisor asignado */}
+          {p.supervisors.map((s) => {
+            const dm = porFecha.get(s.assignmentId);
+            return (
+              <div key={s.assignmentId} className="grid" style={{ gridTemplateColumns: gridCols, borderTop: '1px solid var(--hairline)' }}>
+                <div className="sticky left-0 z-20 flex items-center gap-2 px-4 py-1.5 pl-10" style={{ background: 'var(--card)' }}>
+                  <span className="truncate text-xs">{s.name}</span>
+                  {s.isRelief && (
+                    <span className="shrink-0 text-[10px]" style={{ color: 'var(--ink-faint)' }}>relevo</span>
+                  )}
+                </div>
+                {monthDays.map((d, i) => {
+                  const code = dm?.get(ymd(d)) || '';
+                  return (
+                    <div
+                      key={i}
+                      className="flex items-center justify-center"
+                      style={{ borderRight: '1px solid var(--hairline)', background: code ? undefined : tintFor?.(d, i) }}
+                      title={code ? CODE_LABEL[code] || code : undefined}
+                    >
+                      {code ? (
+                        <span
+                          className="flex h-[22px] w-[34px] items-center justify-center rounded text-[10px] font-semibold"
+                          style={codePill(code)}
+                        >
+                          {code}
+                        </span>
+                      ) : null}
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })}
+
+          {/* Un puesto sin nadie asignado no puede verse como una fila vacía:
+              es exactamente el caso que hay que resolver. */}
+          {!p.supervisors.length && (
+            <div className="grid" style={{ gridTemplateColumns: gridCols, borderTop: '1px solid var(--hairline)' }}>
+              <div className="sticky left-0 z-20 px-4 py-1.5 pl-10 text-[11px]" style={{ background: 'var(--card)', color: 'var(--warn-text)' }}>
+                Sin supervisores asignados
+              </div>
+              {monthDays.map((_, i) => (
+                <div key={i} style={{ borderRight: '1px solid var(--hairline)' }} />
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** Fecha local en YYYY-MM-DD (las columnas de la hoja ya vienen en hora local). */
+function ymd(d: Date): string {
+  const p = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+}
