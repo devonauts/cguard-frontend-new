@@ -2100,7 +2100,8 @@
       "thePerson": "La persona",
       "loadError": "No se pudieron cargar los roles disponibles.",
       "error": "No se pudo cambiar el rol.",
-      "hasBothRoles": "Ahora tiene los dos papeles. Al elegir uno, se quedará sólo con ese."
+      "hasBothRoles": "Ahora tiene los dos papeles. Al elegir uno, se quedará sólo con ese.",
+      "welcomeSent": "Le enviamos un correo de bienvenida con el enlace para descargar la app de supervisor."
     }
   },
   "header": {

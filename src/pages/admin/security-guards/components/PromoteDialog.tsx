@@ -101,6 +101,11 @@ export function PromoteDialog({
           }),
         );
       }
+      // El correo de bienvenida sale solo al ascender. Decirlo evita que quien
+      // promueve escriba a la persona por su cuenta para explicarle el cambio.
+      if (r?.correoEnviado) {
+        toast.info(t('guards.promote.welcomeSent', 'Le enviamos un correo de bienvenida con el enlace para descargar la app de supervisor.'));
+      }
       onOpenChange(false);
       onDone?.();
     } catch (e: any) {

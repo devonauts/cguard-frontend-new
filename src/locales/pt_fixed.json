@@ -2301,7 +2301,8 @@
       "thePerson": "A pessoa",
       "loadError": "Não foi possível carregar as funções disponíveis.",
       "error": "Não foi possível mudar a função.",
-      "hasBothRoles": "Atualmente tem os dois papéis. Ao escolher um, ficará apenas com esse."
+      "hasBothRoles": "Atualmente tem os dois papéis. Ao escolher um, ficará apenas com esse.",
+      "welcomeSent": "Enviámos-lhe um email de boas-vindas com a ligação para descarregar a app de supervisor."
     }
   },
   "clients": {
