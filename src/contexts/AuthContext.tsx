@@ -417,8 +417,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setError(m);
         return { success: false, error: m };
       }
-      if (message === "auth.emailNotVerified") {
-        return { success: false, error: "Tu correo no está verificado. Te enviamos un correo de verificación.", needVerification: true };
+      // El CÓDIGO, no el texto: `err.message` trae el mensaje ya traducido por
+      // el servidor ("Todavía no confirmaste tu correo…"), así que comparar el
+      // texto con "auth.emailNotVerified" no acertaba nunca y el aviso de
+      // verificación no llegaba a mostrarse.
+      const codigo = err?.data?.messageCode || "";
+      if (codigo === "auth.emailNotVerified") {
+        return { success: false, error: message, needVerification: true };
       }
       setError(message);
       return { success: false, error: message };

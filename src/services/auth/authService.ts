@@ -45,16 +45,17 @@ export class AuthService {
       )
       return response
     } catch (err: any) {
-      const msg = err?.message || ''
-      if (msg === 'auth.emailNotVerified') {
-        try {
-          await ApiService.post(
-            '/auth/send-email-address-verification-email',
-            { email: credentials.email },
-            { skipAuth: true }
-          )
-        } catch {}
-      }
+      // AQUÍ NO SE REENVÍA NADA. Esto llamaba a
+      // `/auth/send-email-address-verification-email` en cada intento fallido,
+      // y ese endpoint FABRICA UN TOKEN NUEVO: cada reenvío mataba el enlace
+      // del correo anterior. Es el fallo que dejó a un cliente de Perú con seis
+      // enlaces —cinco muertos— el 2026-08-26.
+      //
+      // El propio `/auth/sign-in` ya se encarga: reenvía el MISMO enlace
+      // mientras siga vivo y como mucho uno cada cinco minutos. Lo mismo hace
+      // con el enlace para crear la contraseña de quien nunca la puso.
+      // (Además la comparación estaba rota: `err.message` trae el texto ya
+      // traducido, nunca el código, así que este bloque no llegó a ejecutarse.)
       throw err
     }
   }
