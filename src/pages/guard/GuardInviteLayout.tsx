@@ -15,6 +15,7 @@
  */
 import { ReactNode } from 'react';
 import { CalendarClock, ClipboardCheck, MapPin } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import AuthShell from '@/pages/auth/AuthShell';
 
 export default function GuardInviteLayout({
@@ -30,6 +31,7 @@ export default function GuardInviteLayout({
   title: string;
   subtitle?: string;
 }) {
+  const { t } = useTranslation();
   const empresa = (tenantName || '').trim();
 
   return (
@@ -38,7 +40,7 @@ export default function GuardInviteLayout({
       subtitle={subtitle}
       brandName={empresa || undefined}
       logoUrl={tenantLogoUrl || undefined}
-      eyebrow="Invitación · Equipo de seguridad"
+      eyebrow={t('invite.eyebrow_guard', 'Invitación · Equipo de seguridad')}
       /* El formulario del vigilante es largo (documento, fechas, contactos):
          la columna estrecha lo convertiría en una tira interminable. */
       width="lg"
@@ -46,9 +48,9 @@ export default function GuardInviteLayout({
          encima sólo retrasa un formulario que el usuario ya está esperando. */
       splash={false}
       features={[
-        { icon: MapPin, label: 'Entrada y salida con geolocalización' },
-        { icon: ClipboardCheck, label: 'Reportes, rondas y novedades' },
-        { icon: CalendarClock, label: 'Tus turnos siempre a la mano' },
+        { icon: MapPin, label: t('invite.guard.feature_geo', 'Entrada y salida con geolocalización') },
+        { icon: ClipboardCheck, label: t('invite.guard.feature_reports', 'Reportes, rondas y novedades') },
+        { icon: CalendarClock, label: t('invite.guard.feature_shifts', 'Tus turnos siempre a la mano') },
       ]}
     >
       {children}

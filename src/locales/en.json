@@ -9453,5 +9453,78 @@
   "roles": {
     "securityGuard": "Guard",
     "securitySupervisor": "Supervisor"
+  },
+  "invite": {
+    "staff": {
+      "loading_signin": "Signing you in…",
+      "loading_invite": "Preparing your invitation",
+      "loading_signin_sub": "One moment — we are setting up your account.",
+      "loading_invite_sub": "We are checking your access link.",
+      "subtitle": "Complete your registration to enter the panel.",
+      "error_activate": "We could not activate the account. Check the link and try again.",
+      "error_toast": "Could not activate the account",
+      "doc_title": "Activate your account | CGuard Pro"
+    },
+    "eyebrow": "Invitation",
+    "hide_password": "Hide password",
+    "show_password": "Show password",
+    "rule": {
+      "len": "At least 8 characters",
+      "upper": "One uppercase letter",
+      "lower": "One lowercase letter",
+      "num": "One number",
+      "special": "One special character"
+    },
+    "strength": {
+      "weak": "Weak",
+      "good": "Good",
+      "great": "Excellent"
+    },
+    "error": {
+      "rules": "The password does not meet the requirements.",
+      "mismatch": "The passwords do not match.",
+      "register": "Could not complete the registration"
+    },
+    "val": {
+      "name_required": "Name is required",
+      "email_required": "Email is required",
+      "email_invalid": "Invalid email",
+      "password_required": "Password is required",
+      "password_short": "The password must be at least 8 characters",
+      "confirm_required": "Confirm the password",
+      "mismatch": "The passwords do not match",
+      "lastname_required": "Last name is required",
+      "birthplace_required": "Place of birth is required",
+      "gender_required": "Gender is required",
+      "marital_required": "Marital status is required",
+      "education_required": "Education is required",
+      "hire_required": "Hire date is required",
+      "blood_required": "Blood type is required",
+      "credentials_required": "Credentials are required",
+      "address_required": "Address is required",
+      "phone_required": "Phone is required"
+    },
+    "password": "Password",
+    "password_min": "At least 8 characters",
+    "eyebrow_supervisor": "Invitation · Supervision",
+    "eyebrow_client": "Invitation · Client portal",
+    "guard": {
+      "lastname": "Last name",
+      "gov_id": "ID document",
+      "birthplace": "Place of birth",
+      "credentials": "Credentials",
+      "male": "Male",
+      "female": "Female",
+      "other": "Other",
+      "single": "Single",
+      "married": "Married",
+      "divorced": "Divorced",
+      "feature_geo": "Clock in and out with geolocation",
+      "feature_reports": "Reports, patrols and incidents",
+      "feature_shifts": "Your shifts always at hand"
+    },
+    "select": "Select",
+    "eyebrow_guard": "Invitation · Security team",
+    "step_of": "Step {{step}} of {{total}}"
   }
 }

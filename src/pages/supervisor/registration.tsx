@@ -107,19 +107,19 @@ export default function SupervisorRegistration() {
 
   const validate = () => {
     const nextErrors: Record<string, string> = {};
-    if (!name?.trim()) nextErrors.name = "El nombre es obligatorio";
-    if (!email?.trim()) nextErrors.email = "El correo electrónico es obligatorio";
-    else if (!validateEmail(email)) nextErrors.email = "Correo electrónico inválido";
-    if (!password) nextErrors.password = "La contraseña es obligatoria";
+    if (!name?.trim()) nextErrors.name = t('invite.val.name_required', 'El nombre es obligatorio');
+    if (!email?.trim()) nextErrors.email = t('invite.val.email_required', 'El correo electrónico es obligatorio');
+    else if (!validateEmail(email)) nextErrors.email = t('invite.val.email_invalid', 'Correo electrónico inválido');
+    if (!password) nextErrors.password = t('invite.val.password_required', 'La contraseña es obligatoria');
     else {
-      if (password.length < 8) nextErrors.password = "La contraseña debe tener al menos 8 caracteres";
+      if (password.length < 8) nextErrors.password = t('invite.val.password_short', 'La contraseña debe tener al menos 8 caracteres');
       else if (!/[A-Z]/.test(password)) nextErrors.password = "La contraseña debe contener al menos una letra mayúscula";
       else if (!/[a-z]/.test(password)) nextErrors.password = "La contraseña debe contener al menos una letra minúscula";
       else if (!/[0-9]/.test(password)) nextErrors.password = "La contraseña debe contener al menos un número";
       else if (!/[^A-Za-z0-9]/.test(password)) nextErrors.password = "La contraseña debe contener al menos un carácter especial";
     }
-    if (!confirm) nextErrors.confirm = "Confirme la contraseña";
-    if (password && confirm && password !== confirm) nextErrors.confirm = "Las contraseñas no coinciden";
+    if (!confirm) nextErrors.confirm = t('invite.val.confirm_required', 'Confirme la contraseña');
+    if (password && confirm && password !== confirm) nextErrors.confirm = t('invite.val.mismatch', 'Las contraseñas no coinciden');
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   };
@@ -147,7 +147,7 @@ export default function SupervisorRegistration() {
       setDone(true);
       try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch {}
     } catch (err: any) {
-      toast.error(err?.message || "Error al registrar");
+      toast.error(err?.message || t('invite.error.register', 'Error al registrar'));
     } finally {
       setIsLoading(false);
     }
@@ -178,7 +178,7 @@ export default function SupervisorRegistration() {
       }
       brandName={empresa}
       logoUrl={fetched?.tenant?.logoUrl || undefined}
-      eyebrow="Invitaci\u00f3n \u00b7 Supervisi\u00f3n"
+      eyebrow={t('invite.eyebrow_supervisor', 'Invitación · Supervisión')}
       width="lg"
       /* Ya se ha ido a la red a por la invitaci\u00f3n: la cortina de 2,5 s s\u00f3lo
          retrasar\u00eda un formulario que el usuario est\u00e1 esperando. */
@@ -263,7 +263,7 @@ export default function SupervisorRegistration() {
               {errors.email && <p className="mt-1.5 text-xs" style={{ color: 'var(--bad-text)' }}>{errors.email}</p>}
             </div>
             <div>
-              <Etiqueta htmlFor="sup-clave">Contrase\u00f1a</Etiqueta>
+              <Etiqueta htmlFor="sup-clave">{t('invite.password', 'Contraseña')}</Etiqueta>
               <div className="relative">
                 <input
                   id="sup-clave"
@@ -272,7 +272,7 @@ export default function SupervisorRegistration() {
                   type={showPwd ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: undefined })); }}
-                  placeholder="M\u00ednimo 8 caracteres"
+                  placeholder={t('invite.password_min', 'Mínimo 8 caracteres')}
                   disabled={isLoading}
                   aria-invalid={!!errors.password}
                 />

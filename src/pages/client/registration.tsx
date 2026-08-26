@@ -121,19 +121,19 @@ export default function ClientRegistration() {
 
   const validate = () => {
     const nextErrors: Record<string, string> = {};
-    if (!name?.trim()) nextErrors.name = "El nombre es obligatorio";
-    if (!email?.trim()) nextErrors.email = "El correo electrónico es obligatorio";
-    else if (!validateEmail(email)) nextErrors.email = "Correo electrónico inválido";
-    if (!password) nextErrors.password = "La contraseña es obligatoria";
+    if (!name?.trim()) nextErrors.name = t('invite.val.name_required', 'El nombre es obligatorio');
+    if (!email?.trim()) nextErrors.email = t('invite.val.email_required', 'El correo electrónico es obligatorio');
+    else if (!validateEmail(email)) nextErrors.email = t('invite.val.email_invalid', 'Correo electrónico inválido');
+    if (!password) nextErrors.password = t('invite.val.password_required', 'La contraseña es obligatoria');
     else {
-      if (password.length < 8) nextErrors.password = "La contraseña debe tener al menos 8 caracteres";
+      if (password.length < 8) nextErrors.password = t('invite.val.password_short', 'La contraseña debe tener al menos 8 caracteres');
       else if (!/[A-Z]/.test(password)) nextErrors.password = "La contraseña debe contener al menos una letra mayúscula";
       else if (!/[a-z]/.test(password)) nextErrors.password = "La contraseña debe contener al menos una letra minúscula";
       else if (!/[0-9]/.test(password)) nextErrors.password = "La contraseña debe contener al menos un número";
       else if (!/[^A-Za-z0-9]/.test(password)) nextErrors.password = "La contraseña debe contener al menos un carácter especial";
     }
-    if (!confirm) nextErrors.confirm = "Confirme la contraseña";
-    if (password && confirm && password !== confirm) nextErrors.confirm = "Las contraseñas no coinciden";
+    if (!confirm) nextErrors.confirm = t('invite.val.confirm_required', 'Confirme la contraseña');
+    if (password && confirm && password !== confirm) nextErrors.confirm = t('invite.val.mismatch', 'Las contraseñas no coinciden');
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   };
@@ -156,7 +156,7 @@ export default function ClientRegistration() {
       setDone(true);
       try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch {}
     } catch (err: any) {
-      toast.error(err?.message || "Error al registrar");
+      toast.error(err?.message || t('invite.error.register', 'Error al registrar'));
     } finally {
       setIsLoading(false);
     }
@@ -223,7 +223,7 @@ export default function ClientRegistration() {
       subtitle={done ? 'Tu acceso quedó listo.' : getRoleDescription()}
       brandName={empresa}
       logoUrl={fetched?.tenant?.logoUrl || undefined}
-      eyebrow="Invitación · Portal del cliente"
+      eyebrow={t('invite.eyebrow_client', 'Invitación · Portal del cliente')}
       width="lg"
       /* Ya se ha ido a la red a por la invitación: una cortina de 2,5 s encima
          sólo retrasa lo que el usuario está esperando. */

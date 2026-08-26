@@ -19,11 +19,11 @@ import AuthShell, { CAMPO, BOTON_PRINCIPAL, AvisoError, Etiqueta } from "./AuthS
  */
 
 const RULES = [
-  { id: "len", label: "Al menos 8 caracteres", test: (p: string) => p.length >= 8 },
-  { id: "upper", label: "Una letra mayúscula", test: (p: string) => /[A-Z]/.test(p) },
-  { id: "lower", label: "Una letra minúscula", test: (p: string) => /[a-z]/.test(p) },
-  { id: "num", label: "Un número", test: (p: string) => /[0-9]/.test(p) },
-  { id: "special", label: "Un carácter especial", test: (p: string) => /[^A-Za-z0-9]/.test(p) },
+  { id: "len", label: "invite.rule.len", test: (p: string) => p.length >= 8 },
+  { id: "upper", label: "invite.rule.upper", test: (p: string) => /[A-Z]/.test(p) },
+  { id: "lower", label: "invite.rule.lower", test: (p: string) => /[a-z]/.test(p) },
+  { id: "num", label: "invite.rule.num", test: (p: string) => /[0-9]/.test(p) },
+  { id: "special", label: "invite.rule.special", test: (p: string) => /[^A-Za-z0-9]/.test(p) },
 ];
 
 const ROLE_LABELS: Record<string, string> = {
@@ -73,7 +73,7 @@ export default function AcceptInvitation() {
   useEffect(() => () => { mounted.current = false; }, []);
 
   useEffect(() => {
-    document.title = "Activa tu cuenta | CGuard Pro";
+    document.title = t('invite.staff.doc_title', 'Activa tu cuenta | CGuard Pro');
     const run = async () => {
       if (!inviteToken) { setInviteNotFound(true); setLoading(false); return; }
       // Clear any stale session so the invite flow starts clean.
@@ -98,7 +98,7 @@ export default function AcceptInvitation() {
 
   const passedRules = useMemo(() => RULES.filter((r) => r.test(password)).length, [password]);
   const strength = (passedRules / RULES.length) * 100;
-  const strengthLabel = passedRules <= 2 ? "Débil" : passedRules <= 4 ? "Buena" : "Excelente";
+  const strengthLabel = passedRules <= 2 ? t('invite.strength.weak', 'Débil') : passedRules <= 4 ? t('invite.strength.good', 'Buena') : t('invite.strength.great', 'Excelente');
   /* Semántico, no decorativo: la fuerza de una contraseña se lee en rojo →
      ámbar → verde en cualquier producto, así que NO sigue el acento. */
   const strengthTone = passedRules <= 2 ? "bad" : passedRules <= 4 ? "warn" : "ok";
@@ -108,8 +108,8 @@ export default function AcceptInvitation() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    if (passedRules !== RULES.length) { setError("La contraseña no cumple los requisitos."); return; }
-    if (password !== confirm) { setError("Las contraseñas no coinciden."); return; }
+    if (passedRules !== RULES.length) { setError(t('invite.error.rules', 'La contraseña no cumple los requisitos.')); return; }
+    if (password !== confirm) { setError(t('invite.error.mismatch', 'Las contraseñas no coinciden.')); return; }
     setSubmitting(true);
     try {
       await AuthService.signUp({ email, password, invitationToken: inviteToken, name } as any);
@@ -127,8 +127,8 @@ export default function AcceptInvitation() {
     } catch (err: any) {
       if (!mounted.current) return;
       setPhase("form");
-      setError(err?.message || "No se pudo activar la cuenta. Verifica el enlace e inténtalo de nuevo.");
-      toast.error(err?.message || "Error al activar la cuenta");
+      setError(err?.message || t('invite.staff.error_activate', 'No se pudo activar la cuenta. Verifica el enlace e inténtalo de nuevo.'));
+      toast.error(err?.message || t('invite.staff.error_toast', 'Error al activar la cuenta'));
     } finally {
       if (mounted.current) setSubmitting(false);
     }
@@ -146,8 +146,8 @@ export default function AcceptInvitation() {
         showFeatures={false}
         logoUrl={tenantLogo}
         brandName={tenantName}
-        title={phase === "signing-in" ? "Accediendo al panel…" : "Preparando tu invitación"}
-        subtitle={phase === "signing-in" ? "Un momento, estamos preparando tu cuenta." : "Estamos comprobando tu enlace de acceso."}
+        title={phase === "signing-in" ? t('invite.staff.loading_signin', 'Accediendo al panel…') : t('invite.staff.loading_invite', 'Preparando tu invitación')}
+        subtitle={phase === "signing-in" ? t('invite.staff.loading_signin_sub', 'Un momento, estamos preparando tu cuenta.') : t('invite.staff.loading_invite_sub', 'Estamos comprobando tu enlace de acceso.')}
       >
         <div className="flex flex-col items-center gap-4 py-8">
           <Loader2 className="h-9 w-9 animate-spin" style={{ color: 'var(--brand-text)' }} />
@@ -162,7 +162,7 @@ export default function AcceptInvitation() {
       <AuthShell
         splash={false}
         showFeatures={false}
-        eyebrow="Invitación"
+        eyebrow={t('invite.eyebrow', 'Invitación')}
         title={t("ui.acceptinvitation.invitacionNoValida", "Invitación no válida")}
         subtitle={t('ui.acceptinvitation.elEnlaceNoExisteYa')}
       >
@@ -191,7 +191,7 @@ export default function AcceptInvitation() {
       subtitle={
         role
           ? `Te han invitado como ${role}${tenantName ? ` en ${tenantName}` : ''}. Crea tu contraseña y entra al panel.`
-          : "Completa tu registro para entrar al panel."
+          : t('invite.staff.subtitle', 'Completa tu registro para entrar al panel.')
       }
     >
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -221,7 +221,7 @@ export default function AcceptInvitation() {
             <button
               type="button"
               tabIndex={-1}
-              aria-label={showPwd ? "Ocultar contraseña" : "Mostrar contraseña"}
+              aria-label={showPwd ? t('invite.hide_password', 'Ocultar contraseña') : t('invite.show_password', 'Mostrar contraseña')}
               onClick={() => setShowPwd((v) => !v)}
               className="cg-focus absolute right-1.5 top-1/2 -translate-y-1/2 rounded-md p-2.5"
               style={{ color: 'var(--ink-faint)' }}
@@ -256,7 +256,7 @@ export default function AcceptInvitation() {
                   className="flex items-center gap-1.5 text-[11px]"
                   style={{ color: ok ? 'var(--ok-text)' : 'var(--ink-faint)' }}
                 >
-                  {ok ? <Check size={13} className="shrink-0" /> : <X size={13} className="shrink-0 opacity-50" />} {r.label}
+                  {ok ? <Check size={13} className="shrink-0" /> : <X size={13} className="shrink-0 opacity-50" />} {t(r.label)}
                 </li>
               );
             })}

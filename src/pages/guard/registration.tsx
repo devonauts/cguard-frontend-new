@@ -234,32 +234,32 @@ export default function GuardRegistration() {
     const collect = (stepNum: number) : Record<string,string> => {
       const nextErrors: Record<string, string> = {};
       if (stepNum === 1) {
-        if (!firstName?.trim()) nextErrors.firstName = "El nombre es obligatorio";
-        if (!lastName?.trim()) nextErrors.lastName = "El apellido es obligatorio";
-        if (!email?.trim()) nextErrors.email = "El correo electrónico es obligatorio";
-        else if (!validateEmail(email)) nextErrors.email = "Correo electrónico inválido";
+        if (!firstName?.trim()) nextErrors.firstName = t('invite.val.name_required', 'El nombre es obligatorio');
+        if (!lastName?.trim()) nextErrors.lastName = t('invite.val.lastname_required', 'El apellido es obligatorio');
+        if (!email?.trim()) nextErrors.email = t('invite.val.email_required', 'El correo electrónico es obligatorio');
+        else if (!validateEmail(email)) nextErrors.email = t('invite.val.email_invalid', 'Correo electrónico inválido');
       }
       if (stepNum === 2) {
         if (!governmentId?.trim()) nextErrors.governmentId = " ";
         if (!birthDate) nextErrors.birthDate = " ";
-        if (!birthPlace?.trim()) nextErrors.birthPlace = "El lugar de nacimiento es obligatorio";
-        if (!gender) nextErrors.gender = "El género es obligatorio";
-        if (!maritalStatus) nextErrors.maritalStatus = "El estado civil es obligatorio";
-        if (!academicInstruction) nextErrors.academicInstruction = "La formación académica es obligatoria";
+        if (!birthPlace?.trim()) nextErrors.birthPlace = t('invite.val.birthplace_required', 'El lugar de nacimiento es obligatorio');
+        if (!gender) nextErrors.gender = t('invite.val.gender_required', 'El género es obligatorio');
+        if (!maritalStatus) nextErrors.maritalStatus = t('invite.val.marital_required', 'El estado civil es obligatorio');
+        if (!academicInstruction) nextErrors.academicInstruction = t('invite.val.education_required', 'La formación académica es obligatoria');
       }
       if (stepNum === 3) {
-        if (!hiringContractDate) nextErrors.hiringContractDate = "La fecha de contratación es obligatoria";
-        if (!bloodType) nextErrors.bloodType = "El grupo sanguíneo es obligatorio";
-        if (!guardCredentials?.trim()) nextErrors.guardCredentials = "Las credenciales son obligatorias";
-        if (!address?.trim()) nextErrors.address = "La dirección es obligatoria";
-        if (!phone?.trim()) nextErrors.phone = "El teléfono es obligatorio";
-        if (!password) nextErrors.password = "La contraseña es obligatoria";
+        if (!hiringContractDate) nextErrors.hiringContractDate = t('invite.val.hire_required', 'La fecha de contratación es obligatoria');
+        if (!bloodType) nextErrors.bloodType = t('invite.val.blood_required', 'El grupo sanguíneo es obligatorio');
+        if (!guardCredentials?.trim()) nextErrors.guardCredentials = t('invite.val.credentials_required', 'Las credenciales son obligatorias');
+        if (!address?.trim()) nextErrors.address = t('invite.val.address_required', 'La dirección es obligatoria');
+        if (!phone?.trim()) nextErrors.phone = t('invite.val.phone_required', 'El teléfono es obligatorio');
+        if (!password) nextErrors.password = t('invite.val.password_required', 'La contraseña es obligatoria');
         else {
           const pe = passwordPolicyError(password);
           if (pe) nextErrors.password = pe;
         }
-        if (!confirm) nextErrors.confirm = "Confirme la contraseña";
-        if (password && confirm && password !== confirm) nextErrors.confirm = "Las contraseñas no coinciden";
+        if (!confirm) nextErrors.confirm = t('invite.val.confirm_required', 'Confirme la contraseña');
+        if (password && confirm && password !== confirm) nextErrors.confirm = t('invite.val.mismatch', 'Las contraseñas no coinciden');
       }
       return nextErrors;
     };
@@ -284,32 +284,32 @@ export default function GuardRegistration() {
     const collect = (stepNum: number) : Record<string,string> => {
       const nextErrors: Record<string, string> = {};
       if (stepNum === 1) {
-        if (!firstName?.trim()) nextErrors.firstName = "El nombre es obligatorio";
-        if (!lastName?.trim()) nextErrors.lastName = "El apellido es obligatorio";
-        if (!email?.trim()) nextErrors.email = "El correo electrónico es obligatorio";
-        else if (!validateEmail(email)) nextErrors.email = "Correo electrónico inválido";
+        if (!firstName?.trim()) nextErrors.firstName = t('invite.val.name_required', 'El nombre es obligatorio');
+        if (!lastName?.trim()) nextErrors.lastName = t('invite.val.lastname_required', 'El apellido es obligatorio');
+        if (!email?.trim()) nextErrors.email = t('invite.val.email_required', 'El correo electrónico es obligatorio');
+        else if (!validateEmail(email)) nextErrors.email = t('invite.val.email_invalid', 'Correo electrónico inválido');
       }
       if (stepNum === 2) {
         if (!governmentId?.trim()) nextErrors.governmentId = "El documento de identidad es obligatorio";
         if (!birthDate) nextErrors.birthDate = "La fecha de nacimiento es obligatoria";
-        if (!birthPlace?.trim()) nextErrors.birthPlace = "El lugar de nacimiento es obligatorio";
-        if (!gender) nextErrors.gender = "El género es obligatorio";
-        if (!maritalStatus) nextErrors.maritalStatus = "El estado civil es obligatorio";
-        if (!academicInstruction) nextErrors.academicInstruction = "La formación académica es obligatoria";
+        if (!birthPlace?.trim()) nextErrors.birthPlace = t('invite.val.birthplace_required', 'El lugar de nacimiento es obligatorio');
+        if (!gender) nextErrors.gender = t('invite.val.gender_required', 'El género es obligatorio');
+        if (!maritalStatus) nextErrors.maritalStatus = t('invite.val.marital_required', 'El estado civil es obligatorio');
+        if (!academicInstruction) nextErrors.academicInstruction = t('invite.val.education_required', 'La formación académica es obligatoria');
       }
       if (stepNum === 3) {
-        if (!hiringContractDate) nextErrors.hiringContractDate = "La fecha de contratación es obligatoria";
-        if (!bloodType) nextErrors.bloodType = "El grupo sanguíneo es obligatorio";
-        if (!guardCredentials?.trim()) nextErrors.guardCredentials = "Las credenciales son obligatorias";
-        if (!address?.trim()) nextErrors.address = "La dirección es obligatoria";
-        if (!phone?.trim()) nextErrors.phone = "El teléfono es obligatorio";
-        if (!password) nextErrors.password = "La contraseña es obligatoria";
+        if (!hiringContractDate) nextErrors.hiringContractDate = t('invite.val.hire_required', 'La fecha de contratación es obligatoria');
+        if (!bloodType) nextErrors.bloodType = t('invite.val.blood_required', 'El grupo sanguíneo es obligatorio');
+        if (!guardCredentials?.trim()) nextErrors.guardCredentials = t('invite.val.credentials_required', 'Las credenciales son obligatorias');
+        if (!address?.trim()) nextErrors.address = t('invite.val.address_required', 'La dirección es obligatoria');
+        if (!phone?.trim()) nextErrors.phone = t('invite.val.phone_required', 'El teléfono es obligatorio');
+        if (!password) nextErrors.password = t('invite.val.password_required', 'La contraseña es obligatoria');
         else {
           const pe = passwordPolicyError(password);
           if (pe) nextErrors.password = pe;
         }
-        if (!confirm) nextErrors.confirm = "Confirme la contraseña";
-        if (password && confirm && password !== confirm) nextErrors.confirm = "Las contraseñas no coinciden";
+        if (!confirm) nextErrors.confirm = t('invite.val.confirm_required', 'Confirme la contraseña');
+        if (password && confirm && password !== confirm) nextErrors.confirm = t('invite.val.mismatch', 'Las contraseñas no coinciden');
       }
       return nextErrors;
     };
@@ -652,7 +652,7 @@ export default function GuardRegistration() {
 
         <div className="mb-5">
           <div className="mb-2 flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Paso {step} de {totalSteps}</span>
+            <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t('invite.step_of', 'Paso {{step}} de {{total}}', { step, total: totalSteps })}</span>
             <div className="flex items-center gap-2">
               {[1, 2, 3].map((s) => (
                 <div
@@ -684,8 +684,8 @@ export default function GuardRegistration() {
               {errors.firstName && <div className="mt-1 text-sm" style={{ color: 'var(--bad-text)' }}>{errors.firstName}</div>}
             </div>
             <div>
-              <label className={labelClass}>Apellido<span style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
-              <Input className={formControl} style={errorStyle('lastName')} value={lastName} onChange={(e: any) => { setLastName(e.target.value); setErrors((p) => ({ ...p, lastName: undefined })); }} placeholder="Apellido" disabled={isLoading || lockedLastName} />
+              <label className={labelClass}>{t('invite.guard.lastname', 'Apellido')}<span style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
+              <Input className={formControl} style={errorStyle('lastName')} value={lastName} onChange={(e: any) => { setLastName(e.target.value); setErrors((p) => ({ ...p, lastName: undefined })); }} placeholder={t('invite.guard.lastname', 'Apellido')} disabled={isLoading || lockedLastName} />
               {errors.lastName && <div className="mt-1 text-sm" style={{ color: 'var(--bad-text)' }}>{errors.lastName}</div>}
             </div>
             <div className="md:col-span-2">
@@ -699,8 +699,8 @@ export default function GuardRegistration() {
         {step === 2 && (
           <div className="grid grid-cols-1 gap-x-4 gap-y-4 md:grid-cols-2">
             <div>
-              <label className={labelClass}>Documento de identidad<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
-              <Input className={formControl} style={errorStyle('governmentId')} value={governmentId} onChange={(e: any) => { setGovernmentId(e.target.value); setErrors((p) => ({ ...p, governmentId: undefined })); }} placeholder="Documento de identidad" disabled={isLoading} />
+              <label className={labelClass}>{t('invite.guard.gov_id', 'Documento de identidad')}<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
+              <Input className={formControl} style={errorStyle('governmentId')} value={governmentId} onChange={(e: any) => { setGovernmentId(e.target.value); setErrors((p) => ({ ...p, governmentId: undefined })); }} placeholder={t('invite.guard.gov_id', 'Documento de identidad')} disabled={isLoading} />
               {errors.governmentId && <div className="mt-1 text-sm" style={{ color: 'var(--bad-text)' }}>{errors.governmentId}</div>}
             </div>
             <div>
@@ -709,31 +709,31 @@ export default function GuardRegistration() {
               {errors.birthDate && <div className="mt-1 text-sm" style={{ color: 'var(--bad-text)' }}>{errors.birthDate}</div>}
             </div>
             <div>
-              <label className={labelClass}>Lugar de nacimiento<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
-              <Input className={formControl} style={errorStyle('birthPlace')} value={birthPlace} onChange={(e: any) => setBirthPlace(e.target.value)} placeholder="Lugar de nacimiento" disabled={isLoading} />
+              <label className={labelClass}>{t('invite.guard.birthplace', 'Lugar de nacimiento')}<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
+              <Input className={formControl} style={errorStyle('birthPlace')} value={birthPlace} onChange={(e: any) => setBirthPlace(e.target.value)} placeholder={t('invite.guard.birthplace', 'Lugar de nacimiento')} disabled={isLoading} />
             </div>
             <div>
               <label className={labelClass}>{t("ui.registration.genero", "Género")}<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
               <select value={gender} onChange={(e) => setGender(e.target.value)} className={formControl} style={errorStyle('gender')} disabled={isLoading}>
-                <option value="">Seleccione</option>
-                <option value="Masculino">Masculino</option>
-                <option value="Femenino">Femenino</option>
-                <option value="Otro">Otro</option>
+                <option value="">{t('invite.select', 'Seleccione')}</option>
+                <option value="Masculino">{t('invite.guard.male', 'Masculino')}</option>
+                <option value="Femenino">{t('invite.guard.female', 'Femenino')}</option>
+                <option value="Otro">{t('invite.guard.other', 'Otro')}</option>
               </select>
             </div>
             <div>
               <label className={labelClass}>{t('comun.estadoCivil')}<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
               <select value={maritalStatus} onChange={(e) => setMaritalStatus(e.target.value)} className={formControl} style={errorStyle('maritalStatus')} disabled={isLoading}>
-                <option value="">Seleccione</option>
-                <option value="Soltero">Soltero</option>
-                <option value="Casado">Casado</option>
-                <option value="Divorciado">Divorciado</option>
+                <option value="">{t('invite.select', 'Seleccione')}</option>
+                <option value="Soltero">{t('invite.guard.single', 'Soltero')}</option>
+                <option value="Casado">{t('invite.guard.married', 'Casado')}</option>
+                <option value="Divorciado">{t('invite.guard.divorced', 'Divorciado')}</option>
               </select>
             </div>
             <div>
               <label className={labelClass}>{t("ui.registration.formacionAcademica", "Formación académica")}<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
               <select value={academicInstruction} onChange={(e) => setAcademicInstruction(e.target.value)} className={formControl} style={errorStyle('academicInstruction')} disabled={isLoading}>
-                <option value="">Seleccione</option>
+                <option value="">{t('invite.select', 'Seleccione')}</option>
                 <option>Primaria</option>
                 <option>Secundaria</option>
                 <option>Universidad</option>
@@ -751,7 +751,7 @@ export default function GuardRegistration() {
             <div>
               <label className={labelClass}>{t("ui.registration.grupoSanguineo", "Grupo sanguíneo")}<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
               <select value={bloodType} onChange={(e) => setBloodType(e.target.value)} className={formControl} style={errorStyle('bloodType')} disabled={isLoading}>
-                <option value="">Seleccione</option>
+                <option value="">{t('invite.select', 'Seleccione')}</option>
                 <option>O+</option><option>O-</option>
                 <option>A+</option><option>A-</option>
                 <option>B+</option><option>B-</option>
@@ -759,8 +759,8 @@ export default function GuardRegistration() {
               </select>
             </div>
             <div>
-              <label className={labelClass}>Credenciales<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
-              <Input className={formControl} style={errorStyle('guardCredentials')} value={guardCredentials} onChange={(e: any) => setGuardCredentials(e.target.value)} placeholder="Credenciales" disabled={isLoading} />
+              <label className={labelClass}>{t('invite.guard.credentials', 'Credenciales')}<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>
+              <Input className={formControl} style={errorStyle('guardCredentials')} value={guardCredentials} onChange={(e: any) => setGuardCredentials(e.target.value)} placeholder={t('invite.guard.credentials', 'Credenciales')} disabled={isLoading} />
             </div>
             <div>
               <label className={labelClass}>{t("ui.registration.telefonoMovil", "Teléfono móvil")}<span className="ml-0.5" style={{ color: 'var(--brand-text)' }} aria-hidden>*</span></label>

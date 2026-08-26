@@ -9453,5 +9453,78 @@
   "roles": {
     "securityGuard": "Vigilante",
     "securitySupervisor": "Supervisor"
+  },
+  "invite": {
+    "staff": {
+      "loading_signin": "Accediendo al panel…",
+      "loading_invite": "Preparando tu invitación",
+      "loading_signin_sub": "Un momento, estamos preparando tu cuenta.",
+      "loading_invite_sub": "Estamos comprobando tu enlace de acceso.",
+      "subtitle": "Completa tu registro para entrar al panel.",
+      "error_activate": "No se pudo activar la cuenta. Verifica el enlace e inténtalo de nuevo.",
+      "error_toast": "Error al activar la cuenta",
+      "doc_title": "Activa tu cuenta | CGuard Pro"
+    },
+    "eyebrow": "Invitación",
+    "hide_password": "Ocultar contraseña",
+    "show_password": "Mostrar contraseña",
+    "rule": {
+      "len": "Al menos 8 caracteres",
+      "upper": "Una letra mayúscula",
+      "lower": "Una letra minúscula",
+      "num": "Un número",
+      "special": "Un carácter especial"
+    },
+    "strength": {
+      "weak": "Débil",
+      "good": "Buena",
+      "great": "Excelente"
+    },
+    "error": {
+      "rules": "La contraseña no cumple los requisitos.",
+      "mismatch": "Las contraseñas no coinciden.",
+      "register": "Error al registrar"
+    },
+    "val": {
+      "name_required": "El nombre es obligatorio",
+      "email_required": "El correo electrónico es obligatorio",
+      "email_invalid": "Correo electrónico inválido",
+      "password_required": "La contraseña es obligatoria",
+      "password_short": "La contraseña debe tener al menos 8 caracteres",
+      "confirm_required": "Confirme la contraseña",
+      "mismatch": "Las contraseñas no coinciden",
+      "lastname_required": "El apellido es obligatorio",
+      "birthplace_required": "El lugar de nacimiento es obligatorio",
+      "gender_required": "El género es obligatorio",
+      "marital_required": "El estado civil es obligatorio",
+      "education_required": "La formación académica es obligatoria",
+      "hire_required": "La fecha de contratación es obligatoria",
+      "blood_required": "El grupo sanguíneo es obligatorio",
+      "credentials_required": "Las credenciales son obligatorias",
+      "address_required": "La dirección es obligatoria",
+      "phone_required": "El teléfono es obligatorio"
+    },
+    "password": "Contraseña",
+    "password_min": "Mínimo 8 caracteres",
+    "eyebrow_supervisor": "Invitación · Supervisión",
+    "eyebrow_client": "Invitación · Portal del cliente",
+    "guard": {
+      "lastname": "Apellido",
+      "gov_id": "Documento de identidad",
+      "birthplace": "Lugar de nacimiento",
+      "credentials": "Credenciales",
+      "male": "Masculino",
+      "female": "Femenino",
+      "other": "Otro",
+      "single": "Soltero",
+      "married": "Casado",
+      "divorced": "Divorciado",
+      "feature_geo": "Entrada y salida con geolocalización",
+      "feature_reports": "Reportes, rondas y novedades",
+      "feature_shifts": "Tus turnos siempre a la mano"
+    },
+    "select": "Seleccione",
+    "eyebrow_guard": "Invitación · Equipo de seguridad",
+    "step_of": "Paso {{step}} de {{total}}"
   }
 }

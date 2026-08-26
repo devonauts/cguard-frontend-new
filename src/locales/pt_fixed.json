@@ -7409,5 +7409,78 @@
   "roles": {
     "securityGuard": "Vigilante",
     "securitySupervisor": "Supervisor"
+  },
+  "invite": {
+    "staff": {
+      "loading_signin": "Entrando no painel…",
+      "loading_invite": "Preparando seu convite",
+      "loading_signin_sub": "Um momento, estamos preparando sua conta.",
+      "loading_invite_sub": "Estamos verificando seu link de acesso.",
+      "subtitle": "Conclua seu cadastro para entrar no painel.",
+      "error_activate": "Não foi possível ativar a conta. Verifique o link e tente de novo.",
+      "error_toast": "Erro ao ativar a conta",
+      "doc_title": "Ative sua conta | CGuard Pro"
+    },
+    "eyebrow": "Convite",
+    "hide_password": "Ocultar senha",
+    "show_password": "Mostrar senha",
+    "rule": {
+      "len": "Pelo menos 8 caracteres",
+      "upper": "Uma letra maiúscula",
+      "lower": "Uma letra minúscula",
+      "num": "Um número",
+      "special": "Um caractere especial"
+    },
+    "strength": {
+      "weak": "Fraca",
+      "good": "Boa",
+      "great": "Excelente"
+    },
+    "error": {
+      "rules": "A senha não atende aos requisitos.",
+      "mismatch": "As senhas não coincidem.",
+      "register": "Erro ao cadastrar"
+    },
+    "val": {
+      "name_required": "O nome é obrigatório",
+      "email_required": "O e-mail é obrigatório",
+      "email_invalid": "E-mail inválido",
+      "password_required": "A senha é obrigatória",
+      "password_short": "A senha deve ter pelo menos 8 caracteres",
+      "confirm_required": "Confirme a senha",
+      "mismatch": "As senhas não coincidem",
+      "lastname_required": "O sobrenome é obrigatório",
+      "birthplace_required": "O local de nascimento é obrigatório",
+      "gender_required": "O gênero é obrigatório",
+      "marital_required": "O estado civil é obrigatório",
+      "education_required": "A formação acadêmica é obrigatória",
+      "hire_required": "A data de contratação é obrigatória",
+      "blood_required": "O tipo sanguíneo é obrigatório",
+      "credentials_required": "As credenciais são obrigatórias",
+      "address_required": "O endereço é obrigatório",
+      "phone_required": "O telefone é obrigatório"
+    },
+    "password": "Senha",
+    "password_min": "Mínimo de 8 caracteres",
+    "eyebrow_supervisor": "Convite · Supervisão",
+    "eyebrow_client": "Convite · Portal do cliente",
+    "guard": {
+      "lastname": "Sobrenome",
+      "gov_id": "Documento de identidade",
+      "birthplace": "Local de nascimento",
+      "credentials": "Credenciais",
+      "male": "Masculino",
+      "female": "Feminino",
+      "other": "Outro",
+      "single": "Solteiro",
+      "married": "Casado",
+      "divorced": "Divorciado",
+      "feature_geo": "Entrada e saída com geolocalização",
+      "feature_reports": "Relatórios, rondas e ocorrências",
+      "feature_shifts": "Seus turnos sempre à mão"
+    },
+    "select": "Selecione",
+    "eyebrow_guard": "Convite · Equipe de segurança",
+    "step_of": "Etapa {{step}} de {{total}}"
   }
 }
