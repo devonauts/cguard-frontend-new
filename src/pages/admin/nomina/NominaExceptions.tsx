@@ -85,6 +85,10 @@ export default function NominaExceptions() {
   const [busy, setBusy] = useState(false);
   const [selected, setSelected] = useState<ExceptionRow | null>(null);
   const [notes, setNotes] = useState("");
+  // Cierre en bloque del atraso: fecha de corte, cuántas alcanza y confirmación.
+  const [corte, setCorte] = useState("");
+  const [alcance, setAlcance] = useState<number | null>(null);
+  const [cerrando, setCerrando] = useState(false);
 
   const load = useCallback(() => {
     setLoading(true);
@@ -101,6 +105,38 @@ export default function NominaExceptions() {
   useEffect(load, [load]);
 
   const openSheet = (r: ExceptionRow) => { setSelected(r); setNotes(r.resolutionNotes || ""); };
+
+  /** Cuenta sin escribir. Nadie confirma un cierre masivo a ciegas. */
+  useEffect(() => {
+    if (!corte) { setAlcance(null); return; }
+    let vivo = true;
+    attendanceService
+      .bulkResolveExceptions({ before: new Date(`${corte}T00:00:00`).toISOString(), type: type || undefined, preview: true })
+      .then((r: any) => { if (vivo) setAlcance(Number(r?.matched ?? 0)); })
+      .catch(() => { if (vivo) setAlcance(null); });
+    return () => { vivo = false; };
+  }, [corte, type]);
+
+  const cerrarAtraso = async () => {
+    if (!corte || !alcance) return;
+    const fecha = new Date(`${corte}T00:00:00`).toLocaleDateString("es");
+    if (!window.confirm(`Se darán por resueltas ${alcance} excepción(es) abiertas anteriores al ${fecha}. Esta acción queda registrada en auditoría. ¿Continuar?`)) return;
+    setCerrando(true);
+    try {
+      const r: any = await attendanceService.bulkResolveExceptions({
+        before: new Date(`${corte}T00:00:00`).toISOString(),
+        type: type || undefined,
+      });
+      toast.success(`${r?.resolved ?? 0} excepción(es) cerradas`);
+      setCorte("");
+      setAlcance(null);
+      load();
+    } catch (e) {
+      toast.error((e as { message?: string })?.message || "No se pudo cerrar el atraso");
+    } finally {
+      setCerrando(false);
+    }
+  };
 
   const act = async (id: string, newStatus: "resolved" | "acknowledged") => {
     setBusy(true);
@@ -173,6 +209,41 @@ export default function NominaExceptions() {
             {loading ? "Cargando…" : `${rows.length} excepción(es)`}
           </span>
         </Toolbar>
+
+        {/* ── CERRAR EL ATRASO ─────────────────────────────────────────────
+            Con miles de excepciones abiertas, trabajarlas una a una no es una
+            opción; dejarlas tampoco, porque entierran lo que llega después.
+            El recuento se enseña ANTES de confirmar, y el filtro de tipo de
+            arriba también acota el cierre. */}
+        {status === "open" && (
+          <div className="mb-4 flex flex-wrap items-center gap-3 rounded-xl border p-3" style={{ borderColor: "var(--hairline)" }}>
+            <span className="text-sm font-semibold">Cerrar el atraso</span>
+            <label className="flex items-center gap-2 text-sm" style={{ color: "var(--ink-soft)" }}>
+              anteriores al
+              <input
+                type="date"
+                value={corte}
+                onChange={(e) => setCorte(e.target.value)}
+                className="min-h-9 rounded-lg border px-2 py-1 text-sm"
+                style={{ borderColor: "var(--hairline)", background: "transparent" }}
+              />
+            </label>
+            {corte && (
+              <span className="text-sm tabular-nums" style={{ color: "var(--ink-soft)" }}>
+                {alcance === null ? "calculando…" : `alcanza a ${alcance} excepción(es)${type ? ` de tipo ${EXCEPTION_LABEL[type] || type}` : ""}`}
+              </span>
+            )}
+            <Button
+              size="sm"
+              variant="outline"
+              className="ml-auto"
+              disabled={!corte || !alcance || cerrando}
+              onClick={cerrarAtraso}
+            >
+              {cerrando ? "Cerrando…" : "Cerrar en bloque"}
+            </Button>
+          </div>
+        )}
 
         <Section title={STATUS_OPTIONS.find((s) => s.value === status)?.label || "Excepciones"} icon={<ListChecks />}>
           {loading ? (

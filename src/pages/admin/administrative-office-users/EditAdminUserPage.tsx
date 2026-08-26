@@ -22,6 +22,7 @@ import userService from "@/lib/api/userService";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import { MultiSelectDeSedes } from "@/components/MultiSelectDeSedes";
 
 import { newAdminUserSchema, type NewAdminUserValues } from "@/lib/validators/new-admin-user.schema";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
@@ -32,85 +33,6 @@ import { PageContainer, PageHeader, Section, GlassPanel, IconTile } from "@/comp
 import { roleDisplayDescription } from "@/config/roleLabels";
 import { UserCog, ShieldCheck, ChevronDown, ChevronRight, MapPin } from "lucide-react";
 
-function ClientMultiSelect({
-  value,
-  onChange,
-  options,
-  placeholder,
-}: {
-  value: string[];
-  onChange: (ids: string[]) => void;
-  options: Array<{ id: string; name: string }>;
-  placeholder?: string;
-}) {
-  const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
-  const picked = options.filter((o) => value.includes(o.id));
-
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button variant="outline" className="w-full justify-start">
-          {picked.length ? (
-            <span className="truncate">{picked.map((p) => p.name).join(", ")}</span>
-          ) : (
-            <span className="text-muted-foreground">{placeholder || t('adminOfficeUsers.editUser.form.selectDefault', { defaultValue: 'Seleccionar…' })}</span>
-          )}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="p-0 w-[calc(100vw-2rem)] sm:w-[360px]">
-        <div className="p-2">
-          <Command>
-            <CommandInput placeholder={`Buscar ${placeholder || t('adminOfficeUsers.editUser.form.searchPlaceholder', { defaultValue: 'opción' })}…`} />
-            <CommandList>
-              <CommandGroup>
-                <CommandItem
-                  onSelect={() => {
-                    const allSelected = options.length > 0 && value.length === options.length && options.every((o) => value.includes(o.id));
-                    if (allSelected) onChange([]);
-                    else onChange(options.map((o) => o.id));
-                  }}
-                >
-                  {
-                    (() => {
-                      const allSelected = options.length > 0 && value.length === options.length && options.every((o) => value.includes(o.id));
-                      return (
-                        <>
-                          <input className="mr-2" type="checkbox" readOnly checked={allSelected} />
-                          {allSelected ? t('adminOfficeUsers.editUser.form.deselectAll', { defaultValue: 'Deseleccionar todos' }) : t('adminOfficeUsers.editUser.form.selectAll', { defaultValue: 'Seleccionar todos' })}
-                        </>
-                      );
-                    })()
-                  }
-                </CommandItem>
-
-                {options.length === 0 && (
-                  <div className="p-3 text-sm text-muted-foreground">{t('adminOfficeUsers.editUser.form.noOptions', { defaultValue: 'Sin opciones' })}</div>
-                )}
-
-                {options.map((opt) => {
-                  const checked = value.includes(opt.id);
-                  return (
-                    <CommandItem
-                      key={opt.id}
-                      onSelect={() => {
-                        if (checked) onChange(value.filter((id) => id !== opt.id));
-                        else onChange([...value, opt.id]);
-                      }}
-                    >
-                      <input className="mr-2" type="checkbox" readOnly checked={checked} />
-                      {opt.name}
-                    </CommandItem>
-                  );
-                })}
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </div>
-      </PopoverContent>
-    </Popover>
-  );
-}
 
 const CLIENT_OPTIONS_PLACEHOLDER: Array<{ id: string; name: string }> = [];
 
@@ -660,7 +582,7 @@ export default function EditAdminUserPage() {
                               El alcance de verdad: limita turnos, nómina, cobertura, visitas y puestos.
                             </p>
                             <FormControl>
-                              <ClientMultiSelect
+                              <MultiSelectDeSedes
                                 value={(field.value as string[]) || []}
                                 onChange={(ids: string[]) => field.onChange(ids)}
                                 options={siteOptions}
@@ -688,7 +610,7 @@ export default function EditAdminUserPage() {
                               limita qué <strong>incidentes</strong> ve.
                             </p>
                             <FormControl>
-                              <ClientMultiSelect
+                              <MultiSelectDeSedes
                                 value={(field.value as string[]) || []}
                                 onChange={(ids: string[]) => field.onChange(ids)}
                                 options={clientOptions}

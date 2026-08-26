@@ -80,6 +80,16 @@ const attendanceService = {
     return unwrap(await api.get(`/tenant/${t}/attendance/exceptions${buildQuery(params)}`));
   },
 
+  /**
+   * Cierre en bloque del atraso. Con `preview: true` el servidor sólo cuenta a
+   * cuántas filas alcanzaría — es lo que la pantalla enseña ANTES de confirmar.
+   * Pide nivel de dirección: la app del supervisor no tiene esta ruta.
+   */
+  async bulkResolveExceptions(data: { before: string; type?: string; resolutionNotes?: string; preview?: boolean }) {
+    const t = getTenantId();
+    return unwrap(await api.post(`/tenant/${t}/attendance/exceptions/bulk-resolve`, { data }));
+  },
+
   async resolveException(id: string, data: { status?: string; resolutionNotes?: string }) {
     const t = getTenantId();
     return unwrap(await api.patch(`/tenant/${t}/attendance/exceptions/${id}/resolve`, { data }));

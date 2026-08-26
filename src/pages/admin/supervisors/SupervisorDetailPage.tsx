@@ -6,9 +6,12 @@ import GuardsLayout from "@/layouts/GuardsLayout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { CalendarClock, Car, MapPin, Pencil, Check, IdCard, UserCog } from "lucide-react";
+import { CalendarClock, Car, MapPin, Pencil, Check, IdCard, UserCog, Building2 } from "lucide-react";
 import { Section, Field, EmptyState, SkeletonCards, PageContainer } from "@/components/kit";
 import { supervisorService, type Supervisor } from "@/lib/api/supervisorService";
+import { postSiteService } from "@/lib/api/postSiteService";
+import userService from "@/lib/api/userService";
+import { MultiSelectDeSedes } from "@/components/MultiSelectDeSedes";
 import i18n from "@/i18n";
 
 const WEEKDAYS = [
@@ -32,6 +35,94 @@ function fmtDate(v: string | number | Date | null | undefined): string | null {
   if (!v) return null;
   const d = new Date(v);
   return isNaN(d.getTime()) ? String(v) : d.toLocaleDateString("es");
+}
+
+/**
+ * ── LAS SEDES DE ESTE SUPERVISOR ──────────────────────────────────────────
+ *
+ * Este control existía SÓLO en la ficha de usuarios de oficina, y a los
+ * supervisores se les excluye de esa lista (`AdminOfficeUsersPage`) y se les
+ * manda aquí — donde no estaba. Resultado medido en producción el 2026-08-26:
+ * `tenant_user_post_sites` con CERO filas. No es que nadie lo hubiera hecho:
+ * es que no se podía.
+ *
+ * Sin sedes asignadas, las listas del supervisor (excepciones de asistencia,
+ * solicitudes de fichaje) no se pueden acotar a lo suyo — ve la operación
+ * entera de la empresa. Marcar sedes aquí es lo que las acota.
+ *
+ * El backend ya lo aceptaba: `TenantUserRepository.updateRoles` persiste
+ * `postSiteIds`, valida que sean del tenant y no mira el rol. Sólo faltaba
+ * la pantalla.
+ */
+function SedesAsignadas({ userId }: { userId: string }) {
+  const { t } = useTranslation();
+  const [opciones, setOpciones] = useState<Array<{ id: string; name: string }>>([]);
+  const [elegidas, setElegidas] = useState<string[]>([]);
+  const [cargando, setCargando] = useState(true);
+  const [guardando, setGuardando] = useState(false);
+
+  useEffect(() => {
+    let vivo = true;
+    (async () => {
+      try {
+        const [sedes, usuario] = await Promise.all([
+          postSiteService.list({}, { limit: 500, offset: 0 }),
+          userService.fetchUser(userId),
+        ]);
+        if (!vivo) return;
+        setOpciones((sedes?.rows || []).map((s: any) => ({ id: String(s.id), name: s.name || s.companyName || s.businessName || "—" })));
+        const u: any = (usuario as any)?.data ?? usuario;
+        const crudas = u?.postSiteIds ?? u?.postSites ?? u?.assignedPostSites ?? [];
+        setElegidas(Array.isArray(crudas) ? crudas.map((x: any) => String(x?.id ?? x)).filter(Boolean) : []);
+      } catch {
+        // Un fallo aquí no puede tumbar la ficha entera: la sección se queda
+        // vacía y el resto del supervisor se sigue viendo.
+      } finally {
+        if (vivo) setCargando(false);
+      }
+    })();
+    return () => { vivo = false; };
+  }, [userId]);
+
+  const guardar = async () => {
+    setGuardando(true);
+    try {
+      await userService.updateUser(userId, { postSiteIds: elegidas } as any);
+      toast.success(t("ui.SupervisorDetail.sedesGuardadas", "Sedes guardadas"));
+    } catch {
+      toast.error(t("ui.SupervisorDetail.sedesError", "No se pudieron guardar las sedes"));
+    } finally {
+      setGuardando(false);
+    }
+  };
+
+  return (
+    <Section title={t("ui.SupervisorDetail.sedesAsignadas", "Sedes asignadas")} icon={<Building2 />}>
+      <p className="mb-3 text-sm" style={{ color: "var(--ink-soft)" }}>
+        Limita lo que este supervisor ve en su app: excepciones de asistencia y solicitudes de fichaje.
+      </p>
+      {cargando ? (
+        <p className="text-sm" style={{ color: "var(--ink-soft)" }}>Cargando…</p>
+      ) : (
+        <>
+          <MultiSelectDeSedes
+            value={elegidas}
+            onChange={setElegidas}
+            options={opciones}
+            placeholder={t("comun.elegirSedes", "Elegir sedes")}
+          />
+          {elegidas.length === 0 && (
+            <p className="mt-2 text-xs" style={{ color: "var(--ink-soft)" }}>
+              Sin ninguna sede marcada seguirá viendo TODO.
+            </p>
+          )}
+          <Button className="mt-3" size="sm" onClick={guardar} disabled={guardando}>
+            {guardando ? "Guardando…" : "Guardar sedes"}
+          </Button>
+        </>
+      )}
+    </Section>
+  );
 }
 
 // ── Campos de edición — mismo lenguaje que la ficha del vigilante ───────────
@@ -232,6 +323,8 @@ export default function SupervisorDetailPage() {
                       </Button>
                     </div>
                   </Section>
+
+                  <SedesAsignadas userId={String(id)} />
                 </div>
 
                 {/* SIDEBAR (1/3) */}
