@@ -5716,7 +5716,8 @@
       "orders": "Consignas específicas",
       "loadError": "Error al cargar puesto",
       "patrolQr": "QR de Rondas",
-      "station": "Estación"
+      "station": "Estación",
+      "parking": "Control vehicular"
     },
     "orders": {
       "title": "Consignas específicas",
@@ -5818,10 +5819,10 @@
         "guard": "Vigilante",
         "visitor": "Visitante / Vehículo"
       },
-      "empty": "No hay registros de parking para este puesto.",
+      "empty": "Todavía no se ha registrado ningún vehículo en este puesto.",
       "loadError": "Error al cargar registros",
-      "subtitle": "Registro de entrada y salida de vehículos en este puesto",
-      "title": "Gestión de Parking"
+      "subtitle": "Entrada y salida de vehículos en este puesto. El vigilante los registra desde la app y marca la salida cuando se van.",
+      "title": "Control vehicular"
     },
     "patrolQr": {
       "empty": "Aún no hay puntos de control. Créalos en la sección \"Rondas de Seguridad\" y vuelve aquí para generar sus QR.",
@@ -6671,7 +6672,9 @@
       "columnTypeHeader": "Tipo de aviso",
       "selectAllAria": "Seleccionar todo {{label}}",
       "allChannelsAria": "Todas las vías de {{label}}",
-      "saveBtn": "Guardar"
+      "saveBtn": "Guardar",
+      "vehicleOverstayLabel": "Vehículo con permanencia excedida",
+      "vehicleOverstayHint": "Un vehículo lleva dentro más de los minutos que fijaste en Control vehicular › Reglas del puesto. Se avisa una sola vez por vehículo"
     },
     "festivos": {
       "loadError": "No se pudieron cargar los festivos.",

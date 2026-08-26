@@ -34,7 +34,7 @@ export default function StationLayout({ title, children, station }: Props) {
     { id: 'etiquetas',  label: t('station.details.patrolQr',   'QR de Rondas'),         icon: QrCode,          path: `${base}/etiquetas` },
     { id: 'tag-scans',  label: t('station.details.rondaHistory', 'Historial'),          icon: History,         path: `${base}/tag-scans` },
     { id: 'inventory',  label: t('station.details.inventory',  'Inventario'),           icon: Package,         path: `${base}/inventory` },
-    { id: 'parking',    label: t('station.details.parking',    'Parking'),              icon: Car,             path: `${base}/parking` },
+    { id: 'parking',    label: t('station.details.parking',    'Control vehicular'),              icon: Car,             path: `${base}/parking` },
     { id: 'incidents',  label: t('station.details.incidents',  'Incidencias'),          icon: AlertTriangle,   path: `${base}/incidents` },
   ];
 

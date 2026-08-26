@@ -1214,7 +1214,9 @@
       "columnTypeHeader": "Tipo de aviso",
       "selectAllAria": "Selecionar tudo {{label}}",
       "allChannelsAria": "Todas as vias de {{label}}",
-      "saveBtn": "Guardar"
+      "saveBtn": "Guardar",
+      "vehicleOverstayLabel": "Veículo com permanência excedida",
+      "vehicleOverstayHint": "Um veículo está há mais tempo do que os minutos definidos em Controle veicular › Regras do posto. Avisa uma única vez por veículo"
     },
     "festivos": {
       "loadError": "Não foi possível carregar os feriados.",
@@ -4319,7 +4321,8 @@
       "orders": "Consignas específicas",
       "loadError": "Erro ao carregar o posto",
       "patrolQr": "QR de rondas",
-      "station": "Estação"
+      "station": "Estação",
+      "parking": "Controle veicular"
     },
     "orders": {
       "activate": "Ativar",
@@ -4423,8 +4426,8 @@
       },
       "empty": "Não há registros de estacionamento para este posto.",
       "loadError": "Erro ao carregar os registros",
-      "subtitle": "Registro de entrada e saída de veículos neste posto",
-      "title": "Gestão de estacionamento"
+      "subtitle": "Entrada e saída de veículos neste posto. O vigilante os registra pelo app e marca a saída quando saem.",
+      "title": "Controle veicular"
     },
     "patrolQr": {
       "empty": "Ainda não há pontos de controle. Crie-os em \"Rondas de segurança\" e volte aqui para gerar os QR.",

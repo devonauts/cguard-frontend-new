@@ -5716,7 +5716,8 @@
       "orders": "Specific Standing Orders",
       "loadError": "The post could not be loaded",
       "patrolQr": "Patrol QR codes",
-      "station": "Station"
+      "station": "Station",
+      "parking": "Vehicle control"
     },
     "orders": {
       "title": "Specific Standing Orders",
@@ -5818,10 +5819,10 @@
         "guard": "Guard",
         "visitor": "Visitor / vehicle"
       },
-      "empty": "There are no parking records for this post.",
+      "empty": "No vehicle has been registered at this post yet.",
       "loadError": "The records could not be loaded",
-      "subtitle": "Vehicles in and out of this post",
-      "title": "Parking"
+      "subtitle": "Vehicles in and out of this post. The guard registers them from the app and marks the exit when they leave.",
+      "title": "Vehicle control"
     },
     "patrolQr": {
       "empty": "No checkpoints yet. Create them under \"Security patrols\" and come back here to generate their QR codes.",
@@ -6671,7 +6672,9 @@
       "columnTypeHeader": "Notification type",
       "selectAllAria": "Select all {{label}}",
       "allChannelsAria": "All channels for {{label}}",
-      "saveBtn": "Save"
+      "saveBtn": "Save",
+      "vehicleOverstayLabel": "Vehicle staying too long",
+      "vehicleOverstayHint": "A vehicle has been inside longer than the minutes you set in Vehicle control › Post rules. Notified once per vehicle"
     },
     "festivos": {
       "loadError": "The holidays couldn't be loaded.",
