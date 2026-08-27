@@ -94,6 +94,14 @@ export function PanicAlertOverlay({
   // Sólo presentación: el foco del campo dibuja un halo ROJO, no el del acento.
   // `.cg-input` lo pintaría con `--brand` y aquí nada puede seguir al acento.
   const [fieldFocused, setFieldFocused] = useState(false);
+  // La cadena de llamadas del SOS. DEBE declararse aquí arriba, junto al resto
+  // de hooks y ANTES de cualquier `return`: estaba después del `if (!active)
+  // return null`, así que al abrirse un pánico React veía «más hooks que en el
+  // render anterior» (#310) y el overlay reventaba —lo que, sin boundary,
+  // ponía el CRM entero en blanco—. Regla de hooks: nunca tras un return.
+  const [contactos, setContactos] = useState<Array<{
+    nombre: string; telefono: string; rol: string; pideClave?: boolean;
+  }>>([]);
   const latest = alerts[0];
 
   // Siren wails while any panic is on screen; stops when the last is acknowledged.
@@ -109,6 +117,28 @@ export function PanicAlertOverlay({
   // Reset the action field whenever the visible alert changes.
   useEffect(() => {
     setAction("");
+  }, [latest?.id]);
+
+  // ── LA LISTA DE LLAMADAS ────────────────────────────────────────────────
+  // El servidor resuelve la cadena completa (contactos del panel → cliente →
+  // representante legal → supervisor de zona → emergencias del país). Antes,
+  // en un SOS de persona este espacio estaba vacío. Va aquí arriba con el resto
+  // de hooks; los ids se sacan de `latest.payload` porque aún no se ha
+  // desestructurado `p` (eso ocurre después del return de abajo).
+  useEffect(() => {
+    if (!latest) { setContactos([]); return; }
+    const pp: any = latest.payload || {};
+    let vivo = true;
+    const qs = new URLSearchParams();
+    if (pp.stationId) qs.set("stationId", String(pp.stationId));
+    if (pp.postSiteId) qs.set("postSiteId", String(pp.postSiteId));
+    if (pp.clientAccountId) qs.set("clientAccountId", String(pp.clientAccountId));
+
+    ApiService.get(`/tenant/${localStorage.getItem("tenantId")}/emergency/call-list?${qs}`)
+      .then((r: any) => { if (vivo) setContactos(r?.contacts || r?.data?.contacts || []); })
+      .catch(() => { if (vivo) setContactos([]); });
+
+    return () => { vivo = false; };
   }, [latest?.id]);
 
   if (!active) return null;
@@ -132,36 +162,6 @@ export function PanicAlertOverlay({
   })();
 
   const phoneTel = p.phone ? String(p.phone).replace(/[^+\d]/g, "") : null;
-
-  // ── LA LISTA DE LLAMADAS ────────────────────────────────────────────────
-  // Aquí sólo había un `tel:911` escrito a mano y el teléfono del sitio. En un
-  // SOS de VIGILANTE eso deja a quien atiende sin nadie a quien llamar: los
-  // contactos de emergencia cuelgan de un panel de alarma, y en un pánico de
-  // persona no hay panel.
-  //
-  // El servidor resuelve la cadena completa (contactos del panel → cliente →
-  // representante legal → supervisor de zona → emergencias del país) y el 911
-  // deja de estar escrito en la interfaz.
-  const [contactos, setContactos] = useState<Array<{
-    nombre: string; telefono: string; rol: string; pideClave?: boolean;
-  }>>([]);
-
-  useEffect(() => {
-    if (!latest) { setContactos([]); return; }
-    let vivo = true;
-    const qs = new URLSearchParams();
-    if (p.stationId) qs.set("stationId", String(p.stationId));
-    if (p.postSiteId) qs.set("postSiteId", String(p.postSiteId));
-    if (p.clientAccountId) qs.set("clientAccountId", String(p.clientAccountId));
-
-    ApiService.get(`/tenant/${localStorage.getItem("tenantId")}/emergency/call-list?${qs}`)
-      .then((r: any) => { if (vivo) setContactos(r?.contacts || r?.data?.contacts || []); })
-      // Que falle la lista NO puede tumbar la alerta de pánico: se queda con lo
-      // que ya se muestra arriba.
-      .catch(() => { if (vivo) setContactos([]); });
-
-    return () => { vivo = false; };
-  }, [latest, p.stationId, p.postSiteId, p.clientAccountId]);
 
   const handleAck = async () => {
     if (!action.trim() || saving) return;
