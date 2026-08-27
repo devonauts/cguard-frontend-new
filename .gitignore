@@ -38,3 +38,4 @@ yarn.lock
 # siquiera arrancaba: `setup-node` con `cache: npm` y `npm ci` EXIGEN lockfile.
 # El versionado es el del servidor, que es el que produce lo que hoy está vivo.
 bun.lockb
+newlogo.txt
