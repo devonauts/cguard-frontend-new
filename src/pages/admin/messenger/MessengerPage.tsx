@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo, type ReactNode } from "react";
+import { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo, type ReactNode } from "react";
 import { useTranslation } from 'react-i18next';
 import AppLayout from "@/layouts/app-layout";
 import Breadcrumb from "@/components/ui/breadcrumb";
@@ -83,6 +83,39 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
   const [uploading, setUploading] = useState(false);
   const [membersOpen, setMembersOpen] = useState(false);
   const threadRef = useRef<HTMLDivElement>(null);
+
+  /* ─── El alto de la conversación se MIDE, no se adivina ────────────────────
+     Esto era `h-[calc(100vh-240px)]`: 240 px a ojo para todo lo que va encima
+     (barra de la app, migas de pan, cabecera de la página y sus separaciones).
+     Medido en producción, lo que hay encima son 271 px, así que el panel
+     terminaba 31 px POR DEBAJO del borde inferior de la pantalla — en 1600x1000,
+     en 1440x780 y en 1280x720 por igual, porque el error es fijo.
+
+     Y esos 31 px son justo donde vive la caja de escribir. Como el armazón de la
+     aplicación recorta lo que sobra, no aparecía ni barra de desplazamiento: la
+     caja simplemente no estaba, y para responder había que desplazar. El mismo
+     patrón de medir con `getBoundingClientRect().top` ya se usa en la hoja del
+     Horario. Se vuelve a medir al cambiar el tamaño de la ventana y al cambiar
+     lo que va encima (el título cambia entre Operativos y Clientes). */
+  const shellRef = useRef<HTMLDivElement>(null);
+  const [shellTop, setShellTop] = useState(240);
+  // El hueco de abajo tampoco se inventa: es el MISMO relleno que la página ya
+  // se da a sí misma (16 px en móvil, 24 px de `lg` en adelante), leído del
+  // contenedor. Así el panel respira igual por arriba que por abajo aunque
+  // alguien cambie el `p-4 lg:p-6`.
+  const [gapAbajo, setGapAbajo] = useState(16);
+  useLayoutEffect(() => {
+    const medir = () => {
+      const el = shellRef.current;
+      if (!el) return;
+      setShellTop(Math.round(el.getBoundingClientRect().top));
+      const cont = el.parentElement;
+      if (cont) setGapAbajo(Math.round(parseFloat(getComputedStyle(cont).paddingBottom)) || 16);
+    };
+    medir();
+    window.addEventListener('resize', medir);
+    return () => window.removeEventListener('resize', medir);
+  }, [pageTitle]);
   const fileRef = useRef<HTMLInputElement>(null);
   const recorder = useAudioRecorder();
 
@@ -229,7 +262,11 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
               <Plus size={15} className="mr-1.5" />{" "}{t('ui.MessengerPage.nuevo')}{" "}</Button>
           }
         />
-        <div className="glass flex h-[calc(100vh-240px)] overflow-hidden">
+        <div
+          ref={shellRef}
+          className="glass flex overflow-hidden"
+          style={{ height: `calc(100vh - ${shellTop + gapAbajo}px)`, minHeight: 320 }}
+        >
           {/* Conversation list */}
           {/* En móvil sólo cabe un panel: se ve la lista, o la conversación abierta. */}
           <aside className={`${selected ? 'hidden md:flex' : 'flex'} w-full flex-col border-r md:max-w-xs`} style={{ borderColor: 'var(--hairline)' }}>
