@@ -14,6 +14,7 @@ import { getAuthToken } from '@/lib/api';
 import { playNotificationChime } from '@/lib/notificationSound';
 import { notifyNative, setAppBadge, ensureNotificationPermission } from '@/lib/desktop';
 import { crearSocket, cerrarSocket } from '@/lib/socket';
+import { notifyMessagesChanged } from './useMessagesUnread';
 
 const API_URL = (import.meta.env.VITE_API_URL as string | undefined) || '';
 
@@ -166,6 +167,13 @@ export function useNotificationStream(
     socket.on('notification', (n: PlatformNotification) => {
       if (destroyed || !n || !n.id) return;
       addNotification(n, false); // list dedups by id internally
+
+      // Un mensaje nuevo cambia el contador del buzón: se avisa al menú lateral
+      // para que el punto aparezca en el momento, sin esperar a su intervalo.
+      // Va ANTES del corte por duplicados de abajo a propósito: es idempotente
+      // (sólo provoca una relectura del contador) y así también reacciona en
+      // pestañas donde nadie escucha `onLive`.
+      if (n.eventType === 'message.new') notifyMessagesChanged();
 
       // Only the first delivery of a given event id raises an alert; duplicate
       // room copies from the backend are ignored. The chime + toast fire only

@@ -444,7 +444,8 @@
     "themeToLight": "Mudar para o modo claro",
     "themeToDark": "Mudar para o modo escuro",
     "themeToggle": "Alternar tema",
-    "goToDashboard": "Ir ao painel de controle"
+    "goToDashboard": "Ir ao painel de controle",
+    "unreadMessages": "{{count}} mensagens não lidas"
   },
   "settings": {
     "configuracion": {

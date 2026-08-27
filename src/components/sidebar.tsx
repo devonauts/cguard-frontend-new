@@ -40,6 +40,7 @@ import {
 import sidebarMenuData from "../data/sidebar-menu.json";
 import { useAuth } from "@/contexts/AuthContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
+import { useMessagesUnread } from "@/hooks/useMessagesUnread";
 import tenantService from "@/services/tenant.service";
 import {
   getStoredTenantBranding,
@@ -232,6 +233,23 @@ const CGSB_CSS = `
               border-color .18s var(--ease), box-shadow .18s var(--ease), transform .18s var(--ease);
 }
 .cgsb-item-label { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; }
+
+/* ── AVISO DE MENSAJES SIN LEER ───────────────────────────────────────────── */
+/* Cuenta en el menú abierto, punto a secas en el colapsado: ahí no hay sitio
+   para un número legible y lo que importa es «hay algo». */
+.cgsb-count {
+  flex: 0 0 auto; min-width: 18px; height: 18px; padding: 0 5px;
+  display: inline-grid; place-items: center;
+  border-radius: 9999px;
+  background: var(--brand); color: var(--brand-ink);
+  font-size: 10.5px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums;
+}
+.cgsb-orb-dot {
+  position: absolute; top: 6px; right: 6px;
+  width: 8px; height: 8px; border-radius: 9999px;
+  background: var(--brand);
+  box-shadow: 0 0 0 2px var(--glass-solid);
+}
 
 /* ── SUBELEMENTOS ─────────────────────────────────────────────────────────── */
 /* La guía vertical se enciende con el acento cuando el grupo tiene un hijo
@@ -608,6 +626,11 @@ export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps)
   const userEmail = user?.email ?? '';
   const avatar: string | undefined = (user as any)?.avatar || (user as any)?.photoURL || undefined;
 
+  /* Mensajes sin leer del buzón del CRM → punto en «Mensajería». Se refresca
+     solo cuando entra un mensaje (la campana lo avisa) o al leer un hilo. */
+  const mensajesSinLeer = useMessagesUnread(hasTenant);
+  const insigniaDe = (itemId: string) => (itemId === 'mensajeria' ? mensajesSinLeer : 0);
+
   /* ── Un destino del menú (hoja o desplegable) ───────────────────────────── */
   const renderItem = (item: MenuItem, opts?: { forcedSubs?: SubMenuItem[] }) => {
     const isExpandable = !!item.expandable;
@@ -617,10 +640,20 @@ export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps)
     const subs = opts?.forcedSubs ?? item.subItems ?? [];
     const label = labelOf(item);
 
+    const sinLeer = insigniaDe(item.id);
+
     const inner = (
       <>
         <item.icon className="cgsb-item-icon h-4 w-4" />
         <span className="cgsb-item-label">{label}</span>
+        {sinLeer > 0 && (
+          <span
+            className="cgsb-count"
+            aria-label={t('sidebar.unreadMessages', { count: sinLeer, defaultValue: '{{count}} mensajes sin leer' })}
+          >
+            {sinLeer > 99 ? '99+' : sinLeer}
+          </span>
+        )}
         {isExpandable && (
           <ChevronRight
             className="h-3.5 w-3.5 shrink-0 transition-transform duration-200"
@@ -690,7 +723,18 @@ export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps)
     const isDisabled = !hasTenant && item.path !== "/dashboard";
     const isActive = active.itemId === item.id;
     const label = labelOf(item);
-    const icon = <item.icon className="h-[18px] w-[18px]" />;
+    const sinLeer = insigniaDe(item.id);
+    const icon = (
+      <>
+        <item.icon className="h-[18px] w-[18px]" />
+        {sinLeer > 0 && (
+          <span
+            className="cgsb-orb-dot"
+            aria-label={t('sidebar.unreadMessages', { count: sinLeer, defaultValue: '{{count}} mensajes sin leer' })}
+          />
+        )}
+      </>
+    );
 
     if (isDisabled) {
       return (

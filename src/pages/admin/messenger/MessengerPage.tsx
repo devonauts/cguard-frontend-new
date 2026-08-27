@@ -15,6 +15,7 @@ import { useAudioRecorder } from "@/lib/useAudioRecorder";
 import { toast } from "sonner";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import i18n from "@/i18n";
+import { notifyMessagesChanged } from "@/hooks/useMessagesUnread";
 
 /**
  * Renders one message attachment (image/video). The attachment `url` is a raw
@@ -102,6 +103,9 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
       if (markRead && (conv.unreadCount || 0) > 0) {
         await messageService.markRead(conv.id).catch(() => {});
         setConversations((cs) => cs.map((c) => (c.id === conv.id ? { ...c, unreadCount: 0 } : c)));
+        // Leer aquí baja el contador del menú lateral: sin este aviso el punto
+        // seguiría encendido hasta el siguiente refresco automático.
+        notifyMessagesChanged();
       }
       setTimeout(() => threadRef.current?.scrollTo({ top: threadRef.current.scrollHeight }), 50);
     } catch (e: any) {

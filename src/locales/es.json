@@ -5245,7 +5245,8 @@
     "themeToLight": "Cambiar a modo claro",
     "themeToDark": "Cambiar a modo oscuro",
     "themeToggle": "Cambiar tema",
-    "goToDashboard": "Ir al panel de control"
+    "goToDashboard": "Ir al panel de control",
+    "unreadMessages": "{{count}} mensajes sin leer"
   },
   "siteTour": {
     "newTour": "Nuevo Recorrido",

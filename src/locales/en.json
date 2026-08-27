@@ -5245,7 +5245,8 @@
     "themeToLight": "Switch to light mode",
     "themeToDark": "Switch to dark mode",
     "themeToggle": "Toggle theme",
-    "goToDashboard": "Go to the dashboard"
+    "goToDashboard": "Go to the dashboard",
+    "unreadMessages": "{{count}} unread messages"
   },
   "siteTour": {
     "newTour": "New Tour",
