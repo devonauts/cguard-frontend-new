@@ -5,3 +5,6 @@ export interface GuardAssignment { id: string; guardId: string; stationId: strin
 export interface ShiftRecord { id: string; guardId: string; stationId: string; positionId?: string; startTime: string; endTime: string; guard?: Pick<GuardRef, 'id' | 'firstName' | 'lastName'>; }
 export interface ScheduleOverride { id: string; guardId: string; assignmentId?: string; date: string; type: string; note?: string; }
 export interface GuardOption { id: string; label: string; }
+
+/** Aviso por puesto: plazas fijas sin cubrir y días de descanso sin sacafranco. */
+export interface StationAlert { stationId: string; stationName: string; nickname?: string | null; missingFijoCount: number; sfUncoveredDays: number; }

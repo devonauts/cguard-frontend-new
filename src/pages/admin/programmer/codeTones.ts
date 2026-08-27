@@ -63,3 +63,17 @@ export const codePill = (code: string): React.CSSProperties =>
 /** Igual, con filo — el selector de novedades. */
 export const codeCard = (code: string): React.CSSProperties =>
   toneCard(OVERRIDE_TONE[code] ?? 'neutral', codeFill(code), 30);
+
+
+/* ─── Rayado de columnas ─────────────────────────────────────────────────────
+   Las filas separadoras de la hoja del Mes (cabecera de puesto, cabecera de
+   sacafrancos, fila de puesto de supervisión) sólo pintaban las rayitas
+   verticales… con UN DIV VACÍO POR DÍA. Con el lienzo del año entero eso eran
+   365 nodos por fila, ~11.000 en total, únicamente para dibujar líneas.
+
+   Un degradado que se repite hace exactamente lo mismo en un solo nodo, y la
+   raya cae en el mismo píxel: el borde derecho de cada columna.               */
+export const columnRules = (w = 44): React.CSSProperties => ({
+  backgroundImage:
+    `repeating-linear-gradient(to right, transparent 0 ${w - 1}px, var(--hairline) ${w - 1}px ${w}px)`,
+});

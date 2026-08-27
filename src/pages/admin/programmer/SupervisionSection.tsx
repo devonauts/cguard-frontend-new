@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown, ChevronRight, ShieldCheck, AlertTriangle, Settings2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ApiService } from '@/services/api/apiService';
-import { codePill, CODE_LABEL } from './codeTones';
+import { codePill, CODE_LABEL, columnRules } from './codeTones';
 
 /**
  * ────────────────────────────────────────────────────────────────────────────
@@ -47,15 +47,23 @@ const tenantId = () => localStorage.getItem('tenantId') || '';
 
 export default function SupervisionSection({
   monthDays,
+  colA,
+  colB,
   gridCols,
   tintFor,
 }: {
   /** Los MISMOS días que pinta la hoja — así las columnas cuadran solas. */
   monthDays: Date[];
+  /* Ventana virtualizada de la hoja: sólo se pintan las columnas [colA, colB).
+     `gridCols` ya trae las dos columnas de relleno que conservan el ancho del
+     año entero, así que aquí basta con abrir y cerrar cada fila con un div. */
+  colA: number;
+  colB: number;
   gridCols: string;
   /** Tinte de columna (hoy / domingo) que ya calcula la hoja. */
   tintFor?: (day: Date, index: number) => string | undefined;
 }) {
+  const visibleDays = monthDays.slice(colA, colB);
   const [abierta, setAbierta] = useState(true);
   const [datos, setDatos] = useState<Rejilla | null>(null);
   const [cargando, setCargando] = useState(true);
@@ -133,9 +141,7 @@ export default function SupervisionSection({
             <Settings2 size={14} />
           </Link>
         </div>
-        {monthDays.map((_, i) => (
-          <div key={i} className="last:border-r-0" style={{ borderRight: '1px solid var(--hairline)' }} />
-        ))}
+        <div style={{ gridColumn: '2 / -1', ...columnRules() }} />
       </div>
 
       {/* Supervisores con rol y sin puesto: el caso real de 3 de las 4 empresas
@@ -165,9 +171,7 @@ export default function SupervisionSection({
               Crear puesto
             </Link>
           </div>
-          {monthDays.map((_, i) => (
-            <div key={i} style={{ borderRight: '1px solid var(--hairline)' }} />
-          ))}
+          <div style={{ gridColumn: '2 / -1', ...columnRules() }} />
         </div>
       )}
 
@@ -196,9 +200,11 @@ export default function SupervisionSection({
                 {p.coverage.assigned}/{p.coverage.needed}
               </span>
             </div>
-            {monthDays.map((d, i) => (
-              <div key={i} style={{ borderRight: '1px solid var(--hairline)', background: tintFor?.(d, i) }} />
+            <div />
+            {visibleDays.map((d, k) => (
+              <div key={colA + k} style={{ borderRight: '1px solid var(--hairline)', background: tintFor?.(d, colA + k) }} />
             ))}
+            <div />
           </div>
 
           {/* Una fila por supervisor asignado */}
@@ -212,7 +218,9 @@ export default function SupervisionSection({
                     <span className="shrink-0 text-[10px]" style={{ color: 'var(--ink-faint)' }}>relevo</span>
                   )}
                 </div>
-                {monthDays.map((d, i) => {
+                <div />
+                {visibleDays.map((d, k) => {
+                  const i = colA + k;
                   const code = dm?.get(ymd(d)) || '';
                   return (
                     <div
@@ -232,6 +240,7 @@ export default function SupervisionSection({
                     </div>
                   );
                 })}
+                <div />
               </div>
             );
           })}
@@ -243,9 +252,7 @@ export default function SupervisionSection({
               <div className="sticky left-0 z-20 px-4 py-1.5 pl-10 text-[11px]" style={{ background: 'var(--card)', color: 'var(--warn-text)' }}>
                 Sin supervisores asignados
               </div>
-              {monthDays.map((_, i) => (
-                <div key={i} style={{ borderRight: '1px solid var(--hairline)' }} />
-              ))}
+              <div style={{ gridColumn: '2 / -1', ...columnRules() }} />
             </div>
           )}
         </div>

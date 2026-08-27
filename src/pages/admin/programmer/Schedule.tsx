@@ -43,10 +43,12 @@ import ContextMenu, { CtxItem, CtxMenuState } from "./ContextMenu";
 import TransferShiftModal, { TransferTarget } from "./TransferShiftModal";
 import { stationLabel } from "@/lib/stationName";
 import SupervisionSection from './SupervisionSection';
+import MonthStationBlock, { type BlockSel, type MonthGridHandlers } from './MonthStationBlock';
+import { COL_W, COL_STICKY_W } from './gridBand';
 
 import {
   type Tone, tonePill, toneCard, toneInk,
-  OVERRIDE_TONE, CODE_LABEL, CODE_ORDER, codeFill, codePill, codeCard,
+  OVERRIDE_TONE, CODE_LABEL, CODE_ORDER, codeFill, codePill, codeCard, columnRules,
 } from './codeTones';
 
 import type {
@@ -58,6 +60,7 @@ import type {
   ShiftRecord,
   GuardOption,
   ScheduleOverride,
+  StationAlert,
 } from "@/types";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -71,15 +74,6 @@ interface RawGuardRow {
   name?: string;
   label?: string;
   email?: string;
-}
-
-// Per-station staffing alert (uncovered fijo slots / SF rest-day gaps).
-interface StationAlert {
-  stationId: string;
-  stationName: string;
-  nickname?: string | null;
-  missingFijoCount: number;
-  sfUncoveredDays: number;
 }
 
 // One row of the post-publish implementation plan (who was notified of what).
@@ -203,11 +197,19 @@ const fmtDate = (d: Date): string =>
 // Today's YYYY-MM-DD in the COMPANY timezone (cached by AppLayout). The
 // operator may be in a different zone than the operation — the horario always
 // runs on company wall-clock.
+// El formateador se cachea por zona: construir un `Intl.DateTimeFormat` cuesta
+// decenas de microsegundos y `tzToday()` se llama en cada render de la hoja.
+const DAY_DTF_CACHE = new Map<string, Intl.DateTimeFormat>();
 const tzToday = (): string => {
   const tz = getTenantTimezone();
   if (tz) {
     try {
-      return new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+      let f = DAY_DTF_CACHE.get(tz);
+      if (!f) {
+        f = new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' });
+        DAY_DTF_CACHE.set(tz, f);
+      }
+      return f.format(new Date());
     } catch { /* bad cached tz → device time */ }
   }
   return localToday();
@@ -230,6 +232,17 @@ const dseOf = (d: Date): number =>
 type ViewMode = 'month' | 'week' | 'day';
 
 const VIEW_KEY = 'programador.horario.view';
+
+/* La ventana se recalcula en CADA evento de desplazamiento, así que el margen
+   (`COL_OVERSCAN`) sólo tiene que cubrir lo que el dedo alcanza a correr entre
+   dos fotogramas: no hace falta que sea grande. `COL_CHUNK` redondea los
+   extremos de la ventana, y es lo que hace que desplazarse no dispare un render
+   por fotograma sino uno cada COL_CHUNK columnas (≈2.600 px). Los dos valores
+   están MEDIDOS: con 60/7 la hoja bloquea menos hilo al desplazar que la
+   versión sin virtualizar, y con 28/7 bloquea el doble. La geometría (COL_W /
+   COL_STICKY_W) vive en `gridBand`. */
+const COL_CHUNK = 60;
+const COL_OVERSCAN = 7;
 
 /* ─── Papeles de color ───────────────────────────────────────────────────────
    Ni un color escrito a mano. Cada cosa que se pinta declara su PAPEL
@@ -258,24 +271,6 @@ const TINT_SUNDAY = 'color-mix(in oklab, var(--bad) 5%, transparent)';
 
 // Keyboard → novedad code (spreadsheet typing).
 const KEY_CODES: Record<string, string> = { d: 'D', n: 'N', l: 'L', v: 'V', f: 'F', p: 'PM', '2': '24' };
-
-// Día/Noche letter for a WORKING cell. Standard 24h alternates by rotation
-// phase; 12h-day/12h-night are fixed. A CUSTOM puesto has no día/noche split in
-// its rotation (the work count sits in dayShifts, so the phase is always 'day'),
-// so classify it by the block's ACTUAL start hour — a 20:00→08:00 block is Noche.
-// Mirrors the backend's shiftHalfByStart (18/6 threshold) so the grid label
-// matches the generated shift instead of hard-forcing 'D' for every custom puesto.
-function dnCode(
-  scheduleType: string | null | undefined,
-  posStartTime: string | null | undefined,
-  status: 'day' | 'night',
-): 'D' | 'N' {
-  if (scheduleType === '24h') return status === 'night' ? 'N' : 'D';
-  if (scheduleType === '12h-night') return 'N';
-  if (scheduleType === '12h-day') return 'D';
-  const h = parseInt(String(posStartTime || '').split(':')[0], 10);
-  return !Number.isNaN(h) && (h >= 18 || h < 6) ? 'N' : 'D';
-}
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
@@ -395,6 +390,12 @@ export default function Schedule() {
     return days;
   }, [todayYear]);
 
+  // `YYYY-MM-DD` y «¿es domingo?» de cada columna, precalculados UNA vez. Antes
+  // `fmtDate(day)` se ejecutaba dentro de cada celda: 365 columnas x 55 filas =
+  // ~20.000 construcciones de cadena en CADA render de la hoja.
+  const monthDayStrs = useMemo(() => monthDays.map(fmtDate), [monthDays]);
+  const monthDaySunday = useMemo(() => monthDays.map(d => d.getDay() === 0), [monthDays]);
+
   // Visible days for the Semana/Día timeline. Día shows 48h (the chosen day +
   // the next) so a block can be DRAWN across midnight — e.g. 07:00 → 07:00.
   const timelineDays = useMemo(() => {
@@ -501,11 +502,40 @@ export default function Schedule() {
     return m;
   }, [shifts, tzName]);
 
+  /* Índices, no barridos. Estas dos se llaman una vez por puesto y una vez por
+     posición en CADA render; como `.filter()` eso era O(puestos x posiciones).
+     Y —más importante— devolvían un array NUEVO cada vez, así que ninguna fila
+     podía memoizarse. Ahora el array es el MISMO objeto mientras no cambien los
+     datos, que es lo que deja que `React.memo` corte el render de la fila. */
+  const EMPTY_POS = useMemo<StationPosition[]>(() => [], []);
+  const EMPTY_ASG = useMemo<GuardAssignment[]>(() => [], []);
+
+  const positionsByStation = useMemo(() => {
+    const m = new Map<string, StationPosition[]>();
+    for (const p of positions) {
+      if (p.type === 'sacafranco') continue;
+      const list = m.get(p.stationId);
+      if (list) list.push(p); else m.set(p.stationId, [p]);
+    }
+    return m;
+  }, [positions]);
+
+  const assignmentsByPosition = useMemo(() => {
+    const m = new Map<string, GuardAssignment[]>();
+    for (const a of assignments) {
+      const list = m.get(a.positionId);
+      if (list) list.push(a); else m.set(a.positionId, [a]);
+    }
+    return m;
+  }, [assignments]);
+
+  const sfPositions = useMemo(() => positions.filter(p => p.type === 'sacafranco'), [positions]);
+
   const getPositionsForStation = useCallback((stationId: string) =>
-    positions.filter(p => p.stationId === stationId && p.type !== 'sacafranco'), [positions]);
+    positionsByStation.get(stationId) || EMPTY_POS, [positionsByStation, EMPTY_POS]);
 
   const getAssignmentsForPosition = useCallback((positionId: string) =>
-    assignments.filter(a => a.positionId === positionId), [assignments]);
+    assignmentsByPosition.get(positionId) || EMPTY_ASG, [assignmentsByPosition, EMPTY_ASG]);
 
   const guardColorMap = useMemo(() => {
     const map: Record<string, string> = {};
@@ -585,30 +615,30 @@ export default function Schedule() {
     });
 
     // Group by guard (deduplicate — a sacafranco may have assignments at multiple stations)
-    const byGuard = new Map<string, { guard: GuardRef | undefined; assignments: GuardAssignment[]; availability: { date: Date; status: 'covering' | 'available'; stationName?: string }[] }>();
+    const byGuard = new Map<string, { guard: GuardRef | undefined; assignments: GuardAssignment[]; coverDays: number; availDays: number }>();
 
     reliefAssignments.forEach(a => {
       if (!byGuard.has(a.guardId)) {
-        byGuard.set(a.guardId, { guard: a.guard, assignments: [], availability: [] });
+        byGuard.set(a.guardId, { guard: a.guard, assignments: [], coverDays: 0, availDays: 0 });
       }
       byGuard.get(a.guardId)!.assignments.push(a);
     });
 
     // Daily status from REAL shifts only: covering where a shift exists (any
     // station), libre otherwise. No rotation math — the SF is manual now.
+    //
+    // El panel sólo enseña DOS NÚMEROS («N libre» / «N cubre»), así que aquí se
+    // cuenta y ya. Antes se construía un array de 365 objetos por sacafranco
+    // para luego recorrerlo dos veces contando: miles de objetos por render.
     byGuard.forEach((data, guardId) => {
-      monthDays.forEach(day => {
-        const shift = shiftByGuardDate.get(`${guardId}|${fmtDate(day)}`);
-        if (shift) {
-          data.availability.push({ date: day, status: 'covering', stationName: stationsById.get(shift.stationId)?.stationName || 'Cobertura' });
-        } else {
-          data.availability.push({ date: day, status: 'available' });
-        }
-      });
+      for (const dateStr of monthDayStrs) {
+        if (shiftByGuardDate.has(`${guardId}|${dateStr}`)) data.coverDays++;
+        else data.availDays++;
+      }
     });
 
     return Array.from(byGuard.values());
-  }, [assignments, positionsById, stationsById, shiftByGuardDate, monthDays]);
+  }, [assignments, positionsById, shiftByGuardDate, monthDayStrs]);
 
   // Map: `${stationId}-${dateStr}` → quién cubre REALMENTE ahí ese día (turnos
   // de verdad — se pinta sobre la casilla «L» del fijo).
@@ -641,16 +671,34 @@ export default function Schedule() {
     return map;
   }, [shifts, reliefGuardIds, tzName, guardsPool]);
 
+  // El servidor ya calcula estas alertas (`staffing.stationAlerts`). Cuando las
+  // manda, este memo se saltaba… pero se calculaba igual y se tiraba: 30 puestos
+  // x 365 dias x `isWorkDay` por nada. Ahora sale en la primera linea.
+  const apiStationAlerts = Array.isArray(staffing?.stationAlerts) ? staffing!.stationAlerts : null;
+
   // Per-station alerts for uncovered fijo slots and SF rest-day coverage gaps.
   const localStationAlerts = useMemo(() => {
     const rows: { stationId: string; stationName: string; nickname?: string | null; missingFijoCount: number; sfUncoveredDays: number }[] = [];
+    if (apiStationAlerts) return rows;
+
+    // Indices por puesto, construidos UNA vez. Antes eran dos `.filter()` sobre
+    // TODAS las posiciones y asignaciones DENTRO del bucle de puestos.
+    const fijoPosByStation = new Map<string, StationPosition[]>();
+    for (const p of positions) {
+      if (p.type !== 'fijo') continue;
+      const list = fijoPosByStation.get(p.stationId);
+      if (list) list.push(p); else fijoPosByStation.set(p.stationId, [p]);
+    }
+    const fijoAsgByStation = new Map<string, GuardAssignment[]>();
+    for (const a of assignments) {
+      if (a.isRelief || positionsById.get(a.positionId)?.type !== 'fijo') continue;
+      const list = fijoAsgByStation.get(a.stationId);
+      if (list) list.push(a); else fijoAsgByStation.set(a.stationId, [a]);
+    }
 
     for (const st of stations) {
-      const stationFijoPositions = positions.filter(p => p.stationId === st.id && p.type === 'fijo');
-      const stationFijoAssignments = assignments.filter(a => {
-        const pos = positionsById.get(a.positionId);
-        return a.stationId === st.id && !a.isRelief && pos?.type === 'fijo';
-      });
+      const stationFijoPositions = fijoPosByStation.get(st.id) || [];
+      const stationFijoAssignments = fijoAsgByStation.get(st.id) || [];
 
       const assignedPosIds = new Set(stationFijoAssignments.map(a => a.positionId));
       const missingFijoCount = stationFijoPositions.filter(p => !assignedPosIds.has(p.id)).length;
@@ -681,18 +729,17 @@ export default function Schedule() {
 
     rows.sort((a, b) => (b.missingFijoCount + b.sfUncoveredDays) - (a.missingFijoCount + a.sfUncoveredDays));
     return rows;
-  }, [stations, positions, positionsById, assignments, monthDays, sfStationCoverage, isWorkDay]);
+  }, [apiStationAlerts, stations, positions, positionsById, assignments, monthDays, sfStationCoverage, isWorkDay]);
 
   const stationAlerts = useMemo<StationAlert[]>(() => {
-    const apiAlerts = staffing?.stationAlerts;
-    const rows = Array.isArray(apiAlerts) ? apiAlerts : localStationAlerts;
+    const rows = apiStationAlerts ?? localStationAlerts;
     // The staffing endpoint does not return the nominativo, and this panel is
     // where you pick which puesto to fix — so stitch it back on from the
     // stations we already hold. Several puestos share a stationName; without it
     // the list names four different posts identically.
     const nickById = new Map(stations.map(st => [String(st.id), st.nickname ?? null]));
     return rows.map(a => (a.nickname ? a : { ...a, nickname: nickById.get(String(a.stationId)) ?? null }));
-  }, [staffing, localStationAlerts, stations]);
+  }, [apiStationAlerts, localStationAlerts, stations]);
 
   const stationAlertByStationId = useMemo(() => {
     const map = new Map<string, StationAlert>();
@@ -787,12 +834,12 @@ export default function Schedule() {
       }
     }
     if (sfSectionOpen) {
-      for (const pos of positions.filter(p => p.type === 'sacafranco')) {
+      for (const pos of sfPositions) {
         rows.push({ key: pos.id, station: stationsById.get(pos.stationId) || null, pos, assignments: getAssignmentsForPosition(pos.id), isSf: true });
       }
     }
     return rows;
-  }, [stations, positions, sfSectionOpen, stationsById, getPositionsForStation, getAssignmentsForPosition]);
+  }, [stations, sfPositions, sfSectionOpen, stationsById, getPositionsForStation, getAssignmentsForPosition]);
 
   const rowIndexByKey = useMemo(() => {
     const m = new Map<string, number>();
@@ -841,10 +888,21 @@ export default function Schedule() {
     return () => window.removeEventListener('mouseup', up);
   }, []);
 
+  /* Con la hoja virtualizada la celda destino puede NO estar pintada todavía,
+     así que el desplazamiento horizontal se calcula por geometría (la columna
+     `c` ocupa siempre [240 + c*44, 240 + (c+1)*44)) en vez de buscar el nodo.
+     Para el eje vertical se usa la celda del NOMBRE de la fila, que es fija y
+     existe siempre. Mover `scrollLeft` dispara el evento `scroll`, que es quien
+     recalcula la ventana de columnas. */
   const scrollCellIntoView = useCallback((rowKey: string, c: number) => {
-    requestAnimationFrame(() => {
-      document.getElementById(`hc-${rowKey}-${c}`)?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-    });
+    const el = gridScrollRef.current;
+    if (el) {
+      if (c * COL_W < el.scrollLeft) el.scrollLeft = c * COL_W;
+      else if (COL_STICKY_W + (c + 1) * COL_W > el.scrollLeft + el.clientWidth) {
+        el.scrollLeft = COL_STICKY_W + (c + 1) * COL_W - el.clientWidth;
+      }
+    }
+    document.getElementById(`hr-${rowKey}`)?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
   }, []);
 
   // ─── Actions ──────────────────────────────────────────────────────────────
@@ -1656,6 +1714,46 @@ export default function Schedule() {
 
   const gridScrollRef = useRef<HTMLDivElement>(null);
 
+  /* ─── Virtualización horizontal de la hoja del Mes ─────────────────────────
+     La hoja es un lienzo de UN AÑO: 365 columnas. Pintarlas todas ponía ~44.000
+     nodos en el DOM (medido con los datos reales de 30 puestos x 30 posiciones)
+     y obligaba al navegador a recorrerlos enteros ante CUALQUIER cambio: de ahí
+     los congelamientos.
+
+     Ahora sólo existen las columnas visibles más un margen. El ancho del año
+     entero se conserva con dos columnas de relleno —una a cada lado—, así que
+     la barra de desplazamiento, la línea de «hoy», el salto de mes y la
+     posición guardada se comportan exactamente igual que antes.
+
+     La ventana se redondea a bloques de COL_CHUNK días para que desplazar no
+     dispare un render por fotograma, sino uno cada ~14 columnas.              */
+  const [colWin, setColWin] = useState<{ a: number; b: number }>({ a: 0, b: 0 });
+
+  const syncColWindow = useCallback((el: HTMLDivElement | null) => {
+    if (!el) return;
+    const total = monthDays.length;
+    // La columna congelada de la izquierda (240 px) tapa el principio del
+    // lienzo; se resta para no pedir columnas que quedan debajo de ella.
+    const first = Math.floor(Math.max(0, el.scrollLeft - COL_STICKY_W) / COL_W);
+    const last = Math.ceil(Math.max(0, el.scrollLeft + el.clientWidth - COL_STICKY_W) / COL_W);
+    const a = Math.max(0, Math.floor((first - COL_OVERSCAN) / COL_CHUNK) * COL_CHUNK);
+    const b = Math.min(total, Math.ceil((last + COL_OVERSCAN) / COL_CHUNK) * COL_CHUNK);
+    setColWin(prev => (prev.a === a && prev.b === b ? prev : { a, b }));
+  }, [monthDays.length]);
+
+  // Mientras la ventana no se ha medido (primer pintado) se enseña un tramo
+  // razonable: así la hoja nunca aparece vacía un fotograma.
+  const colA = colWin.b > colWin.a ? colWin.a : 0;
+  const colB = colWin.b > colWin.a ? colWin.b : Math.min(monthDays.length, 60);
+
+  useLayoutEffect(() => {
+    if (view !== 'month' || loading) return;
+    syncColWindow(gridScrollRef.current);
+    const onResize = () => syncColWindow(gridScrollRef.current);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [view, loading, syncColWindow]);
+
   const dayIndexOf = useCallback((y: number, mo1: number, d: number) =>
     Math.round((new Date(y, mo1 - 1, d).getTime() - new Date(todayYear, 0, 1).getTime()) / 86400000), [todayYear]);
 
@@ -1766,21 +1864,33 @@ export default function Schedule() {
     } catch { /* storage full/blocked */ }
   }, [currentDate, view, sfSectionOpen, panelOpen, todayYear]);
 
+  /* Guardar la posición toca `sessionStorage` (un `JSON.parse` + un `setItem`,
+     ambos SÍNCRONOS). Esto colgaba de un `requestAnimationFrame`, o sea que se
+     ejecutaba ~60 veces por segundo mientras el usuario desplazaba la hoja.
+     Ahora se guarda cuando el desplazamiento PARA. */
+  const scrollSaveTimer = useRef<number>(0);
+  const persistViewRef = useRef(persistView);
+  persistViewRef.current = persistView;
+
   const onGridScroll = () => {
+    window.clearTimeout(scrollSaveTimer.current);
+    scrollSaveTimer.current = window.setTimeout(() => persistViewRef.current(), 300);
+
     cancelAnimationFrame(scrollSaveRaf.current);
     scrollSaveRaf.current = requestAnimationFrame(() => {
-      persistView();
-      // Toolbar month label follows the leftmost visible day of the canvas.
       const el = gridScrollRef.current;
-      if (el && view === 'month') {
-        const idx = Math.max(0, Math.min(monthDays.length - 1, Math.round((el.scrollLeft + 60) / 44)));
-        const d = monthDays[idx];
-        if (d && (d.getMonth() !== visibleMonth.getMonth() || d.getFullYear() !== visibleMonth.getFullYear())) {
-          setVisibleMonth(new Date(d.getFullYear(), d.getMonth(), 1));
-        }
+      if (!el || view !== 'month') return;
+      syncColWindow(el);
+      // Toolbar month label follows the leftmost visible day of the canvas.
+      const idx = Math.max(0, Math.min(monthDays.length - 1, Math.round((el.scrollLeft + 60) / 44)));
+      const d = monthDays[idx];
+      if (d && (d.getMonth() !== visibleMonth.getMonth() || d.getFullYear() !== visibleMonth.getFullYear())) {
+        setVisibleMonth(new Date(d.getFullYear(), d.getMonth(), 1));
       }
     });
   };
+
+  useEffect(() => () => { window.clearTimeout(scrollSaveTimer.current); cancelAnimationFrame(scrollSaveRaf.current); }, []);
 
   useEffect(() => { persistView(); }, [persistView]);
 
@@ -1835,8 +1945,50 @@ export default function Schedule() {
   }, [view, monthLabel, timelineDays, currentDate]);
 
   const todayStr = tzToday();
-  const gridCols = `240px repeat(${monthDays.length}, 44px)`;
-  const gridMinWidth = 240 + monthDays.length * 44;
+  /* La rejilla pinta: columna congelada · relleno izquierdo · columnas visibles ·
+     relleno derecho. Los dos rellenos suman lo que ocupan los días NO pintados,
+     así que el lienzo mide siempre el año entero aunque sólo existan ~100
+     columnas y la barra de desplazamiento no miente.
+
+     Se probó la alternativa «pista fija del ancho del año + banda colocada con
+     `translateX`», que en teoría evita recalcular la disposición al correr la
+     ventana. MEDIDA: era peor (6.023 ms de hilo bloqueado contra 4.673 ms en el
+     mismo barrido), seguramente por las ~60 capas de composición que crea. No
+     volver a intentarlo sin medir. */
+  const padLeftW = colA * COL_W;
+  const padRightW = (monthDays.length - colB) * COL_W;
+  const gridCols = `${COL_STICKY_W}px ${padLeftW}px repeat(${Math.max(0, colB - colA)}, ${COL_W}px) ${padRightW}px`;
+  const gridMinWidth = COL_STICKY_W + monthDays.length * COL_W;
+
+  /* ─── Lo que hace que la memoización de los puestos sirva ─────────────────
+     `MonthStationBlock` está memoizado. Si le llegaran funciones nuevas en cada
+     render la memoización no cortaría nada, así que los manejadores viajan en UN
+     objeto cuya identidad no cambia nunca: aquí se le reasignan los campos, y el
+     bloque los llama como `h.loQueSea(...)` en el momento del evento (nunca los
+     desestructura, que congelaría la versión vieja y con ella el estado viejo). */
+  const handlersRef = useRef<MonthGridHandlers>({} as MonthGridHandlers);
+  Object.assign(handlersRef.current, {
+    configureStation, addPosition, deletePosition, openAssignForm,
+    removeAssignment, onGuardDragStart, handleDrop, openCellCtx,
+    setOverrideTarget, startCellSelect, hoverCellSelect, isWorkDay,
+  });
+  const handlers = handlersRef.current;
+
+  /* La selección, recortada a las filas de un puesto. Vale `null` —siempre el
+     MISMO valor— en los puestos que no toca, que es lo que deja que los otros
+     veintinueve no se repinten en cada paso del arrastre. */
+  const selRange = useMemo<BlockSel | null>(() => {
+    if (!sel || !selBounds) return null;
+    const keys = new Set<string>();
+    for (let r = selBounds.r1; r <= selBounds.r2; r++) {
+      const row = selectableRows[r];
+      if (row) keys.add(row.key);
+    }
+    return { keys, c1: selBounds.c1, c2: selBounds.c2, focusKey: selectableRows[sel.fr]?.key || '', fc: sel.fc };
+  }, [sel, selBounds, selectableRows]);
+
+  const selForRows = (rows: StationPosition[]): BlockSel | null =>
+    selRange && rows.some(p => selRange.keys.has(p.id)) ? selRange : null;
 
   const selInfo = useMemo(() => {
     if (!sel || !selBounds) return null;
@@ -1850,120 +2002,6 @@ export default function Schedule() {
 
   // ─── Cell renderers ──────────────────────────────────────────────────────
 
-  const renderFijoCell = (station: Station, pos: StationPosition, posAssignments: GuardAssignment[], day: Date, dayIdx: number) => {
-    const dateStr = fmtDate(day);
-    const isToday = dateStr === todayStr;
-    const isSunday = day.getDay() === 0;
-    // La selección se pinta con clases (`cellSelCls`), y un `background` en
-    // línea le ganaría siempre: el tinte de hoy/domingo se cede mientras la
-    // celda está seleccionada, o la selección no se vería en esas columnas.
-    const selCls = cellSelCls(pos.id, dayIdx);
-
-    return (
-      <div
-        key={dayIdx}
-        id={`hc-${pos.id}-${dayIdx}`}
-        /* Celda de rejilla: estilos PLANOS, jamás `backdrop-filter`. Este nodo
-           se pinta una vez por puesto y por día — un mes de un turno grande son
-           miles. */
-        className={`flex min-h-[36px] px-0.5 py-0.5${selCls}`}
-        style={{
-          borderRight: '1px solid var(--hairline)',
-          background: selCls
-            ? undefined
-            : isToday
-              ? TINT_TODAY
-              : isSunday ? TINT_SUNDAY : undefined,
-        }}
-        onMouseDown={e => { if (e.button === 0) startCellSelect(pos.id, dayIdx, e.shiftKey); }}
-        onMouseEnter={() => hoverCellSelect(pos.id, dayIdx)}
-        onDragOver={e => e.preventDefault()}
-        onDrop={e => handleDrop(e, station.id, pos.id, dateStr)}
-        onContextMenu={e => openCellCtx(e, station, pos, posAssignments, dateStr)}
-      >
-        {posAssignments.length === 0 ? (
-          // SIN VIGILANTE = SIN ROTACIÓN. Aquí se pintaba D/N/L a partir del
-          // offset guardado en el puesto: una rotación inventada para un puesto
-          // que nadie trabaja, que es de dónde salían las "L" que no cuadraban
-          // con nadie. La fase es del vigilante; sin vigilante no hay fase.
-          <div
-            className="flex flex-1 cursor-pointer items-center justify-center rounded border border-dashed"
-            style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}
-            title={t('ui.Schedule.puestoSinVigilanteDobleClic')}
-            onDoubleClick={() => openAssignForm(station.id, pos.id, dateStr)}
-          >
-            <span className="text-[10px] font-bold" style={{ color: 'var(--ink-faint)' }}>·</span>
-          </div>
-        ) : (
-          <div className="flex-1 flex flex-col gap-0.5">
-            {posAssignments.map(assignment => {
-              const guardName = nombreDeVigilante(assignment.guard, '?');
-              const color = guardColorMap[assignment.guardId] || 'var(--ink-faint)';
-              const override = getOverride(assignment.guardId, dateStr);
-
-              // If there's an override, show it instead of calculated rotation
-              if (override) {
-                const oType = override.type;
-                return (
-                  <div
-                    key={assignment.id}
-                    className="flex min-h-[18px] flex-1 cursor-pointer items-center justify-center rounded"
-                    style={{ ...codePill(oType), borderLeft: `2px solid ${color}` }}
-                    title={`${guardName} — ${CODE_LABEL[oType] ?? oType}${override.note ? ': ' + override.note : ''} (doble clic para editar)`}
-                    onDoubleClick={() => setOverrideTarget({ guardId: assignment.guardId, guardName, date: dateStr, assignmentId: assignment.id })}
-                  >
-                    <span className="text-[10px] font-bold">{oType}</span>
-                  </div>
-                );
-              }
-
-              const workStatus = isWorkDay(assignment, day);
-
-              if (workStatus === 'rest') {
-                const coverKey = `${station.id}-${dateStr}`;
-                const coveringSfs = sfStationCoverage.get(coverKey) || [];
-                const sfLabel = coveringSfs.length > 0 ? coveringSfs[0].name : '';
-                const sfTooltip = coveringSfs.length > 0 ? coveringSfs.map(s => s.fullName).join(', ') : '';
-                return (
-                  <div
-                    key={assignment.id}
-                    className="relative flex min-h-[18px] flex-1 cursor-pointer items-center justify-center rounded"
-                    style={sfLabel ? toneCard('ok', 12, 22) : { background: 'var(--glass-sunken)' }}
-                    title={`${guardName} — Libre${sfTooltip ? ` · Cubre: ${sfTooltip}` : ' (clic derecho: asignar sacafranco)'}`}
-                    onDoubleClick={() => setOverrideTarget({ guardId: assignment.guardId, guardName, date: dateStr, assignmentId: assignment.id })}
-                  >
-                    {sfLabel ? (
-                      <span className="text-[8px] font-bold">{sfLabel}</span>
-                    ) : (
-                      <span className="text-[10px] font-bold" style={{ color: 'var(--ink-faint)' }}>L</span>
-                    )}
-                  </div>
-                );
-              }
-
-              const code = dnCode(station.scheduleType, pos.startTime, workStatus as 'day' | 'night');
-              // El color sale del MISMO mapa que la leyenda; el 24 h se pinta con
-              // su propio código, que ya es el más denso de la rejilla.
-              const is24h = station.scheduleType === '24h';
-              const pillCode = is24h && code !== 'N' ? '24' : code;
-
-              return (
-                <div
-                  key={assignment.id}
-                  className="flex min-h-[18px] flex-1 cursor-pointer items-center justify-center rounded hover:opacity-80"
-                  style={{ ...codePill(pillCode), borderLeft: `2px solid ${color}` }}
-                  title={`${guardName} — ${CODE_LABEL[code] ?? code}${is24h ? ' · 24 h' : ''} (doble clic para novedad)`}
-                  onDoubleClick={() => setOverrideTarget({ guardId: assignment.guardId, guardName, date: dateStr, assignmentId: assignment.id })}
-                >
-                  <span className="text-[10px] font-bold">{code}</span>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-    );
-  };
 
   // ─── Render ───────────────────────────────────────────────────────────────
 
@@ -2078,7 +2116,11 @@ export default function Schedule() {
                 onScroll={onGridScroll}
                 onMouseDown={e => startPan(e, gridScrollRef.current)}
                 tabIndex={0}
-                className="glass flex-1 min-w-0 select-none overflow-auto outline-none"
+                /* `glass-flat`, NO `glass`: `backdrop-filter` obliga al navegador a
+                   rasterizar lo que hay detrás en CADA fotograma, y esto es un
+                   lienzo de 16.000 px que se desplaza. Es la regla que el
+                   propio `glass.css` documenta para lo que hace scroll. */
+                className="glass-flat flex-1 min-w-0 select-none overflow-auto outline-none"
               >
                 <div className="relative" style={{ minWidth: gridMinWidth }}>
                   {/* Today guide: a full-height vertical line framing today's
@@ -2104,13 +2146,15 @@ export default function Schedule() {
                     >
                       Puesto
                     </div>
-                    {monthDays.map((day, i) => {
-                      const isToday = fmtDate(day) === todayStr;
-                      const isSunday = day.getDay() === 0;
+                    <div style={{ background: 'var(--glass-solid)' }} />
+                    {monthDays.slice(colA, colB).map((day, k) => {
+                      const i = colA + k;
+                      const isToday = monthDayStrs[i] === todayStr;
+                      const isSunday = monthDaySunday[i];
                       return (
                         <div
                           key={i}
-                          className="relative px-0.5 py-1.5 text-center last:border-r-0"
+                          className="relative px-0.5 py-1.5 text-center"
                           style={{ background: 'var(--glass-solid)', borderRight: '1px solid var(--hairline)' }}
                         >
                           {/* El tinte va de capa encima: la celda en sí queda OPACA
@@ -2132,6 +2176,7 @@ export default function Schedule() {
                         </div>
                       );
                     })}
+                    <div style={{ background: 'var(--glass-solid)' }} />
                   </div>
 
                   {/* SUPERVISIÓN — arriba del todo, con la misma rejilla.
@@ -2140,203 +2185,39 @@ export default function Schedule() {
                       motor (nunca toca `shift`/`guardShift`). */}
                   <SupervisionSection
                     monthDays={monthDays}
+                    colA={colA}
+                    colB={colB}
                     gridCols={gridCols}
-                    tintFor={(d) => {
-                      const hoy = tzToday();
-                      const ds = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-                      if (ds === hoy) return TINT_TODAY;
-                      return d.getDay() === 0 ? TINT_SUNDAY : undefined;
-                    }}
+                    tintFor={(_d, i) => (monthDayStrs[i] === todayStr ? TINT_TODAY : monthDaySunday[i] ? TINT_SUNDAY : undefined)}
                   />
 
-                  {/* Station rows */}
-                  {stations.map(station => {
-                    const stationPositions = getPositionsForStation(station.id);
-                    const hasPositions = stationPositions.length > 0;
-                    const stationAlert = stationAlertByStationId.get(station.id);
-
-                    return (
-                      <div key={station.id} className="last:border-b-0" style={{ borderBottom: '1px solid var(--hairline)' }}>
-                        {/* Station header */}
-                        <div className="grid" style={{ gridTemplateColumns: gridCols, background: 'var(--glass-sunken)' }}>
-                          <div
-                            className="sticky left-0 z-20 flex items-center gap-2 px-4 py-2"
-                            style={{ background: 'var(--glass-solid)', borderRight: '1px solid var(--hairline)' }}
-                          >
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-1.5 min-w-0">
-                                {/* Nominativo: several puestos share a name, so
-                                    the name alone identifies nothing. */}
-                                {station.nickname && (
-                                  <span className="glass-sunken shrink-0 px-1.5 py-0.5 font-mono text-[10px] font-bold" style={{ color: 'var(--ink-soft)' }}>
-                                    {station.nickname}
-                                  </span>
-                                )}
-                                <div className="truncate text-sm font-semibold">{station.stationName}</div>
-                              </div>
-                              <button
-                                onClick={() => configureStation(station)}
-                                className="cg-focus text-[11px] transition-colors hover:underline"
-                                style={{ color: 'var(--ink-soft)' }}
-                                title={t("ui.Schedule.cambiarTipoDeHorarioRotacion", "Cambiar tipo de horario / rotación")}
-                              >
-                                {station.scheduleType ? station.scheduleType.replace('-', ' ').toUpperCase() : 'Sin configurar'}
-                              </button>
-                              {stationAlert && (
-                                <div className="mt-1 flex items-center gap-1 flex-wrap">
-                                  {stationAlert.missingFijoCount > 0 && (
-                                    <span className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[9px] font-semibold tabular-nums" style={toneCard('bad')}>
-                                      <AlertTriangle size={9} />
-                                      {stationAlert.missingFijoCount} fijo(s) faltan
-                                    </span>
-                                  )}
-                                  {stationAlert.sfUncoveredDays > 0 && (
-                                    <span className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[9px] font-semibold tabular-nums" style={toneCard('warn')}>
-                                      <AlertTriangle size={9} />
-                                      {stationAlert.sfUncoveredDays} L sin SF
-                                    </span>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                            {!hasPositions && (
-                              <Button size="sm" variant="outline" className="text-xs h-7" onClick={() => configureStation(station)}>
-                                Configurar
-                              </Button>
-                            )}
-                            {hasPositions && (
-                              <div className="flex items-center gap-1">
-                                <button
-                                  onClick={() => configureStation(station)}
-                                  className="cg-btn-ghost cg-focus rounded p-1 transition-colors"
-                                  title={t("ui.Schedule.reconfigurarElPuestoTipoDe", "Reconfigurar el puesto (tipo de horario y rotación)")}
-                                >
-                                  <Clock size={14} />
-                                </button>
-                                <button
-                                  onClick={() => addPosition(station.id)}
-                                  className="cg-btn-ghost cg-focus rounded p-1 transition-colors"
-                                  title={t("ui.Schedule.agregarPosicionSacafranco", "Agregar posición sacafranco")}
-                                >
-                                  <Plus size={14} />
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                          {monthDays.map((_, i) => (
-                            <div key={i} className="last:border-r-0" style={{ borderRight: '1px solid var(--hairline)' }} />
-                          ))}
-                        </div>
-
-                        {/* Position rows */}
-                        {stationPositions.map(pos => {
-                          const posAssignments = getAssignmentsForPosition(pos.id);
-                          const meta = POSITION_TONE[pos.type] || POSITION_TONE.fijo;
-                          const Icon = meta.icon;
-
-                          return (
-                            <div key={pos.id} className="grid" style={{ gridTemplateColumns: gridCols, borderTop: '1px solid var(--hairline)' }}>
-                              {/* Nombre del puesto */}
-                              <div
-                                className="sticky left-0 z-20 flex items-center gap-2 px-4 py-2"
-                                style={{ background: 'var(--glass-solid)', borderRight: '1px solid var(--hairline)' }}
-                                onDragOver={e => e.preventDefault()}
-                                onDrop={e => handleDrop(e, station.id, pos.id)}
-                              >
-                                <div className="flex h-6 w-6 items-center justify-center rounded" style={tonePill(meta.tone, 14)}>
-                                  <Icon size={12} />
-                                </div>
-                                <div className="min-w-0 flex-1">
-                                  <div className="truncate text-xs font-semibold">{pos.name}</div>
-                                  <div className="text-[10px] tabular-nums" style={{ color: 'var(--ink-soft)' }}>
-                                    {(() => {
-                                      // Real hours come from the POSITION (custom blocks carry
-                                      // their own window; start==end wraps the full day).
-                                      // A 24h STATION is covered by two fijos doing 12h each,
-                                      // swapping day/night — label the fijo, not the station.
-                                      if (station.scheduleType === '24h') return 'Turnos de 12h · D/N rotativo';
-                                      const st5 = (pos.startTime || '').slice(0, 5);
-                                      const en5 = (pos.endTime || '').slice(0, 5);
-                                      if (st5 && en5) return st5 === en5 ? `${st5} → ${en5} · 24h` : `${st5} – ${en5}`;
-                                      return station.scheduleType === '12h-night' ? '19:00 – 07:00' : '07:00 – 19:00';
-                                    })()}
-                                  </div>
-                                </div>
-                                {/* Assigned guard names — draggable to MOVE to another puesto */}
-                                {posAssignments.length > 0 && (
-                                  <div className="flex flex-col gap-0.5">
-                                    {posAssignments.map(a => {
-                                      const name = a.guard ? nombreDeVigilante(a.guard).split(' ')[0] : '?';
-                                      const color = guardColorMap[a.guardId] || 'var(--ink-faint)';
-                                      return (
-                                        <button
-                                          key={a.id}
-                                          draggable
-                                          onDragStart={e => onGuardDragStart(e, a.guardId, a)}
-                                          onClick={() => removeAssignment(a.id)}
-                                          /* Ficha arrastrable: el color de identidad
-                                             va en el filo, no en la tinta — a ese
-                                             tamaño el texto necesita `--ink`. */
-                                          className="cg-focus cursor-grab rounded px-1.5 py-0.5 text-[9px] font-semibold active:cursor-grabbing"
-                                          style={{
-                                            background: `color-mix(in oklab, ${color} 16%, transparent)`,
-                                            borderLeft: `2px solid ${color}`,
-                                            color: 'var(--ink)',
-                                          }}
-                                          title={`${nombreDeVigilante(a.guard, 'Vigilante')} — Arrastra para mover · Clic para remover`}
-                                        >
-                                          {name} ×
-                                        </button>
-                                      );
-                                    })}
-                                  </div>
-                                )}
-                                {posAssignments.length === 0 && (
-                                  <div className="flex items-center gap-1">
-                                    <button
-                                      onClick={() => openAssignForm(station.id, pos.id)}
-                                      className="cg-focus rounded-md p-1 transition-colors"
-                                      style={tonePill('brand', 14)}
-                                      title={t('comun.asignarVigilante')}
-                                    >
-                                      <Plus size={12} />
-                                    </button>
-                                    <button
-                                      onClick={() => deletePosition(station.id, pos.id)}
-                                      className="cg-focus rounded-md p-1 transition-colors hover:bg-[color-mix(in_oklab,var(--bad)_12%,transparent)]"
-                                      style={{ color: 'var(--ink-faint)' }}
-                                      title={t("ui.Schedule.eliminarPosicion", "Eliminar posición")}
-                                    >
-                                      <X size={11} />
-                                    </button>
-                                  </div>
-                                )}
-                              </div>
-
-                              {/* Day cells */}
-                              {monthDays.map((day, dayIdx) => renderFijoCell(station, pos, posAssignments, day, dayIdx))}
-                            </div>
-                          );
-                        })}
-
-                        {/* No positions configured */}
-                        {!hasPositions && (
-                          <div className="grid" style={{ gridTemplateColumns: gridCols, borderTop: '1px solid var(--hairline)' }}>
-                            <div className="col-span-full px-4 py-4 text-center">
-                              <p className="mb-2 text-xs" style={{ color: 'var(--ink-soft)' }}>{t('ui.Schedule.estePuestoNoTienePosiciones')}</p>
-                              <Button size="sm" variant="outline" className="text-xs" onClick={() => configureStation(station)}>
-                                Configurar posiciones
-                              </Button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                  {/* Station rows — cada puesto es un componente MEMOIZADO
+                      (`MonthStationBlock`). Arrastrar una selección sólo repinta
+                      el puesto tocado; antes repintaba la hoja entera. */}
+                  {stations.map(station => (
+                    <MonthStationBlock
+                      key={station.id}
+                      station={station}
+                      stationPositions={getPositionsForStation(station.id)}
+                      stationAlert={stationAlertByStationId.get(station.id)}
+                      assignmentsByPosition={assignmentsByPosition}
+                      overrideByGuardDate={overrideByGuardDate}
+                      sfStationCoverage={sfStationCoverage}
+                      guardColorMap={guardColorMap}
+                      monthDays={monthDays}
+                      monthDayStrs={monthDayStrs}
+                      monthDaySunday={monthDaySunday}
+                      colA={colA}
+                      colB={colB}
+                      gridCols={gridCols}
+                      todayStr={todayStr}
+                      sel={selForRows(getPositionsForStation(station.id))}
+                      h={handlers}
+                    />
+                  ))}
 
                   {/* ─── Sacafrancos Section ─── */}
                   {(() => {
-                    const sfPositions = positions.filter(p => p.type === 'sacafranco');
                     if (sfPositions.length === 0) return null;
                     return (
                       // When EXPANDED, pin the sacafranco section to the bottom of
@@ -2366,13 +2247,13 @@ export default function Schedule() {
                               <div className="text-[10px]" style={{ color: 'var(--ink-soft)' }}>{sfPositions.length} posiciones {sfSectionOpen ? '▾' : '▸ (clic para expandir)'}</div>
                             </div>
                           </div>
-                          {monthDays.map((_, i) => (
-                            <div
-                              key={i}
-                              className="last:border-r-0"
-                              style={{ borderRight: '1px solid var(--hairline)', background: 'color-mix(in oklab, var(--ok) 5%, transparent)' }}
-                            />
-                          ))}
+                          <div
+                            style={{
+                              gridColumn: '2 / -1',
+                              backgroundColor: 'color-mix(in oklab, var(--ok) 5%, transparent)',
+                              ...columnRules(COL_W),
+                            }}
+                          />
                         </div>
 
                         {/* SF Position rows — only if expanded */}
@@ -2383,6 +2264,7 @@ export default function Schedule() {
                             <div key={pos.id} className="grid" style={{ gridTemplateColumns: gridCols, borderTop: '1px solid var(--hairline)' }}>
                               {/* Nombre del sacafranco */}
                               <div
+                                id={`hr-${pos.id}`}
                                 className="sticky left-0 z-20 flex items-center gap-2 px-4 py-2"
                                 style={{ background: 'var(--glass-solid)', borderRight: '1px solid var(--hairline)' }}
                                 onDragOver={e => e.preventDefault()}
@@ -2422,10 +2304,12 @@ export default function Schedule() {
                               {/* Day cells — REAL shifts only: all L until coverage is
                                   placed (drag the SF's L onto a puesto's L) or the
                                   optimizer generates it. */}
-                              {monthDays.map((day, dayIdx) => {
-                                const dateStr = fmtDate(day);
+                              <div />
+                              {monthDays.slice(colA, colB).map((day, k) => {
+                                const dayIdx = colA + k;
+                                const dateStr = monthDayStrs[dayIdx];
                                 const isToday = dateStr === todayStr;
-                                const isSunday = day.getDay() === 0;
+                                const isSunday = monthDaySunday[dayIdx];
                                 // Celda de rejilla: plana, sin desenfoque — ver la
                                 // nota en renderFijoCell. El tinte en línea se
                                 // cede mientras la celda está seleccionada, o la
@@ -2523,6 +2407,7 @@ export default function Schedule() {
                                   </div>
                                 );
                               })}
+                              <div />
                             </div>
                           );
                         })}
@@ -2740,8 +2625,7 @@ export default function Schedule() {
                       <div className="space-y-1.5">
                         {sacafrancoData.map(sf => {
                           const name = nombreDeVigilante(sf.guard, '?');
-                          const availDays = sf.availability.filter(a => a.status === 'available').length;
-                          const coverDays = sf.availability.filter(a => a.status === 'covering').length;
+                          const { availDays, coverDays } = sf;
                           const stationsCovering = [...new Set(sf.assignments.map(a => stationsById.get(a.stationId)?.stationName).filter(Boolean))];
                           return (
                             <div key={sf.guard?.id || name} className="glass-sunken space-y-0.5 px-2 py-1.5">

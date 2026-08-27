@@ -50,15 +50,29 @@ const addDays = (d: Date, n: number): Date => {
   return r;
 };
 
-/** Milliseconds to ADD to a UTC instant to get the tz's wall-clock. */
-function tzOffsetMs(date: Date, tz?: string): number {
-  if (!tz) return -date.getTimezoneOffset() * 60000;
-  try {
-    const dtf = new Intl.DateTimeFormat('en-US', {
+/* Construir un `Intl.DateTimeFormat` cuesta caro (decenas de microsegundos) y
+   esto se llama UNA VEZ POR TURNO en dos memos de la rejilla del Mes: con 2.400
+   turnos eran ~5.000 construcciones (50-250 ms) en cada guardado. El formateador
+   sólo depende de la zona horaria, así que se cachea por zona. */
+const DTF_CACHE = new Map<string, Intl.DateTimeFormat>();
+const tzFormatter = (tz: string): Intl.DateTimeFormat => {
+  let f = DTF_CACHE.get(tz);
+  if (!f) {
+    f = new Intl.DateTimeFormat('en-US', {
       timeZone: tz, hour12: false,
       year: 'numeric', month: '2-digit', day: '2-digit',
       hour: '2-digit', minute: '2-digit', second: '2-digit',
     });
+    DTF_CACHE.set(tz, f);
+  }
+  return f;
+};
+
+/** Milliseconds to ADD to a UTC instant to get the tz's wall-clock. */
+function tzOffsetMs(date: Date, tz?: string): number {
+  if (!tz) return -date.getTimezoneOffset() * 60000;
+  try {
+    const dtf = tzFormatter(tz);
     const p: Record<string, string> = {};
     for (const { type, value } of dtf.formatToParts(date)) p[type] = value;
     const asUTC = Date.UTC(+p.year, +p.month - 1, +p.day, p.hour === '24' ? 0 : +p.hour, +p.minute, +p.second);
