@@ -5,6 +5,7 @@ import {
   User, Clock, CheckCircle2, Flag, Building2, XCircle, X,
 } from 'lucide-react';
 import { ApiService } from '@/services/api/apiService';
+import ScanDetailModal from '@/components/rondas/ScanDetailModal';
 import { Section, EmptyState, SkeletonCards, StatusBadge, Modal, IconTile, SmartImage } from '@/components/kit';
 import { fileUrlFromPrivate } from '@/lib/fileUrl';
 import type { Station } from '@/types';
@@ -145,6 +146,10 @@ function RondaDetailModal({ open, onOpenChange, tenantId, assignmentId, fallback
   const [error, setError] = useState<string | null>(null);
   const [detail, setDetail] = useState<RondaDetail | null>(null);
   const [photo, setPhoto] = useState<string | null>(null); // lightbox
+  // El detalle de UN punto: foto, observación, mapa, dirección, coordenadas y
+  // el visto bueno. Es el mismo componente que abre el informe de recorridos —
+  // la revisión no puede depender de por dónde se haya llegado.
+  const [escaneoRevisar, setEscaneoRevisar] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open || !assignmentId) return;
@@ -243,6 +248,14 @@ function RondaDetailModal({ open, onOpenChange, tenantId, assignmentId, fallback
                             <div className="mt-2 space-y-2">
                               <div className="flex flex-wrap items-center gap-2">
                                 {geoBadge(c.scan.validLocation, c.scan.distanceMeters)}
+                                <button
+                                  type="button"
+                                  onClick={() => setEscaneoRevisar(c.scan!.id)}
+                                  className="cg-focus text-xs underline underline-offset-2"
+                                  style={{ color: 'var(--brand-text)' }}
+                                >
+                                  Ver detalle y revisar
+                                </button>
                               </div>
                               {note && (
                                 <p className="glass-sunken px-3 py-2 text-sm">{note}</p>
@@ -329,6 +342,21 @@ function RondaDetailModal({ open, onOpenChange, tenantId, assignmentId, fallback
           </div>
         )}
       </Modal>
+
+      {/* Detalle + revisión de UN punto (el mismo que abre el informe) */}
+      <ScanDetailModal
+        open={!!escaneoRevisar}
+        onOpenChange={(o: boolean) => { if (!o) setEscaneoRevisar(null); }}
+        scanId={escaneoRevisar}
+        // Rechazar un punto puede sacar la ronda de «completada»: se vuelve a
+        // pedir el detalle para que la cabecera no siga diciendo lo viejo.
+        onRevisado={() => {
+          if (!assignmentId) return;
+          ApiService.get(`/tenant/${tenantId}/site-tour/ronda/${encodeURIComponent(assignmentId)}?_=${Date.now()}`)
+            .then((res: any) => setDetail((res && (res.data !== undefined ? res.data : res)) as RondaDetail))
+            .catch(() => { /* el veredicto ya está guardado; esto es sólo refresco */ });
+        }}
+      />
 
       {/* Photo lightbox */}
       {photo && (

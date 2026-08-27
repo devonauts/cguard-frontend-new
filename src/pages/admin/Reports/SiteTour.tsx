@@ -1,18 +1,24 @@
+import { useCallback, useRef, useState } from "react";
 import { Route } from "lucide-react";
 import DataReport, { type ReportColumn } from "./DataReport";
 import { formatDateTime, rangeBounds, REPORT_ROW_LIMIT, warnIfCapped } from "./reportFormat";
 import { ApiService } from "@/services/api/apiService";
+import ScanDetailModal, { type VeredictoRevision } from "@/components/rondas/ScanDetailModal";
 
 interface TagScan {
   id: string;
   scannedAt?: string | null;
   validLocation?: boolean | null;
   distanceMeters?: number | null;
+  reviewStatus?: VeredictoRevision | null;
   tag?: { name?: string; tagIdentifier?: string; siteTour?: { name?: string } } | null;
   guard?: { fullName?: string } | null;
   station?: { stationName?: string } | null;
 }
 
+/** El veredicto de la revisión manual, en una palabra. */
+const revisionTexto = (e?: VeredictoRevision | null) =>
+  e === "accepted" ? "Aceptado" : e === "rejected" ? "Rechazado" : "Sin revisar";
 
 const columns: ReportColumn<TagScan>[] = [
   { key: "scanned", label: "Fecha/Hora", value: (r) => formatDateTime(r.scannedAt) },
@@ -22,30 +28,52 @@ const columns: ReportColumn<TagScan>[] = [
   { key: "station", label: "Estación", value: (r) => r.station?.stationName || "—" },
   { key: "valid", label: "Ubicación", value: (r) => (r.validLocation ? "Válida" : "Fuera de rango"), align: "center" },
   { key: "dist", label: "Distancia (m)", value: (r) => (r.distanceMeters != null ? Number(r.distanceMeters).toFixed(0) : "—"), align: "right" },
+  // La revisión viaja también al CSV y al PDF: un informe exportado sin el
+  // veredicto de la oficina cuenta la mitad de la historia.
+  { key: "review", label: "Revisión", value: (r) => revisionTexto(r.reviewStatus), align: "center" },
 ];
 
 export default function SiteTour() {
+  const [abierto, setAbierto] = useState(false);
+  const [escaneoId, setEscaneoId] = useState<string | null>(null);
+  // Cambiar un veredicto no debe obligar a recargar el informe entero: se
+  // recarga la tabla en su sitio (`DataReport` vuelve a pedir el rango).
+  const recargar = useRef<(() => void) | null>(null);
+
+  const cargar = useCallback(async ({ from, to }: { from: string; to: string }) => {
+    const tenantId = localStorage.getItem("tenantId") || "";
+    // El rango (`scannedAt`) va EN LA CONSULTA. Antes se pedían los 2000
+    // escaneos más recientes y se recortaba aquí: un rango antiguo se
+    // exportaba vacío.
+    const { start, end } = rangeBounds(from, to);
+    const params = new URLSearchParams({ from: start, to: end, limit: String(REPORT_ROW_LIMIT) });
+    const res: TagScan[] | { rows?: TagScan[] } = await ApiService.get(
+      `/tenant/${tenantId}/site-tour/tag-scans?${params.toString()}`,
+    );
+    const rows: TagScan[] = Array.isArray(res) ? res : res?.rows || [];
+    return warnIfCapped(rows);
+  }, []);
+
   return (
-    <DataReport<TagScan>
-      title="Informe de Recorridos del Sitio"
-      description="Escaneos de rondas: puntos de control marcados por vigilante, con validación de ubicación."
-      icon={Route}
-      columns={columns}
-      // Un punto marcado fuera de rango es una anomalía, no un dato más.
-      rowTone={(r) => (r.validLocation === false ? "warn" : undefined)}
-      load={async ({ from, to }) => {
-        const tenantId = localStorage.getItem("tenantId") || "";
-        // El rango (`scannedAt`) va EN LA CONSULTA. Antes se pedían los 2000
-        // escaneos más recientes y se recortaba aquí: un rango antiguo se
-        // exportaba vacío.
-        const { start, end } = rangeBounds(from, to);
-        const params = new URLSearchParams({ from: start, to: end, limit: String(REPORT_ROW_LIMIT) });
-        const res: TagScan[] | { rows?: TagScan[] } = await ApiService.get(
-          `/tenant/${tenantId}/site-tour/tag-scans?${params.toString()}`,
-        );
-        const rows: TagScan[] = Array.isArray(res) ? res : res?.rows || [];
-        return warnIfCapped(rows);
-      }}
-    />
+    <>
+      <DataReport<TagScan>
+        title="Informe de Recorridos del Sitio"
+        description="Escaneos de rondas: pulsa una fila para ver la foto, la observación, la ubicación y aceptar o rechazar el punto."
+        icon={Route}
+        columns={columns}
+        // Un punto marcado fuera de rango es una anomalía, no un dato más; uno
+        // rechazado por una persona pesa más todavía.
+        rowTone={(r) => (r.reviewStatus === "rejected" ? "bad" : r.validLocation === false ? "warn" : undefined)}
+        onRowClick={(r) => { setEscaneoId(r.id); setAbierto(true); }}
+        reloadRef={recargar}
+        load={cargar}
+      />
+      <ScanDetailModal
+        open={abierto}
+        onOpenChange={setAbierto}
+        scanId={escaneoId}
+        onRevisado={() => recargar.current?.()}
+      />
+    </>
   );
 }

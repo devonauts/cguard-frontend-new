@@ -42,6 +42,18 @@ interface DataReportProps<T> {
    * severidad SIEMPRE sale de aquí, nunca del acento de la empresa.
    */
   rowTone?: (row: T) => "bad" | "warn" | "ok" | undefined;
+  /**
+   * Abrir el detalle de una fila. Un informe cuyas filas se pueden auditar
+   * —recorridos, marcaciones— deja de ser una tabla que se mira y pasa a ser
+   * una que se revisa. Sin esta prop la tabla se comporta igual que siempre.
+   */
+  onRowClick?: (row: T) => void;
+  /**
+   * Recibe la función que vuelve a pedir las filas. Sirve para refrescar el
+   * informe después de cambiar algo desde el detalle (aceptar o rechazar un
+   * punto de ronda) sin recargar la página ni perder el rango elegido.
+   */
+  reloadRef?: React.MutableRefObject<(() => void) | null>;
 }
 
 function ymd(d: Date): string {
@@ -81,7 +93,7 @@ function download(filename: string, blob: Blob) {
  * shell into a functioning, exportable report.
  */
 export default function DataReport<T>({
-  title, description, icon, tone, columns: columnsProp, load, searchable = true, defaultDays = 30, emptyMessage, rowTone,
+  title, description, icon, tone, columns: columnsProp, load, searchable = true, defaultDays = 30, emptyMessage, rowTone, onRowClick, reloadRef,
 }: DataReportProps<T>) {
   // «Ocultar nombre del vigilante» (Configuración › Informes) también rige lo
   // que se arma en el navegador. Falla abierto: sin ajuste legible, se muestra
@@ -119,6 +131,13 @@ export default function DataReport<T>({
   }, [from, to, load]);
 
   useEffect(() => { fetchRows(); /* eslint-disable-next-line */ }, [from, to]);
+
+  // El mando a distancia del informe, para quien lo haya pedido.
+  useEffect(() => {
+    if (!reloadRef) return;
+    reloadRef.current = fetchRows;
+    return () => { reloadRef.current = null; };
+  }, [reloadRef, fetchRows]);
 
   const filtered = useMemo(() => {
     if (!searchable || !search.trim()) return rows;
@@ -272,7 +291,17 @@ export default function DataReport<T>({
                   <tr
                     key={(currentPage - 1) * pageSize + i}
                     className="border-b transition-colors hover:bg-[var(--glass-sunken)]"
+                    // Con detalle, la fila es un control: se pulsa con el ratón y
+                    // también con el teclado. Un informe que sólo se puede
+                    // auditar con ratón no se puede auditar.
+                    role={onRowClick ? "button" : undefined}
+                    tabIndex={onRowClick ? 0 : undefined}
+                    onClick={onRowClick ? () => onRowClick(row) : undefined}
+                    onKeyDown={onRowClick ? (e) => {
+                      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onRowClick(row); }
+                    } : undefined}
                     style={{
+                      cursor: onRowClick ? "pointer" : undefined,
                       borderColor: "var(--hairline)",
                       // La fila crítica se tiñe con su semántico, nunca con el
                       // acento: un pánico es rojo aunque la empresa elija verde.
