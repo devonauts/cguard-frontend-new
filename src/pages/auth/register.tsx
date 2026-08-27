@@ -42,6 +42,23 @@ export default function Register() {
     document.title = t('auth.register_title') || 'Registro | Cguard';
   }, []);
 
+  // ATRIBUCIÓN ENTRE DOMINIOS. El sitio vive en cguardpro.com y el alta aquí,
+  // en app.cguardpro.com: son orígenes distintos, así que la sesión del sitio
+  // no cruza sola. La traemos colgando del enlace (?cg=…&lp=…) y avisamos al
+  // panel de que un visitante del sitio EMPEZÓ un alta — así el embudo
+  // blog → alta se cierra. Sin `cg` no hay nada que atribuir y no se hace nada.
+  useEffect(() => {
+    try {
+      const q = new URLSearchParams(window.location.search);
+      const cg = q.get('cg');
+      if (cg) {
+        sessionStorage.setItem('cg_web', cg);
+        if (q.get('lp')) sessionStorage.setItem('cg_lp', q.get('lp') as string);
+        pistaDeAlta('signup_started');
+      }
+    } catch { /* la atribución nunca estorba el registro */ }
+  }, []);
+
   // ¿Hay captcha configurado? Lo dice el servidor. Si no responde, el
   // formulario sigue siendo usable: el servidor decide igual del otro lado.
   useEffect(() => {
@@ -104,6 +121,7 @@ export default function Register() {
     setIsLoading(false);
 
     if (res?.success) {
+      pistaDeAlta('signup_completed');
       toast.success(t('auth.account_created_verify_email'));
       navigate("/login");
     } else {
@@ -111,6 +129,27 @@ export default function Register() {
       toast.error(msg);
     }
   };
+  // Avisa al panel de un momento del alta, con la sesión ORIGINAL del sitio
+  // (la que traía el enlace), para que el evento caiga en el mismo embudo que
+  // su visita al blog. Va directo al API público de tracking.
+  function pistaDeAlta(evento: string) {
+    try {
+      const cg = sessionStorage.getItem('cg_web');
+      if (!cg) return;
+      const base = (import.meta.env.VITE_API_URL as string | undefined) || '';
+      fetch(`${base}/track`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'omit',
+        keepalive: true,
+        body: JSON.stringify({
+          source: 'website', sessionId: cg, event: evento,
+          path: sessionStorage.getItem('cg_lp') || '/register',
+        }),
+      }).catch(() => {});
+    } catch { /* nunca romper el alta por una métrica */ }
+  }
+
   return (
     <AuthShell title={t('auth.register_prompt') || 'Crea tu cuenta'}>
       <form className="space-y-4" onSubmit={handleRegister}>
