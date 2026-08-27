@@ -15,6 +15,7 @@ import {
   GraduationCap, TrendingUp, Users, CalendarOff, LifeBuoy, Map as MapIcon,
   RadioTower, Home, Route as RouteIcon, CalendarDays, User as UserIcon,
   Wifi, BatteryFull, SignalHigh, ChevronRight, ShieldAlert, ClipboardList,
+  MessageSquare, CarFront, Check, QrCode,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
@@ -155,8 +156,9 @@ export default function MobileHubPage() {
       tagline={cfg.tagline || 'Security Operations'}
       logoUrl={cfg.useTenantLogo ? logoUrl : null}
       light={cfg.defaultTheme === 'light'}
+      modules={cfg.modules}
     />
-  ), [accent, cfg.displayName, cfg.tagline, cfg.useTenantLogo, cfg.defaultTheme, logoUrl]);
+  ), [accent, cfg.displayName, cfg.tagline, cfg.useTenantLogo, cfg.defaultTheme, cfg.modules, logoUrl]);
 
   return (
     <AppLayout>
@@ -362,10 +364,13 @@ export default function MobileHubPage() {
  * la empresa elige arriba; si aquí usáramos los tokens del panel, la vista previa
  * mentiría. El chasis del teléfono sí es acromático como el resto del sistema.
  */
-function PhonePreview({ accent, name, tagline, logoUrl, light }: {
+function PhonePreview({ accent, name, tagline, logoUrl, light, modules }: {
   accent: string; name: string; tagline: string; logoUrl: string | null; light: boolean;
+  modules: Record<ModuleKey, boolean>;
 }) {
   const { t } = useTranslation();
+  const [pantalla, setPantalla] = useState<'inicio' | 'ronda' | 'entrenamiento' | 'horario' | 'mensajes' | 'perfil'>('inicio');
+
   const bg = light ? '#f5f5f4' : '#0a0e16';
   const card = light ? '#ffffff' : '#141a24';
   const text = light ? '#111827' : '#f3f4f6';
@@ -375,33 +380,318 @@ function PhonePreview({ accent, name, tagline, logoUrl, light }: {
 
   /**
    * ── LA MAQUETA SE DIBUJA A TAMAÑO DE TELÉFONO DE VERDAD ──────────────────
-   * Antes esto medía 240 px de ancho y todo dentro estaba escrito a mano en
-   * `text-[7px]`, `text-[8px]`, `text-[9px]`: no era una pantalla de móvil a
-   * escala, era un dibujo pequeño con tipografías que ningún teléfono usa. Las
-   * proporciones no se parecían a nada y no se podía juzgar si el acento de la
-   * empresa se ve bien.
+   * Antes medía 240 px de ancho y todo dentro estaba escrito a mano en
+   * `text-[7px]`, `text-[8px]`, `text-[9px]`: no era una pantalla a escala,
+   * era un dibujo pequeño con tipografías que ningún teléfono usa.
    *
-   * Ahora el contenido se dibuja en un lienzo de 390 × 844 — el tamaño lógico
-   * real de un iPhone 14, que es el mismo en el que se dibuja la app — con
-   * tipografías normales (14 px, 12 px), y el conjunto se REDUCE con `scale`
-   * para caber en la columna. Escalar la imagen final conserva las
-   * proporciones; escribir tamaños diminutos a mano las destruye.
-   *
-   * `ESCALA` es el único número que hay que tocar para agrandarlo o achicarlo.
+   * Ahora el contenido se dibuja en un lienzo de 390 × 844 —el tamaño lógico
+   * real de un iPhone 14, el mismo en el que se dibuja la app— con tipografías
+   * normales, y el conjunto se REDUCE con `scale` para caber en la columna.
+   * Escalar la imagen final conserva las proporciones; escribir tamaños
+   * diminutos a mano las destruye. `ESCALA` es el único número que hay que
+   * tocar para agrandarlo o achicarlo.
    */
   const ANCHO = 390;
   const ALTO = 844;
   const ESCALA = 0.86;
 
-  return (
-    <div
-      className="select-none"
-      // El hueco que ocupa en la página es el del teléfono YA reducido: sin
-      // esto, el `scale` deja un agujero del tamaño original debajo.
-      style={{ width: ANCHO * ESCALA, height: (ALTO + 20) * ESCALA }}
+  /* ── Piezas ─────────────────────────────────────────────────────────────── */
+
+  const Eyebrow = ({ children }: { children: React.ReactNode }) => (
+    <p className="mb-2 text-[11px] font-bold uppercase tracking-wider" style={{ color: muted }}>{children}</p>
+  );
+
+  const Tarjeta = ({ children, acento = false }: { children: React.ReactNode; acento?: boolean }) => (
+    <div className="rounded-2xl border p-4" style={{ borderColor: acento ? `${accent}55` : border, background: card }}>
+      {children}
+    </div>
+  );
+
+  /** Fila pulsable con icono — la forma que tiene la app para Radio, Visitantes… */
+  const Fila = ({ icon, label, extra, onClick }: {
+    icon: React.ReactNode; label: string; extra?: React.ReactNode; onClick?: () => void;
+  }) => (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex w-full items-center gap-3 rounded-2xl border px-3.5 py-3 text-left transition-transform active:scale-[0.98]"
+      style={{ borderColor: border, background: card, color: text }}
     >
+      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg" style={{ background: `${accent}1f`, color: accent }}>{icon}</span>
+      <span className="min-w-0 flex-1 truncate text-[13.5px] font-semibold">{label}</span>
+      {extra}
+      <ChevronRight size={16} style={{ color: muted }} />
+    </button>
+  );
+
+  const Stat = ({ v, l, acento = false }: { v: string; l: string; acento?: boolean }) => (
+    <div className="min-w-0 flex-1">
+      <p className="truncate text-[17px] font-bold tabular-nums" style={{ color: acento ? accent : text }}>{v}</p>
+      <p className="truncate text-[10.5px]" style={{ color: muted }}>{l}</p>
+    </div>
+  );
+
+  /* ── Pantallas ──────────────────────────────────────────────────────────── */
+
+  const inicio = (
+    <div className="space-y-3">
+      <Tarjeta acento>
+        <div className="flex items-center justify-between">
+          <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: muted }}>
+            {t('settings.mobileHub.previewCurrentShift', { defaultValue: 'Turno actual' })}
+          </span>
+          <span className="rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ background: '#16a34a22', color: '#16a34a' }}>
+            {t('settings.mobileHub.previewOnDuty', { defaultValue: '● En servicio' })}
+          </span>
+        </div>
+        <p className="mt-1.5 font-mono text-[36px] font-bold leading-none" style={{ color: accent }}>04:00:06</p>
+        <p className="mt-1.5 text-[12px]" style={{ color: muted }}>
+          {t('settings.mobileHub.previewShiftHours', { defaultValue: 'Turno 20:00 – 08:00' })}
+        </p>
+        <div className="mt-3 flex gap-3 border-t pt-3" style={{ borderColor: border }}>
+          <Stat v="03:59" l={t('settings.mobileHub.previewRemaining', { defaultValue: 'Restante' })} />
+          <Stat v="08:00" l={t('settings.mobileHub.previewEndsAt', { defaultValue: 'Finaliza' })} />
+          <Stat v="00" l={t('settings.mobileHub.previewIncidents', { defaultValue: 'Incidentes' })} />
+          <Stat v="6/8" l={t('settings.mobileHub.previewCheckpoints', { defaultValue: 'Puntos' })} acento />
+        </div>
+      </Tarjeta>
+
+      <button
+        type="button"
+        onClick={() => setPantalla('ronda')}
+        className="w-full rounded-2xl border p-4 text-left transition-transform active:scale-[0.98]"
+        style={{ borderColor: border, background: card, color: text }}
+      >
+        <div className="flex items-center justify-between">
+          <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: muted }}>
+            {t('settings.mobileHub.previewActiveRound', { defaultValue: 'Ronda activa' })}
+          </span>
+          <span className="flex items-center gap-1 text-[12px] font-semibold" style={{ color: accent }}>
+            {t('settings.mobileHub.previewContinue', { defaultValue: 'Continuar' })} <ChevronRight size={14} />
+          </span>
+        </div>
+        <p className="mt-1 text-[15px] font-bold">R-02 · {t('settings.mobileHub.previewNextPoint', { defaultValue: 'Próximo: Puerta trasera' })}</p>
+        <div className="mt-2.5 h-[6px] w-full overflow-hidden rounded-full" style={{ background: light ? '#e5e7eb' : '#232a36' }}>
+          <div className="h-full rounded-full" style={{ width: '75%', background: accent }} />
+        </div>
+        <p className="mt-1.5 text-[11.5px]" style={{ color: muted }}>
+          {t('settings.mobileHub.previewCheckpointsDone', { defaultValue: '6 de 8 puntos completados' })}
+        </p>
+      </button>
+
+      <Fila
+        icon={<ClipboardList size={16} />}
+        label={t('settings.mobileHub.previewShiftTasks', { defaultValue: 'Tareas del turno' })}
+        extra={<span className="grid h-5 w-5 place-items-center rounded-full text-[11px] font-bold" style={{ background: accent, color: inkOnAccent }}>3</span>}
+      />
+      <Fila icon={<RadioTower size={16} />} label={t('settings.mobileHub.navRadio', { defaultValue: 'Radio' })} />
+      {modules.visitors && (
+        <>
+          <Fila icon={<Users size={16} />} label={t('settings.mobileHub.previewVisitors', { defaultValue: 'Visitantes' })} />
+          <Fila icon={<CarFront size={16} />} label={t('settings.mobileHub.previewVehicles', { defaultValue: 'Control vehicular' })} />
+        </>
+      )}
+      {modules.map && <Fila icon={<MapIcon size={16} />} label={t('settings.mobileHub.previewMap', { defaultValue: 'Mapa del sitio' })} />}
+      {modules.backup && <Fila icon={<LifeBuoy size={16} />} label={t('settings.mobileHub.previewBackup', { defaultValue: 'Pedir respaldo' })} />}
+
+      <div>
+        <Eyebrow>{t('settings.mobileHub.previewAlerts', { defaultValue: 'Novedades' })}</Eyebrow>
+        <div className="overflow-hidden rounded-2xl border" style={{ borderColor: border, background: card }}>
+          {[
+            { icon: <RouteIcon size={15} />, txt: t('settings.mobileHub.previewActRound', { defaultValue: 'Ronda completada · 8/8 puntos' }), hora: '21:40' },
+            { icon: <ShieldAlert size={15} />, txt: t('settings.mobileHub.previewActIncident', { defaultValue: 'Novedad reportada · portón norte' }), hora: '20:55' },
+          ].map((r, i) => (
+            <div key={r.hora} className="flex items-center gap-3 px-3.5 py-3" style={i ? { borderTop: `1px solid ${border}` } : undefined}>
+              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg" style={{ background: `${accent}1a`, color: accent }}>{r.icon}</span>
+              <span className="min-w-0 flex-1 truncate text-[12.5px]">{r.txt}</span>
+              <span className="shrink-0 text-[11px] tabular-nums" style={{ color: muted }}>{r.hora}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <button
+        type="button"
+        className="w-full rounded-2xl py-3.5 text-[14px] font-bold transition-transform active:scale-[0.98]"
+        style={{ background: accent, color: inkOnAccent }}
+      >
+        {t('settings.mobileHub.previewClockOut', { defaultValue: 'Marcar salida' })}
+      </button>
+
+      <div className="rounded-2xl border p-4" style={{ borderColor: '#dc262655', background: light ? '#fef2f2' : '#1a1114' }}>
+        <p className="text-[13.5px] font-bold" style={{ color: '#ef4444' }}>
+          {t('settings.mobileHub.previewSosTitle', { defaultValue: 'Emergencia' })}
+        </p>
+        <p className="mt-0.5 text-[11.5px]" style={{ color: muted }}>
+          {t('settings.mobileHub.previewSosSub', { defaultValue: 'Envía una alerta de pánico a tu central' })}
+        </p>
+        <div className="mt-3 rounded-xl py-2.5 text-center text-[13px] font-bold" style={{ background: '#dc2626', color: '#fff' }}>
+          {t('settings.mobileHub.previewSosButton', { defaultValue: 'SOS / Pánico' })}
+        </div>
+      </div>
+    </div>
+  );
+
+  const ronda = (
+    <div className="space-y-3">
+      <Tarjeta acento>
+        <Eyebrow>{t('settings.mobileHub.previewActiveRound', { defaultValue: 'Ronda activa' })}</Eyebrow>
+        <p className="text-[17px] font-bold">R-02 · {t('settings.mobileHub.previewPerimeter', { defaultValue: 'Perímetro' })}</p>
+        <div className="mt-2.5 h-[6px] w-full overflow-hidden rounded-full" style={{ background: light ? '#e5e7eb' : '#232a36' }}>
+          <div className="h-full rounded-full" style={{ width: '75%', background: accent }} />
+        </div>
+        <p className="mt-1.5 text-[11.5px]" style={{ color: muted }}>
+          {t('settings.mobileHub.previewCheckpointsDone', { defaultValue: '6 de 8 puntos completados' })}
+        </p>
+      </Tarjeta>
+      {[
+        { n: t('settings.mobileHub.previewPointLobby', { defaultValue: 'Recepción' }), ok: true },
+        { n: t('settings.mobileHub.previewPointParking', { defaultValue: 'Parqueadero' }), ok: true },
+        { n: t('settings.mobileHub.previewPointBack', { defaultValue: 'Puerta trasera' }), ok: false },
+        { n: t('settings.mobileHub.previewPointRoof', { defaultValue: 'Terraza' }), ok: false },
+      ].map((p) => (
+        <div key={p.n} className="flex items-center gap-3 rounded-2xl border px-3.5 py-3" style={{ borderColor: border, background: card }}>
+          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg"
+            style={p.ok ? { background: '#16a34a22', color: '#16a34a' } : { background: `${accent}1f`, color: accent }}>
+            {p.ok ? <Check size={16} /> : <QrCode size={16} />}
+          </span>
+          <span className="flex-1 text-[13.5px] font-semibold">{p.n}</span>
+          <span className="text-[11px]" style={{ color: muted }}>
+            {p.ok ? '21:12' : t('settings.mobileHub.previewPending', { defaultValue: 'Pendiente' })}
+          </span>
+        </div>
+      ))}
+      <button type="button" className="w-full rounded-2xl py-3.5 text-[14px] font-bold" style={{ background: accent, color: inkOnAccent }}>
+        {t('settings.mobileHub.previewScan', { defaultValue: 'Escanear punto' })}
+      </button>
+    </div>
+  );
+
+  const entrenamiento = (
+    <div className="space-y-3">
+      <Tarjeta acento>
+        <Eyebrow>{t('settings.mobileHub.previewMyProgress', { defaultValue: 'Mi progreso' })}</Eyebrow>
+        <p className="font-mono text-[32px] font-bold leading-none" style={{ color: accent }}>720</p>
+        <p className="mt-1 text-[12px]" style={{ color: muted }}>{t('settings.mobileHub.previewPoints', { defaultValue: 'puntos acumulados' })}</p>
+      </Tarjeta>
+      {[
+        { c: t('settings.mobileHub.previewCourse1', { defaultValue: 'Uso de la fuerza' }), p: 100 },
+        { c: t('settings.mobileHub.previewCourse2', { defaultValue: 'Primeros auxilios' }), p: 60 },
+        { c: t('settings.mobileHub.previewCourse3', { defaultValue: 'Control de accesos' }), p: 0 },
+      ].map((c) => (
+        <div key={c.c} className="rounded-2xl border px-3.5 py-3" style={{ borderColor: border, background: card }}>
+          <div className="flex items-center justify-between">
+            <span className="text-[13.5px] font-semibold">{c.c}</span>
+            <span className="text-[11px] tabular-nums" style={{ color: muted }}>{c.p}%</span>
+          </div>
+          <div className="mt-2 h-[5px] w-full overflow-hidden rounded-full" style={{ background: light ? '#e5e7eb' : '#232a36' }}>
+            <div className="h-full rounded-full" style={{ width: `${c.p}%`, background: accent }} />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  const horario = (
+    <div className="space-y-3">
+      <Eyebrow>{t('settings.mobileHub.previewThisWeek', { defaultValue: 'Esta semana' })}</Eyebrow>
+      {[
+        { d: t('settings.mobileHub.previewToday', { defaultValue: 'Hoy' }), h: '20:00 – 08:00', hoy: true },
+        { d: t('settings.mobileHub.previewTomorrow', { defaultValue: 'Mañana' }), h: '20:00 – 08:00', hoy: false },
+        { d: t('settings.mobileHub.previewDayAfter', { defaultValue: 'Sábado' }), h: t('settings.mobileHub.previewRestDay', { defaultValue: 'Descanso' }), hoy: false },
+      ].map((r) => (
+        <div key={r.d} className="flex items-center justify-between rounded-2xl border px-3.5 py-3.5"
+          style={{ borderColor: r.hoy ? `${accent}55` : border, background: card }}>
+          <div>
+            <p className="text-[13.5px] font-bold">{r.d}</p>
+            <p className="text-[11.5px]" style={{ color: muted }}>{t('settings.mobileHub.previewPost', { defaultValue: 'Puesto' })} BRAVO 4</p>
+          </div>
+          <span className="text-[13px] font-semibold tabular-nums" style={{ color: r.hoy ? accent : muted }}>{r.h}</span>
+        </div>
+      ))}
+      {modules.timeOff && (
+        <Fila icon={<CalendarOff size={16} />} label={t('settings.mobileHub.previewTimeOff', { defaultValue: 'Permisos y vacaciones' })} />
+      )}
+    </div>
+  );
+
+  const mensajes = (
+    <div className="space-y-3">
+      {[
+        { n: t('settings.mobileHub.previewOpsRoom', { defaultValue: 'Central de operaciones' }), m: t('settings.mobileHub.previewMsg1', { defaultValue: 'Confirma relevo a las 08:00' }), h: '21:30', sinLeer: 2 },
+        { n: t('settings.mobileHub.previewSupervisor', { defaultValue: 'Supervisor de zona' }), m: t('settings.mobileHub.previewMsg2', { defaultValue: 'Recibido, gracias.' }), h: '20:12', sinLeer: 0 },
+      ].map((c) => (
+        <div key={c.n} className="flex items-center gap-3 rounded-2xl border px-3.5 py-3" style={{ borderColor: border, background: card }}>
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-[13px] font-bold" style={{ background: `${accent}22`, color: accent }}>
+            {c.n.charAt(0)}
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-[13.5px] font-semibold">{c.n}</p>
+            <p className="truncate text-[11.5px]" style={{ color: muted }}>{c.m}</p>
+          </div>
+          <div className="flex shrink-0 flex-col items-end gap-1">
+            <span className="text-[10.5px]" style={{ color: muted }}>{c.h}</span>
+            {c.sinLeer > 0 && (
+              <span className="grid h-4 min-w-4 place-items-center rounded-full px-1 text-[10px] font-bold" style={{ background: accent, color: inkOnAccent }}>{c.sinLeer}</span>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  const perfil = (
+    <div className="space-y-3">
+      <div className="flex flex-col items-center py-2">
+        <span className="grid h-20 w-20 place-items-center rounded-full text-[26px] font-black" style={{ background: `${accent}22`, color: accent }}>JR</span>
+        <p className="mt-2.5 text-[16px] font-bold">Juan Ramírez</p>
+        <p className="text-[11.5px]" style={{ color: muted }}>{t('settings.mobileHub.previewPost', { defaultValue: 'Puesto' })} BRAVO 4</p>
+      </div>
+      {modules.performance && (
+        <Tarjeta acento>
+          <Eyebrow>{t('settings.mobileHub.previewMyPerformance', { defaultValue: 'Mi desempeño' })}</Eyebrow>
+          <div className="flex items-end gap-2">
+            <p className="font-mono text-[34px] font-bold leading-none" style={{ color: accent }}>96</p>
+            <p className="pb-1 text-[12px]" style={{ color: muted }}>/ 100</p>
+          </div>
+        </Tarjeta>
+      )}
+      {modules.training && (
+        <Fila icon={<GraduationCap size={16} />} label={t('settings.mobileHub.previewTraining', { defaultValue: 'Entrenamiento' })} onClick={() => setPantalla('entrenamiento')} />
+      )}
+      {modules.timeOff && <Fila icon={<CalendarOff size={16} />} label={t('settings.mobileHub.previewTimeOff', { defaultValue: 'Permisos y vacaciones' })} />}
+      <Fila icon={<UserIcon size={16} />} label={t('settings.mobileHub.previewMyData', { defaultValue: 'Mis datos' })} />
+    </div>
+  );
+
+  const PANTALLAS: Record<string, React.ReactNode> = {
+    inicio, ronda, entrenamiento, horario, mensajes, perfil,
+  };
+
+  /**
+   * ── LA BARRA ES LA DE LA APP, NO UNA INVENTADA ───────────────────────────
+   * Cinco pestañas, y la segunda es VARIABLE igual que en la app: Ronda cuando
+   * el vigilante está en servicio, Entrenamiento cuando no lo está — y Ronda
+   * también si la empresa apagó el módulo de entrenamiento (ver `GuardTabs`).
+   * La maqueta enseñaba cuatro pestañas y se comía Mensajes.
+   */
+  const pestanas = [
+    { id: 'inicio' as const, icon: <Home size={21} />, label: t('settings.mobileHub.navHome', { defaultValue: 'Inicio' }) },
+    modules.training
+      ? { id: 'entrenamiento' as const, icon: <GraduationCap size={21} />, label: t('settings.mobileHub.navTraining', { defaultValue: 'Entrenamiento' }) }
+      : { id: 'ronda' as const, icon: <RouteIcon size={21} />, label: t('settings.mobileHub.navRounds', { defaultValue: 'Ronda' }) },
+    { id: 'horario' as const, icon: <CalendarDays size={21} />, label: t('settings.mobileHub.navSchedule', { defaultValue: 'Horario' }) },
+    { id: 'mensajes' as const, icon: <MessageSquare size={21} />, label: t('settings.mobileHub.navMessages', { defaultValue: 'Mensajes' }) },
+    { id: 'perfil' as const, icon: <UserIcon size={21} />, label: t('settings.mobileHub.navProfile', { defaultValue: 'Perfil' }) },
+  ];
+
+  // La pestaña variable puede desaparecer al apagar «Entrenamiento» estando en
+  // ella: se vuelve a Inicio en vez de dejar la maqueta en una pantalla muerta.
+  const activa = pestanas.some((p) => p.id === pantalla) || pantalla === 'ronda' ? pantalla : 'inicio';
+
+  return (
+    <div className="select-none" style={{ width: ANCHO * ESCALA, height: (ALTO + 20) * ESCALA }}>
       <div style={{ transform: `scale(${ESCALA})`, transformOrigin: 'top left' }}>
-        {/* Chasis */}
         <div
           className="rounded-[3.2rem] p-[10px]"
           style={{
@@ -410,15 +700,9 @@ function PhonePreview({ accent, name, tagline, logoUrl, light }: {
             boxShadow: 'var(--lift-4)',
           }}
         >
-          <div
-            className="relative overflow-hidden rounded-[2.6rem]"
-            style={{ width: ANCHO, height: ALTO, background: bg, color: text }}
-          >
+          <div className="relative overflow-hidden rounded-[2.6rem]" style={{ width: ANCHO, height: ALTO, background: bg, color: text }}>
             {/* Isla dinámica */}
-            <div
-              className="absolute left-1/2 top-[10px] z-20 h-[30px] w-[112px] -translate-x-1/2 rounded-full"
-              style={{ background: 'oklch(0 0 0)' }}
-            />
+            <div className="absolute left-1/2 top-[10px] z-20 h-[30px] w-[112px] -translate-x-1/2 rounded-full" style={{ background: 'oklch(0 0 0)' }} />
 
             {/* Barra de estado */}
             <div className="flex h-[50px] items-center justify-between px-7 pt-2 text-[14px] font-semibold">
@@ -428,103 +712,54 @@ function PhonePreview({ accent, name, tagline, logoUrl, light }: {
               </span>
             </div>
 
-            {/* Contenido */}
-            <div className="space-y-3.5 px-4 pt-2">
-              <div className="flex items-center gap-3">
-                {logoUrl ? (
-                  <img src={logoUrl} alt="" className="h-11 w-11 rounded-xl object-contain" style={{ background: card }} />
-                ) : (
-                  <span
-                    className="grid h-11 w-11 place-items-center rounded-xl text-lg font-black"
-                    style={{ background: `${accent}22`, color: accent }}
-                  >
-                    {name.trim().charAt(0).toUpperCase() || 'C'}
-                  </span>
-                )}
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-[17px] font-bold leading-tight">{name}</p>
-                  <p className="truncate text-[11px] uppercase tracking-[0.14em]" style={{ color: muted }}>{tagline}</p>
-                </div>
-              </div>
-
-              {/* Turno en curso */}
-              <div className="rounded-2xl border p-4" style={{ borderColor: `${accent}55`, background: card }}>
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: muted }}>
-                    {t('settings.mobileHub.previewCurrentShift', { defaultValue: 'Turno actual' })}
-                  </span>
-                  <span className="rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ background: '#16a34a22', color: '#16a34a' }}>
-                    {t('settings.mobileHub.previewOnDuty', { defaultValue: '● En servicio' })}
-                  </span>
-                </div>
-                <p className="mt-1.5 font-mono text-[38px] font-bold leading-none" style={{ color: accent }}>04:00:06</p>
-                <p className="mt-1.5 text-[12px]" style={{ color: muted }}>
-                  {t('settings.mobileHub.previewShiftHours', { defaultValue: 'Turno 20:00 – 08:00' })}
-                </p>
-              </div>
-
-              {/* Accesos rápidos */}
-              <div className="grid grid-cols-2 gap-2.5">
-                {[
-                  { icon: <RouteIcon size={17} />, label: t('settings.mobileHub.navRounds', { defaultValue: 'Rondas' }) },
-                  { icon: <ShieldAlert size={17} />, label: t('settings.mobileHub.previewIncident', { defaultValue: 'Novedad' }) },
-                ].map((q) => (
-                  <div
-                    key={q.label}
-                    className="flex items-center gap-2.5 rounded-2xl border px-3 py-3"
-                    style={{ borderColor: border, background: card }}
-                  >
-                    <span className="grid h-8 w-8 place-items-center rounded-lg" style={{ background: `${accent}1f`, color: accent }}>
-                      {q.icon}
-                    </span>
-                    <span className="text-[13px] font-semibold">{q.label}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Tareas */}
-              <div className="flex items-center justify-between rounded-2xl border px-3.5 py-3" style={{ borderColor: border, background: card }}>
-                <span className="flex items-center gap-2.5 text-[13px] font-semibold">
-                  <ClipboardList size={17} style={{ color: muted }} />
-                  {t('settings.mobileHub.previewShiftTasks', { defaultValue: 'Tareas del turno' })}
+            {/* Cabecera de marca */}
+            <div className="flex items-center gap-3 px-4 pb-2 pt-1">
+              {logoUrl ? (
+                <img src={logoUrl} alt="" className="h-11 w-11 rounded-xl object-contain" style={{ background: card }} />
+              ) : (
+                <span className="grid h-11 w-11 place-items-center rounded-xl text-lg font-black" style={{ background: `${accent}22`, color: accent }}>
+                  {name.trim().charAt(0).toUpperCase() || 'C'}
                 </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="grid h-5 w-5 place-items-center rounded-full text-[11px] font-bold" style={{ background: accent, color: inkOnAccent }}>3</span>
-                  <ChevronRight size={16} style={{ color: muted }} />
-                </span>
+              )}
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-[17px] font-bold leading-tight">{name}</p>
+                <p className="truncate text-[11px] uppercase tracking-[0.14em]" style={{ color: muted }}>{tagline}</p>
               </div>
             </div>
 
-            {/* Botón de radio, flotando sobre la barra inferior */}
-            <div className="absolute bottom-[104px] right-5">
-              <span className="grid h-16 w-16 place-items-center rounded-full" style={{ background: accent, boxShadow: 'var(--lift-3)' }}>
-                <Mic size={26} style={{ color: inkOnAccent }} />
-              </span>
+            {/* Pantalla — desplazable, como en el teléfono */}
+            <div className="absolute inset-x-0 bottom-[86px] top-[104px] overflow-y-auto px-4 pb-4">
+              {PANTALLAS[activa]}
             </div>
 
-            {/* Barra de navegación */}
-            <div
-              className="absolute inset-x-0 bottom-0 flex items-start justify-around border-t px-2 pb-7 pt-2.5"
-              style={{ borderColor: border, background: card }}
-            >
-              {[
-                { icon: <Home size={20} />, label: t('settings.mobileHub.navHome', { defaultValue: 'Inicio' }) },
-                { icon: <RouteIcon size={20} />, label: t('settings.mobileHub.navRounds', { defaultValue: 'Rondas' }) },
-                { icon: <CalendarDays size={20} />, label: t('settings.mobileHub.navSchedule', { defaultValue: 'Horario' }) },
-                { icon: <UserIcon size={20} />, label: t('settings.mobileHub.navProfile', { defaultValue: 'Perfil' }) },
-              ].map((n, i) => (
-                <span key={n.label} className="flex flex-col items-center gap-1" style={{ color: i === 0 ? accent : muted }}>
-                  {n.icon}
-                  <span className="text-[10px] font-semibold">{n.label}</span>
+            {/* Botón de radio */}
+            {activa === 'inicio' && (
+              <div className="absolute bottom-[100px] right-5">
+                <span className="grid h-14 w-14 place-items-center rounded-full" style={{ background: accent, boxShadow: 'var(--lift-3)' }}>
+                  <Mic size={24} style={{ color: inkOnAccent }} />
                 </span>
+              </div>
+            )}
+
+            {/* Barra de navegación — PULSABLE */}
+            <div className="absolute inset-x-0 bottom-0 flex items-start justify-around border-t px-1 pb-7 pt-2.5"
+              style={{ borderColor: border, background: card }}>
+              {pestanas.map((p) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => setPantalla(p.id)}
+                  className="flex flex-1 flex-col items-center gap-1 rounded-lg py-1 transition-transform active:scale-95"
+                  style={{ color: activa === p.id ? accent : muted }}
+                >
+                  {p.icon}
+                  <span className="text-[9.5px] font-semibold">{p.label}</span>
+                </button>
               ))}
             </div>
 
-            {/* Indicador de inicio */}
-            <span
-              className="absolute bottom-[7px] left-1/2 h-[5px] w-[134px] -translate-x-1/2 rounded-full"
-              style={{ background: light ? '#00000055' : '#ffffff66' }}
-            />
+            <span className="absolute bottom-[7px] left-1/2 h-[5px] w-[134px] -translate-x-1/2 rounded-full"
+              style={{ background: light ? '#00000055' : '#ffffff66' }} />
           </div>
         </div>
       </div>
