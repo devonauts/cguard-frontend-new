@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { History, Map as MapIcon, FileSpreadsheet, Loader2, MapPin } from "lucide-react";
 import Breadcrumb from "@/components/ui/breadcrumb";
+import { rangeBounds } from "@/pages/admin/Reports/reportFormat";
 import { PageContainer, PageHeader, Section, EmptyState } from "@/components/kit";
 import { securityGuardService } from "@/lib/api/securityGuardService";
 import TrailMap, { type TrailPoint } from "./TrailMap";
@@ -72,9 +73,14 @@ export default function TrackingHistoryPage() {
     if (!guardId) { toast.error(t('comun.seleccionaUnVigilante')); return; }
     setLoading(true);
     try {
+      // El rango es el día DE LA EMPRESA, no el de Greenwich: con las cotas en
+      // UTC el recorrido de la noche (a partir de las 19:00 en Perú/Ecuador)
+      // caía en el día siguiente y el mapa salía vacío. Mismo cálculo que los
+      // informes — ver `rangeBounds`.
+      const { start, end } = rangeBounds(from, to);
       const pts = await securityGuardService.trail(guardId, {
-        from: `${from}T00:00:00.000Z`,
-        to: `${to}T23:59:59.999Z`,
+        from: start,
+        to: end,
         limit: 5000,
       });
       setPoints(pts);
