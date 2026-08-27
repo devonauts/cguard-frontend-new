@@ -118,8 +118,17 @@ export default function NominaApprovals() {
   const decideClockIn = async (id: string, status: "approved" | "rejected") => {
     setBusy(true);
     try {
-      await attendanceService.decideClockInRequest(id, { status });
-      toast.success(status === "approved" ? "Entrada aprobada" : "Entrada rechazada");
+      const r: any = await attendanceService.decideClockInRequest(id, { status });
+      if (status !== "approved") {
+        toast.success("Entrada rechazada");
+      } else if (r?.autoClockIn?.registrada) {
+        // Aprobar YA registra la entrada con la selfie y el GPS que el vigilante
+        // tomó al llegar. Decirlo importa: quien aprueba tiene que saber si el
+        // turno quedó abierto o si la persona todavía tiene que marcar.
+        toast.success("Entrada aprobada y registrada — el vigilante ya está en turno");
+      } else {
+        toast.success("Entrada aprobada. El vigilante debe marcar su entrada en la app");
+      }
       load();
     } catch (e) {
       toast.error((e as { message?: string })?.message || "Error");

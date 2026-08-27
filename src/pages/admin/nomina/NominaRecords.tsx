@@ -160,7 +160,15 @@ export default function NominaRecords() {
       setSelected(match);
       attendanceService.find(match.id).then(setSelected).catch(() => {});
       setFocusHandled(true);
+      return;
     }
+    // ── SI LA FILA NO ESTÁ EN LA LISTA, SE PIDE ─────────────────────────────
+    // El enlace del aviso trae un día, y si ese día no es el que la fila ocupa
+    // —un turno nocturno, un periodo distinto guardado de la última visita—
+    // aquí no se encontraba nada y el aviso no abría NADA, sin decir por qué.
+    // Se busca por su identificador, que es lo que el aviso trae de verdad.
+    setFocusHandled(true);
+    attendanceService.find(focusId).then((r) => { if (r) setSelected(r); }).catch(() => {});
   }, [focusId, focusHandled, loading, rows]);
 
   const act = async (fn: () => Promise<unknown>, okMsg: string) => {

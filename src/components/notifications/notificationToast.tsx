@@ -87,14 +87,29 @@ export function targetForNotification(n: PlatformNotification): string {
 
   // ── Clock-in/out + every attendance event (late, no-show, geofence, etc.) → the
   // Nómina attendance records, focused on that day's row.
+  //
+  // ── LA SALIDA FORZADA IBA A LA LISTA DE VIGILANTES ────────────────────────
+  // `guard.forced_clockout` caía en el cajón de sastre `guard*` y llevaba a
+  // /security-guards: la plantilla entera, que no dice absolutamente nada de la
+  // salida que se acaba de forzar. El sitio al que hay que ir es el registro de
+  // asistencia de ESE turno — donde se corrige la hora de salida y se anota lo
+  // que pasó — y el identificador del turno ya viajaba en el aviso.
   if (
     type === 'guard.checkin' ||
     type === 'guard.checkout' ||
+    type === 'guard.forced_clockout' ||
     type === 'guard.late' ||
     type.startsWith('attendance')
   ) {
-    const params = new URLSearchParams({ date: localDay(n.createdAt) });
-    if (id) params.set('focus', id);
+    // El día del TURNO, no el del aviso: un turno nocturno que empieza el 26 a
+    // las 19:00 se cierra a la fuerza el 27 a las 07:00, y su fila vive en el
+    // 26. Abrir el 27 dejaría la lista sin la fila que se venía a ver. El
+    // servidor lo manda ya resuelto en la zona de la empresa; si no viene (un
+    // aviso anterior a esto), se cae al día del aviso, que es lo de siempre.
+    const dia = typeof p.shiftDay === 'string' && p.shiftDay ? p.shiftDay : localDay(n.createdAt);
+    const params = new URLSearchParams({ date: dia });
+    const filaDelTurno = p.guardShiftId || id;
+    if (filaDelTurno) params.set('focus', String(filaDelTurno));
     return `/nomina/records?${params.toString()}`;
   }
 
