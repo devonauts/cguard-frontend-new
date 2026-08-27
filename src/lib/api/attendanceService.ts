@@ -75,6 +75,29 @@ const attendanceService = {
     return unwrap(await api.get(`/tenant/${t}/attendance/${id}`));
   },
 
+  /**
+   * La misma ficha, pero SIN gritar si no existe.
+   *
+   * La usa el enlace de un aviso, y ahí el identificador puede no ser el de un
+   * registro de asistencia: cada aviso trae el suyo (una solicitud, un aviso de
+   * geocerca, el propio evento). Pedirlo con `find` soltaba un «Extraviado» en
+   * mitad de la pantalla — un error de sistema para decir «este aviso no
+   * apuntaba a una ficha», que no es un error de nadie.
+   *
+   * Devuelve `null` y la pantalla sigue: el enlace ya dejó al usuario en el día
+   * correcto, que es la mitad útil del viaje.
+   */
+  async findSilent(id: string): Promise<AttendanceRecord | null> {
+    try {
+      const t = getTenantId();
+      return unwrap(
+        await api.get(`/tenant/${t}/attendance/${id}`, { toast: { silentError: true } }),
+      );
+    } catch {
+      return null;
+    }
+  },
+
   async exceptions(params?: Record<string, unknown>) {
     const t = getTenantId();
     return unwrap(await api.get(`/tenant/${t}/attendance/exceptions${buildQuery(params)}`));

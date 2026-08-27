@@ -108,7 +108,19 @@ export function targetForNotification(n: PlatformNotification): string {
     // aviso anterior a esto), se cae al día del aviso, que es lo de siempre.
     const dia = typeof p.shiftDay === 'string' && p.shiftDay ? p.shiftDay : localDay(n.createdAt);
     const params = new URLSearchParams({ date: dia });
-    const filaDelTurno = p.guardShiftId || id;
+    /**
+     * ── `sourceEntityId` NO SIEMPRE ES UN REGISTRO DE ASISTENCIA ────────────
+     * Cada aviso trae el id de LO SUYO: «Sin marcar salida» trae el de la
+     * excepción, no el del turno. Usarlo como `focus` hacía que la pantalla
+     * pidiera `/attendance/<id de excepción>` y saliera un «Extraviado» a
+     * pantalla completa — un 404 para decir «este aviso no apuntaba a una
+     * ficha», que no es un error de nadie. Visto el 2026-08-27.
+     *
+     * El turno se coge de donde de verdad está: `payload.guardShiftId`. Sólo se
+     * usa `sourceEntityId` cuando el propio evento dice que ES un turno.
+     */
+    const esTurno = String(n.sourceEntityType || '').toLowerCase() === 'guardshift';
+    const filaDelTurno = p.guardShiftId || (esTurno ? id : null);
     if (filaDelTurno) params.set('focus', String(filaDelTurno));
     return `/nomina/records?${params.toString()}`;
   }

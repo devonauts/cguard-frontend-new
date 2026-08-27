@@ -162,13 +162,20 @@ export default function NominaRecords() {
       setFocusHandled(true);
       return;
     }
-    // ── SI LA FILA NO ESTÁ EN LA LISTA, SE PIDE ─────────────────────────────
+    // ── SI LA FILA NO ESTÁ EN LA LISTA, SE PIDE — EN SILENCIO ───────────────
     // El enlace del aviso trae un día, y si ese día no es el que la fila ocupa
     // —un turno nocturno, un periodo distinto guardado de la última visita—
-    // aquí no se encontraba nada y el aviso no abría NADA, sin decir por qué.
-    // Se busca por su identificador, que es lo que el aviso trae de verdad.
+    // aquí no se encontraba nada y el aviso no abría NADA.
+    //
+    // Pero el identificador del aviso NO SIEMPRE es el de un registro de
+    // asistencia: cada tipo de aviso trae el suyo (una solicitud de entrada, un
+    // aviso de geocerca, el propio evento). Pedirlo con el `find` normal soltaba
+    // un «Extraviado» a pantalla completa — un error de sistema para decir «este
+    // aviso no apuntaba a una ficha», que no es un error de nadie. Se pide en
+    // silencio: si no es una ficha, el usuario se queda en el día correcto, que
+    // es la mitad útil del viaje.
     setFocusHandled(true);
-    attendanceService.find(focusId).then((r) => { if (r) setSelected(r); }).catch(() => {});
+    attendanceService.findSilent(focusId).then((r) => { if (r) setSelected(r); });
   }, [focusId, focusHandled, loading, rows]);
 
   const act = async (fn: () => Promise<unknown>, okMsg: string) => {
