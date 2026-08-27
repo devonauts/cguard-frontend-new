@@ -548,6 +548,68 @@ export default function SecurityGuardsPage() {
   const pendingCount = useMemo(() => guards.filter(g => g.status === "Pendiente").length, [guards]);
   const archivedCount = useMemo(() => guards.filter(g => g.status === "Archivado").length, [guards]);
 
+  /**
+   * ── ¿ESTA PERSONA TODAVÍA NO HA ENTRADO NUNCA? ────────────────────────────
+   * La regla vivía escrita DOS VECES dentro de la tabla, con dos criterios
+   * distintos (uno miraba `status === 'Pendiente'`, el otro `!hasPassword ||
+   * invited || pending`), y en la vista de TARJETAS —que es la que sale por
+   * defecto— no existía en absoluto. Resultado: la opción de reenviar la
+   * invitación estaba, pero sólo si te acordabas de cambiar a vista de lista.
+   *
+   * Aquí, una sola vez: hace falta invitación mientras no tenga contraseña
+   * puesta. Eso es lo que de verdad impide entrar — el estado del alta puede
+   * decir «Activo» y la persona seguir sin haber creado nunca su acceso.
+   */
+  const necesitaInvitacion = useCallback((guard: any): boolean => {
+    const g = guard?.raw?.guard || guard?.raw || {};
+    if (g.hasPassword === true) return false;
+    const estado = String(g.status || guard?.raw?.status || '').toLowerCase();
+    if (estado === 'archived' || guard?.status === 'Archivado') return false;
+    return true;
+  }, []);
+
+  /** ¿Y el enlace que ya se le mandó, sigue vivo? (30 días de vigencia.) */
+  const invitacionCaducada = useCallback((guard: any): boolean => {
+    const exp = guard?.raw?.guard?.invitationTokenExpiresAt || guard?.raw?.invitationTokenExpiresAt;
+    if (!exp) return false;
+    const t = new Date(exp).getTime();
+    return Number.isFinite(t) && t < Date.now();
+  }, []);
+
+  /** Reenviar la invitación de acceso a la app. Compartido por las dos vistas. */
+  const reenviarInvitacion = useCallback(async (guard: any) => {
+    try {
+      // El servidor acepta el id del usuario, o el correo si aún no hay usuario.
+      const payload: any = {};
+      if (guard.raw?.guard?.id) payload.guard = guard.raw.guard.id;
+      else if (guard.email) payload.contact = guard.email;
+      else if (guard.raw?.contact) payload.contact = guard.raw.contact;
+      if (guard.id) payload.securityGuardId = guard.raw?.id || guard.id;
+      const nombre = guard.raw?.guard?.firstName || guard.raw?.firstName;
+      const apellido = guard.raw?.guard?.lastName || guard.raw?.lastName;
+      if (nombre) payload.firstName = nombre;
+      if (apellido) payload.lastName = apellido;
+
+      if (!payload.guard && !payload.contact) {
+        toast.error(t('guards.list.toasts.inviteNoContact', 'Este vigilante no tiene correo: añádele uno para poder invitarlo.'));
+        return;
+      }
+
+      await securityGuardService.resendInvite(payload);
+      toast.success(t('guards.list.toasts.inviteResent', 'Invitación reenviada'));
+      // La fecha de caducidad del enlace cambia con el reenvío: se recarga para
+      // que la ficha no siga diciendo «caducada» con el enlace ya renovado.
+      try {
+        const refreshed: any = await securityGuardService.list();
+        if (Array.isArray(refreshed)) setGuards(refreshed.map(normalizeGuard));
+        else if (refreshed && Array.isArray(refreshed.rows)) setGuards(refreshed.rows.map(normalizeGuard));
+      } catch { /* el reenvío ya salió; el refresco es cosmético */ }
+    } catch (err) {
+      console.error(err);
+      toast.error(t('guards.list.toasts.inviteResendError', 'Error reenviando invitación'));
+    }
+  }, [t]);
+
   // Acciones del menú de cada tarjeta (mismos handlers que la tabla).
   const guardCardActions = useCallback((guard: any): GuardCardAction[] => {
     const realId = guard.raw?.id || guard.id;
@@ -557,6 +619,16 @@ export default function SecurityGuardsPage() {
     }
     if (hasPermission('securityGuardEdit') && guard.status !== 'Archivado') {
       acts.push({ label: 'Asignar a estación', icon: <ShieldCheck className="h-4 w-4" />, onClick: () => { setAssignGuard(guard); setAssignStationId(''); setAssignDialogOpen(true); } });
+      // Sólo a quien todavía no ha creado su acceso. Ofrecérselo a quien ya
+      // entra a diario sería invitar ruido: el enlace de invitación no le
+      // sirve de nada, y para el que olvidó su clave está «Restablecer».
+      if (necesitaInvitacion(guard)) {
+        acts.push({
+          label: invitacionCaducada(guard) ? 'Reenviar invitación (caducada)' : 'Reenviar invitación',
+          icon: <Send className="h-4 w-4" />,
+          onClick: () => reenviarInvitacion(guard),
+        });
+      }
       acts.push({
         label: 'Restablecer contraseña', icon: <KeyRound className="h-4 w-4" />, onClick: async () => {
           try {
@@ -963,47 +1035,14 @@ export default function SecurityGuardsPage() {
                           <DropdownMenuContent align="end">
                             {guard.status === "Pendiente" ? (
                               <>
-                                <DropdownMenuItem
-                                  onClick={async () => {
-                                    try {
-                                      // Build minimal payload for resend: prefer guard id if available, otherwise email/contact
-                                      const payload: any = {};
-                                      if (guard.raw?.guard && guard.raw.guard.id) {
-                                        payload.guard = guard.raw.guard.id;
-                                      } else if (guard.email) {
-                                        payload.contact = guard.email;
-                                      } else if (guard.raw?.contact) {
-                                        payload.contact = guard.raw.contact;
-                                      }
-                                      // Include the securityGuardId if available
-                                      if (guard.id) {
-                                        payload.securityGuardId = guard.id;
-                                      }
-                                      // Include names when available
-                                      if (guard.raw?.guard?.firstName || guard.raw?.firstName) {
-                                        payload.firstName = guard.raw?.guard?.firstName || guard.raw?.firstName;
-                                      }
-                                      if (guard.raw?.guard?.lastName || guard.raw?.lastName) {
-                                        payload.lastName = guard.raw?.guard?.lastName || guard.raw?.lastName;
-                                      }
-
-                                      await securityGuardService.resendInvite(payload);
-                                      toast.success(t('guards.list.toasts.inviteResent', 'Invitación reenviada'));
-                                      // Refresh list
-                                      try {
-                                        const refreshed = await securityGuardService.list();
-                                        if (Array.isArray(refreshed)) setGuards(refreshed.map(normalizeGuard));
-                                        else if (refreshed && Array.isArray((refreshed as any).rows)) setGuards((refreshed as any).rows.map(normalizeGuard));
-                                      } catch (e) {
-                                        // ignore refresh errors
-                                      }
-                                    } catch (err) {
-                                      console.error(err);
-                                      toast.error(t('guards.list.toasts.inviteResendError', 'Error reenviando invitación'));
-                                    }
-                                  }}
-                                >
-                                  <Send className="mr-2 h-4 w-4" /> {t('guards.list.actions.resendInvite','Reenviar Invitación')}
+                                {/* Mismo reenvío que la vista de tarjetas — una
+                                    sola función, para que las dos vistas no
+                                    puedan volver a discrepar. */}
+                                <DropdownMenuItem onClick={() => reenviarInvitacion(guard)}>
+                                  <Send className="mr-2 h-4 w-4" />{' '}
+                                  {invitacionCaducada(guard)
+                                    ? t('guards.list.actions.resendInviteExpired', 'Reenviar invitación (caducada)')
+                                    : t('guards.list.actions.resendInvite', 'Reenviar invitación')}
                                 </DropdownMenuItem>
 
                                 <DropdownMenuItem
@@ -1100,39 +1139,17 @@ export default function SecurityGuardsPage() {
                                     <KeyRound className="mr-2 h-4 w-4" /> {t('guards.list.actions.resetPassword', 'Restablecer contraseña')}
                                   </DropdownMenuItem>
                                 )}
-                                {/* Show "Reenviar Invitación" for any active guard that hasn't set up their account yet */}
-                                {(() => {
-                                  const rawStatus = guard.raw?.guard?.status || guard.raw?.status || '';
-                                  const hasPassword = guard.raw?.guard?.hasPassword;
-                                  const needsInvite = !hasPassword || rawStatus === 'invited' || rawStatus === 'pending';
-                                  if (!needsInvite) return null;
-                                  return (
-                                    <>
-                                      <DropdownMenuItem
-                                        onClick={async () => {
-                                          try {
-                                            const payload: any = {};
-                                            if (guard.raw?.guard && guard.raw.guard.id) {
-                                              payload.guard = guard.raw.guard.id;
-                                            } else if (guard.email) {
-                                              payload.contact = guard.email;
-                                            }
-                                            if (guard.id) payload.securityGuardId = guard.id;
-                                            if (guard.raw?.guard?.firstName || guard.raw?.firstName) payload.firstName = guard.raw?.guard?.firstName || guard.raw?.firstName;
-                                            if (guard.raw?.guard?.lastName || guard.raw?.lastName) payload.lastName = guard.raw?.guard?.lastName || guard.raw?.lastName;
-                                            await securityGuardService.resendInvite(payload);
-                                            toast.success(t('guards.list.toasts.inviteResent', 'Invitación reenviada'));
-                                          } catch (err) {
-                                            console.error(err);
-                                            toast.error(t('guards.list.toasts.inviteResendError', 'Error reenviando invitación'));
-                                          }
-                                        }}
-                                      >
-                                        <Send className="mr-2 h-4 w-4" /> {t('guards.list.actions.resendInvite','Reenviar Invitación')}
-                                      </DropdownMenuItem>
-                                    </>
-                                  );
-                                })()}
+                                {/* Reenviar la invitación a quien todavía no ha
+                                    creado su acceso. La regla es `necesitaInvitacion`,
+                                    la MISMA que usan las tarjetas. */}
+                                {necesitaInvitacion(guard) && (
+                                  <DropdownMenuItem onClick={() => reenviarInvitacion(guard)}>
+                                    <Send className="mr-2 h-4 w-4" />{' '}
+                                    {invitacionCaducada(guard)
+                                      ? t('guards.list.actions.resendInviteExpired', 'Reenviar invitación (caducada)')
+                                      : t('guards.list.actions.resendInvite', 'Reenviar invitación')}
+                                  </DropdownMenuItem>
+                                )}
                                 {guard.status === "Archivado" ? (
                                   <>
                                     {hasPermission('securityGuardEdit') && (

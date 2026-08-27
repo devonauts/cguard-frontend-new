@@ -1910,11 +1910,12 @@
         "copyInviteLink": "Copiar link de cadastro",
         "deletePermanently": "Excluir permanentemente",
         "remove": "Remover",
-        "resendInvite": "Reenviar Convite",
+        "resendInvite": "Reenviar convite",
         "restore": "Restaurar",
         "viewDetails": "Ver Detalhes",
         "assignStation": "Atribuir a uma estação",
-        "resetPassword": "Redefinir senha"
+        "resetPassword": "Redefinir senha",
+        "resendInviteExpired": "Reenviar convite (caducado)"
       },
       "applyFilters": "Aplicar filtros",
       "aria": {
@@ -2073,7 +2074,8 @@
         "selectAtLeastOne": "Selecione ao menos um vigilante",
         "assignError": "Erro ao atribuir o vigilante",
         "assigned": "Vigilante atribuído com sucesso",
-        "resetError": "Não foi possível redefinir a senha"
+        "resetError": "Não foi possível redefinir a senha",
+        "inviteNoContact": "Este vigilante não tem e-mail: adicione um para o poder convidar."
       },
       "noData": "Nenhum vigilante encontrado",
       "subtitle": "Gerencie a equipe de segurança da sua organização"

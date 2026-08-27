@@ -127,7 +127,7 @@ export default function SupervisorsPage() {
     try {
       const r = await supervisorService.resendInvite(s.id);
       try { if (r?.link) await navigator.clipboard.writeText(r.link); } catch { /* clipboard optional */ }
-      toast.success(r?.emailed ? "Acceso a la app enviado por correo y enlace copiado" : "Enlace de acceso copiado al portapapeles");
+      toast.success(r?.emailed ? "Invitación reenviada por correo y enlace copiado" : "Enlace de invitación copiado al portapapeles");
     } catch (e: any) {
       toast.error(e?.message || "No se pudo enviar el acceso a la app");
     }
@@ -169,8 +169,11 @@ export default function SupervisorsPage() {
         <DropdownMenuItem onClick={() => navigate(`/supervisors/${s.id}`)}>
           <Eye className="mr-2 h-4 w-4" /> Ver detalles
         </DropdownMenuItem>
+        {/* «Enviar acceso a la app» describía el efecto pero no lo que es:
+            quien la busca la busca como «reenviar la invitación», que es como
+            se llama en la página de vigilantes y en el correo que recibe. */}
         <DropdownMenuItem onClick={() => resendInvite(s)}>
-          <Send className="mr-2 h-4 w-4" /> Enviar acceso a la app
+          <Send className="mr-2 h-4 w-4" /> Reenviar invitación
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => sendPasswordReset(s)}>
           <KeyRound className="mr-2 h-4 w-4" /> Restablecer contraseña

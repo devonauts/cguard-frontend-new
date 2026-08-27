@@ -1470,11 +1470,12 @@
         "copyInviteLink": "Copiar enlace de registro",
         "deletePermanently": "Eliminar permanentemente",
         "remove": "Remover",
-        "resendInvite": "Reenviar Invitación",
+        "resendInvite": "Reenviar invitación",
         "restore": "Restaurar",
         "viewDetails": "Ver Detalles",
         "assignStation": "Asignar a estación",
-        "resetPassword": "Restablecer contraseña"
+        "resetPassword": "Restablecer contraseña",
+        "resendInviteExpired": "Reenviar invitación (caducada)"
       },
       "aria": {
         "closeModal": "Cerrar modal"
@@ -1593,7 +1594,8 @@
         "selectAtLeastOne": "Selecciona al menos un vigilante",
         "assignError": "Error al asignar vigilante",
         "assigned": "Vigilante asignado exitosamente",
-        "resetError": "No se pudo restablecer la contraseña"
+        "resetError": "No se pudo restablecer la contraseña",
+        "inviteNoContact": "Este vigilante no tiene correo: añádele uno para poder invitarlo."
       },
       "dialog": {
         "archive": {
