@@ -42,6 +42,8 @@ const PRESET_ACCENTS = [
 
 interface MobileAppSettings {
   accentColor: string;
+  /** '' = la del sistema · las tres van empaquetadas en la app */
+  fontFamily: '' | 'poppins' | 'inter' | 'manrope';
   displayName: string;
   tagline: string;
   useTenantLogo: boolean;
@@ -63,6 +65,7 @@ const MODULE_META: { key: ModuleKey; label: string; desc: string; icon: React.Re
 
 const DEFAULTS: MobileAppSettings = {
   accentColor: '',
+  fontFamily: '',
   displayName: '',
   tagline: '',
   useTenantLogo: true,
@@ -131,7 +134,7 @@ export default function MobileHubPage() {
           mobileAppSettings: cfg,
         },
       });
-      toast.success(t('settings.mobileHub.saveSuccess', { defaultValue: 'Hub móvil guardado. Las apps lo aplican en el próximo inicio de sesión.' }));
+      toast.success(t('settings.mobileHub.saveSuccess', { defaultValue: 'Hub móvil guardado. Las apps abiertas lo aplican en segundos.' }));
     } catch (e: any) {
       toast.error(e?.message || t('settings.mobileHub.saveError', { defaultValue: 'No se pudo guardar.' }));
     } finally {
@@ -269,6 +272,23 @@ export default function MobileHubPage() {
                         onCheckedChange={(v) => set('useTenantLogo', v)}
                         disabled={!canEdit}
                       />
+                    </div>
+
+                    <div>
+                      <Label className="mb-2 block">{t('settings.mobileHub.fontLabel', { defaultValue: 'Tipo de letra' })}</Label>
+                      <Segmented
+                        value={cfg.fontFamily}
+                        onChange={(v) => set('fontFamily', v as MobileAppSettings['fontFamily'])}
+                        options={[
+                          { value: '', label: t('settings.mobileHub.fontSystem', { defaultValue: 'Del sistema' }) },
+                          { value: 'poppins', label: 'Poppins' },
+                          { value: 'inter', label: 'Inter' },
+                          { value: 'manrope', label: 'Manrope' },
+                        ]}
+                      />
+                      <p className="mt-2 text-xs" style={{ color: 'var(--ink-soft)' }}>
+                        {t('settings.mobileHub.fontHint', { defaultValue: 'Las tres van dentro de la app, así que el cambio se ve al instante y también sin cobertura. «Del sistema» usa la letra propia de cada teléfono.' })}
+                      </p>
                     </div>
 
                     <div>
