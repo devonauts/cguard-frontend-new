@@ -727,12 +727,20 @@ function PhonePreview({ accent, name, tagline, logoUrl, light, modules }: {
               </div>
             </div>
 
-            {/* Pantalla — desplazable, como en el teléfono */}
-            <div className="absolute inset-x-0 bottom-[86px] top-[104px] overflow-y-auto px-4 pb-4">
+            {/* Pantalla — desplazable, como en el teléfono. El hueco de abajo
+                deja sitio al botón de radio: la app hace lo mismo
+                (`radio-fab-visible` reserva espacio) para que la última fila no
+                quede tapada para siempre debajo del micrófono. */}
+            <div
+              className="absolute inset-x-0 bottom-[86px] top-[104px] overflow-y-auto px-4"
+              style={{ paddingBottom: activa === 'inicio' ? 76 : 16 }}
+            >
               {PANTALLAS[activa]}
             </div>
 
-            {/* Botón de radio */}
+            {/* Botón flotante de radio — existe de verdad en la app
+                (`components/FloatingRadioButton`) y sólo mientras se está en
+                servicio, que es el estado que enseña esta maqueta. */}
             {activa === 'inicio' && (
               <div className="absolute bottom-[100px] right-5">
                 <span className="grid h-14 w-14 place-items-center rounded-full" style={{ background: accent, boxShadow: 'var(--lift-3)' }}>
