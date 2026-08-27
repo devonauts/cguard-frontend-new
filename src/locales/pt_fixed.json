@@ -2873,7 +2873,38 @@
       "videos": "Vídeos instrutivos",
       "videosSub": "Aprenda passo a passo",
       "ticket": "Enviar Chamado",
-      "ticketSub": "Chamados de suporte"
+      "ticketSub": "Chamados de suporte",
+      "soon": "Em breve",
+      "sent": {
+        "title": "Pedido enviado",
+        "body": "Recebemos. Entramos em contacto pelo e-mail ou telefone da tua conta."
+      },
+      "form": {
+        "intro": "Conta-nos o que se passa. Somos avisados de imediato.",
+        "subject": "Assunto",
+        "subjectHint": "Ex.: não consigo marcar entrada",
+        "category": "Tipo",
+        "priority": "Urgência",
+        "message": "O que se passa",
+        "messageHint": "O que estavas a tentar fazer, o que aconteceu e em que ecrã.",
+        "note": "Enviamos também o ecrã de onde escreves, para não termos de perguntar.",
+        "required": "Escreve um assunto e conta-nos o que se passa.",
+        "error": "Não foi possível enviar. Tenta de novo.",
+        "send": "Enviar pedido",
+        "sending": "A enviar…"
+      },
+      "cat": {
+        "problema": "Algo não funciona",
+        "pregunta": "Tenho uma dúvida",
+        "sugerencia": "Sugestão",
+        "facturacion": "Faturação",
+        "otro": "Outro"
+      },
+      "prio": {
+        "baja": "Pode esperar",
+        "normal": "Normal",
+        "alta": "Estamos parados"
+      }
     }
   },
   "dispatcher": {
@@ -4014,7 +4045,8 @@
     "restore": "Restaurar",
     "save": "Salvar",
     "view": "Ver",
-    "viewDetails": "Ver detalhes"
+    "viewDetails": "Ver detalhes",
+    "back": "Voltar"
   },
   "vigia": {
     "cancelled": "Entendido, não vou fazer. Mais alguma coisa?",

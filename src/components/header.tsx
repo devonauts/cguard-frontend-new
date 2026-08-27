@@ -33,6 +33,7 @@ import {
   LayoutGrid,
   Settings2,
   X,
+  Check,
 } from "lucide-react";
 import { useSyncExternalStore } from "react";
 import { subscribeRadio, getRadioSnapshot, toggleWidget, radioResume } from "@/lib/radioVoiceManager";
@@ -43,6 +44,7 @@ import { alarmService } from "@/lib/api/alarmService";
 import { ApiService } from "@/services/api/apiService";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useNotificationStream, type PlatformNotification } from "@/hooks/useNotificationStream";
 import { NotificationsPanel } from "@/components/notifications/NotificationsPanel";
@@ -50,7 +52,7 @@ import { showNotificationToast } from "@/components/notifications/notificationTo
 import { PanicAlertOverlay } from "@/components/notifications/PanicAlertOverlay";
 import TrialDaysBadge from "@/components/TrialDaysBadge";
 import { ThemeSwitch } from "@/components/theme-switch";
-import { IconTile } from "@/components/kit";
+import { IconTile, FIELD_CLS, FIELD_CLS_LG } from "@/components/kit";
 import MENU from "@/data/sidebar-menu.json";
 import NAVS from "@/data/settings-nav.json";
 
@@ -243,6 +245,13 @@ export default function Header({
   const [openUser, setOpenUser] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
+  // El cuadro de ayuda tiene dos caras: el menú de las cuatro opciones y el
+  // formulario del ticket. Se queda dentro del MISMO diálogo para que «volver»
+  // sea volver, y no cerrar y empezar de cero.
+  const [ticketAbierto, setTicketAbierto] = useState(false);
+  const [ticketEnviado, setTicketEnviado] = useState(false);
+  const [ticketEnviando, setTicketEnviando] = useState(false);
+  const [ticket, setTicket] = useState({ subject: '', message: '', category: 'problema', priority: 'normal' });
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [feedbackText, setFeedbackText] = useState("");
@@ -419,6 +428,51 @@ export default function Header({
     setRating(0);
     setHoverRating(0);
     setFeedbackText("");
+  };
+
+  /**
+   * ── ENVIAR UN TICKET DE SOPORTE ─────────────────────────────────────────
+   * A diferencia de la valoración de arriba, esto NO es «lo mejor que se
+   * pueda»: si el envío falla hay que decirlo. Una valoración perdida no le
+   * cuesta nada a nadie; un ticket perdido deja a una empresa esperando una
+   * respuesta que nadie sabe que tiene que dar — que es exactamente lo que
+   * pasaba cuando estos botones no tenían `onClick`.
+   */
+  const enviarTicket = async () => {
+    const asunto = ticket.subject.trim();
+    const mensaje = ticket.message.trim();
+    if (!asunto || !mensaje) {
+      toast.error(t('header.support.form.required', 'Escribe un asunto y cuéntanos qué pasa.'));
+      return;
+    }
+    setTicketEnviando(true);
+    try {
+      const tid = localStorage.getItem('tenantId');
+      if (!tid) throw new Error('sin empresa');
+      await ApiService.post(`/tenant/${tid}/support/ticket`, {
+        subject: asunto,
+        message: mensaje,
+        category: ticket.category,
+        priority: ticket.priority,
+        // La pantalla desde la que se pide ayuda es la mitad de la respuesta.
+        pageUrl: window.location.pathname + window.location.search,
+      });
+      setTicketEnviado(true);
+      setTicket({ subject: '', message: '', category: 'problema', priority: 'normal' });
+    } catch (e: any) {
+      toast.error(e?.message || t('header.support.form.error', 'No se pudo enviar. Inténtalo de nuevo.'));
+    } finally {
+      setTicketEnviando(false);
+    }
+  };
+
+  /** Cerrar el cuadro lo devuelve al menú: la próxima vez no se abre a medias. */
+  const cerrarAyuda = (abierto: boolean) => {
+    setHelpOpen(abierto);
+    if (!abierto) {
+      setTicketAbierto(false);
+      setTicketEnviado(false);
+    }
   };
 
   const enlaceMenu = "flex items-center gap-3 px-4 py-2.5 text-sm transition-colors hover:bg-[var(--glass-sunken)]";
@@ -729,36 +783,163 @@ export default function Header({
         </DialogContent>
       </Dialog>
 
-      {/* Help Modal */}
-      <Dialog open={helpOpen} onOpenChange={setHelpOpen}>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle className="text-center text-lg font-semibold">{t("ui.header.comoPodemosAyudar", "¿Cómo podemos ayudar?")}</DialogTitle>
-            <DialogDescription className="text-center">{t("ui.header.encuentraArticulosVideosYSoporte", "Encuentra artículos, videos y soporte para resolver tus dudas.")}</DialogDescription>
-          </DialogHeader>
+      {/* ── AYUDA ────────────────────────────────────────────────────────────
+          Las cuatro tarjetas de este cuadro NO TENÍAN `onClick`. Ninguna de las
+          cuatro. Una empresa con un problema pulsaba «Enviar Ticket» y no
+          pasaba nada: ni se enviaba, ni se avisaba de que no se había enviado.
+          Un canal de soporte que no existe es peor que no tener botón, porque
+          el cliente se queda esperando una respuesta que nadie sabe que tiene
+          que dar.
 
-          {/* Dos columnas de ~164 px menos 48 px de relleno dejan 116 px para
-              «Chat en vivo con soporte»: en el teléfono va a una columna. */}
-          <div className="grid grid-cols-1 gap-4 py-6 sm:grid-cols-2">
-            {[
-              { icono: <HelpCircle />, titulo: t('header.support.helpCenter'), pie: t('header.support.helpCenterSub') },
-              { icono: <MessageSquare />, titulo: t('header.support.chat'), pie: t('header.support.chatSub') },
-              { icono: <Clock />, titulo: t('header.support.videos'), pie: t('header.support.videosSub') },
-              { icono: <Settings />, titulo: t('header.support.ticket'), pie: t('header.support.ticketSub') },
-            ].map((c) => (
-              <button
-                key={c.titulo}
-                className="glass glass-hover flex flex-col items-center gap-3 p-6 text-center"
-                type="button"
-              >
-                <IconTile size="lg">{c.icono}</IconTile>
-                <span>
-                  <span className="mb-1 block text-sm font-semibold" style={{ color: 'var(--ink)' }}>{c.titulo}</span>
-                  <span className="block text-xs" style={{ color: 'var(--ink-soft)' }}>{c.pie}</span>
-                </span>
-              </button>
-            ))}
-          </div>
+          Hoy funciona el ticket. Las otras tres lo dicen —«Próximamente»— y no
+          se pueden pulsar: prometer un chat que no hay es el mismo error otra
+          vez, sólo que más caro. */}
+      <Dialog open={helpOpen} onOpenChange={cerrarAyuda}>
+        <DialogContent className="sm:max-w-[600px]">
+          {ticketEnviado ? (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-center text-lg font-semibold">
+                  {t('header.support.sent.title', 'Ticket enviado')}
+                </DialogTitle>
+                <DialogDescription className="text-center">
+                  {t('header.support.sent.body', 'Lo recibimos. Te contactamos al correo o al teléfono de tu cuenta.')}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex justify-center py-6">
+                <IconTile size="lg" tone="ok"><Check /></IconTile>
+              </div>
+              <Button onClick={() => cerrarAyuda(false)} className="w-full">
+                {t('actions.close', 'Cerrar')}
+              </Button>
+            </>
+          ) : ticketAbierto ? (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-lg font-semibold">{t('header.support.ticket', 'Enviar Ticket')}</DialogTitle>
+                <DialogDescription>
+                  {t('header.support.form.intro', 'Cuéntanos qué pasa. Recibimos el aviso al instante.')}
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-3 py-2">
+                <div>
+                  <label className="cg-eyebrow mb-1 block" htmlFor="ticket-asunto">
+                    {t('header.support.form.subject', 'Asunto')}
+                  </label>
+                  <Input
+                    id="ticket-asunto"
+                    value={ticket.subject}
+                    maxLength={200}
+                    onChange={(e) => setTicket((x) => ({ ...x, subject: e.target.value }))}
+                    placeholder={t('header.support.form.subjectHint', 'Ej.: no puedo marcar entrada')}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="cg-eyebrow mb-1 block" htmlFor="ticket-categoria">
+                      {t('header.support.form.category', 'Tipo')}
+                    </label>
+                    <select
+                      id="ticket-categoria"
+                      className={FIELD_CLS}
+                      value={ticket.category}
+                      onChange={(e) => setTicket((x) => ({ ...x, category: e.target.value }))}
+                    >
+                      <option value="problema">{t('header.support.cat.problema', 'Algo no funciona')}</option>
+                      <option value="pregunta">{t('header.support.cat.pregunta', 'Tengo una duda')}</option>
+                      <option value="sugerencia">{t('header.support.cat.sugerencia', 'Sugerencia')}</option>
+                      <option value="facturacion">{t('header.support.cat.facturacion', 'Facturación')}</option>
+                      <option value="otro">{t('header.support.cat.otro', 'Otro')}</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="cg-eyebrow mb-1 block" htmlFor="ticket-prioridad">
+                      {t('header.support.form.priority', 'Urgencia')}
+                    </label>
+                    <select
+                      id="ticket-prioridad"
+                      className={FIELD_CLS}
+                      value={ticket.priority}
+                      onChange={(e) => setTicket((x) => ({ ...x, priority: e.target.value }))}
+                    >
+                      <option value="baja">{t('header.support.prio.baja', 'Puede esperar')}</option>
+                      <option value="normal">{t('header.support.prio.normal', 'Normal')}</option>
+                      <option value="alta">{t('header.support.prio.alta', 'Nos tiene parados')}</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="cg-eyebrow mb-1 block" htmlFor="ticket-mensaje">
+                    {t('header.support.form.message', 'Qué pasa')}
+                  </label>
+                  <textarea
+                    id="ticket-mensaje"
+                    rows={5}
+                    maxLength={5000}
+                    className={FIELD_CLS_LG}
+                    value={ticket.message}
+                    onChange={(e) => setTicket((x) => ({ ...x, message: e.target.value }))}
+                    placeholder={t('header.support.form.messageHint', 'Qué intentabas hacer, qué pasó y en qué pantalla.')}
+                  />
+                </div>
+
+                <p className="text-xs" style={{ color: 'var(--ink-faint)' }}>
+                  {t('header.support.form.note', 'Enviamos también la pantalla desde la que escribes, para no tener que preguntártelo.')}
+                </p>
+              </div>
+
+              <div className="flex gap-2">
+                <Button variant="outline" className="flex-1" disabled={ticketEnviando} onClick={() => setTicketAbierto(false)}>
+                  {t('actions.back', 'Atrás')}
+                </Button>
+                <Button className="flex-1" disabled={ticketEnviando} onClick={enviarTicket}>
+                  {ticketEnviando ? t('header.support.form.sending', 'Enviando…') : t('header.support.form.send', 'Enviar ticket')}
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-center text-lg font-semibold">{t("ui.header.comoPodemosAyudar", "¿Cómo podemos ayudar?")}</DialogTitle>
+                <DialogDescription className="text-center">{t("ui.header.encuentraArticulosVideosYSoporte", "Encuentra artículos, videos y soporte para resolver tus dudas.")}</DialogDescription>
+              </DialogHeader>
+
+              {/* Dos columnas de ~164 px menos 48 px de relleno dejan 116 px para
+                  «Chat en vivo con soporte»: en el teléfono va a una columna. */}
+              <div className="grid grid-cols-1 gap-4 py-6 sm:grid-cols-2">
+                {[
+                  { id: 'ticket', icono: <Settings />, titulo: t('header.support.ticket'), pie: t('header.support.ticketSub'), listo: true },
+                  { id: 'chat', icono: <MessageSquare />, titulo: t('header.support.chat'), pie: t('header.support.chatSub'), listo: false },
+                  { id: 'centro', icono: <HelpCircle />, titulo: t('header.support.helpCenter'), pie: t('header.support.helpCenterSub'), listo: false },
+                  { id: 'videos', icono: <Clock />, titulo: t('header.support.videos'), pie: t('header.support.videosSub'), listo: false },
+                ].map((c) => (
+                  <button
+                    key={c.id}
+                    className="glass flex flex-col items-center gap-3 p-6 text-center transition-opacity disabled:cursor-not-allowed"
+                    style={c.listo ? undefined : { opacity: 0.55 }}
+                    type="button"
+                    disabled={!c.listo}
+                    onClick={c.listo ? () => setTicketAbierto(true) : undefined}
+                  >
+                    <IconTile size="lg">{c.icono}</IconTile>
+                    <span>
+                      <span className="mb-1 block text-sm font-semibold" style={{ color: 'var(--ink)' }}>{c.titulo}</span>
+                      <span className="block text-xs" style={{ color: 'var(--ink-soft)' }}>{c.pie}</span>
+                      {!c.listo && (
+                        <span className="mt-2 inline-block rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider"
+                          style={{ background: 'var(--glass-sunken)', color: 'var(--ink-faint)' }}>
+                          {t('header.support.soon', 'Próximamente')}
+                        </span>
+                      )}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
         </DialogContent>
       </Dialog>
 

@@ -22,7 +22,8 @@
     "restore": "Restaurar",
     "save": "Guardar",
     "view": "Ver",
-    "viewDetails": "Ver detalles"
+    "viewDetails": "Ver detalles",
+    "back": "Atrás"
   },
   "activity": {
     "live": "En vivo",
@@ -2151,7 +2152,38 @@
       "videos": "Videos instructivos",
       "videosSub": "Aprende paso a paso",
       "ticket": "Enviar Ticket",
-      "ticketSub": "Tickets de soporte"
+      "ticketSub": "Tickets de soporte",
+      "soon": "Próximamente",
+      "sent": {
+        "title": "Ticket enviado",
+        "body": "Lo recibimos. Te contactamos al correo o al teléfono de tu cuenta."
+      },
+      "form": {
+        "intro": "Cuéntanos qué pasa. Recibimos el aviso al instante.",
+        "subject": "Asunto",
+        "subjectHint": "Ej.: no puedo marcar entrada",
+        "category": "Tipo",
+        "priority": "Urgencia",
+        "message": "Qué pasa",
+        "messageHint": "Qué intentabas hacer, qué pasó y en qué pantalla.",
+        "note": "Enviamos también la pantalla desde la que escribes, para no tener que preguntártelo.",
+        "required": "Escribe un asunto y cuéntanos qué pasa.",
+        "error": "No se pudo enviar. Inténtalo de nuevo.",
+        "send": "Enviar ticket",
+        "sending": "Enviando…"
+      },
+      "cat": {
+        "problema": "Algo no funciona",
+        "pregunta": "Tengo una duda",
+        "sugerencia": "Sugerencia",
+        "facturacion": "Facturación",
+        "otro": "Otro"
+      },
+      "prio": {
+        "baja": "Puede esperar",
+        "normal": "Normal",
+        "alta": "Nos tiene parados"
+      }
     }
   },
   "incidents": {

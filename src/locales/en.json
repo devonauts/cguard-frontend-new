@@ -62,7 +62,8 @@
     "restore": "Restore",
     "save": "Save",
     "view": "View",
-    "viewDetails": "View Details"
+    "viewDetails": "View Details",
+    "back": "Back"
   },
   "adminOfficeUsers": {
     "searchPlaceholder": "Search user",
@@ -2151,7 +2152,38 @@
       "videos": "How-to videos",
       "videosSub": "Learn step by step",
       "ticket": "Submit a Ticket",
-      "ticketSub": "Support tickets"
+      "ticketSub": "Support tickets",
+      "soon": "Coming soon",
+      "sent": {
+        "title": "Ticket sent",
+        "body": "We got it. We'll reach you at your account's email or phone."
+      },
+      "form": {
+        "intro": "Tell us what's happening. We're alerted straight away.",
+        "subject": "Subject",
+        "subjectHint": "E.g.: I can't clock in",
+        "category": "Type",
+        "priority": "Urgency",
+        "message": "What's happening",
+        "messageHint": "What you were trying to do, what happened, and on which screen.",
+        "note": "We also send the screen you're writing from, so we don't have to ask.",
+        "required": "Write a subject and tell us what's happening.",
+        "error": "Could not send. Please try again.",
+        "send": "Send ticket",
+        "sending": "Sending…"
+      },
+      "cat": {
+        "problema": "Something is broken",
+        "pregunta": "I have a question",
+        "sugerencia": "Suggestion",
+        "facturacion": "Billing",
+        "otro": "Other"
+      },
+      "prio": {
+        "baja": "Can wait",
+        "normal": "Normal",
+        "alta": "We're blocked"
+      }
     }
   },
   "incidents": {
