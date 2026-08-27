@@ -154,6 +154,66 @@ const get = (path: string) => api.get(`/tenant/${tenantId()}${path}`).then((r) =
 /** Single hook that powers the whole Control Center. Wires the real backend
  *  endpoints discovered in the audit; documents gaps via `gaps[]` and marks
  *  any fallback KPI with `fallback: true` instead of inventing data. */
+/**
+ * ════════════════════════════════════════════════════════════════════════════
+ * UN PUESTO CERRADO NO ES UN PUESTO SIN CUBRIR
+ *
+ * La cobertura era `vigilantes en servicio / TODOS los puestos de la empresa`.
+ * A las tres de la mañana, una empresa con 20 puestos de los que 5 operan de
+ * noche mostraba 5/20 = 25 %, en rojo — estando cubierta al cien por cien. El
+ * indicador que debería avisar de un puesto vacío se pasaba las noches enteras
+ * en rojo, y un indicador que siempre está en rojo es uno que nadie mira.
+ *
+ * El denominador correcto son los puestos que DEBERÍAN estar atendidos ahora, y
+ * eso lo sabe `coverage/live`: cuenta los puestos por estado, y `idle` significa
+ * exactamente «ahora no toca nadie aquí».
+ *
+ *     cobertura = cubiertos / (cubiertos + en riesgo + sin cubrir)
+ *
+ * Los `idle` salen de la cuenta y se dicen aparte, para que se vea que no se han
+ * perdido.
+ *
+ * Vive aquí fuera, y no dentro del cargador, porque el sondeo en vivo la usa
+ * también: dos copias de esta regla acabarían dando dos porcentajes distintos
+ * en la misma pantalla según cuál se hubiera ejecutado la última.
+ *
+ * Si la consulta falla o quien mira no tiene permiso de cobertura, se cae al
+ * cálculo de antes. Un panel con una cifra imperfecta es mejor que uno con un
+ * hueco.
+ * ════════════════════════════════════════════════════════════════════════════
+ */
+export function calcularCobertura(
+  respuesta: any,
+  onDuty: number,
+  totalPuestos: number,
+): { coverage: number | null; coverageSub: string } {
+  const n = (v: any) => (Number.isFinite(Number(v)) ? Number(v) : 0);
+  const resumen = respuesta?.summary || respuesta?.data?.summary || null;
+  const cubiertos = n(resumen?.covered);
+  const enRiesgo = n(resumen?.at_risk);
+  const sinCubrir = n(resumen?.uncovered);
+  const fueraDeTurno = n(resumen?.idle);
+  const queTocan = cubiertos + enRiesgo + sinCubrir;
+
+  if (resumen && queTocan > 0) {
+    return {
+      coverage: Math.min(100, Math.round((cubiertos / queTocan) * 100)),
+      coverageSub:
+        `${cubiertos}/${queTocan} cubiertos` +
+        (fueraDeTurno > 0 ? ` · ${fueraDeTurno} fuera de turno` : ""),
+    };
+  }
+  if (resumen && fueraDeTurno > 0) {
+    // Todo cerrado ahora mismo. NO es un 0 %: no hay nada que cubrir, y pintar
+    // un cero rojo diría exactamente lo contrario de lo que pasa.
+    return { coverage: null, coverageSub: `${fueraDeTurno} puestos fuera de turno` };
+  }
+  return {
+    coverage: totalPuestos > 0 ? Math.min(100, Math.round((onDuty / totalPuestos) * 100)) : null,
+    coverageSub: `${onDuty}/${totalPuestos} cubiertos`,
+  };
+}
+
 export function useControlCenter(intervalSec = 15): ControlCenterData & { refresh: () => void } {
   const [state, setState] = useState<ControlCenterData>({
     kpis: [], entities: [], revenue: emptyRevenue(), incidentsTrend: [], responseTrend: [],
@@ -180,7 +240,7 @@ export function useControlCenter(intervalSec = 15): ControlCenterData & { refres
     let alive = true;
     (async () => {
       const gaps: string[] = [];
-      const [stats, active, stationsR, postsR, clientsR, guardsR, incidentsR, openIncR, usersR, tenantR, eventsR, opsR, supsR] = await Promise.all([
+      const [stats, active, stationsR, postsR, clientsR, guardsR, incidentsR, openIncR, usersR, tenantR, eventsR, opsR, supsR, cobR] = await Promise.all([
         puedeVerPanelEjecutivo ? safe<DashboardStats>(get("/dashboard/stats"), {}) : Promise.resolve({} as DashboardStats),
         safe(securityGuardService.activeLocations(), null as any),
         safe(get("/station?limit=500"), null),
@@ -204,6 +264,11 @@ export function useControlCenter(intervalSec = 15): ControlCenterData & { refres
         // shows on the map immediately (not only when a socket ping happens to
         // land while the map is open). Mirrors the guard activeLocations feed.
         safe(supervisorService.list(), null as any),
+        // Cobertura EN VIVO, por estado. Es lo que permite que un puesto fuera
+        // de turno deje de contar como puesto sin cubrir — ver el cálculo de
+        // `coverage` más abajo. `summaryOnly` para traer sólo los cuatro
+        // recuentos y no la ficha de cada puesto.
+        safe(get("/coverage/live?summaryOnly=1"), null),
       ]);
       if (!alive) return;
 
@@ -396,18 +461,29 @@ export function useControlCenter(intervalSec = 15): ControlCenterData & { refres
       }
       const incidentsToday = opsBy.incidents ?? incidentRows.filter((i) => sameDay(i.incidentAt || i.createdAt)).length;
       const patrolsToday = opsBy.rondas ?? null;
-      // Coverage: on-duty guards vs. active posts — a real, at-a-glance operational health metric.
-      const coverage = counts.stations > 0 ? Math.min(100, Math.round((onDuty / counts.stations) * 100)) : null;
+      const { coverage, coverageSub } = calcularCobertura(cobR, onDuty, counts.stations);
+      const resumenVivo = (cobR as any)?.summary || (cobR as any)?.data?.summary || null;
+      const puestosQueTocanAhora: number | null = resumenVivo
+        ? num(resumenVivo.covered) + num(resumenVivo.at_risk) + num(resumenVivo.uncovered)
+        : null;
       const incSpark = incidentsTrend.map((p) => p.value).slice(-8);
       const respSpark = responseTrend.map((p) => p.value).slice(-8);
 
       // ── KPIs (real where available; fallback flagged otherwise) ──
       const kpis: Kpi[] = [
         kpi("onDuty", "Vigilantes en servicio", onDuty, { status: onDuty > 0 ? "online" : "offline", sub: `de ${counts.guards || onDuty} vigilantes` }),
-        kpi("stations", "Puestos activos", counts.stations, { status: "patrol", sub: `${counts.postSites || 0} sedes` }),
+        // «Puestos activos» es el total de puestos dados de alta, no los que
+        // están operando ahora — la palabra «activos» se leía como lo segundo.
+        // Se dice cuántos tocan ahora mismo, que es la pregunta real.
+        kpi("stations", "Puestos activos", counts.stations, {
+          status: "patrol",
+          sub: puestosQueTocanAhora != null
+            ? `${puestosQueTocanAhora} en turno ahora · ${counts.postSites || 0} sedes`
+            : `${counts.postSites || 0} sedes`,
+        }),
         kpi("openIncidents", "Incidentes abiertos", openIncidents, { status: openIncidents > 0 ? "incident" : "online", sub: `${incidentsToday} hoy`, spark: incSpark }),
         kpi("patrolsToday", "Rondas hoy", patrolsToday ?? "—", { status: (patrolsToday ?? 0) > 0 ? "patrol" : "neutral", sub: "puntos escaneados", fallback: patrolsToday == null }),
-        kpi("coverage", "Cobertura de puestos", coverage ?? "—", { unit: coverage != null ? "%" : "", status: coverage == null ? "neutral" : coverage >= 80 ? "online" : coverage >= 50 ? "delayed" : "incident", sub: `${onDuty}/${counts.stations} cubiertos`, fallback: coverage == null }),
+        kpi("coverage", "Cobertura de puestos", coverage ?? "—", { unit: coverage != null ? "%" : "", status: coverage == null ? "neutral" : coverage >= 80 ? "online" : coverage >= 50 ? "delayed" : "incident", sub: coverageSub, fallback: coverage == null }),
         kpi("supervisors", "Supervisores", supervisors, { status: "online", sub: `equipo de ${counts.team || 0}`, hint: "Estado en línea no disponible en backend.", fallback: supervisors === 0 }),
         kpi("response", "Tiempo de respuesta", lastResponse ?? "—", { unit: lastResponse != null ? "min" : "", status: "neutral", trend: trendOf(responseTrend, true), spark: respSpark, sub: "promedio mensual", fallback: lastResponse == null, hint: lastResponse == null ? "Sin datos de desempeño." : undefined }),
         kpi("clients", "Clientes", counts.clients, { status: "neutral", sub: `${counts.stations} puestos` }),
@@ -469,7 +545,14 @@ export function useControlCenter(intervalSec = 15): ControlCenterData & { refres
       // Monotonic guard: a slow poll must not overwrite a newer one's positions
       // (markers were jumping backward / clocked-out guards reappearing).
       const mine = ++locSeqRef.current;
-      const active = await safe(securityGuardService.activeLocations(), null as any);
+      // La cobertura viaja EN EL MISMO sondeo. Sin esto, el indicador se
+      // quedaba con la foto del momento en que se abrió el panel: un puesto que
+      // cerraba a las once seguía contando como puesto por cubrir hasta que
+      // alguien recargaba la página — que es justo lo que se pidió arreglar.
+      const [active, cobViva] = await Promise.all([
+        safe(securityGuardService.activeLocations(), null as any),
+        safe(get("/coverage/live?summaryOnly=1"), null),
+      ]);
       if (mine !== locSeqRef.current) return;
       const activeRows = rows(active) as ActiveGuardRow[];
       setState((s) => {
@@ -484,7 +567,31 @@ export function useControlCenter(intervalSec = 15): ControlCenterData & { refres
             label: g.fullName || "Vigilante", sub: g.postSiteName || g.stationName || "En servicio",
             meta: guardMeta(g) });
         });
-        return { ...s, entities: [...others, ...guards],
+        // Se recalcula con la MISMA función que la carga inicial, para que el
+        // panel no enseñe dos porcentajes distintos según cuál corrió última.
+        //
+        // Si el sondeo NO trajo el resumen (red, permiso, servidor), se deja el
+        // indicador como está: recalcularlo con el respaldo lo haría PEOR que
+        // el que ya se pintó al cargar, y un número que empeora solo cada
+        // treinta segundos es peor que uno quieto.
+        const hayResumen = !!((cobViva as any)?.summary || (cobViva as any)?.data?.summary);
+        const { coverage, coverageSub } = calcularCobertura(cobViva, onDuty, 0);
+        const kpis = !hayResumen ? s.kpis : s.kpis.map((k) =>
+          k.key === "coverage"
+            ? {
+                ...k,
+                value: coverage ?? "—",
+                unit: coverage != null ? "%" : "",
+                sub: coverageSub,
+                fallback: coverage == null,
+                status: coverage == null ? "neutral"
+                  : coverage >= 80 ? "online"
+                  : coverage >= 50 ? "delayed"
+                  : "incident",
+              }
+            : k,
+        ) as typeof s.kpis;
+        return { ...s, kpis, entities: [...others, ...guards],
           health: { ...s.health, onlineDevices: onDuty, lastSync: new Date().toISOString() } };
       });
     }, Math.max(5, intervalSec) * 1000);
