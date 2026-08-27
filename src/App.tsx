@@ -271,7 +271,14 @@ function PersistentChrome({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const { isAuthenticated } = useAuth();
   if (!isAuthenticated || isNoChromePath(location.pathname)) return <>{children}</>;
-  return <AppLayout>{children}</AppLayout>;
+  // La cabecera persistente (topbar + menú + overlay de pánico) se monta FUERA
+  // del AppErrorBoundary de las rutas. Este boundary de respaldo evita que un
+  // error en cualquier pieza de la envoltura tumbe el CRM entero a blanco.
+  return (
+    <AppErrorBoundary scope="chrome">
+      <AppLayout>{children}</AppLayout>
+    </AppErrorBoundary>
+  );
 }
 
 export default function App() {

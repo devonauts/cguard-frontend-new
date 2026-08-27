@@ -44,6 +44,24 @@ const GoogleMapEmbed = lazy(() => import("@/components/GoogleMap/GoogleMapEmbed"
  * Se usa `color-mix` y no `oklch(from …)` a propósito: soporte más amplio, y un
  * color inválido en una alarma de pánico no es un fallo cosmético.
  */
+
+/**
+ * Texto seguro para pintar como hijo de React. Si llega un objeto —una
+ * asociación de Sequelize que se coló en el payload— saca su campo legible en
+ * vez de reventar con «Objects are not valid as a React child» (#31). Un SOS
+ * NO puede caerse por un dato con forma inesperada.
+ */
+function comoTexto(v: unknown): string | null {
+  if (v == null) return null;
+  if (typeof v === "string") return v;
+  if (typeof v === "number" || typeof v === "boolean") return String(v);
+  if (typeof v === "object") {
+    const o = v as any;
+    return o.fullName || o.name || o.stationName || o.companyName || o.title || o.label || null;
+  }
+  return String(v);
+}
+
 const PANIC_VARS = {
   "--panic": "var(--bad)",
   "--panic-fill": "color-mix(in oklab, var(--bad) 72%, black)",
@@ -156,16 +174,18 @@ export function PanicAlertOverlay({
     }
   };
 
-  const Row = ({ icon, label, value }: { icon: ReactNode; label: string; value?: string | null }) =>
-    value ? (
+  const Row = ({ icon, label, value }: { icon: ReactNode; label: string; value?: unknown }) => {
+    const texto = comoTexto(value);
+    return texto ? (
       <div className="flex items-start gap-2.5">
         <span className="mt-0.5 shrink-0" style={{ color: "var(--bad-text)" }}>{icon}</span>
         <div className="min-w-0">
-          <div className="cg-eyebrow">{label}</div>
-          <div className="break-words text-sm font-semibold" style={{ color: "var(--ink)" }}>{value}</div>
+          <div className="cg-eyebrow">{comoTexto(label)}</div>
+          <div className="break-words text-sm font-semibold" style={{ color: "var(--ink)" }}>{texto}</div>
         </div>
       </div>
     ) : null;
+  };
 
   // Portal to <body> so `position: fixed` is relative to the VIEWPORT. Mounted
   // inside the header, an ancestor's backdrop-filter would otherwise make `fixed`
@@ -254,9 +274,9 @@ export function PanicAlertOverlay({
                           style={{ background: "color-mix(in oklab, var(--panic) 8%, transparent)" }}
                         >
                           <span className="min-w-0 flex-1 truncate">
-                            <span className="font-semibold">{c.nombre}</span>
+                            <span className="font-semibold">{comoTexto(c.nombre)}</span>
                             <span className="ml-2 text-xs" style={{ color: "var(--ink-faint)" }}>
-                              {c.rol}
+                              {comoTexto(c.rol)}
                             </span>
                             {/* La clave verbal NO viaja; sólo el aviso de que hay
                                 que pedirla, que es lo que la hace útil. */}
@@ -266,7 +286,7 @@ export function PanicAlertOverlay({
                               </span>
                             )}
                           </span>
-                          <span className="shrink-0 font-mono text-xs">{c.telefono}</span>
+                          <span className="shrink-0 font-mono text-xs">{comoTexto(c.telefono)}</span>
                         </a>
                       ))}
                   </div>

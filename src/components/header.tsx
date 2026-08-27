@@ -50,6 +50,7 @@ import { useNotificationStream, type PlatformNotification } from "@/hooks/useNot
 import { NotificationsPanel } from "@/components/notifications/NotificationsPanel";
 import { showNotificationToast } from "@/components/notifications/notificationToast";
 import { PanicAlertOverlay } from "@/components/notifications/PanicAlertOverlay";
+import AppErrorBoundary from "@/components/AppErrorBoundary";
 import TrialDaysBadge from "@/components/TrialDaysBadge";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { IconTile, FIELD_CLS, FIELD_CLS_LG } from "@/components/kit";
@@ -479,7 +480,14 @@ export default function Header({
 
   return (
     <>
-    <PanicAlertOverlay alerts={panicAlerts} onAcknowledge={handleAcknowledgePanic} />
+    {/* El overlay del SOS vive en la cabecera GLOBAL, que se monta FUERA del
+        AppErrorBoundary de las rutas (App.tsx · PersistentChrome). Sin este
+        cerrojo, cualquier error de render aquí —un campo que llega como objeto
+        en un SOS— tumbaba el CRM ENTERO a pantalla blanca. Aislado, si el
+        overlay fallara, el resto del panel sigue vivo. */}
+    <AppErrorBoundary scope="panic-overlay">
+      <PanicAlertOverlay alerts={panicAlerts} onAcknowledge={handleAcknowledgePanic} />
+    </AppErrorBoundary>
     {/* Sin fondo propio: el cristal lo pone `.app-header` del contenedor. */}
     <header
       className="relative flex h-14 items-center gap-2 px-3 transition-shadow duration-300 sm:px-4"
