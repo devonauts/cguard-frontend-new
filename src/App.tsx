@@ -36,6 +36,7 @@ const DepartmentPage = lazy(() => import("./pages/admin/Configuration/department
 const UserRolesPage = lazy(() => import("./pages/admin/Configuration/user-roles/UserRolesPage"));
 const SettingsHome = lazy(() => import("./pages/admin/Configuration/SettingsHome"));
 const IntegrationsList = lazy(() => import("./pages/admin/Configuration/integrations/IntegrationsList"));
+const ApiKeysPage = lazy(() => import("./pages/admin/Configuration/api-keys/ApiKeysPage"));
 const ProfileFieldsPage = lazy(() => import("./pages/admin/Configuration/profile-fields/ProfileFieldsPage"));
 const PasswordChangePage = lazy(() => import("./pages/admin/Configuration/change-password/ChangePasswordPage"));
 const PostingGlobalPage = lazy(() => import("./pages/admin/Configuration/posting-global/PostingGlobalPage"));
@@ -1577,6 +1578,14 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <IntegrationsList />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/setting/api-keys"
+                element={
+                  <ProtectedRoute>
+                    <ApiKeysPage />
                   </ProtectedRoute>
                 }
               />
