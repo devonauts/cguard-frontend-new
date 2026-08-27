@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import {
   Route, ChevronRight, MapPin, MapPinOff, HelpCircle,
   User, Clock, CheckCircle2, Flag, Building2, XCircle, X,
@@ -391,6 +392,28 @@ export default function StationRondaHistory({ station, stationId }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [detailFor, setDetailFor] = useState<Ronda | null>(null);
 
+  /**
+   * ── LLEGAR AQUÍ DESDE UN AVISO ────────────────────────────────────────────
+   * El aviso de ronda (empezada / completada / perdida) trae la vuelta en la
+   * dirección: `…/tag-scans?ronda=<id>`. Se abre sola, y NO hace falta que esa
+   * vuelta esté entre las 100 que carga la lista —el detalle se pide por su
+   * id—, así que un aviso de hace tres semanas sigue abriendo lo suyo.
+   *
+   * El parámetro se retira de la barra después de abrirlo: si se quedara,
+   * cerrar el cuadro y recargar volvería a abrirlo, y no habría forma de ver la
+   * lista.
+   */
+  const [searchParams, setSearchParams] = useSearchParams();
+  const rondaDelAviso = searchParams.get('ronda');
+  const [rondaAbierta, setRondaAbierta] = useState<string | null>(null);
+  useEffect(() => {
+    if (!rondaDelAviso) return;
+    setRondaAbierta(rondaDelAviso);
+    const resto = new URLSearchParams(searchParams);
+    resto.delete('ronda');
+    setSearchParams(resto, { replace: true });
+  }, [rondaDelAviso, searchParams, setSearchParams]);
+
   const load = useCallback(async () => {
     if (!stationId) return;
     setLoading(true);
@@ -474,10 +497,10 @@ export default function StationRondaHistory({ station, stationId }: Props) {
       )}
 
       <RondaDetailModal
-        open={!!detailFor}
-        onOpenChange={(o) => { if (!o) setDetailFor(null); }}
+        open={!!detailFor || !!rondaAbierta}
+        onOpenChange={(o: boolean) => { if (!o) { setDetailFor(null); setRondaAbierta(null); } }}
         tenantId={tenantId}
-        assignmentId={detailFor?.id ?? null}
+        assignmentId={detailFor?.id ?? rondaAbierta}
         fallbackName={detailFor?.rondaName}
       />
     </Section>
