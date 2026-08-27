@@ -6321,7 +6321,8 @@
       "navHome": "Home",
       "navRounds": "Patrols",
       "navSchedule": "Schedule",
-      "navProfile": "Profile"
+      "navProfile": "Profile",
+      "previewIncident": "Incident"
     },
     "appearance": {
       "layoutTitle": "Appearance",

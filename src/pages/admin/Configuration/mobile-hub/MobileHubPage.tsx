@@ -13,7 +13,8 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   TabletSmartphone, Palette, LayoutGrid, Mic, Save, RotateCcw,
   GraduationCap, TrendingUp, Users, CalendarOff, LifeBuoy, Map as MapIcon,
-  RadioTower,
+  RadioTower, Home, Route as RouteIcon, CalendarDays, User as UserIcon,
+  Wifi, BatteryFull, SignalHigh, ChevronRight, ShieldAlert, ClipboardList,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
@@ -183,7 +184,7 @@ export default function MobileHubPage() {
           {loading ? (
             <SkeletonCards count={4} />
           ) : (
-            <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+            <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_400px]">
               <div className="space-y-6">
                 {/* ── Marca ─────────────────────────────────────────────── */}
                 <Section title={t('settings.mobileHub.brandSectionTitle', { defaultValue: 'Marca' })} icon={<Palette size={18} />}>
@@ -372,59 +373,158 @@ function PhonePreview({ accent, name, tagline, logoUrl, light }: {
   const border = light ? '#e5e7eb' : '#232a36';
   const inkOnAccent = 'oklch(0.15 0 0)';
 
+  /**
+   * ── LA MAQUETA SE DIBUJA A TAMAÑO DE TELÉFONO DE VERDAD ──────────────────
+   * Antes esto medía 240 px de ancho y todo dentro estaba escrito a mano en
+   * `text-[7px]`, `text-[8px]`, `text-[9px]`: no era una pantalla de móvil a
+   * escala, era un dibujo pequeño con tipografías que ningún teléfono usa. Las
+   * proporciones no se parecían a nada y no se podía juzgar si el acento de la
+   * empresa se ve bien.
+   *
+   * Ahora el contenido se dibuja en un lienzo de 390 × 844 — el tamaño lógico
+   * real de un iPhone 14, que es el mismo en el que se dibuja la app — con
+   * tipografías normales (14 px, 12 px), y el conjunto se REDUCE con `scale`
+   * para caber en la columna. Escalar la imagen final conserva las
+   * proporciones; escribir tamaños diminutos a mano las destruye.
+   *
+   * `ESCALA` es el único número que hay que tocar para agrandarlo o achicarlo.
+   */
+  const ANCHO = 390;
+  const ALTO = 844;
+  const ESCALA = 0.86;
+
   return (
     <div
-      className="w-60 select-none rounded-[2.2rem] p-[7px]"
-      style={{ background: 'linear-gradient(160deg, oklch(0.32 0 0), oklch(0.14 0 0) 60%, oklch(0.26 0 0))', boxShadow: 'var(--lift-4)' }}
+      className="select-none"
+      // El hueco que ocupa en la página es el del teléfono YA reducido: sin
+      // esto, el `scale` deja un agujero del tamaño original debajo.
+      style={{ width: ANCHO * ESCALA, height: (ALTO + 20) * ESCALA }}
     >
-      <div className="overflow-hidden rounded-[1.85rem]" style={{ background: bg }}>
-        <div className="grid h-6 place-items-center" style={{ background: light ? '#e7e5e4' : '#10151d' }}>
-          <span className="h-3.5 w-16 rounded-full" style={{ background: 'oklch(0 0 0)' }} />
-        </div>
-        <div className="space-y-3 p-4" style={{ color: text }}>
-          <div className="flex items-center gap-2.5">
-            {logoUrl ? (
-              <img src={logoUrl} alt="" className="h-8 w-8 rounded-lg object-contain" style={{ background: card }} />
-            ) : (
-              <span className="grid h-8 w-8 place-items-center rounded-lg text-[13px] font-black" style={{ background: `${accent}22`, color: accent }}>
-                {name.trim().charAt(0).toUpperCase() || 'C'}
+      <div style={{ transform: `scale(${ESCALA})`, transformOrigin: 'top left' }}>
+        {/* Chasis */}
+        <div
+          className="rounded-[3.2rem] p-[10px]"
+          style={{
+            width: ANCHO + 20,
+            background: 'linear-gradient(160deg, oklch(0.34 0 0), oklch(0.13 0 0) 55%, oklch(0.28 0 0))',
+            boxShadow: 'var(--lift-4)',
+          }}
+        >
+          <div
+            className="relative overflow-hidden rounded-[2.6rem]"
+            style={{ width: ANCHO, height: ALTO, background: bg, color: text }}
+          >
+            {/* Isla dinámica */}
+            <div
+              className="absolute left-1/2 top-[10px] z-20 h-[30px] w-[112px] -translate-x-1/2 rounded-full"
+              style={{ background: 'oklch(0 0 0)' }}
+            />
+
+            {/* Barra de estado */}
+            <div className="flex h-[50px] items-center justify-between px-7 pt-2 text-[14px] font-semibold">
+              <span>20:04</span>
+              <span className="flex items-center gap-1.5" style={{ opacity: 0.9 }}>
+                <SignalHigh size={15} /> <Wifi size={15} /> <BatteryFull size={17} />
               </span>
-            )}
-            <div className="min-w-0">
-              <p className="truncate text-[13px] font-bold leading-tight">{name}</p>
-              <p className="truncate text-[9px] uppercase tracking-widest" style={{ color: muted }}>{tagline}</p>
             </div>
-          </div>
 
-          <div className="rounded-xl border p-3" style={{ borderColor: `${accent}55`, background: card }}>
-            <div className="flex items-center justify-between">
-              <span className="text-[8px] font-bold uppercase tracking-wider" style={{ color: muted }}>{t('settings.mobileHub.previewCurrentShift', { defaultValue: 'Turno actual' })}</span>
-              <span className="rounded-full px-1.5 py-0.5 text-[7px] font-bold" style={{ background: '#16a34a22', color: '#16a34a' }}>{t('settings.mobileHub.previewOnDuty', { defaultValue: '● En servicio' })}</span>
+            {/* Contenido */}
+            <div className="space-y-3.5 px-4 pt-2">
+              <div className="flex items-center gap-3">
+                {logoUrl ? (
+                  <img src={logoUrl} alt="" className="h-11 w-11 rounded-xl object-contain" style={{ background: card }} />
+                ) : (
+                  <span
+                    className="grid h-11 w-11 place-items-center rounded-xl text-lg font-black"
+                    style={{ background: `${accent}22`, color: accent }}
+                  >
+                    {name.trim().charAt(0).toUpperCase() || 'C'}
+                  </span>
+                )}
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[17px] font-bold leading-tight">{name}</p>
+                  <p className="truncate text-[11px] uppercase tracking-[0.14em]" style={{ color: muted }}>{tagline}</p>
+                </div>
+              </div>
+
+              {/* Turno en curso */}
+              <div className="rounded-2xl border p-4" style={{ borderColor: `${accent}55`, background: card }}>
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: muted }}>
+                    {t('settings.mobileHub.previewCurrentShift', { defaultValue: 'Turno actual' })}
+                  </span>
+                  <span className="rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ background: '#16a34a22', color: '#16a34a' }}>
+                    {t('settings.mobileHub.previewOnDuty', { defaultValue: '● En servicio' })}
+                  </span>
+                </div>
+                <p className="mt-1.5 font-mono text-[38px] font-bold leading-none" style={{ color: accent }}>04:00:06</p>
+                <p className="mt-1.5 text-[12px]" style={{ color: muted }}>
+                  {t('settings.mobileHub.previewShiftHours', { defaultValue: 'Turno 20:00 – 08:00' })}
+                </p>
+              </div>
+
+              {/* Accesos rápidos */}
+              <div className="grid grid-cols-2 gap-2.5">
+                {[
+                  { icon: <RouteIcon size={17} />, label: t('settings.mobileHub.navRounds', { defaultValue: 'Rondas' }) },
+                  { icon: <ShieldAlert size={17} />, label: t('settings.mobileHub.previewIncident', { defaultValue: 'Novedad' }) },
+                ].map((q) => (
+                  <div
+                    key={q.label}
+                    className="flex items-center gap-2.5 rounded-2xl border px-3 py-3"
+                    style={{ borderColor: border, background: card }}
+                  >
+                    <span className="grid h-8 w-8 place-items-center rounded-lg" style={{ background: `${accent}1f`, color: accent }}>
+                      {q.icon}
+                    </span>
+                    <span className="text-[13px] font-semibold">{q.label}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Tareas */}
+              <div className="flex items-center justify-between rounded-2xl border px-3.5 py-3" style={{ borderColor: border, background: card }}>
+                <span className="flex items-center gap-2.5 text-[13px] font-semibold">
+                  <ClipboardList size={17} style={{ color: muted }} />
+                  {t('settings.mobileHub.previewShiftTasks', { defaultValue: 'Tareas del turno' })}
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="grid h-5 w-5 place-items-center rounded-full text-[11px] font-bold" style={{ background: accent, color: inkOnAccent }}>3</span>
+                  <ChevronRight size={16} style={{ color: muted }} />
+                </span>
+              </div>
             </div>
-            <p className="mt-1 font-mono text-xl font-bold" style={{ color: accent }}>04:00:06</p>
-            <p className="text-[9px]" style={{ color: muted }}>{t('settings.mobileHub.previewShiftHours', { defaultValue: 'Turno 20:00 – 08:00' })}</p>
-          </div>
 
-          <div className="flex items-center justify-between rounded-xl border p-2.5" style={{ borderColor: border, background: card }}>
-            <span className="text-[10px] font-semibold">{t('settings.mobileHub.previewShiftTasks', { defaultValue: 'Tareas del turno' })}</span>
-            <span className="grid h-4 w-4 place-items-center rounded-full text-[8px] font-bold" style={{ background: accent, color: inkOnAccent }}>3</span>
-          </div>
+            {/* Botón de radio, flotando sobre la barra inferior */}
+            <div className="absolute bottom-[104px] right-5">
+              <span className="grid h-16 w-16 place-items-center rounded-full" style={{ background: accent, boxShadow: 'var(--lift-3)' }}>
+                <Mic size={26} style={{ color: inkOnAccent }} />
+              </span>
+            </div>
 
-          <div className="flex justify-end pr-1">
-            <span className="grid h-11 w-11 place-items-center rounded-full" style={{ background: accent, boxShadow: 'var(--lift-3)' }}>
-              <Mic size={18} style={{ color: inkOnAccent }} />
-            </span>
-          </div>
+            {/* Barra de navegación */}
+            <div
+              className="absolute inset-x-0 bottom-0 flex items-start justify-around border-t px-2 pb-7 pt-2.5"
+              style={{ borderColor: border, background: card }}
+            >
+              {[
+                { icon: <Home size={20} />, label: t('settings.mobileHub.navHome', { defaultValue: 'Inicio' }) },
+                { icon: <RouteIcon size={20} />, label: t('settings.mobileHub.navRounds', { defaultValue: 'Rondas' }) },
+                { icon: <CalendarDays size={20} />, label: t('settings.mobileHub.navSchedule', { defaultValue: 'Horario' }) },
+                { icon: <UserIcon size={20} />, label: t('settings.mobileHub.navProfile', { defaultValue: 'Perfil' }) },
+              ].map((n, i) => (
+                <span key={n.label} className="flex flex-col items-center gap-1" style={{ color: i === 0 ? accent : muted }}>
+                  {n.icon}
+                  <span className="text-[10px] font-semibold">{n.label}</span>
+                </span>
+              ))}
+            </div>
 
-          <div className="flex items-center justify-between rounded-xl px-3 py-2" style={{ background: card, border: `1px solid ${border}` }}>
-            {[
-              t('settings.mobileHub.navHome', { defaultValue: 'Inicio' }),
-              t('settings.mobileHub.navRounds', { defaultValue: 'Rondas' }),
-              t('settings.mobileHub.navSchedule', { defaultValue: 'Horario' }),
-              t('settings.mobileHub.navProfile', { defaultValue: 'Perfil' }),
-            ].map((label, i) => (
-              <span key={label} className="text-[8px] font-semibold" style={{ color: i === 0 ? accent : muted }}>{label}</span>
-            ))}
+            {/* Indicador de inicio */}
+            <span
+              className="absolute bottom-[7px] left-1/2 h-[5px] w-[134px] -translate-x-1/2 rounded-full"
+              style={{ background: light ? '#00000055' : '#ffffff66' }}
+            />
           </div>
         </div>
       </div>
