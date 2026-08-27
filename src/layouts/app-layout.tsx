@@ -12,6 +12,7 @@ import PlatformAnnouncements from "@/components/PlatformAnnouncements";
 import { RadioRealtimeProvider } from "@/components/radio/RadioRealtimeProvider";
 import RadioVoiceWidget from "@/components/radio/RadioVoiceWidget";
 import VigiaWidget from "@/components/vigia/VigiaWidget";
+import VisitBeacon from "@/components/VisitBeacon";
 import OnboardingProvider from "@/components/onboarding/OnboardingProvider";
 import tenantService from "@/services/tenant.service";
 import { cacheTenantLocation, cacheTenantCountry, cacheTenantTimezone } from "@/utils/tenantLocation";
@@ -267,6 +268,8 @@ function AppLayoutShell({ children }: AppLayoutProps) {
        lleve `viewport-fit=cover`, que hoy NO lo lleva: todo esto mide lo mismo
        que antes hasta que alguien active el borde a borde. */}
     <div className="app-shell h-screen w-full bg-background supports-[height:100dvh]:h-[100dvh]">
+      {/* No pinta nada: avisa al panel del dueño de que esta sesión está viva. */}
+      <VisitBeacon />
       {/* El velo de los menús flotantes vive AQUÍ DENTRO, no en el <body>.
           `.app-shell` lleva `isolation: isolate`, así que crea su propio contexto
           de apilamiento: un velo hermano suyo pintaba por encima del armazón
