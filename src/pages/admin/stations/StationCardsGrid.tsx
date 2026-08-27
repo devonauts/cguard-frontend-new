@@ -5,9 +5,104 @@
  * al detalle de la estación. Los datos llegan en lote desde /station/cards.
  */
 import { useTranslation } from "react-i18next";
-import { RadioTower, Building2, Users, MapPin } from "lucide-react";
+import { RadioTower, Building2, Users, MapPin, ShieldCheck, ShieldAlert, ShieldX, Moon, Clock } from "lucide-react";
 import { StatusBadge, SkeletonCards, EmptyState, GlassPanel, SmartImage } from "@/components/kit";
 import type { StationCard } from "@/lib/api/stationService";
+import { getTenantTimezone } from "@/utils/tenantLocation";
+
+/**
+ * ════════════════════════════════════════════════════════════════════════════
+ * «CON COBERTURA» NO QUERÍA DECIR LO QUE PARECÍA
+ *
+ * La insignia se encendía en verde con `guardCount > 0`, y ese número es la
+ * PLANTILLA del contrato: cuántos vigilantes tiene asignados el puesto. Un
+ * puesto con dos asignados y nadie fichado a las tres de la mañana salía en
+ * verde igual que uno atendido. Quien lo leía entendía «hay alguien ahí»,
+ * entraba, y se encontraba lo contrario — que es peor que no tener insignia.
+ *
+ * Ahora la insignia dice lo que pasa AHORA, en cuatro estados que no se
+ * confunden entre sí:
+ *
+ *   Vigilante en puesto   verde     alguien fichado
+ *   Esperando relevo      ámbar     se le espera y aún no llega (o falta uno)
+ *   Puesto sin cubrir     rojo      se le espera, no está, y ya pasó la hora
+ *   Fuera de turno        neutro    no toca nadie ahora — no es un problema
+ *
+ * El neutro es deliberado: un puesto que cierra a las once no es una alarma a
+ * medianoche, y pintarlo en rojo enseña a ignorar los rojos de verdad.
+ * ════════════════════════════════════════════════════════════════════════════
+ */
+
+/** Hora corta EN LA ZONA DE LA EMPRESA — «Entra 19:00». */
+function horaCorta(iso?: string | null): string | null {
+  if (!iso) return null;
+  try {
+    const tz = getTenantTimezone();
+    return new Date(iso).toLocaleTimeString("es-EC", {
+      hour: "2-digit", minute: "2-digit", hour12: false,
+      ...(tz ? { timeZone: tz } : {}),
+    });
+  } catch { return null; }
+}
+
+type Insignia = { tone: "ok" | "warn" | "bad" | "neutral"; icon: JSX.Element; label: string; hint?: string | null };
+
+function insigniaDeCobertura(s: StationCard, t: (k: string, o?: any) => string): Insignia | null {
+  // Sin estado calculado no se inventa nada: antes que una insignia falsa,
+  // ninguna.
+  if (!s.coverageStatus) return null;
+  const entra = horaCorta(s.nextShiftStart);
+
+  switch (s.coverageStatus) {
+    case "covered":
+      return {
+        tone: "ok",
+        icon: <ShieldCheck className="h-3 w-3" />,
+        // El número importa: un puesto de dos con dos no es lo mismo que con uno.
+        label: s.onDutyCount > 1
+          ? t("stations.coverage.onDutyN", { count: s.onDutyCount, defaultValue: "{{count}} en puesto" })
+          : t("stations.coverage.onDuty", { defaultValue: "Vigilante en puesto" }),
+      };
+    case "at_risk":
+      return {
+        tone: "warn",
+        icon: <ShieldAlert className="h-3 w-3" />,
+        // Con alguien dentro pero incompleto, el problema es otro: falta parte
+        // del relevo, no el relevo entero.
+        label: s.onDutyCount > 0
+          ? t("stations.coverage.partial", {
+              on: s.onDutyCount, exp: s.expectedCount,
+              defaultValue: "Relevo incompleto ({{on}}/{{exp}})",
+            })
+          : t("stations.coverage.awaiting", { defaultValue: "Esperando vigilante" }),
+      };
+    case "uncovered":
+      return {
+        tone: "bad",
+        icon: <ShieldX className="h-3 w-3" />,
+        label: s.openGaps > 0
+          ? t("stations.coverage.gapDeclared", { defaultValue: "Hueco declarado" })
+          : t("stations.coverage.uncovered", { defaultValue: "Puesto sin cubrir" }),
+      };
+    default:
+      // Fuera de turno. Y si el puesto NO tiene turnos hoy, eso es otra cosa —
+      // decir «fuera de turno» de un puesto que nadie ha programado sugiere un
+      // horario que no existe.
+      return s.shiftsToday > 0
+        ? {
+            tone: "neutral",
+            icon: <Moon className="h-3 w-3" />,
+            label: t("stations.coverage.offHours", { defaultValue: "Fuera de turno" }),
+            hint: entra ? t("stations.coverage.nextAt", { time: entra, defaultValue: "Entra {{time}}" }) : null,
+          }
+        : {
+            tone: "neutral",
+            icon: <Clock className="h-3 w-3" />,
+            label: t("stations.coverage.noShifts", { defaultValue: "Sin turnos hoy" }),
+            hint: entra ? t("stations.coverage.nextAt", { time: entra, defaultValue: "Entra {{time}}" }) : null,
+          };
+  }
+}
 
 export default function StationCardsGrid({
   stations,
@@ -73,11 +168,27 @@ export default function StationCardsGrid({
                   <p className="truncate text-sm leading-tight" style={{ color: "var(--ink-soft)" }} title={subtitle}>{subtitle}</p>
                 )}
                 <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                  <StatusBadge tone={s.guardCount > 0 ? "ok" : "warn"}>
-                    {s.guardCount > 0
-                      ? t("stations.covered", { defaultValue: "Con cobertura" })
-                      : t("stations.uncovered", { defaultValue: "Sin vigilantes" })}
-                  </StatusBadge>
+                  {(() => {
+                    const ins = insigniaDeCobertura(s, t);
+                    if (!ins) return null;
+                    return (
+                      <>
+                        <StatusBadge tone={ins.tone} dot={false}>
+                          {ins.icon} {ins.label}
+                        </StatusBadge>
+                        {ins.hint && (
+                          <span className="text-xs" style={{ color: "var(--ink-faint)" }}>{ins.hint}</span>
+                        )}
+                      </>
+                    );
+                  })()}
+                  {/* Un puesto sin NADIE asignado en el contrato es un problema
+                      distinto —y previo— al de la cobertura de esta noche. */}
+                  {s.guardCount === 0 && (
+                    <StatusBadge tone="warn" dot={false}>
+                      {t("stations.noGuardsAssigned", { defaultValue: "Sin vigilantes asignados" })}
+                    </StatusBadge>
+                  )}
                 </div>
               </div>
             </div>
@@ -104,7 +215,7 @@ export default function StationCardsGrid({
               <span className="flex items-center gap-1.5">
                 <Users className="h-4 w-4" style={{ color: "var(--brand-text)" }} />
                 <span className="font-semibold text-foreground">{s.guardCount}</span>{" "}
-                {t("stations.guardsLabel", { defaultValue: "vigilante(s)" })}
+                {t("stations.guardsAssignedLabel", { defaultValue: "asignado(s)" })}
               </span>
             </div>
           </GlassPanel>

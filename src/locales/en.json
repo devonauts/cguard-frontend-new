@@ -7096,7 +7096,20 @@
     },
     "covered": "Covered",
     "uncovered": "No guards",
-    "guardsLabel": "guard(s)"
+    "guardsLabel": "guard(s)",
+    "coverage": {
+      "onDuty": "Guard on post",
+      "onDutyN": "{{count}} on post",
+      "awaiting": "Waiting for guard",
+      "partial": "Partial relief ({{on}}/{{exp}})",
+      "uncovered": "Post uncovered",
+      "gapDeclared": "Gap reported",
+      "offHours": "Off shift",
+      "noShifts": "No shifts today",
+      "nextAt": "Starts {{time}}"
+    },
+    "noGuardsAssigned": "No guards assigned",
+    "guardsAssignedLabel": "assigned"
   },
   "admin": {
     "registration_title": "Administrator sign-up"

@@ -7096,7 +7096,20 @@
     },
     "covered": "Con cobertura",
     "uncovered": "Sin vigilantes",
-    "guardsLabel": "vigilante(s)"
+    "guardsLabel": "vigilante(s)",
+    "coverage": {
+      "onDuty": "Vigilante en puesto",
+      "onDutyN": "{{count}} en puesto",
+      "awaiting": "Esperando vigilante",
+      "partial": "Relevo incompleto ({{on}}/{{exp}})",
+      "uncovered": "Puesto sin cubrir",
+      "gapDeclared": "Hueco declarado",
+      "offHours": "Fuera de turno",
+      "noShifts": "Sin turnos hoy",
+      "nextAt": "Entra {{time}}"
+    },
+    "noGuardsAssigned": "Sin vigilantes asignados",
+    "guardsAssignedLabel": "asignado(s)"
   },
   "admin": {
     "registration_title": "Registro de Administrador"

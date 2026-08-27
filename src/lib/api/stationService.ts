@@ -149,7 +149,29 @@ export interface StationCard {
   clientId: string | null;
   clientName: string | null;
   clientLogoUrl: string | null;
+  /** Vigilantes ASIGNADOS al puesto (plantilla del contrato) — no es cobertura. */
   guardCount: number;
+  /**
+   * ── EL ESTADO DEL PUESTO AHORA MISMO ──────────────────────────────────────
+   * `covered`   alguien está fichado en el puesto
+   * `at_risk`   se le espera y aún no ficha (dentro de la tolerancia), o falta
+   *             parte del relevo en un puesto de dos
+   * `uncovered` se le espera y no está, pasada la tolerancia — o hay un hueco
+   *             ya declarado
+   * `idle`      no hay nadie esperado ahora: fuera de turno
+   * `null`      no se pudo calcular (la tarjeta no pinta insignia)
+   */
+  coverageStatus: 'covered' | 'at_risk' | 'uncovered' | 'idle' | null;
+  /** Cuántos hay fichados AHORA. */
+  onDutyCount: number;
+  /** Cuántos se esperan según el horario. */
+  expectedCount: number;
+  /** Próxima entrada planificada (24 h) — «Entra 19:00». */
+  nextShiftStart: string | null;
+  /** Turnos de HOY: «cerrado ahora» no es lo mismo que «sin turnos». */
+  shiftsToday: number;
+  /** Huecos de cobertura ya declarados por alguien. */
+  openGaps: number;
 }
 
 const stationService = {

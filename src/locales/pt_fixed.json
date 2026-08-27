@@ -5052,7 +5052,20 @@
     },
     "covered": "Com cobertura",
     "uncovered": "Sem vigilantes",
-    "guardsLabel": "vigilante(s)"
+    "guardsLabel": "vigilante(s)",
+    "coverage": {
+      "onDuty": "Vigilante no posto",
+      "onDutyN": "{{count}} no posto",
+      "awaiting": "À espera do vigilante",
+      "partial": "Rendição incompleta ({{on}}/{{exp}})",
+      "uncovered": "Posto por cobrir",
+      "gapDeclared": "Falha declarada",
+      "offHours": "Fora de turno",
+      "noShifts": "Sem turnos hoje",
+      "nextAt": "Entra {{time}}"
+    },
+    "noGuardsAssigned": "Sem vigilantes atribuídos",
+    "guardsAssignedLabel": "atribuído(s)"
   },
   "admin": {
     "registration_title": "Cadastro de administrador"
