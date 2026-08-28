@@ -16,6 +16,7 @@ import {
   RadioTower, Home, Route as RouteIcon, CalendarDays, User as UserIcon,
   Wifi, BatteryFull, SignalHigh, ChevronRight, ShieldAlert, ClipboardList,
   MessageSquare, CarFront, Check, QrCode,
+  Building2, MapPin, Bell, Menu, Navigation,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
@@ -96,6 +97,7 @@ export default function MobileHubPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [cfg, setCfg] = useState<MobileAppSettings>(DEFAULTS);
+  const [previewApp, setPreviewApp] = useState<'guard' | 'supervisor'>('guard');
   /** Full settings row from GET — re-sent on save so logoUrl/logos survive. */
   const [row, setRow] = useState<SettingsRow | null>(null);
 
@@ -157,8 +159,19 @@ export default function MobileHubPage() {
       logoUrl={cfg.useTenantLogo ? logoUrl : null}
       light={cfg.defaultTheme === 'light'}
       modules={cfg.modules}
+      font={cfg.fontFamily}
     />
-  ), [accent, cfg.displayName, cfg.tagline, cfg.useTenantLogo, cfg.defaultTheme, cfg.modules, logoUrl]);
+  ), [accent, cfg.displayName, cfg.tagline, cfg.useTenantLogo, cfg.defaultTheme, cfg.modules, cfg.fontFamily, logoUrl]);
+
+  const previewSupervisor = useMemo(() => (
+    <SupervisorPreview
+      accent={accent}
+      name={cfg.displayName || 'C-Guard Pro'}
+      logoUrl={cfg.useTenantLogo ? logoUrl : null}
+      light={cfg.defaultTheme === 'light'}
+      font={cfg.fontFamily}
+    />
+  ), [accent, cfg.displayName, cfg.useTenantLogo, cfg.defaultTheme, cfg.fontFamily, logoUrl]);
 
   return (
     <AppLayout>
@@ -341,8 +354,18 @@ export default function MobileHubPage() {
 
               {/* ── Vista previa ─────────────────────────────────────────── */}
               <div className="lg:sticky lg:top-24 lg:self-start">
-                <Section title={t('settings.mobileHub.previewSectionTitle', { defaultValue: 'Vista previa' })} icon={<TabletSmartphone size={18} />} contentClassName="flex justify-center">
-                  {preview}
+                <Section title={t('settings.mobileHub.previewSectionTitle', { defaultValue: 'Vista previa' })} icon={<TabletSmartphone size={18} />}>
+                  <Segmented
+                    value={previewApp}
+                    onChange={(v) => setPreviewApp(v as 'guard' | 'supervisor')}
+                    options={[
+                      { value: 'guard', label: t('settings.mobileHub.previewAppGuard', { defaultValue: 'App del vigilante' }) },
+                      { value: 'supervisor', label: t('settings.mobileHub.previewAppSupervisor', { defaultValue: 'App del supervisor' }) },
+                    ]}
+                  />
+                  <div className="mt-4 flex justify-center">
+                    {previewApp === 'guard' ? preview : previewSupervisor}
+                  </div>
                 </Section>
                 <p className="mt-3 text-center text-xs" style={{ color: 'var(--ink-faint)' }}>
                   {t('settings.mobileHub.previewApplyNote', { defaultValue: 'Los cambios se aplican en las apps al iniciar sesión.' })}
@@ -364,9 +387,17 @@ export default function MobileHubPage() {
  * la empresa elige arriba; si aquí usáramos los tokens del panel, la vista previa
  * mentiría. El chasis del teléfono sí es acromático como el resto del sistema.
  */
-function PhonePreview({ accent, name, tagline, logoUrl, light, modules }: {
+/** La familia CSS de cada fuente elegible (las carga main.tsx). '' = del sistema. */
+const FAMILIA_FUENTE: Record<string, string | undefined> = {
+  '': undefined,
+  poppins: '"Poppins", system-ui, sans-serif',
+  inter: '"Inter", system-ui, sans-serif',
+  manrope: '"Manrope", system-ui, sans-serif',
+};
+
+function PhonePreview({ accent, name, tagline, logoUrl, light, modules, font }: {
   accent: string; name: string; tagline: string; logoUrl: string | null; light: boolean;
-  modules: Record<ModuleKey, boolean>;
+  modules: Record<ModuleKey, boolean>; font: string;
 }) {
   const { t } = useTranslation();
   const [pantalla, setPantalla] = useState<'inicio' | 'ronda' | 'entrenamiento' | 'horario' | 'mensajes' | 'perfil'>('inicio');
@@ -690,7 +721,7 @@ function PhonePreview({ accent, name, tagline, logoUrl, light, modules }: {
   const activa = pestanas.some((p) => p.id === pantalla) || pantalla === 'ronda' ? pantalla : 'inicio';
 
   return (
-    <div className="select-none" style={{ width: ANCHO * ESCALA, height: (ALTO + 20) * ESCALA }}>
+    <div className="select-none" style={{ width: ANCHO * ESCALA, height: (ALTO + 20) * ESCALA, fontFamily: FAMILIA_FUENTE[font] }}>
       <div style={{ transform: `scale(${ESCALA})`, transformOrigin: 'top left' }}>
         <div
           className="rounded-[3.2rem] p-[10px]"
@@ -774,3 +805,185 @@ function PhonePreview({ accent, name, tagline, logoUrl, light, modules }: {
     </div>
   );
 }
+
+/**
+ * Maqueta a escala de la app del SUPERVISOR — su mundo es distinto al del
+ * vigilante: un tablero de MAPA con las estaciones, no una lista de turno.
+ * Mismo chasis de teléfono y misma regla de color (los de dentro son los de la
+ * app nativa, no los del CRM). Refleja acento, nombre, logo, tema y la fuente
+ * elegida arriba, al instante.
+ */
+function SupervisorPreview({ accent, name, logoUrl, light, font }: {
+  accent: string; name: string; logoUrl: string | null; light: boolean; font: string;
+}) {
+  const { t } = useTranslation();
+  const [pantalla, setPantalla] = useState<'dashboard' | 'estaciones'>('dashboard');
+
+  const bg = light ? '#f5f5f4' : '#0d0d0d';
+  const card = light ? '#ffffff' : '#1a1a1a';
+  const card2 = light ? '#f3f4f6' : '#262626';
+  const text = light ? '#111827' : '#f5f5f5';
+  const muted = light ? '#6b7280' : '#a3a3a3';
+  const border = light ? '#e5e7eb' : '#2e2e2e';
+  const inkOnAccent = 'oklch(0.15 0 0)';
+  const mapBg = light ? '#dfe3e8' : '#12161b';
+
+  const ANCHO = 390, ALTO = 844, ESCALA = 0.86;
+
+  /* ── piezas ── */
+  const Kpi = ({ v, l, c, acento = false }: { v: string; l: string; c: string; acento?: boolean }) => (
+    <div className="rounded-2xl border px-3 py-2.5" style={{ borderColor: acento ? accent + '66' : border, background: card }}>
+      <div className="flex items-center gap-1.5" style={{ color: c }}>
+        <span className="h-2 w-2 rounded-full" style={{ background: c }} />
+        <span className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: muted }}>{l}</span>
+      </div>
+      <p className="mt-1 text-[22px] font-bold leading-none tabular-nums" style={{ color: acento ? accent : text }}>{v}</p>
+    </div>
+  );
+
+  const Chip = ({ icon, label, val, activo = false }: { icon: React.ReactNode; label: string; val: string; activo?: boolean }) => (
+    <div className="flex min-w-[92px] items-center gap-2 rounded-2xl border px-3 py-2"
+      style={{ borderColor: activo ? accent : border, background: activo ? accent + '1f' : card }}>
+      <span style={{ color: activo ? accent : muted }}>{icon}</span>
+      <div className="min-w-0">
+        <p className="truncate text-[9.5px] uppercase tracking-wide" style={{ color: muted }}>{label}</p>
+        <p className="text-[15px] font-bold leading-none tabular-nums" style={{ color: activo ? accent : text }}>{val}</p>
+      </div>
+    </div>
+  );
+
+  const Estacion = ({ nombre, dir }: { nombre: string; dir: string }) => (
+    <div className="rounded-2xl border" style={{ borderColor: border, background: card }}>
+      <div className="flex items-center gap-3 p-3">
+        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl" style={{ background: card2, color: accent }}>
+          <Building2 size={18} />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-[14px] font-bold" style={{ color: text }}>{nombre}</p>
+          <p className="truncate text-[11px]" style={{ color: muted }}>{dir}</p>
+          <span className="mt-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9.5px] font-semibold"
+            style={{ background: card2, color: muted }}>● {t('settings.mobileHub.svPreviewOffline', { defaultValue: 'Sin conexión' })}</span>
+        </div>
+        <div className="text-right">
+          <p className="text-[9.5px] uppercase tracking-wide" style={{ color: muted }}>{t('settings.mobileHub.svPreviewEta', { defaultValue: 'ETA' })}</p>
+          <p className="flex items-center gap-1 text-[13px] font-bold tabular-nums" style={{ color: accent }}><Navigation size={11} /> 26 min</p>
+        </div>
+        <ChevronRight size={16} style={{ color: muted }} />
+      </div>
+      <div className="flex items-center justify-between border-t px-3 py-2 text-[11px]" style={{ borderColor: border, color: muted }}>
+        <span className="flex items-center gap-1"><Check size={12} style={{ color: '#16a34a' }} /> {t('settings.mobileHub.svPreviewIncidents', { defaultValue: 'Incidentes hoy' })} <b style={{ color: text }}>0</b></span>
+        <span className="flex items-center gap-1"><ClipboardList size={12} /> {t('settings.mobileHub.svPreviewTasks', { defaultValue: 'Tareas' })} <b style={{ color: text }}>0</b></span>
+      </div>
+    </div>
+  );
+
+  /* ── pantallas ── */
+  const dashboard = (
+    <div className="relative h-full w-full">
+      {/* Mapa estilizado */}
+      <div className="absolute inset-0" style={{ background: mapBg }}>
+        <div className="absolute inset-0 opacity-[0.28]" style={{
+          backgroundImage: `linear-gradient(${border} 1px, transparent 1px), linear-gradient(90deg, ${border} 1px, transparent 1px)`,
+          backgroundSize: '46px 46px',
+        }} />
+        <div className="absolute" style={{ left: '18%', top: '54%', color: accent }}><MapPin size={22} fill={accent} /></div>
+        <div className="absolute" style={{ left: '62%', top: '40%', color: '#ef4444' }}><MapPin size={22} fill="#ef4444" /></div>
+        <div className="absolute" style={{ left: '44%', top: '66%', color: muted }}><MapPin size={20} /></div>
+        <div className="absolute flex flex-col items-center" style={{ left: '48%', top: '30%' }}>
+          <span className="grid h-7 w-7 place-items-center rounded-full ring-4" style={{ background: '#3b82f6', color: '#fff', ['--tw-ring-color' as any]: '#3b82f622' }}><UserIcon size={14} /></span>
+          <span className="mt-1 rounded px-1.5 py-0.5 text-[9px] font-bold" style={{ background: '#3b82f6', color: '#fff' }}>{t('settings.mobileHub.svPreviewYou', { defaultValue: 'Tú' })}</span>
+        </div>
+      </div>
+      {/* KPIs flotantes */}
+      <div className="absolute inset-x-3 top-3 grid grid-cols-4 gap-2">
+        <Kpi v="20" l={t('settings.mobileHub.svPreviewStations', { defaultValue: 'Puestos' })} c={accent} acento />
+        <Kpi v="2" l={t('settings.mobileHub.svPreviewOnDuty', { defaultValue: 'En turno' })} c="#16a34a" />
+        <Kpi v="0" l={t('settings.mobileHub.svPreviewLate', { defaultValue: 'Tarde' })} c="#f59e0b" />
+        <Kpi v="18" l={t('settings.mobileHub.svPreviewOff', { defaultValue: 'Offline' })} c="#ef4444" />
+      </div>
+      {/* FABs SOS + Radio */}
+      <div className="absolute bottom-4 right-4 flex flex-col items-center gap-3">
+        <span className="grid h-14 w-14 place-items-center rounded-full" style={{ background: accent, boxShadow: 'var(--lift-3)' }}>
+          <RadioTower size={22} style={{ color: inkOnAccent }} />
+        </span>
+        <span className="grid h-16 w-16 place-items-center rounded-full text-[13px] font-black" style={{ background: '#ef4444', color: '#fff', boxShadow: 'var(--lift-3)' }}>SOS</span>
+      </div>
+    </div>
+  );
+
+  const estaciones = (
+    <div className="space-y-3 px-4 pt-3">
+      <div>
+        <p className="text-[20px] font-bold" style={{ color: text }}>{t('settings.mobileHub.svPreviewStationsTitle', { defaultValue: 'Puestos' })}</p>
+        <p className="text-[12px]" style={{ color: muted }}>{t('settings.mobileHub.svPreviewStationsSub', { defaultValue: 'Todas las ubicaciones del cliente' })}</p>
+      </div>
+      <div className="flex gap-2 overflow-hidden">
+        <Chip icon={<Building2 size={15} />} label={t('settings.mobileHub.svPreviewAll', { defaultValue: 'Todos' })} val="20" activo />
+        <Chip icon={<Check size={15} />} label={t('settings.mobileHub.svPreviewActive', { defaultValue: 'Activos' })} val="1" />
+        <Chip icon={<ShieldAlert size={15} />} label={t('settings.mobileHub.svPreviewAttention', { defaultValue: 'Atención' })} val="0" />
+      </div>
+      <Estacion nombre="Acceso de Servicio" dir="Av. Ámsterdam 240, Condesa" />
+      <Estacion nombre="Acceso Peatonal" dir="Av. Universidad 2020, Copilco" />
+      <Estacion nombre="Andén de Carga" dir="Calz. Vallejo 1055, Industrial Vallejo" />
+    </div>
+  );
+
+  const PANTALLAS: Record<string, React.ReactNode> = { dashboard, estaciones };
+
+  const pestanas = [
+    { id: 'dashboard' as const, icon: <MapIcon size={21} />, label: t('settings.mobileHub.svNavDashboard', { defaultValue: 'Tablero' }) },
+    { id: 'estaciones' as const, icon: <Building2 size={21} />, label: t('settings.mobileHub.svNavStations', { defaultValue: 'Puestos' }) },
+    { id: 'guardias' as const, icon: <Users size={21} />, label: t('settings.mobileHub.svNavGuards', { defaultValue: 'Vigilantes' }) },
+    { id: 'mensajes' as const, icon: <MessageSquare size={21} />, label: t('settings.mobileHub.svNavMessages', { defaultValue: 'Mensajes' }) },
+    { id: 'reportes' as const, icon: <ClipboardList size={21} />, label: t('settings.mobileHub.svNavReports', { defaultValue: 'Reportes' }) },
+  ];
+  const activa = pantalla;
+  const conMapa = activa === 'dashboard';
+
+  return (
+    <div className="select-none" style={{ width: ANCHO * ESCALA, height: (ALTO + 20) * ESCALA, fontFamily: FAMILIA_FUENTE[font] }}>
+      <div style={{ transform: `scale(${ESCALA})`, transformOrigin: 'top left' }}>
+        <div className="rounded-[3.2rem] p-[10px]" style={{ width: ANCHO + 20, background: 'linear-gradient(160deg, oklch(0.34 0 0), oklch(0.13 0 0) 55%, oklch(0.28 0 0))', boxShadow: 'var(--lift-4)' }}>
+          <div className="relative overflow-hidden rounded-[2.6rem]" style={{ width: ANCHO, height: ALTO, background: bg, color: text }}>
+            <div className="absolute left-1/2 top-[10px] z-20 h-[30px] w-[112px] -translate-x-1/2 rounded-full" style={{ background: 'oklch(0 0 0)' }} />
+            <div className="flex h-[50px] items-center justify-between px-7 pt-2 text-[14px] font-semibold" style={{ color: conMapa ? '#fff' : text }}>
+              <span>20:04</span>
+              <span className="flex items-center gap-1.5" style={{ opacity: 0.9 }}><SignalHigh size={15} /> <Wifi size={15} /> <BatteryFull size={17} /></span>
+            </div>
+            {/* Cabecera: hamburguesa + marca + campana (como en la app del supervisor) */}
+            <div className="relative z-10 flex items-center gap-2.5 px-4 pb-2 pt-1" style={{ color: conMapa ? '#fff' : text }}>
+              <Menu size={20} style={{ opacity: 0.85 }} />
+              {logoUrl ? (
+                <img src={logoUrl} alt="" className="h-9 w-9 rounded-xl object-contain" style={{ background: card }} />
+              ) : (
+                <span className="grid h-9 w-9 place-items-center rounded-xl text-[15px] font-black" style={{ background: accent + '22', color: accent }}>{name.trim().charAt(0).toUpperCase() || 'C'}</span>
+              )}
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-[15px] font-bold leading-tight">{name}</p>
+                <p className="truncate text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ color: accent }}>{t('settings.mobileHub.svPreviewRole', { defaultValue: 'Supervisor' })}</p>
+              </div>
+              <Bell size={19} style={{ opacity: 0.85 }} />
+            </div>
+            {/* Pantalla */}
+            <div className="absolute inset-x-0 bottom-[86px] top-[104px] overflow-hidden" style={conMapa ? {} : { overflowY: 'auto' }}>
+              {PANTALLAS[activa]}
+            </div>
+            {/* Nav */}
+            <div className="absolute inset-x-0 bottom-0 flex items-start justify-around border-t px-1 pb-7 pt-2.5" style={{ borderColor: border, background: card }}>
+              {pestanas.map((p) => (
+                <button key={p.id} type="button" onClick={() => { if (p.id === 'dashboard' || p.id === 'estaciones') setPantalla(p.id); }}
+                  className="flex flex-1 flex-col items-center gap-1 rounded-lg py-1 transition-transform active:scale-95"
+                  style={{ color: activa === p.id ? accent : muted }}>
+                  {p.icon}
+                  <span className="text-[9.5px] font-semibold">{p.label}</span>
+                </button>
+              ))}
+            </div>
+            <span className="absolute bottom-[7px] left-1/2 h-[5px] w-[134px] -translate-x-1/2 rounded-full" style={{ background: light ? '#00000055' : '#ffffff66' }} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+

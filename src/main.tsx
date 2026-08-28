@@ -17,6 +17,20 @@ import App from "./App.tsx";
 //                    fuente dentro del mismo esqueleto no se nota. Aquí cambia
 //                    el esqueleto, y por eso sí se ve.
 import "@fontsource-variable/inter";
+/* Las 3 fuentes que la empresa puede elegir para las apps móviles — cargadas
+   aquí SOLO para que la vista previa del Hub Móvil las muestre de verdad. */
+import "@fontsource/poppins/400.css";
+import "@fontsource/poppins/500.css";
+import "@fontsource/poppins/600.css";
+import "@fontsource/poppins/700.css";
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/500.css";
+import "@fontsource/inter/600.css";
+import "@fontsource/inter/700.css";
+import "@fontsource/manrope/400.css";
+import "@fontsource/manrope/500.css";
+import "@fontsource/manrope/600.css";
+import "@fontsource/manrope/700.css";
 import "@fontsource-variable/saira";
 // Orden IMPORTANTE: tokens (color) → globals (tipografía/animación) → glass
 // (superficies). glass.css va sin @layer para ganar el cascade a Tailwind.
