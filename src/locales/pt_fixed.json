@@ -414,7 +414,6 @@
     },
     "monitoreo-alarmas": {
       "label": "Central de monitoramento",
-      "alarm-queue": "Fila de alarmes",
       "alarm-panels": "Painéis",
       "alarm-signals": "Sinais",
       "alarm-reports": "Relatórios",
@@ -445,7 +444,8 @@
     "themeToDark": "Mudar para o modo escuro",
     "themeToggle": "Alternar tema",
     "goToDashboard": "Ir ao painel de controle",
-    "unreadMessages": "{{count}} mensagens não lidas"
+    "unreadMessages": "{{count}} mensagens não lidas",
+    "emergencias": "Centro de Emergências"
   },
   "settings": {
     "configuracion": {

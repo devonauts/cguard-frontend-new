@@ -13,6 +13,12 @@
     "path": "/activities"
   },
   {
+    "id": "emergencias",
+    "name": "Centro de Emergencias",
+    "icon": "Siren",
+    "path": "/alarm/queue"
+  },
+  {
     "id": "estaciones",
     "name": "Estaciones",
     "icon": "Radio",
@@ -149,11 +155,6 @@
     "icon": "Siren",
     "expandable": true,
     "subItems": [
-      {
-        "id": "alarm-queue",
-        "name": "Cola de Alarmas",
-        "path": "/alarm/queue"
-      },
       {
         "id": "alarm-panels",
         "name": "Paneles",

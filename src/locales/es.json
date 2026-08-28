@@ -5249,7 +5249,6 @@
     },
     "monitoreo-alarmas": {
       "label": "Central de Monitoreo",
-      "alarm-queue": "Cola de Alarmas",
       "alarm-panels": "Paneles",
       "alarm-signals": "Señales",
       "alarm-reports": "Reportes",
@@ -5280,7 +5279,8 @@
     "themeToDark": "Cambiar a modo oscuro",
     "themeToggle": "Cambiar tema",
     "goToDashboard": "Ir al panel de control",
-    "unreadMessages": "{{count}} mensajes sin leer"
+    "unreadMessages": "{{count}} mensajes sin leer",
+    "emergencias": "Centro de Emergencias"
   },
   "siteTour": {
     "newTour": "Nuevo Recorrido",

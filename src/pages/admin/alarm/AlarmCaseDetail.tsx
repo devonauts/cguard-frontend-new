@@ -313,7 +313,7 @@ export default function AlarmCaseDetail() {
               <>
                 <Button variant="ghost" onClick={() => navigate("/alarm/queue")}>
                   <ArrowLeft className="size-4" />
-                  Cola de alarmas
+                  Centro de Emergencias
                 </Button>
                 <Button variant="outline" onClick={() => load()} disabled={busy}>
                   {busy ? <Loader2 className="size-4 animate-spin" /> : <RefreshCw className="size-4" />}

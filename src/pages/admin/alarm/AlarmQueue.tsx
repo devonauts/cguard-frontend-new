@@ -160,8 +160,26 @@ export default function AlarmQueue() {
       <PageContainer width="wide">
         <PageHeader
           icon={<Siren />}
-          title="Cola de alarmas"
-          subtitle="Casos de la central receptora ordenados por prioridad"
+          /**
+           * ── DEJA DE LLAMARSE «COLA DE ALARMAS» ──────────────────────────
+           * Se llamaba así porque nació dentro de la Central de Monitoreo, el
+           * negocio de recibir señales de paneles de alarma. Pero medido el
+           * 2026-08-27: de los 29 casos que hay, DIECISÉIS son SOS de la app
+           * del cliente y TRECE son pánicos de vigilantes. De paneles, CERO —
+           * ese negocio todavía no arrancó.
+           *
+           * O sea que esta pantalla no es la cola de la central: es la consola
+           * de emergencias de la operación, y quien la busca la busca por ahí.
+           * El nombre viejo la escondía dentro de un módulo que la mayoría de
+           * las empresas no usa. Ahora vive en el primer nivel del menú, debajo
+           * de Actividad; Paneles, Señales, Reportes y Análisis se quedan en la
+           * Central de Monitoreo, que es su sitio.
+           *
+           * El nombre aguanta cuando entren los paneles: una alarma de panel
+           * también es una emergencia y también se atiende aquí.
+           */
+          title="Centro de Emergencias"
+          subtitle="Pánicos, SOS y alarmas activas, por prioridad"
           badges={loading ? null : (
             <>
               {criticas > 0 && (
