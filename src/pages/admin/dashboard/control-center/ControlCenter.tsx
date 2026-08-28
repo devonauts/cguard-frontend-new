@@ -82,7 +82,7 @@ function nombreDe(user?: { firstName?: string; lastName?: string; email?: string
 
 export default function ControlCenter() {
   const { t } = useTranslation();
-  usePageTitle("Panel de control");
+  usePageTitle(t("dashboard.pageTitle"));
   const { user } = useAuth();
   const esMovil = useEsMovil();
   // Se pinta con la caché del navegador y, en cuanto responde la cuenta, manda
@@ -134,9 +134,9 @@ export default function ControlCenter() {
 
   const c = data.counts;
   const resumen = [
-    `${c.onDuty ?? 0} en servicio`,
-    `${c.stations ?? 0} puestos activos`,
-    `${c.openIncidents ?? 0} incidentes abiertos`,
+    t("dashboard.sub.onDuty", { count: c.onDuty ?? 0 }),
+    t("dashboard.sub.stations", { count: c.stations ?? 0 }),
+    t("dashboard.sub.incidents", { count: c.openIncidents ?? 0 }),
   ].join(" · ");
 
   const railItems: RailItem[] = recursos.map((k) => ({ kpi: k, icon: KPI_ICON[k.key], to: k.to ?? KPI_ROUTES[k.key] }));
@@ -223,9 +223,9 @@ export default function ControlCenter() {
                 <div className="flex flex-col gap-5 xl:col-span-4">
                   <Panel
                     icon={<ShieldCheck />}
-                    title="Cobertura de puestos"
+                    title={t("dashboard.coverage.title")}
                     subtitle={t('comun.ahoraMismoSobreElTerreno')}
-                    action={<PanelLink to="/live-tracking">Ver en vivo</PanelLink>}
+                    action={<PanelLink to="/live-tracking">{t("dashboard.viewLive")}</PanelLink>}
                     bodyClassName="pt-1"
                   >
                     <CoverageGauge coverage={cobertura} onDuty={c.onDuty ?? 0} stations={c.stations ?? 0} />
@@ -234,7 +234,7 @@ export default function ControlCenter() {
                   <StatRail
                     icon={<Boxes />}
                     title={t("ui.ControlCenter.recursosDeLaOperacion", "Recursos de la operación")}
-                    subtitle="Puestos, mando y cartera"
+                    subtitle={t("dashboard.resources.sub")}
                     items={railItems}
                   />
                 </div>

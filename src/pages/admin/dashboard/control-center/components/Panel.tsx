@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 /**
  * Panel de cristal del centro de mando: cabecera (icono + título + subtítulo +
  * acción «Ver todo») y un halo del acento POR DETRÁS del cristal — es lo que el
@@ -95,8 +96,9 @@ export function TonePill({
 }
 
 /** Indicador de «esto se actualiza solo». El punto late; el texto no. */
-export function LivePip({ label = "En vivo", tone = "ok" as Tone }: { label?: string; tone?: Tone }) {
-  return <TonePill tone={tone} pulse>{label}</TonePill>;
+export function LivePip({ label, tone = "ok" as Tone }: { label?: string; tone?: Tone }) {
+  const { t } = useTranslation();
+  return <TonePill tone={tone} pulse>{label ?? t("dashboard.live")}</TonePill>;
 }
 
 /** Punto de estado sin animación — para listas donde 20 latidos serían ruido. */

@@ -9,11 +9,12 @@ import { FadeIn, IconTile } from "@/components/kit";
 import { clockOf } from "../tone";
 import { TonePill } from "./Panel";
 
+/** Devuelve la CLAVE del saludo; la traduce quien la pinta. */
 function saludo(): string {
   const h = new Date().getHours();
-  if (h < 12) return "Buenos días";
-  if (h < 19) return "Buenas tardes";
-  return "Buenas noches";
+  if (h < 12) return "dashboard.greeting.morning";
+  if (h < 19) return "dashboard.greeting.afternoon";
+  return "dashboard.greeting.evening";
 }
 
 export function CommandBar({
@@ -31,9 +32,9 @@ export function CommandBar({
 }) {
   const { t } = useTranslation();
   const enlace = demo
-    ? { tone: "brand" as const, label: "Datos de demostración" }
+    ? { tone: "brand" as const, label: t("dashboard.demoData") }
     : sseConnected
-    ? { tone: "ok" as const, label: "Enlace en vivo" }
+    ? { tone: "ok" as const, label: t("dashboard.liveLink") }
     : { tone: "warn" as const, label: "Sondeo activo" };
 
   return (
@@ -47,9 +48,9 @@ export function CommandBar({
         <div className="flex min-w-0 items-center gap-4">
           <IconTile size="lg"><Radar /></IconTile>
           <div className="min-w-0">
-            <div className="cg-eyebrow">Centro de mando</div>
+            <div className="cg-eyebrow">{t("dashboard.commandCenter")}</div>
             <h1 className="font-display mt-1 truncate text-2xl font-bold tracking-tight sm:text-[28px]">
-              {saludo()}, {userName}
+              {t(saludo())}, {userName}
             </h1>
             <p className="mt-1 truncate text-xs" style={{ color: "var(--ink-soft)" }}>{resumen}</p>
           </div>
@@ -98,14 +99,14 @@ export function CommandBar({
             className="cg-btn-glass cg-focus inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold"
           >
             <Maximize2 className="size-3.5" />
-            <span className="hidden sm:inline">Mapa completo</span>
+            <span className="hidden sm:inline">{t("dashboard.fullMap")}</span>
           </button>
 
           <button
             type="button"
             onClick={onRefresh}
-            title="Actualizar"
-            aria-label="Actualizar"
+            title={t("dashboard.refresh")}
+            aria-label={t("dashboard.refresh")}
             className="cg-btn-glass cg-focus grid size-9 place-items-center rounded-full"
           >
             <RefreshCw className="size-4" />
@@ -117,7 +118,7 @@ export function CommandBar({
             className="cg-btn-brand cg-focus inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-xs font-semibold"
           >
             <SlidersHorizontal className="size-3.5" />
-            <span className="hidden sm:inline">Personalizar</span>
+            <span className="hidden sm:inline">{t("dashboard.customize")}</span>
           </button>
         </div>
       </div>

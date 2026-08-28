@@ -192,7 +192,7 @@ export function formatWhen(iso?: string | null): string {
   if (!iso) return '—';
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return '—';
-  return d.toLocaleString('es', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleString(i18n.language || 'es', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
 }
 
 /** Fecha completa con segundos — la bitácora de un caso, donde el segundo ES el
@@ -201,7 +201,7 @@ export function formatWhenFull(iso?: string | null): string {
   if (!iso) return '—';
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return '—';
-  return d.toLocaleString('es', {
+  return d.toLocaleString(i18n.language || 'es', {
     day: '2-digit', month: 'short', year: 'numeric',
     hour: '2-digit', minute: '2-digit', second: '2-digit',
   });

@@ -4702,7 +4702,76 @@
         "type": "Tipo"
       }
     },
-    "title": "Painel de controle"
+    "title": "Painel de controle",
+    "pageTitle": "Painel de controlo",
+    "commandCenter": "Centro de comando",
+    "liveLink": "Ligação ao vivo",
+    "demoData": "Dados de demonstração",
+    "refresh": "Atualizar",
+    "fullMap": "Mapa completo",
+    "customize": "Personalizar",
+    "noData": "Sem dados disponíveis",
+    "greeting": {
+      "morning": "Bom dia",
+      "afternoon": "Boa tarde",
+      "evening": "Boa noite"
+    },
+    "sub": {
+      "onDuty_one": "1 em serviço",
+      "onDuty_other": "{{count}} em serviço",
+      "stations_one": "1 posto ativo",
+      "stations_other": "{{count}} postos ativos",
+      "incidents_one": "1 incidente aberto",
+      "incidents_other": "{{count}} incidentes abertos"
+    },
+    "kpi": {
+      "onDuty": "Vigilantes em serviço",
+      "onDutySub_one": "de 1 vigilante",
+      "onDutySub_other": "de {{count}} vigilantes",
+      "stations": "Postos ativos",
+      "stationsSub": "{{ahora}} em turno agora · {{sedes}} sedes",
+      "sites_one": "1 sede",
+      "sites_other": "{{count}} sedes",
+      "incidents": "Incidentes abertos",
+      "today": "{{count}} hoje",
+      "patrols": "Rondas hoje",
+      "scanned": "pontos lidos",
+      "coveredOf": "{{cubiertos}}/{{total}} cobertos",
+      "offShift_one": "1 fora de turno",
+      "offShift_other": "{{count}} fora de turno",
+      "postsOffShift_one": "1 posto fora de turno",
+      "postsOffShift_other": "{{count}} postos fora de turno"
+    },
+    "coverage": {
+      "title": "Cobertura de postos",
+      "normal": "Cobertura normal",
+      "tight": "Cobertura justa",
+      "none": "Sem cobertura",
+      "covered": "Postos cobertos",
+      "uncovered": "Postos descobertos",
+      "noData": "Sem dados",
+      "eyebrow": "Cobertura",
+      "footnote": "Vigilantes registados face a postos ativos"
+    },
+    "map": {
+      "title": "Operações em tempo real",
+      "waiting": "À espera de posições",
+      "items_one": "1 elemento no mapa",
+      "items_other": "{{count}} elementos no mapa"
+    },
+    "resources": {
+      "sub": "Postos, comando e carteira"
+    },
+    "live": "Ao vivo",
+    "viewLive": "Ver ao vivo",
+    "status": {
+      "online": "Em linha",
+      "offline": "Fora de linha",
+      "patrol": "Em ronda",
+      "incident": "Incidente",
+      "delayed": "Atrasado",
+      "emergency": "Emergência"
+    }
   },
   "projects": {
     "actions": {
@@ -7265,7 +7334,17 @@
       "4": "P4 · Baixa",
       "5": "P5 · Info"
     },
-    "sinDatos": "Sem dados"
+    "sinDatos": "Sem dados",
+    "source": {
+      "clientApp": "App Cliente · SOS",
+      "clientAppShort": "SOS Cliente",
+      "workerApp": "App Vigilante · Pânico",
+      "workerAppShort": "Pânico",
+      "manual": "Criada manualmente",
+      "manualShort": "Manual",
+      "panel": "Sistema de alarme",
+      "panelShort": "Painel"
+    }
   },
   "nomina": {
     "estado": {
@@ -7643,5 +7722,47 @@
   },
   "brand": {
     "tagline": "Segurança Inteligente"
+  },
+  "emergency": {
+    "title": "Centro de Emergências",
+    "subtitle": "Pânicos, SOS e alarmes ativos, por prioridade",
+    "refresh": "Atualizar",
+    "statusFilter": "Estado",
+    "section": "Emergências",
+    "loadError": "Não foi possível carregar os alarmes",
+    "newAlarm": "Novo alarme",
+    "noneOpen": "Sem casos abertos",
+    "criticalOpen_one": "1 crítica em aberto",
+    "criticalOpen_other": "{{count}} críticas em aberto",
+    "casesOpen_one": "1 caso aberto",
+    "casesOpen_other": "{{count}} casos abertos",
+    "filter": {
+      "all": "Todas",
+      "queued": "Na fila",
+      "acknowledged": "Reconhecidas",
+      "verifying": "Verificando",
+      "dispatched": "Despachadas",
+      "resolved": "Resolvidas",
+      "closed": "Fechadas"
+    },
+    "stat": {
+      "total": "Total",
+      "queued": "Na fila",
+      "verifying": "Verificando",
+      "resolved": "Resolvidas"
+    },
+    "empty": {
+      "title": "Sem emergências",
+      "none": "Não há nenhuma emergência ativa neste momento.",
+      "filtered": "Não há emergências com este estado."
+    },
+    "pill": {
+      "inQueue": "na fila",
+      "duration": "duração",
+      "resolvedIn": "resolvida em"
+    },
+    "chip": {
+      "incident": "Incidente"
+    }
   }
 }

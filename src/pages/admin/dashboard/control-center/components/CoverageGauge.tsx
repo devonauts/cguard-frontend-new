@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 /**
  * El instrumento de cobertura: qué parte de los puestos tiene un vigilante
  * encima AHORA. Es la pregunta que un jefe de operaciones hace primero, así que
@@ -19,14 +20,15 @@ const SWEEP = 75; // % de la circunferencia (pathLength = 100)
 export function CoverageGauge({ coverage, onDuty, stations }: {
   coverage: number | null; onDuty: number; stations: number;
 }) {
+  const { t } = useTranslation();
   const reduce = useReducedMotion();
   const pct = coverage == null ? 0 : Math.max(0, Math.min(100, coverage));
   const sinCubrir = Math.max(0, stations - onDuty);
   const salud =
-    coverage == null ? { tone: "neutral", label: "Sin datos" }
-    : coverage >= 80 ? { tone: "ok", label: "Cobertura normal" }
-    : coverage >= 50 ? { tone: "warn", label: "Cobertura justa" }
-    : { tone: "bad", label: "Puestos descubiertos" };
+    coverage == null ? { tone: "neutral", label: t("dashboard.coverage.noData") }
+    : coverage >= 80 ? { tone: "ok", label: t("dashboard.coverage.normal") }
+    : coverage >= 50 ? { tone: "warn", label: t("dashboard.coverage.tight") }
+    : { tone: "bad", label: t("dashboard.coverage.uncovered") };
 
   return (
     <div className="flex flex-col items-center px-5 pb-5 pt-4">
@@ -61,20 +63,20 @@ export function CoverageGauge({ coverage, onDuty, stations }: {
             {coverage == null ? "—" : fmtValue(coverage)}
             {coverage != null && <span className="text-xl" style={{ color: "var(--ink-faint)" }}>%</span>}
           </div>
-          <div className="cg-eyebrow mt-1.5">Cobertura</div>
+          <div className="cg-eyebrow mt-1.5">{t("dashboard.coverage.eyebrow")}</div>
         </div>
       </div>
 
       <StatusBadge tone={salud.tone} className="mt-1">{salud.label}</StatusBadge>
 
       <div className="mt-5 w-full space-y-3">
-        <Linea label="Puestos cubiertos" value={`${onDuty}/${stations}`} pct={stations ? (onDuty / stations) * 100 : 0} tone="ok" />
-        <Linea label="Sin cobertura" value={String(sinCubrir)} pct={stations ? (sinCubrir / stations) * 100 : 0} tone={sinCubrir > 0 ? "warn" : "neutral"} />
+        <Linea label={t("dashboard.coverage.covered")} value={`${onDuty}/${stations}`} pct={stations ? (onDuty / stations) * 100 : 0} tone="ok" />
+        <Linea label={t("dashboard.coverage.none")} value={String(sinCubrir)} pct={stations ? (sinCubrir / stations) * 100 : 0} tone={sinCubrir > 0 ? "warn" : "neutral"} />
       </div>
 
       <div className="mt-4 flex items-center gap-2 text-[11px]" style={{ color: "var(--ink-faint)" }}>
         <ShieldCheck className="size-3.5" />
-        Vigilantes fichados frente a puestos activos
+        {t("dashboard.coverage.footnote")}
       </div>
     </div>
   );

@@ -25,6 +25,7 @@ import {
   type AlarmCase,
   type AlarmCaseStatus,
 } from "@/lib/api/alarmService";
+import { useTranslation } from "react-i18next";
 import { openEventStream } from "@/lib/api/eventStream";
 import {
   CriticalRail, ClockPill, PriorityPill, STATUS_META, OPEN_STATUSES,
@@ -34,19 +35,19 @@ import {
 
 
 /* ------------------------------------------------------------------ */
-/* Metadata (Spanish labels)                                           */
+/* Metadata (labels via i18n)                                          */
 /* ------------------------------------------------------------------ */
 
 type StatusFilter = "all" | AlarmCaseStatus;
 
-const STATUS_FILTERS: { value: StatusFilter; label: string }[] = [
-  { value: "all", label: "Todas" },
-  { value: "queued", label: "En cola" },
-  { value: "acknowledged", label: "Reconocidas" },
-  { value: "verifying", label: "Verificando" },
-  { value: "dispatched", label: "Despachadas" },
-  { value: "resolved", label: "Resueltas" },
-  { value: "closed", label: "Cerradas" },
+const STATUS_FILTERS: { value: StatusFilter; key: string }[] = [
+  { value: "all", key: "emergency.filter.all" },
+  { value: "queued", key: "emergency.filter.queued" },
+  { value: "acknowledged", key: "emergency.filter.acknowledged" },
+  { value: "verifying", key: "emergency.filter.verifying" },
+  { value: "dispatched", key: "emergency.filter.dispatched" },
+  { value: "resolved", key: "emergency.filter.resolved" },
+  { value: "closed", key: "emergency.filter.closed" },
 ];
 
 /** Lo único propio de esta pantalla: qué marca de tiempo ordena la cola. Todo
@@ -61,6 +62,7 @@ function caseTime(c: AlarmCase): string {
 /* ------------------------------------------------------------------ */
 
 export default function AlarmQueue() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [cases, setCases] = React.useState<AlarmCase[]>([]);
   const [loading, setLoading] = React.useState(true);
@@ -77,7 +79,7 @@ export default function AlarmQueue() {
         setCases(Array.isArray(rows) ? rows : []);
       } catch (e) {
         const err = e as { data?: { message?: string }; message?: string };
-        toast.error(err?.data?.message || err?.message || "No se pudieron cargar las alarmas");
+        toast.error(err?.data?.message || err?.message || t("emergency.loadError"));
       } finally {
         setLoading(false);
       }
@@ -102,8 +104,9 @@ export default function AlarmQueue() {
   // Real-time: subscribe to the platform SSE stream; refresh instantly on alarm events.
   React.useEffect(() => {
     const tid = localStorage.getItem("tenantId") || "";
-    let t: ReturnType<typeof setTimeout> | null = null;
-    const debouncedReload = () => { if (t) clearTimeout(t); t = setTimeout(() => load({ silent: true }), 600); };
+    // Se llamaba `t` y tapaba la función de traducción del componente.
+    let temporizador: ReturnType<typeof setTimeout> | null = null;
+    const debouncedReload = () => { if (temporizador) clearTimeout(temporizador); temporizador = setTimeout(() => load({ silent: true }), 600); };
     // Shared helper centralizes the token-in-URL setup (see eventStream.ts security note).
     const es = openEventStream(tid);
     if (es) {
@@ -112,7 +115,7 @@ export default function AlarmQueue() {
           const data = JSON.parse(ev.data);
           if (typeof data?.eventType === "string" && data.eventType.startsWith("alarm")) {
             if (data.eventType === "alarm.case.new" || data.eventType === "alarm.case.escalated") {
-              toast(data.title || "Nueva alarma", { description: data.body });
+              toast(data.title || t("emergency.newAlarm"), { description: data.body });
             }
             debouncedReload();
           }
@@ -120,7 +123,7 @@ export default function AlarmQueue() {
       };
       es.addEventListener("notification", onEvent as EventListener);
     } // else SSE unsupported — the poll covers it
-    return () => { es?.close(); if (t) clearTimeout(t); };
+    return () => { es?.close(); if (temporizador) clearTimeout(temporizador); };
   }, [load]);
 
   // Sort by priority (asc, 1=critical first) then by time (newest first)
@@ -178,21 +181,21 @@ export default function AlarmQueue() {
            * El nombre aguanta cuando entren los paneles: una alarma de panel
            * también es una emergencia y también se atiende aquí.
            */
-          title="Centro de Emergencias"
-          subtitle="Pánicos, SOS y alarmas activas, por prioridad"
+          title={t("emergency.title")}
+          subtitle={t("emergency.subtitle")}
           badges={loading ? null : (
             <>
               {criticas > 0 && (
                 <StatusBadge tone="bad">
-                  {criticas === 1 ? "1 crítica sin cerrar" : `${criticas} críticas sin cerrar`}
+                  {t("emergency.criticalOpen", { count: criticas })}
                 </StatusBadge>
               )}
               {abiertas > 0 ? (
                 <StatusBadge tone={criticas > 0 ? "warn" : "info"}>
-                  {abiertas === 1 ? "1 caso abierto" : `${abiertas} casos abiertos`}
+                  {t("emergency.casesOpen", { count: abiertas })}
                 </StatusBadge>
               ) : (
-                <StatusBadge tone="ok">Sin casos abiertos</StatusBadge>
+                <StatusBadge tone="ok">{t("emergency.noneOpen")}</StatusBadge>
               )}
             </>
           )}
@@ -207,23 +210,23 @@ export default function AlarmQueue() {
               ) : (
                 <RefreshCw className="size-4" />
               )}
-              Actualizar
+              {t("emergency.refresh")}
             </Button>
           )}
         />
 
         <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <StatCard label="Total" value={cases.length} icon={<Siren />} accent="neutral" />
-          <StatCard label="En cola" value={counts['queued'] || 0} icon={<Clock />} accent="bad" />
-          <StatCard label="Verificando" value={counts['verifying'] || 0} icon={<ShieldAlert />} accent="info" />
-          <StatCard label="Resueltas" value={counts['resolved'] || 0} icon={<Activity />} accent="ok" />
+          <StatCard label={t("emergency.stat.total")} value={cases.length} icon={<Siren />} accent="neutral" />
+          <StatCard label={t("emergency.stat.queued")} value={counts['queued'] || 0} icon={<Clock />} accent="bad" />
+          <StatCard label={t("emergency.stat.verifying")} value={counts['verifying'] || 0} icon={<ShieldAlert />} accent="info" />
+          <StatCard label={t("emergency.stat.resolved")} value={counts['resolved'] || 0} icon={<Activity />} accent="ok" />
         </Stagger>
 
         {/* Filtros */}
         <Toolbar>
           <span className="ml-1 mr-1 flex items-center gap-1.5 text-xs font-semibold" style={{ color: 'var(--ink-soft)' }}>
             <Filter className="size-3.5" />
-            Estado
+            {t("emergency.statusFilter")}
           </span>
           <Segmented
             className="flex-wrap"
@@ -233,7 +236,7 @@ export default function AlarmQueue() {
               value: f.value,
               label: (
                 <span className="inline-flex items-center gap-1.5">
-                  {f.label}
+                  {t(f.key)}
                   <span className="tabular-nums opacity-70">
                     {f.value === "all" ? cases.length : counts[f.value] || 0}
                   </span>
@@ -247,16 +250,16 @@ export default function AlarmQueue() {
         {/* «Casos de alarma» era el vocabulario de la central receptora. Lo
             que hay aquí son emergencias: SOS de clientes, pánicos de
             vigilantes y —cuando existan— alarmas de panel. */}
-        <Section title="Emergencias" icon={<Siren />}>
+        <Section title={t("emergency.section")} icon={<Siren />}>
         {loading ? (
           <SkeletonCards count={4} className="sm:grid-cols-1" />
         ) : sorted.length === 0 ? (
           <EmptyState
             icon={<Siren />}
-            title="Sin emergencias"
+            title={t("emergency.empty.title")}
             description={status === "all"
-              ? "No hay ninguna emergencia activa en este momento."
-              : "No hay emergencias con este estado."}
+              ? t("emergency.empty.none")
+              : t("emergency.empty.filtered")}
           />
         ) : (
           <div className="space-y-3">
@@ -333,7 +336,7 @@ export default function AlarmQueue() {
                              un realce de marca. Iba en el acento configurable. */
                           <StatusBadge tone="bad" dot={false}>
                             <AlertTriangle className="size-3.5" />
-                            Incidente
+                            {t("emergency.chip.incident")}
                           </StatusBadge>
                         ) : null}
                       </div>
@@ -363,7 +366,7 @@ export default function AlarmQueue() {
                           <Clock className="size-3.5" />
                           {elapsedSince(caseTime(c), now)}
                         </ClockPill>
-                        <span className="cg-eyebrow">en cola</span>
+                        <span className="cg-eyebrow">{t("emergency.pill.inQueue")}</span>
                       </div>
                     ) : (
                       <div className="hidden shrink-0 flex-col items-end gap-1 sm:flex">
@@ -375,7 +378,7 @@ export default function AlarmQueue() {
                           )}
                         </ClockPill>
                         <span className="cg-eyebrow">
-                          {(c.status || "") === "closed" ? "duración" : "resuelta en"}
+                          {(c.status || "") === "closed" ? t("emergency.pill.duration") : t("emergency.pill.resolvedIn")}
                         </span>
                       </div>
                     )}

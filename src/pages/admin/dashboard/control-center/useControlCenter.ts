@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import i18n from "@/i18n";
 import api, { getAuthToken } from "@/lib/api";
 import { crearSocket, cerrarSocket } from "@/lib/socket";
 import { openEventStream } from "@/lib/api/eventStream";
@@ -199,14 +200,14 @@ export function calcularCobertura(
     return {
       coverage: Math.min(100, Math.round((cubiertos / queTocan) * 100)),
       coverageSub:
-        `${cubiertos}/${queTocan} cubiertos` +
-        (fueraDeTurno > 0 ? ` · ${fueraDeTurno} fuera de turno` : ""),
+        i18n.t("dashboard.kpi.coveredOf", { cubiertos, total: queTocan }) +
+        (fueraDeTurno > 0 ? " · " + i18n.t("dashboard.kpi.offShift", { count: fueraDeTurno }) : ""),
     };
   }
   if (resumen && fueraDeTurno > 0) {
     // Todo cerrado ahora mismo. NO es un 0 %: no hay nada que cubrir, y pintar
     // un cero rojo diría exactamente lo contrario de lo que pasa.
-    return { coverage: null, coverageSub: `${fueraDeTurno} puestos fuera de turno` };
+    return { coverage: null, coverageSub: i18n.t("dashboard.kpi.postsOffShift", { count: fueraDeTurno }) };
   }
   return {
     coverage: totalPuestos > 0 ? Math.min(100, Math.round((onDuty / totalPuestos) * 100)) : null,
@@ -471,19 +472,19 @@ export function useControlCenter(intervalSec = 15): ControlCenterData & { refres
 
       // ── KPIs (real where available; fallback flagged otherwise) ──
       const kpis: Kpi[] = [
-        kpi("onDuty", "Vigilantes en servicio", onDuty, { status: onDuty > 0 ? "online" : "offline", sub: `de ${counts.guards || onDuty} vigilantes` }),
+        kpi("onDuty", i18n.t("dashboard.kpi.onDuty"), onDuty, { status: onDuty > 0 ? "online" : "offline", sub: i18n.t("dashboard.kpi.onDutySub", { count: counts.guards || onDuty }) }),
         // «Puestos activos» es el total de puestos dados de alta, no los que
         // están operando ahora — la palabra «activos» se leía como lo segundo.
         // Se dice cuántos tocan ahora mismo, que es la pregunta real.
-        kpi("stations", "Puestos activos", counts.stations, {
+        kpi("stations", i18n.t("dashboard.kpi.stations"), counts.stations, {
           status: "patrol",
           sub: puestosQueTocanAhora != null
-            ? `${puestosQueTocanAhora} en turno ahora · ${counts.postSites || 0} sedes`
-            : `${counts.postSites || 0} sedes`,
+            ? i18n.t("dashboard.kpi.stationsSub", { ahora: puestosQueTocanAhora, sedes: counts.postSites || 0 })
+            : i18n.t("dashboard.kpi.sites", { count: counts.postSites || 0 }),
         }),
-        kpi("openIncidents", "Incidentes abiertos", openIncidents, { status: openIncidents > 0 ? "incident" : "online", sub: `${incidentsToday} hoy`, spark: incSpark }),
-        kpi("patrolsToday", "Rondas hoy", patrolsToday ?? "—", { status: (patrolsToday ?? 0) > 0 ? "patrol" : "neutral", sub: "puntos escaneados", fallback: patrolsToday == null }),
-        kpi("coverage", "Cobertura de puestos", coverage ?? "—", { unit: coverage != null ? "%" : "", status: coverage == null ? "neutral" : coverage >= 80 ? "online" : coverage >= 50 ? "delayed" : "incident", sub: coverageSub, fallback: coverage == null }),
+        kpi("openIncidents", i18n.t("dashboard.kpi.incidents"), openIncidents, { status: openIncidents > 0 ? "incident" : "online", sub: i18n.t("dashboard.kpi.today", { count: incidentsToday }), spark: incSpark }),
+        kpi("patrolsToday", i18n.t("dashboard.kpi.patrols"), patrolsToday ?? "—", { status: (patrolsToday ?? 0) > 0 ? "patrol" : "neutral", sub: i18n.t("dashboard.kpi.scanned"), fallback: patrolsToday == null }),
+        kpi("coverage", i18n.t("dashboard.coverage.title"), coverage ?? "—", { unit: coverage != null ? "%" : "", status: coverage == null ? "neutral" : coverage >= 80 ? "online" : coverage >= 50 ? "delayed" : "incident", sub: coverageSub, fallback: coverage == null }),
         kpi("supervisors", "Supervisores", supervisors, { status: "online", sub: `equipo de ${counts.team || 0}`, hint: "Estado en línea no disponible en backend.", fallback: supervisors === 0 }),
         kpi("response", "Tiempo de respuesta", lastResponse ?? "—", { unit: lastResponse != null ? "min" : "", status: "neutral", trend: trendOf(responseTrend, true), spark: respSpark, sub: "promedio mensual", fallback: lastResponse == null, hint: lastResponse == null ? "Sin datos de desempeño." : undefined }),
         kpi("clients", "Clientes", counts.clients, { status: "neutral", sub: `${counts.stations} puestos` }),

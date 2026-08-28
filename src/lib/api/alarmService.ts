@@ -1,4 +1,5 @@
 import { ApiService } from "@/services/api/apiService";
+import i18n from '@/i18n';
 
 const tid = (): string => localStorage.getItem("tenantId") || "";
 
@@ -195,18 +196,18 @@ export function alarmSourceMeta(source?: string | null): {
 } {
   switch (source) {
     case 'client_app':
-      return { label: 'App Cliente · SOS', short: 'SOS Cliente', tone: 'bad' };
+      return { label: i18n.t('alarm.source.clientApp'), short: i18n.t('alarm.source.clientAppShort'), tone: 'bad' };
     case 'worker_app':
       // `bad`, NO `warn`. Antes era naranja —se conservó al migrar de clases a
       // tonos— y quedaba el absurdo de que el SOS de un cliente salía rojo y el
       // botón de pánico de un vigilante ámbar. El backend dispara la MISMA ruta
       // de pánico completa para los dos: pintar uno menos grave es mentir.
-      return { label: 'App Vigilante · Pánico', short: 'Pánico', tone: 'bad' };
+      return { label: i18n.t('alarm.source.workerApp'), short: i18n.t('alarm.source.workerAppShort'), tone: 'bad' };
     case 'manual':
-      return { label: 'Creada manualmente', short: 'Manual', tone: 'neutral' };
+      return { label: i18n.t('alarm.source.manual'), short: i18n.t('alarm.source.manualShort'), tone: 'neutral' };
     case 'alarm_panel':
     default:
-      return { label: 'Sistema de alarma', short: 'Panel', tone: 'info' };
+      return { label: i18n.t('alarm.source.panel'), short: i18n.t('alarm.source.panelShort'), tone: 'info' };
   }
 }
 

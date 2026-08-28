@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 /**
  * La métrica grande de la fila superior: cifra enorme, píldora de variación y
  * una pista debajo. Es la lectura de un instrumento, así que todo va en
@@ -19,10 +20,11 @@ import { TonePill } from "./Panel";
 export function MetricHero({ kpi, icon: Icon, to, className }: {
   kpi: Kpi; icon?: LucideIcon; to?: string; className?: string;
 }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const tone = toneOf(kpi.status);
   const dir = deltaDirection(kpi.trend);
-  const estado = kpi.status && kpi.status !== "neutral" ? STATUS_LABEL[kpi.status as LiveStatus] : null;
+  const estado = kpi.status && kpi.status !== "neutral" ? t(STATUS_LABEL[kpi.status as LiveStatus]) : null;
   const spark = kpi.spark && kpi.spark.length > 1 ? kpi.spark : null;
   const ir = to ? () => navigate(to) : undefined;
 
@@ -79,7 +81,7 @@ export function MetricHero({ kpi, icon: Icon, to, className }: {
         )}
         {kpi.fallback && (
           <TonePill tone="warn" className="mb-1.5" >
-            <span title={kpi.hint || "Sin datos disponibles"}>s/d</span>
+            <span title={kpi.hint || t("dashboard.noData")}>s/d</span>
           </TonePill>
         )}
       </div>

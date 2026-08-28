@@ -24,8 +24,8 @@ export function MapPanel({ entities, prefs, defaultCenter, live, onFull, height 
     <Panel
       className={className}
       icon={<MapIcon />}
-      title="Operaciones en tiempo real"
-      subtitle={enMapa ? `${enMapa} elementos en el mapa` : "Esperando posiciones"}
+      title={t("dashboard.map.title")}
+      subtitle={enMapa ? t("dashboard.map.items", { count: enMapa }) : t("dashboard.map.waiting")}
       live={live}
       action={
         <button

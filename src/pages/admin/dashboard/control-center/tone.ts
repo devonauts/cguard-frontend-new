@@ -14,13 +14,17 @@ import type { LiveStatus } from "./types";
 
 export type Tone = "brand" | "neutral" | "ok" | "warn" | "bad" | "info";
 
+/**
+ * CLAVES de traducción, no texto. Estaban fijadas en español y salían así
+ * aunque el CRM estuviera en inglés; quien las pinta llama a `t()`.
+ */
 export const STATUS_LABEL: Record<LiveStatus, string> = {
-  online: "En línea",
-  offline: "Fuera de línea",
-  patrol: "En ronda",
-  incident: "Incidente",
-  delayed: "Retrasado",
-  emergency: "Emergencia",
+  online: "dashboard.status.online",
+  offline: "dashboard.status.offline",
+  patrol: "dashboard.status.patrol",
+  incident: "dashboard.status.incident",
+  delayed: "dashboard.status.delayed",
+  emergency: "dashboard.status.emergency",
 };
 
 const STATUS_TONE: Record<LiveStatus, Tone> = {

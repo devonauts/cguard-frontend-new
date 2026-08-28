@@ -1030,6 +1030,75 @@
         "time": "Time",
         "type": "Type"
       }
+    },
+    "pageTitle": "Dashboard",
+    "commandCenter": "Command center",
+    "liveLink": "Live link",
+    "demoData": "Demo data",
+    "refresh": "Refresh",
+    "fullMap": "Full map",
+    "customize": "Customize",
+    "noData": "No data available",
+    "greeting": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening"
+    },
+    "sub": {
+      "onDuty_one": "1 on duty",
+      "onDuty_other": "{{count}} on duty",
+      "stations_one": "1 active post",
+      "stations_other": "{{count}} active posts",
+      "incidents_one": "1 open incident",
+      "incidents_other": "{{count}} open incidents"
+    },
+    "kpi": {
+      "onDuty": "Officers on duty",
+      "onDutySub_one": "of 1 officer",
+      "onDutySub_other": "of {{count}} officers",
+      "stations": "Active posts",
+      "stationsSub": "{{ahora}} on shift now · {{sedes}} sites",
+      "sites_one": "1 site",
+      "sites_other": "{{count}} sites",
+      "incidents": "Open incidents",
+      "today": "{{count}} today",
+      "patrols": "Tours today",
+      "scanned": "checkpoints scanned",
+      "coveredOf": "{{cubiertos}}/{{total}} covered",
+      "offShift_one": "1 off shift",
+      "offShift_other": "{{count}} off shift",
+      "postsOffShift_one": "1 post off shift",
+      "postsOffShift_other": "{{count}} posts off shift"
+    },
+    "coverage": {
+      "title": "Post coverage",
+      "normal": "Coverage normal",
+      "tight": "Coverage tight",
+      "none": "No coverage",
+      "covered": "Posts covered",
+      "uncovered": "Posts uncovered",
+      "noData": "No data",
+      "eyebrow": "Coverage",
+      "footnote": "Officers clocked in against active posts"
+    },
+    "map": {
+      "title": "Live operations",
+      "waiting": "Waiting for positions",
+      "items_one": "1 item on the map",
+      "items_other": "{{count}} items on the map"
+    },
+    "resources": {
+      "sub": "Posts, command and portfolio"
+    },
+    "live": "Live",
+    "viewLive": "View live",
+    "status": {
+      "online": "Online",
+      "offline": "Offline",
+      "patrol": "On patrol",
+      "incident": "Incident",
+      "delayed": "Delayed",
+      "emergency": "Emergency"
     }
   },
   "dispatcher": {
@@ -9309,7 +9378,17 @@
       "4": "P4 · Low",
       "5": "P5 · Info"
     },
-    "sinDatos": "No data"
+    "sinDatos": "No data",
+    "source": {
+      "clientApp": "Client App · SOS",
+      "clientAppShort": "Client SOS",
+      "workerApp": "Guard App · Panic",
+      "workerAppShort": "Panic",
+      "manual": "Created manually",
+      "manualShort": "Manual",
+      "panel": "Alarm system",
+      "panelShort": "Panel"
+    }
   },
   "nomina": {
     "estado": {
@@ -9687,5 +9766,47 @@
   },
   "brand": {
     "tagline": "Intelligent Security"
+  },
+  "emergency": {
+    "title": "Emergency Center",
+    "subtitle": "Panic alerts, SOS and active alarms, by priority",
+    "refresh": "Refresh",
+    "statusFilter": "Status",
+    "section": "Emergencies",
+    "loadError": "Could not load the alarms",
+    "newAlarm": "New alarm",
+    "noneOpen": "No open cases",
+    "criticalOpen_one": "1 critical still open",
+    "criticalOpen_other": "{{count}} critical still open",
+    "casesOpen_one": "1 open case",
+    "casesOpen_other": "{{count}} open cases",
+    "filter": {
+      "all": "All",
+      "queued": "In queue",
+      "acknowledged": "Acknowledged",
+      "verifying": "Verifying",
+      "dispatched": "Dispatched",
+      "resolved": "Resolved",
+      "closed": "Closed"
+    },
+    "stat": {
+      "total": "Total",
+      "queued": "In queue",
+      "verifying": "Verifying",
+      "resolved": "Resolved"
+    },
+    "empty": {
+      "title": "No emergencies",
+      "none": "There are no active emergencies right now.",
+      "filtered": "No emergencies with this status."
+    },
+    "pill": {
+      "inQueue": "in queue",
+      "duration": "duration",
+      "resolvedIn": "resolved in"
+    },
+    "chip": {
+      "incident": "Incident"
+    }
   }
 }
