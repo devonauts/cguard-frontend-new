@@ -150,11 +150,13 @@ export default function AuthShell({
               {iniciales(brandName)}
             </div>
           ) : (
-            <img
-              src="/assets/logo/c-guard-logo.png"
-              alt={t('auth.landing.logo_alt', { defaultValue: 'C-Guard Pro' })}
-              className="mb-5 h-12 object-contain dark:brightness-0 dark:invert"
-            />
+            <span className="cg-logo-sheen mb-5">
+              <img
+                src="/assets/logo/c-guard-logo.png"
+                alt={t('auth.landing.logo_alt', { defaultValue: 'C-Guard Pro' })}
+                className="h-12 object-contain dark:brightness-0 dark:invert"
+              />
+            </span>
           )}
 
           <span

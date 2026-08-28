@@ -17,11 +17,13 @@ export default function SplashScreen() {
     >
       {/* Logo y texto */}
       <div className="flex flex-col items-center">
-        <img
-          src="/assets/logo/c-guard-logo.png"
-          alt="C Guard logo"
-          className="w-52 select-none dark:brightness-0 dark:invert"
-        />
+        <span className="cg-logo-sheen">
+          <img
+            src="/assets/logo/c-guard-logo.png"
+            alt="C Guard logo"
+            className="w-52 select-none dark:brightness-0 dark:invert"
+          />
+        </span>
 
         {/* <div className="text-center">
           <h1 className="text-2xl font-bold text-[#0c2245] tracking-tight">

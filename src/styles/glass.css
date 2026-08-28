@@ -1045,3 +1045,56 @@ button, [role="button"] { transition: transform 0.09s var(--ease); }
   .cg-hoja { transition: none; }
   .cg-carrusel { scroll-behavior: auto; }
 }
+
+/* ── Destello de cristal sobre el logo de marca ──────────────────────────────
+   El mismo barrido especular que llevan los iconos, aplicado al logotipo del
+   arranque y de la pantalla de acceso. Va recortado por la silueta del propio
+   PNG (`mask-image`), así que la luz sólo corre por encima del logo y no por su
+   caja.
+
+   Cambia de signo según el tema, y no por gusto: en claro el logo es dorado
+   sobre fondo claro y la banda tiene que ser LUZ; en oscuro el logo se invierte
+   a blanco (`dark:brightness-0 dark:invert`), y una banda blanca sobre blanco
+   no se vería — ahí la que lee es una banda de SOMBRA. Es el mismo principio
+   por el que el icono lleva contorno oscuro y filo claro a la vez.
+
+   Movimiento: pasa una vez cada 6 s y no se queda dando vueltas encima. El
+   producto se mira ocho horas seguidas. */
+.cg-logo-sheen { position: relative; display: inline-block; }
+.cg-logo-sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  -webkit-mask-image: url("/assets/logo/c-guard-logo.png");
+  mask-image: url("/assets/logo/c-guard-logo.png");
+  -webkit-mask-size: contain; mask-size: contain;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center; mask-position: center;
+  background: linear-gradient(
+    105deg,
+    transparent 38%,
+    rgba(255, 255, 255, 0.9) 50%,
+    transparent 62%
+  );
+  background-size: 300% 100%;
+  mix-blend-mode: screen;
+  animation: cg-logo-sweep 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+html.dark .cg-logo-sheen::after {
+  background: linear-gradient(
+    105deg,
+    transparent 38%,
+    rgba(8, 12, 24, 0.72) 50%,
+    transparent 62%
+  );
+  mix-blend-mode: multiply;
+}
+@keyframes cg-logo-sweep {
+  0%, 8%   { background-position: 140% 0; }
+  42%      { background-position: -40% 0; }
+  100%     { background-position: -40% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cg-logo-sheen::after { animation: none; opacity: 0; }
+}
