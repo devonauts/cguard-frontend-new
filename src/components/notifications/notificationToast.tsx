@@ -63,10 +63,21 @@ export function targetForNotification(n: PlatformNotification): string {
 
   // ── SOS / panic / alarm-case → the alarm case (acknowledge / action plan /
   // dispatch / resolve). Falls back to the linked incident, then the queue.
-  if (type === 'panic.alert' || type.startsWith('alarm')) {
-    if (p.caseId) return `/alarm/case/${p.caseId}`;
-    if (id) return `/reports/incident/${id}`;
-    return '/alarm/queue';
+  /**
+   * ── UNA EMERGENCIA LLEVA AL CENTRO DE EMERGENCIAS. PUNTO. ────────────────
+   * Aquí había un respaldo a `/reports/incident/:id` — la ficha de INFORME,
+   * que es de sólo lectura. Quien pulsaba el aviso de un pánico podía acabar
+   * en una pantalla donde se lee lo que pasó y no se puede reconocer, ni
+   * despachar, ni cerrar. En mitad de una emergencia, eso es un callejón sin
+   * salida disfrazado de destino.
+   *
+   * El informe se elimina del camino. Si el aviso trae el caso, se abre el
+   * caso; si no lo trae —un aviso viejo, o uno cuyo caso no se llegó a crear—
+   * se abre el Centro de Emergencias, donde el caso está y donde SÍ se puede
+   * actuar. Nunca un informe.
+   */
+  if (type === 'panic.alert' || type.startsWith('alarm') || type.startsWith('sos')) {
+    return p.caseId ? `/alarm/case/${p.caseId}` : '/alarm/queue';
   }
 
   // ── Things that need a supervisor DECISION → the right approvals queue, focused.
