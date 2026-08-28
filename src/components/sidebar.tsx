@@ -69,7 +69,12 @@ const iconMap: Record<string, LucideIcon> = {
    NO se pierde: cae en el grupo «Otros». */
 type GroupDef = { id: string; label: string; icon: LucideIcon; ids: string[] };
 const GROUPS: GroupDef[] = [
-  { id: "resumen",   label: "Resumen",   icon: Gauge,      ids: ["panel", "actividad", "estaciones"] },
+  // «emergencias» va TERCERO, justo debajo de Actividad: es la consola que se
+  // abre cuando suena un pánico, y en ese momento nadie va a bajar a buscarla.
+  // OJO: esta lista es la que MANDA. Añadir un destino en `sidebar-menu.json`
+  // sin añadir su id aquí lo deja caer al grupo «Otros» del fondo — que es
+  // exactamente lo que le pasó a esta entrada al moverla.
+  { id: "resumen",   label: "Resumen",   icon: Gauge,      ids: ["panel", "actividad", "emergencias", "estaciones"] },
   { id: "operacion", label: "Operación", icon: Siren,      ids: ["despachador", "monitoreo-alarmas", "videovigilancia", "patrulla", "radio", "inventario"] },
   { id: "personal",  label: "Personal",  icon: Users,      ids: ["equipo", "programador", "nomina", "tareas", "entrenamiento"] },
   { id: "clientes",  label: "Clientes",  icon: Briefcase,  ids: ["clientes", "solicitudes-clientes", "control-de-calidad", "mensajeria"] },
