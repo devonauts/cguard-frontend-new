@@ -166,6 +166,9 @@ export interface AlarmCase {
   createdAt?: string;
   updatedAt?: string;
   panel?: AlarmPanel | null;
+  /** El «dónde» de un caso que NO viene de un panel: un SOS o un pánico. */
+  station?: { id: string; stationName?: string | null } | null;
+  postSite?: { id: string; companyName?: string | null } | null;
   events?: AlarmEvent[];
   auditLogs?: AlarmAuditLog[];
 }

@@ -244,16 +244,19 @@ export default function AlarmQueue() {
         </Toolbar>
 
         {/* List */}
-        <Section title="Casos de alarma" icon={<Siren />}>
+        {/* «Casos de alarma» era el vocabulario de la central receptora. Lo
+            que hay aquí son emergencias: SOS de clientes, pánicos de
+            vigilantes y —cuando existan— alarmas de panel. */}
+        <Section title="Emergencias" icon={<Siren />}>
         {loading ? (
           <SkeletonCards count={4} className="sm:grid-cols-1" />
         ) : sorted.length === 0 ? (
           <EmptyState
             icon={<Siren />}
-            title="Sin alarmas"
+            title="Sin emergencias"
             description={status === "all"
-              ? "No hay casos de alarma en este momento."
-              : "No hay casos con este estado."}
+              ? "No hay ninguna emergencia activa en este momento."
+              : "No hay emergencias con este estado."}
           />
         ) : (
           <div className="space-y-3">
@@ -261,8 +264,25 @@ export default function AlarmQueue() {
               const cat = categoryMeta(c.category);
               const st = STATUS_META[c.status || "queued"] || STATUS_META.queued;
               const live = OPEN_STATUSES.has(c.status || "queued");
-              const panelName = c.panel?.name || "Panel desconocido";
-              const accountNumber = c.panel?.accountNumber;
+              /**
+               * ── DÓNDE PASÓ, SIN INVENTAR UN PANEL ──────────────────────
+               * Esto era `c.panel?.name || "Panel desconocido"`, y un SOS no
+               * tiene panel: los 29 casos que hay en producción son SOS o
+               * pánico, así que el CIEN POR CIEN de la lista decía «Panel
+               * desconocido». En una pantalla de emergencias, escribir el
+               * nombre de un equipo que no existe en lugar del sitio donde
+               * alguien pidió auxilio es lo contrario de informar.
+               *
+               * Ahora el «dónde» es lo que corresponda a su origen: el panel
+               * si vino de un panel, y el puesto y la estación si vino de una
+               * persona. Si no se sabe, no se escribe nada — un hueco es más
+               * honesto que un dato falso.
+               */
+              const dePanel = c.source === "alarm_panel" || !!c.panel;
+              const lugar = dePanel
+                ? c.panel?.name || null
+                : [c.station?.stationName, c.postSite?.companyName].filter(Boolean).join(" · ") || null;
+              const accountNumber = dePanel ? c.panel?.accountNumber : null;
 
               const sm = alarmSourceMeta(c.source);
               const sla = slaTone(caseTime(c), live, now);
@@ -323,11 +343,13 @@ export default function AlarmQueue() {
                       </p>
 
                       <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs" style={{ color: 'var(--ink-faint)' }}>
-                        <span className="inline-flex items-center gap-1">
-                          <ShieldAlert className="size-3.5" />
-                          {panelName}
-                          {accountNumber ? ` · #${accountNumber}` : ""}
-                        </span>
+                        {lugar ? (
+                          <span className="inline-flex items-center gap-1">
+                            <ShieldAlert className="size-3.5" />
+                            {lugar}
+                            {accountNumber ? ` · #${accountNumber}` : ""}
+                          </span>
+                        ) : null}
                         <span>{formatWhen(caseTime(c))}</span>
                       </div>
                     </div>
