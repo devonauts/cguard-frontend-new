@@ -1,0 +1,95 @@
+import { useCallback, useLayoutEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+
+/**
+ * Bloque de marca: el ojo + «C-GUARD» como imagen, y el lema como TEXTO.
+ *
+ * El lema venía dibujado dentro del PNG, así que decía «Seguridad Inteligente»
+ * también en inglés y en portugués. Aquí sale de `brand.tagline`, se puede
+ * buscar y lo lee un lector de pantalla.
+ *
+ * Va colocado sobre la imagen en el hueco exacto que ocupaba en el arte
+ * original — las medidas de abajo salen del alfa del PNG de 6477x1119, no de
+ * ajustarlo a ojo — y se estira al ancho del wordmark, porque «Intelligent
+ * Security» es bastante más corto que «Segurança Inteligente» y sin eso el
+ * bloque bailaría al cambiar de idioma.
+ *
+ * El arte tiene dos versiones porque el vidrio lleva color propio: el truco de
+ * `dark:brightness-0 dark:invert` que usaba el logo negro ya no sirve.
+ */
+export default function BrandLockup({
+  className = '',
+  animated = true,
+  showTagline = true,
+}: {
+  className?: string;
+  animated?: boolean;
+  showTagline?: boolean;
+}) {
+  const { t } = useTranslation();
+  const tagline = t('brand.tagline', { defaultValue: 'Seguridad Inteligente' });
+  const slotRef = useRef<HTMLSpanElement>(null);
+  const textRef = useRef<HTMLSpanElement>(null);
+
+  /** Lleva el lema al ancho del wordmark repartiendo el espacio ENTRE LETRAS.
+   *
+   *  Antes lo hacía escalando el bloque entero, y eso mueve el tamaño del texto:
+   *  el lema acababa midiendo lo que hiciera falta para encajar en vez de lo que
+   *  le toca. El cuerpo se queda fijo (lo fija el CSS, medido sobre el arte) y lo
+   *  único que se ajusta es el tracking — que es justo lo que tiene el original:
+   *  0,9 de ancho por carácter respecto a su altura no es una fuente estirada,
+   *  es una fuente normal muy espaciada. */
+  const fit = useCallback(() => {
+    const slot = slotRef.current;
+    const text = textRef.current;
+    if (!slot || !text) return;
+    text.style.letterSpacing = '0px';
+    const box = slot.getBoundingClientRect().width;
+    const own = text.getBoundingClientRect().width;
+    const gaps = (text.textContent?.length ?? 1) - 1;
+    if (box > 0 && own > 0 && gaps > 0) {
+      // El tracking se aplica también DESPUÉS del último carácter, así que el
+      // reparto va entre los huecos + ese sobrante: si no, el lema se pasa de
+      // largo por un carácter.
+      text.style.letterSpacing = `${((box - own) / (gaps + 1)).toFixed(3)}px`;
+    }
+  }, []);
+
+  useLayoutEffect(() => {
+    fit();
+    // La fuente de marca (Saira) suele llegar DESPUÉS del primer pintado: si no
+    // se vuelve a medir, el lema se queda con el ancho de la fuente de reserva.
+    document.fonts?.ready.then(fit).catch(() => {});
+    const slot = slotRef.current;
+    if (!slot || typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(fit);
+    ro.observe(slot);
+    return () => ro.disconnect();
+  }, [fit, tagline]);
+
+  return (
+    <span className={`cg-lockup ${animated ? 'is-animated' : ''} ${className}`.trim()}>
+      <img
+        src="/assets/logo/c-guard-lockup-light.png"
+        alt={t('auth.landing.logo_alt', { defaultValue: 'C-Guard Pro' })}
+        className="cg-lockup__mark cg-lockup__mark--light"
+      />
+      <img
+        src="/assets/logo/c-guard-lockup-dark.png"
+        alt=""
+        aria-hidden
+        className="cg-lockup__mark cg-lockup__mark--dark"
+      />
+      {showTagline && (
+        <span className="cg-lockup__slot" ref={slotRef} aria-hidden>
+          <span className="cg-lockup__tagline" ref={textRef}>
+            {tagline}
+          </span>
+        </span>
+      )}
+      {/* El lema visible es aria-hidden porque va escalado con transform; esta
+          copia es la que anuncia el lector de pantalla. */}
+      {showTagline && <span className="sr-only">{tagline}</span>}
+    </span>
+  );
+}

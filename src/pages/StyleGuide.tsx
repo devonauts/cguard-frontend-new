@@ -20,6 +20,7 @@ import {
   Plus, Radio, RotateCw, Search, Settings, Shield, ShieldCheck, Trash2, TriangleAlert,
   Users, Video,
 } from 'lucide-react';
+import BrandLockup from '@/components/BrandLockup';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -308,6 +309,77 @@ export default function StyleGuide() {
             <Token nombre="Aviso" variable="--warn" />
             <Token nombre="Peligro" variable="--bad" />
             <Token nombre="Información" variable="--info" />
+          </div>
+        </Bloque>
+
+        <Bloque
+          titulo="Bloque de marca"
+          uso="El logotipo con el lema. Se usa en el acceso y en el arranque; en cualquier otro sitio, consúltalo antes."
+          api={['BrandLockup', 'cg-lockup']}
+          nota="El lema NO es parte de la imagen. Estaba dibujado dentro del PNG, y por eso decía «Seguridad Inteligente» también en inglés y en portugués: ahora sale de `brand.tagline` y se estira al ancho del wordmark, porque cada idioma mide distinto y si no el bloque bailaría al cambiarlo. El arte tiene dos versiones, clara y oscura, porque el cristal lleva color propio: el viejo truco de invertir el PNG negro con `dark:brightness-0 dark:invert` ya no sirve. Las medidas del hueco del lema salen del alfa del arte original (6477×1119), no de ajustarlas a ojo — si se rehace el logo, hay que volver a medirlas."
+        >
+          <div className="space-y-6">
+            <div>
+              <div className="cg-eyebrow mb-2">Completo · con lema · animado</div>
+              <BrandLockup className="w-[260px]" />
+            </div>
+            <div>
+              <div className="cg-eyebrow mb-2">Sin lema · para tamaños pequeños (por debajo de ~160 px el lema no se lee)</div>
+              <BrandLockup className="w-[150px]" showTagline={false} />
+            </div>
+            <div>
+              <div className="cg-eyebrow mb-2">Quieto · sin destello</div>
+              <BrandLockup className="w-[260px]" animated={false} />
+            </div>
+            <div>
+              <div className="cg-eyebrow mb-2">El lema por idioma · clave brand.tagline</div>
+              <ul className="space-y-1 text-sm text-ink-soft">
+                <li><span className="font-mono text-xs text-ink-faint">es</span> · Seguridad Inteligente</li>
+                <li><span className="font-mono text-xs text-ink-faint">en</span> · Intelligent Security</li>
+                <li><span className="font-mono text-xs text-ink-faint">pt</span> · Segurança Inteligente</li>
+              </ul>
+            </div>
+            <p className="text-sm text-ink-soft">
+              El destello cruza una vez cada 6 s y se está quieto el resto: esta pantalla se mira
+              ocho horas seguidas. Respeta <code className="rounded bg-surface-2 px-1.5 py-0.5 text-xs">prefers-reduced-motion</code>.
+              La banda cambia de signo con el tema — luz sobre el logotipo oscuro, sombra sobre el
+              claro — por lo mismo que el icono lleva contorno oscuro y filo claro a la vez:
+              cada uno sólo se ve en el fondo donde el otro desaparece.
+            </p>
+          </div>
+        </Bloque>
+
+        <Bloque
+          titulo="Miniatura al compartir"
+          uso="La imagen que sale cuando alguien pega el enlace en WhatsApp, X, LinkedIn o Slack. 1200×630, JPG."
+          api={['og:image', '/assets/og/']}
+          nota="Se diseña para el tamaño CHICO, no para el grande: WhatsApp la muestra a unos 300 px de ancho, así que si el titular no se lee ahí, no se lee. De ahí el titular a dos líneas y corto, y nada de texto secundario que dependa de leerse. El escudo va SIEMPRE en su variante oscura sobre estos fondos — la clara puesta encima de un fondo oscuro se lee plateada, que es un error fácil de colar. Y va UNA POR IDIOMA: el titular y el lema son texto, no están dibujados en la imagen, así que el enlace en español se comparte en español. Antes había una sola en inglés con el lema en español."
+        >
+          <div className="space-y-6">
+            {[
+              { src: 'miniatura-es', n: 'Español', d: 'La que sirve cguardpro.com' },
+              { src: 'miniatura-en', n: 'English', d: 'La que sirve cguardpro.com/en' },
+              { src: 'miniatura-pt', n: 'Português', d: 'Generada y lista; el sitio aún no habla portugués, el CRM sí.' },
+              { src: 'miniatura-producto', n: 'Alternativa · Producto', d: 'Enseña el panel real. Cuenta mejor qué es el producto.' },
+              { src: 'miniatura-marca', n: 'Alternativa · Marca', d: 'La más limpia: el escudo se reconoce incluso a 300 px.' },
+            ].map((m) => (
+              <div key={m.src}>
+                <div className="cg-eyebrow mb-2">{m.n}</div>
+                <img
+                  src={`/assets/og/${m.src}.jpg`}
+                  alt={`Miniatura ${m.n}`}
+                  className="w-full max-w-[520px] rounded-xl border border-line"
+                />
+                <p className="mt-2 max-w-[520px] text-sm text-ink-soft">{m.d}</p>
+              </div>
+            ))}
+            <p className="text-sm text-ink-soft">
+              Se generan con <code className="rounded bg-surface-2 px-1.5 py-0.5 text-xs">npm run og</code> en
+              el sitio: el diseño es HTML y se fotografía con Chrome sin ventana a 1200×630 exactos. Se hace
+              así y no a mano para que el día que cambie el titular, el lema o un idioma la imagen se rehaga
+              sola, en vez de acabar con un JPG suelto que ya nadie sabe reconstruir — que es exactamente
+              cómo se había quedado la anterior en inglés.
+            </p>
           </div>
         </Bloque>
 

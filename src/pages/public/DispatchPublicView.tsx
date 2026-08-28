@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import BrandLockup from '@/components/BrandLockup';
 import { useTranslation } from 'react-i18next';
 import { clientDisplayName } from '@/lib/clientName';
 import { useParams } from 'react-router-dom';
@@ -198,15 +199,11 @@ export default function DispatchPublicView() {
       <div className="max-w-4xl mx-auto space-y-4">
         {/* Logo + Map header */}
         <div className="flex flex-col items-center mb-2">
-          {/* El archivo mide 6477x1119 (casi 6:1). Con sólo la ALTURA fijada
-              (h-32) el navegador calculaba 741 px de ancho: en un móvil eso no
-              es un logo grande, es la página entera desplazándose de lado. Se
-              manda el ANCHO y la altura se deduce. */}
-          <img
-            src="/assets/logo/c-guard-logo.png"
-            alt="C Guard logo"
-            className="mb-4 h-auto w-full max-w-[260px] object-contain sm:max-w-md"
-          />
+          {/* El bloque es casi 6:1. Con sólo la ALTURA fijada (h-32) el navegador
+              calculaba 741 px de ancho: en un móvil eso no es un logo grande, es
+              la página entera desplazándose de lado. Se manda el ANCHO y la
+              altura se deduce. */}
+          <BrandLockup className="mb-4 w-full max-w-[260px] sm:max-w-md" />
           {coords && <div className="w-full overflow-hidden rounded-2xl border shadow-sm"><IncidentMap lat={coords.lat} lng={coords.lng} label={payload?.ticketId || payload?.id} /></div>}
         </div>
 

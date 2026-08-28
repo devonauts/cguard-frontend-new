@@ -1046,49 +1046,106 @@ button, [role="button"] { transition: transform 0.09s var(--ease); }
   .cg-carrusel { scroll-behavior: auto; }
 }
 
-/* ── Destello de cristal sobre el logo de marca ──────────────────────────────
-   El mismo barrido especular que llevan los iconos, aplicado al logotipo del
-   arranque y de la pantalla de acceso. Va recortado por la silueta del propio
-   PNG (`mask-image`), así que la luz sólo corre por encima del logo y no por su
-   caja.
+/* ── BLOQUE DE MARCA ─────────────────────────────────────────────────────────
+   El ojo y «C-GUARD» son imagen; el lema es TEXTO, para que se traduzca.
 
-   Cambia de signo según el tema, y no por gusto: en claro el logo es dorado
-   sobre fondo claro y la banda tiene que ser LUZ; en oscuro el logo se invierte
-   a blanco (`dark:brightness-0 dark:invert`), y una banda blanca sobre blanco
-   no se vería — ahí la que lee es una banda de SOMBRA. Es el mismo principio
-   por el que el icono lleva contorno oscuro y filo claro a la vez.
+   Las medidas del hueco del lema salen del alfa del arte original (6477x1119):
+   el bloque de tipografía empieza en x=3363 → 51,9 % del ancho, y el lema
+   arranca bajo el hueco de y=739..861 → 75,5 % del alto. No están ajustadas a
+   ojo: si algún día se rehace el logo, hay que volver a medirlas.
 
-   Movimiento: pasa una vez cada 6 s y no se queda dando vueltas encima. El
-   producto se mira ocho horas seguidas. */
-.cg-logo-sheen { position: relative; display: inline-block; }
-.cg-logo-sheen::after {
+   El cuerpo del lema (2,75 % del ancho) también sale de ahí: 156 px de alto
+   sobre 6477 de ancho. Al ponerlo por instinto quedó cuatro veces más grande y
+   se salía del bloque.
+
+   El vidrio lleva color propio, así que el viejo truco de invertir el PNG negro
+   (`dark:brightness-0 dark:invert`) ya no vale: son dos archivos, y aquí se
+   elige uno u otro según el tema. */
+.cg-lockup {
+  position: relative;
+  display: inline-block;
+  container-type: inline-size;
+  line-height: 0;
+}
+.cg-lockup__mark { width: 100%; height: auto; display: block; }
+.cg-lockup__mark--dark { display: none; }
+html.dark .cg-lockup__mark--light { display: none; }
+html.dark .cg-lockup__mark--dark { display: block; }
+
+.cg-lockup__slot {
+  position: absolute;
+  left: 51.9%;
+  right: 0;
+  top: 76.9%;
+  display: block;
+  line-height: 1;
+}
+.cg-lockup__tagline {
+  display: block;
+  /* El token, no el nombre a pelo: la familia cargada se llama "Saira Variable",
+     así que `font-family: Saira` caía al system-ui de reserva sin avisar — el
+     lema salía con otra tipografía distinta a la de la marca. */
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  white-space: nowrap;
+  /* 2,42 % del ancho es la ALTURA DE LA MAYÚSCULA del lema en el arte original
+     (157 px sobre 6477). El cuerpo es esa altura entre el cap-ratio de la fuente
+     de la fuente, MEDIDO con canvas y no supuesto: 0,694 para Saira → 3,49.
+     Con 2,75 el lema salía un 18 % corto. */
+  font-size: 3.49cqw;
+  line-height: 1;
+  color: #0b0d2e;
+}
+html.dark .cg-lockup__tagline { color: #eef1fb; }
+
+/* ── Destello de cristal ─────────────────────────────────────────────────────
+   El mismo barrido especular que llevan los iconos. Sobre la imagen va
+   recortado por la silueta del propio PNG (`mask-image`), para que la luz corra
+   por el logo y no por su caja; sobre el lema va con `background-clip: text`,
+   que es la única forma de recortarlo a unas letras.
+
+   Cambia de signo con el tema, y no por gusto: en claro el logo es oscuro sobre
+   fondo claro y la banda tiene que ser LUZ; en oscuro es al revés y quien lee es
+   una banda de SOMBRA. Es el mismo principio por el que el icono lleva contorno
+   oscuro y filo claro a la vez.
+
+   Las dos capas comparten duración y curva, así que la banda cruza el conjunto
+   como una sola. Pasa una vez cada 6 s y se está quieta el resto: el producto se
+   mira ocho horas seguidas. */
+.cg-lockup.is-animated .cg-lockup__mark::after,
+.cg-lockup.is-animated::after {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  -webkit-mask-image: url("/assets/logo/c-guard-logo.png");
-  mask-image: url("/assets/logo/c-guard-logo.png");
-  -webkit-mask-size: contain; mask-size: contain;
+  -webkit-mask-image: url("/assets/logo/c-guard-lockup-light.png");
+  mask-image: url("/assets/logo/c-guard-lockup-light.png");
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
   -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-  -webkit-mask-position: center; mask-position: center;
-  background: linear-gradient(
-    105deg,
-    transparent 38%,
-    rgba(255, 255, 255, 0.9) 50%,
-    transparent 62%
-  );
+  background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.9) 50%, transparent 62%);
   background-size: 300% 100%;
   mix-blend-mode: screen;
-  animation: cg-logo-sweep 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation: cg-logo-sweep 6s cubic-bezier(.4, 0, .2, 1) infinite;
 }
-html.dark .cg-logo-sheen::after {
-  background: linear-gradient(
-    105deg,
-    transparent 38%,
-    rgba(8, 12, 24, 0.72) 50%,
-    transparent 62%
-  );
+html.dark .cg-lockup.is-animated::after {
+  -webkit-mask-image: url("/assets/logo/c-guard-lockup-dark.png");
+  mask-image: url("/assets/logo/c-guard-lockup-dark.png");
+  background: linear-gradient(105deg, transparent 38%, rgba(8,12,24,.72) 50%, transparent 62%);
   mix-blend-mode: multiply;
+}
+.cg-lockup.is-animated .cg-lockup__tagline {
+  background-image: linear-gradient(105deg,
+    currentColor 38%, rgba(255,255,255,.95) 50%, currentColor 62%);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: cg-logo-sweep 6s cubic-bezier(.4, 0, .2, 1) infinite;
+}
+html.dark .cg-lockup.is-animated .cg-lockup__tagline {
+  background-image: linear-gradient(105deg,
+    currentColor 38%, rgba(80,90,130,.95) 50%, currentColor 62%);
 }
 @keyframes cg-logo-sweep {
   0%, 8%   { background-position: 140% 0; }
@@ -1096,5 +1153,9 @@ html.dark .cg-logo-sheen::after {
   100%     { background-position: -40% 0; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .cg-logo-sheen::after { animation: none; opacity: 0; }
+  .cg-lockup.is-animated::after { animation: none; opacity: 0; }
+  .cg-lockup.is-animated .cg-lockup__tagline {
+    animation: none;
+    -webkit-text-fill-color: currentColor;
+  }
 }

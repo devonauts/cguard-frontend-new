@@ -26,6 +26,7 @@ import { ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AlertTriangle, BarChart3, Clock, MapPin, Shield } from 'lucide-react';
 import SplashScreen from '@/components/SplashScreen';
+import BrandLockup from '@/components/BrandLockup';
 import { FadeIn } from '@/components/kit';
 
 interface AuthShellProps {
@@ -150,13 +151,7 @@ export default function AuthShell({
               {iniciales(brandName)}
             </div>
           ) : (
-            <span className="cg-logo-sheen mb-5">
-              <img
-                src="/assets/logo/c-guard-logo.png"
-                alt={t('auth.landing.logo_alt', { defaultValue: 'C-Guard Pro' })}
-                className="h-12 object-contain dark:brightness-0 dark:invert"
-              />
-            </span>
+            <BrandLockup className="mb-5 w-[210px]" />
           )}
 
           <span

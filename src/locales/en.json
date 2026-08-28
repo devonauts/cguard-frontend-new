@@ -9684,5 +9684,8 @@
     "notaRevision": "Reason or comment for the review",
     "notaPlaceholder": "Required when rejecting. E.g.: the photo is not of this checkpoint.",
     "efectoRonda": "Rejecting this checkpoint stops it counting as visited; if the round then falls below its total, it no longer shows as completed."
+  },
+  "brand": {
+    "tagline": "Intelligent Security"
   }
 }

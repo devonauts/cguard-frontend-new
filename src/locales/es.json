@@ -9684,5 +9684,8 @@
     "notaRevision": "Motivo o comentario de la revisión",
     "notaPlaceholder": "Obligatorio al rechazar. Ej.: la foto no corresponde al punto.",
     "efectoRonda": "Rechazar este punto hace que deje de contar como visitado; si la ronda queda por debajo de su total, deja de figurar como completada."
+  },
+  "brand": {
+    "tagline": "Seguridad Inteligente"
   }
 }
