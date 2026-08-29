@@ -1,4 +1,5 @@
 import { toast } from "sonner";
+import i18n from "@/i18n";
 import { reportRequestOk, reportNetworkFailure } from "@/lib/offline/networkStatus";
 import { autoInvalidateForMutation } from "@/lib/queryClient";
 const API_BASE_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:3001/api").replace(/\/+$/, "");
@@ -69,7 +70,7 @@ export class ApiService {
       } catch {
         if (idempotent && attempt < maxAttempts) { await sleep(250 * attempt); continue; }
         try { reportNetworkFailure(); } catch { /* ignore */ }
-        throw new ApiError("No se pudo conectar con el servidor.", 0, null);
+        throw new ApiError(i18n.t("errores.sinConexionServidor", "No se pudo conectar con el servidor."), 0, null);
       }
 
       const contentType = response.headers.get("content-type") || "";
@@ -187,7 +188,7 @@ export class ApiService {
     try {
       response = await fetch(url, { ...options, method: 'GET', headers, credentials: 'include' });
     } catch {
-      throw new ApiError("No se pudo conectar con el servidor.", 0, null);
+      throw new ApiError(i18n.t("errores.sinConexionServidor", "No se pudo conectar con el servidor."), 0, null);
     }
 
     if (!response.ok) {

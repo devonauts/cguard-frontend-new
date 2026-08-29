@@ -60,7 +60,8 @@
       "test": "Test",
       "supervisory": "Nadzór",
       "restore": "Powrót do normy",
-      "default": "Alarm"
+      "default": "Alarm",
+      "desconocido": "Nieznany"
     },
     "priority": {
       "1": "P1 · Krytyczny",
@@ -84,7 +85,69 @@
       "callLog": "Rejestr połączeń",
       "immediateDispatch": "Natychmiastowa interwencja (bez ECV)",
       "noContacts": "Brak skonfigurowanych kontaktów dla tej centrali.",
-      "title": "Weryfikacja (ECV)"
+      "title": "Weryfikacja (ECV)",
+      "dispatchError": "Nie udało się wezwać policji",
+      "dispatchPolice": "Wezwij policję",
+      "logCallError": "Nie udało się zapisać rozmowy",
+      "outcome": {
+        "cancelPasscode": "Odwołanie (hasło)",
+        "contacted": "Skontaktowano się",
+        "noAnswer": "Brak odpowiedzi",
+        "verifiedFalse": "Weryf. FAŁSZYWY",
+        "verifiedReal": "Weryf. PRAWDZIWY"
+      }
+    },
+    "actionPlan": {
+      "step": {
+        "call": "Zadzwoń do kontaktu",
+        "dispatchGuard": "Skieruj pracownika ochrony",
+        "note": "Notatka",
+        "notifyCustomer": "Powiadom zleceniodawcę",
+        "notifyPolice": "Powiadom policję",
+        "verify": "Zweryfikuj",
+        "video": "Weryfikacja wideo"
+      },
+      "stepUpdateError": "Nie udało się zaktualizować kroku"
+    },
+    "analytics": {
+      "exportAuditFailed": "Nie udało się wyeksportować rejestru audytu"
+    },
+    "contacts": {
+      "saveError": "Nie udało się zapisać kontaktu"
+    },
+    "panelType": {
+      "access": "Kontrola dostępu",
+      "environmental": "Środowiskowa"
+    },
+    "panels": {
+      "deleteError": "Nie udało się usunąć centrali",
+      "keepCurrentKey": "Prosimy zostawić puste, aby zachować obecny klucz",
+      "loadError": "Nie udało się wczytać central",
+      "noMakeModel": "Brak marki i modelu",
+      "saveError": "Nie udało się zapisać centrali"
+    },
+    "zoneType": {
+      "entry": "Wejście/wyjście",
+      "glassbreak": "Stłuczenie szyby",
+      "motion": "Ruch",
+      "perimeter": "Perymetr",
+      "smoke": "Dym"
+    },
+    "zones": {
+      "deleteError": "Nie udało się usunąć strefy",
+      "loadError": "Nie udało się wczytać stref",
+      "saveError": "Nie udało się zapisać strefy"
+    },
+    "authority": {
+      "emergency": "Kontakt alarmowy",
+      "keyholder": "Osoba z kluczami",
+      "manager": "Kierownik",
+      "owner": "Właściciel"
+    },
+    "panelStatus": {
+      "armed": "Uzbrojony",
+      "disarmed": "Rozbrojony",
+      "unknown": "Nieznany"
     }
   },
   "auth": {
@@ -558,7 +621,9 @@
     },
     "validation": {
       "cedula_invalid": "Nieprawidłowy numer dowodu",
-      "ruc_invalid": "Nieprawidłowy NIP (musi kończyć się na 001 i zawierać poprawny numer dowodu)"
+      "ruc_invalid": "Nieprawidłowy NIP (musi kończyć się na 001 i zawierać poprawny numer dowodu)",
+      "latitude_numeric": "Szerokość geograficzna musi być liczbą",
+      "longitude_numeric": "Długość geograficzna musi być liczbą"
     },
     "alerts": {
       "archiveClients": {
@@ -720,7 +785,96 @@
     "importDialog": {
       "description": "Prosimy wgrać plik .xlsx/.xls/.csv, aby zaimportować zleceniodawców."
     },
-    "loadClientErrorHint": "Prosimy spróbować ponownie lub sprawdzić, czy zleceniodawca istnieje."
+    "loadClientErrorHint": "Prosimy spróbować ponownie lub sprawdzić, czy zleceniodawca istnieje.",
+    "contract": {
+      "service": {
+        "accessControl": "Kontrola dostępu",
+        "alarmResponse": "Reakcja na alarmy",
+        "assetCustody": "Ochrona mienia",
+        "cameraMonitoring": "Monitoring kamer",
+        "custom": "Niestandardowa",
+        "eventSecurity": "Ochrona imprez",
+        "fixedGuard": "Ochrona stała 24/7",
+        "mobilePatrol": "Patrol zmotoryzowany",
+        "visitorManagement": "Obsługa gości"
+      }
+    },
+    "coverage": {
+      "assignRemoveError": "Nie udało się usunąć",
+      "assignUpdateError": "Nie udało się zaktualizować przypisania",
+      "cell": {
+        "coveredBy": "Obsadza: {{name}}",
+        "day": {
+          "legend": "Dzień",
+          "letter": "D",
+          "title": "Zmiana dzienna"
+        },
+        "gap": {
+          "legend": "Brak wygenerowanej zmiany",
+          "letter": "!",
+          "title": "Brak wygenerowanej zmiany (luka w obsadzie)"
+        },
+        "night": {
+          "legend": "Noc",
+          "letter": "N",
+          "title": "Zmiana nocna"
+        },
+        "none": {
+          "legend": "Brak rotacji",
+          "letter": "·",
+          "title": "Brak skonfigurowanej rotacji"
+        },
+        "rest": {
+          "legend": "Wolne",
+          "letter": "W",
+          "title": "Wolne"
+        }
+      }
+    },
+    "documents": {
+      "breakdown": {
+        "documents": "Dokumenty",
+        "images": "Obrazy",
+        "others": "Inne",
+        "videos": "Filmy"
+      }
+    },
+    "portal": {
+      "modules": {
+        "analytics": {
+          "desc": "Panel wskaźników usługi",
+          "label": "Analityka"
+        },
+        "attendance": {
+          "desc": "Kto i o której zarejestrował wejście na każdym posterunku",
+          "label": "Wejścia i wyjścia"
+        },
+        "incidents": {
+          "desc": "Zdarzenia zgłoszone na jego obiektach",
+          "label": "Zdarzenia"
+        },
+        "inventory": {
+          "desc": "Sprzęt przypisany do jego posterunków",
+          "label": "Wyposażenie"
+        },
+        "liveLocation": {
+          "desc": "Podgląd na mapie, gdzie teraz są pracownicy ochrony",
+          "label": "Pozycja na żywo"
+        },
+        "photos": {
+          "desc": "Zdjęcia dołączone do zdarzeń i obchodów",
+          "label": "Zdjęcia"
+        },
+        "rondas": {
+          "desc": "Obchody i punkty kontrolne",
+          "label": "Obchody"
+        },
+        "visitors": {
+          "desc": "Rejestracja i wcześniejsze zezwolenia dla gości",
+          "label": "Wizyty"
+        }
+      }
+    }
   },
   "common": {
     "active": "Aktywny",
@@ -854,7 +1008,35 @@
     "colCost": "Koszt",
     "pageOf": "Strona {{page}} z {{total}} · {{count}} wpisów",
     "prev": "Wstecz",
-    "next": "Dalej"
+    "next": "Dalej",
+    "channel": {
+      "push": "Powiadomienie na telefon",
+      "email": "E-mail",
+      "sms": "SMS",
+      "wallet": "Doładowanie",
+      "whatsapp": "WhatsApp"
+    },
+    "status": {
+      "delivered": "Dostarczona",
+      "failed": "Nieudana",
+      "queued": "W kolejce",
+      "read": "Przeczytana",
+      "sent": "Wysłana",
+      "skipped": "Pominięta"
+    },
+    "type": {
+      "escalation": "Eskalacja",
+      "generic": "Ogólne",
+      "incidentAlert": "Zdarzenie",
+      "newAssignment": "Nowe przypisanie",
+      "noShow": "Nieobecność",
+      "otp": "Kod dostępu",
+      "panic": "Alarm napadowy",
+      "rondaAlert": "Obchód",
+      "shiftReminder": "Przypomnienie o zmianie",
+      "taskAlert": "Zadanie",
+      "visitorAlert": "Wizyta"
+    }
   },
   "comun": {
     "estado": "Status",
@@ -1000,7 +1182,21 @@
     "conLosFiltrosAplicados": "Z zastosowanymi filtrami",
     "dentroDeLasInstalaciones": "Na terenie obiektu",
     "conSalidaRegistrada": "Z zapisanym wyjściem",
-    "sinTurnosProgramados": "Brak zaplanowanych zmian."
+    "sinTurnosProgramados": "Brak zaplanowanych zmian.",
+    "periodo": {
+      "dia": "Dzień"
+    },
+    "weekday": {
+      "short": {
+        "fri": "Pt",
+        "mon": "Pn",
+        "sat": "Sb",
+        "sun": "Nd",
+        "thu": "Cz",
+        "tue": "Wt",
+        "wed": "Śr"
+      }
+    }
   },
   "customer": {
     "registration_title": "Rejestracja zleceniodawcy"
@@ -1144,7 +1340,8 @@
     "reset": "Przywróć oryginalne kolory",
     "logoHint": "Logo w Twoich wiadomościach to logo Twojej firmy. Można je zmienić w Ustawienia › Profil firmy.",
     "preview": "Podgląd",
-    "previewHint": "Tak zleceniodawca zobaczy wiadomość od firmy."
+    "previewHint": "Tak zleceniodawca zobaczy wiadomość od firmy.",
+    "previewLoadError": "Nie udało się wczytać przykładu."
   },
   "guards": {
     "created": "KPI utworzony",
@@ -1562,7 +1759,9 @@
       },
       "empty": {
         "description": "Nie znaleźliśmy pozycji pasujących do wyszukiwania",
-        "title": "Nie znaleziono wyników"
+        "title": "Nie znaleziono wyników",
+        "byStatusTitle": "Brak pracowników ochrony o tym statusie",
+        "noneFoundTitle": "Nie znaleziono pracowników ochrony"
       },
       "export": {
         "excel": "Eksportuj do Excela",
@@ -1920,7 +2119,17 @@
       },
       "editHint": "Edytuj dane osobowe i kadrowe pracownika ochrony.",
       "nav": "Profil",
-      "noAttendance": "Brak wpisów obecności"
+      "noAttendance": "Brak wpisów obecności",
+      "academic": {
+        "primary": "Podstawowe",
+        "secondary": "Średnie",
+        "special": "Specjalne",
+        "university": "Wyższe",
+        "universityDegree": "Studia wyższe"
+      },
+      "maritalStatus": {
+        "freeUnion": "Konkubinat"
+      }
     },
     "reminders": {
       "addReminder": "Dodaj przypomnienie",
@@ -2203,7 +2412,16 @@
       "welcomeSent": "Wysłaliśmy powitalną wiadomość e-mail z linkiem do pobrania aplikacji nadzorcy."
     },
     "department": {
-      "title": "Dział"
+      "title": "Dział",
+      "assignLabel": "Przypisz do działu",
+      "changeLabel": "Zmień dział",
+      "updateError": "Nie udało się zaktualizować działu"
+    },
+    "create": {
+      "cvUploadHint": "Prosimy wgrać CV z karty pracownika, w zakładce Dokumenty."
+    },
+    "reviews": {
+      "saveError": "Nie udało się zapisać"
     }
   },
   "incidents": {
@@ -2290,7 +2508,10 @@
       "subtitle": "Proszę dokończyć rejestrację, aby wejść do panelu.",
       "error_activate": "Nie udało się aktywować konta. Proszę sprawdzić link i spróbować ponownie.",
       "error_toast": "Nie udało się aktywować konta",
-      "doc_title": "Aktywuj swoje konto | CGuard Pro"
+      "doc_title": "Aktywuj swoje konto | CGuard Pro",
+      "role_generic": "Użytkownik administracyjny",
+      "subtitleRole": "Otrzymali Państwo zaproszenie jako {{role}}. Prosimy ustawić hasło i wejść do panelu.",
+      "subtitleRoleAt": "Otrzymali Państwo zaproszenie jako {{role}} w firmie {{empresa}}. Prosimy ustawić hasło i wejść do panelu."
     },
     "eyebrow": "Zaproszenie",
     "hide_password": "Ukryj hasło",
@@ -2348,7 +2569,15 @@
       "divorced": "Rozwiedziony / rozwiedziona",
       "feature_geo": "Rejestracja wejścia i wyjścia z geolokalizacją",
       "feature_reports": "Raporty, obchody i zdarzenia",
-      "feature_shifts": "Twoje zmiany zawsze pod ręką"
+      "feature_shifts": "Twoje zmiany zawsze pod ręką",
+      "edu": {
+        "primary": "Podstawowe",
+        "secondary": "Średnie",
+        "special": "Specjalne",
+        "university": "Studia wyższe",
+        "universityStudies": "Wyższe"
+      },
+      "freeUnion": "Konkubinat"
     },
     "select": "Wybierz",
     "eyebrow_guard": "Zaproszenie · Zespół ochrony",
@@ -2366,7 +2595,8 @@
       "feature_live": "Twoja usługa na żywo",
       "feature_gps": "Obchody i posterunki z GPS",
       "feature_alerts": "Powiadomienia o zdarzeniach"
-    }
+    },
+    "accessReady": "Twój dostęp jest gotowy."
   },
   "licenseTypes": {
     "dialog": {
@@ -2404,7 +2634,8 @@
     },
     "page": {
       "title": "Rodzaje uprawnień"
-    }
+    },
+    "loadError": "Nie udało się wczytać rodzajów licencji"
   },
   "map": {
     "actions": {
@@ -2414,6 +2645,10 @@
       "comoLlegar": "Wyznacz trasę",
       "verRonda": "Zobacz obchód",
       "radio": "Radio"
+    },
+    "popup": {
+      "noTimestamp": "Brak znacznika czasu",
+      "nowOnPost": "Teraz na posterunku"
     }
   },
   "maps": {
@@ -2432,6 +2667,29 @@
     },
     "popup": {
       "loadError": "Nie udało się wczytać szczegółów"
+    },
+    "address": {
+      "dragToAdjust": "Prosimy przeciągnąć, aby ustawić dokładną lokalizację"
+    },
+    "checkpointPicker": {
+      "dropToPin": "Prosimy puścić, aby ustawić punkt"
+    },
+    "pin": {
+      "noKnownAddress": "Brak znanego adresu"
+    },
+    "precision": {
+      "approximate": "Przybliżona",
+      "geometricCenter": "Środek kwartału",
+      "neighbourhoodCenter": "Środek dzielnicy",
+      "rangeInterpolated": "Interpolowana wzdłuż ulicy",
+      "rooftop": "Dokładna · wejście",
+      "streetLevel": "Poziom ulicy"
+    },
+    "sites": {
+      "noLocation": "Brak zapisanej lokalizacji"
+    },
+    "static": {
+      "altDefault": "Mapa lokalizacji"
     }
   },
   "nomina": {
@@ -2478,6 +2736,24 @@
       "medium": "Średni",
       "high": "Wysoki",
       "critical": "Krytyczna"
+    },
+    "dashboard": {
+      "cards": {
+        "attendancePct": "Obecność",
+        "clockedInNow": "Teraz na służbie",
+        "lateToday": "Spóźnienia",
+        "noShowsToday": "Nieobecności",
+        "overtimeToday": "Nadgodziny",
+        "pendingApprovals": "Oczekujące zatwierdzenia",
+        "scheduledToday": "W grafiku na dziś"
+      }
+    },
+    "records": {
+      "correctionReasonTitle": "Powód korekty",
+      "newPunchInTitle": "Nowa godzina wejścia"
+    },
+    "timeClock": {
+      "clockInError": "Nie udało się zarejestrować wejścia"
     }
   },
   "performance": {
@@ -2570,7 +2846,19 @@
       "consulting": "Doradztwo",
       "event": "Zabezpieczenie imprezy",
       "investigation": "Dochodzenie",
-      "other": "Inna usługa"
+      "other": "Inna usługa",
+      "alarm_response_desc": "Reakcja pracownika ochrony na wzbudzenie alarmu. Bez stałego posterunku.",
+      "consulting_desc": "Doradztwo w zakresie bezpieczeństwa, analiza ryzyka, opracowanie procedur.",
+      "event_desc": "Ochrona imprez jednorazowych: koncertów, zgromadzeń, targów, otwarć.",
+      "investigation_desc": "Dochodzenia prywatne, audyty bezpieczeństwa, weryfikacja przeszłości.",
+      "other_desc": "Dowolna inna usługa doraźna lub przygotowana na zamówienie."
+    },
+    "status": {
+      "active": "Aktywny",
+      "cancelled": "Anulowany",
+      "completed": "Ukończone",
+      "none": "Brak statusu",
+      "on_hold": "Wstrzymany"
     }
   },
   "revision": {
@@ -5241,7 +5529,16 @@
       "nextAt": "Zaczyna {{time}}"
     },
     "noGuardsAssigned": "Brak przypisanych pracowników ochrony",
-    "guardsAssignedLabel": "przypisanych"
+    "guardsAssignedLabel": "przypisanych",
+    "card": {
+      "jornadas": "Doby służbowe: {{n}}"
+    },
+    "scheduleType": {
+      "12hDay": "12 h dzienna",
+      "12hNight": "12 h nocna",
+      "24h": "24 godziny",
+      "custom": "Własny"
+    }
   },
   "tenantValidations": {
     "business_max": "Nazwa firmy jest za długa",
@@ -5364,7 +5661,8 @@
       "administrativeAssistant": "Asystent administracyjny",
       "administrativeSupervisor": "Kierownik administracyjny",
       "dispatcher": "Dyspozytor",
-      "secretary": "Sekretariat / recepcja"
+      "secretary": "Sekretariat / recepcja",
+      "securitySupervisor": "Nadzorca ochrony"
     },
     "rowActions": {
       "delete": "Usuń",
@@ -5805,7 +6103,8 @@
       "covered": "Obsadzony",
       "at_risk": "Zagrożony",
       "uncovered": "Nieobsadzony",
-      "idle": "Bez zmiany"
+      "idle": "Bez zmiany",
+      "noGps": "Brak danych GPS"
     }
   },
   "dashboard": {
@@ -5935,6 +6234,40 @@
       "incident": "Zdarzenie",
       "delayed": "Opóźnienie",
       "emergency": "Sytuacja alarmowa"
+    },
+    "controlCenter": {
+      "systemStatus": {
+        "devices": {
+          "hint": "Urządzenia przesyłające pozycję",
+          "label": "Urządzenia online"
+        },
+        "realtime": {
+          "hintLive": "Zdarzenia docierają natychmiast",
+          "hintPolling": "Odświeżanie co kilka sekund",
+          "label": "Łącze na żywo"
+        },
+        "stations": {
+          "hint": "Aktywne posterunki i obsługiwani zleceniodawcy",
+          "label": "Posterunki / zleceniodawcy"
+        },
+        "team": {
+          "hint": "Użytkownicy z dostępem do panelu",
+          "label": "Zespół administracyjny"
+        }
+      }
+    },
+    "trend": {
+      "responseSubtitle": "Średnia liczba minut do pierwszej reakcji"
+    },
+    "kpiCorto": {
+      "clients": "Zleceniodawcy",
+      "coverage": "Obsada",
+      "onDuty": "Na służbie",
+      "openIncidents": "Zdarzenia",
+      "patrolsToday": "Obchody dziś",
+      "response": "Reakcja",
+      "stations": "Posterunki",
+      "supervisors": "Nadzorcy"
     }
   },
   "emergency": {
@@ -6004,7 +6337,8 @@
     "roleLabel": "Ochroniarz",
     "invite_not_found": "Nie znaleziono zaproszenia lub jest ono nieważne — formularz można wypełnić ręcznie.",
     "timeOff": {
-      "title": "Moje urlopy"
+      "title": "Moje urlopy",
+      "pickDates": "Prosimy wybrać datę początkową i końcową"
     }
   },
   "header": {
@@ -7026,7 +7360,44 @@
       "noImageToPreview": "Brak obrazu do podglądu.",
       "confirmDeleteTitle": "Potwierdź usunięcie",
       "confirmDeleteQuestion": "Czy na pewno usunąć: {{label}}?",
-      "cannotUndo": "Tej operacji nie można cofnąć."
+      "cannotUndo": "Tej operacji nie można cofnąć.",
+      "preview": {
+        "bannerPlaceholderDesc": "Prosimy dodać baner, aby promować swoje usługi.",
+        "bannerPlaceholderTitle": "Tutaj Twój baner",
+        "certification": "Certyfikat"
+      },
+      "serviceTemplates": {
+        "access": "Kontrola dostępu",
+        "advisory": "Doradztwo w zakresie bezpieczeństwa",
+        "alarms": "Monitoring alarmów",
+        "armed": "Ochrona uzbrojona",
+        "bank": "Ochrona banków",
+        "bodyguard": "Ochrona osobista (ochroniarz osobisty)",
+        "cash": "Transport wartości",
+        "cctv": "Monitoring CCTV",
+        "construction": "Ochrona budów",
+        "crowd": "Kontrola tłumu",
+        "custody": "Konwojowanie towarów",
+        "cyber": "Cyberbezpieczeństwo",
+        "electronic": "Zabezpieczenia elektroniczne",
+        "escort": "Ochrona VIP",
+        "events": "Ochrona imprez",
+        "fire": "Ochrona przeciwpożarowa",
+        "firstaid": "Pierwsza pomoc / ratownictwo",
+        "gps": "Monitoring GPS pojazdów",
+        "guard": "Ochrona fizyczna",
+        "industrial": "Ochrona obiektów przemysłowych",
+        "investigation": "Detektywistyka",
+        "k9": "Sekcja przewodników psów (K9)",
+        "panic": "Alarm napadowy / SOS",
+        "patrol": "Obchody ochronne",
+        "reception": "Portiernia i recepcja",
+        "residential": "Ochrona osiedli",
+        "response": "Reagowanie na zagrożenia",
+        "risk": "Analiza ryzyka",
+        "vehicle": "Ochrona pojazdów",
+        "verification": "Weryfikacja przeszłości"
+      }
     },
     "mobileHub": {
       "loadError": "Nie udało się wczytać ustawień.",
@@ -7650,6 +8021,47 @@
       "reachSection": "Czego to dotyczy",
       "reachScreen": "Wszystkiego, co widać na ekranie: menu, przycisków, powiadomień i nazw sekcji.",
       "reachMail": "A także wiadomości e-mail i powiadomień, które wysyłamy: są redagowane w wybranym tutaj języku."
+    },
+    "apiKeys": {
+      "copyError": "Nie udało się skopiować.",
+      "createError": "Nie udało się utworzyć klucza.",
+      "loadError": "Nie udało się wczytać kluczy.",
+      "nameRequired": "Prosimy nadać kluczowi nazwę.",
+      "revokeError": "Nie udało się unieważnić klucza.",
+      "scopeTimesheetsTitle": "Godziny i dni"
+    },
+    "departments": {
+      "emptyDesc": "Prosimy utworzyć pierwszy przyciskiem „Nowy dział” — na przykład Operacje, Kadry lub Płace.",
+      "emptyTitle": "Brak działów",
+      "errors": {
+        "delete": "Nie udało się usunąć działu",
+        "deleteOne": "Nie udało się usunąć jednego z działów",
+        "load": "Nie udało się wczytać działów",
+        "save": "Nie udało się zapisać działu",
+        "toggle": "Nie udało się zmienić statusu"
+      }
+    },
+    "form": {
+      "saveConfig": "Zapisz ustawienia"
+    },
+    "permissions": {
+      "requiredForAdmin": "Wymagane do dostępu administratora",
+      "state": {
+        "granted": "Przyznane",
+        "notGranted": "Nieprzyznane",
+        "required": "Obowiązkowe"
+      }
+    },
+    "policies": {
+      "colTitle": "Tytuł"
+    },
+    "profile": {
+      "errors": {
+        "changeEmail": "Nie udało się zmienić adresu e-mail.",
+        "save": "Nie udało się zapisać profilu.",
+        "sendCode": "Nie udało się wysłać kodu.",
+        "verifyPhone": "Nie udało się zweryfikować numeru."
+      }
     }
   },
   "siteTourTag": {
@@ -7757,7 +8169,13 @@
     "areaCode": "Numer kierunkowy",
     "searchPrompt": "Prosimy wyszukać numery dostępne do zakupu.",
     "buy": "Kup",
-    "buyNumberHint": "Numer kupowany jest w ramach subkonta i pozostaje nadawcą wiadomości SMS. Niektóre kraje wymagają dokumentacji regulacyjnej Twilio."
+    "buyNumberHint": "Numer kupowany jest w ramach subkonta i pozostaje nadawcą wiadomości SMS. Niektóre kraje wymagają dokumentacji regulacyjnej Twilio.",
+    "countries": {
+      "CA": "Kanada (+1)",
+      "ES": "Hiszpania (+34)",
+      "GB": "Wielka Brytania (+44)",
+      "US": "Stany Zjednoczone (+1)"
+    }
   },
   "station": {
     "details": {
@@ -7927,7 +8345,19 @@
       "rules": "Zasady kontroli pojazdów",
       "saveError": "Nie udało się zapisać zasad",
       "saved": "Zasady zapisane",
-      "viewPhoto": "Zobacz zdjęcie"
+      "viewPhoto": "Zobacz zdjęcie",
+      "condition": {
+        "damaged": "Uszkodzony",
+        "noted": "Z uwagą",
+        "ok": "Bez uszkodzeń"
+      },
+      "vehicleType": {
+        "car": "Samochód osobowy",
+        "motorcycle": "Motocykl",
+        "other": "Inny",
+        "truck": "Ciężarówka",
+        "van": "Furgonetka"
+      }
     },
     "patrolQr": {
       "empty": "Nie ma jeszcze punktów kontrolnych. Prosimy utworzyć je w sekcji „Obchody ochrony” i wrócić tutaj, aby wygenerować kody QR.",
@@ -7985,7 +8415,33 @@
       "namePlaceholder": "Np. Obchód nocny",
       "point": "punkt",
       "points": "punkty",
-      "settings": "Ustawienia"
+      "settings": "Ustawienia",
+      "deleteCpTitle": "Usuń punkt kontrolny",
+      "thisSite": "Ten obiekt"
+    },
+    "geofence": {
+      "centerPinTitle": "Lokalizacja posterunku (prosimy przeciągnąć, aby poprawić)",
+      "needThreePoints": "Prosimy dodać co najmniej 3 punkty, aby zamknąć geostrefę.",
+      "sizeOk": "Rozmiar odpowiedni do rejestrowania wejść i wyjść."
+    },
+    "overview": {
+      "locationSaveError": "Nie udało się zapisać lokalizacji",
+      "notConfigured": "Nieskonfigurowane",
+      "scheduleUpdateError": "Nie udało się zaktualizować grafiku",
+      "status": {
+        "noShow": "Nie stawił się"
+      },
+      "useEditToAssign": "Prosimy użyć przycisku Edytuj, aby go przypisać"
+    },
+    "shifts": {
+      "removeGuardError": "Nie udało się usunąć pracownika ochrony"
+    },
+    "schedule": {
+      "12h-day": "12 h dzienna",
+      "12h-night": "12 h nocna",
+      "24h": "24 godziny",
+      "custom": "Własny",
+      "undefined": "Grafik nieokreślony"
     }
   },
   "supervisor": {
@@ -8001,6 +8457,22 @@
       "licencias": "Uprawnienia",
       "notas": "Notatki",
       "dispositivo": "Urządzenie"
+    },
+    "card": {
+      "noVehicle": "Brak pojazdu",
+      "noZone": "Brak przypisanego rejonu"
+    },
+    "errors": {
+      "createFailed": "Nie udało się utworzyć nadzorcy",
+      "passwordResetFailed": "Nie udało się zresetować hasła",
+      "removeFailed": "Nie udało się usunąć nadzorcy",
+      "resendInviteFailed": "Nie udało się wysłać dostępu do aplikacji"
+    },
+    "schedule": {
+      "noDate": "Brak daty"
+    },
+    "stats": {
+      "withVehicle": "Z pojazdem"
     }
   },
   "suscripcion": {
@@ -8093,12 +8565,15 @@
       "esteRolVe": "Ta rola widzi",
       "paraQuienLlevaUnasCuentas": "Dla osób obsługujących wybranych zleceniodawców.",
       "sinSedeMarcadaVeTodo": "Jeśli nie zaznaczysz żadnego obiektu, nadal będzie widzieć WSZYSTKO.",
-      "todosLosClientesYTodas": "Wszyscy zleceniodawcy i wszystkie obiekty."
+      "todosLosClientesYTodas": "Wszyscy zleceniodawcy i wszystkie obiekty.",
+      "noSePudoGuardarUbicacion": "Nie udało się zapisać lokalizacji"
     },
     "GuardDashboard": {
       "proximoTurno": "Następna zmiana",
       "sinEntradaActiva": "Brak aktywnego wejścia",
-      "noTienesPuestosAsignados": "Nie masz przypisanych posterunków."
+      "noTienesPuestosAsignados": "Nie masz przypisanych posterunków.",
+      "errorGeovalla": "Błąd geostrefy",
+      "errorObteniendoUbicacion": "Błąd podczas ustalania lokalizacji"
     },
     "GuardSchedule": {
       "noTienesDiasLibresAprobados": "Brak zatwierdzonych dni wolnych w najbliższym czasie."
@@ -8247,7 +8722,15 @@
       "todaLaJornada1Fijo": "Cała doba służbowa (1 osoba na stałe)",
       "aunNoHayMarcacionesEnEstePuesto": "Na tym posterunku nie ma jeszcze rejestracji.",
       "definirUbicacion": "Określ lokalizację",
-      "sinUbicacionConfigurada": "Brak ustawionej lokalizacji"
+      "sinUbicacionConfigurada": "Brak ustawionej lokalizacji",
+      "turno": {
+        "24h": "24 godziny",
+        "custom": "Własny",
+        "defineLasHoras": "Określ godziny",
+        "diaYNoche": "Dzień + noc",
+        "diurno": "12 h dzienna",
+        "nocturno": "12 h nocna"
+      }
     },
     "StationShifts": {
       "dia": "Dzień",
@@ -8278,7 +8761,16 @@
       "correoEjemploCom": "adres@przyklad.pl",
       "invitacionAceptadaYaEstasVinculado": "Zaproszenie przyjęte. Konto jest już powiązane z firmą",
       "empresaCreadaYVinculadaCorrectamente": "Firma utworzona i powiązana",
-      "borrarBorrador": "Usuń wersję roboczą"
+      "borrarBorrador": "Usuń wersję roboczą",
+      "cedulaInvalida": "Nieprawidłowy ekwadorski numer dowodu.",
+      "empresaCreadaSinLogo": "Firma utworzona, ale nie udało się wgrać logo",
+      "ingresarDireccionManual": "Wpisz adres ręcznie",
+      "logoFormato": "Logo musi być w formacie PNG, JPG, SVG lub WEBP.",
+      "logoTamano": "Logo nie może przekraczać 5 MB.",
+      "noSePudoAceptarInvitacion": "Nie udało się przyjąć zaproszenia",
+      "noSePudoCrearEmpresa": "Nie udało się utworzyć firmy",
+      "rucTreceDigitos": "Ekwadorski numer RUC musi mieć 13 cyfr.",
+      "sitioWebInvalido": "Nieprawidłowa strona internetowa. Np.: firma.pl"
     },
     "Tenants": {
       "configuracion": "Ustawienia"
@@ -8392,7 +8884,13 @@
       "clasifiqueElDesenlaceDelCaso": "Prosimy określić rozstrzygnięcie sprawy przed jej zamknięciem.",
       "cronologiaDeEventos": "Chronologia zdarzeń",
       "registroDeAuditoria": "Rejestr audytu",
-      "volverALaCola": "Wróć do kolejki"
+      "volverALaCola": "Wróć do kolejki",
+      "dispatch": {
+        "fire": "Straż pożarna",
+        "guard": "Ochroniarz",
+        "medical": "Pogotowie",
+        "police": "Policja"
+      }
     },
     "AlarmPanels": {
       "agenciaPsapPolicia": "Służba / PSAP (policja)",
@@ -8448,7 +8946,8 @@
       "codigo": "Kod",
       "registroDeSenales": "Rejestr sygnałów",
       "sinSenales": "Brak sygnałów",
-      "todoLoQueHanEnviado": "Wszystko, co wysłały centrale, w postaci, w jakiej dotarło. Nie można tego zmieniać."
+      "todoLoQueHanEnviado": "Wszystko, co wysłały centrale, w postaci, w jakiej dotarło. Nie można tego zmieniać.",
+      "ningunaSenalCoincide": "Żaden sygnał nie pasuje do wyszukiwania."
     },
     "App": {
       "paginaNoEncontrada": "Nie znaleziono strony",
@@ -8464,7 +8963,8 @@
       "publicaElCursoAntesDe": "Prosimy opublikować kurs przed jego przypisaniem.",
       "seleccionaUnVigilante": "Prosimy wybrać pracownika ochrony.",
       "nombreDelVigilante": "Imię i nazwisko ochroniarza",
-      "asignaElCursoArribaY": "Po przypisaniu kursu powyżej postępy pojawią się tutaj."
+      "asignaElCursoArribaY": "Po przypisaniu kursu powyżej postępy pojawią się tutaj.",
+      "noSePudoAsignarElCurso": "Nie udało się przypisać kursu."
     },
     "AuditLogs": {
       "buscarPorUsuarioDireccionO": "Szukaj po użytkowniku, adresie lub urządzeniu…",
@@ -8488,7 +8988,9 @@
       "seleccionaLaCategoriaDestinoPara": "Prosimy wybrać kategorię docelową dla zaznaczonych obiektów.",
       "seleccionaUnaCategoria": "Prosimy wybrać kategorię",
       "noSePudieronCargarLas": "Nie udało się wczytać sektorów",
-      "errorAlAsignarCategoria": "Błąd podczas przypisywania kategorii"
+      "errorAlAsignarCategoria": "Błąd podczas przypisywania kategorii",
+      "moverSitiosACategoria": "Przenieś obiekty do kategorii",
+      "sectorizarSitio": "Przypisz obiekt do sektora"
     },
     "Checklist": {
       "informeDeListaDeVerificacion": "Raport z listy kontrolnej",
@@ -8582,7 +9084,10 @@
       "eliminarEstacion": "Usuń posterunek",
       "fijarUbicacionEnElMapa": "Ustal lokalizację na mapie",
       "puestosYCoberturaEnVivo": "Posterunki i obsada na żywo w wybranym obiekcie",
-      "verEstacion": "Zobacz posterunek"
+      "verEstacion": "Zobacz posterunek",
+      "noSePudoEliminarLaEstacion": "Nie udało się usunąć posterunku",
+      "parcial": "Częściowo",
+      "sinMarcar": "Bez rejestracji"
     },
     "ClientDetailsDialog": {
       "codigoPostal": "Kod pocztowy",
@@ -8593,7 +9098,8 @@
       "telefono": "Telefon",
       "telefonoFijo": "Telefon stacjonarny",
       "detallesDelCliente": "Szczegóły zleceniodawcy",
-      "informacionDetalladaDelCliente": "Szczegółowe informacje o wybranym zleceniodawcy."
+      "informacionDetalladaDelCliente": "Szczegółowe informacje o wybranym zleceniodawcy.",
+      "errorCargarDetalles": "Nie udało się wczytać danych zleceniodawcy"
     },
     "ClientDocuments": {
       "arrastraArchivosAquiOHaz": "Prosimy przeciągnąć pliki tutaj lub kliknąć, aby wybrać",
@@ -8649,7 +9155,13 @@
       "errorAlEnviar": "Błąd podczas wysyłania",
       "invitarALaAppMi": "Zaproś do aplikacji Mi Seguridad",
       "esteClienteNoTieneCorreo": "Ten zleceniodawca nie ma adresu e-mail ani powiązanego użytkownika. Prosimy edytować zleceniodawcę i dodać adres e-mail, aby włączyć dostęp.",
-      "invitaAlTitularOAgrega": "Prosimy zaprosić osobę główną lub dodać dodatkowe dostępy, aby zleceniodawca mógł wejść do portalu i aplikacji."
+      "invitaAlTitularOAgrega": "Prosimy zaprosić osobę główną lub dodać dodatkowe dostępy, aby zleceniodawca mógł wejść do portalu i aplikacji.",
+      "inviteSendError": "Nie udało się wysłać zaproszenia. Prosimy spróbować ponownie.",
+      "noEmailAddress": "Brak adresu e-mail",
+      "resendPortalInvite": "Wyślij ponownie zaproszenie do portalu",
+      "sendPortalInvite": "Wyślij zaproszenie do portalu",
+      "withEmail": "Z e-mailem",
+      "withoutEmail": "Bez e-maila"
     },
     "ClientPostSites": {
       "asignacion": "Przypisanie",
@@ -8667,7 +9179,8 @@
       "lasSedesNoTienenUbicacion": "Obiekty nie mają zapisanej lokalizacji",
       "mapaDeSedes": "Mapa obiektów",
       "verElPanelDeLaSede": "Zobacz panel obiektu",
-      "vigilantesAsignadosVsEstaciones": "Przypisani pracownicy ochrony a posterunki (to nie obsada na żywo)"
+      "vigilantesAsignadosVsEstaciones": "Przypisani pracownicy ochrony a posterunki (to nie obsada na żywo)",
+      "noSePudoEliminarLaSede": "Nie udało się usunąć obiektu"
     },
     "ClientProjects": {
       "eliminarEsteProyecto": "Usunąć ten projekt?",
@@ -8729,7 +9242,13 @@
       "coberturaPorTurno": "Obsada wg zmian",
       "sinTurnosConfigurados": "Brak skonfigurowanych zmian.",
       "sinAusenciasHoy": "Brak nieobecności dzisiaj.",
-      "quitarDeLaEstacion": "Usuń z posterunku"
+      "quitarDeLaEstacion": "Usuń z posterunku",
+      "noSePudoQuitarLaAsignacion": "Nie udało się usunąć przypisania",
+      "ausente": "Nieobecny",
+      "descanso": "Wolne",
+      "enRuta": "W drodze",
+      "operador": "Operator",
+      "patrullero": "Patrolowiec"
     },
     "ClientUserAccess": {
       "losAccesosOtorganAlCliente": "Dostępy dają zleceniodawcy wgląd wyłącznie we własną operację.",
@@ -8741,7 +9260,8 @@
       "invitaAlTitularOAgrega": "Prosimy zaprosić osobę główną lub dodać dodatkowe dostępy, aby zleceniodawca mógł wejść do portalu i aplikacji Mi Seguridad.",
       "correoDeLaPersona": "Adres e-mail osoby",
       "personaEmpresaCom": "osoba@firma.pl",
-      "tipoDeAcceso": "Typ dostępu"
+      "tipoDeAcceso": "Typ dostępu",
+      "sinCorreo": "Brak e-maila"
     },
     "CommandBar": {
       "datosDeDemostracion": "Dane demonstracyjne",
@@ -8753,7 +9273,8 @@
     "CountryPhoneSelect": {
       "buscarPaisOCodigo": "Szukaj kraju lub numeru kierunkowego…",
       "seleccionarPais": "Wybierz kraj…",
-      "noSeEncontraronResultados": "Nie znaleziono wyników."
+      "noSeEncontraronResultados": "Nie znaleziono wyników.",
+      "noSePudoCargarPaises": "Nie udało się wczytać listy krajów"
     },
     "Coverage": {
       "anularLaNovedadYDevolver": "Anuluj zgłoszenie i przywróć zmianę do rotacji",
@@ -8778,7 +9299,11 @@
       "detalleOpcional": "Szczegóły (opcjonalnie)",
       "ejRefuerzoPorEventoEn": "Np.: wzmocnienie na czas imprezy u zleceniodawcy",
       "sinCubrir": "nieobsadzony",
-      "despuesVuelveAutomaticamenteA": "Potem automatycznie wraca na"
+      "despuesVuelveAutomaticamenteA": "Potem automatycznie wraca na",
+      "conSueldo": "Płatne",
+      "enElPuesto": "Na posterunku",
+      "sinMarcarEntrada": "Bez rejestracji wejścia",
+      "sinSueldo": "Bezpłatne"
     },
     "CustomerRequests": {
       "elementosPorPagina": "Pozycji na stronę",
@@ -8817,7 +9342,8 @@
       "operacionDeEjemplo": "operacja przykładowa",
       "datosDeEjemploRetiradosEsta": "Dane przykładowe usunięte. To już Państwa rzeczywista operacja.",
       "noPudimosQuitarLosDatos": "Nie udało się usunąć danych przykładowych. Prosimy spróbować ponownie.",
-      "estasExplorandoConUna": "To jest"
+      "estasExplorandoConUna": "To jest",
+      "quitarDatosDeEjemplo": "Usuń dane przykładowe"
     },
     "DepartmentDialog": {
       "descripcion": "Opis",
@@ -8897,7 +9423,12 @@
       "alertasDeCaidaDetectadasPor": "Alarmy upadku wykryte przez telefon pracownika ochrony w trakcie zmiany."
     },
     "GuardHorario": {
-      "laRotacionSeConfiguraEn": "Rotację konfiguruje się na posterunku."
+      "laRotacionSeConfiguraEn": "Rotację konfiguruje się na posterunku.",
+      "huecoCobertura": "Brak wygenerowanej zmiany (luka w obsadzie)",
+      "sinRotacion": "Brak skonfigurowanej rotacji",
+      "sinTurnoGenerado": "Brak wygenerowanej zmiany",
+      "turnoDeDia": "Zmiana dzienna",
+      "turnoDeNoche": "Zmiana nocna"
     },
     "GuardRatingLevel": {
       "verResenasDelVigilante": "Zobacz opinie o pracowniku ochrony",
@@ -8954,7 +9485,8 @@
       "agregaLeccionesConVideoTexto": "Prosimy dodać lekcje z nagraniami, tekstem i materiałami, aby zbudować kurs.",
       "eliminarRecurso": "Usuń materiał",
       "agregarLeccion": "Dodaj lekcję",
-      "urlDeVideoYoutubeVimeo": "Adres URL wideo (YouTube, Vimeo itp.)"
+      "urlDeVideoYoutubeVimeo": "Adres URL wideo (YouTube, Vimeo itp.)",
+      "nuevaLeccion": "Nowa lekcja"
     },
     "LiveTracking": {
       "direccion": "Adres",
@@ -8993,7 +9525,8 @@
     "MobileCommandCenter": {
       "datosDeDemostracion": "Dane demonstracyjne",
       "recursosDeLaOperacion": "Zasoby operacyjne",
-      "personalizarElPanel": "Dostosuj panel"
+      "personalizarElPanel": "Dostosuj panel",
+      "demostracion": "Demonstracja"
     },
     "ModulesTable": {
       "modulosContratados": "Wykupione moduły",
@@ -9032,7 +9565,9 @@
       "desviacionesDeAsistenciaRegistroE": "Odchylenia obecności — rejestr i historia operacyjna",
       "noHayDesviacionesDeAsistencia": "Brak odchyleń obecności dla wybranych filtrów.",
       "por": "Przez",
-      "cerrarElAtraso": "Zamknij zaległości"
+      "cerrarElAtraso": "Zamknij zaległości",
+      "sinExcepciones": "Brak nieprawidłowości",
+      "sinExcepcionesAbiertas": "Brak otwartych nieprawidłowości"
     },
     "NominaRecords": {
       "salidaSinUbicacion": "Wyjście bez lokalizacji",
@@ -9148,7 +9683,8 @@
       "estaSemana": "W tym tygodniu",
       "buscarPuestoOFecha": "Szukaj posterunku lub daty",
       "noHayTurnosAbiertos": "Brak wolnych zmian",
-      "todosLosTurnosTienenVigilante": "Wszystkie zmiany mają przypisanego pracownika ochrony albo w wybranym okresie nie ma zmian."
+      "todosLosTurnosTienenVigilante": "Wszystkie zmiany mają przypisanego pracownika ochrony albo w wybranym okresie nie ma zmian.",
+      "sinPuesto": "Brak posterunku"
     },
     "OperationSetupAlert": {
       "faltaLaConfiguracionOperativa": "Brakuje konfiguracji operacyjnej",
@@ -9174,7 +9710,11 @@
       "imagenes": "Zdjęcia"
     },
     "PatrullaBoard": {
-      "rutasDelDia": "Trasy dnia"
+      "rutasDelDia": "Trasy dnia",
+      "filtroDelDia": "Z tego dnia",
+      "filtroTodas": "Wszystkie",
+      "sinRutasCreadas": "Nie utworzono żadnych tras",
+      "sinRutasEsteDia": "Brak tras zaplanowanych na ten dzień"
     },
     "PhoneInput": {
       "noSeEncontraronPaises": "Nie znaleziono krajów."
@@ -9207,7 +9747,8 @@
       "telefonoFijo": "Telefon stacjonarny",
       "detallesDelSitio": "Szczegóły obiektu",
       "clienteAsociado": "Powiązany zleceniodawca",
-      "informacionDetalladaDelPuestoDeSeguridadSeleccionada": "Szczegółowe informacje o wybranym obiekcie ochrony."
+      "informacionDetalladaDelPuestoDeSeguridadSeleccionada": "Szczegółowe informacje o wybranym obiekcie ochrony.",
+      "errorAlCargarDetallesDelSitio": "Nie udało się wczytać danych obiektu"
     },
     "PostSiteWizard": {
       "agregarOtraCapacitacion": "Dodaj kolejne szkolenie…",
@@ -9249,7 +9790,57 @@
       "anadirEstacion": "Dodaj posterunek",
       "continuarSinSeleccionarTipo": "Kontynuuj bez wyboru typu",
       "estacionesDeVigilancia": "Posterunki ochrony",
-      "instruccionesDelPuestoSop": "Instrukcja posterunku (SOP)"
+      "instruccionesDelPuestoSop": "Instrukcja posterunku (SOP)",
+      "deploy": {
+        "alarmResponse": "Reakcja na alarmy",
+        "armedService": "Ochrona uzbrojona",
+        "cctvMonitoring": "Monitoring CCTV",
+        "formalHandover": "Formalne zdanie służby",
+        "incidentLog": "Książka służby",
+        "k9Service": "Psy służbowe / K9",
+        "keyCustody": "Depozyt kluczy",
+        "periodicPatrol": "Obchody perymetru",
+        "radioComms": "Łączność radiowa",
+        "uniformRequired": "Obowiązkowy mundur",
+        "vehicleControl": "Kontrola wjazdu pojazdów",
+        "visitorLog": "Rejestr gości"
+      },
+      "equipment": {
+        "baton": "Pałka",
+        "binoculars": "Lornetka",
+        "bodycam": "Kamera nasobna",
+        "firstAidKit": "Apteczka pierwszej pomocy",
+        "flashlight": "Latarka taktyczna",
+        "gloves": "Rękawice antyprzecięciowe",
+        "handcuffs": "Kajdanki",
+        "metalDetector": "Wykrywacz metali",
+        "radio": "Radiotelefon",
+        "torch": "Latarka szperacz",
+        "umbrella": "Peleryna / parasol",
+        "vehicle": "Przydzielony pojazd"
+      },
+      "errorAlCrearElSitio": "Nie udało się utworzyć obiektu",
+      "training": {
+        "accessControl": "Kontrola dostępu",
+        "cctv": "Telewizja dozorowa (CCTV)",
+        "communication": "Łączność radiowa",
+        "crowdControl": "Kontrola tłumu",
+        "customerService": "Obsługa klienta",
+        "defensiveTactics": "Techniki obronne",
+        "evacuation": "Ewakuacja",
+        "fireExtinguisher": "Obsługa gaśnic",
+        "firearms": "Posługiwanie się bronią",
+        "firstAid": "Pierwsza pomoc",
+        "panicProtocol": "Procedura antypaniczna",
+        "reportWriting": "Sporządzanie raportów"
+      },
+      "agregarPersonalizado": "Dodaj własny…",
+      "jornada": {
+        "matutina": "Poranna",
+        "nocturna": "Nocna",
+        "personalizada": "Własna",
+        "sacafranco": "Zmiennik"
+      }
     },
     "ProfilePhotoCapture": {
       "buenaIluminacionEviteSombrasY": "Dobre oświetlenie — prosimy unikać cieni i światła pod słońce",
@@ -9308,7 +9899,24 @@
       "tiempoRestanteParaCompletarEl": "Czas pozostały na uzupełnienie meldunku",
       "llamarAEstePuesto": "Zawołaj ten posterunek",
       "marcarComoIncidente": "Oznacz jako zdarzenie",
-      "noHayPuestosConfigurados": "Brak skonfigurowanych posterunków."
+      "noHayPuestosConfigurados": "Brak skonfigurowanych posterunków.",
+      "automatico": "Automatycznie",
+      "class": {
+        "incident": "Zdarzenie",
+        "novedad": "Uwaga",
+        "sin_novedad": "Bez uwag"
+      },
+      "generandoResumen": "Generowanie podsumowania…",
+      "manual": "Ręcznie",
+      "resumenNoDisponibleSinClaveDeIa": "Podsumowanie niedostępne (brak klucza AI).",
+      "sinVigilanteEnTurno": "Brak pracownika ochrony na zmianie",
+      "status": {
+        "no_response": "Brak odpowiedzi",
+        "notified": "Wywołanie…",
+        "pending": "W kolejce",
+        "responded": "Odpowiedział",
+        "skipped": "Brak obsady"
+      }
     },
     "RadioLiveChannelPanel": {
       "uneteParaEscucharYHablar": "Prosimy dołączyć, aby słuchać i rozmawiać z pracownikami ochrony w czasie rzeczywistym (push-to-talk).",
@@ -9347,7 +9955,10 @@
       "patronDeRotacion": "Wzorzec rotacji",
       "patronDeRotacionCreado": "Wzorzec rotacji utworzony",
       "cargandoPatrones": "Wczytywanie wzorców…",
-      "noHayPatronesCreaUno": "Brak wzorców. Prosimy utworzyć wzorzec przyciskiem „Własny”."
+      "noHayPatronesCreaUno": "Brak wzorców. Prosimy utworzyć wzorzec przyciskiem „Własny”.",
+      "dias": "Dni",
+      "errorCrearPatron": "Nie udało się utworzyć wzorca",
+      "trabaja": "Pracuje"
     },
     "RouteForm": {
       "asignacion": "Przypisanie",
@@ -9377,7 +9988,9 @@
       "enviarNotificacionAntesDeLasPasadasProgramadas": "Wysyłaj powiadomienie przed zaplanowanymi przejazdami",
       "forzarRegistroDeEntradaAntesDeComenzarLaRuta": "Wymagaj rejestracji wejścia przed rozpoczęciem trasy",
       "noHayPuntosDefinidos": "Nie zdefiniowano punktów",
-      "sinUbicacion": "Brak lokalizacji"
+      "sinUbicacion": "Brak lokalizacji",
+      "errorCargandoPuestosDeVigilancia": "Błąd podczas wczytywania obiektów ochrony",
+      "optimizarElOrdenDeLasParadas": "Zoptymalizuj kolejność przystanków"
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "Przy tempie ruchu miejskiego, bez czasu postoju na przystankach",
@@ -9387,7 +10000,8 @@
       "diaACubrirDescansoDel": "Dzień do obsadzenia (dzień wolny osoby etatowej)",
       "cubreLosDiasDeDescanso": "Pokrywa dni wolne stałej obsady. Najbardziej dostępni na początku.",
       "ocupadoEnOtroPuesto": "Zajęty na innym posterunku",
-      "todosLosVigilantesTienenUna": "Wszyscy pracownicy ochrony mają aktywną rotację."
+      "todosLosVigilantesTienenUna": "Wszyscy pracownicy ochrony mają aktywną rotację.",
+      "noSePudoAsignarElSacafranco": "Nie udało się przypisać zmiennika"
     },
     "Schedule": {
       "14Dias": "(14 dni)",
@@ -9444,7 +10058,30 @@
       "revisaAntesDePublicar": "Prosimy sprawdzić przed publikacją:",
       "rotacionSf": "Rotacja SF:",
       "seMoveraDesde": "Zostanie przeniesiony z",
-      "sugeridoSegunLoQueFaltaEseDia": "Sugestia na podstawie braków w tym dniu:"
+      "sugeridoSegunLoQueFaltaEseDia": "Sugestia na podstawie braków w tym dniu:",
+      "ajustarLaRotacionDesdeEsteLibre": "Przestaw rotację od tego dnia wolnego",
+      "asignarVigilanteALaRotacion": "Przypisz pracownika ochrony do rotacji",
+      "borradorDeHorario": "Wersja robocza grafiku",
+      "clicEnUnaCeldaParaSeleccionar": "Prosimy kliknąć komórkę, aby zaznaczyć",
+      "cubrirEsteDia": "Obsadź ten dzień",
+      "duplicarAlDiaSiguiente": "Powiel na następny dzień",
+      "duplicarTurnoAlDiaSiguiente": "Powiel zmianę na następny dzień",
+      "eliminarTurnoDeEsteDia": "Usuń zmianę z tego dnia",
+      "errorAlAsignarLaCobertura": "Nie udało się przypisać zastępstwa",
+      "errorAlCrearElTurno": "Nie udało się utworzyć zmiany",
+      "errorEnAutoAsignacion": "Błąd automatycznego przypisania",
+      "errorEnOptimizacion": "Błąd optymalizacji",
+      "errorGenerandoElBorrador": "Błąd podczas generowania wersji roboczej",
+      "horaDeLaEmpresaPunto": "Czas według firmy.",
+      "moverVigilanteDePuesto": "Przenieś pracownika ochrony na inny posterunek",
+      "nadieCoincideConLaBusqueda": "Nikt nie pasuje do wyszukiwania.",
+      "noHayVigilantesParaMostrar": "Brak pracowników ochrony do wyświetlenia.",
+      "noSePudoReajustarLaRotacion": "Nie udało się przestawić rotacji",
+      "planDeImplementacion": "Plan wdrożenia",
+      "removerAsignacion": "Usuń przypisanie",
+      "soloEsteDia": "Tylko ten dzień",
+      "terminaAlDiaSiguientePunto": "Kończy się następnego dnia.",
+      "turnoDe24Horas": "Zmiana 24-godzinna."
     },
     "ScheduleTimeline": {
       "duracion": "Czas trwania:",
@@ -9453,7 +10090,10 @@
       "fechasInvalidas": "Nieprawidłowe daty",
       "turnoActualizado": "Zmiana zaktualizowana",
       "siguiente": "(następny)",
-      "eligeUnPuesto": "Prosimy wybrać posterunek…"
+      "eligeUnPuesto": "Prosimy wybrać posterunek…",
+      "errorAlGuardarElTurno": "Nie udało się zapisać zmiany",
+      "turnoGeneradoPorRotacion": "Wygenerowana przez rotację posterunku (po usunięciu może pojawić się ponownie).",
+      "turnoManual": "Zmiana ręczna (narysowany blok lub zmiana jednorazowa)."
     },
     "Scheduling": {
       "planificacionDeTurnos": "Planowanie zmian",
@@ -9475,7 +10115,8 @@
     "ServiceTypeBadge": {
       "ejGestionDeAccesoSeguridad": "Np. kontrola dostępu, ochrona przemysłowa, ochrona VIP...",
       "especifiqueUnTipoDeServicioPersonalizado": "Prosimy podać własny typ usługi.",
-      "sinTipo": "Brak typu"
+      "sinTipo": "Brak typu",
+      "otro": "Inne..."
     },
     "ShiftAssignModal": {
       "cambialaParaMoverElDia": "— prosimy ją zmienić, aby przesunąć dzień wolny.",
@@ -9496,7 +10137,9 @@
       "fechaDeInicio": "dacie rozpoczęcia",
       "fechaDeInicioDelTurno": "Data rozpoczęcia zmiany",
       "paraEscalonarDosVigilantesEn": "Aby rozłożyć dwóch pracowników ochrony na posterunku całodobowym, prosimy nadać im różne daty rozpoczęcia.",
-      "hastaOpcional": "Do (opcjonalnie)"
+      "hastaOpcional": "Do (opcjonalnie)",
+      "asignarRotacion": "Przypisz rotację",
+      "crearTurno": "Utwórz zmianę"
     },
     "ShiftExchange": {
       "elementosPorPagina": "Pozycji na stronę",
@@ -9521,7 +10164,8 @@
       "aunNoEmpiezan": "Jeszcze się nie zaczęły",
       "turnosYaCerrados": "Zmiany już zamknięte",
       "quedaronSinVigilante": "Pozostały bez pracownika ochrony",
-      "buscarVigilanteOPuesto": "Szukaj pracownika ochrony lub posterunku"
+      "buscarVigilanteOPuesto": "Szukaj pracownika ochrony lub posterunku",
+      "estadoDelTurno": "Status zmiany"
     },
     "ShiftTemplates": {
       "basico": "Podstawowy",
@@ -9541,7 +10185,14 @@
       "nombreDeLaPlantilla": "Nazwa szablonu",
       "cargandoPlantillas": "Wczytywanie szablonów…",
       "noHayPlantillas": "Brak szablonów",
-      "creaTuPrimeraPlantillaDe": "Prosimy utworzyć pierwszy szablon zmiany przyciskiem powyżej."
+      "creaTuPrimeraPlantillaDe": "Prosimy utworzyć pierwszy szablon zmiany przyciskiem powyżej.",
+      "editTemplateTitle": "Edytuj szablon zmiany",
+      "newTemplateTitle": "Nowy szablon zmiany",
+      "saveError": "Nie udało się zapisać szablonu",
+      "legacyDept": {
+        "admin": "Administracja",
+        "security": "Ochrona"
+      }
     },
     "StationGeofencePolygon": {
       "area": "Powierzchnia",
@@ -9553,7 +10204,8 @@
       "puestoMovil": "Posterunek mobilny",
       "puestoRenombrado": "Nazwa posterunku zmieniona",
       "renombrarPuesto": "Zmień nazwę posterunku",
-      "nadieDeTurnoEnEsteMomento": "Nikt nie pełni w tej chwili służby"
+      "nadieDeTurnoEnEsteMomento": "Nikt nie pełni w tej chwili służby",
+      "errorRenombrar": "Nie udało się zmienić nazwy"
     },
     "StationRoster": {
       "dia": "Dzień",
@@ -9578,7 +10230,8 @@
       "visitaAFamiliarEntregaEtc": "Odwiedziny u bliskich, dostawa itp.",
       "noHayVisitantesRegistradosPara": "Brak zarejestrowanych gości na tym posterunku.",
       "editarVisitante": "Edytuj gościa",
-      "eliminarVisitante": "Usuń gościa"
+      "eliminarVisitante": "Usuń gościa",
+      "permisoDeCamaraDenegado": "Odmówiono dostępu do aparatu."
     },
     "StepIndicator": {
       "progresoDeConfiguracion": "Postęp konfiguracji"
@@ -9680,7 +10333,8 @@
       "reproduceElRecorridoGpsReal": "Odtwarzanie rzeczywistej trasy GPS pracowników ochrony w wybranym zakresie dat.",
       "seleccionaUnVigilanteYUn": "Prosimy wybrać pracownika ochrony i zakres",
       "eligeUnVigilanteYLas": "Prosimy wybrać pracownika ochrony i daty, a następnie nacisnąć „Pokaż trasę”, aby wykreślić jego przebieg GPS.",
-      "hojaDeRuta": "Karta trasy"
+      "hojaDeRuta": "Karta trasy",
+      "sinPuntosEnRango": "Brak punktów w tym zakresie"
     },
     "TrailMap": {
       "bateria": "Bateria",
@@ -9689,7 +10343,13 @@
       "velMedia": "Śr. prędkość",
       "volverAlInicioDelRecorrido": "Wróć na początek trasy",
       "instanteDelRecorrido": "Moment trasy",
-      "sinRecorridoParaEsteRango": "Brak trasy w tym zakresie"
+      "sinRecorridoParaEsteRango": "Brak trasy w tym zakresie",
+      "camaraSigueElRecorrido": "Kamera podąża za trasą",
+      "camaraSuelta": "Kamera swobodna",
+      "irAEsteMomento": "Przejdź do tego momentu",
+      "posicionEnElInstanteMostrado": "Pozycja w pokazywanej chwili",
+      "precision": "Dokładność",
+      "recorridoHastaAqui": "Trasa do tego miejsca"
     },
     "TrainingCatalog": {
       "sinAccesoAlCatalogo": "Brak dostępu do katalogu"
@@ -9706,7 +10366,8 @@
       "descripcion": "Opis",
       "eliminarCurso": "Usunąć kurs?",
       "titulo": "Tytuł *",
-      "todasLasCategorias": "Wszystkie kategorie"
+      "todasLasCategorias": "Wszystkie kategorie",
+      "progresoDeVigilantes": "Postępy pracowników ochrony"
     },
     "TrainingEnrollments": {
       "aunNoHaCompletadoLecciones": "Nie ukończono jeszcze żadnej lekcji."
@@ -9715,7 +10376,9 @@
       "duracion": "Czas trwania",
       "trasladarAOtroPuesto": "Przenieś na inny posterunek",
       "ejCubreFaltaEnEl": "Np.: obsadza nieobecność na drugim posterunku",
-      "despuesVuelveAutomaticamenteA": "Potem automatycznie wraca na"
+      "despuesVuelveAutomaticamenteA": "Potem automatycznie wraca na",
+      "hastaUnaFecha": "Do wybranej daty",
+      "soloEsteTurno": "Tylko ta zmiana"
     },
     "UserRoleDialog": {
       "descripcion": "Opis",
@@ -9758,7 +10421,11 @@
       "propiedadDeLaEmpresa": "Własność firmy",
       "propiedadDelVigilante": "Własność pracownika ochrony",
       "anadirVehiculo": "Dodaj pojazd",
-      "informacionCompletaDelVehiculo": "Pełne informacje o pojeździe."
+      "informacionCompletaDelVehiculo": "Pełne informacje o pojeździe.",
+      "activarVehiculos": "Aktywuj pojazdy",
+      "eliminarVehiculos": "Usuń pojazdy",
+      "errorCargandoVehiculos": "Błąd podczas wczytywania pojazdów",
+      "sinPlaca": "Brak numeru rejestracyjnego"
     },
     "VideoActionModals": {
       "critica": "Krytyczna",
@@ -9794,7 +10461,15 @@
       "eliminarDispositivo": "Usuń urządzenie",
       "configuraLosDatosDeConexion": "Prosimy skonfigurować dane połączenia rejestratora DVR/NVR lub kamery.",
       "dispositivosDeVideo": "Urządzenia wideo",
-      "puntoDeServicioOpcional": "Posterunek (opcjonalnie)"
+      "puntoDeServicioOpcional": "Posterunek (opcjonalnie)",
+      "dejarEnBlanco": "Prosimy zostawić puste, aby zachować",
+      "errorCargar": "Nie udało się wczytać urządzeń",
+      "errorEliminar": "Nie udało się usunąć urządzenia",
+      "errorGuardar": "Nie udało się zapisać urządzenia",
+      "errorSincronizar": "Nie udało się zsynchronizować kamer",
+      "falloPrueba": "Test połączenia nie powiódł się",
+      "sinMarcaModelo": "Brak marki/modelu",
+      "sinStream": "Brak obrazu"
     },
     "VideoGatewayModal": {
       "configuracionGo2rtcPegalaEnGo2rtc": "Konfiguracja go2rtc (do wklejenia w go2rtc.yaml)",
@@ -9802,7 +10477,9 @@
       "urlBaseDelGatewayGo2rtc": "Bazowy adres URL bramki (go2rtc)",
       "dondeCorreGo2rtcEnLa": "Gdzie działa go2rtc — w chmurze (jeśli rejestrator jest dostępny przez DDNS) albo na mostku w obiekcie.",
       "despliegaGo2rtcConEsteConfig": "Prosimy uruchomić go2rtc z tą konfiguracją; pobiera ona strumień RTSP z rejestratora i udostępnia go do CRM.",
-      "gatewayDeVideo": "Bramka wideo"
+      "gatewayDeVideo": "Bramka wideo",
+      "noSePudoGuardarElGateway": "Nie udało się zapisać bramki wideo",
+      "sincronizaLasCamarasPrimero": "Prosimy najpierw zsynchronizować kamery urządzenia."
     },
     "VideoMonitoring": {
       "ningunaCamaraTransmitiendo": "Żadna kamera nie nadaje",
@@ -9818,7 +10495,9 @@
     },
     "VideoPlayer": {
       "camaraFueraDeLinea": "Kamera offline",
-      "sinTransmisionConfigurada": "Brak skonfigurowanego strumienia"
+      "sinTransmisionConfigurada": "Brak skonfigurowanego strumienia",
+      "errorDeTransmision": "Błąd transmisji",
+      "hlsNoSoportado": "Twoja przeglądarka nie obsługuje HLS"
     },
     "VideoRelaySites": {
       "aunNoHaySitiosRemotos": "Nie ma jeszcze obiektów zdalnych",
@@ -9886,7 +10565,21 @@
       "nuevaTarea": "Nowe zadanie",
       "describeLaTarea": "Prosimy opisać zadanie…",
       "detalleDeLaTarea": "Szczegóły zadania",
-      "imagenDeReferencia": "Zdjęcie referencyjne"
+      "imagenDeReferencia": "Zdjęcie referencyjne",
+      "estado": {
+        "approved": "Zatwierdzone",
+        "cancelled": "Anulowane",
+        "completed": "Wykonane",
+        "pendingApproval": "Do zatwierdzenia",
+        "rejected": "Odrzucone"
+      },
+      "filtro": {
+        "all": "Wszystkie",
+        "approved": "Zatwierdzone",
+        "completed": "Wykonane",
+        "pendingApproval": "Do zatwierdzenia",
+        "rejected": "Odrzucone"
+      }
     },
     "TrendPanel": {
       "maximo": "Maksimum",
@@ -9940,7 +10633,26 @@
       "elGrupoNoTieneMiembros": "Grupa nie ma członków",
       "anadeVigilantesConElBuscador": "Prosimy dodać pracowników ochrony wyszukiwarką lub zsynchronizować z przypisaniami posterunku.",
       "sincronizarConAsignaciones": "Synchronizuj z przypisaniami",
-      "soloAnunciosLosMiembrosNo": "Tylko ogłoszenia (członkowie nie mogą odpowiadać)"
+      "soloAnunciosLosMiembrosNo": "Tylko ogłoszenia (członkowie nie mogą odpowiadać)",
+      "conversacionesConTusClientes": "Rozmowy z Twoimi zleceniodawcami.",
+      "conversacionesConVigilantesSupervisores": "Rozmowy z pracownikami ochrony, nadzorcami i grupami posterunków.",
+      "eliminarConversacion": "Usuń rozmowę",
+      "eliminarGrupo": "Usuń grupę",
+      "empiezaUnaNuevaConElBoton": "Prosimy zacząć nową przyciskiem „Nowa”.",
+      "noSePudieronCargarLasConversaciones": "Nie udało się wczytać rozmów",
+      "noSePudieronCargarLosMiembros": "Nie udało się wczytać członków",
+      "noSePudoAccederAlMicrofono": "Nie udało się uzyskać dostępu do mikrofonu",
+      "noSePudoAnadir": "Nie udało się dodać",
+      "noSePudoCargarLaConversacion": "Nie udało się wczytać rozmowy",
+      "noSePudoCrearElGrupo": "Nie udało się utworzyć grupy",
+      "noSePudoEliminarLaConversacion": "Nie udało się usunąć rozmowy",
+      "noSePudoEnviar": "Nie udało się wysłać",
+      "noSePudoEnviarLaNotaDeVoz": "Nie udało się wysłać wiadomości głosowej",
+      "noSePudoSincronizar": "Nie udało się zsynchronizować",
+      "noSePudoSubirElArchivo": "Nie udało się wgrać pliku",
+      "sinConversaciones": "Brak rozmów",
+      "sinMensajesDeClientes": "Brak wiadomości od zleceniodawców",
+      "todaviaNoHayMensajesDeTusClientes": "Nie ma jeszcze wiadomości od Twoich zleceniodawców."
     },
     "PassdownsPage": {
       "pasesDeTurno": "Zdania służby",
@@ -10088,7 +10800,8 @@
     },
     "ClientsPage": {
       "elUsuarioDebeEstarVinculado": "Aby kontynuować, użytkownik musi być powiązany z firmą",
-      "elClienteRecibeUnCorreo": "Zleceniodawca otrzymuje wiadomość e-mail z linkiem dostępowym"
+      "elClienteRecibeUnCorreo": "Zleceniodawca otrzymuje wiadomość e-mail z linkiem dostępowym",
+      "errorEnviarInvitacion": "Nie udało się wysłać zaproszenia"
     },
     "AddStationPage": {
       "cadaBloqueLoComparten": ": każdy blok dzielą między siebie",
@@ -10101,7 +10814,8 @@
       "estaRondaNoTienePuntos": "Ten obchód nie ma punktów kontrolnych.",
       "fotoDelEscaneo": "Zdjęcie ze skanowania",
       "fotoDeLaRonda": "Zdjęcie z obchodu",
-      "noEscaneado": "Nie zeskanowano"
+      "noEscaneado": "Nie zeskanowano",
+      "errorDetalleRonda": "Nie udało się wczytać szczegółów obchodu"
     },
     "EditSecurityGuardPage": {
       "noTienesPermisoParaEditar": "Brak uprawnień do edycji pracowników ochrony",
@@ -10228,7 +10942,10 @@
       "registraLosDatosDelVehiculo": "Rejestracja danych pojazdu patrolowego",
       "delCliente": "Zleceniodawcy",
       "quitarFotografia": "Usuń zdjęcie",
-      "tocaLaImagenParaElegir": "Prosimy dotknąć obrazu, aby wybrać zdjęcie pojazdu."
+      "tocaLaImagenParaElegir": "Prosimy dotknąć obrazu, aby wybrać zdjęcie pojazdu.",
+      "editarVehiculo": "Edytuj pojazd",
+      "errorCreandoVehiculo": "Błąd podczas tworzenia pojazdu",
+      "yaExisteUnVehiculoConEsaPlaca": "Pojazd o tym numerze rejestracyjnym już istnieje"
     },
     "ActivityStream": {
       "parteDeNovedades": "Raport zdarzeń"
@@ -10253,7 +10970,8 @@
       "yaLaGuarde": "Klucz zapisany"
     },
     "AppErrorBoundary": {
-      "estaSeccionNoSePudoMostrar": "Nie udało się wyświetlić tej sekcji"
+      "estaSeccionNoSePudoMostrar": "Nie udało się wyświetlić tej sekcji",
+      "errorDeRenderizado": "Błąd wyświetlania"
     },
     "BottomSheet": {
       "ajustarLaAlturaDelPanel": "Dostosuj wysokość panelu"
@@ -10278,7 +10996,21 @@
       "arrastraOHazClicParaAdjuntar": "Prosimy przeciągnąć lub kliknąć, aby załączyć"
     },
     "ExtremoRutaField": {
-      "usarEstaUbicacion": "Użyj tej lokalizacji"
+      "usarEstaUbicacion": "Użyj tej lokalizacji",
+      "destino": {
+        "accion": "Określ cel trasy",
+        "ayuda": "Gdzie kończy się trasa. Jeśli pole pozostanie puste, trasa kończy się na ostatnim przystanku.",
+        "modal": "Cel trasy",
+        "titulo": "Cel",
+        "vacio": "Nie określono celu: trasa kończy się na ostatnim przystanku."
+      },
+      "origen": {
+        "accion": "Określ początek trasy",
+        "ayuda": "Skąd rusza nadzorca. Jeśli pole pozostanie puste, trasa zaczyna się na pierwszym przystanku.",
+        "modal": "Początek trasy",
+        "titulo": "Początek",
+        "vacio": "Nie określono początku: trasa zaczyna się na pierwszym przystanku."
+      }
     },
     "GeoFenceLog": {
       "registrosDeGeoVallas": "Rejestry geostref"
@@ -10333,14 +11065,17 @@
       "enunciadoDeLaPregunta": "Treść pytania",
       "opcion": "Opcja",
       "puntajeParaAprobar": "Próg zaliczenia:",
-      "sinCuestionario": "Brak testu"
+      "sinCuestionario": "Brak testu",
+      "agregaAlMenosUnaPreguntaConDosOpciones": "Prosimy dodać co najmniej jedno pytanie z dwiema odpowiedziami.",
+      "noSePudoGuardarElCuestionario": "Nie udało się zapisać testu."
     },
     "ScheduleCard": {
       "sinHorario": "Brak grafiku",
       "tocaUnVigilanteParaCambiarlo": "Prosimy dotknąć pracownika ochrony, aby go zmienić."
     },
     "SiteTour": {
-      "informeDeRecorridosDelSitio": "Raport z obchodów obiektu"
+      "informeDeRecorridosDelSitio": "Raport z obchodów obiektu",
+      "revision": "Przegląd"
     },
     "StaticMapImage": {
       "abrirElMapaInteractivo": "Otwórz mapę interaktywną",
@@ -10350,7 +11085,9 @@
       "configurarPuestosDeSupervision": "Skonfiguruj posterunki nadzoru",
       "puestosDeSupervisionSinCubrir": "Nieobsadzone posterunki nadzoru",
       "sinSupervisoresAsignados": "Brak przypisanych nadzorców",
-      "supervision": "Nadzór"
+      "supervision": "Nadzór",
+      "contraerSupervision": "Zwiń nadzór",
+      "expandirSupervision": "Rozwiń nadzór"
     },
     "SupervisorKpisPage": {
       "indicadoresDelSupervisor": "Wskaźniki nadzorcy"
@@ -10376,7 +11113,9 @@
       "recorridosDePatrullajeVehicular": "Przejazdy patrolu zmotoryzowanego: trasy, postoje i czasy."
     },
     "VerifyEmailGate": {
-      "verificaTuCorreoElectronico": "Prosimy potwierdzić adres e-mail"
+      "verificaTuCorreoElectronico": "Prosimy potwierdzić adres e-mail",
+      "noSePudoComprobar": "Nie udało się sprawdzić statusu. Prosimy spróbować ponownie.",
+      "noSePudoReenviar": "Nie udało się ponownie wysłać wiadomości. Prosimy spróbować ponownie."
     },
     "VideoEvents": {
       "eventosDeVideo": "Zdarzenia wideo",
@@ -10386,10 +11125,27 @@
       "enlaceNoDisponible": "Link niedostępny",
       "esteEnlaceEsPrivadoYPuedeCaducarNoLoCompartas": "Ten link jest prywatny i może wygasnąć. Prosimy go nie udostępniać.",
       "procesandoElVideo": "Przetwarzanie wideo",
-      "videoCompartidoDeFormaSegura": "Wideo udostępnione w bezpieczny sposób"
+      "videoCompartidoDeFormaSegura": "Wideo udostępnione w bezpieczny sposób",
+      "clipDeVideo": "Klip wideo",
+      "enlaceInvalido": "Ten link jest nieprawidłowy lub już wygasł."
     },
     "WatchMode": {
       "registrosDeModoVigilancia": "Rejestry trybu czuwania"
+    },
+    "AlarmVideoVerification": {
+      "camara": "Kamera",
+      "clipDeVerificacion": "Klip weryfikacyjny"
+    },
+    "DataReport": {
+      "errorCargarInforme": "Nie udało się wczytać raportu",
+      "habilitaVentanasEmergentes": "Prosimy zezwolić na wyskakujące okna, aby wyeksportować"
+    },
+    "DispatchIncidentMap": {
+      "masCercanoConVigilante": "Najbliższy z pracownikiem ochrony",
+      "sinVigilanteAhora": "Teraz bez pracownika ochrony"
+    },
+    "ImportarHojaDeVida": {
+      "revisalosAntesDeGuardar": "Prosimy je sprawdzić przed zapisaniem."
     }
   },
   "visitantes": {
@@ -10513,7 +11269,8 @@
     "printError": "Nie udało się wydrukować",
     "subtitle": "Kontrola wejść i wyjść gości",
     "placeTypeLabel": "Rodzaj miejsca",
-    "tagLabel": "Identyfikator"
+    "tagLabel": "Identyfikator",
+    "bitacorasImprimir": "Rejestry wizyt — drukowanie"
   },
   "app": {
     "loading": "Ładowanie…",
@@ -10523,6 +11280,9 @@
   "controlCenter": {
     "errorBoundary": {
       "title": "Nie udało się wczytać centrum dowodzenia"
+    },
+    "sheet": {
+      "label": "Szczegóły operacji"
     }
   },
   "routes": {
@@ -10531,6 +11291,563 @@
       "distanciaDelRecorrido": "Długość trasy",
       "sinOptimizar": "Bez optymalizacji",
       "yaEnMejorOrden": "Kolejność była już optymalna"
+    },
+    "detail": {
+      "destinationFallback": "Kończy się na ostatnim przystanku",
+      "originFallback": "Zaczyna się na pierwszym przystanku"
+    },
+    "list": {
+      "bulkDeleteError": "Nie udało się usunąć tras"
+    },
+    "live": {
+      "loadError": "Nie udało się wczytać tras"
+    }
+  },
+  "analytics": {
+    "attendance": {
+      "earlyDeparture": "Wcześniejsze wyjścia",
+      "late": "Spóźnienia"
+    },
+    "loadError": "Nie udało się wczytać analiz",
+    "range": {
+      "d30": "30 dni",
+      "d7": "7 dni",
+      "d90": "90 dni",
+      "today": "Dziś"
+    }
+  },
+  "appearance": {
+    "accent": {
+      "ambar": "Bursztyn",
+      "carmesi": "Karmazyn",
+      "acero": "Stal",
+      "azul": "Błękit",
+      "cian": "Cyjan",
+      "esmeralda": "Szmaragd",
+      "lima": "Limonka",
+      "magenta": "Fuksja",
+      "mostaza": "Złota musztarda",
+      "violeta": "Fiolet"
+    }
+  },
+  "dispatch": {
+    "validation": {
+      "incidentDateTimeRequired": "Data i godzina zdarzenia są wymagane",
+      "stationRequired": "Posterunek jest wymagany",
+      "callerNameRequired": "Imię i nazwisko zgłaszającego jest wymagane",
+      "callerTypeRequired": "Typ zgłaszającego jest wymagany",
+      "dateRequired": "Data jest wymagana",
+      "detailsRequired": "Szczegóły są wymagane",
+      "incidentTypeRequired": "Rodzaj zdarzenia jest wymagany",
+      "locationRequired": "Lokalizacja jest wymagana",
+      "timeRequired": "Godzina jest wymagana"
+    }
+  },
+  "errores": {
+    "sinConexionServidor": "Nie udało się nawiązać połączenia."
+  },
+  "memos": {
+    "readReceiptReceived": "Otrzymano potwierdzenie odczytu"
+  },
+  "misAvisos": {
+    "fila": {
+      "attendanceApprovals": "Zatwierdzenia obecności",
+      "attendanceExceptions": "Nieprawidłowości w obecności",
+      "checkInOut": "Wejścia i wyjścia pracowników ochrony",
+      "contractExpiry": "Kończące się umowy zleceniodawców",
+      "coverageUncovered": "Nieobsadzony posterunek",
+      "dispatchUpdates": "Zgłoszenia zdarzeń",
+      "geofenceAlert": "Wejścia i wyjścia z geostrefy",
+      "inactiveGuardAlert": "Bezczynny pracownik ochrony na zmianie",
+      "licenseExpiry": "Kończące się licencje",
+      "panicButton": "Alarm napadowy",
+      "ptoRequest": "Wnioski o wolne",
+      "taskCompleted": "Wykonane zadania"
+    },
+    "hint": {
+      "coverageUncovered": "Nikt nie stawił się na posterunku",
+      "panicButton": "Alarm dociera zawsze"
+    },
+    "via": {
+      "dashboard": "Panel i telefon",
+      "email": "E-mail",
+      "sms": "SMS"
+    }
+  },
+  "offline": {
+    "replay": {
+      "noTenant": "Brak firmy — nie można powtórzyć zapisanej zmiany"
+    }
+  },
+  "onboarding": {
+    "requiredFields": {
+      "address": "Adres",
+      "businessTitle": "Nazwa rejestrowa",
+      "email": "Adres e-mail",
+      "name": "Nazwa firmy",
+      "phone": "Telefon",
+      "taxNumber": "RUC / nr dowodu",
+      "timezone": "Strefa czasowa",
+      "logo": "Logotyp"
+    },
+    "wizard": {
+      "autoSearch": "Wyszukiwanie automatyczne",
+      "logoUploadError": "Dane zapisane, ale nie udało się wgrać logo.",
+      "manualEntry": "Wpisz ręcznie",
+      "step": {
+        "bienvenida": "Powitanie",
+        "contacto": "Kontakt",
+        "revisar": "Sprawdzenie",
+        "tuEmpresa": "Twoja firma"
+      },
+      "welcome": {
+        "companyData": "Dane Twojej firmy (nazwa, nazwa rejestrowa, RUC)",
+        "logo": "Logo, które zobaczą Twoi pracownicy ochrony i zleceniodawcy"
+      }
+    }
+  },
+  "panic": {
+    "overlay": {
+      "subtitleClient": "Zleceniodawca uruchomił przycisk SOS",
+      "subtitleGuard": "Pracownik ochrony uruchomił alarm napadowy",
+      "quickAction": {
+        "calledPolice": "Zadzwoniono na policję",
+        "contactClient": "Skontaktowano się ze zleceniodawcą",
+        "contactGuard": "Skontaktowano się z pracownikiem ochrony na miejscu",
+        "dispatchSupervisor": "Wysłano nadzorcę / patrol",
+        "falseAlarm": "Fałszywy alarm / test"
+      }
+    }
+  },
+  "passdown": {
+    "loadDetailError": "Nie udało się wczytać zdania służby",
+    "noNotes": "Nie zarejestrowano żadnych zdarzeń."
+  },
+  "radio": {
+    "devices": {
+      "saveError": "Nie udało się zapisać radia IP",
+      "status": {
+        "error": "Błąd",
+        "offline": "Brak połączenia",
+        "registered": "Zarejestrowane",
+        "unknown": "Nieprzetestowane"
+      },
+      "testError": "Nie udało się przetestować połączenia"
+    },
+    "paseEndError": "Nie udało się zakończyć odprawy",
+    "paseStartError": "Nie udało się rozpocząć odprawy",
+    "voice": {
+      "connectError": "Nie udało się połączyć radia",
+      "notConnected": "Radio niepodłączone"
+    },
+    "voiceModuleLoadError": "Nie udało się wczytać modułu głosowego."
+  },
+  "reports": {
+    "card": {
+      "checklist": {
+        "desc": "Podgląd list kontrolnych wypełnionych przez pracowników ochrony",
+        "title": "Raport list kontrolnych"
+      },
+      "checkpointLogs": {
+        "desc": "Podgląd punktów kontrolnych zeskanowanych przez pracowników ochrony",
+        "title": "Rejestr punktów kontrolnych obchodów"
+      },
+      "dar": {
+        "desc": "Podgląd dziennej aktywności pracowników ochrony",
+        "title": "Raport dziennej służby (DAR)"
+      },
+      "deliveryLogs": {
+        "desc": "Podgląd przesyłek odnotowanych przez pracowników ochrony"
+      },
+      "entryExit": {
+        "desc": "Podgląd, kiedy pracownik ochrony rejestruje wejście na obiekt i wyjście z niego"
+      },
+      "fallAlertLogs": {
+        "desc": "Podgląd zapisów alarmu upadku pracowników ochrony i urządzeń",
+        "title": "Rejestr alarmów upadku pracownika ochrony"
+      },
+      "geofenceLogs": {
+        "desc": "Podgląd zapisów geostrefy pracowników ochrony"
+      },
+      "guardKpi": {
+        "desc": "Podgląd raportu wskaźników pracownika ochrony"
+      },
+      "inactiveGuardLogs": {
+        "desc": "Podgląd zapisów bezczynności pracowników ochrony"
+      },
+      "licenseLogs": {
+        "desc": "Podgląd rejestru licencji pracowników ochrony"
+      },
+      "panicButtonLogs": {
+        "desc": "Podgląd zapisów alarmów napadowych uruchomionych przez pracowników ochrony"
+      },
+      "payrollClient": {
+        "desc": "Podgląd przepracowanych godzin wg zleceniodawcy",
+        "title": "Przepracowane godziny wg zleceniodawcy"
+      },
+      "payrollDepartment": {
+        "desc": "Podgląd godzin do rozliczenia wg działu",
+        "title": "Przepracowane godziny wg działu"
+      },
+      "payrollPost": {
+        "desc": "Podgląd przepracowanych godzin wg posterunku",
+        "title": "Przepracowane godziny wg posterunku"
+      },
+      "postKpi": {
+        "desc": "Podgląd raportu wskaźników posterunku",
+        "title": "Raport wskaźników posterunku"
+      },
+      "siteTours": {
+        "desc": "Podgląd obchodów wykonanych i pominiętych przez pracowników ochrony"
+      },
+      "tasks": {
+        "desc": "Podgląd zadań wykonanych przez pracowników ochrony"
+      },
+      "timecardClient": {
+        "desc": "Podgląd godzin z ewidencji czasu pracy wg zleceniodawcy",
+        "title": "Ewidencja czasu pracy wg zleceniodawcy"
+      },
+      "timecardGuard": {
+        "desc": "Podgląd godzin z ewidencji czasu pracy wg pracownika ochrony",
+        "title": "Ewidencja czasu pracy wg pracownika ochrony"
+      },
+      "timecardPost": {
+        "desc": "Podgląd godzin z ewidencji czasu pracy wg posterunku",
+        "title": "Ewidencja czasu pracy wg posterunku"
+      },
+      "vehiclePatrol": {
+        "desc": "Podgląd aktywności patrolu zmotoryzowanego"
+      },
+      "watchModeLogs": {
+        "desc": "Podgląd plików multimedialnych przesłanych przez pracowników ochrony"
+      }
+    },
+    "panicLog": {
+      "origin": {
+        "alarmPanel": "Centrala alarmowa",
+        "clientApp": "Aplikacja zleceniodawcy (SOS)",
+        "manual": "Ręcznie",
+        "workerApp": "Alarm napadowy (pracownik ochrony)"
+      },
+      "status": {
+        "acknowledged": "Przyjęte",
+        "closed": "Zamknięte",
+        "dispatched": "Wysłany patrol",
+        "open": "Otwarte",
+        "resolved": "Rozwiązane"
+      }
+    },
+    "section": {
+      "general": {
+        "title": "Raporty ogólne"
+      },
+      "incidents": {
+        "title": "Raporty zdarzeń"
+      },
+      "logs": {
+        "title": "Raporty rejestrów"
+      },
+      "payroll": {
+        "title": "Raporty przepracowanych godzin"
+      },
+      "standard": {
+        "title": "Raporty standardowe"
+      },
+      "timecard": {
+        "title": "Raporty ewidencji czasu pracy"
+      }
+    },
+    "col": {
+      "checkInOut": {
+        "guard": "Ochroniarz",
+        "hours": "Godziny",
+        "in": "Wejście",
+        "late": "Spóźnienie (min)",
+        "out": "Wyjście",
+        "station": "Posterunek",
+        "status": "Status"
+      },
+      "geoFenceLog": {
+        "date": "Data",
+        "guard": "Ochroniarz",
+        "in": "Wejście",
+        "inDist": "Odl. wejścia",
+        "out": "Wyjście",
+        "outDist": "Odl. wyjścia",
+        "station": "Posterunek"
+      },
+      "incident": {
+        "created": "Data",
+        "desc": "Opis",
+        "location": "Lokalizacja",
+        "priority": "Priorytet",
+        "site": "Posterunek",
+        "status": "Status",
+        "title": "Tytuł"
+      },
+      "panicButtonLog": {
+        "ack": "Data przyjęcia",
+        "created": "Data",
+        "origin": "Źródło",
+        "priority": "Priorytet",
+        "resolved": "Data rozwiązania",
+        "status": "Status",
+        "title": "Tytuł"
+      },
+      "passdown": {
+        "created": "Data",
+        "instr": "Instrukcje",
+        "notes": "Zdarzenia",
+        "outgoing": "Zdający służbę",
+        "received": "Odebrał",
+        "shift": "Zmiana",
+        "station": "Posterunek",
+        "status": "Status"
+      },
+      "task": {
+        "created": "Data utworzenia",
+        "done": "Data wykonania",
+        "due": "Termin",
+        "priority": "Priorytet",
+        "source": "Źródło",
+        "station": "Posterunek",
+        "status": "Status",
+        "task": "Zadanie"
+      }
+    }
+  },
+  "security": {
+    "event": {
+      "deviceEvicted": "Urządzenie odłączone",
+      "deviceRegistered": "Urządzenie zarejestrowane",
+      "login": "Logowanie",
+      "loginFailed": "Nieudana próba",
+      "logout": "Wylogowanie",
+      "providerAccess": "Dostęp wsparcia (CGuardPro)"
+    },
+    "logs": {
+      "actionCreate": "Utworzenie",
+      "actionDelete": "Usunięcie",
+      "actionUpdate": "Aktualizacja"
+    }
+  },
+  "serviceTypes": {
+    "alarm": "Alarm i reakcja",
+    "cctv": "Monitoring wizyjny",
+    "custody": "Ochrona i konwój",
+    "manned": "Ochrona fizyczna",
+    "patrol": "Patrol zmotoryzowany",
+    "alarm_desc": "Monitoring alarmów i szybka reakcja na zdarzenia bezpieczeństwa.",
+    "cctv_desc": "Zdalny monitoring przy użyciu kamer i telewizji przemysłowej.",
+    "custody_desc": "Ochrona osobista lub konwojowanie mienia o dużej wartości.",
+    "manned_desc": "Pracownicy ochrony przypisani do posterunku na stałe lub zmianowo.",
+    "patrol_desc": "Nadzorcy wykonujący cykliczne obchody w jednym lub kilku obiektach."
+  },
+  "supervisorPositions": {
+    "assignError": "Nie udało się przypisać",
+    "createError": "Nie udało się utworzyć",
+    "unassignError": "Nie udało się usunąć",
+    "updateError": "Nie udało się zaktualizować",
+    "scheduleType": {
+      "12hDay": "Dzienna (12 h)",
+      "12hNight": "Nocna (12 h)",
+      "24h": "24 h (dzień/noc)",
+      "custom": "Własny"
+    }
+  },
+  "tasks": {
+    "approvals": {
+      "rejectReasonTitle": "Powód odrzucenia"
+    },
+    "estado": {
+      "approved": "Zatwierdzone",
+      "completed": "Wykonane",
+      "rejected": "Odrzucone"
+    },
+    "origen": {
+      "passdown": "Zdanie służby",
+      "staff": "Personel"
+    }
+  },
+  "tracking": {
+    "unitState": {
+      "active": "Na służbie",
+      "noSignal": "Brak sygnału",
+      "stopped": "Zatrzymany"
+    },
+    "viewTodayRoute": "Zobacz dzisiejszą trasę"
+  },
+  "training": {
+    "categories": {
+      "compliance": "Zgodność z przepisami",
+      "other": "Inne",
+      "safety": "Prewencja",
+      "security": "Bezpieczeństwo",
+      "skills": "Umiejętności"
+    },
+    "enrollments": {
+      "title": "Postępy w kursie"
+    },
+    "enrollmentStatus": {
+      "assigned": "Przypisany",
+      "completed": "Ukończony",
+      "expired": "Wygasł",
+      "inProgress": "W trakcie"
+    },
+    "levels": {
+      "advanced": "Zaawansowany",
+      "beginner": "Podstawowy",
+      "intermediate": "Średnio zaawansowany"
+    }
+  },
+  "validacion": {
+    "rangoFechasInvalido": "Nieprawidłowy zakres dat"
+  },
+  "validation": {
+    "inviteByLink": {
+      "invalidLink": "Nieprawidłowy link"
+    },
+    "postSite": {
+      "latitude": "Nieprawidłowa szerokość geograficzna (tylko cyfry i kropka dziesiętna)",
+      "longitude": "Nieprawidłowa długość geograficzna (tylko cyfry i kropka dziesiętna)",
+      "faxMax": "Numer faksu może mieć maksymalnie 20 znaków",
+      "maxChars": "Maksymalnie {{n}} znaków",
+      "phoneMax": "Numer telefonu może mieć maksymalnie 20 znaków"
+    },
+    "profile": {
+      "academicInstructionRequired": "Wykształcenie jest wymagane",
+      "genderRequired": "Płeć jest wymagana",
+      "maritalStatusRequired": "Stan cywilny jest wymagany",
+      "birthDateRequired": "Data urodzenia jest wymagana",
+      "identificationRequired": "Numer dowodu / identyfikatora jest wymagany"
+    },
+    "adminUser": {
+      "accessLevelRequired": "Proszę wybrać poziom dostępu"
+    },
+    "client": {
+      "addressRequired": "Adres jest wymagany",
+      "documentRequired": "RUC / nr dowodu jest wymagany",
+      "emailRequired": "Adres e-mail jest wymagany",
+      "latitudeRange": "Szerokość geograficzna musi mieścić się w zakresie od -90 do 90",
+      "longitudeRange": "Długość geograficzna musi mieścić się w zakresie od -180 do 180",
+      "nameRequired": "Nazwa zleceniodawcy jest wymagana",
+      "phoneRequired": "Telefon jest wymagany",
+      "postalCodeRequired": "Kod pocztowy jest wymagany",
+      "websiteInvalid": "Nieprawidłowy adres strony internetowej"
+    },
+    "common": {
+      "atLeastOneGuard": "Proszę dodać co najmniej jednego pracownika ochrony",
+      "dateFormat": "Format RRRR-MM-DD",
+      "emailInvalid": "Proszę podać prawidłowy adres e-mail",
+      "lastNameInvalid": "Nazwisko nie może zawierać cyfr ani niedozwolonych znaków",
+      "lastNameRequired": "Nazwisko jest wymagane",
+      "middleNameInvalid": "Drugie imię nie może zawierać cyfr ani niedozwolonych znaków",
+      "nameInvalid": "Imię nie może zawierać cyfr ani niedozwolonych znaków",
+      "nameRequired": "Imię jest wymagane",
+      "phoneE164": "Proszę użyć formatu, np. +12015550123",
+      "phoneE164International": "Proszę użyć formatu międzynarodowego, np. +12015550123"
+    },
+    "joinByCode": {
+      "codeLength": "Kod musi mieć 6 cyfr",
+      "codeNumeric": "Kod może zawierać tylko cyfry"
+    },
+    "route": {
+      "dateFromRequired": "Data od jest wymagana",
+      "dateToRequired": "Data do jest wymagana",
+      "daysRequired": "Proszę wybrać co najmniej jeden dzień",
+      "endTimeRequired": "Godzina zakończenia jest wymagana",
+      "sitesRequired": "Proszę wybrać co najmniej jeden posterunek",
+      "startTimeRequired": "Godzina rozpoczęcia jest wymagana",
+      "supervisorRequired": "Nadzorca jest wymagany",
+      "vehicleRequired": "Pojazd jest wymagany"
+    },
+    "vehicle": {
+      "colorRequired": "Kolor jest wymagany",
+      "digitsOnly": "Tylko cyfry",
+      "makeRequired": "Marka jest wymagana",
+      "mileageRequired": "Początkowy przebieg jest wymagany",
+      "modelRequired": "Model jest wymagany",
+      "plateRequired": "Numer rejestracyjny jest wymagany",
+      "vinAlphanumeric": "Nieprawidłowy numer VIN (musi mieć dokładnie 17 znaków alfanumerycznych)",
+      "vinLength": "Nieprawidłowy numer VIN (musi mieć dokładnie 17 znaków)",
+      "yearInvalid": "Nieprawidłowy rok"
+    }
+  },
+  "video": {
+    "actions": {
+      "clipError": "Nie udało się wygenerować klipu",
+      "dispatchError": "Nie udało się skierować",
+      "incidentError": "Nie udało się utworzyć zdarzenia"
+    },
+    "events": {
+      "empty": {
+        "allDescription": "Nie zarejestrowano jeszcze żadnych zdarzeń wideo.",
+        "filteredDescription": "Brak zdarzeń o tym statusie."
+      },
+      "unknownCamera": "Nieznana kamera"
+    },
+    "monitoring": {
+      "empty": {
+        "noCameras": "Nie skonfigurowano jeszcze żadnych kamer",
+        "noMatches": "Żadna kamera nie pasuje do filtrów"
+      }
+    },
+    "relay": {
+      "createSiteError": "Nie udało się utworzyć obiektu",
+      "generateError": "Nie udało się utworzyć przekaźnika",
+      "regenerateTokenError": "Nie udało się odnowić klucza dostępu",
+      "status": {
+        "offline": "Brak połączenia",
+        "publishing": "Nadaje",
+        "unknown": "Nieaktywne"
+      }
+    },
+    "deviceType": {
+      "camera": "Kamera",
+      "cloud": "Chmura",
+      "dvr": "DVR",
+      "nvr": "NVR"
+    }
+  },
+  "inventory": {
+    "itemCondition": {
+      "bueno": "Dobry",
+      "danado": "Uszkodzony",
+      "regular": "Średni"
+    },
+    "itemStatus": {
+      "asignado": "Przypisany",
+      "disponible": "Dostępny",
+      "enMantenimiento": "W serwisie",
+      "retirado": "Wycofany"
+    },
+    "itemType": {
+      "arma": "Broń",
+      "bitacora": "Książka służby",
+      "caseta": "Budka wartownicza",
+      "chalecoAntibalas": "Kamizelka kuloodporna",
+      "cintoCompleto": "Pas z pełnym wyposażeniem",
+      "detectorDeMetales": "Wykrywacz metali",
+      "linterna": "Latarka",
+      "otro": "Inne",
+      "pito": "Gwizdek",
+      "ponchoDeAguas": "Peleryna przeciwdeszczowa",
+      "radio": "Radiotelefon",
+      "tolete": "Pałka",
+      "vehiculo": "Pojazd"
+    }
+  },
+  "rotation": {
+    "days": "dni: {{count}}",
+    "nights": "noce: {{count}}",
+    "none": "Brak rotacji",
+    "rests": "dni wolne: {{count}}"
+  },
+  "vehicles": {
+    "ownership": {
+      "alquilado": "Wynajęty",
+      "cliente": "Zleceniodawcy",
+      "propio": "Własny"
     }
   }
 }

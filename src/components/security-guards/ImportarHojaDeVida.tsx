@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { FileUp, Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,7 @@ export function ImportarHojaDeVida({
   onArchivo?: (archivo: File) => void;
   className?: string;
 }) {
+  const { t } = useTranslation();
   const input = useRef<HTMLInputElement>(null);
   const [leyendo, setLeyendo] = useState(false);
 
@@ -66,11 +68,11 @@ export function ImportarHojaDeVida({
         });
       } else {
         toast.success(`Leímos ${leidos} datos de la hoja de vida`, {
-          description: "Revísalos antes de guardar.",
+          description: t("ui.ImportarHojaDeVida.revisalosAntesDeGuardar", "Revísalos antes de guardar."),
         });
       }
     } catch (err: any) {
-      toast.error(err?.message || "No pudimos leer la hoja de vida.");
+      toast.error(err?.message || t("vigia.cvError", "No pudimos leer la hoja de vida."));
     } finally {
       setLeyendo(false);
     }

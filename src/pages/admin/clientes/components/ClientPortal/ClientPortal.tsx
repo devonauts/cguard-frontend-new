@@ -36,15 +36,15 @@ interface AccessUser {
  * Las claves coinciden con las del backend (clientPortalSettingsService.ts).
  * El SOS no está aquí a propósito: es un botón de emergencia y no se apaga.
  */
-const MODULOS: { key: string; icon: any; label: string; desc: string }[] = [
-  { key: 'liveLocation', icon: MapPin, label: 'Ubicación en vivo', desc: 'Ver dónde están los vigilantes ahora, en el mapa' },
-  { key: 'attendance', icon: Users, label: 'Entradas y salidas', desc: 'Quién fichó en cada puesto y a qué hora' },
-  { key: 'incidents', icon: AlertTriangle, label: 'Incidentes', desc: 'Novedades reportadas en sus sedes' },
-  { key: 'rondas', icon: ClipboardList, label: 'Rondas', desc: 'Recorridos y puntos de control' },
-  { key: 'photos', icon: FileBarChart, label: 'Fotos', desc: 'Imágenes adjuntas a incidentes y rondas' },
-  { key: 'inventory', icon: ShieldCheck, label: 'Inventario', desc: 'Equipo asignado a sus puestos' },
-  { key: 'analytics', icon: FileBarChart, label: 'Analítica', desc: 'Panel de indicadores del servicio' },
-  { key: 'visitors', icon: Bell, label: 'Visitas', desc: 'Registro y pre-autorización de visitantes' },
+const MODULOS: { key: string; icon: any; labelKey: string; label: string; descKey: string; desc: string }[] = [
+  { key: 'liveLocation', icon: MapPin, labelKey: 'clients.portal.modules.liveLocation.label', label: 'Ubicación en vivo', descKey: 'clients.portal.modules.liveLocation.desc', desc: 'Ver dónde están los vigilantes ahora, en el mapa' },
+  { key: 'attendance', icon: Users, labelKey: 'clients.portal.modules.attendance.label', label: 'Entradas y salidas', descKey: 'clients.portal.modules.attendance.desc', desc: 'Quién fichó en cada puesto y a qué hora' },
+  { key: 'incidents', icon: AlertTriangle, labelKey: 'clients.portal.modules.incidents.label', label: 'Incidentes', descKey: 'clients.portal.modules.incidents.desc', desc: 'Novedades reportadas en sus sedes' },
+  { key: 'rondas', icon: ClipboardList, labelKey: 'clients.portal.modules.rondas.label', label: 'Rondas', descKey: 'clients.portal.modules.rondas.desc', desc: 'Recorridos y puntos de control' },
+  { key: 'photos', icon: FileBarChart, labelKey: 'clients.portal.modules.photos.label', label: 'Fotos', descKey: 'clients.portal.modules.photos.desc', desc: 'Imágenes adjuntas a incidentes y rondas' },
+  { key: 'inventory', icon: ShieldCheck, labelKey: 'clients.portal.modules.inventory.label', label: 'Inventario', descKey: 'clients.portal.modules.inventory.desc', desc: 'Equipo asignado a sus puestos' },
+  { key: 'analytics', icon: FileBarChart, labelKey: 'clients.portal.modules.analytics.label', label: 'Analítica', descKey: 'clients.portal.modules.analytics.desc', desc: 'Panel de indicadores del servicio' },
+  { key: 'visitors', icon: Bell, labelKey: 'clients.portal.modules.visitors.label', label: 'Visitas', descKey: 'clients.portal.modules.visitors.desc', desc: 'Registro y pre-autorización de visitantes' },
 ];
 
 type Tono = 'brand' | 'neutral' | 'ok' | 'warn' | 'bad' | 'info';
@@ -131,7 +131,7 @@ export default function ClientPortal({ client }: Props) {
       setConfirm(null);
       toast.success(kind === 'portal' ? 'Invitación al portal enviada' : 'Invitación a la app enviada');
     } catch (err: any) {
-      setErrorMsg(err?.response?.data?.message || err?.message || 'No se pudo enviar la invitación. Intenta de nuevo.');
+      setErrorMsg(err?.response?.data?.message || err?.message || t('ui.ClientPortal.inviteSendError', 'No se pudo enviar la invitación. Intenta de nuevo.'));
       setConfirm(null);
     } finally { setSending(false); }
   };
@@ -146,7 +146,7 @@ export default function ClientPortal({ client }: Props) {
         <Kpi icon={<Globe />} value={linked ? 'Vinculado' : 'Sin usuario'} label="Acceso al portal" accent={linked ? 'green' : 'slate'} />
         <Kpi icon={<Users />} value={accessCount} label={t('comun.usuariosConAcceso')} accent="blue" />
         <Kpi icon={<Smartphone />} value="Mi Seguridad" label={t("ui.ClientPortal.appMovilDelCliente", "App móvil del cliente")} accent="primary" />
-        <Kpi icon={<Mail />} value={email ? 'Con correo' : 'Sin correo'} label={email || 'Agrega un correo al cliente'} accent={email ? 'green' : 'orange'} />
+        <Kpi icon={<Mail />} value={email ? t('ui.ClientPortal.withEmail', 'Con correo') : t('ui.ClientPortal.withoutEmail', 'Sin correo')} label={email || 'Agrega un correo al cliente'} accent={email ? 'green' : 'orange'} />
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.3fr_1fr]">
@@ -163,7 +163,7 @@ export default function ClientPortal({ client }: Props) {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold">{name}</p>
-                <p className="truncate text-xs" style={{ color: 'var(--ink-soft)' }}>{email || 'Sin correo electrónico'}</p>
+                <p className="truncate text-xs" style={{ color: 'var(--ink-soft)' }}>{email || t('ui.ClientPortal.noEmailAddress', 'Sin correo electrónico')}</p>
               </div>
               <StatusBadge tone={linked ? 'ok' : 'neutral'}>{linked ? 'Usuario vinculado' : 'Sin usuario'}</StatusBadge>
             </div>
@@ -203,7 +203,7 @@ export default function ClientPortal({ client }: Props) {
 
             {/* Actions */}
             <div className="mt-3 flex flex-wrap gap-2">
-              <Button variant="brand" onClick={() => setConfirm('portal')} disabled={!email && !linked}><Mail className="mr-1.5 h-4 w-4" /> {linked ? 'Reenviar invitación al portal' : 'Enviar invitación al portal'}</Button>
+              <Button variant="brand" onClick={() => setConfirm('portal')} disabled={!email && !linked}><Mail className="mr-1.5 h-4 w-4" /> {linked ? t('ui.ClientPortal.resendPortalInvite', 'Reenviar invitación al portal') : t('ui.ClientPortal.sendPortalInvite', 'Enviar invitación al portal')}</Button>
               <Button variant="outline" onClick={() => setConfirm('app')} disabled={!email && !linked}><Smartphone className="mr-1.5 h-4 w-4" />{" "}{t('ui.ClientPortal.invitarALaAppMi')}</Button>
             </div>
             {(!email && !linked) && <p className="mt-2 text-xs" style={{ color: 'var(--warn-text)' }}>{t('ui.ClientPortal.esteClienteNoTieneCorreo')}</p>}
@@ -240,6 +240,7 @@ export default function ClientPortal({ client }: Props) {
             <div className="space-y-2.5">
               {MODULOS.map((f) => {
                 const on = portal[f.key] !== false;
+                const fLabel = t(f.labelKey, f.label);
                 return (
                   <label key={f.key} className="flex cursor-pointer items-start gap-3">
                     <Checkbox
@@ -247,12 +248,12 @@ export default function ClientPortal({ client }: Props) {
                       disabled={guardandoPortal}
                       onCheckedChange={() => togglePortal(f.key)}
                       className="mt-0.5"
-                      aria-label={f.label}
+                      aria-label={fLabel}
                     />
                     <IconTile size="sm"><f.icon /></IconTile>
                     <div>
-                      <div className="text-sm font-medium">{f.label}</div>
-                      <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{f.desc}</div>
+                      <div className="text-sm font-medium">{fLabel}</div>
+                      <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{t(f.descKey, f.desc)}</div>
                     </div>
                   </label>
                 );

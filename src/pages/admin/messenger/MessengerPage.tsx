@@ -124,7 +124,7 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
       const res = await messageService.listConversations({ limit: 50 });
       setConversations(res?.rows || []);
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || "No se pudieron cargar las conversaciones");
+      toast.error(e?.data?.message || e?.message || t("ui.MessengerPage.noSePudieronCargarLasConversaciones", "No se pudieron cargar las conversaciones"));
     } finally { setLoadingList(false); }
   }, []);
 
@@ -142,7 +142,7 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
       }
       setTimeout(() => threadRef.current?.scrollTo({ top: threadRef.current.scrollHeight }), 50);
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || "No se pudo cargar la conversación");
+      toast.error(e?.data?.message || e?.message || t("ui.MessengerPage.noSePudoCargarLaConversacion", "No se pudo cargar la conversación"));
     }
   }, []);
 
@@ -189,7 +189,7 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
       await loadThread(selected);
       loadConversations();
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || "No se pudo enviar");
+      toast.error(e?.data?.message || e?.message || t("ui.MessengerPage.noSePudoEnviar", "No se pudo enviar"));
       setDraft(body);
       setPending(atts);
     } finally { setSending(false); }
@@ -197,7 +197,7 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
 
   const onDeleteConversation = async () => {
     if (!selected) return;
-    if (!(await confirmDialog({ title: 'Eliminar conversación', message: `¿Eliminar la conversación con ${selected.recipientName}? Esta acción no se puede deshacer.`, confirmText: 'Eliminar', tone: 'danger' }))) return;
+    if (!(await confirmDialog({ title: t('ui.MessengerPage.eliminarConversacion', 'Eliminar conversación'), message: `¿Eliminar la conversación con ${selected.recipientName}? Esta acción no se puede deshacer.`, confirmText: 'Eliminar', tone: 'danger' }))) return;
     const id = selected.id;
     try {
       await messageService.deleteConversation(id);
@@ -206,7 +206,7 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
       setMessages([]);
       toast.success(t('ui.MessengerPage.conversacionEliminada'));
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || "No se pudo eliminar la conversación");
+      toast.error(e?.data?.message || e?.message || t("ui.MessengerPage.noSePudoEliminarLaConversacion", "No se pudo eliminar la conversación"));
     }
   };
 
@@ -223,12 +223,12 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
         await loadThread(selected);
         loadConversations();
       } catch (e: any) {
-        toast.error(e?.data?.message || e?.message || "No se pudo enviar la nota de voz");
+        toast.error(e?.data?.message || e?.message || t("ui.MessengerPage.noSePudoEnviarLaNotaDeVoz", "No se pudo enviar la nota de voz"));
       } finally { setUploading(false); }
       return;
     }
     try { await recorder.start(); }
-    catch (e: any) { toast.error(e?.message || "No se pudo acceder al micrófono"); }
+    catch (e: any) { toast.error(e?.message || t("ui.MessengerPage.noSePudoAccederAlMicrofono", "No se pudo acceder al micrófono")); }
   };
 
   const onPickFiles = async (files: FileList | null) => {
@@ -242,7 +242,7 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
         setPending((p) => [...p, att]);
       }
     } catch (e: any) {
-      toast.error(e?.message || "No se pudo subir el archivo");
+      toast.error(e?.message || t("ui.MessengerPage.noSePudoSubirElArchivo", "No se pudo subir el archivo"));
     } finally {
       setUploading(false);
       if (fileRef.current) fileRef.current.value = "";
@@ -251,12 +251,12 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
 
   return (
     <AppLayout>
-      <Breadcrumb items={[{ label: "Panel de control", path: "/dashboard" }, { label: "Mensajería" }, { label: pageTitle }]} />
+      <Breadcrumb items={[{ label: "Panel de control", path: "/dashboard" }, { label: t("sidebar.mensajeria.label", "Mensajería") }, { label: pageTitle }]} />
       <div className="p-4 lg:p-6 space-y-4">
         <PageHeader
           icon={<MessageSquareText />}
           title={pageTitle}
-          subtitle={isClient ? "Conversaciones con tus clientes." : "Conversaciones con vigilantes, supervisores y grupos por puesto."}
+          subtitle={isClient ? t("ui.MessengerPage.conversacionesConTusClientes", "Conversaciones con tus clientes.") : t("ui.MessengerPage.conversacionesConVigilantesSupervisores", "Conversaciones con vigilantes, supervisores y grupos por puesto.")}
           actions={
             <Button variant="brand" onClick={() => setComposeOpen(true)}>
               <Plus size={15} className="mr-1.5" />{" "}{t('ui.MessengerPage.nuevo')}{" "}</Button>
@@ -281,8 +281,8 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
               ) : visibleConversations.length === 0 ? (
                 <EmptyState
                   icon={<MessageSquareText />}
-                  title={isClient ? "Sin mensajes de clientes" : "Sin conversaciones"}
-                  description={isClient ? "Todavía no hay mensajes de tus clientes." : "Empieza una nueva con el botón «Nuevo»."}
+                  title={isClient ? t("ui.MessengerPage.sinMensajesDeClientes", "Sin mensajes de clientes") : t("ui.MessengerPage.sinConversaciones", "Sin conversaciones")}
+                  description={isClient ? t("ui.MessengerPage.todaviaNoHayMensajesDeTusClientes", "Todavía no hay mensajes de tus clientes.") : t("ui.MessengerPage.empiezaUnaNuevaConElBoton", "Empieza una nueva con el botón «Nuevo».")}
                 />
               ) : (
                 visibleConversations.map((c) => {
@@ -369,7 +369,7 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
                   )}
                   <button
                     onClick={onDeleteConversation}
-                    title={selected.isGroup ? "Eliminar grupo" : "Eliminar conversación"}
+                    title={selected.isGroup ? t("ui.MessengerPage.eliminarGrupo", "Eliminar grupo") : t("ui.MessengerPage.eliminarConversacion", "Eliminar conversación")}
                     className={`${selected.isGroup ? "" : "ml-auto"} cg-focus grid h-9 w-9 place-items-center rounded-lg transition-colors`}
                     style={{ color: 'var(--ink-soft)' }}
                     onMouseEnter={(e) => {
@@ -596,7 +596,7 @@ function ComposeDialog({ scope, onClose, onSent }: { scope: "operational" | "cli
       const res = await messageService.createConversation({ recipientType: isClient ? "client" : "guard", recipientId: picked.id, body: body.trim() });
       onSent(res?.conversation || res);
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || "No se pudo enviar");
+      toast.error(e?.data?.message || e?.message || t("ui.MessengerPage.noSePudoEnviar", "No se pudo enviar"));
     } finally { setSending(false); }
   };
 
@@ -613,7 +613,7 @@ function ComposeDialog({ scope, onClose, onSent }: { scope: "operational" | "cli
         subject: c.subject, isOneWay: c.isOneWay, memberCount: (res?.members || []).length,
       });
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || "No se pudo crear el grupo");
+      toast.error(e?.data?.message || e?.message || t("ui.MessengerPage.noSePudoCrearElGrupo", "No se pudo crear el grupo"));
     } finally { setSending(false); }
   };
 
@@ -727,7 +727,7 @@ function MembersPanel({ conversation, onClose, onChanged }: { conversation: Conv
 
   const load = useCallback(async () => {
     try { const res = await messageService.listMembers(conversation.id); setMembers(res?.rows || []); }
-    catch (e: any) { toast.error(e?.data?.message || e?.message || "No se pudieron cargar los miembros"); }
+    catch (e: any) { toast.error(e?.data?.message || e?.message || t("ui.MessengerPage.noSePudieronCargarLosMiembros", "No se pudieron cargar los miembros")); }
     finally { setLoading(false); }
   }, [conversation.id]);
 
@@ -749,7 +749,7 @@ function MembersPanel({ conversation, onClose, onChanged }: { conversation: Conv
   const addMember = async (userId: string) => {
     setBusy(true);
     try { const res = await messageService.addMembers(conversation.id, [userId]); setMembers(res?.rows || []); setQ(""); setResults([]); onChanged(); }
-    catch (e: any) { toast.error(e?.data?.message || e?.message || "No se pudo añadir"); }
+    catch (e: any) { toast.error(e?.data?.message || e?.message || t("ui.MessengerPage.noSePudoAnadir", "No se pudo añadir")); }
     finally { setBusy(false); }
   };
   const removeMember = async (userId: string) => {
@@ -761,7 +761,7 @@ function MembersPanel({ conversation, onClose, onChanged }: { conversation: Conv
   const resync = async () => {
     setBusy(true);
     try { const res = await messageService.resyncMembers(conversation.id); setMembers(res?.rows || []); onChanged(); toast.success(t('ui.MessengerPage.miembrosActualizadosDesdeLasAsignaciones')); }
-    catch (e: any) { toast.error(e?.data?.message || e?.message || "No se pudo sincronizar"); }
+    catch (e: any) { toast.error(e?.data?.message || e?.message || t("ui.MessengerPage.noSePudoSincronizar", "No se pudo sincronizar")); }
     finally { setBusy(false); }
   };
 

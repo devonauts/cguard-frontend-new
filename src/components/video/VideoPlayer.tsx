@@ -179,7 +179,7 @@ export function VideoPlayer({ camera, className, autoPlay = true, ptz = true, vi
       }
       loadHlsJs().then((Hls) => {
         if (cancelled || videoElRef.current !== video) return;
-        if (!Hls.isSupported()) { onErr("Tu navegador no soporta HLS"); return; }
+        if (!Hls.isSupported()) { onErr(t("ui.VideoPlayer.hlsNoSoportado", "Tu navegador no soporta HLS")); return; }
         const attach = () => {
           const hls = new Hls(hlsConfig(Hls));
           hlsRef.current = hls;
@@ -283,7 +283,7 @@ export function VideoPlayer({ camera, className, autoPlay = true, ptz = true, vi
         <Overlay snapshot={snapshot}><VideoOff className="size-8" style={{ color: "var(--brand)" }} /><p className="text-sm font-medium text-white/85">{t("ui.VideoPlayer.sinTransmisionConfigurada", "Sin transmisión configurada")}</p></Overlay>
       ) : null}
       {state === "error" ? (
-        <Overlay snapshot={snapshot}><AlertTriangle className="size-8" style={{ color: "var(--warn)" }} /><p className="text-sm font-medium text-white/85">{errorMsg || "Error de transmisión"}</p><RetryButton onClick={reload} /></Overlay>
+        <Overlay snapshot={snapshot}><AlertTriangle className="size-8" style={{ color: "var(--warn)" }} /><p className="text-sm font-medium text-white/85">{errorMsg || t("ui.VideoPlayer.errorDeTransmision", "Error de transmisión")}</p><RetryButton onClick={reload} /></Overlay>
       ) : null}
     </div>
   );

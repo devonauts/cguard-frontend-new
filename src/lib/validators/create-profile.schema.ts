@@ -1,5 +1,17 @@
 
 import { z } from "zod";
+import i18n from "@/i18n";
+
+// Esquema de MÓDULO: se construye al importar, así que aquí NO se puede llamar a
+// `t()` con el texto ya resuelto — quedaría congelado en el idioma de arranque.
+// zod acepta una FUNCIÓN en `error`, y esa función corre al validar: ahí sí se
+// traduce, con el idioma que esté activo en ese momento.
+const msg = (clave: string, porDefecto: string) => () => i18n.t(clave, porDefecto);
+
+/** Mensaje de longitud máxima: FUNCIÓN, evaluada por zod al validar. */
+const maxChars = (n: number) => ({
+  error: () => i18n.t("validation.postSite.maxChars", { n, defaultValue: "Máximo {{n}} caracteres" }),
+});
 
 const e164 = /^\+[1-9]\d{7,14}$/;
 
@@ -24,46 +36,52 @@ export const createProfileSchema = z
     firstName: z
       .string()
       .trim()
-      .min(1, "El nombre es requerido")
-      .regex(nameRegex, "El nombre no debe contener números ni caracteres inválidos"),
+      .min(1, { error: msg("validation.common.nameRequired", "El nombre es requerido") })
+      .regex(nameRegex, { error: msg("validation.common.nameInvalid", "El nombre no debe contener números ni caracteres inválidos") }),
     middleName: z
       .string()
       .trim()
-      .regex(nameRegex, "El segundo nombre no debe contener números ni caracteres inválidos")
+      .regex(nameRegex, { error: msg("validation.common.middleNameInvalid", "El segundo nombre no debe contener números ni caracteres inválidos") })
       .optional()
       .or(z.literal("")),
     lastName: z
       .string()
       .trim()
-      .min(1, "El apellido es requerido")
-      .regex(nameRegex, "El apellido no debe contener números ni caracteres inválidos"),
+      .min(1, { error: msg("validation.common.lastNameRequired", "El apellido es requerido") })
+      .regex(nameRegex, { error: msg("validation.common.lastNameInvalid", "El apellido no debe contener números ni caracteres inválidos") }),
 
-    gender: z.enum(GENDER_OPTIONS, { error: "El género es requerido" }),
+    gender: z.enum(GENDER_OPTIONS, {
+      error: msg("validation.profile.genderRequired", "El género es requerido"),
+    }),
 
     birthDate: z
       .string()
       .trim()
-      .min(1, "La fecha de nacimiento es requerida")
-      .regex(/^\d{4}-\d{2}-\d{2}$/, "Formato YYYY-MM-DD"),
+      .min(1, { error: msg("validation.profile.birthDateRequired", "La fecha de nacimiento es requerida") })
+      .regex(/^\d{4}-\d{2}-\d{2}$/, { error: msg("validation.common.dateFormat", "Formato YYYY-MM-DD") }),
 
-    birthPlace: z.string().trim().max(50, "Máximo 50 caracteres").optional().or(z.literal("")),
+    birthPlace: z.string().trim().max(50, maxChars(50)).optional().or(z.literal("")),
 
-    maritalStatus: z.enum(MARITAL_STATUS_OPTIONS, { error: "El estado civil es requerido" }),
+    maritalStatus: z.enum(MARITAL_STATUS_OPTIONS, {
+      error: msg("validation.profile.maritalStatusRequired", "El estado civil es requerido"),
+    }),
 
-    academicInstruction: z.enum(ACADEMIC_INSTRUCTION_OPTIONS, { error: "La instrucción académica es requerida" }),
+    academicInstruction: z.enum(ACADEMIC_INSTRUCTION_OPTIONS, {
+      error: msg("validation.profile.academicInstructionRequired", "La instrucción académica es requerida"),
+    }),
 
     hiringContractDate: z
       .string()
       .trim()
-      .regex(/^\d{4}-\d{2}-\d{2}$/, "Formato YYYY-MM-DD")
+      .regex(/^\d{4}-\d{2}-\d{2}$/, { error: msg("validation.common.dateFormat", "Formato YYYY-MM-DD") })
       .optional()
       .or(z.literal("")),
 
-    guardCredentials: z.string().trim().max(255, "Máximo 255 caracteres").optional().or(z.literal("")),
+    guardCredentials: z.string().trim().max(255, maxChars(255)).optional().or(z.literal("")),
 
     // ── Contact ────────────────────────────────────────────────────────────
-    email: z.string().trim().email("Ingrese un correo válido"),
-    phone: z.string().trim().regex(e164, "Use formato e.g. +12015550123"),
+    email: z.string().trim().email({ error: msg("validation.common.emailInvalid", "Ingrese un correo válido") }),
+    phone: z.string().trim().regex(e164, { error: msg("validation.common.phoneE164", "Use formato e.g. +12015550123") }),
 
     // ── Address ─────────────────────────────────────────────────────────────
     homeAddress: z.string().trim().optional().or(z.literal("")),
@@ -74,8 +92,8 @@ export const createProfileSchema = z
     identificationNumber: z
       .string()
       .trim()
-      .min(1, "El número de cédula/identificación es requerido")
-      .max(30, "Máximo 30 caracteres"),
+      .min(1, { error: msg("validation.profile.identificationRequired", "El número de cédula/identificación es requerido") })
+      .max(30, maxChars(30)),
     bloodType: z.enum(BLOOD_TYPES),
 
     // ── Assignments ────────────────────────────────────────────────────────

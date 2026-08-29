@@ -17,7 +17,7 @@ def hojas(o, pre=''):
     else: yield pre, o
 
 todas, origen, choques = {}, {}, []
-for f in sorted(glob.glob(os.path.join(AQUI, 'literales', '*-claves.json'))):
+for f in sorted(glob.glob(os.path.join(AQUI, 'literales2', '*-claves.json'))):
     lote = os.path.basename(f).replace('-claves.json', '')
     d = json.load(open(f, encoding='utf-8'))
     plano = d if all(isinstance(v, str) for v in d.values()) else dict(hojas(d))

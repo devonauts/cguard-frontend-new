@@ -25,18 +25,20 @@ import { leerAparienciaDeLaCuenta, guardarApariencia, cambioLocalReciente } from
 
 export type Accent = { h: number; c: number };
 
-/** Tono y croma; el nombre es sólo para la interfaz. */
-export const ACCENT_PRESETS: Array<{ id: string; label: string; h: number; c: number }> = [
-  { id: "mostaza", label: "Mostaza oro", h: 88, c: 0.16 },
-  { id: "ambar", label: "Ámbar", h: 70, c: 0.16 },
-  { id: "lima", label: "Lima", h: 125, c: 0.16 },
-  { id: "esmeralda", label: "Esmeralda", h: 155, c: 0.15 },
-  { id: "cian", label: "Cian", h: 205, c: 0.14 },
-  { id: "azul", label: "Azul", h: 250, c: 0.15 },
-  { id: "violeta", label: "Violeta", h: 295, c: 0.16 },
-  { id: "magenta", label: "Magenta", h: 340, c: 0.16 },
-  { id: "carmesi", label: "Carmesí", h: 22, c: 0.17 },
-  { id: "acero", label: "Acero", h: 250, c: 0.04 },
+/** Tono y croma; el nombre es sólo para la interfaz.
+ *  `labelKey` es la clave i18n: este array se evalúa al cargar el módulo, así
+ *  que el texto se traduce DONDE SE PINTA (`t(p.labelKey ?? "", p.label)`). */
+export const ACCENT_PRESETS: Array<{ id: string; label: string; labelKey?: string; h: number; c: number }> = [
+  { id: "mostaza", label: "Mostaza oro", labelKey: "appearance.accent.mostaza", h: 88, c: 0.16 },
+  { id: "ambar", label: "Ámbar", labelKey: "appearance.accent.ambar", h: 70, c: 0.16 },
+  { id: "lima", label: "Lima", labelKey: "appearance.accent.lima", h: 125, c: 0.16 },
+  { id: "esmeralda", label: "Esmeralda", labelKey: "appearance.accent.esmeralda", h: 155, c: 0.15 },
+  { id: "cian", label: "Cian", labelKey: "appearance.accent.cian", h: 205, c: 0.14 },
+  { id: "azul", label: "Azul", labelKey: "appearance.accent.azul", h: 250, c: 0.15 },
+  { id: "violeta", label: "Violeta", labelKey: "appearance.accent.violeta", h: 295, c: 0.16 },
+  { id: "magenta", label: "Magenta", labelKey: "appearance.accent.magenta", h: 340, c: 0.16 },
+  { id: "carmesi", label: "Carmesí", labelKey: "appearance.accent.carmesi", h: 22, c: 0.17 },
+  { id: "acero", label: "Acero", labelKey: "appearance.accent.acero", h: 250, c: 0.04 },
 ];
 
 export const ACCENT_DEFAULT: Accent = { h: 88, c: 0.16 };

@@ -69,7 +69,7 @@ export function CustomizePanel({
                 <button
                   key={preset.id}
                   type="button"
-                  title={preset.label}
+                  title={t(preset.labelKey ?? "", preset.label)}
                   onClick={() => setAccent({ h: preset.h, c: preset.c })}
                   className="cg-focus grid size-8 place-items-center rounded-full border transition-transform hover:scale-105"
                   style={{

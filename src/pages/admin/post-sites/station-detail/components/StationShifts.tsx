@@ -495,7 +495,7 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
       setSelectedShift(null);
       loadShifts();
     } catch (e: any) {
-      toast.error(e?.message || 'No se pudo quitar al vigilante');
+      toast.error(e?.message || t('station.shifts.removeGuardError', 'No se pudo quitar al vigilante'));
     }
   };
 

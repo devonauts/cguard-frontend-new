@@ -83,14 +83,17 @@ export const toneInk = (fill: string) => INK_OF[fill] ?? fill;
 
 const fmtDate = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
-const PRESETS: { label: string; days: number }[] = [
-  { label: "Hoy", days: 1 },
-  { label: "7 días", days: 7 },
-  { label: "30 días", days: 30 },
-  { label: "90 días", days: 90 },
+/** Constante de módulo: guarda la CLAVE, no el texto traducido. Llamar a `t()`
+ *  aquí lo congelaría en el idioma de arranque. Se traduce en AnalyticsShell. */
+const PRESETS: { label: string; labelKey: string; days: number }[] = [
+  { label: "Hoy", labelKey: "analytics.range.today", days: 1 },
+  { label: "7 días", labelKey: "analytics.range.d7", days: 7 },
+  { label: "30 días", labelKey: "analytics.range.d30", days: 30 },
+  { label: "90 días", labelKey: "analytics.range.d90", days: 90 },
 ];
 
 export function useOpsAnalytics(initialDays = 30) {
+  const { t } = useTranslation();
   const [days, setDays] = useState(initialDays);
   const [data, setData] = useState<OpsAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
@@ -105,7 +108,7 @@ export function useOpsAnalytics(initialDays = 30) {
   const load = async () => {
     setLoading(true); setError(null);
     try { setData(await analyticsService.operations(range)); }
-    catch (e) { setError((e as Error)?.message || "No se pudieron cargar las analíticas"); }
+    catch (e) { setError((e as Error)?.message || t('analytics.loadError', "No se pudieron cargar las analíticas")); }
     finally { setLoading(false); }
   };
 
@@ -120,6 +123,7 @@ export function AnalyticsShell({
   title: string; subtitle: string; days: number; setDays: (n: number) => void;
   loading: boolean; error: string | null; reload: () => void; children: React.ReactNode;
 }) {
+  const { t } = useTranslation();
   return (
     <AppLayout>
       <PageContainer width="wide" className="p-4 sm:p-6">
@@ -132,7 +136,7 @@ export function AnalyticsShell({
               <Segmented
                 value={String(days)}
                 onChange={(v) => setDays(Number(v))}
-                options={PRESETS.map((p) => ({ value: String(p.days), label: p.label }))}
+                options={PRESETS.map((p) => ({ value: String(p.days), label: t(p.labelKey, p.label) }))}
               />
               <Button variant="outline" size="icon" onClick={reload} title="Actualizar" aria-label="Actualizar">
                 <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
@@ -304,13 +308,14 @@ export function AttendanceTiles({ attendance, className }: {
   attendance: OpsAnalytics["attendance"];
   className?: string;
 }) {
+  const { t } = useTranslation();
   return (
     <Stagger className={className ?? "grid grid-cols-2 gap-3"}>
       {[
-        { label: "Horas trabajadas", value: attendance.hoursWorked, accent: "info" },
-        { label: "Tardanzas", value: attendance.late, accent: "warn" },
-        { label: "Salidas tempranas", value: attendance.earlyDeparture, accent: "warn" },
-        { label: "Fuera de geocerca", value: attendance.geofenceViolations, accent: "bad" },
+        { label: t('guards.summary.stats.metrics.hoursWorked', "Horas trabajadas"), value: attendance.hoursWorked, accent: "info" },
+        { label: t('analytics.attendance.late', "Tardanzas"), value: attendance.late, accent: "warn" },
+        { label: t('analytics.attendance.earlyDeparture', "Salidas tempranas"), value: attendance.earlyDeparture, accent: "warn" },
+        { label: t('nomina.excepcion.outside_geofence', "Fuera de geocerca"), value: attendance.geofenceViolations, accent: "bad" },
       ].map((c) => (
         <StatCard key={c.label} accent={c.accent} label={c.label} value={c.value} />
       ))}

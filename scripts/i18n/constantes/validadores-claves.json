@@ -1,0 +1,57 @@
+{
+  "validation.common.nameRequired": "El nombre es requerido",
+  "validation.common.nameInvalid": "El nombre no debe contener números ni caracteres inválidos",
+  "validation.common.middleNameInvalid": "El segundo nombre no debe contener números ni caracteres inválidos",
+  "validation.common.lastNameRequired": "El apellido es requerido",
+  "validation.common.lastNameInvalid": "El apellido no debe contener números ni caracteres inválidos",
+  "validation.common.emailInvalid": "Ingrese un correo válido",
+  "validation.common.phoneE164": "Use formato e.g. +12015550123",
+  "validation.common.phoneE164International": "Use formato internacional, e.g. +12015550123",
+  "validation.common.dateFormat": "Formato YYYY-MM-DD",
+  "validation.common.atLeastOneGuard": "Agregue al menos un vigilante",
+
+  "validation.client.nameRequired": "Nombre del cliente requerido",
+  "validation.client.emailRequired": "Email requerido",
+  "validation.client.phoneRequired": "Teléfono requerido",
+  "validation.client.addressRequired": "Dirección requerida",
+  "validation.client.postalCodeRequired": "Código postal requerido",
+  "validation.client.websiteInvalid": "URL inválida",
+  "validation.client.latitudeRange": "Latitud entre -90 y 90",
+  "validation.client.longitudeRange": "Longitud entre -180 y 180",
+  "validation.client.documentRequired": "RUC/Cédula requerido",
+
+  "validation.profile.birthDateRequired": "La fecha de nacimiento es requerida",
+  "validation.profile.identificationRequired": "El número de cédula/identificación es requerido",
+
+  "validation.vehicle.yearInvalid": "Año inválido",
+  "validation.vehicle.makeRequired": "Marca requerida",
+  "validation.vehicle.modelRequired": "Modelo requerido",
+  "validation.vehicle.colorRequired": "Color requerido",
+  "validation.vehicle.plateRequired": "Placa requerida",
+  "validation.vehicle.mileageRequired": "Kilometraje inicial requerido",
+  "validation.vehicle.digitsOnly": "Solo números",
+  "validation.vehicle.vinLength": "VIN inválido (debe tener exactamente 17 caracteres)",
+  "validation.vehicle.vinAlphanumeric": "VIN inválido (debe tener exactamente 17 caracteres alfanuméricos)",
+
+  "dispatch.validation.callerTypeRequired": "Tipo de llamador requerido",
+  "dispatch.validation.callerNameRequired": "Nombre del llamador requerido",
+  "dispatch.validation.locationRequired": "Ubicación requerida",
+  "dispatch.validation.incidentTypeRequired": "Tipo de incidente requerido",
+  "dispatch.validation.dateRequired": "Fecha requerida",
+  "dispatch.validation.timeRequired": "Hora requerida",
+  "dispatch.validation.detailsRequired": "Detalles requeridos",
+
+  "validation.route.dateFromRequired": "Desde requerido",
+  "validation.route.dateToRequired": "Hasta requerido",
+  "validation.route.startTimeRequired": "Hora de inicio requerida",
+  "validation.route.endTimeRequired": "Hora de fin requerida",
+  "validation.route.daysRequired": "Seleccionar al menos un día",
+  "validation.route.supervisorRequired": "Supervisor requerido",
+  "validation.route.sitesRequired": "Selecciona al menos un puesto de seguridad",
+  "validation.route.vehicleRequired": "Vehículo requerido",
+
+  "validation.joinByCode.codeLength": "El código debe tener 6 dígitos",
+  "validation.joinByCode.codeNumeric": "El código debe ser numérico",
+
+  "validation.adminUser.accessLevelRequired": "Seleccione un nivel"
+}

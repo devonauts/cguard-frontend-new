@@ -60,7 +60,8 @@
       "test": "Test",
       "supervisory": "Toezicht",
       "restore": "Herstel",
-      "default": "Alarm"
+      "default": "Alarm",
+      "desconocido": "Onbekend"
     },
     "priority": {
       "1": "P1 · Kritiek",
@@ -84,7 +85,69 @@
       "callLog": "Gesprekslogboek",
       "immediateDispatch": "Directe uitruk (vrijgesteld van ECV)",
       "noContacts": "Geen contactpersonen ingesteld voor dit paneel.",
-      "title": "Verificatie (ECV)"
+      "title": "Verificatie (ECV)",
+      "dispatchError": "De politie kon niet worden uitgestuurd",
+      "dispatchPolice": "Politie uitsturen",
+      "logCallError": "Het gesprek kon niet worden vastgelegd",
+      "outcome": {
+        "cancelPasscode": "Geannuleerd (wachtwoord)",
+        "contacted": "Bereikt",
+        "noAnswer": "Geen gehoor",
+        "verifiedFalse": "Verif. VALS",
+        "verifiedReal": "Verif. ECHT"
+      }
+    },
+    "actionPlan": {
+      "step": {
+        "call": "Contactpersoon bellen",
+        "dispatchGuard": "Beveiliger uitsturen",
+        "note": "Notitie",
+        "notifyCustomer": "Opdrachtgever informeren",
+        "notifyPolice": "Politie waarschuwen",
+        "verify": "Verifiëren",
+        "video": "Verificatie via video"
+      },
+      "stepUpdateError": "De stap kon niet worden bijgewerkt"
+    },
+    "analytics": {
+      "exportAuditFailed": "Het auditlogboek kon niet worden geëxporteerd"
+    },
+    "contacts": {
+      "saveError": "De contactpersoon kon niet worden opgeslagen"
+    },
+    "panelType": {
+      "access": "Toegang",
+      "environmental": "Omgeving"
+    },
+    "panels": {
+      "deleteError": "Het paneel kon niet worden verwijderd",
+      "keepCurrentKey": "Laat leeg om het huidige wachtwoord te behouden",
+      "loadError": "De panelen konden niet worden geladen",
+      "noMakeModel": "Geen merk of model",
+      "saveError": "Het paneel kon niet worden opgeslagen"
+    },
+    "zoneType": {
+      "entry": "In-/uitgang",
+      "glassbreak": "Glasbreuk",
+      "motion": "Beweging",
+      "perimeter": "Perimeter",
+      "smoke": "Rook"
+    },
+    "zones": {
+      "deleteError": "De zone kon niet worden verwijderd",
+      "loadError": "De zones konden niet worden geladen",
+      "saveError": "De zone kon niet worden opgeslagen"
+    },
+    "authority": {
+      "emergency": "Noodgeval",
+      "keyholder": "Sleutelhouder",
+      "manager": "Manager",
+      "owner": "Eigenaar"
+    },
+    "panelStatus": {
+      "armed": "Ingeschakeld",
+      "disarmed": "Uitgeschakeld",
+      "unknown": "Onbekend"
     }
   },
   "auth": {
@@ -558,7 +621,9 @@
     },
     "validation": {
       "cedula_invalid": "Ongeldig ID-nummer",
-      "ruc_invalid": "Ongeldig fiscaal nummer (moet eindigen op 001 en een geldig ID-nummer bevatten)"
+      "ruc_invalid": "Ongeldig fiscaal nummer (moet eindigen op 001 en een geldig ID-nummer bevatten)",
+      "latitude_numeric": "De breedtegraad moet een getal zijn",
+      "longitude_numeric": "De lengtegraad moet een getal zijn"
     },
     "alerts": {
       "archiveClients": {
@@ -720,7 +785,96 @@
     "importDialog": {
       "description": "Upload een .xlsx-, .xls- of .csv-bestand om opdrachtgevers te importeren."
     },
-    "loadClientErrorHint": "Probeer het opnieuw of controleer of de opdrachtgever bestaat."
+    "loadClientErrorHint": "Probeer het opnieuw of controleer of de opdrachtgever bestaat.",
+    "contract": {
+      "service": {
+        "accessControl": "Toegangscontrole",
+        "alarmResponse": "Alarmopvolging",
+        "assetCustody": "Bewaking van bedrijfsmiddelen",
+        "cameraMonitoring": "Cameratoezicht",
+        "custom": "Aangepast",
+        "eventSecurity": "Evenementenbeveiliging",
+        "fixedGuard": "Vaste bewaking 24/7",
+        "mobilePatrol": "Mobiele surveillance",
+        "visitorManagement": "Bezoekersbeheer"
+      }
+    },
+    "coverage": {
+      "assignRemoveError": "Verwijderen mislukt",
+      "assignUpdateError": "De toewijzing kon niet worden bijgewerkt",
+      "cell": {
+        "coveredBy": "Bezet door: {{name}}",
+        "day": {
+          "legend": "Dag",
+          "letter": "D",
+          "title": "Dagdienst"
+        },
+        "gap": {
+          "legend": "Geen dienst gegenereerd",
+          "letter": "!",
+          "title": "Geen dienst gegenereerd (gat in de bezetting)"
+        },
+        "night": {
+          "legend": "Nacht",
+          "letter": "N",
+          "title": "Nachtdienst"
+        },
+        "none": {
+          "legend": "Geen rotatie",
+          "letter": "·",
+          "title": "Geen rotatie ingesteld"
+        },
+        "rest": {
+          "legend": "Vrij",
+          "letter": "V",
+          "title": "Vrij"
+        }
+      }
+    },
+    "documents": {
+      "breakdown": {
+        "documents": "Documenten",
+        "images": "Afbeeldingen",
+        "others": "Overig",
+        "videos": "Video's"
+      }
+    },
+    "portal": {
+      "modules": {
+        "analytics": {
+          "desc": "Overzicht met kerncijfers van de dienstverlening",
+          "label": "Analyse"
+        },
+        "attendance": {
+          "desc": "Wie op welke post heeft geklokt en hoe laat",
+          "label": "In- en uitklokken"
+        },
+        "incidents": {
+          "desc": "Bijzonderheden die op zijn locaties zijn gemeld",
+          "label": "Incidenten"
+        },
+        "inventory": {
+          "desc": "Uitrusting die aan zijn posten is toegewezen",
+          "label": "Inventaris"
+        },
+        "liveLocation": {
+          "desc": "Zie op de kaart waar de beveiligers nu zijn",
+          "label": "Live positie"
+        },
+        "photos": {
+          "desc": "Afbeeldingen bij incidenten en rondes",
+          "label": "Foto's"
+        },
+        "rondas": {
+          "desc": "Rondes en controlepunten",
+          "label": "Rondes"
+        },
+        "visitors": {
+          "desc": "Registratie en vooraanmelding van bezoekers",
+          "label": "Bezoeken"
+        }
+      }
+    }
   },
   "common": {
     "active": "Actief",
@@ -854,7 +1008,35 @@
     "colCost": "Kosten",
     "pageOf": "Pagina {{page}} van {{total}} · {{count}} records",
     "prev": "Vorige",
-    "next": "Volgende"
+    "next": "Volgende",
+    "channel": {
+      "push": "Melding op de telefoon",
+      "email": "E-mail",
+      "sms": "Sms",
+      "wallet": "Opwaardering",
+      "whatsapp": "WhatsApp"
+    },
+    "status": {
+      "delivered": "Afgeleverd",
+      "failed": "Mislukt",
+      "queued": "In wachtrij",
+      "read": "Gelezen",
+      "sent": "Verstuurd",
+      "skipped": "Overgeslagen"
+    },
+    "type": {
+      "escalation": "Escalatie",
+      "generic": "Algemeen",
+      "incidentAlert": "Incident",
+      "newAssignment": "Nieuwe toewijzing",
+      "noShow": "Niet verschenen",
+      "otp": "Toegangscode",
+      "panic": "Paniek",
+      "rondaAlert": "Ronde",
+      "shiftReminder": "Herinnering dienst",
+      "taskAlert": "Taak",
+      "visitorAlert": "Bezoek"
+    }
   },
   "comun": {
     "estado": "Status",
@@ -1000,7 +1182,21 @@
     "conLosFiltrosAplicados": "Met de toegepaste filters",
     "dentroDeLasInstalaciones": "Binnen het terrein",
     "conSalidaRegistrada": "Met uitklokken vastgelegd",
-    "sinTurnosProgramados": "Geen diensten gepland."
+    "sinTurnosProgramados": "Geen diensten gepland.",
+    "periodo": {
+      "dia": "Dag"
+    },
+    "weekday": {
+      "short": {
+        "fri": "Vr",
+        "mon": "Ma",
+        "sat": "Za",
+        "sun": "Zo",
+        "thu": "Do",
+        "tue": "Di",
+        "wed": "Wo"
+      }
+    }
   },
   "customer": {
     "registration_title": "Registratie opdrachtgever"
@@ -1144,7 +1340,8 @@
     "reset": "Oorspronkelijke kleuren herstellen",
     "logoHint": "Het logo in je e-mails is dat van je bedrijf. Wijzig het bij Instellingen › Bedrijfsprofiel.",
     "preview": "Voorbeeld",
-    "previewHint": "Zo ziet je opdrachtgever een e-mail van het bedrijf."
+    "previewHint": "Zo ziet je opdrachtgever een e-mail van het bedrijf.",
+    "previewLoadError": "Het voorbeeld kon niet worden geladen."
   },
   "guards": {
     "created": "KPI aangemaakt",
@@ -1562,7 +1759,9 @@
       },
       "empty": {
         "description": "We konden niets vinden dat overeenkomt met je zoekopdracht",
-        "title": "Geen resultaten gevonden"
+        "title": "Geen resultaten gevonden",
+        "byStatusTitle": "Geen beveiligers met deze status",
+        "noneFoundTitle": "Geen beveiligers gevonden"
       },
       "export": {
         "excel": "Exporteren als Excel",
@@ -1920,7 +2119,17 @@
       },
       "editHint": "Bewerk de persoons- en dienstverbandgegevens van de beveiliger.",
       "nav": "Profiel",
-      "noAttendance": "Geen aanwezigheidsregistraties"
+      "noAttendance": "Geen aanwezigheidsregistraties",
+      "academic": {
+        "primary": "Basisonderwijs",
+        "secondary": "Voortgezet onderwijs",
+        "special": "Speciaal onderwijs",
+        "university": "Universitair",
+        "universityDegree": "Universiteit"
+      },
+      "maritalStatus": {
+        "freeUnion": "Samenwonend"
+      }
     },
     "reminders": {
       "addReminder": "Herinnering toevoegen",
@@ -2203,7 +2412,16 @@
       "welcomeSent": "We hebben hem een welkomstmail gestuurd met de link om de supervisorapp te downloaden."
     },
     "department": {
-      "title": "Afdeling"
+      "title": "Afdeling",
+      "assignLabel": "Aan een afdeling toewijzen",
+      "changeLabel": "Van afdeling wisselen",
+      "updateError": "De afdeling kon niet worden bijgewerkt"
+    },
+    "create": {
+      "cvUploadHint": "Upload het cv via zijn profiel, bij Documenten."
+    },
+    "reviews": {
+      "saveError": "Vastleggen mislukt"
     }
   },
   "incidents": {
@@ -2290,7 +2508,10 @@
       "subtitle": "Rond je registratie af om het paneel te openen.",
       "error_activate": "We konden het account niet activeren. Controleer de link en probeer het opnieuw.",
       "error_toast": "Het account kon niet worden geactiveerd",
-      "doc_title": "Activeer je account | CGuard Pro"
+      "doc_title": "Activeer je account | CGuard Pro",
+      "role_generic": "Administratieve gebruiker",
+      "subtitleRole": "Je bent uitgenodigd als {{role}}. Maak je wachtwoord aan en ga naar het dashboard.",
+      "subtitleRoleAt": "Je bent uitgenodigd als {{role}} bij {{empresa}}. Maak je wachtwoord aan en ga naar het dashboard."
     },
     "eyebrow": "Uitnodiging",
     "hide_password": "Wachtwoord verbergen",
@@ -2348,7 +2569,15 @@
       "divorced": "Gescheiden",
       "feature_geo": "In- en uitklokken met locatiebepaling",
       "feature_reports": "Rapporten, rondes en meldingen",
-      "feature_shifts": "Je diensten altijd bij de hand"
+      "feature_shifts": "Je diensten altijd bij de hand",
+      "edu": {
+        "primary": "Basisonderwijs",
+        "secondary": "Voortgezet onderwijs",
+        "special": "Speciaal onderwijs",
+        "university": "Universiteit",
+        "universityStudies": "Universitair"
+      },
+      "freeUnion": "Samenwonend"
     },
     "select": "Selecteer",
     "eyebrow_guard": "Uitnodiging · Beveiligingsteam",
@@ -2366,7 +2595,8 @@
       "feature_live": "Je dienstverlening, live",
       "feature_gps": "Rondes en posten met GPS",
       "feature_alerts": "Incidentmeldingen"
-    }
+    },
+    "accessReady": "Je toegang staat klaar."
   },
   "licenseTypes": {
     "dialog": {
@@ -2404,7 +2634,8 @@
     },
     "page": {
       "title": "Pastypen"
-    }
+    },
+    "loadError": "De pastypen konden niet worden geladen"
   },
   "map": {
     "actions": {
@@ -2414,6 +2645,10 @@
       "comoLlegar": "Route",
       "verRonda": "Ronde bekijken",
       "radio": "Radio"
+    },
+    "popup": {
+      "noTimestamp": "Geen tijdstip",
+      "nowOnPost": "Nu op de post"
     }
   },
   "maps": {
@@ -2432,6 +2667,29 @@
     },
     "popup": {
       "loadError": "De details konden niet worden geladen"
+    },
+    "address": {
+      "dragToAdjust": "Sleep om de exacte positie bij te stellen"
+    },
+    "checkpointPicker": {
+      "dropToPin": "Laat los om het punt vast te zetten"
+    },
+    "pin": {
+      "noKnownAddress": "Geen adres bekend"
+    },
+    "precision": {
+      "approximate": "Bij benadering",
+      "geometricCenter": "Midden van het bouwblok",
+      "neighbourhoodCenter": "Midden van de wijk",
+      "rangeInterpolated": "Geschat langs de straat",
+      "rooftop": "Exact · voordeur",
+      "streetLevel": "Straatniveau"
+    },
+    "sites": {
+      "noLocation": "Geen positie vastgelegd"
+    },
+    "static": {
+      "altDefault": "Kaart van de locatie"
     }
   },
   "nomina": {
@@ -2478,6 +2736,24 @@
       "medium": "Midden",
       "high": "Hoog",
       "critical": "Kritiek"
+    },
+    "dashboard": {
+      "cards": {
+        "attendancePct": "Aanwezigheid",
+        "clockedInNow": "Nu in dienst",
+        "lateToday": "Te laat gekomen",
+        "noShowsToday": "Niet verschenen",
+        "overtimeToday": "Overuren",
+        "pendingApprovals": "Openstaande goedkeuringen",
+        "scheduledToday": "Vandaag ingepland"
+      }
+    },
+    "records": {
+      "correctionReasonTitle": "Reden van de correctie",
+      "newPunchInTitle": "Nieuwe inkloktijd"
+    },
+    "timeClock": {
+      "clockInError": "Inklokken mislukt"
     }
   },
   "performance": {
@@ -2570,7 +2846,19 @@
       "consulting": "Advies",
       "event": "Evenementbeveiliging",
       "investigation": "Onderzoek",
-      "other": "Andere dienst"
+      "other": "Andere dienst",
+      "alarm_response_desc": "Een beveiliger gaat ter plaatse bij een alarmmelding. Zonder vaste, permanente post.",
+      "consulting_desc": "Beveiligingsadvies, risicoanalyse en het opstellen van protocollen.",
+      "event_desc": "Beveiliging van eenmalige evenementen: concerten, vergaderingen, beurzen, openingen.",
+      "investigation_desc": "Particulier onderzoek, beveiligingsaudits en antecedentenonderzoek.",
+      "other_desc": "Elke andere incidentele of op maat gemaakte dienst."
+    },
+    "status": {
+      "active": "Actief",
+      "cancelled": "Geannuleerd",
+      "completed": "Afgerond",
+      "none": "Geen status",
+      "on_hold": "Gepauzeerd"
     }
   },
   "revision": {
@@ -5241,7 +5529,16 @@
       "nextAt": "Start {{time}}"
     },
     "noGuardsAssigned": "Geen beveiligers toegewezen",
-    "guardsAssignedLabel": "toegewezen"
+    "guardsAssignedLabel": "toegewezen",
+    "card": {
+      "jornadas": "{{n}} dienst(en)"
+    },
+    "scheduleType": {
+      "12hDay": "12h dag",
+      "12hNight": "12h nacht",
+      "24h": "24 uur",
+      "custom": "Aangepast"
+    }
   },
   "tenantValidations": {
     "business_max": "De naam van het bedrijf is te lang",
@@ -5364,7 +5661,8 @@
       "administrativeAssistant": "Administratief medewerker",
       "administrativeSupervisor": "Administratief supervisor",
       "dispatcher": "Meldkamer",
-      "secretary": "Secretariaat / receptie"
+      "secretary": "Secretariaat / receptie",
+      "securitySupervisor": "Beveiligingssupervisor"
     },
     "rowActions": {
       "delete": "Verwijderen",
@@ -5805,7 +6103,8 @@
       "covered": "Bezet",
       "at_risk": "Risico",
       "uncovered": "Onbezet",
-      "idle": "Geen dienst"
+      "idle": "Geen dienst",
+      "noGps": "Geen gps-gegevens"
     }
   },
   "dashboard": {
@@ -5935,6 +6234,40 @@
       "incident": "Incident",
       "delayed": "Vertraagd",
       "emergency": "Noodgeval"
+    },
+    "controlCenter": {
+      "systemStatus": {
+        "devices": {
+          "hint": "Apparaten die hun positie doorgeven",
+          "label": "Apparaten online"
+        },
+        "realtime": {
+          "hintLive": "Gebeurtenissen komen direct binnen",
+          "hintPolling": "Wordt om de paar seconden bijgewerkt",
+          "label": "Live verbinding"
+        },
+        "stations": {
+          "hint": "Actieve posten en bediende opdrachtgevers",
+          "label": "Posten / opdrachtgevers"
+        },
+        "team": {
+          "hint": "Gebruikers met toegang tot het paneel",
+          "label": "Kantoorteam"
+        }
+      }
+    },
+    "trend": {
+      "responseSubtitle": "Gemiddeld aantal minuten tot de eerste reactie"
+    },
+    "kpiCorto": {
+      "clients": "Opdrachtgevers",
+      "coverage": "Bezetting",
+      "onDuty": "In dienst",
+      "openIncidents": "Incidenten",
+      "patrolsToday": "Rondes vandaag",
+      "response": "Reactie",
+      "stations": "Posten",
+      "supervisors": "Supervisors"
     }
   },
   "emergency": {
@@ -6004,7 +6337,8 @@
     "roleLabel": "Beveiliger",
     "invite_not_found": "Uitnodiging niet gevonden of ongeldig — u kunt het formulier handmatig invullen.",
     "timeOff": {
-      "title": "Mijn verlof"
+      "title": "Mijn verlof",
+      "pickDates": "Kies een begin- en einddatum"
     }
   },
   "header": {
@@ -7026,7 +7360,44 @@
       "noImageToPreview": "Er is geen afbeelding om te tonen.",
       "confirmDeleteTitle": "Verwijderen bevestigen",
       "confirmDeleteQuestion": "Weet u zeker dat u {{label}} wilt verwijderen?",
-      "cannotUndo": "Deze actie kan niet ongedaan worden gemaakt."
+      "cannotUndo": "Deze actie kan niet ongedaan worden gemaakt.",
+      "preview": {
+        "bannerPlaceholderDesc": "Voeg een banner toe om uw diensten uit te lichten.",
+        "bannerPlaceholderTitle": "Hier komt uw banner",
+        "certification": "Certificering"
+      },
+      "serviceTemplates": {
+        "access": "Toegangscontrole",
+        "advisory": "Beveiligingsadvies",
+        "alarms": "Alarmmonitoring",
+        "armed": "Gewapende beveiliger",
+        "bank": "Bankbeveiliging",
+        "bodyguard": "Persoonsbeveiliging (bodyguard)",
+        "cash": "Waardetransport",
+        "cctv": "CCTV-monitoring",
+        "construction": "Bouwplaatsbeveiliging",
+        "crowd": "Crowdmanagement",
+        "custody": "Goederenbewaking",
+        "cyber": "Cyberbeveiliging",
+        "electronic": "Elektronische beveiliging",
+        "escort": "Directie-escorte",
+        "events": "Evenementenbeveiliging",
+        "fire": "Brandpreventie",
+        "firstaid": "Eerste hulp / paramedicus",
+        "gps": "Gps-tracking van voertuigen",
+        "guard": "Fysieke bewaking",
+        "industrial": "Industriële beveiliging",
+        "investigation": "Particulier onderzoek",
+        "k9": "Hondengeleiding (K9)",
+        "panic": "Paniekknop / SOS",
+        "patrol": "Beveiligingsrondes",
+        "reception": "Portiersdienst en receptie",
+        "residential": "Woningbeveiliging",
+        "response": "Hulpverlening bij noodgevallen",
+        "risk": "Risicoanalyse",
+        "vehicle": "Voertuigbegeleiding",
+        "verification": "Antecedentenonderzoek"
+      }
     },
     "mobileHub": {
       "loadError": "De instellingen konden niet worden geladen.",
@@ -7650,6 +8021,47 @@
       "reachSection": "Hoe ver dit reikt",
       "reachScreen": "Alles wat u op het scherm ziet: menu's, knoppen, meldingen en de namen van de secties.",
       "reachMail": "En ook de e-mails en meldingen die wij u sturen: die worden geschreven in de taal die u hier kiest."
+    },
+    "apiKeys": {
+      "copyError": "Kopiëren mislukt.",
+      "createError": "De sleutel kon niet worden aangemaakt.",
+      "loadError": "De sleutels konden niet worden geladen.",
+      "nameRequired": "Geef de sleutel een naam.",
+      "revokeError": "De sleutel kon niet worden ingetrokken.",
+      "scopeTimesheetsTitle": "Uren en dagen"
+    },
+    "departments": {
+      "emptyDesc": "Maak de eerste aan met “Nieuwe afdeling” — bijvoorbeeld Operatie, Personeelszaken of Salarisadministratie.",
+      "emptyTitle": "Geen afdelingen",
+      "errors": {
+        "delete": "De afdeling kon niet worden verwijderd",
+        "deleteOne": "Eén afdeling kon niet worden verwijderd",
+        "load": "De afdelingen konden niet worden geladen",
+        "save": "De afdeling kon niet worden opgeslagen",
+        "toggle": "De status kon niet worden gewijzigd"
+      }
+    },
+    "form": {
+      "saveConfig": "Instellingen opslaan"
+    },
+    "permissions": {
+      "requiredForAdmin": "Vereist voor beheerderstoegang",
+      "state": {
+        "granted": "Toegekend",
+        "notGranted": "Niet toegekend",
+        "required": "Verplicht"
+      }
+    },
+    "policies": {
+      "colTitle": "Titel"
+    },
+    "profile": {
+      "errors": {
+        "changeEmail": "Het e-mailadres kon niet worden gewijzigd.",
+        "save": "Het profiel kon niet worden opgeslagen.",
+        "sendCode": "De code kon niet worden verstuurd.",
+        "verifyPhone": "Het nummer kon niet worden geverifieerd."
+      }
     }
   },
   "siteTourTag": {
@@ -7757,7 +8169,13 @@
     "areaCode": "Netnummer",
     "searchPrompt": "Zoek beschikbare nummers om te kopen.",
     "buy": "Kopen",
-    "buyNumberHint": "Het nummer wordt binnen uw subaccount aangeschaft en wordt de afzender van uw sms-berichten. Sommige landen vragen om regelgevende documentatie van Twilio."
+    "buyNumberHint": "Het nummer wordt binnen uw subaccount aangeschaft en wordt de afzender van uw sms-berichten. Sommige landen vragen om regelgevende documentatie van Twilio.",
+    "countries": {
+      "CA": "Canada (+1)",
+      "ES": "Spanje (+34)",
+      "GB": "Verenigd Koninkrijk (+44)",
+      "US": "Verenigde Staten (+1)"
+    }
   },
   "station": {
     "details": {
@@ -7927,7 +8345,19 @@
       "rules": "Regels voor de voertuigcontrole",
       "saveError": "De regels konden niet worden opgeslagen",
       "saved": "Regels opgeslagen",
-      "viewPhoto": "Foto bekijken"
+      "viewPhoto": "Foto bekijken",
+      "condition": {
+        "damaged": "Met schade",
+        "noted": "Met opmerking",
+        "ok": "Zonder schade"
+      },
+      "vehicleType": {
+        "car": "Auto",
+        "motorcycle": "Motor",
+        "other": "Overig",
+        "truck": "Vrachtwagen",
+        "van": "Bestelbus"
+      }
     },
     "patrolQr": {
       "empty": "Er zijn nog geen controlepunten. Maak ze aan bij \"Beveiligingsrondes\" en kom hier terug om hun QR-codes te genereren.",
@@ -7985,7 +8415,33 @@
       "namePlaceholder": "Bijv. Nachtronde",
       "point": "punt",
       "points": "punten",
-      "settings": "Instellingen"
+      "settings": "Instellingen",
+      "deleteCpTitle": "Controlepunt verwijderen",
+      "thisSite": "Deze locatie"
+    },
+    "geofence": {
+      "centerPinTitle": "Positie van de post (sleep om bij te stellen)",
+      "needThreePoints": "Voeg minstens 3 punten toe om de geofence te sluiten.",
+      "sizeOk": "Geschikte grootte om in en uit te klokken."
+    },
+    "overview": {
+      "locationSaveError": "De positie kon niet worden opgeslagen",
+      "notConfigured": "Niet ingericht",
+      "scheduleUpdateError": "Het rooster kon niet worden bijgewerkt",
+      "status": {
+        "noShow": "Niet verschenen"
+      },
+      "useEditToAssign": "Gebruik Bewerken om hem toe te wijzen"
+    },
+    "shifts": {
+      "removeGuardError": "De beveiliger kon niet worden verwijderd"
+    },
+    "schedule": {
+      "12h-day": "12h dag",
+      "12h-night": "12h nacht",
+      "24h": "24 uur",
+      "custom": "Aangepast",
+      "undefined": "Tijden niet ingesteld"
     }
   },
   "supervisor": {
@@ -8001,6 +8457,22 @@
       "licencias": "Passen",
       "notas": "Notities",
       "dispositivo": "Apparaat"
+    },
+    "card": {
+      "noVehicle": "Geen voertuig",
+      "noZone": "Geen zone toegewezen"
+    },
+    "errors": {
+      "createFailed": "De supervisor kon niet worden aangemaakt",
+      "passwordResetFailed": "Het wachtwoord kon niet worden hersteld",
+      "removeFailed": "De supervisor kon niet worden verwijderd",
+      "resendInviteFailed": "De toegang tot de app kon niet worden verstuurd"
+    },
+    "schedule": {
+      "noDate": "Geen datum"
+    },
+    "stats": {
+      "withVehicle": "Met voertuig"
     }
   },
   "suscripcion": {
@@ -8093,12 +8565,15 @@
       "esteRolVe": "Deze rol ziet",
       "paraQuienLlevaUnasCuentas": "Voor wie een aantal specifieke opdrachtgevers beheert.",
       "sinSedeMarcadaVeTodo": "Zonder aangevinkte locatie blijft hij ALLES zien.",
-      "todosLosClientesYTodas": "Alle opdrachtgevers en alle locaties."
+      "todosLosClientesYTodas": "Alle opdrachtgevers en alle locaties.",
+      "noSePudoGuardarUbicacion": "De positie kon niet worden opgeslagen"
     },
     "GuardDashboard": {
       "proximoTurno": "Volgende dienst",
       "sinEntradaActiva": "Niet ingeklokt",
-      "noTienesPuestosAsignados": "Je hebt geen posten toegewezen gekregen."
+      "noTienesPuestosAsignados": "Je hebt geen posten toegewezen gekregen.",
+      "errorGeovalla": "Geofence-fout",
+      "errorObteniendoUbicacion": "De positie kon niet worden bepaald"
     },
     "GuardSchedule": {
       "noTienesDiasLibresAprobados": "U heeft geen goedgekeurde vrije dagen in het vooruitzicht."
@@ -8247,7 +8722,15 @@
       "todaLaJornada1Fijo": "De hele dienst (1 vaste beveiliger)",
       "aunNoHayMarcacionesEnEstePuesto": "Er is nog niet ingeklokt op deze post.",
       "definirUbicacion": "Positie bepalen",
-      "sinUbicacionConfigurada": "Geen positie ingesteld"
+      "sinUbicacionConfigurada": "Geen positie ingesteld",
+      "turno": {
+        "24h": "24 uur",
+        "custom": "Aangepast",
+        "defineLasHoras": "Stel de tijden in",
+        "diaYNoche": "Dag + nacht",
+        "diurno": "12h dag",
+        "nocturno": "12h nacht"
+      }
     },
     "StationShifts": {
       "dia": "Dag",
@@ -8278,7 +8761,16 @@
       "correoEjemploCom": "post@voorbeeld.com",
       "invitacionAceptadaYaEstasVinculado": "Uitnodiging geaccepteerd. U bent nu gekoppeld aan het bedrijf",
       "empresaCreadaYVinculadaCorrectamente": "Bedrijf aangemaakt en gekoppeld",
-      "borrarBorrador": "Concept verwijderen"
+      "borrarBorrador": "Concept verwijderen",
+      "cedulaInvalida": "Ongeldig Ecuadoraans ID-nummer.",
+      "empresaCreadaSinLogo": "Bedrijf aangemaakt, maar het logo kon niet worden geüpload",
+      "ingresarDireccionManual": "Adres handmatig invoeren",
+      "logoFormato": "Het logo moet PNG, JPG, SVG of WEBP zijn.",
+      "logoTamano": "Het logo mag niet groter zijn dan 5 MB.",
+      "noSePudoAceptarInvitacion": "De uitnodiging kon niet worden geaccepteerd",
+      "noSePudoCrearEmpresa": "Het bedrijf kon niet worden aangemaakt",
+      "rucTreceDigitos": "Het Ecuadoraanse fiscale nummer moet 13 cijfers hebben.",
+      "sitioWebInvalido": "Ongeldige website. Bijv.: bedrijf.nl"
     },
     "Tenants": {
       "configuracion": "Instellingen"
@@ -8392,7 +8884,13 @@
       "clasifiqueElDesenlaceDelCaso": "Geef de afhandeling van de melding op voordat u deze sluit.",
       "cronologiaDeEventos": "Tijdlijn van gebeurtenissen",
       "registroDeAuditoria": "Auditlogboek",
-      "volverALaCola": "Terug naar de wachtrij"
+      "volverALaCola": "Terug naar de wachtrij",
+      "dispatch": {
+        "fire": "Brandweer",
+        "guard": "Beveiliger",
+        "medical": "Ambulance",
+        "police": "Politie"
+      }
     },
     "AlarmPanels": {
       "agenciaPsapPolicia": "Instantie / meldkamer (politie)",
@@ -8448,7 +8946,8 @@
       "codigo": "Code",
       "registroDeSenales": "Signalenlogboek",
       "sinSenales": "Geen signalen",
-      "todoLoQueHanEnviado": "Alles wat de panelen hebben verstuurd, precies zoals het binnenkwam. Dit kan niet worden gewijzigd."
+      "todoLoQueHanEnviado": "Alles wat de panelen hebben verstuurd, precies zoals het binnenkwam. Dit kan niet worden gewijzigd.",
+      "ningunaSenalCoincide": "Geen enkel signaal komt overeen met de zoekopdracht."
     },
     "App": {
       "paginaNoEncontrada": "Pagina niet gevonden",
@@ -8464,7 +8963,8 @@
       "publicaElCursoAntesDe": "Publiceer de cursus voordat u hem toewijst.",
       "seleccionaUnVigilante": "Selecteer een beveiliger.",
       "nombreDelVigilante": "Naam van de beveiliger",
-      "asignaElCursoArribaY": "Wijs de cursus hierboven toe; de voortgang verschijnt dan hier."
+      "asignaElCursoArribaY": "Wijs de cursus hierboven toe; de voortgang verschijnt dan hier.",
+      "noSePudoAsignarElCurso": "De cursus kon niet worden toegewezen."
     },
     "AuditLogs": {
       "buscarPorUsuarioDireccionO": "Zoeken op gebruiker, adres of apparaat…",
@@ -8488,7 +8988,9 @@
       "seleccionaLaCategoriaDestinoPara": "Kies de doelsector voor de geselecteerde locaties.",
       "seleccionaUnaCategoria": "Kies een sector",
       "noSePudieronCargarLas": "De sectoren konden niet worden geladen",
-      "errorAlAsignarCategoria": "De sector kon niet worden toegewezen"
+      "errorAlAsignarCategoria": "De sector kon niet worden toegewezen",
+      "moverSitiosACategoria": "Locaties naar een sector verplaatsen",
+      "sectorizarSitio": "Locatie in een sector plaatsen"
     },
     "Checklist": {
       "informeDeListaDeVerificacion": "Checklistrapport",
@@ -8582,7 +9084,10 @@
       "eliminarEstacion": "Post verwijderen",
       "fijarUbicacionEnElMapa": "Positie op de kaart vastleggen",
       "puestosYCoberturaEnVivo": "Posten en live bezetting van de geselecteerde locatie",
-      "verEstacion": "Post bekijken"
+      "verEstacion": "Post bekijken",
+      "noSePudoEliminarLaEstacion": "De post kon niet worden verwijderd",
+      "parcial": "Gedeeltelijk",
+      "sinMarcar": "Niet ingeklokt"
     },
     "ClientDetailsDialog": {
       "codigoPostal": "Postcode",
@@ -8593,7 +9098,8 @@
       "telefono": "Telefoon",
       "telefonoFijo": "Vast nummer",
       "detallesDelCliente": "Details van de opdrachtgever",
-      "informacionDetalladaDelCliente": "Gedetailleerde informatie over de geselecteerde opdrachtgever."
+      "informacionDetalladaDelCliente": "Gedetailleerde informatie over de geselecteerde opdrachtgever.",
+      "errorCargarDetalles": "De gegevens van de opdrachtgever konden niet worden geladen"
     },
     "ClientDocuments": {
       "arrastraArchivosAquiOHaz": "Sleep bestanden hierheen of klik om ze te kiezen",
@@ -8649,7 +9155,13 @@
       "errorAlEnviar": "Versturen mislukt",
       "invitarALaAppMi": "Uitnodigen voor de app Mi Seguridad",
       "esteClienteNoTieneCorreo": "Voor deze opdrachtgever is geen e-mailadres en geen gekoppelde gebruiker bekend. Bewerk de opdrachtgever en voeg een e-mailadres toe om toegang mogelijk te maken.",
-      "invitaAlTitularOAgrega": "Nodig de hoofdcontactpersoon uit of voeg extra logins toe, zodat de opdrachtgever het portaal en de app kan gebruiken."
+      "invitaAlTitularOAgrega": "Nodig de hoofdcontactpersoon uit of voeg extra logins toe, zodat de opdrachtgever het portaal en de app kan gebruiken.",
+      "inviteSendError": "De uitnodiging kon niet worden verstuurd. Probeer het opnieuw.",
+      "noEmailAddress": "Geen e-mailadres",
+      "resendPortalInvite": "Portaaluitnodiging opnieuw sturen",
+      "sendPortalInvite": "Portaaluitnodiging versturen",
+      "withEmail": "Met e-mail",
+      "withoutEmail": "Zonder e-mail"
     },
     "ClientPostSites": {
       "asignacion": "Toewijzing",
@@ -8667,7 +9179,8 @@
       "lasSedesNoTienenUbicacion": "De locaties hebben geen geregistreerde positie",
       "mapaDeSedes": "Kaart met locaties",
       "verElPanelDeLaSede": "Het dashboard van de locatie bekijken",
-      "vigilantesAsignadosVsEstaciones": "Toegewezen beveiligers versus posten (niet de live bezetting)"
+      "vigilantesAsignadosVsEstaciones": "Toegewezen beveiligers versus posten (niet de live bezetting)",
+      "noSePudoEliminarLaSede": "De locatie kon niet worden verwijderd"
     },
     "ClientProjects": {
       "eliminarEsteProyecto": "Dit project verwijderen?",
@@ -8729,7 +9242,13 @@
       "coberturaPorTurno": "Bezetting per dienst",
       "sinTurnosConfigurados": "Geen diensten ingericht.",
       "sinAusenciasHoy": "Geen afwezigheden vandaag.",
-      "quitarDeLaEstacion": "Van de post halen"
+      "quitarDeLaEstacion": "Van de post halen",
+      "noSePudoQuitarLaAsignacion": "De toewijzing kon niet worden verwijderd",
+      "ausente": "Afwezig",
+      "descanso": "Vrij",
+      "enRuta": "Onderweg",
+      "operador": "Centralist",
+      "patrullero": "Surveillant"
     },
     "ClientUserAccess": {
       "losAccesosOtorganAlCliente": "De toegang geeft de opdrachtgever alleen zicht op zijn eigen operatie.",
@@ -8741,7 +9260,8 @@
       "invitaAlTitularOAgrega": "Nodig de hoofdcontactpersoon uit of voeg extra logins toe, zodat de opdrachtgever het portaal en de app Mi Seguridad kan gebruiken.",
       "correoDeLaPersona": "E-mailadres van de persoon",
       "personaEmpresaCom": "persoon@bedrijf.com",
-      "tipoDeAcceso": "Soort toegang"
+      "tipoDeAcceso": "Soort toegang",
+      "sinCorreo": "Geen e-mail"
     },
     "CommandBar": {
       "datosDeDemostracion": "Demogegevens",
@@ -8753,7 +9273,8 @@
     "CountryPhoneSelect": {
       "buscarPaisOCodigo": "Land of landnummer zoeken…",
       "seleccionarPais": "Land selecteren…",
-      "noSeEncontraronResultados": "Geen resultaten gevonden."
+      "noSeEncontraronResultados": "Geen resultaten gevonden.",
+      "noSePudoCargarPaises": "De landenlijst kon niet worden geladen"
     },
     "Coverage": {
       "anularLaNovedadYDevolver": "De melding annuleren en de dienst terugzetten in de rotatie",
@@ -8778,7 +9299,11 @@
       "detalleOpcional": "Toelichting (optioneel)",
       "ejRefuerzoPorEventoEn": "Bijv.: extra bezetting voor een evenement bij de opdrachtgever",
       "sinCubrir": "onbezet",
-      "despuesVuelveAutomaticamenteA": "Daarna keert hij automatisch terug naar"
+      "despuesVuelveAutomaticamenteA": "Daarna keert hij automatisch terug naar",
+      "conSueldo": "Betaald",
+      "enElPuesto": "Op de post",
+      "sinMarcarEntrada": "Niet ingeklokt",
+      "sinSueldo": "Onbetaald"
     },
     "CustomerRequests": {
       "elementosPorPagina": "Items per pagina",
@@ -8817,7 +9342,8 @@
       "operacionDeEjemplo": "voorbeeldoperatie",
       "datosDeEjemploRetiradosEsta": "Voorbeeldgegevens verwijderd. Dit is nu uw echte operatie.",
       "noPudimosQuitarLosDatos": "De voorbeeldgegevens konden niet worden verwijderd. Probeer het opnieuw.",
-      "estasExplorandoConUna": "Je werkt in een"
+      "estasExplorandoConUna": "Je werkt in een",
+      "quitarDatosDeEjemplo": "Voorbeeldgegevens verwijderen"
     },
     "DepartmentDialog": {
       "descripcion": "Omschrijving",
@@ -8897,7 +9423,12 @@
       "alertasDeCaidaDetectadasPor": "Man-down-alarmen die door de telefoon van de beveiliger tijdens de dienst zijn gedetecteerd."
     },
     "GuardHorario": {
-      "laRotacionSeConfiguraEn": "De rotatie stelt u in bij de post."
+      "laRotacionSeConfiguraEn": "De rotatie stelt u in bij de post.",
+      "huecoCobertura": "Geen dienst gegenereerd (gat in de bezetting)",
+      "sinRotacion": "Geen rotatie ingesteld",
+      "sinTurnoGenerado": "Geen dienst gegenereerd",
+      "turnoDeDia": "Dagdienst",
+      "turnoDeNoche": "Nachtdienst"
     },
     "GuardRatingLevel": {
       "verResenasDelVigilante": "Beoordelingen van de beveiliger bekijken",
@@ -8954,7 +9485,8 @@
       "agregaLeccionesConVideoTexto": "Voeg lessen met video, tekst en materiaal toe om de cursus op te bouwen.",
       "eliminarRecurso": "Materiaal verwijderen",
       "agregarLeccion": "Les toevoegen",
-      "urlDeVideoYoutubeVimeo": "Video-URL (YouTube, Vimeo, enz.)"
+      "urlDeVideoYoutubeVimeo": "Video-URL (YouTube, Vimeo, enz.)",
+      "nuevaLeccion": "Nieuwe les"
     },
     "LiveTracking": {
       "direccion": "Adres",
@@ -8993,7 +9525,8 @@
     "MobileCommandCenter": {
       "datosDeDemostracion": "Demogegevens",
       "recursosDeLaOperacion": "Middelen van de operatie",
-      "personalizarElPanel": "Het dashboard aanpassen"
+      "personalizarElPanel": "Het dashboard aanpassen",
+      "demostracion": "Demo"
     },
     "ModulesTable": {
       "modulosContratados": "Afgenomen modules",
@@ -9032,7 +9565,9 @@
       "desviacionesDeAsistenciaRegistroE": "Afwijkingen bij het klokken — logboek en historie van de operatie",
       "noHayDesviacionesDeAsistencia": "Er zijn geen afwijkingen bij het klokken voor de gekozen filters.",
       "por": "Door",
-      "cerrarElAtraso": "Achterstand wegwerken"
+      "cerrarElAtraso": "Achterstand wegwerken",
+      "sinExcepciones": "Geen afwijkingen",
+      "sinExcepcionesAbiertas": "Geen openstaande afwijkingen"
     },
     "NominaRecords": {
       "salidaSinUbicacion": "Uitklokken zonder positie",
@@ -9148,7 +9683,8 @@
       "estaSemana": "Deze week",
       "buscarPuestoOFecha": "Zoeken op post of datum",
       "noHayTurnosAbiertos": "Er zijn geen openstaande diensten",
-      "todosLosTurnosTienenVigilante": "Alle diensten hebben een beveiliger, of er zijn geen diensten in de gekozen periode."
+      "todosLosTurnosTienenVigilante": "Alle diensten hebben een beveiliger, of er zijn geen diensten in de gekozen periode.",
+      "sinPuesto": "Geen post"
     },
     "OperationSetupAlert": {
       "faltaLaConfiguracionOperativa": "De operationele inrichting ontbreekt",
@@ -9174,7 +9710,11 @@
       "imagenes": "Afbeeldingen"
     },
     "PatrullaBoard": {
-      "rutasDelDia": "Routes van vandaag"
+      "rutasDelDia": "Routes van vandaag",
+      "filtroDelDia": "Van vandaag",
+      "filtroTodas": "Alle",
+      "sinRutasCreadas": "Er zijn geen routes aangemaakt",
+      "sinRutasEsteDia": "Er zijn geen routes gepland voor deze dag"
     },
     "PhoneInput": {
       "noSeEncontraronPaises": "Geen landen gevonden."
@@ -9207,7 +9747,8 @@
       "telefonoFijo": "Vast nummer",
       "detallesDelSitio": "Gegevens van de locatie",
       "clienteAsociado": "Gekoppelde opdrachtgever",
-      "informacionDetalladaDelPuestoDeSeguridadSeleccionada": "Gedetailleerde informatie over de geselecteerde locatie."
+      "informacionDetalladaDelPuestoDeSeguridadSeleccionada": "Gedetailleerde informatie over de geselecteerde locatie.",
+      "errorAlCargarDetallesDelSitio": "De gegevens van de locatie konden niet worden geladen"
     },
     "PostSiteWizard": {
       "agregarOtraCapacitacion": "Nog een training toevoegen…",
@@ -9249,7 +9790,57 @@
       "anadirEstacion": "Post toevoegen",
       "continuarSinSeleccionarTipo": "Doorgaan zonder een type te kiezen",
       "estacionesDeVigilancia": "Bewakingsposten",
-      "instruccionesDelPuestoSop": "Werkinstructie van de post (SOP)"
+      "instruccionesDelPuestoSop": "Werkinstructie van de post (SOP)",
+      "deploy": {
+        "alarmResponse": "Alarmopvolging",
+        "armedService": "Gewapende beveiliger",
+        "cctvMonitoring": "CCTV-monitoring",
+        "formalHandover": "Formele dienstoverdracht",
+        "incidentLog": "Wachtboek",
+        "k9Service": "Hondengeleiding / K9",
+        "keyCustody": "Sleutelbeheer",
+        "periodicPatrol": "Rondes langs de perimeter",
+        "radioComms": "Radiocommunicatie",
+        "uniformRequired": "Uniform verplicht",
+        "vehicleControl": "Voertuigtoegangscontrole",
+        "visitorLog": "Bezoekersregistratie"
+      },
+      "equipment": {
+        "baton": "Wapenstok",
+        "binoculars": "Verrekijker",
+        "bodycam": "Bodycam",
+        "firstAidKit": "EHBO-koffer",
+        "flashlight": "Tactische zaklamp",
+        "gloves": "Snijbestendige handschoenen",
+        "handcuffs": "Handboeien",
+        "metalDetector": "Metaaldetector",
+        "radio": "Portofoon",
+        "torch": "Zoeklamp",
+        "umbrella": "Regenjas / paraplu",
+        "vehicle": "Toegewezen voertuig"
+      },
+      "errorAlCrearElSitio": "De locatie kon niet worden aangemaakt",
+      "training": {
+        "accessControl": "Toegangscontrole",
+        "cctv": "Cameratoezicht (CCTV)",
+        "communication": "Radiocommunicatie",
+        "crowdControl": "Crowdmanagement",
+        "customerService": "Klantgerichtheid",
+        "defensiveTactics": "Verdedigingstechnieken",
+        "evacuation": "Ontruiming",
+        "fireExtinguisher": "Omgaan met brandblussers",
+        "firearms": "Omgaan met wapens",
+        "firstAid": "Eerste hulp",
+        "panicProtocol": "Paniekprotocol",
+        "reportWriting": "Rapporten schrijven"
+      },
+      "agregarPersonalizado": "Eigen optie toevoegen…",
+      "jornada": {
+        "matutina": "Ochtend",
+        "nocturna": "Nacht",
+        "personalizada": "Aangepast",
+        "sacafranco": "Invaller"
+      }
     },
     "ProfilePhotoCapture": {
       "buenaIluminacionEviteSombrasY": "Goed licht — vermijd schaduw en tegenlicht",
@@ -9308,7 +9899,24 @@
       "tiempoRestanteParaCompletarEl": "Resterende tijd om de melding af te ronden",
       "llamarAEstePuesto": "Deze post oproepen",
       "marcarComoIncidente": "Als incident markeren",
-      "noHayPuestosConfigurados": "Er zijn geen posten ingericht."
+      "noHayPuestosConfigurados": "Er zijn geen posten ingericht.",
+      "automatico": "Automatisch",
+      "class": {
+        "incident": "Incident",
+        "novedad": "Bijzonderheid",
+        "sin_novedad": "Geen bijzonderheden"
+      },
+      "generandoResumen": "Samenvatting maken…",
+      "manual": "Handmatig",
+      "resumenNoDisponibleSinClaveDeIa": "Samenvatting niet beschikbaar (geen AI-sleutel).",
+      "sinVigilanteEnTurno": "Geen beveiliger in dienst",
+      "status": {
+        "no_response": "Geen antwoord",
+        "notified": "Oproepen…",
+        "pending": "In wachtrij",
+        "responded": "Geantwoord",
+        "skipped": "Geen beveiliger"
+      }
     },
     "RadioLiveChannelPanel": {
       "uneteParaEscucharYHablar": "Sluit u aan om in realtime mee te luisteren en met de beveiligers te praten (push-to-talk).",
@@ -9347,7 +9955,10 @@
       "patronDeRotacion": "Rotatiepatroon",
       "patronDeRotacionCreado": "Rotatiepatroon aangemaakt",
       "cargandoPatrones": "Patronen laden…",
-      "noHayPatronesCreaUno": "Er zijn geen patronen. Maak er een aan met “Aangepast”."
+      "noHayPatronesCreaUno": "Er zijn geen patronen. Maak er een aan met “Aangepast”.",
+      "dias": "Dagen",
+      "errorCrearPatron": "Het patroon kon niet worden aangemaakt",
+      "trabaja": "Werkt"
     },
     "RouteForm": {
       "asignacion": "Toewijzing",
@@ -9377,7 +9988,9 @@
       "enviarNotificacionAntesDeLasPasadasProgramadas": "Melding sturen vóór de geplande passages",
       "forzarRegistroDeEntradaAntesDeComenzarLaRuta": "Inklokken verplichten voordat de route begint",
       "noHayPuntosDefinidos": "Er zijn geen punten vastgelegd",
-      "sinUbicacion": "Geen positie"
+      "sinUbicacion": "Geen positie",
+      "errorCargandoPuestosDeVigilancia": "De bewakingsposten konden niet worden geladen",
+      "optimizarElOrdenDeLasParadas": "De volgorde van de stops optimaliseren"
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "Op stadssnelheid, exclusief de tijd bij elke halte",
@@ -9387,7 +10000,8 @@
       "diaACubrirDescansoDel": "Te bezetten dag (vrije dag van de vaste beveiliger)",
       "cubreLosDiasDeDescanso": "Neemt de vrije dagen van de vaste beveiligers over. Meest beschikbaar bovenaan.",
       "ocupadoEnOtroPuesto": "Bezet op een andere post",
-      "todosLosVigilantesTienenUna": "Alle beveiligers hebben een actieve rotatie."
+      "todosLosVigilantesTienenUna": "Alle beveiligers hebben een actieve rotatie.",
+      "noSePudoAsignarElSacafranco": "De invaller kon niet worden toegewezen"
     },
     "Schedule": {
       "14Dias": "(14 dagen)",
@@ -9444,7 +10058,30 @@
       "revisaAntesDePublicar": "Controleer vóór het publiceren:",
       "rotacionSf": "SF-rotatie:",
       "seMoveraDesde": "Wordt verplaatst vanaf",
-      "sugeridoSegunLoQueFaltaEseDia": "Voorgesteld op basis van wat die dag ontbreekt:"
+      "sugeridoSegunLoQueFaltaEseDia": "Voorgesteld op basis van wat die dag ontbreekt:",
+      "ajustarLaRotacionDesdeEsteLibre": "De rotatie vanaf deze vrije dag bijstellen",
+      "asignarVigilanteALaRotacion": "Beveiliger aan de rotatie toewijzen",
+      "borradorDeHorario": "Concept van het rooster",
+      "clicEnUnaCeldaParaSeleccionar": "Klik op een cel om te selecteren",
+      "cubrirEsteDia": "Deze dag bezetten",
+      "duplicarAlDiaSiguiente": "Naar de volgende dag kopiëren",
+      "duplicarTurnoAlDiaSiguiente": "Dienst naar de volgende dag kopiëren",
+      "eliminarTurnoDeEsteDia": "Dienst van deze dag verwijderen",
+      "errorAlAsignarLaCobertura": "De bezetting kon niet worden toegewezen",
+      "errorAlCrearElTurno": "De dienst kon niet worden aangemaakt",
+      "errorEnAutoAsignacion": "Fout bij het automatisch toewijzen",
+      "errorEnOptimizacion": "Fout bij het optimaliseren",
+      "errorGenerandoElBorrador": "Fout bij het opstellen van het concept",
+      "horaDeLaEmpresaPunto": "Bedrijfstijd.",
+      "moverVigilanteDePuesto": "Beveiliger naar een andere post verplaatsen",
+      "nadieCoincideConLaBusqueda": "Niemand komt overeen met de zoekopdracht.",
+      "noHayVigilantesParaMostrar": "Er zijn geen beveiligers om te tonen.",
+      "noSePudoReajustarLaRotacion": "De rotatie kon niet opnieuw worden ingesteld",
+      "planDeImplementacion": "Invoeringsplan",
+      "removerAsignacion": "Toewijzing verwijderen",
+      "soloEsteDia": "Alleen deze dag",
+      "terminaAlDiaSiguientePunto": "Eindigt de volgende dag.",
+      "turnoDe24Horas": "Dienst van 24 uur."
     },
     "ScheduleTimeline": {
       "duracion": "Duur:",
@@ -9453,7 +10090,10 @@
       "fechasInvalidas": "Ongeldige datums",
       "turnoActualizado": "Dienst bijgewerkt",
       "siguiente": "(volgende)",
-      "eligeUnPuesto": "Kies een post…"
+      "eligeUnPuesto": "Kies een post…",
+      "errorAlGuardarElTurno": "De dienst kon niet worden opgeslagen",
+      "turnoGeneradoPorRotacion": "Gegenereerd door de rotatie van de post (kan opnieuw verschijnen als u hem verwijdert).",
+      "turnoManual": "Handmatige dienst (getekend blok of eenmalige dienst)."
     },
     "Scheduling": {
       "planificacionDeTurnos": "Dienstplanning",
@@ -9475,7 +10115,8 @@
     "ServiceTypeBadge": {
       "ejGestionDeAccesoSeguridad": "Bijv. toegangsbeheer, industriële beveiliging, VIP-beveiliging...",
       "especifiqueUnTipoDeServicioPersonalizado": "Geef een aangepast servicetype op.",
-      "sinTipo": "Geen type"
+      "sinTipo": "Geen type",
+      "otro": "Overig..."
     },
     "ShiftAssignModal": {
       "cambialaParaMoverElDia": "— wijzig die om de vrije dag te verschuiven.",
@@ -9496,7 +10137,9 @@
       "fechaDeInicio": "startdatum",
       "fechaDeInicioDelTurno": "Startdatum van de dienst",
       "paraEscalonarDosVigilantesEn": "Geef twee beveiligers op een 24-uurspost verschillende startdatums om ze te laten wisselen.",
-      "hastaOpcional": "Tot (optioneel)"
+      "hastaOpcional": "Tot (optioneel)",
+      "asignarRotacion": "Rotatie toewijzen",
+      "crearTurno": "Dienst aanmaken"
     },
     "ShiftExchange": {
       "elementosPorPagina": "Items per pagina",
@@ -9521,7 +10164,8 @@
       "aunNoEmpiezan": "Nog niet begonnen",
       "turnosYaCerrados": "Reeds afgesloten diensten",
       "quedaronSinVigilante": "Zonder beveiliger gebleven",
-      "buscarVigilanteOPuesto": "Zoeken op beveiliger of post"
+      "buscarVigilanteOPuesto": "Zoeken op beveiliger of post",
+      "estadoDelTurno": "Status van de dienst"
     },
     "ShiftTemplates": {
       "basico": "Basis",
@@ -9541,7 +10185,14 @@
       "nombreDeLaPlantilla": "Naam van het sjabloon",
       "cargandoPlantillas": "Sjablonen laden…",
       "noHayPlantillas": "Er zijn geen sjablonen",
-      "creaTuPrimeraPlantillaDe": "Maak uw eerste dienstsjabloon met de knop hierboven."
+      "creaTuPrimeraPlantillaDe": "Maak uw eerste dienstsjabloon met de knop hierboven.",
+      "editTemplateTitle": "Dienstsjabloon bewerken",
+      "newTemplateTitle": "Nieuw dienstsjabloon",
+      "saveError": "Het sjabloon kon niet worden opgeslagen",
+      "legacyDept": {
+        "admin": "Administratie",
+        "security": "Beveiliging"
+      }
     },
     "StationGeofencePolygon": {
       "area": "Gebied",
@@ -9553,7 +10204,8 @@
       "puestoMovil": "Mobiele post",
       "puestoRenombrado": "Post hernoemd",
       "renombrarPuesto": "Post hernoemen",
-      "nadieDeTurnoEnEsteMomento": "Op dit moment niemand in dienst"
+      "nadieDeTurnoEnEsteMomento": "Op dit moment niemand in dienst",
+      "errorRenombrar": "Hernoemen mislukt"
     },
     "StationRoster": {
       "dia": "Dag",
@@ -9578,7 +10230,8 @@
       "visitaAFamiliarEntregaEtc": "Bezoek aan familie, bezorging, enz.",
       "noHayVisitantesRegistradosPara": "Er zijn geen bezoekers geregistreerd voor deze post.",
       "editarVisitante": "Bezoeker bewerken",
-      "eliminarVisitante": "Bezoeker verwijderen"
+      "eliminarVisitante": "Bezoeker verwijderen",
+      "permisoDeCamaraDenegado": "Toegang tot de camera geweigerd."
     },
     "StepIndicator": {
       "progresoDeConfiguracion": "Voortgang van de inrichting"
@@ -9680,7 +10333,8 @@
       "reproduceElRecorridoGpsReal": "Speel het echte gps-spoor van uw beveiligers af over een periode.",
       "seleccionaUnVigilanteYUn": "Selecteer een beveiliger en een periode",
       "eligeUnVigilanteYLas": "Kies een beveiliger en de datums en klik dan op «Spoor bekijken» om zijn gps-route te tekenen.",
-      "hojaDeRuta": "Routestaat"
+      "hojaDeRuta": "Routestaat",
+      "sinPuntosEnRango": "Geen punten in deze periode"
     },
     "TrailMap": {
       "bateria": "Batterij",
@@ -9689,7 +10343,13 @@
       "velMedia": "Gem. snelheid",
       "volverAlInicioDelRecorrido": "Terug naar het begin van het spoor",
       "instanteDelRecorrido": "Moment in het spoor",
-      "sinRecorridoParaEsteRango": "Geen route voor deze periode"
+      "sinRecorridoParaEsteRango": "Geen route voor deze periode",
+      "camaraSigueElRecorrido": "De camera volgt het spoor",
+      "camaraSuelta": "De camera staat los",
+      "irAEsteMomento": "Naar dit moment gaan",
+      "posicionEnElInstanteMostrado": "Positie op het getoonde moment",
+      "precision": "Nauwkeurigheid",
+      "recorridoHastaAqui": "Spoor tot hier"
     },
     "TrainingCatalog": {
       "sinAccesoAlCatalogo": "Geen toegang tot de catalogus"
@@ -9706,7 +10366,8 @@
       "descripcion": "Omschrijving",
       "eliminarCurso": "Cursus verwijderen?",
       "titulo": "Titel *",
-      "todasLasCategorias": "Alle categorieën"
+      "todasLasCategorias": "Alle categorieën",
+      "progresoDeVigilantes": "Voortgang van de beveiligers"
     },
     "TrainingEnrollments": {
       "aunNoHaCompletadoLecciones": "Nog geen lessen afgerond."
@@ -9715,7 +10376,9 @@
       "duracion": "Duur",
       "trasladarAOtroPuesto": "Naar een andere post verplaatsen",
       "ejCubreFaltaEnEl": "Bijv.: vervangt een afwezige op de andere post",
-      "despuesVuelveAutomaticamenteA": "Daarna keert hij automatisch terug naar"
+      "despuesVuelveAutomaticamenteA": "Daarna keert hij automatisch terug naar",
+      "hastaUnaFecha": "Tot een datum",
+      "soloEsteTurno": "Alleen deze dienst"
     },
     "UserRoleDialog": {
       "descripcion": "Omschrijving",
@@ -9758,7 +10421,11 @@
       "propiedadDeLaEmpresa": "Eigendom van het bedrijf",
       "propiedadDelVigilante": "Eigendom van de beveiliger",
       "anadirVehiculo": "Voertuig toevoegen",
-      "informacionCompletaDelVehiculo": "Volledige informatie over het voertuig."
+      "informacionCompletaDelVehiculo": "Volledige informatie over het voertuig.",
+      "activarVehiculos": "Voertuigen activeren",
+      "eliminarVehiculos": "Voertuigen verwijderen",
+      "errorCargandoVehiculos": "De voertuigen konden niet worden geladen",
+      "sinPlaca": "Geen kenteken"
     },
     "VideoActionModals": {
       "critica": "Kritiek",
@@ -9794,7 +10461,15 @@
       "eliminarDispositivo": "Apparaat verwijderen",
       "configuraLosDatosDeConexion": "Stel de verbindingsgegevens van de dvr/nvr of camera in.",
       "dispositivosDeVideo": "Videoapparaten",
-      "puntoDeServicioOpcional": "Post (optioneel)"
+      "puntoDeServicioOpcional": "Post (optioneel)",
+      "dejarEnBlanco": "Laat leeg om te behouden",
+      "errorCargar": "De apparaten konden niet worden geladen",
+      "errorEliminar": "Het apparaat kon niet worden verwijderd",
+      "errorGuardar": "Het apparaat kon niet worden opgeslagen",
+      "errorSincronizar": "De camera's konden niet worden gesynchroniseerd",
+      "falloPrueba": "De verbindingstest is mislukt",
+      "sinMarcaModelo": "Geen merk/model",
+      "sinStream": "Geen stream"
     },
     "VideoGatewayModal": {
       "configuracionGo2rtcPegalaEnGo2rtc": "go2rtc-configuratie (plak deze in go2rtc.yaml)",
@@ -9802,7 +10477,9 @@
       "urlBaseDelGatewayGo2rtc": "Basis-URL van de gateway (go2rtc)",
       "dondeCorreGo2rtcEnLa": "Waar go2rtc draait — in de cloud (als de dvr via DDNS bereikbaar is) of een bridge ter plaatse.",
       "despliegaGo2rtcConEsteConfig": "Rol go2rtc uit met deze configuratie; die haalt de RTSP-stream van de dvr op en levert hem aan het CRM.",
-      "gatewayDeVideo": "Videogateway"
+      "gatewayDeVideo": "Videogateway",
+      "noSePudoGuardarElGateway": "De gateway kon niet worden opgeslagen",
+      "sincronizaLasCamarasPrimero": "Synchroniseer eerst de camera's van het apparaat."
     },
     "VideoMonitoring": {
       "ningunaCamaraTransmitiendo": "Geen enkele camera zendt uit",
@@ -9818,7 +10495,9 @@
     },
     "VideoPlayer": {
       "camaraFueraDeLinea": "Camera offline",
-      "sinTransmisionConfigurada": "Geen stream ingesteld"
+      "sinTransmisionConfigurada": "Geen stream ingesteld",
+      "errorDeTransmision": "Fout in de stream",
+      "hlsNoSoportado": "Je browser ondersteunt HLS niet"
     },
     "VideoRelaySites": {
       "aunNoHaySitiosRemotos": "Nog geen locaties op afstand",
@@ -9886,7 +10565,21 @@
       "nuevaTarea": "Nieuwe taak",
       "describeLaTarea": "Beschrijf de taak…",
       "detalleDeLaTarea": "Details van de taak",
-      "imagenDeReferencia": "Referentieafbeelding"
+      "imagenDeReferencia": "Referentieafbeelding",
+      "estado": {
+        "approved": "Goedgekeurd",
+        "cancelled": "Geannuleerd",
+        "completed": "Afgerond",
+        "pendingApproval": "Ter goedkeuring",
+        "rejected": "Afgewezen"
+      },
+      "filtro": {
+        "all": "Alle",
+        "approved": "Goedgekeurd",
+        "completed": "Afgerond",
+        "pendingApproval": "Ter goedkeuring",
+        "rejected": "Afgewezen"
+      }
     },
     "TrendPanel": {
       "maximo": "Piek",
@@ -9940,7 +10633,26 @@
       "elGrupoNoTieneMiembros": "De groep heeft geen leden",
       "anadeVigilantesConElBuscador": "Voeg beveiligers toe via het zoekveld of synchroniseer met de toewijzingen van de post.",
       "sincronizarConAsignaciones": "Synchroniseren met toewijzingen",
-      "soloAnunciosLosMiembrosNo": "Alleen mededelingen (leden kunnen niet reageren)"
+      "soloAnunciosLosMiembrosNo": "Alleen mededelingen (leden kunnen niet reageren)",
+      "conversacionesConTusClientes": "Gesprekken met uw opdrachtgevers.",
+      "conversacionesConVigilantesSupervisores": "Gesprekken met beveiligers, supervisors en groepen per post.",
+      "eliminarConversacion": "Gesprek verwijderen",
+      "eliminarGrupo": "Groep verwijderen",
+      "empiezaUnaNuevaConElBoton": "Begin er een met de knop «Nieuw».",
+      "noSePudieronCargarLasConversaciones": "De gesprekken konden niet worden geladen",
+      "noSePudieronCargarLosMiembros": "De leden konden niet worden geladen",
+      "noSePudoAccederAlMicrofono": "Er kon geen toegang tot de microfoon worden gekregen",
+      "noSePudoAnadir": "Toevoegen mislukt",
+      "noSePudoCargarLaConversacion": "Het gesprek kon niet worden geladen",
+      "noSePudoCrearElGrupo": "De groep kon niet worden aangemaakt",
+      "noSePudoEliminarLaConversacion": "Het gesprek kon niet worden verwijderd",
+      "noSePudoEnviar": "Versturen mislukt",
+      "noSePudoEnviarLaNotaDeVoz": "De spraaknotitie kon niet worden verstuurd",
+      "noSePudoSincronizar": "Synchroniseren mislukt",
+      "noSePudoSubirElArchivo": "Het bestand kon niet worden geüpload",
+      "sinConversaciones": "Geen gesprekken",
+      "sinMensajesDeClientes": "Geen berichten van opdrachtgevers",
+      "todaviaNoHayMensajesDeTusClientes": "Er zijn nog geen berichten van uw opdrachtgevers."
     },
     "PassdownsPage": {
       "pasesDeTurno": "Dienstoverdrachten",
@@ -10088,7 +10800,8 @@
     },
     "ClientsPage": {
       "elUsuarioDebeEstarVinculado": "De gebruiker moet aan een bedrijf zijn gekoppeld om verder te gaan",
-      "elClienteRecibeUnCorreo": "De opdrachtgever ontvangt een e-mail met een toegangslink"
+      "elClienteRecibeUnCorreo": "De opdrachtgever ontvangt een e-mail met een toegangslink",
+      "errorEnviarInvitacion": "De uitnodiging kon niet worden verstuurd"
     },
     "AddStationPage": {
       "cadaBloqueLoComparten": ": elk blok wordt gedeeld door",
@@ -10101,7 +10814,8 @@
       "estaRondaNoTienePuntos": "Deze ronde heeft geen controlepunten.",
       "fotoDelEscaneo": "Foto van de scan",
       "fotoDeLaRonda": "Foto van de ronde",
-      "noEscaneado": "Niet gescand"
+      "noEscaneado": "Niet gescand",
+      "errorDetalleRonda": "De details van de ronde konden niet worden geladen"
     },
     "EditSecurityGuardPage": {
       "noTienesPermisoParaEditar": "U heeft geen rechten om beveiligers te bewerken",
@@ -10228,7 +10942,10 @@
       "registraLosDatosDelVehiculo": "Leg de gegevens van het patrouillevoertuig vast",
       "delCliente": "Van de opdrachtgever",
       "quitarFotografia": "Foto verwijderen",
-      "tocaLaImagenParaElegir": "Tik op de afbeelding om een foto van het voertuig te kiezen."
+      "tocaLaImagenParaElegir": "Tik op de afbeelding om een foto van het voertuig te kiezen.",
+      "editarVehiculo": "Voertuig bewerken",
+      "errorCreandoVehiculo": "Het voertuig kon niet worden aangemaakt",
+      "yaExisteUnVehiculoConEsaPlaca": "Er bestaat al een voertuig met dat kenteken"
     },
     "ActivityStream": {
       "parteDeNovedades": "Meldingenrapport"
@@ -10253,7 +10970,8 @@
       "yaLaGuarde": "Ik heb hem opgeslagen"
     },
     "AppErrorBoundary": {
-      "estaSeccionNoSePudoMostrar": "Dit onderdeel kon niet worden weergegeven"
+      "estaSeccionNoSePudoMostrar": "Dit onderdeel kon niet worden weergegeven",
+      "errorDeRenderizado": "Weergavefout"
     },
     "BottomSheet": {
       "ajustarLaAlturaDelPanel": "De hoogte van het paneel aanpassen"
@@ -10278,7 +10996,21 @@
       "arrastraOHazClicParaAdjuntar": "Sleep hierheen of klik om bij te voegen"
     },
     "ExtremoRutaField": {
-      "usarEstaUbicacion": "Deze positie gebruiken"
+      "usarEstaUbicacion": "Deze positie gebruiken",
+      "destino": {
+        "accion": "Bestemming instellen",
+        "ayuda": "Waar de route eindigt. Laat u dit leeg, dan eindigt de route bij de laatste stop.",
+        "modal": "Bestemming van de route",
+        "titulo": "Bestemming",
+        "vacio": "Geen bestemming ingesteld: de route eindigt bij de laatste stop."
+      },
+      "origen": {
+        "accion": "Vertrekpunt instellen",
+        "ayuda": "Waar de supervisor vertrekt. Laat u dit leeg, dan begint de route bij de eerste stop.",
+        "modal": "Vertrekpunt van de route",
+        "titulo": "Vertrekpunt",
+        "vacio": "Geen vertrekpunt ingesteld: de route begint bij de eerste stop."
+      }
     },
     "GeoFenceLog": {
       "registrosDeGeoVallas": "Geofenceregistraties"
@@ -10333,14 +11065,17 @@
       "enunciadoDeLaPregunta": "Vraagtekst",
       "opcion": "Optie",
       "puntajeParaAprobar": "Slaagscore:",
-      "sinCuestionario": "Geen toets"
+      "sinCuestionario": "Geen toets",
+      "agregaAlMenosUnaPreguntaConDosOpciones": "Voeg minstens één vraag met twee opties toe.",
+      "noSePudoGuardarElCuestionario": "De toets kon niet worden opgeslagen."
     },
     "ScheduleCard": {
       "sinHorario": "Geen rooster",
       "tocaUnVigilanteParaCambiarlo": "Tik op een beveiliger om deze te wisselen."
     },
     "SiteTour": {
-      "informeDeRecorridosDelSitio": "Rapport van rondes op de locatie"
+      "informeDeRecorridosDelSitio": "Rapport van rondes op de locatie",
+      "revision": "Beoordeling"
     },
     "StaticMapImage": {
       "abrirElMapaInteractivo": "De interactieve kaart openen",
@@ -10350,7 +11085,9 @@
       "configurarPuestosDeSupervision": "Toezichtposten instellen",
       "puestosDeSupervisionSinCubrir": "Onbezette toezichtposten",
       "sinSupervisoresAsignados": "Geen supervisors toegewezen",
-      "supervision": "Toezicht"
+      "supervision": "Toezicht",
+      "contraerSupervision": "Toezicht inklappen",
+      "expandirSupervision": "Toezicht uitklappen"
     },
     "SupervisorKpisPage": {
       "indicadoresDelSupervisor": "Indicatoren van de supervisor"
@@ -10376,7 +11113,9 @@
       "recorridosDePatrullajeVehicular": "Ritten van de mobiele surveillance: routes, stops en tijden."
     },
     "VerifyEmailGate": {
-      "verificaTuCorreoElectronico": "Bevestig je e-mailadres"
+      "verificaTuCorreoElectronico": "Bevestig je e-mailadres",
+      "noSePudoComprobar": "De status kon niet worden gecontroleerd. Probeer het opnieuw.",
+      "noSePudoReenviar": "De e-mail kon niet opnieuw worden verstuurd. Probeer het opnieuw."
     },
     "VideoEvents": {
       "eventosDeVideo": "Videogebeurtenissen",
@@ -10386,10 +11125,27 @@
       "enlaceNoDisponible": "Link niet beschikbaar",
       "esteEnlaceEsPrivadoYPuedeCaducarNoLoCompartas": "Deze link is privé en kan verlopen. Deel hem niet.",
       "procesandoElVideo": "Video wordt verwerkt",
-      "videoCompartidoDeFormaSegura": "Video veilig gedeeld"
+      "videoCompartidoDeFormaSegura": "Video veilig gedeeld",
+      "clipDeVideo": "Videoclip",
+      "enlaceInvalido": "Deze link is niet geldig of is al verlopen."
     },
     "WatchMode": {
       "registrosDeModoVigilancia": "Registraties van de waakstand"
+    },
+    "AlarmVideoVerification": {
+      "camara": "Camera",
+      "clipDeVerificacion": "Verificatieclip"
+    },
+    "DataReport": {
+      "errorCargarInforme": "Het rapport kon niet worden geladen",
+      "habilitaVentanasEmergentes": "Sta pop-ups toe om te kunnen exporteren"
+    },
+    "DispatchIncidentMap": {
+      "masCercanoConVigilante": "Dichtstbij met beveiliger",
+      "sinVigilanteAhora": "Nu geen beveiliger"
+    },
+    "ImportarHojaDeVida": {
+      "revisalosAntesDeGuardar": "Controleer ze voordat u opslaat."
     }
   },
   "visitantes": {
@@ -10513,7 +11269,8 @@
     "printError": "Er kon niet worden afgedrukt",
     "subtitle": "Registratie van binnenkomst en vertrek van bezoekers",
     "placeTypeLabel": "Soort plek",
-    "tagLabel": "Label"
+    "tagLabel": "Label",
+    "bitacorasImprimir": "Logboeken - Afdrukken"
   },
   "app": {
     "loading": "Laden…",
@@ -10523,6 +11280,9 @@
   "controlCenter": {
     "errorBoundary": {
       "title": "Het commandocentrum kon niet worden geladen"
+    },
+    "sheet": {
+      "label": "Details van de operatie"
     }
   },
   "routes": {
@@ -10531,6 +11291,563 @@
       "distanciaDelRecorrido": "Afstand van de route",
       "sinOptimizar": "Niet geoptimaliseerd",
       "yaEnMejorOrden": "De volgorde was al optimaal"
+    },
+    "detail": {
+      "destinationFallback": "Eindigt bij de laatste stop",
+      "originFallback": "Begint bij de eerste stop"
+    },
+    "list": {
+      "bulkDeleteError": "De routes konden niet worden verwijderd"
+    },
+    "live": {
+      "loadError": "De routes konden niet worden geladen"
+    }
+  },
+  "analytics": {
+    "attendance": {
+      "earlyDeparture": "Te vroeg vertrokken",
+      "late": "Te laat"
+    },
+    "loadError": "De analyses konden niet worden geladen",
+    "range": {
+      "d30": "30 dagen",
+      "d7": "7 dagen",
+      "d90": "90 dagen",
+      "today": "Vandaag"
+    }
+  },
+  "appearance": {
+    "accent": {
+      "ambar": "Amber",
+      "carmesi": "Karmijn",
+      "acero": "Staal",
+      "azul": "Blauw",
+      "cian": "Cyaan",
+      "esmeralda": "Smaragd",
+      "lima": "Limoen",
+      "magenta": "Magenta",
+      "mostaza": "Mosterdgoud",
+      "violeta": "Violet"
+    }
+  },
+  "dispatch": {
+    "validation": {
+      "incidentDateTimeRequired": "Datum en tijd van het incident zijn verplicht",
+      "stationRequired": "Post is verplicht",
+      "callerNameRequired": "Naam van de beller is verplicht",
+      "callerTypeRequired": "Soort beller is verplicht",
+      "dateRequired": "Datum is verplicht",
+      "detailsRequired": "Details zijn verplicht",
+      "incidentTypeRequired": "Soort incident is verplicht",
+      "locationRequired": "Locatie is verplicht",
+      "timeRequired": "Tijd is verplicht"
+    }
+  },
+  "errores": {
+    "sinConexionServidor": "Er kon geen verbinding worden gemaakt."
+  },
+  "memos": {
+    "readReceiptReceived": "Leesbevestiging ontvangen"
+  },
+  "misAvisos": {
+    "fila": {
+      "attendanceApprovals": "Goedkeuringen bij het klokken",
+      "attendanceExceptions": "Afwijkingen bij het klokken",
+      "checkInOut": "In- en uitklokken van beveiligers",
+      "contractExpiry": "Aflopende contracten van opdrachtgevers",
+      "coverageUncovered": "Onbezette post",
+      "dispatchUpdates": "Incidenttickets",
+      "geofenceAlert": "Betreden en verlaten van de geofence",
+      "inactiveGuardAlert": "Inactieve beveiliger tijdens dienst",
+      "licenseExpiry": "Aflopende passen",
+      "panicButton": "Paniekknop",
+      "ptoRequest": "Verlofaanvragen",
+      "taskCompleted": "Afgeronde taken"
+    },
+    "hint": {
+      "coverageUncovered": "Er is niemand op de post verschenen",
+      "panicButton": "Een noodgeval komt altijd door"
+    },
+    "via": {
+      "dashboard": "Paneel en telefoon",
+      "email": "E-mail",
+      "sms": "Sms"
+    }
+  },
+  "offline": {
+    "replay": {
+      "noTenant": "Geen bedrijf om de wijziging alsnog te versturen"
+    }
+  },
+  "onboarding": {
+    "requiredFields": {
+      "address": "Adres",
+      "businessTitle": "Statutaire naam",
+      "email": "E-mailadres",
+      "name": "Naam van het bedrijf",
+      "phone": "Telefoon",
+      "taxNumber": "Fiscaal nummer / ID-nummer",
+      "timezone": "Tijdzone",
+      "logo": "Logo"
+    },
+    "wizard": {
+      "autoSearch": "Automatisch zoeken",
+      "logoUploadError": "Gegevens opgeslagen, maar het logo kon niet worden geüpload.",
+      "manualEntry": "Handmatig invoeren",
+      "step": {
+        "bienvenida": "Welkom",
+        "contacto": "Contact",
+        "revisar": "Controleren",
+        "tuEmpresa": "Je bedrijf"
+      },
+      "welcome": {
+        "companyData": "De gegevens van je bedrijf (naam, statutaire naam, fiscaal nummer)",
+        "logo": "Het logo dat je beveiligers en opdrachtgevers te zien krijgen"
+      }
+    }
+  },
+  "panic": {
+    "overlay": {
+      "subtitleClient": "Een opdrachtgever heeft de SOS-knop ingedrukt",
+      "subtitleGuard": "Een beveiliger heeft de noodknop ingedrukt",
+      "quickAction": {
+        "calledPolice": "Ik heb de politie gebeld",
+        "contactClient": "Ik heb contact gehad met de opdrachtgever",
+        "contactGuard": "Ik heb contact gehad met de beveiliger ter plaatse",
+        "dispatchSupervisor": "Supervisor / mobiele eenheid gestuurd",
+        "falseAlarm": "Vals alarm / test"
+      }
+    }
+  },
+  "passdown": {
+    "loadDetailError": "De dienstoverdracht kon niet worden geladen",
+    "noNotes": "Geen bijzonderheden vastgelegd."
+  },
+  "radio": {
+    "devices": {
+      "saveError": "De IP-radio kon niet worden opgeslagen",
+      "status": {
+        "error": "Fout",
+        "offline": "Geen verbinding",
+        "registered": "Geregistreerd",
+        "unknown": "Niet getest"
+      },
+      "testError": "De verbinding kon niet worden getest"
+    },
+    "paseEndError": "De overdracht kon niet worden afgerond",
+    "paseStartError": "De overdracht kon niet worden gestart",
+    "voice": {
+      "connectError": "De radio kon niet worden verbonden",
+      "notConnected": "Radio niet verbonden"
+    },
+    "voiceModuleLoadError": "De spraakmodule kon niet worden geladen."
+  },
+  "reports": {
+    "card": {
+      "checklist": {
+        "desc": "Bekijk de checklists die de beveiligers hebben afgerond",
+        "title": "Checklistrapport"
+      },
+      "checkpointLogs": {
+        "desc": "Bekijk de controlepunten die de beveiligers hebben gescand",
+        "title": "Logboek van controlepunten op ronde"
+      },
+      "dar": {
+        "desc": "Bekijk de dagelijkse activiteit van de beveiligers",
+        "title": "DAR-rapport"
+      },
+      "deliveryLogs": {
+        "desc": "Bekijk de leveringen die de beveiligers hebben doorgegeven"
+      },
+      "entryExit": {
+        "desc": "Bekijk wanneer uw beveiliger in- en uitklokt op de locatie"
+      },
+      "fallAlertLogs": {
+        "desc": "Bekijk de valalarmen van beveiligers en hun apparaten",
+        "title": "Logboek valalarmen"
+      },
+      "geofenceLogs": {
+        "desc": "Bekijk de geofence-registraties van de beveiligers"
+      },
+      "guardKpi": {
+        "desc": "Bekijk het KPI-rapport van de beveiliger"
+      },
+      "inactiveGuardLogs": {
+        "desc": "Bekijk de inactiviteitsmeldingen van de beveiligers"
+      },
+      "licenseLogs": {
+        "desc": "Bekijk het logboek van de passen van de beveiligers"
+      },
+      "panicButtonLogs": {
+        "desc": "Bekijk wanneer beveiligers op de paniekknop hebben gedrukt"
+      },
+      "payrollClient": {
+        "desc": "Bekijk de gewerkte uren per opdrachtgever",
+        "title": "Gewerkte uren per opdrachtgever"
+      },
+      "payrollDepartment": {
+        "desc": "Bekijk de loonuren per afdeling",
+        "title": "Gewerkte uren per afdeling"
+      },
+      "payrollPost": {
+        "desc": "Bekijk de gewerkte uren per post",
+        "title": "Gewerkte uren per post"
+      },
+      "postKpi": {
+        "desc": "Bekijk het KPI-rapport van de post",
+        "title": "KPI-rapport per post"
+      },
+      "siteTours": {
+        "desc": "Bekijk de rondes die beveiligers hebben afgerond of gemist"
+      },
+      "tasks": {
+        "desc": "Bekijk de taken die de beveiligers hebben afgerond"
+      },
+      "timecardClient": {
+        "desc": "Bekijk de geklokte uren per opdrachtgever",
+        "title": "Geklokte uren per opdrachtgever"
+      },
+      "timecardGuard": {
+        "desc": "Bekijk de geklokte uren per beveiliger",
+        "title": "Geklokte uren per beveiliger"
+      },
+      "timecardPost": {
+        "desc": "Bekijk de geklokte uren per post",
+        "title": "Geklokte uren per post"
+      },
+      "vehiclePatrol": {
+        "desc": "Bekijk de activiteit van de mobiele surveillance"
+      },
+      "watchModeLogs": {
+        "desc": "Bekijk de foto's en video's die de beveiligers hebben gestuurd"
+      }
+    },
+    "panicLog": {
+      "origin": {
+        "alarmPanel": "Alarmpaneel",
+        "clientApp": "Opdrachtgever-app (SOS)",
+        "manual": "Handmatig",
+        "workerApp": "Paniekknop (beveiliger)"
+      },
+      "status": {
+        "acknowledged": "Aangenomen",
+        "closed": "Gesloten",
+        "dispatched": "Uitgestuurd",
+        "open": "Open",
+        "resolved": "Opgelost"
+      }
+    },
+    "section": {
+      "general": {
+        "title": "Algemene rapporten"
+      },
+      "incidents": {
+        "title": "Incidentrapporten"
+      },
+      "logs": {
+        "title": "Logboekrapporten"
+      },
+      "payroll": {
+        "title": "Rapporten gewerkte uren"
+      },
+      "standard": {
+        "title": "Standaardrapporten"
+      },
+      "timecard": {
+        "title": "Rapporten geklokte uren"
+      }
+    },
+    "col": {
+      "checkInOut": {
+        "guard": "Beveiliger",
+        "hours": "Uren",
+        "in": "Inklokken",
+        "late": "Te laat (min)",
+        "out": "Uitklokken",
+        "station": "Post",
+        "status": "Status"
+      },
+      "geoFenceLog": {
+        "date": "Datum",
+        "guard": "Beveiliger",
+        "in": "Inklokken",
+        "inDist": "Afst. inklokken",
+        "out": "Uitklokken",
+        "outDist": "Afst. uitklokken",
+        "station": "Post"
+      },
+      "incident": {
+        "created": "Datum",
+        "desc": "Omschrijving",
+        "location": "Locatie",
+        "priority": "Prioriteit",
+        "site": "Post/locatie",
+        "status": "Status",
+        "title": "Titel"
+      },
+      "panicButtonLog": {
+        "ack": "Aangenomen",
+        "created": "Datum",
+        "origin": "Herkomst",
+        "priority": "Prioriteit",
+        "resolved": "Opgelost",
+        "status": "Status",
+        "title": "Titel"
+      },
+      "passdown": {
+        "created": "Datum",
+        "instr": "Werkinstructies",
+        "notes": "Bijzonderheden",
+        "outgoing": "Vertrekkende beveiliger",
+        "received": "Ontvangen door",
+        "shift": "Dienst",
+        "station": "Post",
+        "status": "Status"
+      },
+      "task": {
+        "created": "Aangemaakt",
+        "done": "Uitgevoerd",
+        "due": "Uiterlijk",
+        "priority": "Prioriteit",
+        "source": "Herkomst",
+        "station": "Post",
+        "status": "Status",
+        "task": "Taak"
+      }
+    }
+  },
+  "security": {
+    "event": {
+      "deviceEvicted": "Apparaat afgemeld",
+      "deviceRegistered": "Apparaat geregistreerd",
+      "login": "Aanmelding",
+      "loginFailed": "Mislukte poging",
+      "logout": "Afmelding",
+      "providerAccess": "Toegang door support (CGuardPro)"
+    },
+    "logs": {
+      "actionCreate": "Aangemaakt",
+      "actionDelete": "Verwijderd",
+      "actionUpdate": "Bijgewerkt"
+    }
+  },
+  "serviceTypes": {
+    "alarm": "Alarm en opvolging",
+    "cctv": "Camerabewaking",
+    "custody": "Begeleiding en escorte",
+    "manned": "Bewaking met beveiligers",
+    "patrol": "Mobiele surveillance",
+    "alarm_desc": "Alarmmonitoring en snelle opvolging bij beveiligingsmeldingen.",
+    "cctv_desc": "Toezicht op afstand met camera's en gesloten televisiecircuit.",
+    "custody_desc": "Persoonsbeveiliging of begeleiding van goederen met hoge waarde.",
+    "manned_desc": "Beveiligers die permanent of per dienst aan de post zijn toegewezen.",
+    "patrol_desc": "Supervisors die periodieke rondes lopen op één of meerdere locaties."
+  },
+  "supervisorPositions": {
+    "assignError": "Toewijzen mislukt",
+    "createError": "Aanmaken mislukt",
+    "unassignError": "Verwijderen mislukt",
+    "updateError": "Bijwerken mislukt",
+    "scheduleType": {
+      "12hDay": "Dag (12h)",
+      "12hNight": "Nacht (12h)",
+      "24h": "24h (dag/nacht)",
+      "custom": "Aangepast"
+    }
+  },
+  "tasks": {
+    "approvals": {
+      "rejectReasonTitle": "Reden van afwijzing"
+    },
+    "estado": {
+      "approved": "Goedgekeurd",
+      "completed": "Afgerond",
+      "rejected": "Afgewezen"
+    },
+    "origen": {
+      "passdown": "Dienstoverdracht",
+      "staff": "Personeel"
+    }
+  },
+  "tracking": {
+    "unitState": {
+      "active": "In dienst",
+      "noSignal": "Geen signaal",
+      "stopped": "Stilstaand"
+    },
+    "viewTodayRoute": "Spoor van vandaag bekijken"
+  },
+  "training": {
+    "categories": {
+      "compliance": "Naleving",
+      "other": "Overig",
+      "safety": "Preventie",
+      "security": "Beveiliging",
+      "skills": "Vaardigheden"
+    },
+    "enrollments": {
+      "title": "Voortgang van de cursus"
+    },
+    "enrollmentStatus": {
+      "assigned": "Toegewezen",
+      "completed": "Afgerond",
+      "expired": "Verlopen",
+      "inProgress": "Bezig"
+    },
+    "levels": {
+      "advanced": "Gevorderd",
+      "beginner": "Beginner",
+      "intermediate": "Halfgevorderd"
+    }
+  },
+  "validacion": {
+    "rangoFechasInvalido": "Ongeldige periode"
+  },
+  "validation": {
+    "inviteByLink": {
+      "invalidLink": "Ongeldige link"
+    },
+    "postSite": {
+      "latitude": "Ongeldige breedtegraad (alleen cijfers en een decimale punt)",
+      "longitude": "Ongeldige lengtegraad (alleen cijfers en een decimale punt)",
+      "faxMax": "Het vaste nummer mag maximaal 20 tekens bevatten",
+      "maxChars": "Maximaal {{n}} tekens",
+      "phoneMax": "Het telefoonnummer mag maximaal 20 tekens bevatten"
+    },
+    "profile": {
+      "academicInstructionRequired": "De opleiding is verplicht",
+      "genderRequired": "Het geslacht is verplicht",
+      "maritalStatusRequired": "De burgerlijke staat is verplicht",
+      "birthDateRequired": "De geboortedatum is verplicht",
+      "identificationRequired": "Het identiteitsnummer is verplicht"
+    },
+    "adminUser": {
+      "accessLevelRequired": "Kies een niveau"
+    },
+    "client": {
+      "addressRequired": "Adres is verplicht",
+      "documentRequired": "Fiscaal nummer of ID-nummer is verplicht",
+      "emailRequired": "E-mailadres is verplicht",
+      "latitudeRange": "Breedtegraad tussen -90 en 90",
+      "longitudeRange": "Lengtegraad tussen -180 en 180",
+      "nameRequired": "Naam van de opdrachtgever is verplicht",
+      "phoneRequired": "Telefoonnummer is verplicht",
+      "postalCodeRequired": "Postcode is verplicht",
+      "websiteInvalid": "Ongeldige URL"
+    },
+    "common": {
+      "atLeastOneGuard": "Voeg minstens één beveiliger toe",
+      "dateFormat": "Notatie JJJJ-MM-DD",
+      "emailInvalid": "Voer een geldig e-mailadres in",
+      "lastNameInvalid": "De achternaam mag geen cijfers of ongeldige tekens bevatten",
+      "lastNameRequired": "De achternaam is verplicht",
+      "middleNameInvalid": "De tweede voornaam mag geen cijfers of ongeldige tekens bevatten",
+      "nameInvalid": "De naam mag geen cijfers of ongeldige tekens bevatten",
+      "nameRequired": "De naam is verplicht",
+      "phoneE164": "Gebruik deze notatie, bijv. +12015550123",
+      "phoneE164International": "Gebruik de internationale notatie, bijv. +12015550123"
+    },
+    "joinByCode": {
+      "codeLength": "De code moet 6 cijfers hebben",
+      "codeNumeric": "De code mag alleen cijfers bevatten"
+    },
+    "route": {
+      "dateFromRequired": "Vanaf is verplicht",
+      "dateToRequired": "Tot is verplicht",
+      "daysRequired": "Kies minstens één dag",
+      "endTimeRequired": "Eindtijd is verplicht",
+      "sitesRequired": "Kies minstens één beveiligingspost",
+      "startTimeRequired": "Starttijd is verplicht",
+      "supervisorRequired": "Supervisor is verplicht",
+      "vehicleRequired": "Voertuig is verplicht"
+    },
+    "vehicle": {
+      "colorRequired": "Kleur is verplicht",
+      "digitsOnly": "Alleen cijfers",
+      "makeRequired": "Merk is verplicht",
+      "mileageRequired": "Beginstand van de kilometerteller is verplicht",
+      "modelRequired": "Model is verplicht",
+      "plateRequired": "Kenteken is verplicht",
+      "vinAlphanumeric": "Ongeldig VIN (moet precies 17 alfanumerieke tekens hebben)",
+      "vinLength": "Ongeldig VIN (moet precies 17 tekens hebben)",
+      "yearInvalid": "Ongeldig bouwjaar"
+    }
+  },
+  "video": {
+    "actions": {
+      "clipError": "De clip kon niet worden gemaakt",
+      "dispatchError": "Uitsturen mislukt",
+      "incidentError": "Het incident kon niet worden aangemaakt"
+    },
+    "events": {
+      "empty": {
+        "allDescription": "Er zijn nog geen videogebeurtenissen vastgelegd.",
+        "filteredDescription": "Er zijn geen gebeurtenissen met deze status."
+      },
+      "unknownCamera": "Onbekende camera"
+    },
+    "monitoring": {
+      "empty": {
+        "noCameras": "Er zijn nog geen camera's ingesteld",
+        "noMatches": "Geen enkele camera voldoet aan de filters"
+      }
+    },
+    "relay": {
+      "createSiteError": "De locatie kon niet worden aangemaakt",
+      "generateError": "De relay kon niet worden aangemaakt",
+      "regenerateTokenError": "De toegangssleutel kon niet opnieuw worden aangemaakt",
+      "status": {
+        "offline": "Geen verbinding",
+        "publishing": "Zendt uit",
+        "unknown": "Niet geactiveerd"
+      }
+    },
+    "deviceType": {
+      "camera": "Camera",
+      "cloud": "Cloud",
+      "dvr": "DVR",
+      "nvr": "NVR"
+    }
+  },
+  "inventory": {
+    "itemCondition": {
+      "bueno": "Goed",
+      "danado": "Beschadigd",
+      "regular": "Matig"
+    },
+    "itemStatus": {
+      "asignado": "Toegewezen",
+      "disponible": "Beschikbaar",
+      "enMantenimiento": "In onderhoud",
+      "retirado": "Buiten gebruik"
+    },
+    "itemType": {
+      "arma": "Wapen",
+      "bitacora": "Wachtboek",
+      "caseta": "Portiershokje",
+      "chalecoAntibalas": "Kogelwerend vest",
+      "cintoCompleto": "Volledige koppelriem",
+      "detectorDeMetales": "Metaaldetector",
+      "linterna": "Zaklamp",
+      "otro": "Overig",
+      "pito": "Fluit",
+      "ponchoDeAguas": "Regenponcho",
+      "radio": "Portofoon",
+      "tolete": "Wapenstok",
+      "vehiculo": "Voertuig"
+    }
+  },
+  "rotation": {
+    "days": "{{count}} dag",
+    "nights": "{{count}} nacht",
+    "none": "Geen rotatie",
+    "rests": "{{count}} rustdag"
+  },
+  "vehicles": {
+    "ownership": {
+      "alquilado": "Gehuurd",
+      "cliente": "Van de opdrachtgever",
+      "propio": "Eigen"
     }
   }
 }

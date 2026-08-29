@@ -63,21 +63,23 @@ interface PersonnelData {
   updatedAt: string;
 }
 
-const ESTADO_META: Record<string, { label: string; tone: BadgeTone }> = {
-  en_turno:    { label: 'En turno',      tone: 'green' },
-  fuera_turno: { label: 'Fuera de turno', tone: 'blue' },
-  descanso:    { label: 'Descanso',      tone: 'orange' },
-  ausente:     { label: 'Ausente',       tone: 'red' },
-  en_ruta:     { label: 'En ruta',       tone: 'primary' },
+/* Clave i18n + respaldo en español. Se traduce AL PINTAR (más abajo): un t() en
+   el ámbito del módulo congelaría el idioma de arranque para toda la sesión. */
+const ESTADO_META: Record<string, { label: string; labelKey: string; tone: BadgeTone }> = {
+  en_turno:    { label: 'En turno',       labelKey: 'comun.enTurno',              tone: 'green' },
+  fuera_turno: { label: 'Fuera de turno', labelKey: 'ui.ClientStaff.fueraDeTurno', tone: 'blue' },
+  descanso:    { label: 'Descanso',       labelKey: 'ui.ClientStaff.descanso',     tone: 'orange' },
+  ausente:     { label: 'Ausente',        labelKey: 'ui.ClientStaff.ausente',      tone: 'red' },
+  en_ruta:     { label: 'En ruta',        labelKey: 'ui.ClientStaff.enRuta',       tone: 'primary' },
 };
 /* Los cuatro roles son categorías sin orden ni estado: van a los escalones de
    serie del acento, asignados SIEMPRE en el mismo orden. Que un filtro deje
    fuera a los supervisores no puede repintar a los guardias. */
-const ROLE_META: Record<string, { label: string; tone: BadgeTone; color: string }> = {
-  guardia:    { label: 'Vigilante',    tone: 'slate',   color: seriesVar(0) },
-  supervisor: { label: 'Supervisor', tone: 'blue',    color: seriesVar(1) },
-  patrullero: { label: 'Patrullero', tone: 'primary', color: seriesVar(2) },
-  operador:   { label: 'Operador',   tone: 'orange',  color: seriesVar(3) },
+const ROLE_META: Record<string, { label: string; labelKey: string; tone: BadgeTone; color: string }> = {
+  guardia:    { label: 'Vigilante',  labelKey: 'comun.vigilante',            tone: 'slate',   color: seriesVar(0) },
+  supervisor: { label: 'Supervisor', labelKey: 'comun.supervisor',           tone: 'blue',    color: seriesVar(1) },
+  patrullero: { label: 'Patrullero', labelKey: 'ui.ClientStaff.patrullero',  tone: 'primary', color: seriesVar(2) },
+  operador:   { label: 'Operador',   labelKey: 'ui.ClientStaff.operador',    tone: 'orange',  color: seriesVar(3) },
 };
 
 export default function ClientStaff({ client }: { client: Client }) {
@@ -164,7 +166,7 @@ export default function ClientStaff({ client }: { client: Client }) {
       toast.success(`${p.name} quedó sin asignación`);
       load(true);
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || 'No se pudo quitar la asignación');
+      toast.error(e?.data?.message || e?.message || t('ui.ClientStaff.noSePudoQuitarLaAsignacion', 'No se pudo quitar la asignación'));
     }
   };
 
@@ -244,13 +246,13 @@ export default function ClientStaff({ client }: { client: Client }) {
                             </div>
                           </div>
                         </td>
-                        <td className="px-2 py-2.5"><StatusBadge tone={rm.tone} dot={false}>{p.roleLabel || rm.label}</StatusBadge></td>
+                        <td className="px-2 py-2.5"><StatusBadge tone={rm.tone} dot={false}>{p.roleLabel || t(rm.labelKey, rm.label)}</StatusBadge></td>
                         <td className="px-2 py-2.5">{p.puesto || <span className="text-muted-foreground">—</span>}</td>
                         <td className="px-2 py-2.5">{p.sede || <span className="text-muted-foreground">—</span>}</td>
                         <td className="px-2 py-2.5">
                           {p.turno?.window ? <div><div>{p.turno.window}</div><div className="text-xs text-muted-foreground">{p.turno.label || ''}</div></div> : <span className="text-muted-foreground">—</span>}
                         </td>
-                        <td className="px-2 py-2.5"><StatusBadge tone={em.tone}>{em.label}</StatusBadge></td>
+                        <td className="px-2 py-2.5"><StatusBadge tone={em.tone}>{t(em.labelKey, em.label)}</StatusBadge></td>
                         <td className="px-2 py-2.5 tabular-nums">{p.inicioTurno || '—'}</td>
                         <td className="px-2 py-2.5">
                           {p.ultimaActividad?.type === 'ronda' ? <span className="inline-flex items-center gap-1 text-xs font-semibold" style={{ color: 'var(--ok-text)' }}><RouteIcon className="h-3.5 w-3.5" /> {p.ultimaActividad.label || 'Ronda activa'}</span>

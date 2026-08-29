@@ -75,7 +75,7 @@ export default function QuizManager({ courseId, quiz, passingScore, readOnly, on
       .filter((q) => q.prompt && q.options.length >= 2);
 
     if (cleaned.length === 0) {
-      toast.error('Agrega al menos una pregunta con dos opciones.');
+      toast.error(t('ui.QuizManager.agregaAlMenosUnaPreguntaConDosOpciones', 'Agrega al menos una pregunta con dos opciones.'));
       return;
     }
     for (const q of cleaned) {
@@ -97,7 +97,7 @@ export default function QuizManager({ courseId, quiz, passingScore, readOnly, on
     } catch (err: any) {
       console.error(err);
       const msg = err?.response?.data?.error || err?.message;
-      toast.error(msg || 'No se pudo guardar el cuestionario.');
+      toast.error(msg || t('ui.QuizManager.noSePudoGuardarElCuestionario', 'No se pudo guardar el cuestionario.'));
     } finally {
       setSaving(false);
     }

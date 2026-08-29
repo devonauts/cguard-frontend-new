@@ -212,7 +212,7 @@ export default function CheckpointLocationPicker({
         <div className="cc-map-hud" style={{ left: 10, right: 10, bottom: 10 }}>
           <div className="cc-map-card px-2.5 py-2">
             <div className="cc-map-eyebrow">
-              {arrastrando ? 'Suelta para fijar el punto' : punto ? 'Punto de control' : 'Sin ubicación'}
+              {arrastrando ? t('maps.checkpointPicker.dropToPin', 'Suelta para fijar el punto') : punto ? 'Punto de control' : 'Sin ubicación'}
             </div>
             {punto ? (
               <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px]">

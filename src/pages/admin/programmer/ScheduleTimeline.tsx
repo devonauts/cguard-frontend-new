@@ -382,7 +382,7 @@ export default function ScheduleTimeline({
       setBlockModal(null);
       onChanged();
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || 'Error al guardar el turno');
+      toast.error(e?.data?.message || e?.message || t('ui.ScheduleTimeline.errorAlGuardarElTurno', 'Error al guardar el turno'));
     } finally {
       setBlockSaving(false);
     }
@@ -809,7 +809,7 @@ export default function ScheduleTimeline({
                     color: `var(--${isEngine ? 'warn' : 'ok'}-text)`,
                   }}
                 >
-                  {isEngine ? 'Generado por la rotación del puesto (puede volver a aparecer si lo eliminas).' : 'Turno manual (bloque dibujado o turno único).'}
+                  {isEngine ? t('ui.ScheduleTimeline.turnoGeneradoPorRotacion', 'Generado por la rotación del puesto (puede volver a aparecer si lo eliminas).') : t('ui.ScheduleTimeline.turnoManual', 'Turno manual (bloque dibujado o turno único).')}
                 </div>
               </div>
               <div className="flex items-center justify-between gap-2 px-5 py-3" style={{ borderTop: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>

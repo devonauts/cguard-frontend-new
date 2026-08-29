@@ -154,7 +154,7 @@ export default function AppearancePage() {
                       className="text-xs font-semibold"
                       style={{ color: activo ? "var(--brand-text)" : "var(--ink-soft)" }}
                     >
-                      {p.label}
+                      {t(p.labelKey ?? "", p.label)}
                     </span>
                   </button>
                 );

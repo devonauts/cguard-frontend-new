@@ -72,7 +72,7 @@ export default function DemoDataBanner() {
     if (removing) return;
     // Confirmación en el idioma del producto: dice qué pasa y qué no.
     const ok = await confirmDialog({
-      title: "Quitar datos de ejemplo",
+      title: t("ui.DemoDataBanner.quitarDatosDeEjemplo", "Quitar datos de ejemplo"),
       message:
         "Se quitarán los datos de ejemplo (la sede, los puestos y los vigilantes de muestra). " +
         "Lo que tú hayas creado se conserva.",
@@ -142,7 +142,7 @@ export default function DemoDataBanner() {
         style={{ borderColor: "var(--hairline)", background: "var(--float)", color: "var(--ink)" }}
       >
         <Trash2 size={13} />
-        {removing ? "Quitando…" : "Quitar datos de ejemplo"}
+        {removing ? "Quitando…" : t("ui.DemoDataBanner.quitarDatosDeEjemplo", "Quitar datos de ejemplo")}
       </button>
     </div>
   );

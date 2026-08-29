@@ -4,6 +4,7 @@ import {
   getProjectType,
   PROJECT_TYPES,
   PROJECT_STATUS_LABELS,
+  PROJECT_STATUS_LABEL_KEYS,
   PROJECT_STATUS_COLORS,
 } from '@/lib/projectTypes';
 import type { ProjectTypeValue, ProjectStatus } from '@/lib/projectTypes';
@@ -37,7 +38,7 @@ export function ProjectTypeBadge({ value, className, size = 'sm' }: ProjectTypeB
       className,
     )}>
       <Icon className={size === 'sm' ? 'h-3 w-3' : 'h-4 w-4'} />
-      {def.label}
+      {t(def.labelKey, def.label)}
     </span>
   );
 }
@@ -48,7 +49,12 @@ interface ProjectStatusBadgeProps {
 }
 
 export function ProjectStatusBadge({ value, className }: ProjectStatusBadgeProps) {
-  const label = value ? PROJECT_STATUS_LABELS[value as ProjectStatus] ?? value : 'Sin estado';
+  const { t } = useTranslation();
+  const label = value
+    ? (PROJECT_STATUS_LABELS[value as ProjectStatus]
+        ? t(PROJECT_STATUS_LABEL_KEYS[value as ProjectStatus], PROJECT_STATUS_LABELS[value as ProjectStatus])
+        : value)
+    : t('projects.status.none', 'Sin estado');
   const colors = value ? PROJECT_STATUS_COLORS[value as ProjectStatus] ?? 'bg-muted text-foreground/70' : 'bg-muted text-foreground/70';
   return (
     <span className={cn(
@@ -68,6 +74,7 @@ interface ProjectTypePickerProps {
 }
 
 export function ProjectTypePicker({ value, onChange, error }: ProjectTypePickerProps) {
+  const { t } = useTranslation();
   return (
     <div className="space-y-2">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -97,10 +104,10 @@ export function ProjectTypePicker({ value, onChange, error }: ProjectTypePickerP
                   'block text-sm font-semibold leading-tight',
                   isSelected ? pt.textColor : 'text-foreground',
                 )}>
-                  {pt.label}
+                  {t(pt.labelKey, pt.label)}
                 </span>
                 <span className="block text-xs text-muted-foreground leading-snug truncate">
-                  {pt.description}
+                  {t(pt.descriptionKey, pt.description)}
                 </span>
               </span>
             </button>

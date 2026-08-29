@@ -1,0 +1,7 @@
+{
+  "src/lib/data/countries.ts": "tabla de datos de países (nombres propios)",
+  "src/pages/admin/dashboard/control-center/demoData.ts": "datos ficticios de la demo",
+  "src/config/permissionLabels.ts": "tiene su PROPIO mecanismo de localización (uiLang/esRespaldoIngles)",
+  "src/config/roleLabels.ts": "tiene su PROPIO mecanismo de localización (uiLang/enIdioma)",
+  "src/contexts/LanguageContext.tsx": "son endónimos: «Español» se escribe igual en todos los idiomas"
+}

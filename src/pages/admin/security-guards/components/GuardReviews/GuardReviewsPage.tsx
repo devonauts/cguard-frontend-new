@@ -110,7 +110,7 @@ export default function GuardReviewsPage() {
       toast.success(action.type === 'memo' ? 'Memo enviado al vigilante' : 'Observación registrada');
       setAction(null);
     } catch (e: any) {
-      toast.error(e?.message || 'No se pudo registrar');
+      toast.error(e?.message || t('guards.reviews.saveError', 'No se pudo registrar'));
     } finally { setSaving(false); }
   };
 

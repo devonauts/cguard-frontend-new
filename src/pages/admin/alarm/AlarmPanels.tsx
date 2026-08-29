@@ -84,6 +84,14 @@ const PANEL_TYPE_LABELS: Record<AlarmPanelType, string> = {
   access: "Acceso",
   environmental: "Ambiental",
 };
+// Constantes de módulo: guardan la CLAVE. Se traducen donde se pintan.
+const PANEL_TYPE_LABEL_KEYS: Record<AlarmPanelType, string> = {
+  intrusion: "alarm.category.burglary",
+  fire: "alarm.category.fire",
+  holdup: "alarm.category.holdup",
+  access: "alarm.panelType.access",
+  environmental: "alarm.panelType.environmental",
+};
 
 const COMMS_OPTS: AlarmComms[] = ["ip", "cellular", "dual"];
 const COMMS_LABELS: Record<AlarmComms, string> = {
@@ -98,6 +106,14 @@ const STATUS_LABELS: Record<AlarmPanelStatus, string> = {
   armed: "Armado",
   disarmed: "Desarmado",
   unknown: "Desconocido",
+};
+// Constantes de módulo: guardan la CLAVE. Se traducen donde se pintan.
+const STATUS_LABEL_KEYS: Record<AlarmPanelStatus, string> = {
+  online: "ui.AlarmPanels.enLinea",
+  offline: "ui.AlarmPanels.sinConexion",
+  armed: "alarm.panelStatus.armed",
+  disarmed: "alarm.panelStatus.disarmed",
+  unknown: "alarm.panelStatus.unknown",
 };
 
 const ZONE_TYPE_OPTS: AlarmZoneType[] = [
@@ -120,6 +136,17 @@ const ZONE_TYPE_LABELS: Record<AlarmZoneType, string> = {
   tamper: "Sabotaje",
   supervisory: "Supervisión",
 };
+// Constantes de módulo: guardan la CLAVE. Se traducen donde se pintan.
+const ZONE_TYPE_LABEL_KEYS: Record<AlarmZoneType, string> = {
+  entry: "alarm.zoneType.entry",
+  perimeter: "alarm.zoneType.perimeter",
+  motion: "alarm.zoneType.motion",
+  glassbreak: "alarm.zoneType.glassbreak",
+  smoke: "alarm.zoneType.smoke",
+  panic: "alarm.category.panic",
+  tamper: "alarm.category.tamper",
+  supervisory: "alarm.category.supervisory",
+};
 
 const AUTHORITY_OPTS: AlarmContactAuthority[] = [
   "owner",
@@ -133,6 +160,13 @@ const AUTHORITY_LABELS: Record<AlarmContactAuthority, string> = {
   keyholder: "Responsable de llaves",
   emergency: "Emergencia",
 };
+// Constantes de módulo: guardan la CLAVE. Se traducen donde se pintan.
+const AUTHORITY_LABEL_KEYS: Record<AlarmContactAuthority, string> = {
+  owner: "alarm.authority.owner",
+  manager: "alarm.authority.manager",
+  keyholder: "alarm.authority.keyholder",
+  emergency: "alarm.authority.emergency",
+};
 
 // ============================================================
 // Status badge
@@ -144,38 +178,39 @@ const AUTHORITY_LABELS: Record<AlarmContactAuthority, string> = {
  * además LATE, porque es el único estado que significa «ahora mismo».
  */
 function PanelStatusBadge({ status }: { status?: AlarmPanelStatus }) {
+  const { t } = useTranslation();
   const s = status ?? "unknown";
   if (s === "online") {
     return (
       <KitStatusBadge tone="ok" dot={false}>
-        <span className="cc-dot" style={{ background: 'var(--ok)' }} /> {STATUS_LABELS.online}
+        <span className="cc-dot" style={{ background: 'var(--ok)' }} /> {t(STATUS_LABEL_KEYS.online, STATUS_LABELS.online)}
       </KitStatusBadge>
     );
   }
   if (s === "armed") {
     return (
       <KitStatusBadge tone="warn" dot={false}>
-        <ShieldAlert className="h-3 w-3" /> {STATUS_LABELS.armed}
+        <ShieldAlert className="h-3 w-3" /> {t(STATUS_LABEL_KEYS.armed, STATUS_LABELS.armed)}
       </KitStatusBadge>
     );
   }
   if (s === "disarmed") {
     return (
       <KitStatusBadge tone="info" dot={false}>
-        <Wifi className="h-3 w-3" /> {STATUS_LABELS.disarmed}
+        <Wifi className="h-3 w-3" /> {t(STATUS_LABEL_KEYS.disarmed, STATUS_LABELS.disarmed)}
       </KitStatusBadge>
     );
   }
   if (s === "offline") {
     return (
       <KitStatusBadge tone="bad" dot={false}>
-        <WifiOff className="h-3 w-3" /> {STATUS_LABELS.offline}
+        <WifiOff className="h-3 w-3" /> {t(STATUS_LABEL_KEYS.offline, STATUS_LABELS.offline)}
       </KitStatusBadge>
     );
   }
   return (
     <KitStatusBadge tone="neutral" dot={false}>
-      <WifiOff className="h-3 w-3" /> {STATUS_LABELS.unknown}
+      <WifiOff className="h-3 w-3" /> {t(STATUS_LABEL_KEYS.unknown, STATUS_LABELS.unknown)}
     </KitStatusBadge>
   );
 }
@@ -339,7 +374,7 @@ function PanelModal({
       onSaved();
       onClose();
     } catch (err) {
-      toast.error((err as Error)?.message || "No se pudo guardar el panel");
+      toast.error((err as Error)?.message || t("alarm.panels.saveError", "No se pudo guardar el panel"));
     } finally {
       setSaving(false);
     }
@@ -417,9 +452,9 @@ function PanelModal({
                 value={form.panelType}
                 onChange={(e) => set("panelType", e.target.value as AlarmPanelType)}
               >
-                {PANEL_TYPE_OPTS.map((t) => (
-                  <option key={t} value={t}>
-                    {PANEL_TYPE_LABELS[t]}
+                {PANEL_TYPE_OPTS.map((opt) => (
+                  <option key={opt} value={opt}>
+                    {t(PANEL_TYPE_LABEL_KEYS[opt], PANEL_TYPE_LABELS[opt])}
                   </option>
                 ))}
               </NativeSelect>
@@ -534,7 +569,7 @@ function PanelModal({
                   autoComplete="off"
                   placeholder={
                     editing
-                      ? "Dejar en blanco para conservar la clave actual"
+                      ? t("alarm.panels.keepCurrentKey", "Dejar en blanco para conservar la clave actual")
                       : "Clave de cifrado en hexadecimal (opcional)"
                   }
                 />
@@ -680,7 +715,7 @@ function ZonesManager({ panelId }: { panelId: string }) {
       const list = await alarmService.zones(panelId);
       setZones(Array.isArray(list) ? list : []);
     } catch (e) {
-      toast.error((e as Error)?.message || "No se pudieron cargar las zonas");
+      toast.error((e as Error)?.message || t("alarm.zones.loadError", "No se pudieron cargar las zonas"));
     } finally {
       setLoading(false);
     }
@@ -733,7 +768,7 @@ function ZonesManager({ panelId }: { panelId: string }) {
       resetForm();
       await load();
     } catch (err) {
-      toast.error((err as Error)?.message || "No se pudo guardar la zona");
+      toast.error((err as Error)?.message || t("alarm.zones.saveError", "No se pudo guardar la zona"));
     } finally {
       setSaving(false);
     }
@@ -749,7 +784,7 @@ function ZonesManager({ panelId }: { panelId: string }) {
       if (editingId === deleteTarget.id) resetForm();
       setDeleteTarget(null);
     } catch (e) {
-      toast.error((e as Error)?.message || "No se pudo eliminar la zona");
+      toast.error((e as Error)?.message || t("alarm.zones.deleteError", "No se pudo eliminar la zona"));
     } finally {
       setDeleting(false);
     }
@@ -792,7 +827,10 @@ function ZonesManager({ panelId }: { panelId: string }) {
                   <td className="px-3 py-2 font-mono">{z.zoneNumber || "—"}</td>
                   <td className="px-3 py-2">{z.name || "—"}</td>
                   <td className="px-3 py-2">
-                    {ZONE_TYPE_LABELS[(z.type as AlarmZoneType) ?? "motion"]}
+                    {t(
+                      ZONE_TYPE_LABEL_KEYS[(z.type as AlarmZoneType) ?? "motion"],
+                      ZONE_TYPE_LABELS[(z.type as AlarmZoneType) ?? "motion"],
+                    )}
                   </td>
                   <td className="px-3 py-2">{z.partition || "—"}</td>
                   <td className="px-3 py-2 font-mono text-xs">
@@ -865,9 +903,9 @@ function ZonesManager({ panelId }: { panelId: string }) {
             value={form.type}
             onChange={(e) => set("type", e.target.value as AlarmZoneType)}
           >
-            {ZONE_TYPE_OPTS.map((t) => (
-              <option key={t} value={t}>
-                {ZONE_TYPE_LABELS[t]}
+            {ZONE_TYPE_OPTS.map((opt) => (
+              <option key={opt} value={opt}>
+                {t(ZONE_TYPE_LABEL_KEYS[opt], ZONE_TYPE_LABELS[opt])}
               </option>
             ))}
           </NativeSelect>
@@ -975,7 +1013,7 @@ function ContactsManager({ panelId }: { panelId: string }) {
       arr.sort((a, b) => (a.callOrder ?? 0) - (b.callOrder ?? 0));
       setContacts(arr);
     } catch (e) {
-      toast.error((e as Error)?.message || "No se pudieron cargar los contactos");
+      toast.error((e as Error)?.message || t("clients.contacts.loadError", "No se pudieron cargar los contactos"));
     } finally {
       setLoading(false);
     }
@@ -1035,7 +1073,7 @@ function ContactsManager({ panelId }: { panelId: string }) {
       resetForm();
       await load();
     } catch (err) {
-      toast.error((err as Error)?.message || "No se pudo guardar el contacto");
+      toast.error((err as Error)?.message || t("alarm.contacts.saveError", "No se pudo guardar el contacto"));
     } finally {
       setSaving(false);
     }
@@ -1051,7 +1089,7 @@ function ContactsManager({ panelId }: { panelId: string }) {
       if (editingId === deleteTarget.id) resetForm();
       setDeleteTarget(null);
     } catch (e) {
-      toast.error((e as Error)?.message || "No se pudo eliminar el contacto");
+      toast.error((e as Error)?.message || t("clients.contacts.contactDeleteFailed", "No se pudo eliminar el contacto"));
     } finally {
       setDeleting(false);
     }
@@ -1096,7 +1134,10 @@ function ContactsManager({ panelId }: { panelId: string }) {
                   <td className="px-3 py-2 text-xs">{c.email || "—"}</td>
                   <td className="px-3 py-2">
                     {c.authority
-                      ? AUTHORITY_LABELS[c.authority as AlarmContactAuthority]
+                      ? t(
+                          AUTHORITY_LABEL_KEYS[c.authority as AlarmContactAuthority],
+                          AUTHORITY_LABELS[c.authority as AlarmContactAuthority],
+                        )
                       : "—"}
                   </td>
                   <td className="px-3 py-2">
@@ -1190,7 +1231,7 @@ function ContactsManager({ panelId }: { panelId: string }) {
           >
             {AUTHORITY_OPTS.map((a) => (
               <option key={a} value={a}>
-                {AUTHORITY_LABELS[a]}
+                {t(AUTHORITY_LABEL_KEYS[a], AUTHORITY_LABELS[a])}
               </option>
             ))}
           </NativeSelect>
@@ -1282,7 +1323,7 @@ export default function AlarmPanels() {
       const list = await alarmService.panels();
       setPanels(Array.isArray(list) ? list : []);
     } catch (e) {
-      toast.error((e as Error)?.message || "No se pudieron cargar los paneles");
+      toast.error((e as Error)?.message || t("alarm.panels.loadError", "No se pudieron cargar los paneles"));
     } finally {
       setLoading(false);
     }
@@ -1314,7 +1355,7 @@ export default function AlarmPanels() {
       setPanels((prev) => prev.filter((p) => p.id !== deleteTarget.id));
       setDeleteTarget(null);
     } catch (e) {
-      toast.error((e as Error)?.message || "No se pudo eliminar el panel");
+      toast.error((e as Error)?.message || t("alarm.panels.deleteError", "No se pudo eliminar el panel"));
     } finally {
       setDeleting(false);
     }
@@ -1403,9 +1444,14 @@ export default function AlarmPanels() {
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="truncate font-semibold">{p.name}</span>
                           <KitStatusBadge tone="neutral" dot={false} className="uppercase">
-                            {PANEL_TYPE_LABELS[
-                              (p.panelType as AlarmPanelType) ?? "intrusion"
-                            ]}
+                            {t(
+                              PANEL_TYPE_LABEL_KEYS[
+                                (p.panelType as AlarmPanelType) ?? "intrusion"
+                              ],
+                              PANEL_TYPE_LABELS[
+                                (p.panelType as AlarmPanelType) ?? "intrusion"
+                              ],
+                            )}
                           </KitStatusBadge>
                           {p.active === false && (
                             <KitStatusBadge tone="neutral" dot={false}>{t('common.inactive')}</KitStatusBadge>
@@ -1413,7 +1459,7 @@ export default function AlarmPanels() {
                         </div>
                         <div className="mt-0.5 truncate text-sm" style={{ color: 'var(--ink-soft)' }}>
                           {[p.make, p.model].filter(Boolean).join(" · ") ||
-                            "Sin marca ni modelo"}
+                            t("alarm.panels.noMakeModel", "Sin marca ni modelo")}
                         </div>
                         <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 font-mono text-xs" style={{ color: 'var(--ink-faint)' }}>
                           <span>

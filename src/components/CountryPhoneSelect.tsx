@@ -92,7 +92,7 @@ export default function CountryPhoneSelect({
 
         if (active) setCountries(normalized);
       } catch (e: any) {
-        if (active) setError(e?.message || "No se pudo cargar la lista de países");
+        if (active) setError(e?.message || t("ui.CountryPhoneSelect.noSePudoCargarPaises", "No se pudo cargar la lista de países"));
       } finally {
         if (active) setLoading(false);
       }

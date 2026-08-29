@@ -62,7 +62,7 @@ export default function TrainingCatalogPage() {
         items={[
           { label: 'Panel de control', path: '/dashboard' },
           { label: 'Entrenamiento', path: '/training/courses' },
-          { label: 'Catálogo de la plataforma' },
+          { label: t('sidebar.entrenamiento.training-catalog', 'Catálogo de la plataforma') },
         ]}
       />
 

@@ -64,16 +64,21 @@ interface ParkingRow {
 }
 
 /** Estado del vehículo → cómo se pinta. Los semánticos son fijos. */
-const ESTADO: Record<string, { texto: string; tono: 'ok' | 'bad' | 'warn' }> = {
-  ok: { texto: 'Sin daños', tono: 'ok' },
-  damaged: { texto: 'Con daños', tono: 'bad' },
-  noted: { texto: 'Con observación', tono: 'warn' },
+// Los textos se traducen donde se pintan: este mapa es de módulo y un t() aquí
+// congelaría el idioma con el que arrancó la sesión.
+const ESTADO: Record<string, { clave: string; texto: string; tono: 'ok' | 'bad' | 'warn' }> = {
+  ok: { clave: 'station.parking.condition.ok', texto: 'Sin daños', tono: 'ok' },
+  damaged: { clave: 'station.parking.condition.damaged', texto: 'Con daños', tono: 'bad' },
+  noted: { clave: 'station.parking.condition.noted', texto: 'Con observación', tono: 'warn' },
 };
 
 /** Los tipos que manda la app del vigilante, traducidos a algo legible. */
-const TIPO: Record<string, string> = {
-  car: 'Automóvil', motorcycle: 'Motocicleta', van: 'Furgoneta',
-  truck: 'Camión', other: 'Otro',
+const TIPO: Record<string, { clave: string; texto: string }> = {
+  car: { clave: 'station.parking.vehicleType.car', texto: 'Automóvil' },
+  motorcycle: { clave: 'station.parking.vehicleType.motorcycle', texto: 'Motocicleta' },
+  van: { clave: 'station.parking.vehicleType.van', texto: 'Furgoneta' },
+  truck: { clave: 'station.parking.vehicleType.truck', texto: 'Camión' },
+  other: { clave: 'station.parking.vehicleType.other', texto: 'Otro' },
 };
 
 function formatDate(val: string | null | undefined) {
@@ -371,7 +376,8 @@ export default function StationParking({ stationId }: Props) {
               {visibles.map((r: ParkingRow, i: number) => {
                 const placa = String(r.vehiclePlate || r.vehicle_plate || '').trim().toUpperCase();
                 const tipoBruto = String(r.vehicleType || r.vehicle_type || '').trim();
-                const tipo = TIPO[tipoBruto.toLowerCase()] || tipoBruto || '—';
+                const tipoDef = TIPO[tipoBruto.toLowerCase()];
+                const tipo = tipoDef ? t(tipoDef.clave, tipoDef.texto) : (tipoBruto || '—');
                 const detalle = [r.vehicleMakeModel, r.vehicleColor].filter(Boolean).join(' · ');
                 const firstName = r.firstName || r.first_name || '';
                 const lastName = r.lastName || r.last_name || '';
@@ -456,7 +462,7 @@ export default function StationParking({ stationId }: Props) {
                       })()}
                     </td>
                     <td className="min-w-0 px-2 py-2.5">
-                      {est ? <StatusBadge tone={est.tono}>{est.texto}</StatusBadge> : <span className="text-muted-foreground">—</span>}
+                      {est ? <StatusBadge tone={est.tono}>{t(est.clave, est.texto)}</StatusBadge> : <span className="text-muted-foreground">—</span>}
                       {r.vehicleConditionNotes && (
                         <span className="mt-0.5 block max-w-[220px] truncate text-[11px] text-muted-foreground" title={r.vehicleConditionNotes}>
                           {r.vehicleConditionNotes}
@@ -464,7 +470,7 @@ export default function StationParking({ stationId }: Props) {
                       )}
                       {estSalida && (
                         <span className="mt-1 block text-[11px] text-muted-foreground">
-                          {t('station.parking.onExit', 'Al salir')}: {estSalida.texto}
+                          {t('station.parking.onExit', 'Al salir')}: {t(estSalida.clave, estSalida.texto)}
                           {r.vehicleExitConditionNotes ? ` · ${r.vehicleExitConditionNotes}` : ''}
                         </span>
                       )}

@@ -81,11 +81,13 @@ const TYPE_META: Record<
   tamper: { label: "Sabotaje", icon: <ShieldAlert className="size-3.5" />, grave: true },
 };
 
-const SEVERITY_META: Record<string, { label: string; tone: string }> = {
-  low: { label: "Baja", tone: "neutral" },
-  medium: { label: "Media", tone: "info" },
-  high: { label: "Alta", tone: "warn" },
-  critical: { label: "Crítica", tone: "bad" },
+// `labelKey` viaja en la constante y se traduce al pintar: llamar a t() aquí lo
+// congelaría en el idioma de arranque.
+const SEVERITY_META: Record<string, { label: string; labelKey: string; tone: string }> = {
+  low: { label: "Baja", labelKey: "nomina.severidad.low", tone: "neutral" },
+  medium: { label: "Media", labelKey: "nomina.severidad.medium", tone: "info" },
+  high: { label: "Alta", labelKey: "nomina.severidad.high", tone: "warn" },
+  critical: { label: "Crítica", labelKey: "nomina.severidad.critical", tone: "bad" },
 };
 
 
@@ -148,7 +150,7 @@ export default function VideoEvents() {
 
   const cameraName = (ev: VideoEvent): string => {
     const cam = ev.videoCameraId ? cameras[ev.videoCameraId] : undefined;
-    return cam?.name || "Cámara desconocida";
+    return cam?.name || t("video.events.unknownCamera", "Cámara desconocida");
   };
 
   const cameraFor = (ev: VideoEvent): Camera | null =>
@@ -241,8 +243,8 @@ export default function VideoEvents() {
             title={t('ui.VideoEvents.noHayEventos', 'No hay eventos')}
             description={
               status === "all"
-                ? "Aún no se han registrado eventos de video."
-                : "No hay eventos con este estado."
+                ? t("video.events.empty.allDescription", "Aún no se han registrado eventos de video.")
+                : t("video.events.empty.filteredDescription", "No hay eventos con este estado.")
             }
           />
         ) : (
@@ -278,7 +280,7 @@ export default function VideoEvents() {
                           {type.icon}
                           {type.label}
                         </StatusBadge>
-                        <StatusBadge tone={sev.tone}>{sev.label}</StatusBadge>
+                        <StatusBadge tone={sev.tone}>{t(sev.labelKey, sev.label)}</StatusBadge>
                         <StatusBadge tone={st.tone} dot={ev.status !== "resolved"}>{st.label}</StatusBadge>
                         {ev.incidentId ? (
                           /* Escalado a incidente: agravación, no realce de marca. */

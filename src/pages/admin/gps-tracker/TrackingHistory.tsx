@@ -266,7 +266,7 @@ export default function TrackingHistoryPage() {
               >
                 {points.length === 0 ? (
                   <div className="flex h-full items-center justify-center px-4 py-6 text-center text-sm text-muted-foreground">
-                    {loaded ? "Sin puntos en este rango" : "—"}
+                    {loaded ? t("ui.TrackingHistory.sinPuntosEnRango", "Sin puntos en este rango") : "—"}
                   </div>
                 ) : (
                   <>

@@ -46,15 +46,16 @@ import shiftTemplateService, {
 import { securityGuardService } from "@/lib/api/securityGuardService";
 import { postSiteService } from "@/lib/api/postSiteService";
 import departmentService from "@/lib/api/departmentService";
+import { tablaDeEtiquetas } from "@/lib/i18nLabel";
 
 const NONE = "__none__";
 
 // Legacy hardcoded values stored before departments became a real catalog
 // (Settings › Departamentos); shown so old templates don't render blank.
-const LEGACY_DEPARTMENTS: Record<string, string> = {
-  security: "Seguridad",
-  admin: "Administración",
-};
+const LEGACY_DEPARTMENTS: Record<string, string> = tablaDeEtiquetas({
+  security: "ui.ShiftTemplates.legacyDept.security",
+  admin: "ui.ShiftTemplates.legacyDept.admin",
+});
 
 const emptyForm = {
   templateName: "",
@@ -193,7 +194,7 @@ export default function ShiftTemplates() {
       setEditingId(null);
       loadTemplates();
     } catch (e: any) {
-      toast.error(e?.message || "Error al guardar la plantilla");
+      toast.error(e?.message || t('ui.ShiftTemplates.saveError', "Error al guardar la plantilla"));
     } finally {
       setSaving(false);
     }
@@ -219,7 +220,7 @@ export default function ShiftTemplates() {
       <Breadcrumb
         items={[
           { label: "Panel de control", path: "/dashboard" },
-          { label: "Plantillas de turno" },
+          { label: t('ui.ShiftTemplates.plantillasDeTurno', "Plantillas de turno") },
         ]}
       />
       <PageContainer width="wide" className="px-4 lg:px-6">
@@ -252,7 +253,7 @@ export default function ShiftTemplates() {
                 <SheetContent className="w-full sm:w-[540px] overflow-y-auto">
                   <SheetHeader className="relative">
                     <SheetTitle>
-                      {editingId ? "Editar plantilla de turno" : "Nueva plantilla de turno"}
+                      {editingId ? t('ui.ShiftTemplates.editTemplateTitle', "Editar plantilla de turno") : t('ui.ShiftTemplates.newTemplateTitle', "Nueva plantilla de turno")}
                     </SheetTitle>
                     <Button
                       variant="ghost"

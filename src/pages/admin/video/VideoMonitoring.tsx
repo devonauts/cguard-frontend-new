@@ -390,8 +390,8 @@ export default function VideoMonitoring() {
             icon={<CameraIcon />}
             title={
               cameras.length === 0
-                ? "Aún no hay cámaras configuradas"
-                : "Ninguna cámara coincide con los filtros"
+                ? t("video.monitoring.empty.noCameras", "Aún no hay cámaras configuradas")
+                : t("video.monitoring.empty.noMatches", "Ninguna cámara coincide con los filtros")
             }
             description={
               cameras.length === 0

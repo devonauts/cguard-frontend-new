@@ -179,7 +179,7 @@ export default function NominaTimeClock() {
         ? await attendanceService.clockIn({ stationId, ...coords, ...(selfiePhoto ? { selfiePhoto } : {}) })
         : await attendanceService.staffClockIn(coords);
       if (res && res.success === false) {
-        toast.error(res.message || "No se pudo marcar entrada");
+        toast.error(res.message || t("nomina.timeClock.clockInError", "No se pudo marcar entrada"));
       } else {
         toast.success("Entrada registrada");
         refresh();

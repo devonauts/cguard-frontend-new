@@ -27,7 +27,7 @@ import {
   type EnrollmentRow,
   type EnrollmentDetail,
 } from '@/lib/api/trainingEnrollmentService';
-import { ENROLLMENT_STATUS_LABELS, ENROLLMENT_STATUS_TONE } from './trainingConstants';
+import { ENROLLMENT_STATUS_KEYS, enrollmentStatusLabel, ENROLLMENT_STATUS_TONE } from './trainingConstants';
 import { PageContainer, PageHeader, Section, StatCard, Stagger, StatusBadge, EmptyState, SkeletonCards } from '@/components/kit';
 import { DataTable, type Column } from '@/components/table/DataTable';
 
@@ -117,7 +117,7 @@ export default function TrainingEnrollmentsPage() {
       header: 'Estado',
       render: (_v, r) => (
         <StatusBadge tone={ENROLLMENT_STATUS_TONE[r.status]} dot={false}>
-          {ENROLLMENT_STATUS_LABELS[r.status]}
+          {enrollmentStatusLabel(r.status)}
         </StatusBadge>
       ),
     },
@@ -181,7 +181,7 @@ export default function TrainingEnrollmentsPage() {
       <PageContainer width="wide" className="p-4 sm:p-6">
         <PageHeader
           icon={<GraduationCap />}
-          title={course?.title ?? 'Progreso del curso'}
+          title={course?.title ?? t('training.enrollments.title', 'Progreso del curso')}
           subtitle={`${completedCount} de ${realEnrollments.length} vigilantes completaron el curso.`}
           actions={
             <>
@@ -189,8 +189,8 @@ export default function TrainingEnrollmentsPage() {
                 <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">{t('comun.todosLosEstados')}</SelectItem>
-                  {Object.entries(ENROLLMENT_STATUS_LABELS).map(([v, l]) => (
-                    <SelectItem key={v} value={v}>{l}</SelectItem>
+                  {Object.keys(ENROLLMENT_STATUS_KEYS).map((v) => (
+                    <SelectItem key={v} value={v}>{enrollmentStatusLabel(v)}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -233,7 +233,7 @@ export default function TrainingEnrollmentsPage() {
             <div className="mt-6 space-y-4">
               <div>
                 <div className="text-sm font-semibold tracking-tight">{detail.guardName}</div>
-                <StatusBadge tone={ENROLLMENT_STATUS_TONE[detail.status]} dot={false} className="mt-1.5">{ENROLLMENT_STATUS_LABELS[detail.status]}</StatusBadge>
+                <StatusBadge tone={ENROLLMENT_STATUS_TONE[detail.status]} dot={false} className="mt-1.5">{enrollmentStatusLabel(detail.status)}</StatusBadge>
               </div>
               <div className="flex items-center gap-2">
                 <MeterBar className="flex-1" height={8} pct={detail.progressPercentage ?? 0} ariaLabel="Progreso" />

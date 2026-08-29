@@ -144,7 +144,7 @@ export default function ClientPostSites({ client }: { client: Client }) {
       if (selectedId === s.id) setSelectedId(null);
       toast.success('Sede eliminada');
     } catch (e: any) {
-      toast.error(e?.message || 'No se pudo eliminar la sede');
+      toast.error(e?.message || t('ui.ClientPostSites.noSePudoEliminarLaSede', 'No se pudo eliminar la sede'));
     }
   };
   const risk = client?.riskLevel || '';

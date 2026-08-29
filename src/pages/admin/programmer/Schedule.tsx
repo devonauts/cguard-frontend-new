@@ -1039,7 +1039,7 @@ export default function Schedule() {
       setSfCover(null);
       fetchAll({ silent: true });
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || 'Error al asignar la cobertura');
+      toast.error(e?.data?.message || e?.message || t('ui.Schedule.errorAlAsignarLaCobertura', 'Error al asignar la cobertura'));
     } finally {
       setSfCoverSaving(false);
     }
@@ -1100,8 +1100,8 @@ export default function Schedule() {
         const nm = primerNombre(a.guard, 'vigilante');
         const full = nombreDeVigilante(a.guard, nm);
         items.push({ label: `Editar turno de ${nm} (vista Día)…`, onClick: () => jumpToDay(dateStr) });
-        items.push({ label: 'Duplicar turno al día siguiente', onClick: () => void duplicateShiftNextDay(s) });
-        items.push({ label: 'Eliminar turno de este día', danger: true, onClick: () => void deleteDayShift(s) });
+        items.push({ label: t('ui.Schedule.duplicarTurnoAlDiaSiguiente', 'Duplicar turno al día siguiente'), onClick: () => void duplicateShiftNextDay(s) });
+        items.push({ label: t('ui.Schedule.eliminarTurnoDeEsteDia', 'Eliminar turno de este día'), danger: true, onClick: () => void deleteDayShift(s) });
         items.push({ label: '—' });
       }
     }
@@ -1168,7 +1168,7 @@ export default function Schedule() {
       const covShift = shiftByGuardDate.get(`${sfGuard.guardId}|${dateStr}`);
       if (covShift) {
         items.push({ label: 'Editar cobertura (vista Día)…', onClick: () => jumpToDay(dateStr) });
-        items.push({ label: 'Duplicar al día siguiente', onClick: () => void duplicateShiftNextDay(covShift) });
+        items.push({ label: t('ui.Schedule.duplicarAlDiaSiguiente', 'Duplicar al día siguiente'), onClick: () => void duplicateShiftNextDay(covShift) });
         items.push({ label: 'Quitar cobertura', danger: true, onClick: () => void removeSfCoverage(covShift) });
         items.push({ label: '—' });
       }
@@ -1266,7 +1266,7 @@ export default function Schedule() {
         setMoveFrom(null);
         fetchAll({ silent: true });
       } catch (e: any) {
-        toast.error(e?.data?.message || e?.message || 'Error al crear el turno');
+        toast.error(e?.data?.message || e?.message || t('ui.Schedule.errorAlCrearElTurno', 'Error al crear el turno'));
       } finally {
         setAssignSaving(false);
       }
@@ -1303,7 +1303,7 @@ export default function Schedule() {
   };
 
   const removeAssignment = async (assignmentId: string) => {
-    if (!(await confirmDialog({ title: 'Remover asignación', message: '¿Remover esta asignación? Se eliminarán los turnos futuros generados.', confirmText: 'Remover', tone: 'danger' }))) return;
+    if (!(await confirmDialog({ title: t('ui.Schedule.removerAsignacion', 'Remover asignación'), message: '¿Remover esta asignación? Se eliminarán los turnos futuros generados.', confirmText: 'Remover', tone: 'danger' }))) return;
     try {
       await ApiService.delete(`/tenant/${tenantId}/guard-assignment/${assignmentId}`);
       toast.success(t('ui.Schedule.asignacionRemovida'));
@@ -1381,7 +1381,7 @@ export default function Schedule() {
   };
 
   const deletePosition = async (stationId: string, positionId: string) => {
-    if (!(await confirmDialog({ title: 'Eliminar posición', message: '¿Eliminar esta posición?', confirmText: 'Eliminar', tone: 'danger' }))) return;
+    if (!(await confirmDialog({ title: t('ui.Schedule.eliminarPosicion', 'Eliminar posición'), message: '¿Eliminar esta posición?', confirmText: 'Eliminar', tone: 'danger' }))) return;
     try {
       await ApiService.delete(`/tenant/${tenantId}/station/${stationId}/positions/${positionId}`);
       toast.success(t('ui.Schedule.posicionEliminada'));
@@ -1410,7 +1410,7 @@ export default function Schedule() {
       const detail = await ApiService.get(`/tenant/${tenantId}/scheduler/proposals/${id}`);
       setProposalData(detail?.data ?? detail);
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || 'Error generando el borrador');
+      toast.error(e?.data?.message || e?.message || t('ui.Schedule.errorGenerandoElBorrador', 'Error generando el borrador'));
     } finally {
       setProposalLoading(false);
     }
@@ -1490,7 +1490,7 @@ export default function Schedule() {
       toast.success(`${res.assignmentsCreated} asignaciones creadas`);
       fetchAll();
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || 'Error en auto-asignación');
+      toast.error(e?.data?.message || e?.message || t('ui.Schedule.errorEnAutoAsignacion', 'Error en auto-asignación'));
     } finally {
       setAutoAssigning(false);
     }
@@ -1504,7 +1504,7 @@ export default function Schedule() {
       toast.success(res?.message || 'Sacafrancos optimizados');
       fetchAll();
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || 'Error en optimización');
+      toast.error(e?.data?.message || e?.message || t('ui.Schedule.errorEnOptimizacion', 'Error en optimización'));
     } finally {
       setAutoAssigning(false);
     }
@@ -1552,7 +1552,7 @@ export default function Schedule() {
             : `${rot.restDays} días de descanso (${blockDates.map(fmtHuman).join(' y ')})`;
 
         const applyForward = await confirmDialog({
-          title: 'Ajustar la rotación desde este libre',
+          title: t('ui.Schedule.ajustarLaRotacionDesdeEsteLibre', 'Ajustar la rotación desde este libre'),
           message:
             `El puesto usa el patrón ${rot.name}${rot.restDays > 1 ? ` (${rot.restDays} libres seguidos)` : ''}. ` +
             `¿Quieres que ${target.guardName} descanse ${blockHuman} y la secuencia continúe automáticamente desde ahí?\n\n` +
@@ -1585,7 +1585,7 @@ export default function Schedule() {
             setOverrideTarget(null);
             fetchAll();
           } catch (e: any) {
-            toast.error(e?.data?.message || e?.message || 'No se pudo reajustar la rotación');
+            toast.error(e?.data?.message || e?.message || t('ui.Schedule.noSePudoReajustarLaRotacion', 'No se pudo reajustar la rotación'));
           }
           return;
         }
@@ -2654,7 +2654,7 @@ export default function Schedule() {
             <div className="flex flex-wrap items-center gap-3 pt-1.5 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
               {view === 'month' ? (
                 <>
-                  <span className="font-medium" style={{ color: 'var(--ink-soft)' }}>{selInfo || 'Clic en una celda para seleccionar'}</span>
+                  <span className="font-medium" style={{ color: 'var(--ink-soft)' }}>{selInfo || t('ui.Schedule.clicEnUnaCeldaParaSeleccionar', 'Clic en una celda para seleccionar')}</span>
                   <span className="hidden md:inline"><b>Clic derecho</b>{t('ui.Schedule.editarDuplicarEliminarTurnoY')}{" "}<b>D N L V F P 2</b>{" "}{t('ui.Schedule.paraNovedad')}{" "}<b>Supr</b>{" "}{t("ui.Schedule.borraArrastraUnDia", "borra · Arrastra un día")}{" "}<b>{t('ui.Schedule.lDelSacafranco')}</b>{" "}{t('ui.Schedule.sobreUnLDelPuesto')}{" "}<b>{t("ui.Schedule.reAvPag", "Re/Av Pág")}</b> cambia mes</span>
                 </>
               ) : (
@@ -2836,7 +2836,7 @@ export default function Schedule() {
               <div className="max-h-[46vh] space-y-1.5 overflow-y-auto p-4">
                 {filas.length === 0 && (
                   <p className="py-4 text-center text-[12px]" style={{ color: 'var(--ink-soft)' }}>
-                    {q ? 'Nadie coincide con la búsqueda.' : 'No hay vigilantes para mostrar.'}
+                    {q ? t('ui.Schedule.nadieCoincideConLaBusqueda', 'Nadie coincide con la búsqueda.') : t('ui.Schedule.noHayVigilantesParaMostrar', 'No hay vigilantes para mostrar.')}
                   </p>
                 )}
                 {libres.map(fila)}
@@ -2867,7 +2867,7 @@ export default function Schedule() {
         <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'oklch(0 0 0 / 0.55)' }} onClick={() => { setShowAssignForm(false); setMoveFrom(null); }}>
           <div className="glass-raised mx-4 max-h-[90vh] w-full max-w-md overflow-hidden overflow-y-auto animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--hairline)' }}>
-              <h4 className="text-sm font-semibold">{moveFrom ? 'Mover vigilante de puesto' : (assignMode === 'single' ? 'Cubrir este día' : 'Asignar vigilante a la rotación')}</h4>
+              <h4 className="text-sm font-semibold">{moveFrom ? t('ui.Schedule.moverVigilanteDePuesto', 'Mover vigilante de puesto') : (assignMode === 'single' ? t('ui.Schedule.cubrirEsteDia', 'Cubrir este día') : t('ui.Schedule.asignarVigilanteALaRotacion', 'Asignar vigilante a la rotación'))}</h4>
               <button onClick={() => { setShowAssignForm(false); setMoveFrom(null); }} className="cg-btn-ghost cg-focus rounded-lg p-1.5"><X size={15} /></button>
             </div>
             <div className="p-5 space-y-4">
@@ -2903,8 +2903,8 @@ export default function Schedule() {
                     value={assignMode}
                     onChange={setAssignMode}
                     options={[
-                      { value: 'single', label: 'Sólo este día' },
-                      { value: 'rotation', label: 'Rotación' },
+                      { value: 'single', label: t('ui.Schedule.soloEsteDia', 'Sólo este día') },
+                      { value: 'rotation', label: t('ui.ShiftAssignModal.rotacion', 'Rotación') },
                     ]}
                   />
                   <p className="mt-1.5 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
@@ -2977,7 +2977,7 @@ export default function Schedule() {
                 />
                 <p className="mt-1 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
                   {assignMode === 'single'
-                    ? 'Hora de la empresa.'
+                    ? t('ui.Schedule.horaDeLaEmpresaPunto', 'Hora de la empresa.')
                     : 'Los turnos se generan desde esta fecha (hora de la empresa).'}
                 </p>
               </div>
@@ -2998,7 +2998,7 @@ export default function Schedule() {
                   </div>
                   <p className="mt-1 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
                     {assignEndTime <= assignStartTime
-                      ? (assignEndTime === assignStartTime ? 'Turno de 24 horas.' : 'Termina al día siguiente.')
+                      ? (assignEndTime === assignStartTime ? t('ui.Schedule.turnoDe24Horas', 'Turno de 24 horas.') : t('ui.Schedule.terminaAlDiaSiguientePunto', 'Termina al día siguiente.'))
                       : 'Horas tomadas del puesto; puedes cambiarlas.'}
                   </p>
                 </div>
@@ -3183,7 +3183,7 @@ export default function Schedule() {
             <div className="px-5 py-4" style={{ borderBottom: '1px solid var(--hairline)' }}>
               <div className="flex items-center gap-2">
                 {planData ? <CheckCircle2 size={18} style={{ color: 'var(--ok-text)' }} /> : <FileText size={18} style={{ color: 'var(--brand-text)' }} />}
-                <h3 className="font-display text-base font-bold">{planData ? 'Plan de implementación' : 'Borrador de horario'}</h3>
+                <h3 className="font-display text-base font-bold">{planData ? t('ui.Schedule.planDeImplementacion', 'Plan de implementación') : t('ui.Schedule.borradorDeHorario', 'Borrador de horario')}</h3>
               </div>
               <p className="mt-1 text-xs" style={{ color: 'var(--ink-soft)' }}>
                 {planData ? 'Horario publicado. Estos vigilantes fueron notificados de sus cambios.' : 'Revisa los cambios propuestos. Nada se aplica hasta que publiques.'}

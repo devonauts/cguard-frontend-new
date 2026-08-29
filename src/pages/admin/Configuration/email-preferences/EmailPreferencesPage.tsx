@@ -80,6 +80,7 @@ function EjemploDeCorreo({ item, abierto, onCerrar }: {
   abierto: boolean;
   onCerrar: () => void;
 }) {
+  const { t } = useTranslation();
   const [cargando, setCargando] = useState(false);
   const [datos, setDatos] = useState<EmailPreviewResult | null>(null);
 
@@ -91,7 +92,7 @@ function EjemploDeCorreo({ item, abierto, onCerrar }: {
     emailPreferencesService
       .previewTemplate(item.key)
       .then((r) => { if (vivo) setDatos(r); })
-      .catch(() => { if (vivo) setDatos({ disponible: false, motivo: "No se pudo cargar el ejemplo." }); })
+      .catch(() => { if (vivo) setDatos({ disponible: false, motivo: t("emailPreferences.previewLoadError", "No se pudo cargar el ejemplo.") }); })
       .finally(() => { if (vivo) setCargando(false); });
     return () => { vivo = false; };
   }, [abierto, item]);

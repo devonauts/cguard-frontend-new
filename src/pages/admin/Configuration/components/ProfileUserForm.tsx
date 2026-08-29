@@ -306,7 +306,7 @@ export default function ProfileUserForm() {
         toast.success(t('ui.ProfileUserForm.noHuboCambiosParaGuardar'));
       }
     } catch (e) {
-      toast.error((e as ApiError)?.response?.data?.message ?? "Error al guardar el perfil.");
+      toast.error((e as ApiError)?.response?.data?.message ?? t("settings.profile.errors.save", "Error al guardar el perfil."));
     } finally {
       setSaving(false);
     }
@@ -346,7 +346,7 @@ export default function ProfileUserForm() {
       setPassword("");
       setNewEmail("");
     } catch (e) {
-      toast.error((e as ApiError)?.response?.data?.message ?? "Error al cambiar el correo.");
+      toast.error((e as ApiError)?.response?.data?.message ?? t("settings.profile.errors.changeEmail", "Error al cambiar el correo."));
     }
   };
 
@@ -361,7 +361,7 @@ export default function ProfileUserForm() {
       setShowPhoneVerifyModal(false);
       setVerificationCode("");
     } catch (e) {
-      toast.error((e as ApiError)?.response?.data?.message ?? "Error al verificar el número.");
+      toast.error((e as ApiError)?.response?.data?.message ?? t("settings.profile.errors.verifyPhone", "Error al verificar el número."));
     }
   };
 
@@ -370,7 +370,7 @@ export default function ProfileUserForm() {
       toast.success(t('ui.ProfileUserForm.codigoDeVerificacionEnviado'));
       setShowPhoneVerifyModal(true);
     } catch (e) {
-      toast.error((e as ApiError)?.response?.data?.message ?? "Error al enviar el código.");
+      toast.error((e as ApiError)?.response?.data?.message ?? t("settings.profile.errors.sendCode", "Error al enviar el código."));
     }
   };
 

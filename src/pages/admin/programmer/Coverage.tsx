@@ -136,7 +136,7 @@ export default function Coverage() {
             continue;
           }
           if (code) {
-            toast.error(e?.response?.data?.message || "No se pudo completar la acción");
+            toast.error(e?.response?.data?.message || t("ui.Coverage.noSePudoCompletarLa", "No se pudo completar la acción"));
             return;
           }
           throw e;
@@ -283,7 +283,7 @@ export default function Coverage() {
                   <p className="text-xs tabular-nums" style={{ color: "var(--ink-soft)" }}>
                     {fmtTime(e.startTime)}–{fmtTime(e.endTime)} ·{" "}
                     <span className="font-semibold" style={{ color: here ? "var(--ok-text)" : "var(--bad-text)" }}>
-                      {here ? "En el puesto" : "Sin marcar entrada"}
+                      {here ? t("ui.Coverage.enElPuesto", "En el puesto") : t("ui.Coverage.sinMarcarEntrada", "Sin marcar entrada")}
                     </span>
                   </p>
                 </div>
@@ -453,7 +453,7 @@ export default function Coverage() {
                     </div>
                     {/* Payroll/discipline consequences, visible where they are decided. */}
                     {ev.countsAgainstGuard && <StatusBadge tone="bad">Falta grave</StatusBadge>}
-                    <StatusBadge tone="neutral" dot={false}>{ev.paid ? "Con sueldo" : "Sin sueldo"}</StatusBadge>
+                    <StatusBadge tone="neutral" dot={false}>{ev.paid ? t("ui.Coverage.conSueldo", "Con sueldo") : t("ui.Coverage.sinSueldo", "Sin sueldo")}</StatusBadge>
                     <StatusBadge tone={ev.status === "open" ? "bad" : "ok"}>
                       {ev.status === "open" ? "Sin cubrir" : ev.status === "covered" ? "Cubierto" : ev.status}
                     </StatusBadge>

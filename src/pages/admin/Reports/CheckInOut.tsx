@@ -20,13 +20,13 @@ const guard = (r: Rec) => (typeof r.guardName === "string" ? r.guardName : r.gua
 const station = (r: Rec) => (typeof r.stationName === "string" ? r.stationName : r.stationName?.stationName) || "—";
 
 const columns: ReportColumn<Rec>[] = [
-  { key: "guard", label: "Vigilante", value: guard, privacy: "guardName" },
-  { key: "station", label: "Puesto", value: station },
-  { key: "in", label: "Entrada", value: (r) => formatDateTime(r.punchInTime) },
-  { key: "out", label: "Salida", value: (r) => formatDateTime(r.punchOutTime) },
-  { key: "hours", label: "Horas", value: (r) => (r.hoursWorked != null ? Number(r.hoursWorked).toFixed(2) : "—"), align: "right" },
-  { key: "late", label: "Atraso (min)", value: (r) => String(r.lateMinutes ?? 0), align: "right" },
-  { key: "status", label: "Estado", value: (r) => r.status || "—" },
+  { key: "guard", label: "Vigilante", labelKey: "reports.col.checkInOut.guard", value: guard, privacy: "guardName" },
+  { key: "station", label: "Puesto", labelKey: "reports.col.checkInOut.station", value: station },
+  { key: "in", label: "Entrada", labelKey: "reports.col.checkInOut.in", value: (r) => formatDateTime(r.punchInTime) },
+  { key: "out", label: "Salida", labelKey: "reports.col.checkInOut.out", value: (r) => formatDateTime(r.punchOutTime) },
+  { key: "hours", label: "Horas", labelKey: "reports.col.checkInOut.hours", value: (r) => (r.hoursWorked != null ? Number(r.hoursWorked).toFixed(2) : "—"), align: "right" },
+  { key: "late", label: "Atraso (min)", labelKey: "reports.col.checkInOut.late", value: (r) => String(r.lateMinutes ?? 0), align: "right" },
+  { key: "status", label: "Estado", labelKey: "reports.col.checkInOut.status", value: (r) => r.status || "—" },
 ];
 
 export default function CheckInOut() {

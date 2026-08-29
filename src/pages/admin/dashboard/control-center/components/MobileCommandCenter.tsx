@@ -49,11 +49,12 @@ import { SystemStatus } from "./SystemStatus";
 import { StatCarousel } from "./StatCarousel";
 import { BottomSheet } from "./BottomSheet";
 
-function saludo(): string {
+/** Devuelve la CLAVE del saludo; el texto se traduce donde se pinta. */
+function saludoKey(): { key: string; fallback: string } {
   const h = new Date().getHours();
-  if (h < 12) return "Buenos días";
-  if (h < 19) return "Buenas tardes";
-  return "Buenas noches";
+  if (h < 12) return { key: "dashboard.greeting.morning", fallback: "Buenos días" };
+  if (h < 19) return { key: "dashboard.greeting.afternoon", fallback: "Buenas tardes" };
+  return { key: "dashboard.greeting.evening", fallback: "Buenas noches" };
 }
 
 export function MobileCommandCenter({
@@ -134,7 +135,7 @@ export function MobileCommandCenter({
   }, []);
 
   const enlace = demo
-    ? { tone: "brand" as const, label: "Demostración" }
+    ? { tone: "brand" as const, label: t("ui.MobileCommandCenter.demostracion", "Demostración") }
     : data.health.sseConnected
     ? { tone: "ok" as const, label: "En vivo" }
     : { tone: "warn" as const, label: "Sondeo" };
@@ -222,7 +223,7 @@ export function MobileCommandCenter({
         onMover={alMoverHoja}
         resumen={
           <>
-            <div className="cg-eyebrow truncate">{saludo()}, {userName}</div>
+            <div className="cg-eyebrow truncate">{t(saludoKey().key, saludoKey().fallback)}, {userName}</div>
             <AlCambiar clave={resumen}>
               <p className="truncate text-sm font-semibold">{resumen}</p>
             </AlCambiar>

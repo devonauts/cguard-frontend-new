@@ -1,0 +1,69 @@
+[
+  {
+    "fichero": "src/components/onboarding/onboardingUtils.ts",
+    "constantes": [
+      {
+        "linea": 193,
+        "constante": "COUNTRY_TZ"
+      },
+      {
+        "linea": 215,
+        "constante": "TIMEZONE_OPTIONS"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/Configuration/emergency/EmergencySettingsPage.tsx",
+    "constantes": [
+      {
+        "linea": 50,
+        "constante": "ETIQUETA_ROL"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/alarm/AlarmAnalytics.tsx",
+    "constantes": [
+      {
+        "linea": 33,
+        "constante": "CAT_LABEL"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/dashboard/control-center/components/StatCarousel.tsx",
+    "constantes": [
+      {
+        "linea": 32,
+        "constante": "CORTO"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/programmer/ShiftTemplates.tsx",
+    "constantes": [
+      {
+        "linea": 54,
+        "constante": "LEGACY_DEPARTMENTS"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/supervisors/SupervisorPositionsPage.tsx",
+    "constantes": [
+      {
+        "linea": 16,
+        "constante": "SCHEDULE_TYPES"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/auth/accept-invitation.tsx",
+    "constantes": [
+      {
+        "linea": 29,
+        "constante": "ROLE_LABELS"
+      }
+    ]
+  }
+]

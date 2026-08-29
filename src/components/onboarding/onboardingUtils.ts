@@ -1,3 +1,4 @@
+import i18n from '@/i18n';
 
 import { localeActual } from '@/lib/localeActual'
 // Shared helpers for the first-login business onboarding feature.
@@ -30,14 +31,17 @@ export interface OnboardingTenant {
 }
 
 // Required fields (besides logo) that must be present for "business is set up".
-export const REQUIRED_FIELDS: Array<{ key: keyof OnboardingTenant; label: string }> = [
-  { key: "name", label: "Nombre de la empresa" },
-  { key: "businessTitle", label: "Razón social" },
-  { key: "taxNumber", label: "RUC / Cédula" },
-  { key: "phone", label: "Teléfono" },
-  { key: "email", label: "Correo electrónico" },
-  { key: "address", label: "Dirección" },
-  { key: "timezone", label: "Zona horaria" },
+// OJO: constante de módulo — se evalúa al cargar, así que aquí NO se llama a
+// t(). Cada campo lleva su CLAVE (labelKey) y el texto se traduce donde se
+// pinta (OnboardingBanner).
+export const REQUIRED_FIELDS: Array<{ key: keyof OnboardingTenant; label: string; labelKey: string }> = [
+  { key: "name", label: "Nombre de la empresa", labelKey: "onboarding.requiredFields.name" },
+  { key: "businessTitle", label: "Razón social", labelKey: "onboarding.requiredFields.businessTitle" },
+  { key: "taxNumber", label: "RUC / Cédula", labelKey: "onboarding.requiredFields.taxNumber" },
+  { key: "phone", label: "Teléfono", labelKey: "onboarding.requiredFields.phone" },
+  { key: "email", label: "Correo electrónico", labelKey: "onboarding.requiredFields.email" },
+  { key: "address", label: "Dirección", labelKey: "onboarding.requiredFields.address" },
+  { key: "timezone", label: "Zona horaria", labelKey: "onboarding.requiredFields.timezone" },
 ];
 
 const firstNonEmpty = (...vals: any[]) => {
@@ -137,13 +141,15 @@ export function extractOnboardingTenant(user: any): OnboardingTenant | null {
 
 // List of required fields/items still missing for "business is set up".
 export function getMissingFields(t: OnboardingTenant | null): string[] {
-  if (!t) return REQUIRED_FIELDS.map((f) => f.label).concat("Logo");
+  const rot = (f: { label: string; labelKey: string }) => i18n.t(f.labelKey, f.label);
+  const logo = i18n.t("onboarding.requiredFields.logo", "Logo");
+  if (!t) return REQUIRED_FIELDS.map(rot).concat(logo);
   const missing: string[] = [];
   for (const f of REQUIRED_FIELDS) {
     const v = (t as any)[f.key];
-    if (v === undefined || v === null || String(v).trim() === "") missing.push(f.label);
+    if (v === undefined || v === null || String(v).trim() === "") missing.push(rot(f));
   }
-  if (!t.logoId) missing.push("Logo");
+  if (!t.logoId) missing.push(logo);
   return missing;
 }
 

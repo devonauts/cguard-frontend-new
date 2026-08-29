@@ -22,6 +22,7 @@ type Props = {
 const ESTADOS = {
   concedido: {
     icon: Check,
+    etiquetaKey: "settings.permissions.state.granted",
     etiqueta: "Concedido",
     fondo: "color-mix(in oklab, var(--ok) 10%, transparent)",
     borde: "color-mix(in oklab, var(--ok) 28%, transparent)",
@@ -29,6 +30,7 @@ const ESTADOS = {
   },
   obligatorio: {
     icon: Lock,
+    etiquetaKey: "settings.permissions.state.required",
     etiqueta: "Obligatorio",
     fondo: "color-mix(in oklab, var(--warn) 12%, transparent)",
     borde: "color-mix(in oklab, var(--warn) 30%, transparent)",
@@ -36,6 +38,7 @@ const ESTADOS = {
   },
   heredado: {
     icon: Minus,
+    etiquetaKey: "settings.permissions.state.notGranted",
     etiqueta: "Sin conceder",
     fondo: "transparent",
     borde: "var(--hairline)",
@@ -120,7 +123,7 @@ export default function PermissionsEditor({ value, onChange, query = "", readOnl
               >
                 <Icono />
               </span>
-              {e.etiqueta}
+              {t(e.etiquetaKey, e.etiqueta)}
             </span>
           );
         })}
@@ -192,7 +195,7 @@ export default function PermissionsEditor({ value, onChange, query = "", readOnl
                         key={p}
                         className="flex items-start gap-3 rounded-xl border p-2.5 transition-colors"
                         style={{ background: estado.fondo, borderColor: estado.borde }}
-                        title={bloqueado ? "Requerido para el acceso de administrador" : undefined}
+                        title={bloqueado ? t("settings.permissions.requiredForAdmin", "Requerido para el acceso de administrador") : undefined}
                       >
                         <Checkbox
                           className="mt-0.5"

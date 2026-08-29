@@ -20,7 +20,7 @@ import {
   trainingEnrollmentService,
   type EnrollmentRow,
 } from '@/lib/api/trainingEnrollmentService';
-import { ENROLLMENT_STATUS_LABELS, ENROLLMENT_STATUS_TONE } from '../trainingConstants';
+import { enrollmentStatusLabel, ENROLLMENT_STATUS_TONE } from '../trainingConstants';
 
 import { localeActual } from '@/lib/localeActual'
 interface GuardOption {
@@ -117,7 +117,7 @@ export default function AssignGuardsPanel({ courseId, published }: Props) {
     } catch (err: any) {
       console.error(err);
       const msg = err?.response?.data?.error || err?.message;
-      toast.error(msg || 'No se pudo asignar el curso.');
+      toast.error(msg || t('ui.AssignGuardsPanel.noSePudoAsignarElCurso', 'No se pudo asignar el curso.'));
     } finally {
       setAssigning(false);
     }
@@ -136,7 +136,7 @@ export default function AssignGuardsPanel({ courseId, published }: Props) {
       header: 'Estado',
       render: (_v, e) => (
         <StatusBadge tone={ENROLLMENT_STATUS_TONE[e.status]} dot={false}>
-          {ENROLLMENT_STATUS_LABELS[e.status]}
+          {enrollmentStatusLabel(e.status)}
         </StatusBadge>
       ),
     },

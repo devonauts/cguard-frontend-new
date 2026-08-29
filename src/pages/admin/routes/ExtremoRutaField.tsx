@@ -32,22 +32,35 @@ interface Props {
   soloLectura?: boolean;
 }
 
+/* Constante de módulo: se evalúa al IMPORTAR el fichero, antes de que i18next
+   sepa el idioma. Por eso guarda la CLAVE junto al español, y la traducción
+   ocurre abajo, dentro del componente. */
 const COPIA = {
   origen: {
     titulo: 'Origen',
+    tituloKey: 'ui.ExtremoRutaField.origen.titulo',
     icono: <Home />,
     vacio: 'Sin origen definido: la ruta empieza en la primera parada.',
+    vacioKey: 'ui.ExtremoRutaField.origen.vacio',
     accion: 'Definir origen',
+    accionKey: 'ui.ExtremoRutaField.origen.accion',
     modal: 'Origen del recorrido',
+    modalKey: 'ui.ExtremoRutaField.origen.modal',
     ayuda: 'Desde dónde arranca el supervisor. Si lo dejas vacío, la ruta empieza en la primera parada.',
+    ayudaKey: 'ui.ExtremoRutaField.origen.ayuda',
   },
   destino: {
     titulo: 'Destino',
+    tituloKey: 'ui.ExtremoRutaField.destino.titulo',
     icono: <Flag />,
     vacio: 'Sin destino definido: la ruta termina en la última parada.',
+    vacioKey: 'ui.ExtremoRutaField.destino.vacio',
     accion: 'Definir destino',
+    accionKey: 'ui.ExtremoRutaField.destino.accion',
     modal: 'Destino del recorrido',
+    modalKey: 'ui.ExtremoRutaField.destino.modal',
     ayuda: 'Dónde termina el recorrido. Si lo dejas vacío, la ruta termina en la última parada.',
+    ayudaKey: 'ui.ExtremoRutaField.destino.ayuda',
   },
 } as const;
 
@@ -56,6 +69,7 @@ export default function ExtremoRutaField({ clase, valor, onChange, soloLectura =
   const [borrador, setBorrador] = useState<ExtremoRuta | null>(null);
   const { t } = useTranslation();
   const c = COPIA[clase];
+  const titulo = t(c.tituloKey, c.titulo);
 
   const abrir = () => {
     setBorrador(valor);
@@ -82,7 +96,7 @@ export default function ExtremoRutaField({ clase, valor, onChange, soloLectura =
         <span className="[&_svg]:size-4" style={{ color: 'var(--brand-text)' }}>
           {c.icono}
         </span>
-        <span className="text-sm font-semibold">{c.titulo}</span>
+        <span className="text-sm font-semibold">{titulo}</span>
         <span className="text-xs" style={{ color: 'var(--ink-faint)' }}>
           Opcional
         </span>
@@ -109,7 +123,7 @@ export default function ExtremoRutaField({ clase, valor, onChange, soloLectura =
                 variant="danger-ghost"
                 size="lg"
                 onClick={() => onChange(null)}
-                aria-label={`Quitar ${c.titulo.toLowerCase()}`}
+                aria-label={`Quitar ${titulo.toLowerCase()}`}
               >
                 <X className="size-4" /> Quitar
               </Button>
@@ -122,11 +136,11 @@ export default function ExtremoRutaField({ clase, valor, onChange, soloLectura =
           style={{ borderColor: 'var(--hairline)' }}
         >
           <p className="min-w-0 flex-1 text-sm" style={{ color: 'var(--ink-soft)' }}>
-            {c.vacio}
+            {t(c.vacioKey, c.vacio)}
           </p>
           {!soloLectura && (
             <Button type="button" variant="outline" size="lg" onClick={abrir}>
-              <MapPin className="size-4" /> {c.accion}
+              <MapPin className="size-4" /> {t(c.accionKey, c.accion)}
             </Button>
           )}
         </div>
@@ -137,8 +151,8 @@ export default function ExtremoRutaField({ clase, valor, onChange, soloLectura =
         onOpenChange={setAbierto}
         size="lg"
         icon={c.icono}
-        title={c.modal}
-        description={c.ayuda}
+        title={t(c.modalKey, c.modal)}
+        description={t(c.ayudaKey, c.ayuda)}
         footer={
           <div className="flex w-full flex-wrap justify-end gap-2">
             <Button type="button" variant="outline" size="lg" onClick={() => setAbierto(false)}>

@@ -14,6 +14,7 @@
 // tiempo de ejecución. La clase se carga bajo demanda en `doConnect` — ver ahí
 // el porqué.
 import type { VoiceChannel, VoiceMember, VoiceSpeaker, VoiceState } from "./voiceChannel";
+import i18n from "@/i18n";
 import { getAuthToken } from "./api";
 
 const API_URL = (import.meta.env.VITE_API_URL as string | undefined) || "";
@@ -182,7 +183,11 @@ async function doConnect() {
     ({ VoiceChannel: VoiceChannelCtor } = await import("./voiceChannel"));
   } catch {
     connectPending = false;
-    set({ state: "error", hint: "No se pudo cargar el módulo de voz." });
+    set({
+      state: "error",
+      // Se traduce AQUÍ (en tiempo de llamada), no al cargar el módulo.
+      hint: i18n.t("radio.voiceModuleLoadError", "No se pudo cargar el módulo de voz."),
+    });
     return;
   }
   connectPending = false;

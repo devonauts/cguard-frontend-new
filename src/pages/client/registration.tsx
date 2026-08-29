@@ -220,7 +220,7 @@ export default function ClientRegistration() {
   return (
     <AuthShell
       title={done ? '¡Cuenta activada!' : getTitle()}
-      subtitle={done ? 'Tu acceso quedó listo.' : getRoleDescription()}
+      subtitle={done ? t('invite.accessReady', 'Tu acceso quedó listo.') : getRoleDescription()}
       brandName={empresa}
       logoUrl={fetched?.tenant?.logoUrl || undefined}
       eyebrow={t('invite.eyebrow_client', 'Invitación · Portal del cliente')}

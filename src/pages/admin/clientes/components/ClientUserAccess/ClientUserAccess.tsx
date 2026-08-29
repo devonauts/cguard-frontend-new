@@ -77,7 +77,7 @@ export default function ClientUserAccess({ client }: Props) {
               <div key={u.id} className="flex items-center justify-between gap-3 py-3">
                 <div className="flex min-w-0 items-center gap-3">
                   <Avatar name={u.name} solid={u.isTitular} />
-                  <div className="min-w-0"><div className="truncate text-sm font-medium">{u.name}</div><div className="truncate text-xs text-muted-foreground">{u.email || 'Sin correo'}</div></div>
+                  <div className="min-w-0"><div className="truncate text-sm font-medium">{u.name}</div><div className="truncate text-xs text-muted-foreground">{u.email || t('ui.ClientUserAccess.sinCorreo', 'Sin correo')}</div></div>
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
                   <StatusBadge tone={u.isTitular ? 'green' : 'blue'} dot={false}>{u.role || 'Acceso'}</StatusBadge>
@@ -93,7 +93,7 @@ export default function ClientUserAccess({ client }: Props) {
       </Section>
 
       <Modal open={inviteOpen} onOpenChange={(o) => { if (!sending) setInviteOpen(o); }} title="Invitar acceso" icon={<UserPlus className="h-5 w-5" />}
-        footer={<><Button variant="outline" onClick={() => setInviteOpen(false)} disabled={sending}>{t('actions.cancel')}</Button><Button variant="brand" onClick={invite} disabled={sending || !form.email.trim()}>{sending ? <><Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> Enviando…</> : 'Enviar invitación'}</Button></>}>
+        footer={<><Button variant="outline" onClick={() => setInviteOpen(false)} disabled={sending}>{t('actions.cancel')}</Button><Button variant="brand" onClick={invite} disabled={sending || !form.email.trim()}>{sending ? <><Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> Enviando…</> : t('ui.ClientPortal.enviarInvitacion', 'Enviar invitación')}</Button></>}>
         <div className="space-y-3">
           <LabeledField label={t('ui.ClientUserAccess.correoDeLaPersona')}><input type="email" className={FIELD_CLS} placeholder={t('ui.ClientUserAccess.personaEmpresaCom')} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></LabeledField>
           <LabeledField label={t('ui.ClientUserAccess.tipoDeAcceso')}>

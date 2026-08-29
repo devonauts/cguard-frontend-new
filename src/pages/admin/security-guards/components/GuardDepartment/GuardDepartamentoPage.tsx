@@ -76,7 +76,7 @@ export default function GuardDepartamentoPage() {
       setPendingId('');
       toast.success(departmentId ? 'Departamento asignado' : 'Departamento quitado');
     } catch (e: any) {
-      toast.error(e?.response?.data?.message || e?.response?.data || 'No se pudo actualizar el departamento');
+      toast.error(e?.response?.data?.message || e?.response?.data || t('guards.department.updateError', 'No se pudo actualizar el departamento'));
     } finally {
       setSaving(false);
     }
@@ -133,7 +133,7 @@ export default function GuardDepartamentoPage() {
                 {canEdit && (
                   <div className="space-y-2">
                     <div className="text-sm font-medium">
-                      {current ? 'Cambiar de departamento' : 'Asignar a un departamento'}
+                      {current ? t('guards.department.changeLabel', 'Cambiar de departamento') : t('guards.department.assignLabel', 'Asignar a un departamento')}
                     </div>
                     {departments.length === 0 ? (
                       <p className="text-sm text-muted-foreground">

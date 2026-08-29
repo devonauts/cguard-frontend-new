@@ -1,0 +1,153 @@
+{
+ "src/pages/admin/Configuration/communications/CommunicationsPage.tsx": [
+  "Aviso al móvil",
+  "Cambia o limpia los filtros para ver más envíos.",
+  "Cambios sin guardar",
+  "Canal preferido para el código de acceso",
+  "Con costo",
+  "Configuración guardada",
+  "Código de país por defecto",
+  "Historial de uso",
+  "Mensajes (página)",
+  "No se pudo cargar el historial",
+  "No se pudo guardar la configuración",
+  "No se pudo iniciar la recarga",
+  "Orden de aviso",
+  "Preferencias de enrutamiento",
+  "Recordatorios de turno por WhatsApp",
+  "Requerir saldo para canales con costo",
+  "Respaldo SMS en alertas críticas",
+  "SMS para alertas críticas",
+  "Saldo de comunicaciones e IA",
+  "Sin costo",
+  "Sin registros para los filtros aplicados.",
+  "Umbral de saldo bajo (USD)"
+ ],
+ "src/pages/admin/Configuration/rondas-settings/RondaSettingsForm.tsx": [
+  "Avisar también al cliente",
+  "Cada cuánto debe realizarse una ronda.",
+  "Cadencia de la ronda",
+  "Configuraciones de rondas guardadas",
+  "Cuando un vigilante empieza una ronda.",
+  "Cuando una ronda termina correctamente.",
+  "Duración máxima",
+  "Exigir el orden del recorrido",
+  "Exigir observación",
+  "Exigir ubicación",
+  "Margen antes de marcar una ronda como tarde.",
+  "No se pudieron cargar las configuraciones",
+  "Tiempo máximo para completar una ronda entera.",
+  "Validación de los puntos"
+ ],
+ "src/pages/admin/security-guards/components/GuardNotes/GuardNotespage.tsx": [
+  "Crea la primera nota para este vigilante.",
+  "Fallo al guardar metadata del archivo",
+  "Ingresa el título de la nota",
+  "Ingresa la descripción de la nota",
+  "Ningún archivo seleccionado",
+  "No se encontró el identificador",
+  "No se pudo crear la nota",
+  "No se pudo eliminar la nota",
+  "Sin notas todavía",
+  "Sin título",
+  "Tipo de archivo no permitido"
+ ],
+ "src/pages/admin/video/VideoDevices.tsx": [
+  "Dejar en blanco para conservar",
+  "En línea",
+  "Falló la prueba de conexión",
+  "No se pudieron cargar los dispositivos",
+  "No se pudieron sincronizar las cámaras",
+  "No se pudo eliminar el dispositivo",
+  "No se pudo guardar el dispositivo",
+  "Sin marca/modelo",
+  "Sin stream"
+ ],
+ "src/components/sidebar.tsx": [
+  "Análisis",
+  "Centro de mando",
+  "Limpiar búsqueda",
+  "Navegación principal",
+  "Operación",
+  "Sin coincidencias"
+ ],
+ "src/pages/admin/Configuration/api-keys/ApiKeysPage.tsx": [
+  "Horas y días",
+  "No se pudieron cargar las llaves.",
+  "No se pudo copiar.",
+  "No se pudo crear la llave.",
+  "No se pudo revocar la llave.",
+  "Ponle un nombre a la llave."
+ ],
+ "src/pages/admin/security-guards/components/GuardHorario/GuardHorarioPage.tsx": [
+  "Sin rotación configurada",
+  "Sin turno generado",
+  "Sin turno generado (hueco de cobertura)",
+  "Turno de día",
+  "Turno de noche"
+ ],
+ "src/pages/admin/security-guards/components/GuardFiles/GuardFilesPage.tsx": [
+  "Archivos del vigilante",
+  "Choose files No files selected",
+  "Documentos y archivos del vigilante.",
+  "No Files Found"
+ ],
+ "src/layouts/SettingsLayout.tsx": [
+  "Configuración",
+  "Volver a Configuración",
+  "Índice de configuración"
+ ],
+ "src/pages/admin/security/SystemLogs.tsx": [
+  "Actualización",
+  "Creación",
+  "Eliminación"
+ ],
+ "src/contexts/AccentContext.tsx": [
+  "Carmesí",
+  "Ámbar"
+ ],
+ "src/components/schedule/RotationStyleSelect.tsx": [
+  "Días",
+  "No se pudo crear el patrón"
+ ],
+ "src/pages/admin/Configuration/types-incidents/IncidentTypesTable.tsx": [
+  "Buscar tipo de incidente",
+  "Tipo de incidente"
+ ],
+ "src/pages/admin/vehicle-patrol/PatrullaBoardPage.tsx": [
+  "Del día",
+  "No hay rutas creadas"
+ ],
+ "src/pages/admin/programmer/TransferShiftModal.tsx": [
+  "Hasta una fecha",
+  "Solo este turno"
+ ],
+ "src/pages/admin/Reports/DataReport.tsx": [
+  "Habilita las ventanas emergentes para exportar",
+  "No se pudo cargar el informe"
+ ],
+ "src/contexts/LanguageContext.tsx": [
+  "Español"
+ ],
+ "src/components/clients/ClientDetailsDialog.tsx": [
+  "Error al cargar los detalles del cliente"
+ ],
+ "src/pages/admin/Configuration/company-policies/CompanyPoliciesTable.tsx": [
+  "Título"
+ ],
+ "src/pages/admin/gps-tracker/TrackingHistory.tsx": [
+  "Sin puntos en este rango"
+ ],
+ "src/pages/admin/post-sites/station-detail/components/StationHero.tsx": [
+  "No se pudo renombrar"
+ ],
+ "src/pages/admin/dashboard/control-center/components/StatCarousel.tsx": [
+  "Sin datos"
+ ],
+ "src/pages/admin/clientes/ClientsPage.tsx": [
+  "No se pudo enviar la invitación"
+ ],
+ "src/lib/radioVoiceManager.ts": [
+  "No se pudo cargar el módulo de voz."
+ ]
+}

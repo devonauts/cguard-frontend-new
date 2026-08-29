@@ -200,7 +200,7 @@ export default function TrainingCourseDetailPage() {
                     <Select value={meta.category} onValueChange={(v) => setMeta({ ...meta, category: v })} disabled={readOnly}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        {TRAINING_CATEGORIES.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
+                        {TRAINING_CATEGORIES.map((c) => <SelectItem key={c.value} value={c.value}>{t(c.labelKey, c.label)}</SelectItem>)}
                       </SelectContent>
                     </Select>
                   </div>

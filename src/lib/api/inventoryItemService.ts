@@ -1,5 +1,6 @@
 import api from '@/lib/api';
 import axiosInstance from '@/lib/api';
+import i18n from '@/i18n';
 
 const getTenantId = (): string => {
   const t = localStorage.getItem('tenantId');
@@ -43,6 +44,58 @@ export const ITEM_CONDITION_LABELS: Record<ItemCondition, string> = {
   regular: 'Regular',
   dañado: 'Dañado',
 };
+
+/**
+ * Las tres tablas de arriba son constantes de MÓDULO: se construyen al importar
+ * el fichero, antes de que i18next sepa qué idioma quiere el usuario. Por eso
+ * el español se queda como VALOR POR DEFECTO y la traducción vive en estas
+ * claves, que se resuelven al llamar a los helpers (no al cargar el módulo).
+ * Quien pinte una etiqueta debe usar `itemTypeLabel` / `itemStatusLabel` /
+ * `itemConditionLabel`, nunca leer el `Record` de texto directamente.
+ */
+export const ITEM_TYPE_KEYS: Record<ItemType, string> = {
+  radio: 'inventory.itemType.radio',
+  arma: 'inventory.itemType.arma',
+  chaleco_antibalas: 'inventory.itemType.chalecoAntibalas',
+  tolete: 'inventory.itemType.tolete',
+  pito: 'inventory.itemType.pito',
+  linterna: 'inventory.itemType.linterna',
+  bitacora: 'inventory.itemType.bitacora',
+  cinto_completo: 'inventory.itemType.cintoCompleto',
+  poncho_de_aguas: 'inventory.itemType.ponchoDeAguas',
+  detector_de_metales: 'inventory.itemType.detectorDeMetales',
+  caseta: 'inventory.itemType.caseta',
+  vehiculo: 'inventory.itemType.vehiculo',
+  otro: 'inventory.itemType.otro',
+};
+
+export const ITEM_STATUS_KEYS: Record<ItemStatus, string> = {
+  disponible: 'inventory.itemStatus.disponible',
+  asignado: 'inventory.itemStatus.asignado',
+  en_mantenimiento: 'inventory.itemStatus.enMantenimiento',
+  retirado: 'inventory.itemStatus.retirado',
+};
+
+export const ITEM_CONDITION_KEYS: Record<ItemCondition, string> = {
+  bueno: 'inventory.itemCondition.bueno',
+  regular: 'inventory.itemCondition.regular',
+  'dañado': 'inventory.itemCondition.danado',
+};
+
+export function itemTypeLabel(value?: string | null): string {
+  const k = ITEM_TYPE_KEYS[value as ItemType];
+  return k ? i18n.t(k, ITEM_TYPE_LABELS[value as ItemType]) : (value ?? '');
+}
+
+export function itemStatusLabel(value?: string | null): string {
+  const k = ITEM_STATUS_KEYS[value as ItemStatus];
+  return k ? i18n.t(k, ITEM_STATUS_LABELS[value as ItemStatus]) : (value ?? '');
+}
+
+export function itemConditionLabel(value?: string | null): string {
+  const k = ITEM_CONDITION_KEYS[value as ItemCondition];
+  return k ? i18n.t(k, ITEM_CONDITION_LABELS[value as ItemCondition]) : (value ?? '');
+}
 
 export const ITEM_STATUS_COLORS: Record<ItemStatus, string> = {
   disponible: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400',

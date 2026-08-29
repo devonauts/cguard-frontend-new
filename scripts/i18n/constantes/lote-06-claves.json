@@ -1,0 +1,44 @@
+{
+  "validation.postSite.maxChars": "Máximo {{n}} caracteres",
+  "validation.postSite.phoneMax": "El teléfono puede tener como máximo 20 caracteres",
+  "validation.postSite.faxMax": "El fax puede tener como máximo 20 caracteres",
+
+  "sms.countries.US": "Estados Unidos (+1)",
+  "sms.countries.CA": "Canadá (+1)",
+  "sms.countries.GB": "Reino Unido (+44)",
+  "sms.countries.ES": "España (+34)",
+
+  "clients.coverage.cell.day.letter": "D",
+  "clients.coverage.cell.day.title": "Turno de día",
+  "clients.coverage.cell.day.legend": "Día",
+  "clients.coverage.cell.night.letter": "N",
+  "clients.coverage.cell.night.title": "Turno de noche",
+  "clients.coverage.cell.night.legend": "Noche",
+  "clients.coverage.cell.rest.letter": "L",
+  "clients.coverage.cell.rest.title": "Libre",
+  "clients.coverage.cell.rest.legend": "Libre",
+  "clients.coverage.cell.gap.letter": "!",
+  "clients.coverage.cell.gap.title": "Sin turno generado (hueco de cobertura)",
+  "clients.coverage.cell.gap.legend": "Sin turno generado",
+  "clients.coverage.cell.none.letter": "·",
+  "clients.coverage.cell.none.title": "Sin rotación configurada",
+  "clients.coverage.cell.none.legend": "Sin rotación",
+  "clients.coverage.cell.coveredBy": "Cubre: {{name}}",
+
+  "stations.scheduleType.24h": "24 horas",
+  "stations.scheduleType.12hDay": "12h Día",
+  "stations.scheduleType.12hNight": "12h Noche",
+  "stations.scheduleType.custom": "Personalizado",
+  "stations.card.jornadas": "{{n}} jornada(s)",
+
+  "guards.profile.maritalStatus.freeUnion": "Unión libre",
+  "guards.profile.academic.primary": "Primaria",
+  "guards.profile.academic.secondary": "Secundaria",
+  "guards.profile.academic.university": "Universitaria",
+  "guards.profile.academic.universityDegree": "Universidad",
+  "guards.profile.academic.special": "Especial",
+
+  "vehicles.ownership.propio": "Propio",
+  "vehicles.ownership.alquilado": "Alquilado",
+  "vehicles.ownership.cliente": "Del cliente"
+}

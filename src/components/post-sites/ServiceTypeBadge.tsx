@@ -59,7 +59,7 @@ export function ServiceTypeBadge({ value, className, size = 'sm' }: ServiceTypeB
       className,
     )}>
       <Icon className={size === 'sm' ? 'h-3 w-3' : 'h-4 w-4'} />
-      {def.label}
+      {t(def.labelKey, def.label)}
     </span>
   );
 }
@@ -121,10 +121,10 @@ export function ServiceTypePicker({ value, onChange, error }: ServiceTypePickerP
                   'block text-sm font-semibold',
                   isSelected ? st.textColor : 'text-foreground',
                 )}>
-                  {st.label}
+                  {t(st.labelKey, st.label)}
                 </span>
                 <span className="mt-0.5 block text-xs text-muted-foreground leading-relaxed">
-                  {st.description}
+                  {t(st.descriptionKey, st.description)}
                 </span>
               </span>
             </button>
@@ -150,7 +150,7 @@ export function ServiceTypePicker({ value, onChange, error }: ServiceTypePickerP
           </span>
           <span className="min-w-0">
             <span className={cn('block text-sm font-semibold', isOther ? 'text-foreground' : 'text-foreground')}>
-              Otro...
+              {t('ui.ServiceTypeBadge.otro', 'Otro...')}
             </span>
             <span className="mt-0.5 block text-xs text-muted-foreground leading-relaxed">
               {t('ui.ServiceTypeBadge.especifiqueUnTipoDeServicioPersonalizado', 'Especifique un tipo de servicio personalizado.')}

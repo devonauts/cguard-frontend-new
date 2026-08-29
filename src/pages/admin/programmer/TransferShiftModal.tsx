@@ -153,8 +153,8 @@ export default function TransferShiftModal({
               if (v === "range" && !until) setUntil(target?.dateStr || "");
             }}
             options={[
-              { value: "shift", label: "Solo este turno" },
-              { value: "range", label: "Hasta una fecha" },
+              { value: "shift", label: t("ui.TransferShiftModal.soloEsteTurno", "Solo este turno") },
+              { value: "range", label: t("ui.TransferShiftModal.hastaUnaFecha", "Hasta una fecha") },
             ]}
           />
           {mode === "range" && (

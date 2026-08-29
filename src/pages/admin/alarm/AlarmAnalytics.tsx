@@ -19,6 +19,7 @@ import {
 } from "@/components/kit";
 import { Button } from "@/components/ui/button";
 import i18n from "@/i18n";
+import { tablaDeEtiquetas } from "@/lib/i18nLabel";
 
 const PERIODS = [7, 30, 90, 365];
 
@@ -30,11 +31,24 @@ function fmtDur(sec?: number): string {
   return s ? `${m}m ${s}s` : `${m}m`;
 }
 
-const CAT_LABEL: Record<string, string> = {
-  burglary: "Robo", fire: "Incendio", holdup: "Atraco", panic: "Pánico", medical: "Médica",
-  tamper: "Sabotaje", trouble: "Avería", openclose: "Apertura/Cierre", test: "Prueba",
-  supervisory: "Supervisión", restore: "Restauración", desconocido: "Desconocido",
-};
+/** Se resuelven AL LEERLAS: la tabla se evalúa al importar el módulo, antes de
+ *  que i18next sepa qué idioma quiere el usuario. Comparte las claves con
+ *  `CATEGORY_META` de ./shared para que la misma categoría no salga con dos
+ *  nombres en dos pantallas hermanas. */
+const CAT_LABEL: Record<string, string> = tablaDeEtiquetas({
+  burglary: "alarm.category.burglary",
+  fire: "alarm.category.fire",
+  holdup: "alarm.category.holdup",
+  panic: "alarm.category.panic",
+  medical: "alarm.category.medical",
+  tamper: "alarm.category.tamper",
+  trouble: "alarm.category.trouble",
+  openclose: "alarm.category.openclose",
+  test: "alarm.category.test",
+  supervisory: "alarm.category.supervisory",
+  restore: "alarm.category.restore",
+  desconocido: "alarm.category.desconocido",
+});
 
 /** `raw` conserva la clave original del backend además de la etiqueta ya
  *  traducida: es lo que permite decidir la GRAVEDAD de cada barra después de
@@ -91,7 +105,7 @@ export default function AlarmAnalytics() {
       downloadCsv(r.rows || [], `auditoria-alarmas-${days}d.csv`);
       toast.success(`${r.count} registros exportados`);
     } catch (e) {
-      toast.error((e as Error)?.message || "No se pudo exportar la auditoría");
+      toast.error((e as Error)?.message || t("alarm.analytics.exportAuditFailed", "No se pudo exportar la auditoría"));
     } finally {
       setExporting(false);
     }

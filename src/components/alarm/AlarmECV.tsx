@@ -9,14 +9,17 @@ import { alarmService } from "@/lib/api/alarmService";
 
 const ECV_EXEMPT = ["holdup", "panic", "fire", "medical"];
 
-const OUTCOMES: { key: string; label: string }[] = [
-  { key: "contacted", label: "Contactado" },
-  { key: "no_answer", label: "Sin respuesta" },
-  { key: "verified_real", label: "Verif. REAL" },
-  { key: "verified_false", label: "Verif. FALSA" },
-  { key: "cancel_passcode", label: "Cancelar (contraseña)" },
+// Constante de módulo: guarda la CLAVE (`labelKey`) junto al texto por defecto.
+// La traducción ocurre donde se pinta, más abajo.
+const OUTCOMES: { key: string; labelKey: string; label: string }[] = [
+  { key: "contacted", labelKey: "alarm.ecv.outcome.contacted", label: "Contactado" },
+  { key: "no_answer", labelKey: "alarm.ecv.outcome.noAnswer", label: "Sin respuesta" },
+  { key: "verified_real", labelKey: "alarm.ecv.outcome.verifiedReal", label: "Verif. REAL" },
+  { key: "verified_false", labelKey: "alarm.ecv.outcome.verifiedFalse", label: "Verif. FALSA" },
+  { key: "cancel_passcode", labelKey: "alarm.ecv.outcome.cancelPasscode", label: "Cancelar (contraseña)" },
 ];
 const OUTCOME_LABEL: Record<string, string> = Object.fromEntries(OUTCOMES.map((o) => [o.key, o.label]));
+const OUTCOME_LABEL_KEY: Record<string, string> = Object.fromEntries(OUTCOMES.map((o) => [o.key, o.labelKey]));
 
 /** Enhanced Call Verification panel: call the account contacts, log each outcome,
  *  and dispatch police once ECV is satisfied (exempt for hold-up/panic/fire). */
@@ -48,7 +51,7 @@ export default function AlarmECV({
       if (r.ecvSatisfied) toast.success("ECV satisfecho — despacho policial habilitado");
       onChanged?.();
     } catch (e: any) {
-      toast.error(e?.message || "No se pudo registrar la llamada");
+      toast.error(e?.message || t("alarm.ecv.logCallError", "No se pudo registrar la llamada"));
     } finally {
       setBusyKey(null);
     }
@@ -61,7 +64,7 @@ export default function AlarmECV({
       toast.success(r?.police?.message || "Despacho policial registrado");
       onChanged?.();
     } catch (e: any) {
-      toast.error(e?.message || "No se pudo despachar a la policía");
+      toast.error(e?.message || t("alarm.ecv.dispatchError", "No se pudo despachar a la policía"));
     } finally {
       setDispatching(false);
     }
@@ -116,7 +119,7 @@ export default function AlarmECV({
                     style={{ borderColor: "var(--hairline)", color: "var(--ink-soft)" }}
                   >
                     {busyKey === `${ct.id}:${o.key}` ? <Loader2 className="size-3 animate-spin" /> : null}
-                    {o.label}
+                    {t(o.labelKey, o.label)}
                   </button>
                 ))}
               </div>
@@ -134,7 +137,7 @@ export default function AlarmECV({
                c.outcome === "verified_false" || c.outcome === "cancel_passcode" ? <X className="size-3" style={{ color: "var(--ok-text)" }} /> :
                <Check className="size-3" />}
               <span style={{ color: "var(--ink)" }}>{c.contactName || "Contacto"}</span>
-              <span>· {OUTCOME_LABEL[c.outcome] || c.outcome}</span>
+              <span>· {OUTCOME_LABEL[c.outcome] ? t(OUTCOME_LABEL_KEY[c.outcome], OUTCOME_LABEL[c.outcome]) : c.outcome}</span>
             </div>
           ))}
         </div>
@@ -150,7 +153,7 @@ export default function AlarmECV({
             onClick={dispatchPolice}
             disabled={!canDispatch || dispatching}
             className="gap-1"
-            title={canDispatch ? "Despachar a la policía" : "Complete la ECV (2 llamadas) primero"}
+            title={canDispatch ? t("alarm.ecv.dispatchPolice", "Despachar a la policía") : "Complete la ECV (2 llamadas) primero"}
           >
             {dispatching ? <Loader2 className="size-3.5 animate-spin" /> : <Siren className="size-3.5" />}
             Despachar policía

@@ -259,7 +259,7 @@ export default function AddressAutocomplete({
       map: mapInstanceRef.current,
       position: center,
       gmpDraggable: true,
-      title: 'Arrastra para ajustar la ubicación exacta',
+      title: t('maps.address.dragToAdjust', 'Arrastra para ajustar la ubicación exacta'),
       ...(contenido ? { content: contenido } : {}),
     });
 

@@ -82,7 +82,7 @@ export class AppErrorBoundary extends Component<Props, State> {
           {/* El mensaje técnico se muestra pero sin protagonismo: le sirve a quien
               reporta el problema y no le dice nada a quien sólo quiere seguir. */}
           <p className="mt-3 break-words rounded-lg bg-muted/40 px-3 py-2 text-left font-mono text-xs text-muted-foreground">
-            {error.message || "Error de renderizado"}
+            {error.message || i18n.t("ui.AppErrorBoundary.errorDeRenderizado", "Error de renderizado")}
           </p>
           <div className="mt-5 flex justify-center gap-2">
             <button

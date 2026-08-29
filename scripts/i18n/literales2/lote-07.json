@@ -1,0 +1,153 @@
+{
+ "src/pages/admin/Configuration/sms/SmsBalancePage.tsx": [
+  "Busca números disponibles para comprar.",
+  "Comprar número",
+  "Comprar número de envío",
+  "Cuenta de envío (Twilio)",
+  "Código de área",
+  "El saldo de SMS ahora se gestiona en Comunicaciones",
+  "Falta el número remitente",
+  "Historial de transacciones",
+  "Listo para enviar",
+  "No creada",
+  "No se encontraron números con esos criterios",
+  "No se pudo adquirir el número",
+  "No se pudo buscar números",
+  "No se pudo cargar la cuenta SMS",
+  "No se pudo crear la subcuenta",
+  "Número adquirido y asignado",
+  "Número remitente",
+  "País",
+  "Saldo de mensajería SMS",
+  "Sin activar",
+  "Sin movimientos todavía"
+ ],
+ "src/pages/admin/Configuration/billing/BillingPage.tsx": [
+  "Activación cancelada",
+  "Administrar método de pago",
+  "Aún no hay facturas",
+  "Estado de la suscripción",
+  "Facturación mensual",
+  "Historial de facturas",
+  "No se pudo abrir el portal de pagos",
+  "No se pudo cargar la facturación",
+  "No se pudo iniciar el pago",
+  "Procesamiento de pago",
+  "Puesta en marcha (pago único)",
+  "Sin usuarios",
+  "Suscripción",
+  "Tu plan",
+  "Tu suscripción está activa."
+ ],
+ "src/pages/admin/security-guards/components/GuardMemos/GuardMemosPage.tsx": [
+  "Asunto del memo",
+  "Comunicados dirigidos a este vigilante.",
+  "El asunto es obligatorio",
+  "Escribe el memo...",
+  "Este vigilante aún no tiene memos.",
+  "Historial de memos",
+  "Ningún memo coincide con tu búsqueda.",
+  "No se pudieron cargar los memos",
+  "No se pudo enviar el memo",
+  "Para",
+  "Sin memos todavía"
+ ],
+ "src/pages/admin/gps-tracker/TrailMap.tsx": [
+  "Batería",
+  "Duración",
+  "Ir a este momento",
+  "La cámara sigue el recorrido",
+  "Posición en el instante mostrado",
+  "Precisión",
+  "Recorrido hasta aquí",
+  "Sin recorrido para este rango",
+  "Velocidad de reproducción"
+ ],
+ "src/components/onboarding/OnboardingWizard.tsx": [
+  "Búsqueda automática",
+  "Datos guardados, pero no se pudo subir el logo.",
+  "El logo que verán tus vigilantes y clientes",
+  "Los datos de tu empresa (nombre, razón social, RUC)",
+  "No se pudo guardar la configuración.",
+  "Tu empresa"
+ ],
+ "src/pages/admin/Configuration/my-notifications/MisAvisosPage.tsx": [
+  "Contratos de cliente por vencer",
+  "Entradas y salidas de geocerca",
+  "Entradas y salidas de vigilantes",
+  "Panel y teléfono",
+  "Solicitudes de tiempo libre",
+  "Tickets de incidente"
+ ],
+ "src/pages/admin/clientes/components/ClientContract/ClientContract.tsx": [
+  "Custodia de activos",
+  "Gestión de visitantes",
+  "Monitoreo de cámaras",
+  "Patrullaje móvil",
+  "Seguridad para eventos"
+ ],
+ "src/pages/admin/vehicles/VehiclesPage.tsx": [
+  "Activar vehículos",
+  "Error cargando detalles del vehículo",
+  "Inactivar vehículos",
+  "Sin placa"
+ ],
+ "src/pages/auth/AuthShell.tsx": [
+  "App para vigilantes",
+  "Plataforma de seguridad",
+  "Reporte de incidentes"
+ ],
+ "src/pages/admin/dispatcher/DispatchIncidentMap.tsx": [
+  "Más cercano con vigilante",
+  "Sin vigilante ahora",
+  "Ubicación"
+ ],
+ "src/components/TrialBanner.tsx": [
+  "Activar suscripción",
+  "Tu prueba gratuita termina hoy."
+ ],
+ "src/components/radio/RadioVoiceWidget.tsx": [
+  "No se pudo finalizar el pase",
+  "No se pudo iniciar el pase"
+ ],
+ "src/pages/admin/visitor-management/Visitors.tsx": [
+  "Bitácoras",
+  "Bitácoras - Imprimir"
+ ],
+ "src/pages/admin/passdown/PassdownsPage.tsx": [
+  "No se pudo cargar el pase de turno",
+  "Sin novedades registradas."
+ ],
+ "src/pages/admin/programmer/ShiftStatus.tsx": [
+  "Estado del Turno",
+  "Sin asignar"
+ ],
+ "src/pages/guard/registration.tsx": [
+  "Completa tus datos para activar tu cuenta.",
+  "Registro de vigilante"
+ ],
+ "src/components/AppErrorBoundary.tsx": [
+  "Error de renderizado"
+ ],
+ "src/components/ui/confirmDialog.tsx": [
+  "Confirmar acción"
+ ],
+ "src/pages/admin/Configuration/rondas-settings/RondasSettingsPage.tsx": [
+  "Configuraciones de Rondas"
+ ],
+ "src/pages/admin/training/TrainingEnrollmentsPage.tsx": [
+  "Progreso del curso"
+ ],
+ "src/pages/admin/post-sites/station-detail/components/StationSiteTours.tsx": [
+  "Eliminar punto de control"
+ ],
+ "src/pages/admin/security-guards/components/GuardReviews/GuardReviewsPage.tsx": [
+  "No se pudo registrar"
+ ],
+ "src/pages/admin/clientes/components/ClientCardsGrid.tsx": [
+  "Sin acceso"
+ ],
+ "src/lib/validators/invite-by-link.schema.ts": [
+  "Enlace inválido"
+ ]
+}

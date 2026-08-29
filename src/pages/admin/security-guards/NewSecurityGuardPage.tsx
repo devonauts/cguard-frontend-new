@@ -400,7 +400,7 @@ export default function NewSecurityGuardPage() {
         } catch (err) {
           console.warn('[GuardCreate] no se pudo archivar la hoja de vida', err);
           toast.warning('Creamos el vigilante, pero no pudimos archivar la hoja de vida.', {
-            description: 'Súbela desde su ficha, en Documentos.',
+            description: t('guards.create.cvUploadHint', 'Súbela desde su ficha, en Documentos.'),
           });
         }
       }

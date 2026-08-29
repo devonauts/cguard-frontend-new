@@ -60,7 +60,7 @@ export function DispatchDetailsContent({ requestId, resourceTypeProp }: { reques
     if (!newComment || newComment.trim() === '') { toast.error(t('ui.DispatchDetailsPage.escribeUnComentario')); return; }
     try {
       const tenantId = localStorage.getItem('tenantId');
-      if (!tenantId) { toast.error('Tenant no disponible'); return; }
+      if (!tenantId) { toast.error(t('dispatcher.tenantUnavailable', 'Tenant no disponible')); return; }
       setCommentsLoading(true);
       const api = (await import('@/lib/api')).default;
 

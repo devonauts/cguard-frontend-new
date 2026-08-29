@@ -32,7 +32,7 @@ export function TrendPanel({ incidents, response, acquisition, className }: {
     },
     respuesta: {
       label: "Respuesta", icon: <Timer />, tone: "info", data: response,
-      subtitle: "Minutos promedio hasta la primera respuesta", suffix: " min", to: "/analytics/reporting", mejorSi: "menor",
+      subtitle: t('dashboard.trend.responseSubtitle', "Minutos promedio hasta la primera respuesta"), suffix: " min", to: "/analytics/reporting", mejorSi: "menor",
     },
     clientes: {
       label: "Clientes", icon: <Building2 />, tone: "brand", data: acquisition,

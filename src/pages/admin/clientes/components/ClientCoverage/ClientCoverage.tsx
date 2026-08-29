@@ -71,12 +71,15 @@ interface CoverageData {
 }
 
 /** El punto del pin sale del semántico, nunca de un color escrito a mano. */
-const STATUS_META: Record<string, { label: string; tone: BadgeTone; dot: string; role: string }> = {
-  cubierto:            { label: 'Cubierto',      tone: 'ok',      dot: 'var(--ok)',        role: 'ok' },
-  parcial:             { label: 'Parcial',       tone: 'warn',    dot: 'var(--warn)',      role: 'warn' },
-  asignado_sin_marcar: { label: 'Sin marcar',    tone: 'warn',    dot: 'var(--warn)',      role: 'warn' },
-  sin_cobertura:       { label: 'Sin cobertura', tone: 'bad',     dot: 'var(--bad)',       role: 'crit' },
-  sin_turno:           { label: 'Sin turno',     tone: 'neutral', dot: 'var(--ink-faint)', role: 'muted' },
+/* `label` queda como texto por defecto (español) y `labelKey` es la clave que se
+   traduce DONDE SE PINTA: t(meta.labelKey, meta.label). Traducir aquí congelaría
+   el texto en el idioma de arranque, porque el módulo se evalúa una sola vez. */
+const STATUS_META: Record<string, { labelKey: string; label: string; tone: BadgeTone; dot: string; role: string }> = {
+  cubierto:            { labelKey: 'coverage.status.covered',          label: 'Cubierto',      tone: 'ok',      dot: 'var(--ok)',        role: 'ok' },
+  parcial:             { labelKey: 'ui.ClientCoverage.parcial',        label: 'Parcial',       tone: 'warn',    dot: 'var(--warn)',      role: 'warn' },
+  asignado_sin_marcar: { labelKey: 'ui.ClientCoverage.sinMarcar',      label: 'Sin marcar',    tone: 'warn',    dot: 'var(--warn)',      role: 'warn' },
+  sin_cobertura:       { labelKey: 'ui.ClientCoverage.sinCobertura',   label: 'Sin cobertura', tone: 'bad',     dot: 'var(--bad)',       role: 'crit' },
+  sin_turno:           { labelKey: 'ui.ClientCoverage.sinTurno',       label: 'Sin turno',     tone: 'neutral', dot: 'var(--ink-faint)', role: 'muted' },
 };
 
 function Bar({ pct, status }: { pct: number; status: string }) {
@@ -152,7 +155,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
       if (selectedId === p.id) setSelectedId(null);
       await load(sedeId, true);
     } catch (e: any) {
-      toast.error(e?.message || 'No se pudo eliminar la estación');
+      toast.error(e?.message || t('ui.ClientCoverage.noSePudoEliminarLaEstacion', 'No se pudo eliminar la estación'));
     }
   };
 
@@ -337,7 +340,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
                               <div className="flex items-center gap-2"><span className="w-8 text-xs tabular-nums">{p.coveragePct}%</span><Bar pct={p.coveragePct} status={p.status} /></div>
                             )}
                           </td>
-                          <td className="px-2 py-2.5"><StatusBadge tone={meta.tone} className="whitespace-nowrap">{meta.label}</StatusBadge></td>
+                          <td className="px-2 py-2.5"><StatusBadge tone={meta.tone} className="whitespace-nowrap">{t(meta.labelKey, meta.label)}</StatusBadge></td>
                           <td className="px-2 py-2.5 whitespace-nowrap">
                             {p.lastActivity?.type === 'ronda' ? <span className="inline-flex items-center gap-1 text-xs font-semibold" style={{ color: 'var(--ok-text)' }}><RouteIcon className="h-3.5 w-3.5" />{" "}{t('ui.ClientCoverage.rondaActiva')}</span>
                               : p.lastActivity?.type === 'checkin' ? <div><div className="tabular-nums">{p.lastActivity.time}</div><div className="text-xs" style={{ color: 'var(--ink-faint)' }}>Entrada marcada</div></div>
@@ -438,7 +441,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
                 {/* Legend */}
                 <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs" style={{ color: 'var(--ink-soft)' }}>
                   {Object.entries(STATUS_META).map(([k, m]) => (
-                    <span key={k} className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full" style={{ background: m.dot }} />{m.label}</span>
+                    <span key={k} className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full" style={{ background: m.dot }} />{t(m.labelKey, m.label)}</span>
                   ))}
                 </div>
               </>
@@ -451,8 +454,8 @@ export default function ClientCoverage({ client }: { client: Client }) {
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <div className="font-semibold">{selected.name}</div>
-                  <div className="mt-0.5 text-xs" style={{ color: 'var(--ink-soft)' }}>{selected.type === 'patrulla' ? 'Patrulla' : 'Fijo'} · {selected.window || 'Sin turno'}</div>
-                  <div className="mt-1"><StatusBadge tone={(STATUS_META[selected.status] || STATUS_META.sin_turno).tone}>{(STATUS_META[selected.status] || STATUS_META.sin_turno).label}</StatusBadge></div>
+                  <div className="mt-0.5 text-xs" style={{ color: 'var(--ink-soft)' }}>{selected.type === 'patrulla' ? 'Patrulla' : 'Fijo'} · {selected.window || t('ui.ClientCoverage.sinTurno', 'Sin turno')}</div>
+                  <div className="mt-1"><StatusBadge tone={(STATUS_META[selected.status] || STATUS_META.sin_turno).tone}>{t((STATUS_META[selected.status] || STATUS_META.sin_turno).labelKey, (STATUS_META[selected.status] || STATUS_META.sin_turno).label)}</StatusBadge></div>
                   {Number.isFinite(selected.lat)
                     ? <div className="mt-2 text-xs tabular-nums" style={{ color: 'var(--ink-soft)' }}>{selected.lat!.toFixed(6)}, {selected.lng!.toFixed(6)}</div>
                     : <div className="mt-2 text-xs" style={{ color: 'var(--warn-text)' }}>{t("ui.ClientCoverage.estePuestoAunNoTiene", "Este puesto aún no tiene ubicación exacta.")}</div>}
@@ -506,7 +509,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
                       <IconTile tone="bad" size="sm"><Shield /></IconTile>
                       <div>
                         <div className="text-sm font-medium">{p.name}</div>
-                        <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{p.window || 'Sin turno'} {p.turno ? `(${p.turno})` : ''} · Requiere {p.requiredGuards} {p.requiredGuards === 1 ? 'vigilante' : 'vigilantes'}</div>
+                        <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{p.window || t('ui.ClientCoverage.sinTurno', 'Sin turno')} {p.turno ? `(${p.turno})` : ''} · Requiere {p.requiredGuards} {p.requiredGuards === 1 ? 'vigilante' : 'vigilantes'}</div>
                       </div>
                     </div>
                     <span className="inline-flex items-center gap-1 text-xs font-semibold" style={{ color: 'var(--bad-text)' }}>{t("ui.ClientCoverage.sinAsignacion", "Sin asignación")}{" "}<ChevronRight className="h-3.5 w-3.5" /></span>

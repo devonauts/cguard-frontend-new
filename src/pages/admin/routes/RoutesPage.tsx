@@ -168,7 +168,7 @@ export default function RoutesPage() {
       setSelectedIds([]);
       reload();
     } catch (e: any) {
-      toast.error(String(e?.message || e?.toString() || 'No se pudieron eliminar las rutas'));
+      toast.error(String(e?.message || e?.toString() || t('routes.list.bulkDeleteError', 'No se pudieron eliminar las rutas')));
     } finally {
       setBulkBusy(false);
     }

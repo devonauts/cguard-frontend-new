@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import { Route as RouteIcon } from "lucide-react";
 import { loadGoogleMaps } from "@/utils/loadGoogleMaps";
 import { estiloMapa, huella, pielDe, useMapPalette, type MapPalette } from "@/utils/mapTheme";
@@ -102,10 +104,12 @@ const MS_REVISION = 20000;
 
 type EstadoUnidad = "activo" | "detenido" | "sinSenal";
 
-const ESTADO: Record<EstadoUnidad, { etiqueta: string; tono: Tono; pop: "ok" | "info" | "neutral" }> = {
-  activo: { etiqueta: "En servicio", tono: "bien", pop: "ok" },
-  detenido: { etiqueta: "Detenido", tono: "info", pop: "info" },
-  sinSenal: { etiqueta: "Sin señal", tono: "tenue", pop: "neutral" },
+// Mapa de módulo: la etiqueta se traduce donde se pinta (`clave`), nunca aquí,
+// porque un t() a la carga del módulo congela el idioma de arranque.
+const ESTADO: Record<EstadoUnidad, { clave: string; etiqueta: string; tono: Tono; pop: "ok" | "info" | "neutral" }> = {
+  activo: { clave: "tracking.unitState.active", etiqueta: "En servicio", tono: "bien", pop: "ok" },
+  detenido: { clave: "tracking.unitState.stopped", etiqueta: "Detenido", tono: "info", pop: "info" },
+  sinSenal: { clave: "tracking.unitState.noSignal", etiqueta: "Sin señal", tono: "tenue", pop: "neutral" },
 };
 
 interface RegistroUnidad {
@@ -133,9 +137,9 @@ function colorDeEstado(pal: MapPalette, estado: EstadoUnidad): string {
 /** Las dos cifras grandes del globo de una unidad. Vive fuera del componente
  *  porque se calculan en dos sitios —al abrir y en cada refresco en vivo— y
  *  tienen que decir exactamente lo mismo. */
-function metricasDe(u: LiveUnit, estado: EstadoUnidad): MapPopupMetric[] {
+function metricasDe(u: LiveUnit, estado: EstadoUnidad, t: TFunction): MapPopupMetric[] {
   return mapPopupItems<MapPopupMetric>(
-    { label: "Última señal", value: haceCuanto(u.at), tone: estado === "sinSenal" ? "warn" : undefined },
+    { label: t("ui.AlarmCaseDetail.ultimaSenal", "Última señal"), value: haceCuanto(u.at), tone: estado === "sinSenal" ? "warn" : undefined },
     u.bateria != null
       ? { label: "Batería", value: `${Math.round(u.bateria)}%`, tone: u.bateria <= 20 ? "bad" : undefined }
       : null,
@@ -163,6 +167,7 @@ export default function RouteTrackingMap({
   /** Panel de cristal flotante con el avance del día. */
   hud?: boolean;
 }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
@@ -395,7 +400,7 @@ export default function RouteTrackingMap({
       u.kind === "guard" && u.guardId
         ? {
             id: "recorrido",
-            label: "Ver recorrido de hoy",
+            label: t("tracking.viewTodayRoute", "Ver recorrido de hoy"),
             icon: <RouteIcon />,
             variant: "primary" as const,
             onClick: () => navigate(`/tracking-history?guard=${encodeURIComponent(u.guardId!)}&from=${dia}&to=${dia}`),
@@ -420,8 +425,8 @@ export default function RouteTrackingMap({
       kind: u.kind === "supervisor" ? "supervisor" : "guard",
       title: u.nombre,
       subtitle: `${u.kind === "supervisor" ? "Supervisor" : "Vigilante"}${u.sub ? ` · ${u.sub}` : ""}`,
-      status: { label: e.etiqueta, tone: e.pop, live: rec.estado !== "sinSenal" },
-      metrics: metricasDe(u, rec.estado),
+      status: { label: t(e.clave, e.etiqueta), tone: e.pop, live: rec.estado !== "sinSenal" },
+      metrics: metricasDe(u, rec.estado, t),
       fields: mapPopupItems(
         { label: "Velocidad", value: kmh(u.velocidad ?? null), mono: true },
         { label: "En servicio desde", value: u.desde ? fechaHora(u.desde) : "—", mono: true },
@@ -555,8 +560,8 @@ export default function RouteTrackingMap({
       // «última señal» y la batería tienen que envejecer solas.
       if (popRef.current.isOpen && popRef.current.openId === u.id) {
         popRef.current.update({
-          status: { label: ESTADO[rec.estado].etiqueta, tone: ESTADO[rec.estado].pop, live: rec.estado !== "sinSenal" },
-          metrics: metricasDe(u, rec.estado),
+          status: { label: t(ESTADO[rec.estado].clave, ESTADO[rec.estado].etiqueta), tone: ESTADO[rec.estado].pop, live: rec.estado !== "sinSenal" },
+          metrics: metricasDe(u, rec.estado, t),
         });
       }
     });
@@ -665,7 +670,7 @@ export default function RouteTrackingMap({
                   <>
                     <span className="cc-map-key"><i style={{ color: "var(--ok)" }} />En servicio · {conteo.activos}</span>
                     <span className="cc-map-key"><i style={{ color: "var(--info)" }} />Detenido · {conteo.detenidos}</span>
-                    <span className="cc-map-key"><i style={{ color: "var(--ink-faint)" }} />Sin señal · {conteo.sinSenal}</span>
+                    <span className="cc-map-key"><i style={{ color: "var(--ink-faint)" }} />{t("tracking.unitState.noSignal", "Sin señal")} · {conteo.sinSenal}</span>
                   </>
                 ) : (
                   <>

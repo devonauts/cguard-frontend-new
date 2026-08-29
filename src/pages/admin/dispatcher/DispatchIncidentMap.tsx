@@ -198,11 +198,11 @@ export default function DispatchIncidentMap({
         subtitle: `${formatearDistancia(r.metros)} · ${formatearMinutos(r.minutos)} aprox.`,
         status: r.presentes.length
           ? { label: `${r.presentes.length} en puesto`, tone: 'ok' }
-          : { label: 'Sin vigilante ahora', tone: 'neutral' },
+          : { label: t('ui.DispatchIncidentMap.sinVigilanteAhora', 'Sin vigilante ahora'), tone: 'neutral' },
       });
     });
     return lista;
-  }, [cercanos, cliente, estado, incidente, ticket, tipo, tonoIncidente]);
+  }, [cercanos, cliente, estado, incidente, t, ticket, tipo, tonoIncidente]);
 
   /** El detalle de cada globo: cifras de despacho y botones que hacen algo. */
   const globoDe = (m: MapEmbedMarker): Partial<MapPopupData> | null => {
@@ -212,12 +212,12 @@ export default function DispatchIncidentMap({
         fields: mapPopupItems(
           tipo ? { label: 'Tipo', value: tipo } : null,
           prioridad ? { label: 'Prioridad', value: prioridad } : null,
-          direccion ? { label: 'Ubicación', value: direccion, wide: true } : null,
+          direccion ? { label: t('ui.NominaRecords.ubicacion', 'Ubicación'), value: direccion, wide: true } : null,
           { label: 'Coordenadas', value: formatearCoord(m.lat, m.lng), mono: true, wide: true },
         ),
         metrics: mapPopupItems(
           conGente.length
-            ? { label: 'Más cercano con vigilante', value: formatearDistancia(conGente[0].metros) }
+            ? { label: t('ui.DispatchIncidentMap.masCercanoConVigilante', 'Más cercano con vigilante'), value: formatearDistancia(conGente[0].metros) }
             : null,
           conGente.length
             ? { label: 'Llegada estimada', value: formatearMinutos(conGente[0].minutos) }
@@ -339,7 +339,7 @@ export default function DispatchIncidentMap({
                       className="mt-0.5 block truncate text-[11px]"
                       style={{ color: r.presentes.length ? 'var(--ok-text)' : 'var(--warn-text)' }}
                     >
-                      {r.presentes.length ? r.presentes.join(', ') : 'Sin vigilante ahora'}
+                      {r.presentes.length ? r.presentes.join(', ') : t('ui.DispatchIncidentMap.sinVigilanteAhora', 'Sin vigilante ahora')}
                     </span>
                   </span>
                 </button>

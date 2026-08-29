@@ -33,11 +33,13 @@ function displayName(c: Client): string {
     return last && last.toLowerCase() !== "null" ? `${c.name} ${last}` : c.name;
 }
 
-const APP_BADGE: Record<string, { label: string; tone: "neutral" | "warn" | "ok" | "bad" }> = {
-    not_invited: { label: "Sin acceso", tone: "neutral" },
-    invited: { label: "Invitado", tone: "warn" },
-    active: { label: "En app", tone: "ok" },
-    suspended: { label: "Suspendido", tone: "bad" },
+// Constante de módulo: se evalúa al cargar, antes de que el idioma esté listo.
+// Por eso guarda la CLAVE y el texto se traduce donde se pinta.
+const APP_BADGE: Record<string, { labelKey: string; label: string; tone: "neutral" | "warn" | "ok" | "bad" }> = {
+    not_invited: { labelKey: "clients.onboarding.not_invited", label: "Sin acceso", tone: "neutral" },
+    invited: { labelKey: "clients.onboarding.invited", label: "Invitado", tone: "warn" },
+    active: { labelKey: "clients.onboarding.active", label: "En app", tone: "ok" },
+    suspended: { labelKey: "clients.onboarding.suspended", label: "Suspendido", tone: "bad" },
 };
 
 export default function ClientCardsGrid({
@@ -109,7 +111,7 @@ export default function ClientCardsGrid({
                                     <StatusBadge tone={isActive ? "ok" : "bad"}>
                                         {isActive ? "Activo" : "Archivado"}
                                     </StatusBadge>
-                                    <StatusBadge tone={app.tone}>{app.label}</StatusBadge>
+                                    <StatusBadge tone={app.tone}>{t(app.labelKey, app.label)}</StatusBadge>
                                 </div>
                             </div>
                             {actions.length > 0 && (

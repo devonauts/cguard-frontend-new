@@ -21,11 +21,17 @@ import type { MapEntity } from "../types";
 /** Cobertura de un puesto — el eje semántico de su chincheta. */
 export type Cobertura = "cubierto" | "riesgo" | "sinCubrir" | "sinDatos";
 
-export const COBERTURA_LABEL: Record<Cobertura, string> = {
-  cubierto: "Cubierto",
-  riesgo: "En riesgo",
-  sinCubrir: "Sin cubrir",
-  sinDatos: "Sin datos de GPS",
+/**
+ * Etiqueta de cada estado de cobertura. Guarda la CLAVE junto al texto español:
+ * este fichero es aritmética pura y el objeto se construye al importarlo, antes
+ * de que i18next sepa el idioma. Se traduce donde se pinta (`OperationsMapPopup`),
+ * nunca aquí.
+ */
+export const COBERTURA_LABEL: Record<Cobertura, { label: string; labelKey: string }> = {
+  cubierto: { label: "Cubierto", labelKey: "coverage.status.covered" },
+  riesgo: { label: "En riesgo", labelKey: "coverage.status.at_risk" },
+  sinCubrir: { label: "Sin cubrir", labelKey: "coverage.status.uncovered" },
+  sinDatos: { label: "Sin datos de GPS", labelKey: "coverage.status.noGps" },
 };
 
 export interface PuestoEstado {

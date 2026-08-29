@@ -1,0 +1,123 @@
+[
+  {
+    "fichero": "src/components/alarm/AlarmVideoVerification.tsx",
+    "literales": [
+      "Recortar y enviar"
+    ]
+  },
+  {
+    "fichero": "src/components/notifications/PanicAlertOverlay.tsx",
+    "literales": [
+      "Llamar al sitio",
+      "Abriendo el mapa…"
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/Configuration/components/ProfileUserForm.tsx",
+    "literales": [
+      "Es el nombre con el que te ve el resto del equipo."
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/Reports/DataReport.tsx",
+    "literales": [
+      "Sin datos",
+      "Generado por CGuardPro"
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/alarm/AlarmCaseDetail.tsx",
+    "literales": [
+      "title=\"Panel y sitio\""
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/clientes/ClientsPage.tsx",
+    "literales": [
+      "Enlaces a Google Play y App Store"
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/clientes/components/ClientStaff/ClientStaff.tsx",
+    "literales": [
+      "En ruta"
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/dispatcher/DispatchIncidentMap.tsx",
+    "literales": [
+      "Distancia en línea recta; el tiempo es una estimación en vehículo, sin tráfico."
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/inventory/GlobalInventoryPage.tsx",
+    "literales": [
+      "N.º de serie",
+      "label=\"En mantenimiento\"",
+      "label=\"N.º de serie\"",
+      "label=\"N.º de serie\""
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/nomina/NominaTimeClock.tsx",
+    "literales": [
+      "En un puesto",
+      "Se solicitará tu ubicación para confirmar que estás dentro del área del puesto."
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/post-sites/station-detail/components/StationRondaHistory.tsx",
+    "literales": [
+      "En progreso",
+      "Ver detalle y revisar"
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/programmer/ShiftStatus.tsx",
+    "literales": [
+      "En curso",
+      "En Progreso",
+      "label=\"En curso\""
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/security-guards/NewSecurityGuardPage.tsx",
+    "literales": [
+      "title=\"Certificaciones y Documentos Profesionales\""
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/security-guards/components/GuardSummary/GuardSummarypage.tsx",
+    "literales": [
+      "Estación · Puesto"
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/supervisors/SupervisorCoveragePage.tsx",
+    "literales": [
+      "Zonas y puestos que este supervisor cubre según sus asignaciones."
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/training/TrainingCoursesPage.tsx",
+    "literales": [
+      "Puntos al completar",
+      "placeholder=\"Ej. Primeros auxilios en seguridad\""
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/visitor-management/Visitors.tsx",
+    "literales": [
+      "En curso",
+      "En curso"
+    ]
+  },
+  {
+    "fichero": "src/pages/client/registration.tsx",
+    "literales": [
+      "Vigilantes y puestos en tiempo real, rondas con GPS, incidentes y reportes.",
+      "Inicia sesión en la app con el correo y la contraseña que acabas de crear.",
+      "alt=\"Descargar en Google Play\""
+    ]
+  }
+]

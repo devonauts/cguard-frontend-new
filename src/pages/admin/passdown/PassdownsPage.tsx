@@ -83,7 +83,7 @@ export default function PassdownsPage() {
       const r = await passdownService.get(row.id);
       setDetail(r.passdown);
     } catch (e: any) {
-      toast.error(e?.message || "No se pudo cargar el pase de turno");
+      toast.error(e?.message || t("passdown.loadDetailError", "No se pudo cargar el pase de turno"));
       setDetailOpen(false);
     } finally {
       setDetailLoading(false);
@@ -217,7 +217,7 @@ export default function PassdownsPage() {
             <div>
               <div className="cg-eyebrow mb-1">Novedades</div>
               <p className="glass-sunken whitespace-pre-wrap p-3 text-sm" style={{ color: "var(--ink)" }}>
-                {detail.notes?.trim() || "Sin novedades registradas."}
+                {detail.notes?.trim() || t("passdown.noNotes", "Sin novedades registradas.")}
               </p>
             </div>
 

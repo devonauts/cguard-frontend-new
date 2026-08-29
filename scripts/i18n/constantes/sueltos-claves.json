@@ -1,0 +1,13 @@
+{
+  "station.schedule.24h": "24 horas",
+  "station.schedule.12h-day": "12h diurno",
+  "station.schedule.12h-night": "12h nocturno",
+  "station.schedule.custom": "Personalizado",
+  "station.schedule.undefined": "Horario sin definir",
+  "rotation.none": "Sin rotación",
+  "rotation.days": "{{count}} día",
+  "rotation.nights": "{{count}} noche",
+  "rotation.rests": "{{count}} descanso",
+  "invite.staff.subtitleRoleAt": "Te han invitado como {{role}} en {{empresa}}. Crea tu contraseña y entra al panel.",
+  "invite.staff.subtitleRole": "Te han invitado como {{role}}. Crea tu contraseña y entra al panel."
+}

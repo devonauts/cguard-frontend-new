@@ -53,7 +53,7 @@ export default function StaticMapImage({
   children,
   height = '256px',
   className = '',
-  alt = 'Mapa de la ubicación',
+  alt,
   interactive = true,
   ...mapOptions
 }: StaticMapImageProps) {
@@ -114,7 +114,7 @@ export default function StaticMapImage({
         <>
           <img
             src={url}
-            alt={alt}
+            alt={alt ?? t('maps.static.altDefault', 'Mapa de la ubicación')}
             loading="lazy"
             decoding="async"
             onError={() => setImagenRota(true)}

@@ -14,6 +14,7 @@
  * WebRTC + getUserMedia, so it needs NO permission beyond RECORD_AUDIO (already
  * granted) and rides the Phase-1 microphone foreground service for background.
  */
+import i18n from "@/i18n";
 import {
   Room,
   RoomEvent,
@@ -158,7 +159,9 @@ export class VoiceChannel {
       } catch { /* user can still grant on first PTT */ }
     } catch (e: any) {
       this.cb.onState?.("error");
-      this.cb.onError?.(e?.message || "No se pudo conectar la radio");
+      // Dentro del método (no en el cuerpo del módulo): se resuelve al fallar,
+      // con el idioma que esté activo entonces.
+      this.cb.onError?.(e?.message || i18n.t("radio.voice.connectError", "No se pudo conectar la radio"));
     }
   }
 
@@ -195,7 +198,7 @@ export class VoiceChannel {
   }
 
   async startTalk(): Promise<{ ok: boolean; busyWith?: string; error?: string }> {
-    if (!this.room || !this.connected) return { ok: false, error: "Radio no conectada" };
+    if (!this.room || !this.connected) return { ok: false, error: i18n.t("radio.voice.notConnected", "Radio no conectada") };
     try {
       await this.room.localParticipant.setMicrophoneEnabled(true);
       return { ok: true };

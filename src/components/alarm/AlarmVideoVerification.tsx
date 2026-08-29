@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Video, Scissors, Film, ExternalLink } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import { alarmService } from "@/lib/api/alarmService";
  *  the auto-captured verification clip(s), with one-click trim-and-send to the
  *  customer. Self-contained; hides itself when no camera/clip is linked. */
 export default function AlarmVideoVerification({ caseId }: { caseId: string }) {
+  const { t } = useTranslation();
   const [cameras, setCameras] = useState<any[]>([]);
   const [clips, setClips] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,7 +54,7 @@ export default function AlarmVideoVerification({ caseId }: { caseId: string }) {
             <div key={cam.id} className="overflow-hidden rounded-lg border border-border/60 bg-black/40">
               <VideoPlayer camera={cam} className="aspect-video w-full" />
               <div className="flex items-center justify-between gap-2 px-3 py-2">
-                <span className="truncate text-xs font-medium text-foreground" title={cam.name}>{cam.name || "Cámara"}</span>
+                <span className="truncate text-xs font-medium text-foreground" title={cam.name}>{cam.name || t("ui.AlarmVideoVerification.camara", "Cámara")}</span>
                 <Button size="sm" variant="outline" className="h-7 gap-1 text-xs" onClick={() => setTrimCam(cam)}>
                   <Scissors className="size-3.5" /> Recortar y enviar
                 </Button>
@@ -67,7 +69,7 @@ export default function AlarmVideoVerification({ caseId }: { caseId: string }) {
           {clips.map((cl) => (
             <div key={cl.id} className="flex items-center gap-2 rounded-lg border border-border/50 bg-background px-3 py-2 text-xs">
               <Film className="size-3.5 shrink-0 text-primary" />
-              <span className="min-w-0 flex-1 truncate text-foreground" title={cl.label}>{cl.label || "Clip de verificación"}</span>
+              <span className="min-w-0 flex-1 truncate text-foreground" title={cl.label}>{cl.label || t("ui.AlarmVideoVerification.clipDeVerificacion", "Clip de verificación")}</span>
               <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">{cl.status || "pending"}</span>
               {cl.shareToken && (
                 <a

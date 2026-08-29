@@ -119,7 +119,7 @@ export default function SupervisionSection({
           <button
             onClick={() => setAbierta((v) => !v)}
             className="cg-btn-ghost cg-focus rounded p-0.5"
-            aria-label={abierta ? 'Contraer supervisión' : 'Expandir supervisión'}
+            aria-label={abierta ? t('ui.SupervisionSection.contraerSupervision', 'Contraer supervisión') : t('ui.SupervisionSection.expandirSupervision', 'Expandir supervisión')}
           >
             {abierta ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
           </button>

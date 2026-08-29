@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Route } from "lucide-react";
 import DataReport, { type ReportColumn } from "./DataReport";
@@ -21,19 +21,6 @@ interface TagScan {
 const revisionTexto = (e?: VeredictoRevision | null) =>
   e === "accepted" ? "Aceptado" : e === "rejected" ? "Rechazado" : "Sin revisar";
 
-const columns: ReportColumn<TagScan>[] = [
-  { key: "scanned", label: "Fecha/Hora", value: (r) => formatDateTime(r.scannedAt) },
-  { key: "tour", label: "Recorrido", value: (r) => r.tag?.siteTour?.name || "—" },
-  { key: "tag", label: "Punto (etiqueta)", value: (r) => r.tag?.name || r.tag?.tagIdentifier || "—" },
-  { key: "guard", label: "Vigilante", value: (r) => r.guard?.fullName || "—", privacy: "guardName" },
-  { key: "station", label: "Estación", value: (r) => r.station?.stationName || "—" },
-  { key: "valid", label: "Ubicación", value: (r) => (r.validLocation ? "Válida" : "Fuera de rango"), align: "center" },
-  { key: "dist", label: "Distancia (m)", value: (r) => (r.distanceMeters != null ? Number(r.distanceMeters).toFixed(0) : "—"), align: "right" },
-  // La revisión viaja también al CSV y al PDF: un informe exportado sin el
-  // veredicto de la oficina cuenta la mitad de la historia.
-  { key: "review", label: "Revisión", value: (r) => revisionTexto(r.reviewStatus), align: "center" },
-];
-
 export default function SiteTour() {
   const { t } = useTranslation();
   const [abierto, setAbierto] = useState(false);
@@ -41,6 +28,22 @@ export default function SiteTour() {
   // Cambiar un veredicto no debe obligar a recargar el informe entero: se
   // recarga la tabla en su sitio (`DataReport` vuelve a pedir el rango).
   const recargar = useRef<(() => void) | null>(null);
+
+  // Las etiquetas se arman DENTRO del componente: una constante de módulo se
+  // evalúa al cargar, antes de que el idioma esté listo, y se quedaría congelada.
+  const columns: ReportColumn<TagScan>[] = useMemo(() => [
+    { key: "scanned", label: "Fecha/Hora", value: (r) => formatDateTime(r.scannedAt) },
+    { key: "tour", label: "Recorrido", value: (r) => r.tag?.siteTour?.name || "—" },
+    { key: "tag", label: "Punto (etiqueta)", value: (r) => r.tag?.name || r.tag?.tagIdentifier || "—" },
+    { key: "guard", label: "Vigilante", value: (r) => r.guard?.fullName || "—", privacy: "guardName" },
+    { key: "station", label: "Estación", value: (r) => r.station?.stationName || "—" },
+    { key: "valid", label: "Ubicación", value: (r) => (r.validLocation ? "Válida" : "Fuera de rango"), align: "center" },
+    { key: "dist", label: "Distancia (m)", value: (r) => (r.distanceMeters != null ? Number(r.distanceMeters).toFixed(0) : "—"), align: "right" },
+    // La revisión viaja también al CSV y al PDF: un informe exportado sin el
+    // veredicto de la oficina cuenta la mitad de la historia.
+    { key: "review", label: t('ui.SiteTour.revision', "Revisión"), value: (r) => revisionTexto(r.reviewStatus), align: "center" },
+  ], [t]);
+
 
   const cargar = useCallback(async ({ from, to }: { from: string; to: string }) => {
     const tenantId = localStorage.getItem("tenantId") || "";

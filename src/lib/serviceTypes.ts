@@ -16,6 +16,10 @@ export type ServiceTypeValue =
 export interface ServiceTypeDefinition {
   value: ServiceTypeValue;
   label: string;        // display name (Spanish)
+  /** Clave i18n del rótulo. Se traduce donde se pinta (nunca aquí: esto es
+   *  una constante de módulo y `t()` congelaría el idioma de arranque). */
+  labelKey: string;
+  descriptionKey: string;
   labelEn: string;      // display name (English)
   description: string;  // short description for the picker
   color: string;        // Tailwind bg color class
@@ -30,6 +34,8 @@ export const SERVICE_TYPES: ServiceTypeDefinition[] = [
   {
     value: 'manned',
     label: 'Vigilancia con Vigilantes',
+    labelKey: 'serviceTypes.manned',
+    descriptionKey: 'serviceTypes.manned_desc',
     labelEn: 'Manned Guarding',
     description: 'Vigilantes de seguridad asignados al puesto de forma permanente o por turno.',
     color: 'bg-amber-50',
@@ -42,6 +48,8 @@ export const SERVICE_TYPES: ServiceTypeDefinition[] = [
   {
     value: 'alarm',
     label: 'Alarma y Respuesta',
+    labelKey: 'serviceTypes.alarm',
+    descriptionKey: 'serviceTypes.alarm_desc',
     labelEn: 'Alarm Response',
     description: 'Monitoreo de alarmas y respuesta rápida ante eventos de seguridad.',
     color: 'bg-red-50',
@@ -54,6 +62,8 @@ export const SERVICE_TYPES: ServiceTypeDefinition[] = [
   {
     value: 'cctv',
     label: 'Videovigilancia',
+    labelKey: 'serviceTypes.cctv',
+    descriptionKey: 'serviceTypes.cctv_desc',
     labelEn: 'CCTV Monitoring',
     description: 'Monitoreo remoto mediante cámaras y circuito cerrado de televisión.',
     color: 'bg-purple-50',
@@ -66,6 +76,8 @@ export const SERVICE_TYPES: ServiceTypeDefinition[] = [
   {
     value: 'patrol',
     label: 'Patrulla Móvil',
+    labelKey: 'serviceTypes.patrol',
+    descriptionKey: 'serviceTypes.patrol_desc',
     labelEn: 'Mobile Patrol',
     description: 'Supervisores que realizan rondas periódicas en una o varias instalaciones.',
     color: 'bg-blue-50',
@@ -78,6 +90,8 @@ export const SERVICE_TYPES: ServiceTypeDefinition[] = [
   {
     value: 'custody',
     label: 'Custodia y Escolta',
+    labelKey: 'serviceTypes.custody',
+    descriptionKey: 'serviceTypes.custody_desc',
     labelEn: 'Custody & Escort',
     description: 'Protección personal o custodia de bienes de alto valor.',
     color: 'bg-slate-50',

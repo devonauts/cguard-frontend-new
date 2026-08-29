@@ -429,7 +429,7 @@ export function DispatchDetailsContent({ requestId }: { requestId?: string | nul
                       </button>
                     ) : null}
                   </div>
-                  <div className="text-xs text-foreground mt-2 truncate">{selectedFile ? selectedFile.name : 'Sin archivos seleccionados'}</div>
+                  <div className="text-xs text-foreground mt-2 truncate">{selectedFile ? selectedFile.name : t('dispatcher.comment.no_files_selected', 'Sin archivos seleccionados')}</div>
                 </div>
               </div>
       </Modal>

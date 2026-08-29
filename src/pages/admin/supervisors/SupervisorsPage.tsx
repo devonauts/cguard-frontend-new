@@ -23,9 +23,16 @@ import { confirmDialog } from "@/components/ui/confirmDialog";
 
 type StatFilter = "todos" | "enTurno" | "fuera" | "conVehiculo";
 
+// Weekday labels are translated where they are painted (see WEEKDAYS.map below):
+// this array is module-level, so a t() call here would freeze the boot language.
 const WEEKDAYS = [
-  { n: 1, label: "Lun" }, { n: 2, label: "Mar" }, { n: 3, label: "Mié" },
-  { n: 4, label: "Jue" }, { n: 5, label: "Vie" }, { n: 6, label: "Sáb" }, { n: 0, label: "Dom" },
+  { n: 1, labelKey: "comun.weekday.short.mon", label: "Lun" },
+  { n: 2, labelKey: "comun.weekday.short.tue", label: "Mar" },
+  { n: 3, labelKey: "comun.weekday.short.wed", label: "Mié" },
+  { n: 4, labelKey: "comun.weekday.short.thu", label: "Jue" },
+  { n: 5, labelKey: "comun.weekday.short.fri", label: "Vie" },
+  { n: 6, labelKey: "comun.weekday.short.sat", label: "Sáb" },
+  { n: 0, labelKey: "comun.weekday.short.sun", label: "Dom" },
 ];
 
 export default function SupervisorsPage() {
@@ -116,7 +123,7 @@ export default function SupervisorsPage() {
       setTurnoDays([]);
       navigate(`/supervisors/${sup.id}`);
     } catch (e: any) {
-      toast.error(e?.message || "No se pudo crear el supervisor");
+      toast.error(e?.message || t("supervisors.errors.createFailed", "No se pudo crear el supervisor"));
     } finally {
       setSaving(false);
     }
@@ -129,7 +136,7 @@ export default function SupervisorsPage() {
       try { if (r?.link) await navigator.clipboard.writeText(r.link); } catch { /* clipboard optional */ }
       toast.success(r?.emailed ? "Invitación reenviada por correo y enlace copiado" : "Enlace de invitación copiado al portapapeles");
     } catch (e: any) {
-      toast.error(e?.message || "No se pudo enviar el acceso a la app");
+      toast.error(e?.message || t("supervisors.errors.resendInviteFailed", "No se pudo enviar el acceso a la app"));
     }
   };
 
@@ -140,7 +147,7 @@ export default function SupervisorsPage() {
       const via = [r?.emailed && "correo", r?.pushed && "push"].filter(Boolean).join(" + ");
       toast.success(`Enlace de restablecimiento ${via ? `enviado por ${via} y ` : ""}copiado al portapapeles`);
     } catch (e: any) {
-      toast.error(e?.message || "No se pudo restablecer la contraseña");
+      toast.error(e?.message || t("supervisors.errors.passwordResetFailed", "No se pudo restablecer la contraseña"));
     }
   };
 
@@ -153,7 +160,7 @@ export default function SupervisorsPage() {
       toast.success(t('ui.SupervisorsPage.supervisorEliminado'));
       load();
     } catch (e: any) {
-      toast.error(e?.message || "No se pudo eliminar el supervisor");
+      toast.error(e?.message || t("supervisors.errors.removeFailed", "No se pudo eliminar el supervisor"));
     }
   };
 
@@ -227,7 +234,7 @@ export default function SupervisorsPage() {
               { f: "todos" as StatFilter, label: "Supervisores", value: rows.length, icon: <Users />, accent: "brand" as const },
               { f: "enTurno" as StatFilter, label: "En turno", value: onDuty, icon: <Radar />, accent: "ok" as const },
               { f: "fuera" as StatFilter, label: "Fuera de turno", value: offDuty, icon: <Clock />, accent: "neutral" as const },
-              { f: "conVehiculo" as StatFilter, label: "Con vehículo", value: withVehicle, icon: <Car />, accent: "warn" as const },
+              { f: "conVehiculo" as StatFilter, label: t("supervisors.stats.withVehicle", "Con vehículo"), value: withVehicle, icon: <Car />, accent: "warn" as const },
             ]).map((c) => (
               <button
                 key={c.f}
@@ -273,7 +280,7 @@ export default function SupervisorsPage() {
             ) : filtered.length === 0 ? (
               <EmptyState
                 icon={<ShieldCheck />}
-                title={rows.length === 0 ? "Aún no hay supervisores" : "Ningún supervisor coincide con el filtro"}
+                title={rows.length === 0 ? t("ui.Supervisors.aunNoHaySupervisores", "Aún no hay supervisores") : "Ningún supervisor coincide con el filtro"}
                 description={rows.length === 0
                   ? "Los supervisores que des de alta aparecerán aquí con su zona, vehículo y estado en turno."
                   : "Prueba con otro texto de búsqueda o quita el filtro de las tarjetas de arriba."}
@@ -320,7 +327,7 @@ export default function SupervisorsPage() {
                         </div>
                         <div className="mt-0.5 flex items-center gap-1.5 text-xs" style={{ color: "var(--ink-soft)" }}>
                           <MapPin className="h-3.5 w-3.5 shrink-0" />
-                          <span className="truncate">{s.zone || "Sin zona asignada"}</span>
+                          <span className="truncate">{s.zone || t("supervisors.card.noZone", "Sin zona asignada")}</span>
                         </div>
                       </div>
                     </div>
@@ -330,7 +337,7 @@ export default function SupervisorsPage() {
                     >
                       <div className="flex items-center gap-1.5">
                         <Car className="h-3.5 w-3.5 shrink-0" />
-                        <span className="truncate">{s.assignedVehicle || "Sin vehículo"}</span>
+                        <span className="truncate">{s.assignedVehicle || t("supervisors.card.noVehicle", "Sin vehículo")}</span>
                       </div>
                       {s.email && (
                         <div className="flex items-center gap-1.5">
@@ -392,7 +399,7 @@ export default function SupervisorsPage() {
                     ? { background: "var(--brand)", color: "var(--brand-ink)", borderColor: "transparent", boxShadow: "0 0 18px -6px var(--brand-glow)" }
                     : { background: "transparent", color: "var(--ink-soft)", borderColor: "var(--hairline)" }}
                 >
-                  {d.label}
+                  {t(d.labelKey, d.label)}
                 </button>
               );
             })}

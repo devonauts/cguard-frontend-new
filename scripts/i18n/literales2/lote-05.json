@@ -1,0 +1,151 @@
+{
+ "src/pages/admin/Configuration/components/NotificationForm.tsx": [
+  "Actualizaciones de tickets de Incidente",
+  "Alerta de inactividad para vigilantes inactivos",
+  "Alertas de geovalla al entrar/salir",
+  "Aprobaciones de asistencia",
+  "Avisos y por dónde llegan",
+  "Botón de pánico",
+  "Cierre del día (VigIA)",
+  "Contrato de cliente por vencer",
+  "Desde las",
+  "Expiración de Licencia",
+  "Horario de silencio",
+  "Incidente grave sin atender",
+  "Los avisos de",
+  "No enviar avisos al teléfono de noche",
+  "No se pudieron guardar las preferencias",
+  "Novedades de asistencia",
+  "Panel de alarma sin comunicar",
+  "Panel de control",
+  "Preferencias de notificación guardadas",
+  "Solicitud de tiempo libre",
+  "Tipo de aviso",
+  "Vehículo con permanencia excedida"
+ ],
+ "src/pages/admin/Configuration/appearance/AppearancePage.tsx": [
+  "Acción principal",
+  "Ajústalo a tu gusto",
+  "Así se verá",
+  "Cumplimiento de rondas",
+  "Cuánto color tiene: de gris apagado a pleno.",
+  "El color de tu empresa",
+  "Fondo blanco, para oficinas con luz",
+  "Fondo negro, descansa la vista de noche",
+  "Intensidad del color",
+  "Sin cubrir",
+  "Sin relieve",
+  "Tono del color",
+  "Turno de hoy",
+  "Últimos 7 días"
+ ],
+ "src/pages/admin/clientes/components/ClientPortal/ClientPortal.tsx": [
+  "Analítica",
+  "Con correo",
+  "Imágenes adjuntas a incidentes y rondas",
+  "No se pudo enviar la invitación. Intenta de nuevo.",
+  "Panel de indicadores del servicio",
+  "Quién fichó en cada puesto y a qué hora",
+  "Recorridos y puntos de control",
+  "Reenviar invitación al portal",
+  "Registro y pre-autorización de visitantes",
+  "Sin correo electrónico",
+  "Ubicación en vivo",
+  "Ver dónde están los vigilantes ahora, en el mapa"
+ ],
+ "src/pages/admin/Configuration/posting-global/PostingGlobalPage.tsx": [
+  "Alertar cuando el vigilante salga de la geocerca",
+  "Alertar también cuando regrese",
+  "Alertas de geocerca en turno",
+  "Configuración Global de Puestos",
+  "Configuración Global de Puestos de Vigilancia",
+  "Escalar el aviso tras",
+  "Exigir turno activo para escanear rondas",
+  "Reglas de puestos guardadas. Aplican de inmediato."
+ ],
+ "src/pages/client/registration.tsx": [
+  "Invitación no encontrada o inválida.",
+  "Registro de Administrador",
+  "Registro de Cliente",
+  "Registro de Supervisor",
+  "Registro de cliente",
+  "Registro de usuario",
+  "Tu acceso quedó listo."
+ ],
+ "src/pages/admin/Configuration/brand/MarcaPage.tsx": [
+  "Apps del equipo",
+  "Cabecera de los correos",
+  "Color de la empresa",
+  "Este color se elegía en",
+  "No se pudo cargar la marca."
+ ],
+ "src/pages/admin/security-guards/components/GuardKPIs/GuardPerformancePanel.tsx": [
+  "A esta persona no se le mide el desempeño",
+  "Medir desempeño",
+  "No se pudo cambiar la medición de desempeño.",
+  "Se dejó de medir el desempeño de esta persona.",
+  "Se volverá a medir el desempeño de esta persona."
+ ],
+ "src/pages/admin/supervisors/SupervisorPositionsPage.tsx": [
+  "No se pudo actualizar",
+  "No se pudo asignar",
+  "No se pudo crear",
+  "No se pudo quitar"
+ ],
+ "src/components/alarm/AlarmActionPlan.tsx": [
+  "No se pudo actualizar el paso",
+  "Notificar policía",
+  "Verificación por video"
+ ],
+ "src/pages/admin/security/shared.tsx": [
+  "Acceso de soporte (CGuardPro)",
+  "Cierre de sesión",
+  "Inicio de sesión"
+ ],
+ "src/lib/data/countries.ts": [
+  "El Salvador",
+  "Réunion",
+  "São Tomé and Príncipe"
+ ],
+ "src/pages/admin/Configuration/language/LanguagePage.tsx": [
+  "Elige el idioma",
+  "Hasta dónde llega"
+ ],
+ "src/pages/admin/dispatcher/DispatcherPage.tsx": [
+  "Error cargando todas las opciones de request:",
+  "Errores de validación:"
+ ],
+ "src/pages/admin/security-guards/components/GuardDepartment/GuardDepartamentoPage.tsx": [
+  "Cambiar de departamento",
+  "No se pudo actualizar el departamento"
+ ],
+ "src/pages/admin/clientes/components/ClientCoverage/ScheduleCard.tsx": [
+  "No se pudo actualizar la asignación",
+  "No se pudo remover"
+ ],
+ "src/lib/validators/post-site.ts": [
+  "Latitud inválida (sólo números y punto decimal)",
+  "Longitud inválida (sólo números y punto decimal)"
+ ],
+ "src/components/clients/ImportDialog.tsx": [
+  "Explorar tu archivo Excel aquí...."
+ ],
+ "src/pages/admin/Configuration/report-settings/ReportSettingsPage.tsx": [
+  "Configuración de Informes"
+ ],
+ "src/pages/admin/gps-tracker/LiveTracking.tsx": [
+  "No se pudieron cargar las rutas"
+ ],
+ "src/pages/admin/post-sites/station-detail/components/StationShifts.tsx": [
+  "No se pudo quitar al vigilante"
+ ],
+ "src/pages/admin/dashboard/control-center/components/TrendPanel.tsx": [
+  "Minutos promedio hasta la primera respuesta"
+ ],
+ "src/pages/admin/routes/RoutesPage.tsx": [
+  "No se pudieron eliminar las rutas"
+ ],
+ "src/config/site.ts": [
+  "Aplicación para comparar CVs"
+ ]
+}

@@ -10,17 +10,17 @@ import { useFileUrl } from "@/lib/fileUrl";
 import { useRadioRealtime } from "@/components/radio/RadioRealtimeProvider";
 import RadioLiveChannelPanel from "@/components/radio/RadioLiveChannelPanel";
 
-const statusBadge: Record<string, { label: string; cls: string }> = {
-  responded: { label: "Respondió", cls: "bg-emerald-500/15 text-emerald-600" },
-  no_response: { label: "Sin respuesta", cls: "bg-red-500/15 text-red-600" },
-  notified: { label: "Llamando…", cls: "bg-amber-500/15 text-amber-600" },
-  pending: { label: "En cola", cls: "bg-zinc-500/15 text-zinc-500" },
-  skipped: { label: "Sin vigilante", cls: "bg-zinc-500/10 text-zinc-400" },
+const statusBadge: Record<string, { label: string; labelKey: string; cls: string }> = {
+  responded: { label: "Respondió", labelKey: "ui.RadioDispatch.status.responded", cls: "bg-emerald-500/15 text-emerald-600" },
+  no_response: { label: "Sin respuesta", labelKey: "ui.RadioDispatch.status.no_response", cls: "bg-red-500/15 text-red-600" },
+  notified: { label: "Llamando…", labelKey: "ui.RadioDispatch.status.notified", cls: "bg-amber-500/15 text-amber-600" },
+  pending: { label: "En cola", labelKey: "ui.RadioDispatch.status.pending", cls: "bg-zinc-500/15 text-zinc-500" },
+  skipped: { label: "Sin vigilante", labelKey: "ui.RadioDispatch.status.skipped", cls: "bg-zinc-500/10 text-zinc-400" },
 };
-const classChip: Record<string, { label: string; cls: string }> = {
-  incident: { label: "Incidente", cls: "bg-red-500/15 text-red-600" },
-  novedad: { label: "Novedad", cls: "bg-amber-500/15 text-amber-600" },
-  sin_novedad: { label: "Sin novedad", cls: "bg-emerald-500/15 text-emerald-600" },
+const classChip: Record<string, { label: string; labelKey: string; cls: string }> = {
+  incident: { label: "Incidente", labelKey: "ui.RadioDispatch.class.incident", cls: "bg-red-500/15 text-red-600" },
+  novedad: { label: "Novedad", labelKey: "ui.RadioDispatch.class.novedad", cls: "bg-amber-500/15 text-amber-600" },
+  sin_novedad: { label: "Sin novedad", labelKey: "ui.RadioDispatch.class.sin_novedad", cls: "bg-emerald-500/15 text-emerald-600" },
 };
 
 /**
@@ -190,10 +190,10 @@ export default function RadioDispatch() {
                 <div className="flex items-center gap-3">
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-semibold">{s.stationName}</p>
-                    <p className="truncate text-xs text-muted-foreground">{(s.onDutyGuards || []).join(", ") || "Sin vigilante en turno"}</p>
+                    <p className="truncate text-xs text-muted-foreground">{(s.onDutyGuards || []).join(", ") || t('ui.RadioDispatch.sinVigilanteEnTurno', 'Sin vigilante en turno')}</p>
                   </div>
-                  {cc && <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${cc.cls}`}>{cc.label}</span>}
-                  {badge && <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${badge.cls}`}>{badge.label}</span>}
+                  {cc && <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${cc.cls}`}>{t(cc.labelKey, cc.label)}</span>}
+                  {badge && <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${badge.cls}`}>{t(badge.labelKey, badge.label)}</span>}
                   <Button className="shrink-0" variant="outline" size="icon" onClick={() => start("station", s.stationId)} disabled={busy || !!running} title={t('ui.RadioDispatch.llamarAEstePuesto')}><Play size={13} /></Button>
                 </div>
                 {e && (e.transcript || e.transcriptStatus === "pending" || e.hasAudio) && (
@@ -223,6 +223,7 @@ export default function RadioDispatch() {
 }
 
 function RecentSessions() {
+  const { t } = useTranslation();
   const { version } = useRadioRealtime();
   const [rows, setRows] = useState<any[]>([]);
   const [openId, setOpenId] = useState<string | null>(null);
@@ -245,7 +246,7 @@ function RecentSessions() {
           <div key={s.id} className="cg-card cg-card-hover">
             <button onClick={() => open(s.id)} className="flex w-full flex-wrap items-center gap-x-3 gap-y-1.5 p-3 text-left">
               <span className="text-xs text-muted-foreground">{new Date(s.startedAt).toLocaleString()}</span>
-              <span className="text-xs">{s.mode === "auto" ? "Automático" : "Manual"}</span>
+              <span className="text-xs">{s.mode === "auto" ? t('ui.RadioDispatch.automatico', 'Automático') : t('ui.RadioDispatch.manual', 'Manual')}</span>
               <span className="flex-1" />
               <span className="text-xs text-emerald-600">{s.respondedCount || 0}✓</span>
               <span className="text-xs text-red-600">{s.noResponseCount || 0}✕</span>
@@ -254,7 +255,7 @@ function RecentSessions() {
             {openId === s.id && detail?.session?.id === s.id && (
               <div className="border-t border-border p-3 text-sm">
                 {detail.session.summary ? <p className="whitespace-pre-wrap">{detail.session.summary}</p>
-                  : <p className="text-xs italic text-muted-foreground">{detail.session.summaryStatus === "skipped" ? "Resumen no disponible (sin clave de IA)." : "Generando resumen…"}</p>}
+                  : <p className="text-xs italic text-muted-foreground">{detail.session.summaryStatus === "skipped" ? t('ui.RadioDispatch.resumenNoDisponibleSinClaveDeIa', 'Resumen no disponible (sin clave de IA).') : t('ui.RadioDispatch.generandoResumen', 'Generando resumen…')}</p>}
               </div>
             )}
           </div>

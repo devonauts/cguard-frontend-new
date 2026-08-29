@@ -66,15 +66,17 @@ interface ContractForm {
 }
 
 // ----- service catalog metadata (drives live-usage on the backend) ----------
-const SERVICE_PRESETS: Record<string, { name: string; unit: string; icon: LucideIcon }> = {
-  fixed_guard: { name: 'Vigilancia fija 24/7', unit: 'Estación', icon: Shield },
-  mobile_patrol: { name: 'Patrullaje móvil', unit: 'Rondas', icon: Car },
-  camera_monitoring: { name: 'Monitoreo de cámaras', unit: 'Cámaras', icon: Monitor },
-  access_control: { name: 'Control de acceso', unit: 'Estación', icon: UserCheck },
-  visitor_management: { name: 'Gestión de visitantes', unit: 'Visitantes', icon: Users },
-  alarm_response: { name: 'Respuesta a alarmas', unit: 'Eventos', icon: Bell },
-  asset_custody: { name: 'Custodia de activos', unit: 'Servicio', icon: Lock },
-  event_security: { name: 'Seguridad para eventos', unit: 'Eventos', icon: CalendarCheck },
+// Constante de módulo: se evalúa al cargar, antes de que el idioma esté listo.
+// Por eso guarda la CLAVE (nameKey) y el nombre se traduce donde se pinta.
+const SERVICE_PRESETS: Record<string, { nameKey?: string; name: string; unit: string; icon: LucideIcon }> = {
+  fixed_guard: { nameKey: 'clients.contract.service.fixedGuard', name: 'Vigilancia fija 24/7', unit: 'Estación', icon: Shield },
+  mobile_patrol: { nameKey: 'clients.contract.service.mobilePatrol', name: 'Patrullaje móvil', unit: 'Rondas', icon: Car },
+  camera_monitoring: { nameKey: 'clients.contract.service.cameraMonitoring', name: 'Monitoreo de cámaras', unit: 'Cámaras', icon: Monitor },
+  access_control: { nameKey: 'clients.contract.service.accessControl', name: 'Control de acceso', unit: 'Estación', icon: UserCheck },
+  visitor_management: { nameKey: 'clients.contract.service.visitorManagement', name: 'Gestión de visitantes', unit: 'Visitantes', icon: Users },
+  alarm_response: { nameKey: 'clients.contract.service.alarmResponse', name: 'Respuesta a alarmas', unit: 'Eventos', icon: Bell },
+  asset_custody: { nameKey: 'clients.contract.service.assetCustody', name: 'Custodia de activos', unit: 'Servicio', icon: Lock },
+  event_security: { nameKey: 'clients.contract.service.eventSecurity', name: 'Seguridad para eventos', unit: 'Eventos', icon: CalendarCheck },
   custom: { name: '', unit: '', icon: ClipboardList },
 };
 const SERVICE_KEYS = Object.keys(SERVICE_PRESETS);
@@ -170,10 +172,12 @@ export default function ClientContract({ client }: { client: Client }) {
   };
 
   // ---- service modal --------------------------------------------------------
+  /** El nombre del preset se traduce AQUÍ, no en la constante de módulo. */
+  const nombrePreset = (p?: { nameKey?: string; name: string }) => (p?.nameKey ? t(p.nameKey, p.name) : (p?.name ?? ''));
   const openSvc = (s?: ContractServiceRow) => {
     setSvcForm(s
       ? { ...s }
-      : { serviceKey: 'fixed_guard', name: SERVICE_PRESETS.fixed_guard.name, unit: SERVICE_PRESETS.fixed_guard.unit, description: '', contractedQty: '', slaTarget: '', active: true });
+      : { serviceKey: 'fixed_guard', name: nombrePreset(SERVICE_PRESETS.fixed_guard), unit: SERVICE_PRESETS.fixed_guard.unit, description: '', contractedQty: '', slaTarget: '', active: true });
     setSvcOpen(true);
   };
   const saveSvc = async () => {
@@ -488,9 +492,9 @@ export default function ClientContract({ client }: { client: Client }) {
               <select className={FIELD_CLS} value={svcForm.serviceKey}
                 onChange={(e) => {
                   const k = e.target.value; const p = SERVICE_PRESETS[k];
-                  setSvcForm({ ...svcForm, serviceKey: k, name: (svcForm.id ? svcForm.name : p.name) || svcForm.name, unit: (svcForm.id ? svcForm.unit : p.unit) || svcForm.unit });
+                  setSvcForm({ ...svcForm, serviceKey: k, name: (svcForm.id ? svcForm.name : nombrePreset(p)) || svcForm.name, unit: (svcForm.id ? svcForm.unit : p.unit) || svcForm.unit });
                 }}>
-                {SERVICE_KEYS.map((k) => <option key={k} value={k}>{k === 'custom' ? 'Personalizado' : SERVICE_PRESETS[k].name}</option>)}
+                {SERVICE_KEYS.map((k) => <option key={k} value={k}>{k === 'custom' ? t('clients.contract.service.custom', 'Personalizado') : nombrePreset(SERVICE_PRESETS[k])}</option>)}
               </select>
             </LabeledField>
             <LabeledField label={t('comun.nombre')} full><input className={FIELD_CLS} value={svcForm.name} onChange={(e) => setSvcForm({ ...svcForm, name: e.target.value })} /></LabeledField>

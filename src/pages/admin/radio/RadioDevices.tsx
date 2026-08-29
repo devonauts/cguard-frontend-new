@@ -91,11 +91,12 @@ const emptyForm: FormState = {
  * neutro y en los dispositivos de vídeo el rojo, así que el mismo equipo caído
  * se leía como trámite o como avería según la pantalla.
  */
-const STATUS_BADGE: Record<string, { health: DeviceHealth; label: string }> = {
-  registered: { health: "up", label: "Registrado" },
-  offline: { health: "down", label: "Sin conexión" },
-  error: { health: "down", label: "Error" },
-  unknown: { health: "unknown", label: "Sin probar" },
+// Constante de módulo: guarda la CLAVE. Se traduce donde se pinta.
+const STATUS_BADGE: Record<string, { health: DeviceHealth; labelKey: string; label: string }> = {
+  registered: { health: "up", labelKey: "radio.devices.status.registered", label: "Registrado" },
+  offline: { health: "down", labelKey: "radio.devices.status.offline", label: "Sin conexión" },
+  error: { health: "down", labelKey: "radio.devices.status.error", label: "Error" },
+  unknown: { health: "unknown", labelKey: "radio.devices.status.unknown", label: "Sin probar" },
 };
 
 export default function RadioDevices() {
@@ -191,7 +192,7 @@ export default function RadioDevices() {
       setEditing(null);
       load();
     } catch (e: any) {
-      toast.error(e?.message || "No se pudo guardar el radio IP");
+      toast.error(e?.message || t("radio.devices.saveError", "No se pudo guardar el radio IP"));
     } finally {
       setSaving(false);
     }
@@ -220,7 +221,7 @@ export default function RadioDevices() {
       );
       load();
     } catch (e: any) {
-      toast.error(e?.message || "No se pudo probar la conexión");
+      toast.error(e?.message || t("radio.devices.testError", "No se pudo probar la conexión"));
     } finally {
       setTestingId(null);
     }
@@ -313,7 +314,7 @@ export default function RadioDevices() {
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <p className="truncate font-semibold text-foreground">{d.name}</p>
-                        <DeviceStatusBadge health={badge.health} label={badge.label} />
+                        <DeviceStatusBadge health={badge.health} label={t(badge.labelKey, badge.label)} />
                         {!d.active && <StatusBadge tone="neutral" dot={false}>{t('common.inactive')}</StatusBadge>}
                       </div>
                       <p className="mt-0.5 truncate text-xs" style={{ color: 'var(--ink-soft)' }}>

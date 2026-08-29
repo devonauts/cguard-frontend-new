@@ -189,7 +189,7 @@ export default function StationSiteTours({ station, stationId, postSiteId }: Pro
   };
 
   const deleteCheckpoint = async (tourId: string, tagId: string) => {
-    if (!(await confirmDialog({ title: 'Eliminar punto de control', message: t('station.siteTours.confirmDeleteCp', '¿Eliminar este punto de control?'), confirmText: 'Eliminar', tone: 'danger' }))) return;
+    if (!(await confirmDialog({ title: t('station.siteTours.deleteCpTitle', 'Eliminar punto de control'), message: t('station.siteTours.confirmDeleteCp', '¿Eliminar este punto de control?'), confirmText: 'Eliminar', tone: 'danger' }))) return;
     try {
       await ApiService.delete(`/tenant/${tenantId}/site-tour/${encodeURIComponent(tourId)}/tag/${encodeURIComponent(tagId)}`);
       setCps((m) => ({ ...m, [tourId]: (m[tourId] || []).filter((c) => c.id !== tagId) }));

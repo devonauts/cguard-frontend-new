@@ -13,12 +13,13 @@
  * replay va contra la empresa donde se capturó, no la activa al reconectar).
  */
 import api from "@/lib/api";
+import i18n from "@/i18n";
 import { registerReplayer } from "./offlineQueue";
 import { invalidateEntity } from "@/lib/queryClient";
 
 const tid = (sealed?: string): string => {
   const t = sealed || localStorage.getItem("tenantId");
-  if (!t) throw new Error("Sin empresa para reproducir la mutación");
+  if (!t) throw new Error(i18n.t("offline.replay.noTenant", "Sin empresa para reproducir la mutación"));
   return t;
 };
 

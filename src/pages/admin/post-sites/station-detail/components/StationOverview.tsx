@@ -43,11 +43,13 @@ interface RecentShiftRow {
 // /auto-positions (the same path Programador › Horario uses). The turno picker
 // maps to scheduleType so assigned guards abide by the station's horario.
 type TurnoType = 'diurno' | 'nocturno' | '24h' | 'custom';
-const TURNO_LABELS: { key: TurnoType; label: string; sub: string }[] = [
-  { key: 'diurno',   label: '12h Diurno',   sub: '07:00–19:00' },
-  { key: 'nocturno', label: '12h Nocturno', sub: '19:00–07:00' },
-  { key: '24h',      label: '24 Horas',     sub: 'Día + Noche' },
-  { key: 'custom',   label: 'Personalizado', sub: 'Define las horas' },
+// `label`/`sub` guardan la CLAVE i18n junto al texto español de respaldo; la
+// traducción ocurre al pintar. Los rangos horarios no llevan clave: son datos.
+const TURNO_LABELS: { key: TurnoType; label: string; labelKey: string; sub: string; subKey?: string }[] = [
+  { key: 'diurno',   label: '12h Diurno',    labelKey: 'ui.StationOverview.turno.diurno',   sub: '07:00–19:00' },
+  { key: 'nocturno', label: '12h Nocturno',  labelKey: 'ui.StationOverview.turno.nocturno', sub: '19:00–07:00' },
+  { key: '24h',      label: '24 Horas',      labelKey: 'ui.StationOverview.turno.24h',      sub: 'Día + Noche',      subKey: 'ui.StationOverview.turno.diaYNoche' },
+  { key: 'custom',   label: 'Personalizado', labelKey: 'ui.StationOverview.turno.custom',   sub: 'Define las horas', subKey: 'ui.StationOverview.turno.defineLasHoras' },
 ];
 function turnoToScheduleType(turno: TurnoType): '12h-day' | '12h-night' | '24h' | 'custom' {
   switch (turno) {
@@ -248,7 +250,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
       // positions immediately (no manual reload / no stale day+night sketch).
       try { window.dispatchEvent(new CustomEvent('station-horario-changed', { detail: { stationId } })); } catch { /* noop */ }
     } catch (e: any) {
-      toast.error(e?.message || 'Error al actualizar el horario');
+      toast.error(e?.message || t('station.overview.scheduleUpdateError', 'Error al actualizar el horario'));
     } finally {
       setSavingHorario(false);
     }
@@ -276,7 +278,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
       invalidateEntity("stations");
       toast.success(t('ui.StationOverview.ubicacionYGeocercaActualizadas'));
     } catch (e: any) {
-      toast.error(e?.message || 'Error al guardar la ubicación');
+      toast.error(e?.message || t('station.overview.locationSaveError', 'Error al guardar la ubicación'));
     } finally {
       setSavingLoc(false);
     }
@@ -299,10 +301,10 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
       on_time: { label: 'A tiempo', tone: 'green' },
       late: { label: 'Tarde', tone: 'orange' },
       early_departure: { label: 'Salida temprana', tone: 'orange' },
-      missed_clockout: { label: 'Sin salida', tone: 'red' },
-      no_call_no_show: { label: 'No asistió', tone: 'red' },
+      missed_clockout: { label: t('nomina.estado.missed_clockout', 'Sin salida'), tone: 'red' },
+      no_call_no_show: { label: t('station.overview.status.noShow', 'No asistió'), tone: 'red' },
       overtime: { label: 'Horas extra', tone: 'primary' },
-      pending_review: { label: 'En revisión', tone: 'slate' },
+      pending_review: { label: t('nomina.estado.pending_review', 'En revisión'), tone: 'slate' },
     };
     const fmtHM = (d: any) => (d ? new Date(d).toLocaleTimeString(localeActual(), { hour: '2-digit', minute: '2-digit' }) : null);
     const fmtDay = (d: any) => (d ? new Date(d).toLocaleDateString(localeActual(), { day: '2-digit', month: 'short' }) : '');
@@ -331,8 +333,8 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
             icon={<Clock />}
             label={t('comun.horario')}
             accent="brand"
-            value={turnoInfo ? turnoInfo.label : 'Sin configurar'}
-            hint={turnoInfo ? turnoInfo.sub : 'Usa Editar para asignarlo'}
+            value={turnoInfo ? t(turnoInfo.labelKey, turnoInfo.label) : t('station.overview.notConfigured', 'Sin configurar')}
+            hint={turnoInfo ? (turnoInfo.subKey ? t(turnoInfo.subKey, turnoInfo.sub) : turnoInfo.sub) : t('station.overview.useEditToAssign', 'Usa Editar para asignarlo')}
           />
         </Stagger>
 
@@ -500,8 +502,8 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
                   ? { background: 'var(--brand-wash)', borderColor: 'var(--brand-line)' }
                   : { background: 'var(--glass-sunken)', borderColor: 'var(--hairline)' }}
               >
-                <div className="text-xs font-semibold text-foreground">{o.label}</div>
-                <div className="text-[10px] text-muted-foreground">{o.sub}</div>
+                <div className="text-xs font-semibold text-foreground">{t(o.labelKey, o.label)}</div>
+                <div className="text-[10px] text-muted-foreground">{o.subKey ? t(o.subKey, o.sub) : o.sub}</div>
               </button>
             ))}
           </div>

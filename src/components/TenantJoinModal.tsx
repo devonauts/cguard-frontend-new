@@ -140,7 +140,7 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
             // Give UI a moment to update, then reload so the app fully recognizes tenantId
             try { setTimeout(() => window.location.reload(), 300); } catch {}
         } catch (err: any) {
-            toast.error(err?.message || 'No se pudo aceptar la invitación');
+            toast.error(err?.message || t('ui.TenantJoinModal.noSePudoAceptarInvitacion', 'No se pudo aceptar la invitación'));
         } finally {
             setLoading(false);
         }
@@ -304,7 +304,7 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
                     return 'Si tiene más de 10 dígitos, el RUC ecuatoriano debe terminar en 001.';
                 }
                 if (d.length !== 13) {
-                    return 'El RUC ecuatoriano debe tener 13 dígitos.';
+                    return t('ui.TenantJoinModal.rucTreceDigitos', 'El RUC ecuatoriano debe tener 13 dígitos.');
                 }
                 // full RUC shape present, validate with validator helper
                 if (!validateTaxNumberForCountry(v, 'EC')) {
@@ -315,7 +315,7 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
 
             // Otherwise treat as cédula (10 dígitos). Validate cedula base.
             if (d.length !== 10) return 'Cédula ecuatoriana inválida: debe tener 10 dígitos.';
-            if (!validateTaxNumberForCountry(v, 'EC')) return 'Cédula ecuatoriana inválida.';
+            if (!validateTaxNumberForCountry(v, 'EC')) return t('ui.TenantJoinModal.cedulaInvalida', 'Cédula ecuatoriana inválida.');
             return null;
         }
 
@@ -325,14 +325,14 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
             // RUC-like: more than 10 digits -> expect 13 and end with 001
             if (digits.length > 10) {
                 if (!digits.endsWith('001')) return 'Si tiene más de 10 dígitos, el RUC ecuatoriano debe terminar en 001.';
-                if (digits.length !== 13) return 'El RUC ecuatoriano debe tener 13 dígitos.';
+                if (digits.length !== 13) return t('ui.TenantJoinModal.rucTreceDigitos', 'El RUC ecuatoriano debe tener 13 dígitos.');
                 if (!validateTaxNumberForCountry(v, 'EC')) return 'RUC inválido: verifique la cédula base y los dígitos (debe terminar en 001).';
                 return null;
             }
 
             // Cédula: expect 10 digits
             if (digits.length === 10) {
-                if (!validateTaxNumberForCountry(v, 'EC')) return 'Cédula ecuatoriana inválida.';
+                if (!validateTaxNumberForCountry(v, 'EC')) return t('ui.TenantJoinModal.cedulaInvalida', 'Cédula ecuatoriana inválida.');
                 return null;
             }
 
@@ -359,11 +359,11 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
             const normalized = /^https?:\/\//i.test(v) ? v : `https://${v}`;
             const u = new URL(normalized);
             if (!u.hostname || !u.hostname.includes('.')) {
-                return 'Sitio web inválido. Ej: empresa.com';
+                return t('ui.TenantJoinModal.sitioWebInvalido', 'Sitio web inválido. Ej: empresa.com');
             }
             return null;
         } catch {
-            return 'Sitio web inválido. Ej: empresa.com';
+            return t('ui.TenantJoinModal.sitioWebInvalido', 'Sitio web inválido. Ej: empresa.com');
         }
     };
     const [showAddressAutocomplete, setShowAddressAutocomplete] = useState(true);
@@ -464,14 +464,14 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
         const allowed = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/svg+xml'];
         if (!allowed.includes(file.type)) {
             setLogoFile(null);
-            setLogoError('El logo debe ser PNG, JPG, SVG o WEBP.');
+            setLogoError(t('ui.TenantJoinModal.logoFormato', 'El logo debe ser PNG, JPG, SVG o WEBP.'));
             return;
         }
 
         const maxBytes = 5 * 1024 * 1024;
         if (file.size > maxBytes) {
             setLogoFile(null);
-            setLogoError('El logo no debe superar 5MB.');
+            setLogoError(t('ui.TenantJoinModal.logoTamano', 'El logo no debe superar 5MB.'));
             return;
         }
 
@@ -591,7 +591,7 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
                     try {
                         await tenantService.uploadLogo(logoFile, String(tenantId));
                     } catch (uploadErr: any) {
-                        toast.error(uploadErr?.message || 'Empresa creada, pero no se pudo subir el logo');
+                        toast.error(uploadErr?.message || t('ui.TenantJoinModal.empresaCreadaSinLogo', 'Empresa creada, pero no se pudo subir el logo'));
                     }
                 }
             }
@@ -607,7 +607,7 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
             // Refresh the page so the frontend picks up the new tenant context
             try { setTimeout(() => window.location.reload(), 300); } catch {}
         } catch (err: any) {
-            toast.error(err?.message || 'No se pudo crear la empresa');
+            toast.error(err?.message || t('ui.TenantJoinModal.noSePudoCrearEmpresa', 'No se pudo crear la empresa'));
         } finally {
             setLoading(false);
         }
@@ -825,7 +825,7 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
                                         className="flex items-center gap-2"
                                     >
                                         <Edit className="h-4 w-4" />
-                                        <span>{showAddressAutocomplete ? 'Ingresar dirección manualmente' : 'Volver a búsqueda automática'}</span>
+                                        <span>{showAddressAutocomplete ? t('ui.TenantJoinModal.ingresarDireccionManual', 'Ingresar dirección manualmente') : 'Volver a búsqueda automática'}</span>
                                     </Button>
                                 </div>
 

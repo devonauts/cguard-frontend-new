@@ -23,13 +23,13 @@ const trim = (s?: string | null, n = 80) => {
 };
 
 const columns: ReportColumn<Incident>[] = [
-  { key: "created", label: "Fecha", value: (r) => formatDateTime(r.createdAt) },
-  { key: "title", label: "Título", value: (r) => r.title || "—" },
-  { key: "priority", label: "Prioridad", value: (r) => r.priority || "—", align: "center" },
-  { key: "status", label: "Estado", value: (r) => r.status || "—" },
-  { key: "site", label: "Puesto/Estación", value: (r) => r.postSite?.name || r.station?.stationName || "—" },
-  { key: "location", label: "Ubicación", value: (r) => r.location || "—" },
-  { key: "desc", label: "Descripción", value: (r) => trim(r.description) },
+  { key: "created", label: "Fecha", labelKey: "reports.col.incident.created", value: (r) => formatDateTime(r.createdAt) },
+  { key: "title", label: "Título", labelKey: "reports.col.incident.title", value: (r) => r.title || "—" },
+  { key: "priority", label: "Prioridad", labelKey: "reports.col.incident.priority", value: (r) => r.priority || "—", align: "center" },
+  { key: "status", label: "Estado", labelKey: "reports.col.incident.status", value: (r) => r.status || "—" },
+  { key: "site", label: "Puesto/Estación", labelKey: "reports.col.incident.site", value: (r) => r.postSite?.name || r.station?.stationName || "—" },
+  { key: "location", label: "Ubicación", labelKey: "reports.col.incident.location", value: (r) => r.location || "—" },
+  { key: "desc", label: "Descripción", labelKey: "reports.col.incident.desc", value: (r) => trim(r.description) },
 ];
 
 export default function Incident() {

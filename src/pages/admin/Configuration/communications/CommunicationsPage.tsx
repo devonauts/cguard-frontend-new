@@ -92,35 +92,40 @@ const STATUS_TONE: Record<string, string> = {
   skipped: "warn",
 };
 
-const STATUS_LABELS: Record<string, string> = {
-  delivered: "Entregado",
-  read: "Leído",
-  sent: "Enviado",
-  queued: "En cola",
-  failed: "Fallido",
-  skipped: "Omitido",
+/** Clave i18n + texto español de respaldo. La traducción se hace al PINTAR
+    (ver `statusLabel` / `channelLabel` / `typeLabel`): llamar a t() aquí, en el
+    ámbito del módulo, congelaría el idioma de arranque para toda la sesión. */
+type Etiqueta = { label: string; labelKey: string };
+
+const STATUS_LABELS: Record<string, Etiqueta> = {
+  delivered: { label: "Entregado", labelKey: "comms.status.delivered" },
+  read: { label: "Leído", labelKey: "comms.status.read" },
+  sent: { label: "Enviado", labelKey: "comms.status.sent" },
+  queued: { label: "En cola", labelKey: "comms.status.queued" },
+  failed: { label: "Fallido", labelKey: "comms.status.failed" },
+  skipped: { label: "Omitido", labelKey: "comms.status.skipped" },
 };
 
-const CHANNEL_LABELS: Record<string, string> = {
-  push: "Aviso al móvil",
-  whatsapp: "WhatsApp",
-  sms: "SMS",
-  email: "Correo",
-  wallet: "Recarga",
+const CHANNEL_LABELS: Record<string, Etiqueta> = {
+  push: { label: "Aviso al móvil", labelKey: "comms.channel.push" },
+  whatsapp: { label: "WhatsApp", labelKey: "comms.channel.whatsapp" },
+  sms: { label: "SMS", labelKey: "comms.channel.sms" },
+  email: { label: "Correo", labelKey: "comms.channel.email" },
+  wallet: { label: "Recarga", labelKey: "comms.channel.wallet" },
 };
 
-const TYPE_LABELS: Record<string, string> = {
-  otp: "Código de acceso",
-  shift_reminder: "Recordatorio de turno",
-  incident_alert: "Incidente",
-  visitor_alert: "Visita",
-  ronda_alert: "Ronda",
-  task_alert: "Tarea",
-  no_show: "Ausencia",
-  panic: "Pánico",
-  new_assignment: "Nueva asignación",
-  escalation: "Escalamiento",
-  generic: "General",
+const TYPE_LABELS: Record<string, Etiqueta> = {
+  otp: { label: "Código de acceso", labelKey: "comms.type.otp" },
+  shift_reminder: { label: "Recordatorio de turno", labelKey: "comms.type.shiftReminder" },
+  incident_alert: { label: "Incidente", labelKey: "comms.type.incidentAlert" },
+  visitor_alert: { label: "Visita", labelKey: "comms.type.visitorAlert" },
+  ronda_alert: { label: "Ronda", labelKey: "comms.type.rondaAlert" },
+  task_alert: { label: "Tarea", labelKey: "comms.type.taskAlert" },
+  no_show: { label: "Ausencia", labelKey: "comms.type.noShow" },
+  panic: { label: "Pánico", labelKey: "comms.type.panic" },
+  new_assignment: { label: "Nueva asignación", labelKey: "comms.type.newAssignment" },
+  escalation: { label: "Escalamiento", labelKey: "comms.type.escalation" },
+  generic: { label: "General", labelKey: "comms.type.generic" },
 };
 
 interface ToggleRowProps {
@@ -175,6 +180,14 @@ function ResumenTile({ label, value }: { label: string; value: React.ReactNode }
 
 export default function CommunicationsPage() {
   const { t } = useTranslation();
+  /** Traduce al pintar. Si el código no está en el mapa se muestra crudo. */
+  const etiqueta = (mapa: Record<string, Etiqueta>, code: string) => {
+    const e = mapa[code];
+    return e ? t(e.labelKey, { defaultValue: e.label }) : code;
+  };
+  const channelLabel = (c: string) => etiqueta(CHANNEL_LABELS, c);
+  const statusLabel = (s: string) => etiqueta(STATUS_LABELS, s);
+  const typeLabel = (ty: string) => etiqueta(TYPE_LABELS, ty);
 
   const [settings, setSettings] = useState<CommunicationSettings | null>(null);
   const [wallet, setWallet] = useState<WalletSnapshot | null>(null);
@@ -622,10 +635,10 @@ export default function CommunicationsPage() {
                 </p>
                 <div className="grid gap-2 sm:grid-cols-4">
                   {[
-                    { icon: <BellRing />, label: CHANNEL_LABELS.push, hint: t("comms.orderPush", { defaultValue: "Sin costo" }) },
-                    { icon: <MessageCircle />, label: CHANNEL_LABELS.whatsapp, hint: t("comms.orderWa", { defaultValue: "Lo factura Meta" }) },
-                    { icon: <Smartphone />, label: CHANNEL_LABELS.sms, hint: t("comms.orderSms", { defaultValue: "Consume saldo" }) },
-                    { icon: <Mail />, label: CHANNEL_LABELS.email, hint: t("comms.orderMail", { defaultValue: "Sin costo" }) },
+                    { icon: <BellRing />, label: channelLabel("push"), hint: t("comms.orderPush", { defaultValue: "Sin costo" }) },
+                    { icon: <MessageCircle />, label: channelLabel("whatsapp"), hint: t("comms.orderWa", { defaultValue: "Lo factura Meta" }) },
+                    { icon: <Smartphone />, label: channelLabel("sms"), hint: t("comms.orderSms", { defaultValue: "Consume saldo" }) },
+                    { icon: <Mail />, label: channelLabel("email"), hint: t("comms.orderMail", { defaultValue: "Sin costo" }) },
                   ].map((c, i) => (
                     <div key={c.label} className="glass-flat flex items-center gap-3 p-3">
                       <IconTile tone={i === 0 ? "brand" : "neutral"} size="sm">{c.icon}</IconTile>
@@ -714,7 +727,7 @@ export default function CommunicationsPage() {
                         <option value="">{t("comms.all", { defaultValue: "Todos" })}</option>
                         {CHANNEL_OPTIONS.map((c) => (
                           <option key={c} value={c}>
-                            {CHANNEL_LABELS[c] || c}
+                            {channelLabel(c)}
                           </option>
                         ))}
                       </select>
@@ -744,7 +757,7 @@ export default function CommunicationsPage() {
                         <option value="">{t("comms.all", { defaultValue: "Todos" })}</option>
                         {STATUS_OPTIONS.map((s) => (
                           <option key={s} value={s}>
-                            {STATUS_LABELS[s] || s}
+                            {statusLabel(s)}
                           </option>
                         ))}
                       </select>
@@ -759,7 +772,7 @@ export default function CommunicationsPage() {
                         <option value="">{t("comms.all", { defaultValue: "Todos" })}</option>
                         {TYPE_OPTIONS.map((ty) => (
                           <option key={ty} value={ty}>
-                            {TYPE_LABELS[ty] || ty}
+                            {typeLabel(ty)}
                           </option>
                         ))}
                       </select>
@@ -831,11 +844,11 @@ export default function CommunicationsPage() {
                                 {fmtDate(row.createdAt)}
                               </TableCell>
                               <TableCell className="text-sm">
-                                {CHANNEL_LABELS[row.channel] || row.channel}
+                                {channelLabel(row.channel)}
                                 <span className="ml-1 text-xs" style={{ color: "var(--ink-faint)" }}>{row.provider}</span>
                               </TableCell>
                               <TableCell className="text-xs">
-                                {TYPE_LABELS[row.messageType] || row.messageType}
+                                {typeLabel(row.messageType)}
                               </TableCell>
                               <TableCell className="max-w-[160px] truncate text-xs" title={row.recipient}>
                                 {row.recipient}
@@ -843,7 +856,7 @@ export default function CommunicationsPage() {
                               <TableCell>
                                 <span title={row.errorMessage || undefined}>
                                   <StatusBadge tone={STATUS_TONE[row.status] || "neutral"}>
-                                    {STATUS_LABELS[row.status] || row.status}
+                                    {statusLabel(row.status)}
                                   </StatusBadge>
                                 </span>
                               </TableCell>

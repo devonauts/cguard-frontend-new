@@ -14,11 +14,13 @@ import { PageContainer, PageHeader, Section, StatusBadge, EmptyState, Modal, Ske
 import { smsAccountService, SmsAccount, SmsTransaction, AvailableNumber } from "@/lib/api/smsAccountService";
 
 import { localeActual } from '@/lib/localeActual'
+/* Constante de MÓDULO: se guarda la CLAVE y el español como respaldo; la
+   traducción ocurre al pintar, dentro del componente. */
 const COUNTRIES = [
-  { code: "US", label: "Estados Unidos (+1)" },
-  { code: "CA", label: "Canadá (+1)" },
-  { code: "GB", label: "Reino Unido (+44)" },
-  { code: "ES", label: "España (+34)" },
+  { code: "US", label: "Estados Unidos (+1)", labelKey: "sms.countries.US" },
+  { code: "CA", label: "Canadá (+1)", labelKey: "sms.countries.CA" },
+  { code: "GB", label: "Reino Unido (+44)", labelKey: "sms.countries.GB" },
+  { code: "ES", label: "España (+34)", labelKey: "sms.countries.ES" },
 ];
 
 /** Aviso en línea: el tono manda el color, nunca el acento. */
@@ -287,7 +289,7 @@ export default function SmsBalancePage() {
                         className="cg-input cg-focus mt-1 h-9 w-full px-3 text-sm"
                       >
                         {COUNTRIES.map((c) => (
-                          <option key={c.code} value={c.code}>{c.label}</option>
+                          <option key={c.code} value={c.code}>{t(c.labelKey, c.label)}</option>
                         ))}
                       </select>
                     </div>

@@ -69,11 +69,13 @@ import {
   type RelaySite,
 } from "@/lib/api/videoService";
 
-const TYPE_LABELS: Record<DeviceType, string> = {
-  dvr: "DVR",
-  nvr: "NVR",
-  camera: "Cámara",
-  cloud: "Nube",
+// Clave i18n + respaldo en español; se traduce al pintar (typeLabel). DVR y NVR
+// son siglas: llevan clave para no dejar el Record a medias, no porque cambien.
+const TYPE_LABELS: Record<DeviceType, { label: string; labelKey: string }> = {
+  dvr: { label: "DVR", labelKey: "video.deviceType.dvr" },
+  nvr: { label: "NVR", labelKey: "video.deviceType.nvr" },
+  camera: { label: "Cámara", labelKey: "video.deviceType.camera" },
+  cloud: { label: "Nube", labelKey: "video.deviceType.cloud" },
 };
 
 const PROTOCOL_OPTS: DeviceProtocol[] = ["rtsp", "onvif", "hls", "webrtc"];
@@ -141,15 +143,18 @@ const deviceToForm = (d: Device): DeviceForm => ({
  * enlaces de radio y los sitios de retransmisión: antes cada pantalla decidía
  * por su cuenta de qué color era «sin conexión» y salían cuatro respuestas.
  */
-const DEVICE_HEALTH: Record<DeviceStatus | "unknown", { health: DeviceHealth; label: string }> = {
-  online: { health: "up", label: "En línea" },
+const DEVICE_HEALTH: Record<
+  DeviceStatus | "unknown",
+  { health: DeviceHealth; label: string; labelKey?: string }
+> = {
+  online: { health: "up", label: "En línea", labelKey: "ui.VideoDevices.enLinea" },
   offline: { health: "down", label: "Sin conexión" },
   auth_failed: { health: "auth", label: "Credenciales" },
-  unreachable: { health: "unreachable", label: "Sin stream" },
+  unreachable: { health: "unreachable", label: "Sin stream", labelKey: "ui.VideoDevices.sinStream" },
   unknown: { health: "unknown", label: "Desconocido" },
 };
 
-function deviceHealth(status?: DeviceStatus): { health: DeviceHealth; label: string } {
+function deviceHealth(status?: DeviceStatus): { health: DeviceHealth; label: string; labelKey?: string } {
   return DEVICE_HEALTH[status ?? "unknown"] ?? DEVICE_HEALTH.unknown;
 }
 
@@ -168,6 +173,16 @@ function TypeIcon({ type }: { type?: DeviceType }) {
 
 export default function VideoDevices() {
   const { t } = useTranslation();
+  /** El texto del estado se traduce aquí, no en el mapa de módulo. */
+  const healthProps = (status?: DeviceStatus) => {
+    const h = deviceHealth(status);
+    return { health: h.health, label: h.labelKey ? t(h.labelKey, h.label) : h.label };
+  };
+  /** Igual con el tipo de equipo: la traducción ocurre al pintar. */
+  const typeLabel = (type: DeviceType) => {
+    const e = TYPE_LABELS[type] ?? TYPE_LABELS.dvr;
+    return t(e.labelKey, e.label);
+  };
   const [devices, setDevices] = useState<Device[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -188,7 +203,7 @@ export default function VideoDevices() {
       const list = await videoService.devices();
       setDevices(Array.isArray(list) ? list : []);
     } catch (e) {
-      toast.error((e as Error)?.message || "No se pudieron cargar los dispositivos");
+      toast.error((e as Error)?.message || t("ui.VideoDevices.errorCargar", "No se pudieron cargar los dispositivos"));
     } finally {
       setLoading(false);
     }
@@ -259,7 +274,7 @@ export default function VideoDevices() {
       setDialogOpen(false);
       await load();
     } catch (err) {
-      toast.error((err as Error)?.message || "No se pudo guardar el dispositivo");
+      toast.error((err as Error)?.message || t("ui.VideoDevices.errorGuardar", "No se pudo guardar el dispositivo"));
     } finally {
       setSaving(false);
     }
@@ -284,7 +299,7 @@ export default function VideoDevices() {
       else if (status === "offline") toast.error(`${d.name}: ${message || "sin conexión"}`);
       else toast(`${d.name}: estado desconocido`);
     } catch (e) {
-      toast.error((e as Error)?.message || "Falló la prueba de conexión");
+      toast.error((e as Error)?.message || t("ui.VideoDevices.falloPrueba", "Falló la prueba de conexión"));
     } finally {
       setBusy((b) => ({ ...b, [d.id]: undefined }));
     }
@@ -297,7 +312,7 @@ export default function VideoDevices() {
       const n = Array.isArray(cams) ? cams.length : 0;
       toast.success(`${d.name}: ${n} cámara(s) sincronizada(s)`);
     } catch (e) {
-      toast.error((e as Error)?.message || "No se pudieron sincronizar las cámaras");
+      toast.error((e as Error)?.message || t("ui.VideoDevices.errorSincronizar", "No se pudieron sincronizar las cámaras"));
     } finally {
       setBusy((b) => ({ ...b, [d.id]: undefined }));
     }
@@ -312,7 +327,7 @@ export default function VideoDevices() {
       setDevices((prev) => prev.filter((x) => x.id !== deleteTarget.id));
       setDeleteTarget(null);
     } catch (e) {
-      toast.error((e as Error)?.message || "No se pudo eliminar el dispositivo");
+      toast.error((e as Error)?.message || t("ui.VideoDevices.errorEliminar", "No se pudo eliminar el dispositivo"));
     } finally {
       setDeleting(false);
     }
@@ -394,11 +409,11 @@ export default function VideoDevices() {
                           {/* Chip de clasificación, no de estado: neutro y con la
                               misma pieza que usan las pantallas hermanas. */}
                           <StatusBadge tone="neutral" dot={false}>
-                            {TYPE_LABELS[(d.type as DeviceType) ?? "dvr"]}
+                            {typeLabel((d.type as DeviceType) ?? "dvr")}
                           </StatusBadge>
                         </div>
                         <div className="mt-0.5 truncate text-sm text-muted-foreground">
-                          {[d.brand, d.model].filter(Boolean).join(" · ") || "Sin marca/modelo"}
+                          {[d.brand, d.model].filter(Boolean).join(" · ") || t("ui.VideoDevices.sinMarcaModelo", "Sin marca/modelo")}
                         </div>
                         <div className="mt-1 truncate font-mono text-xs text-muted-foreground">
                           {d.host || "—"}
@@ -408,7 +423,7 @@ export default function VideoDevices() {
                         </div>
                       </div>
                     </div>
-                    <DeviceStatusBadge {...deviceHealth(d.status as DeviceStatus)} />
+                    <DeviceStatusBadge {...healthProps(d.status as DeviceStatus)} />
                   </div>
 
                   <div className="mt-4 flex flex-wrap items-center gap-2">
@@ -532,9 +547,9 @@ export default function VideoDevices() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {TYPE_OPTS.map((t) => (
-                      <SelectItem key={t} value={t}>
-                        {TYPE_LABELS[t]}
+                    {TYPE_OPTS.map((dt) => (
+                      <SelectItem key={dt} value={dt}>
+                        {typeLabel(dt)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -631,7 +646,7 @@ export default function VideoDevices() {
                   value={form.password}
                   onChange={(e) => set("password", e.target.value)}
                   autoComplete="new-password"
-                  placeholder={editing ? "Dejar en blanco para conservar" : "••••••••"}
+                  placeholder={editing ? t("ui.VideoDevices.dejarEnBlanco", "Dejar en blanco para conservar") : "••••••••"}
                 />
               </div>
 

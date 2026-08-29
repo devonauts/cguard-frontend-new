@@ -48,6 +48,13 @@ const Reports: React.FC<ReportsProps> = ({ onNavigate }) => {
     [],
   );
 
+  // reports-config es una constante de módulo: guarda la CLAVE, no el texto.
+  // Aquí es donde se pinta, así que aquí se traduce.
+  const tx = React.useCallback(
+    (key: string | undefined, fallback: string) => (key ? t(key, fallback) : fallback),
+    [t],
+  );
+
   // Live filter across every report.
   const sections = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -57,12 +64,12 @@ const Reports: React.FC<ReportsProps> = ({ onNavigate }) => {
         ...s,
         reports: s.reports.filter(
           (r) =>
-            r.title.toLowerCase().includes(q) ||
-            (r.description || "").toLowerCase().includes(q),
+            tx(r.titleKey, r.title).toLowerCase().includes(q) ||
+            tx(r.descriptionKey, r.description || "").toLowerCase().includes(q),
         ),
       }))
       .filter((s) => s.reports.length > 0);
-  }, [query]);
+  }, [query, tx]);
 
   // Search field reused inside the page hero.
   const searchField = (
@@ -126,7 +133,7 @@ const Reports: React.FC<ReportsProps> = ({ onNavigate }) => {
                       <SectionIcon />
                     </IconTile>
                     <div>
-                      <h2 className="text-sm font-bold">{section.title}</h2>
+                      <h2 className="text-sm font-bold">{tx(section.titleKey, section.title)}</h2>
                       <p className="text-[11px]" style={{ color: "var(--ink-faint)" }}>
                         {section.reports.length} informe{section.reports.length !== 1 ? "s" : ""}
                       </p>
@@ -177,7 +184,7 @@ const Reports: React.FC<ReportsProps> = ({ onNavigate }) => {
                         </IconTile>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-start justify-between gap-2">
-                            <h3 className="text-sm font-semibold leading-snug">{report.title}</h3>
+                            <h3 className="text-sm font-semibold leading-snug">{tx(report.titleKey, report.title)}</h3>
                             {!ready ? (
                               <StatusBadge tone="neutral" dot={false} className="shrink-0 px-1.5 py-0.5 text-[10px]">{t("ui.Reports.proximamente", "Próximamente")}</StatusBadge>
                             ) : (report.openCount !== undefined || report.closedCount !== undefined) && (
@@ -192,7 +199,7 @@ const Reports: React.FC<ReportsProps> = ({ onNavigate }) => {
                             )}
                           </div>
                           <p className="mt-1 line-clamp-2 text-xs leading-relaxed" style={{ color: "var(--ink-soft)" }}>
-                            {report.description}
+                            {tx(report.descriptionKey, report.description)}
                           </p>
                         </div>
                         {ready && (

@@ -1,0 +1,149 @@
+{
+ "src/config/reports-config.ts": [
+  "Horas Trabajadas por Puesto de seguridad",
+  "Horas de Tarjeta de Tiempo por Cliente",
+  "Horas de Tarjeta de Tiempo por Puesto de seguridad",
+  "Horas de Tarjeta de Tiempo por Vigilante",
+  "Informe de Entrada/Salida",
+  "Informe de KPI del Puesto de seguridad",
+  "Informe de KPI del Vigilante",
+  "Informe de Patrulla Vehicular",
+  "Informe de Recorridos del Sitio",
+  "Informe de Tareas",
+  "Informe de lista de verificación",
+  "Informes Estándar",
+  "Informes de Horas Trabajadas",
+  "Informes de Incidentes",
+  "Informes de Registro de Tiempo",
+  "Informes de registro",
+  "Reconocimiento de Documentos y Políticas",
+  "Reconocimiento de Órdenes de Publicación",
+  "Registro de Licencias",
+  "Registros de Alerta de Caída de Vigilante",
+  "Registros de Entrega",
+  "Registros de Geo Vallas",
+  "Registros de Modo Vigilancia",
+  "Registros de Puntos de Control de Recorridos",
+  "Registros de Vigilante Inactivo",
+  "Registros del Botón de Pánico",
+  "Ver actividad de patrulla vehicular",
+  "Ver actividad diaria de los vigilantes de seguridad",
+  "Ver horas de nómina por departamento",
+  "Ver horas de tarjeta de tiempo por cliente",
+  "Ver horas de tarjeta de tiempo por vigilante",
+  "Ver horas trabajadas por puesto de seguridad",
+  "Ver informe de KPI del puesto de seguridad",
+  "Ver informe de KPI del vigilante",
+  "Ver registro de licencias de los vigilantes"
+ ],
+ "src/pages/admin/alarm/AlarmPanels.tsx": [
+  "Dejar en blanco para conservar la clave actual",
+  "Intrusión",
+  "No se pudieron cargar las zonas",
+  "No se pudieron cargar los contactos",
+  "No se pudieron cargar los paneles",
+  "No se pudo eliminar el contacto",
+  "No se pudo eliminar el panel",
+  "No se pudo eliminar la zona",
+  "No se pudo guardar el contacto",
+  "No se pudo guardar el panel",
+  "No se pudo guardar la zona",
+  "Rotura de cristal",
+  "Sin marca ni modelo"
+ ],
+ "src/pages/admin/Configuration/security/SecurityPolicyPage.tsx": [
+  "Avisar 2 minutos antes de cerrar",
+  "Contraseñas",
+  "Exigir mayúsculas",
+  "Exigir minúsculas",
+  "Exigir números",
+  "Exigir símbolos",
+  "No se pudo cargar la política de seguridad.",
+  "Protecciones de la plataforma"
+ ],
+ "src/pages/admin/post-sites/station-detail/components/StationOverview.tsx": [
+  "En revisión",
+  "Error al actualizar el horario",
+  "Error al guardar la ubicación",
+  "No asistió",
+  "Sin configurar",
+  "Sin salida",
+  "Usa Editar para asignarlo"
+ ],
+ "src/components/alarm/AlarmECV.tsx": [
+  "Cancelar (contraseña)",
+  "Despachar a la policía",
+  "No se pudo despachar a la policía",
+  "No se pudo registrar la llamada",
+  "Sin respuesta"
+ ],
+ "src/pages/admin/Configuration/activity-log/ActivityLogHubPage.tsx": [
+  "Accesos a la plataforma",
+  "Eventos del sistema",
+  "Quién cambió qué",
+  "Registro de actividad",
+  "Retención de datos"
+ ],
+ "src/pages/admin/video/VideoRelaySites.tsx": [
+  "No se pudo crear el sitio",
+  "No se pudo eliminar",
+  "No se pudo generar el relay",
+  "No se pudo regenerar el token"
+ ],
+ "src/components/video/VideoActionModals.tsx": [
+  "No se pudo crear el incidente",
+  "No se pudo despachar",
+  "No se pudo generar el clip"
+ ],
+ "src/pages/admin/radio/RadioDevices.tsx": [
+  "No se pudo guardar el radio IP",
+  "No se pudo probar la conexión",
+  "Sin probar"
+ ],
+ "src/lib/validators/create-profile.schema.ts": [
+  "El estado civil es requerido",
+  "El género es requerido",
+  "La instrucción académica es requerida"
+ ],
+ "src/pages/admin/Configuration/user-roles/PermissionsEditor.tsx": [
+  "Requerido para el acceso de administrador",
+  "Sin conceder"
+ ],
+ "src/pages/admin/dispatcher/EditDispatchPage.tsx": [
+  "Error cargando Incidente para editar:",
+  "Error cargando tipos de incidente:"
+ ],
+ "src/pages/admin/dashboard/control-center/components/OperationsMapPopup.tsx": [
+  "Ahora en el puesto",
+  "Sin marca de tiempo"
+ ],
+ "src/pages/admin/clientes/components/ClientDocuments/ClientDocuments.tsx": [
+  "Imágenes",
+  "Vídeos"
+ ],
+ "src/lib/voiceChannel.ts": [
+  "No se pudo conectar la radio",
+  "Radio no conectada"
+ ],
+ "src/components/maps/CheckpointLocationPicker.tsx": [
+  "Suelta para fijar el punto"
+ ],
+ "src/pages/auth/forgot-password.tsx": [
+  "Por favor ingresa tu correo electrónico"
+ ],
+ "src/pages/admin/tasks/TaskApprovals.tsx": [
+  "Motivo del rechazo"
+ ],
+ "src/pages/admin/nomina/NominaTimeClock.tsx": [
+  "No se pudo marcar entrada"
+ ],
+ "src/pages/admin/supervisors/SupervisorDetailPage.tsx": [
+  "No se pudo guardar"
+ ],
+ "src/pages/admin/guard-ratings/GuardRatings.tsx": [
+  "Ver reseñas del vigilante"
+ ],
+ "src/pages/guard/dashboard/GuardTimeOff.tsx": [
+  "Selecciona fechas de inicio y fin"
+ ]
+}

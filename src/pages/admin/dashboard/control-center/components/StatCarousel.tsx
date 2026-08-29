@@ -18,8 +18,10 @@
  * ════════════════════════════════════════════════════════════════════════════
  */
 import type { KeyboardEvent } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Cifra, DeltaPill } from "@/components/kit";
+import { tablaDeEtiquetas } from "@/lib/i18nLabel";
 import type { Kpi } from "../types";
 import { deltaDirection, fmtDelta, fmtValue, toneFill, toneOf } from "../tone";
 
@@ -27,17 +29,21 @@ import { deltaDirection, fmtDelta, fmtValue, toneFill, toneOf } from "../tone";
  * Etiqueta corta para una tarjeta de 160 px. «Vigilantes en servicio» no cabe,
  * y recortarlo con puntos suspensivos deja «Vigilantes en se…», que no dice
  * nada. Lo que no esté aquí usa su etiqueta larga y se recorta.
+ *
+ * Claves propias, no las de la etiqueta larga: el recorte depende del idioma
+ * («Vigilantes en servicio» → «On duty», no «Guards on duty»). Se resuelven al
+ * leerlas, porque la tabla se evalúa al importar el módulo.
  */
-const CORTO: Record<string, string> = {
-  onDuty: "En servicio",
-  coverage: "Cobertura",
-  openIncidents: "Incidentes",
-  patrolsToday: "Rondas hoy",
-  stations: "Puestos",
-  supervisors: "Supervisores",
-  response: "Respuesta",
-  clients: "Clientes",
-};
+const CORTO: Record<string, string> = tablaDeEtiquetas({
+  onDuty: "dashboard.kpiCorto.onDuty",
+  coverage: "dashboard.kpiCorto.coverage",
+  openIncidents: "dashboard.kpiCorto.openIncidents",
+  patrolsToday: "dashboard.kpiCorto.patrolsToday",
+  stations: "dashboard.kpiCorto.stations",
+  supervisors: "dashboard.kpiCorto.supervisors",
+  response: "dashboard.kpiCorto.response",
+  clients: "dashboard.kpiCorto.clients",
+});
 
 export function StatCarousel({ items }: { items: Array<{ kpi: Kpi; to?: string }> }) {
   if (!items.length) return null;
@@ -51,6 +57,7 @@ export function StatCarousel({ items }: { items: Array<{ kpi: Kpi; to?: string }
 }
 
 function TarjetaCifra({ kpi, to }: { kpi: Kpi; to?: string }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const tone = toneOf(kpi.status);
   const dir = deltaDirection(kpi.trend);
@@ -92,7 +99,7 @@ function TarjetaCifra({ kpi, to }: { kpi: Kpi; to?: string }) {
           <DeltaPill direction={dir} className="px-2 py-0.5 text-[11px]">{fmtDelta(kpi.trend)}</DeltaPill>
         ) : (
           <span className="block truncate text-[11px]" style={{ color: "var(--ink-faint)" }}>
-            {kpi.fallback ? "Sin datos" : kpi.sub}
+            {kpi.fallback ? t("comun.sinDatos", "Sin datos") : kpi.sub}
           </span>
         )}
       </div>

@@ -32,7 +32,7 @@ export default function VideoSharedClip() {
         const res = await ApiService.get(`/video/clip/shared/${encodeURIComponent(String(token))}`, { skipAuth: true } as { skipAuth?: boolean }) as (SharedClip & { data?: SharedClip }) | null;
         if (on) setClip(res?.data ?? res);
       } catch {
-        if (on) setError("Este enlace no es válido o ya expiró.");
+        if (on) setError(t("ui.VideoSharedClip.enlaceInvalido", "Este enlace no es válido o ya expiró."));
       } finally {
         if (on) setLoading(false);
       }
@@ -90,7 +90,7 @@ export default function VideoSharedClip() {
 
         {clip && !error && (
           <div className="mt-4 px-1">
-            <p className="text-base font-semibold">{clip.label || "Clip de video"}</p>
+            <p className="text-base font-semibold">{clip.label || t("ui.VideoSharedClip.clipDeVideo", "Clip de video")}</p>
             {(clip.startAt || clip.endAt) && (
               <p className="text-xs" style={{ color: 'var(--ink-faint)' }}>
                 {fmt(clip.startAt)}{clip.endAt ? ` — ${fmt(clip.endAt)}` : ""}

@@ -67,11 +67,12 @@ const CELL: Record<string, { label: string; style: React.CSSProperties }> = {
   },
 };
 
-const TIER_LABEL: Record<string, string> = {
-  excellent: 'Excelente',
-  good: 'Bueno',
-  fair: 'Regular',
-  needs_improvement: 'Por mejorar',
+// Clave i18n + respaldo en español: se traduce al pintar, nunca aquí.
+const TIER_LABEL: Record<string, { label: string; labelKey: string }> = {
+  excellent:         { label: 'Excelente',        labelKey: 'performance.tier.excellent' },
+  good:              { label: 'Bueno',            labelKey: 'performance.tier.good' },
+  fair:              { label: 'Regular',          labelKey: 'performance.tier.fair' },
+  needs_improvement: { label: 'Necesita mejorar', labelKey: 'performance.tier.needs_improvement' },
 };
 const TIER_ACCENT: Record<string, 'ok' | 'warn' | 'bad'> = {
   excellent: 'ok',
@@ -296,7 +297,7 @@ export default function GuardSummary({ guard }: Props) {
             icon={<Gauge />}
             title={
               perf.disabledBy === 'tenant'
-                ? 'Tu empresa no está midiendo el desempeño'
+                ? t('performance.offTenantTitle', 'Tu empresa no está midiendo el desempeño')
                 : 'A esta persona no se le mide el desempeño'
             }
             description={
@@ -316,7 +317,7 @@ export default function GuardSummary({ guard }: Props) {
             <StatCard
               label="Puntaje"
               value={`${perf.score}/100`}
-              hint={TIER_LABEL[perf.tier] || perf.tier}
+              hint={TIER_LABEL[perf.tier] ? t(TIER_LABEL[perf.tier].labelKey, TIER_LABEL[perf.tier].label) : perf.tier}
               accent={TIER_ACCENT[perf.tier] || 'neutral'}
               icon={<Gauge />}
             />

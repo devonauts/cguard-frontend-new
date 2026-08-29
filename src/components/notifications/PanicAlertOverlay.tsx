@@ -72,12 +72,19 @@ const PANIC_VARS = {
   "--ring": "var(--bad)",
 } as CSSProperties;
 
-const QUICK_ACTIONS = [
-  "Contacté al vigilante en sitio",
-  "Despaché supervisor / móvil",
-  "Llamé a la policía (911)",
-  "Contacté al cliente",
-  "Falsa alarma / prueba",
+/**
+ * Acciones rápidas. Se guarda la CLAVE junto al texto español: este objeto se
+ * construye al importar el módulo, antes de que i18next sepa el idioma del
+ * usuario, así que un `t()` aquí congelaría las etiquetas para toda la sesión.
+ * La traducción ocurre al pintar (y el texto elegido es el que se registra en
+ * el historial del caso, en el idioma que el operador está viendo).
+ */
+const QUICK_ACTIONS: Array<{ label: string; labelKey: string }> = [
+  { label: "Contacté al vigilante en sitio", labelKey: "panic.overlay.quickAction.contactGuard" },
+  { label: "Despaché supervisor / móvil", labelKey: "panic.overlay.quickAction.dispatchSupervisor" },
+  { label: "Llamé a la policía", labelKey: "panic.overlay.quickAction.calledPolice" },
+  { label: "Contacté al cliente", labelKey: "panic.overlay.quickAction.contactClient" },
+  { label: "Falsa alarma / prueba", labelKey: "panic.overlay.quickAction.falseAlarm" },
 ];
 
 export function PanicAlertOverlay({
@@ -237,7 +244,9 @@ export function PanicAlertOverlay({
               {isClient ? "ALERTA SOS — CLIENTE" : "ALERTA DE PÁNICO"}
             </div>
             <div className="mt-1 text-sm" style={{ color: "color-mix(in oklab, var(--panic-ink) 84%, transparent)" }}>
-              {isClient ? "Un cliente activó el botón de SOS" : "Un vigilante activó el botón de emergencia"}
+              {isClient
+                ? t("panic.overlay.subtitleClient", "Un cliente activó el botón de SOS")
+                : t("panic.overlay.subtitleGuard", "Un vigilante activó el botón de emergencia")}
             </div>
           </div>
           {alerts.length > 1 && (
@@ -364,12 +373,13 @@ export function PanicAlertOverlay({
             </div>
             <div className="mt-2 flex flex-wrap gap-2">
               {QUICK_ACTIONS.map((a) => {
-                const elegida = action === a;
+                const texto = t(a.labelKey, a.label);
+                const elegida = action === texto;
                 return (
                   <button
-                    key={a}
+                    key={a.labelKey}
                     type="button"
-                    onClick={() => setAction(a)}
+                    onClick={() => setAction(texto)}
                     className="cg-focus inline-flex min-h-9 items-center rounded-full border px-3 py-1 text-xs font-medium transition-colors"
                     style={
                       elegida
@@ -381,7 +391,7 @@ export function PanicAlertOverlay({
                         : { borderColor: "var(--hairline)", color: "var(--ink-soft)" }
                     }
                   >
-                    {a}
+                    {texto}
                   </button>
                 );
               })}

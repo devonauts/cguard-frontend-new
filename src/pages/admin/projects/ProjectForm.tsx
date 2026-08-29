@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { projectService } from '@/lib/api/projectService';
-import { PROJECT_STATUS_LABELS } from '@/lib/projectTypes';
+import { PROJECT_STATUS_LABELS, PROJECT_STATUS_LABEL_KEYS } from '@/lib/projectTypes';
 import type { ProjectTypeValue } from '@/lib/projectTypes';
 import { ProjectTypePicker } from '@/components/projects/ProjectBadge';
 import { Button } from '@/components/ui/button';
@@ -128,7 +128,7 @@ export default function ProjectForm({
     }
   };
 
-  const STATUSES = Object.entries(PROJECT_STATUS_LABELS) as [string, string][];
+  const STATUSES = Object.keys(PROJECT_STATUS_LABELS) as (keyof typeof PROJECT_STATUS_LABELS)[];
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -287,8 +287,10 @@ export default function ProjectForm({
                       className={FIELD_CLS}
                       {...field}
                     >
-                      {STATUSES.map(([val, label]) => (
-                        <option key={val} value={val}>{label}</option>
+                      {STATUSES.map((val) => (
+                        <option key={val} value={val}>
+                          {t(PROJECT_STATUS_LABEL_KEYS[val], PROJECT_STATUS_LABELS[val])}
+                        </option>
                       ))}
                     </select>
                   </FormControl>

@@ -17,13 +17,13 @@ interface Rec {
 
 
 const columns: ReportColumn<Rec>[] = [
-  { key: "date", label: "Fecha", value: (r) => formatDateTime(r.punchInTime) },
-  { key: "guard", label: "Vigilante", value: (r) => r.guardName?.fullName || "—", privacy: "guardName" },
-  { key: "station", label: "Puesto", value: (r) => r.stationName?.stationName || "—" },
-  { key: "inDist", label: "Dist. entrada", value: (r) => formatMeters(r.punchInDistanceM), align: "right" },
-  { key: "in", label: "Entrada", value: (r) => (r.punchInOutsideGeofence ? "Fuera de valla" : "OK"), align: "center" },
-  { key: "outDist", label: "Dist. salida", value: (r) => formatMeters(r.punchOutDistanceM), align: "right" },
-  { key: "out", label: "Salida", value: (r) => (r.punchOutOutsideGeofence ? "Fuera de valla" : "OK"), align: "center" },
+  { key: "date", label: "Fecha", labelKey: "reports.col.geoFenceLog.date", value: (r) => formatDateTime(r.punchInTime) },
+  { key: "guard", label: "Vigilante", labelKey: "reports.col.geoFenceLog.guard", value: (r) => r.guardName?.fullName || "—", privacy: "guardName" },
+  { key: "station", label: "Puesto", labelKey: "reports.col.geoFenceLog.station", value: (r) => r.stationName?.stationName || "—" },
+  { key: "inDist", label: "Dist. entrada", labelKey: "reports.col.geoFenceLog.inDist", value: (r) => formatMeters(r.punchInDistanceM), align: "right" },
+  { key: "in", label: "Entrada", labelKey: "reports.col.geoFenceLog.in", value: (r) => (r.punchInOutsideGeofence ? "Fuera de valla" : "OK"), align: "center" },
+  { key: "outDist", label: "Dist. salida", labelKey: "reports.col.geoFenceLog.outDist", value: (r) => formatMeters(r.punchOutDistanceM), align: "right" },
+  { key: "out", label: "Salida", labelKey: "reports.col.geoFenceLog.out", value: (r) => (r.punchOutOutsideGeofence ? "Fuera de valla" : "OK"), align: "center" },
 ];
 
 export default function GeoFenceLog() {

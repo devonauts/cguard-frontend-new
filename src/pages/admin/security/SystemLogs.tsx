@@ -31,11 +31,11 @@ const PAGE_SIZE = 50;
  * que va en `bad`; un cambio, en `warn`; un alta, en `ok`. Son tonos del sistema
  * y no colores propios: la severidad no cambia con el acento de la empresa.
  */
-function actionMeta(action: string): { label: string; tone: SeverityTone; icon: ReactNode } {
+function actionMeta(action: string): { label: string; labelKey?: string; tone: SeverityTone; icon: ReactNode } {
   const a = String(action || "").toLowerCase();
-  if (a.includes("create")) return { label: "Creación", tone: "ok", icon: <PlusCircle className="size-3.5" /> };
-  if (a.includes("update")) return { label: "Actualización", tone: "warn", icon: <PencilLine className="size-3.5" /> };
-  if (a.includes("delete") || a.includes("destroy")) return { label: "Eliminación", tone: "bad", icon: <Trash2 className="size-3.5" /> };
+  if (a.includes("create")) return { label: "Creación", labelKey: "security.logs.actionCreate", tone: "ok", icon: <PlusCircle className="size-3.5" /> };
+  if (a.includes("update")) return { label: "Actualización", labelKey: "security.logs.actionUpdate", tone: "warn", icon: <PencilLine className="size-3.5" /> };
+  if (a.includes("delete") || a.includes("destroy")) return { label: "Eliminación", labelKey: "security.logs.actionDelete", tone: "bad", icon: <Trash2 className="size-3.5" /> };
   return { label: action || "—", tone: "neutral", icon: <Activity className="size-3.5" /> };
 }
 
@@ -151,7 +151,7 @@ export default function SystemLogs() {
                     <AuditRow tone={m.tone} onClick={() => setExpanded(isOpen ? null : r.id)}>
                       <td className="relative px-4 py-2.5">
                         <SeverityRail tone={m.tone} />
-                        <StatusBadge tone={m.tone} dot={false}>{m.icon}{m.label}</StatusBadge>
+                        <StatusBadge tone={m.tone} dot={false}>{m.icon}{m.labelKey ? t(m.labelKey, m.label) : m.label}</StatusBadge>
                       </td>
                       <td className="px-3 py-2.5">
                         <span className="font-medium">{r.entityName}</span>

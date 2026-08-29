@@ -1,0 +1,151 @@
+{
+ "src/pages/admin/Configuration/components/ProfileCompanyForm.tsx": [
+  "Buscar con autocompletado",
+  "Buscar dirección...",
+  "Cambiar el logo de la empresa",
+  "Coordenadas encontradas para la dirección",
+  "Código postal",
+  "Datos de la empresa guardados correctamente",
+  "Detectar por la dirección",
+  "Dirección complementaria",
+  "Dirección completada automáticamente",
+  "Dirección principal",
+  "Error al guardar datos de la empresa:",
+  "Funcionalidad de eliminación pendiente",
+  "La zona horaria es la",
+  "Logo de la empresa",
+  "No se pudo cargar datos del tenant:",
+  "No se pudo subir el logo:",
+  "Número de licencia de la empresa",
+  "RUC (Registro Único de Contribuyentes)",
+  "RUC de la empresa",
+  "Sólo los administradores pueden guardar cambios",
+  "Todavía no hay una empresa",
+  "Volver a la búsqueda"
+ ],
+ "src/pages/admin/security-guards/components/GuardAssign-Sites/GuardAsignarSitiosPage.tsx": [
+  "Asigna un puesto para empezar.",
+  "Asignación eliminada",
+  "Buscar puesto o estación",
+  "Ninguna asignación coincide con la búsqueda.",
+  "No hay asignaciones válidas para eliminar",
+  "No hay estaciones disponibles",
+  "No hay puestos disponibles",
+  "No se pudo asignar el puesto",
+  "No se pudo determinar la organización",
+  "No se pudo eliminar la asignación",
+  "Quitar del puesto",
+  "Selecciona al menos una estación para eliminar",
+  "Selecciona estación",
+  "Selecciona hora de inicio y fin",
+  "Sin puestos asignados todavía"
+ ],
+ "src/pages/admin/supervisors/SupervisorsPage.tsx": [
+  "Aún no hay supervisores",
+  "Con vehículo",
+  "Mié",
+  "No se pudo crear el supervisor",
+  "No se pudo eliminar el supervisor",
+  "No se pudo enviar el acceso a la app",
+  "No se pudo restablecer la contraseña",
+  "Sin vehículo",
+  "Sin zona asignada",
+  "Sáb"
+ ],
+ "src/pages/admin/Configuration/communications/WhatsAppBusinessCard.tsx": [
+  "Con problemas",
+  "Conectado el",
+  "Integración oficial de Meta",
+  "Mensajes por día",
+  "No se pudo cargar el estado de WhatsApp Business",
+  "No se pudo conectar WhatsApp. Inténtalo de nuevo.",
+  "No se pudo desconectar WhatsApp",
+  "Pendiente de habilitar",
+  "Sin conectar"
+ ],
+ "src/pages/admin/security-guards/components/GuardDevice/GuardDevicepage.tsx": [
+  "Dispositivo del vigilante",
+  "No reconocido",
+  "No se pudo restablecer el vínculo.",
+  "Restablecer vínculo",
+  "Sin dispositivos todavía",
+  "Versión app",
+  "Última anomalía"
+ ],
+ "src/pages/auth/reset-password.tsx": [
+  "Abrir la app C-Guard Pro",
+  "Confirmar contraseña",
+  "Nueva contraseña",
+  "Restablecer contraseña",
+  "Volver a iniciar sesión"
+ ],
+ "src/pages/admin/nomina/NominaRecords.tsx": [
+  "Día",
+  "Motivo de la corrección",
+  "Nueva hora de entrada",
+  "Supervisión",
+  "Todos los estados"
+ ],
+ "src/pages/admin/post-sites/station-detail/components/StationParking.tsx": [
+  "Automóvil",
+  "Con daños",
+  "Con observación",
+  "Sin daños"
+ ],
+ "src/components/GoogleMap/StationGeofencePolygon.tsx": [
+  "Agrega al menos 3 puntos para cerrar la geocerca.",
+  "Tamaño adecuado para marcar entrada y salida.",
+  "Ubicación del puesto (arrastra para ajustar)"
+ ],
+ "src/pages/admin/gps-tracker/RouteTrackingMap.tsx": [
+  "Sin señal",
+  "Ver recorrido de hoy",
+  "Última señal"
+ ],
+ "src/lib/validators/client.ts": [
+  "Cédula inválida",
+  "Latitud debe ser numérica",
+  "Longitud debe ser numérica"
+ ],
+ "src/pages/admin/Configuration/company-policies/CompanyPoliciesPage.tsx": [
+  "Políticas y Documentos",
+  "Políticas y Documentos de la Empresa"
+ ],
+ "src/pages/admin/dispatcher/NewDispatchPage.tsx": [
+  "No tenantId found",
+  "Seleccionar estación"
+ ],
+ "src/pages/admin/security-guards/NewSecurityGuardPage.tsx": [
+  "Correo Electrónico",
+  "Súbela desde su ficha, en Documentos."
+ ],
+ "src/pages/admin/clientes/components/ClientUserAccess/ClientUserAccess.tsx": [
+  "Enviar invitación",
+  "Sin correo"
+ ],
+ "src/lib/validators/dispatch-create.schema.ts": [
+  "Estación requerida",
+  "Fecha y hora del incidente son requeridas"
+ ],
+ "src/components/maps/AddressAutocomplete.tsx": [
+  "Arrastra para ajustar la ubicación exacta"
+ ],
+ "src/pages/admin/Configuration/SettingsHome.tsx": [
+  "Sin resultados"
+ ],
+ "src/pages/admin/memos/MemosPage.tsx": [
+  "Acuse de lectura recibido"
+ ],
+ "src/pages/admin/post-sites/components/PostsiteSiteTours/SiteTours.tsx": [
+  "Este sitio"
+ ],
+ "src/pages/admin/dashboard/control-center/components/BottomSheet.tsx": [
+  "Detalle de la operación"
+ ],
+ "src/pages/admin/alarm/AlarmAnalytics.tsx": [
+  "No se pudo exportar la auditoría"
+ ],
+ "src/pages/supervisor/registration.tsx": [
+  "Registro de supervisor"
+ ]
+}

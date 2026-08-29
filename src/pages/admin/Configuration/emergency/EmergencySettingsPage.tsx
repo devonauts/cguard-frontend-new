@@ -27,6 +27,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { usePermissions } from "@/hooks/usePermissions";
 import api from "@/lib/api";
+import { tablaDeEtiquetas } from "@/lib/i18nLabel";
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
 
@@ -46,15 +47,19 @@ const DEFAULTS: PanicCfg = {
   stopAfterMin: 60,
 };
 
-/** Etiquetas de los roles del sistema; los propios muestran su nombre. */
-const ETIQUETA_ROL: Record<string, string> = {
-  admin: "Administrador",
-  operationsManager: "Jefe de operaciones",
-  securitySupervisor: "Supervisor de seguridad",
-  dispatcher: "Despachador",
-  hrManager: "RR.HH.",
-  officeStaff: "Personal de oficina",
-};
+/**
+ * Etiquetas de los roles del sistema; los propios muestran su nombre.
+ * Se resuelven AL LEERLAS (`tablaDeEtiquetas`): esta tabla se evalúa al
+ * importar el módulo, antes de que el usuario haya elegido idioma.
+ */
+const ETIQUETA_ROL: Record<string, string> = tablaDeEtiquetas({
+  admin: "settings.emergency.role_admin",
+  operationsManager: "settings.emergency.role_operationsManager",
+  securitySupervisor: "settings.emergency.role_securitySupervisor",
+  dispatcher: "settings.emergency.role_dispatcher",
+  hrManager: "settings.emergency.role_hrManager",
+  officeStaff: "settings.emergency.role_officeStaff",
+});
 
 export default function EmergencySettingsPage() {
   const { t } = useTranslation();

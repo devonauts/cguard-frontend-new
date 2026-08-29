@@ -254,7 +254,7 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
           <Button variant="outline" onClick={onClose}>{t('actions.cancel')}</Button>
           <Button onClick={saveShift} disabled={saving || !shiftGuard || (assignMode === 'rotation' && !selectedPositionId)}>
             {saving ? <Loader2 size={14} className="animate-spin" /> : <UserPlus size={14} />}
-            {assignMode === 'rotation' ? 'Asignar rotación' : 'Crear turno'}
+            {assignMode === 'rotation' ? t('ui.ShiftAssignModal.asignarRotacion', 'Asignar rotación') : t('ui.ShiftAssignModal.crearTurno', 'Crear turno')}
           </Button>
         </>
       }

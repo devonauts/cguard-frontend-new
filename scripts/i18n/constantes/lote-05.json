@@ -1,0 +1,56 @@
+[
+  {
+    "fichero": "src/lib/projectTypes.ts",
+    "constantes": [
+      {
+        "linea": 95,
+        "constante": "PROJECT_STATUS_LABELS"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/Configuration/security/SecurityPolicyPage.tsx",
+    "constantes": [
+      {
+        "linea": 44,
+        "constante": "IDLE_OPCIONES"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/analytics/_shared.tsx",
+    "constantes": [
+      {
+        "linea": 86,
+        "constante": "PRESETS"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/inventory/GlobalInventoryPage.tsx",
+    "constantes": [
+      {
+        "linea": 37,
+        "constante": "CONDITION_TONE"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/routes/RouteForm.tsx",
+    "constantes": [
+      {
+        "linea": 72,
+        "constante": "DAY_LABEL"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/vehicle-patrol/PatrullaBoardPage.tsx",
+    "constantes": [
+      {
+        "linea": 24,
+        "constante": "DOW_NUM"
+      }
+    ]
+  }
+]

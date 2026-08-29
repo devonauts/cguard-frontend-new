@@ -1,0 +1,72 @@
+[
+  {
+    "fichero": "src/components/sidebar.tsx",
+    "constantes": [
+      {
+        "linea": 71,
+        "constante": "GROUPS"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/Configuration/guards-settings/GuardsGlobalSettingsPage.tsx",
+    "constantes": [
+      {
+        "linea": 32,
+        "constante": "AVISOS"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/alarm/AlarmPanels.tsx",
+    "constantes": [
+      {
+        "linea": 80,
+        "constante": "PANEL_TYPE_LABELS"
+      },
+      {
+        "linea": 103,
+        "constante": "STATUS_LABELS"
+      },
+      {
+        "linea": 121,
+        "constante": "ZONE_TYPE_LABELS"
+      },
+      {
+        "linea": 149,
+        "constante": "AUTHORITY_LABELS"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/gps-tracker/LiveTracking.tsx",
+    "constantes": [
+      {
+        "linea": 34,
+        "constante": "DOW_NUM"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/routes/ExtremoRutaField.tsx",
+    "constantes": [
+      {
+        "linea": 35,
+        "constante": "COPIA"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/tasks/TaskTracking.tsx",
+    "constantes": [
+      {
+        "linea": 27,
+        "constante": "STATUS_META"
+      },
+      {
+        "linea": 38,
+        "constante": "FILTERS"
+      }
+    ]
+  }
+]

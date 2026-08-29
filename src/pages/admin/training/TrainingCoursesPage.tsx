@@ -167,7 +167,7 @@ export default function TrainingCoursesPage() {
         </div>
       ),
     },
-    { key: 'category', header: 'Categoría', render: (_v, c) => categoryLabel(c.category) },
+    { key: 'category', header: t('ui.TrainingCourses.categoria', 'Categoría'), render: (_v, c) => categoryLabel(c.category) },
     { key: 'level', header: 'Nivel', render: (_v, c) => levelLabel(c.level) },
     {
       key: 'pointsValue',
@@ -229,7 +229,7 @@ export default function TrainingCoursesPage() {
             <SelectContent>
               <SelectItem value="all">{t("ui.TrainingCourses.todasLasCategorias", "Todas las categorías")}</SelectItem>
               {TRAINING_CATEGORIES.map((c) => (
-                <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                <SelectItem key={c.value} value={c.value}>{t(c.labelKey, c.label)}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -244,7 +244,7 @@ export default function TrainingCoursesPage() {
             onRowClick={(c) => navigate(`/training/courses/${c.id}`)}
             rowActions={(c) => [
               { label: 'Abrir / Editar', icon: <Pencil className="h-4 w-4" />, onClick: () => navigate(`/training/courses/${c.id}`) },
-              { label: 'Progreso de vigilantes', icon: <Users className="h-4 w-4" />, onClick: () => navigate(`/training/courses/${c.id}/enrollments`) },
+              { label: t('ui.TrainingCourses.progresoDeVigilantes', 'Progreso de vigilantes'), icon: <Users className="h-4 w-4" />, onClick: () => navigate(`/training/courses/${c.id}/enrollments`) },
               ...(canDestroy && !c.isAddon
                 ? [{ label: 'Eliminar', icon: <Trash2 className="h-4 w-4" />, destructive: true, onClick: () => setDeleteId(c.id) }]
                 : []),
@@ -290,7 +290,7 @@ export default function TrainingCoursesPage() {
                 <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v as any })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {TRAINING_CATEGORIES.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
+                    {TRAINING_CATEGORIES.map((c) => <SelectItem key={c.value} value={c.value}>{t(c.labelKey, c.label)}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>

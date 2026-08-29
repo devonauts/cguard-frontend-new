@@ -113,7 +113,7 @@ export default function NewVehiclePage() {
         try {
           const matches = await vehicleService.autocomplete(plate, 1);
           if (matches && matches.length > 0) {
-            form.setError('plate', { type: 'manual', message: 'Ya existe un vehículo con esa Placa' });
+            form.setError('plate', { type: 'manual', message: t('ui.NewVehiclePage.yaExisteUnVehiculoConEsaPlaca', 'Ya existe un vehículo con esa Placa') });
             return;
           }
         } catch (e) {
@@ -174,7 +174,7 @@ export default function NewVehiclePage() {
       }
     } catch (err) {
       console.error('Error creando vehículo', err);
-      toast.error(String((err as any)?.message || 'Error creando vehículo'));
+      toast.error(String((err as any)?.message || t('ui.NewVehiclePage.errorCreandoVehiculo', 'Error creando vehículo')));
     }
   };
 
@@ -191,7 +191,7 @@ export default function NewVehiclePage() {
       <Breadcrumb
         items={[
           { label: "Panel de control", path: "/dashboard" },
-          { label: "Nuevo vehículo" },
+          { label: t('ui.Vehicles.nuevoVehiculo', 'Nuevo vehículo') },
         ]}
       />
 
@@ -199,7 +199,7 @@ export default function NewVehiclePage() {
        <PageContainer width="narrow">
         <PageHeader
           icon={<Car />}
-          title={isEditing ? "Editar vehículo" : "Nuevo vehículo"}
+          title={isEditing ? t('ui.NewVehiclePage.editarVehiculo', 'Editar vehículo') : t('ui.Vehicles.nuevoVehiculo', 'Nuevo vehículo')}
           subtitle={t('ui.NewVehiclePage.registraLosDatosDelVehiculo')}
         />
         <Form {...form}>
@@ -386,8 +386,8 @@ export default function NewVehiclePage() {
                         <SelectValue placeholder={t('kit.select.placeholder')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="propio">Propio</SelectItem>
-                        <SelectItem value="alquilado">Alquilado</SelectItem>
+                        <SelectItem value="propio">{t("vehicles.ownership.propio", "Propio")}</SelectItem>
+                        <SelectItem value="alquilado">{t("vehicles.ownership.alquilado", "Alquilado")}</SelectItem>
                         <SelectItem value="cliente">{t('ui.NewVehiclePage.delCliente')}</SelectItem>
                       </SelectContent>
                     </Select>

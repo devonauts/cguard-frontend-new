@@ -3,26 +3,50 @@ import { CheckSquare } from "lucide-react";
 import DataReport, { type ReportColumn } from "./DataReport";
 import { formatDate, rangeBounds, REPORT_ROW_LIMIT, warnIfCapped } from "./reportFormat";
 import taskService, { type TaskRow } from "@/lib/api/taskService";
+// `columns` es de módulo: no hay `useTranslation` que valga. Se entra por la
+// instancia de i18next y SIEMPRE dentro de `value()`, nunca en el cuerpo del
+// módulo. Precedente: src/components/AppErrorBoundary.tsx
+import i18n from "@/i18n";
 
 
-const STATUS: Record<string, string> = {
-  pending: "Pendiente",
-  approved: "Aprobada",
-  rejected: "Rechazada",
-  completed: "Completada",
+/**
+ * Mapas de módulo: guardan la CLAVE junto al texto español. Un `t()` aquí se
+ * evaluaría al importar el fichero —antes de que i18next sepa el idioma— y
+ * dejaría la columna congelada para toda la sesión. Se traducen dentro de
+ * `value()`, que sí corre al pintar cada fila.
+ */
+type Etiqueta = { label: string; labelKey: string };
+const STATUS: Record<string, Etiqueta> = {
+  pending: { label: "Pendiente", labelKey: "comun.pendiente" },
+  approved: { label: "Aprobada", labelKey: "tasks.estado.approved" },
+  rejected: { label: "Rechazada", labelKey: "tasks.estado.rejected" },
+  completed: { label: "Completada", labelKey: "tasks.estado.completed" },
 };
-const SOURCE: Record<string, string> = { client: "Cliente", staff: "Personal", passdown: "Relevo" };
-const PRIORITY: Record<string, string> = { alta: "Alta", media: "Media", baja: "Baja" };
+const SOURCE: Record<string, Etiqueta> = {
+  client: { label: "Cliente", labelKey: "comun.cliente" },
+  staff: { label: "Personal", labelKey: "tasks.origen.staff" },
+  passdown: { label: "Relevo", labelKey: "tasks.origen.passdown" },
+};
+const PRIORITY: Record<string, Etiqueta> = {
+  alta: { label: "Alta", labelKey: "comun.alta" },
+  media: { label: "Media", labelKey: "comun.media" },
+  baja: { label: "Baja", labelKey: "comun.baja" },
+};
+/** Traduce una entrada del mapa AL PINTAR, nunca al construirlo. */
+const etiqueta = (mapa: Record<string, Etiqueta>, bruto: unknown): string | null => {
+  const e = mapa[String(bruto ?? "")];
+  return e ? i18n.t(e.labelKey, e.label) : null;
+};
 
 const columns: ReportColumn<TaskRow>[] = [
-  { key: "created", label: "Creada", value: (r) => formatDate(r.createdAt) },
-  { key: "task", label: "Tarea", value: (r) => (r.taskToDo ? (r.taskToDo.length > 70 ? r.taskToDo.slice(0, 70) + "…" : r.taskToDo) : "—") },
-  { key: "station", label: "Puesto", value: (r) => r.taskBelongsToStation?.stationName || "—" },
-  { key: "source", label: "Origen", value: (r) => SOURCE[String(r.source || "")] || r.source || "—" },
-  { key: "priority", label: "Prioridad", value: (r) => PRIORITY[String(r.priority || "")] || r.priority || "—", align: "center" },
-  { key: "due", label: "Para", value: (r) => formatDate(r.dateToDoTheTask) },
-  { key: "done", label: "Realizada", value: (r) => (r.wasItDone ? "Sí" : "No"), align: "center" },
-  { key: "status", label: "Estado", value: (r) => STATUS[String(r.status || "")] || r.status || "—" },
+  { key: "created", label: "Creada", labelKey: "reports.col.task.created", value: (r) => formatDate(r.createdAt) },
+  { key: "task", label: "Tarea", labelKey: "reports.col.task.task", value: (r) => (r.taskToDo ? (r.taskToDo.length > 70 ? r.taskToDo.slice(0, 70) + "…" : r.taskToDo) : "—") },
+  { key: "station", label: "Puesto", labelKey: "reports.col.task.station", value: (r) => r.taskBelongsToStation?.stationName || "—" },
+  { key: "source", label: "Origen", labelKey: "reports.col.task.source", value: (r) => etiqueta(SOURCE, r.source) || r.source || "—" },
+  { key: "priority", label: "Prioridad", labelKey: "reports.col.task.priority", value: (r) => etiqueta(PRIORITY, r.priority) || r.priority || "—", align: "center" },
+  { key: "due", label: "Para", labelKey: "reports.col.task.due", value: (r) => formatDate(r.dateToDoTheTask) },
+  { key: "done", label: "Realizada", labelKey: "reports.col.task.done", value: (r) => (r.wasItDone ? "Sí" : "No"), align: "center" },
+  { key: "status", label: "Estado", labelKey: "reports.col.task.status", value: (r) => etiqueta(STATUS, r.status) || r.status || "—" },
 ];
 
 export default function Task() {

@@ -1,0 +1,149 @@
+{
+ "src/pages/admin/Configuration/mobile-hub/MobileHubPage.tsx": [
+  "App del equipo",
+  "App del supervisor",
+  "App del vigilante",
+  "Atención",
+  "Central de operaciones",
+  "Color de acento",
+  "Confirma relevo a las 08:00",
+  "Control de accesos",
+  "Control de visitas",
+  "Del sistema",
+  "Envía una alerta de pánico a tu central",
+  "Esta semana",
+  "Hub móvil del equipo",
+  "Juan Ramírez",
+  "Mapa del sitio",
+  "Mapa del sitio y ubicaciones.",
+  "Mañana",
+  "Mi desempeño",
+  "Módulos de la app del vigilante",
+  "Perímetro",
+  "Puntaje y evolución del vigilante.",
+  "Recepción",
+  "Registro de visitantes en el puesto.",
+  "SOS / Pánico",
+  "Según el dispositivo",
+  "Sin conexión",
+  "Solicitud de refuerzo/backup.",
+  "Solicitudes de días libres.",
+  "Supervisor de zona",
+  "Sábado",
+  "Tareas del turno",
+  "Tipo de letra",
+  "Todas las ubicaciones del cliente",
+  "Usar el logo de la empresa",
+  "Uso de la fuerza"
+ ],
+ "src/pages/admin/administrative-office-users/NewAdminUserPage.tsx": [
+  "Crear código de invitación",
+  "Código copiado",
+  "Código de invitación creado",
+  "Datos del usuario",
+  "Error cargando sitios para clientes seleccionados",
+  "Error cargando usuario para edición",
+  "Error creando código",
+  "Generar código",
+  "Generar código de invitación",
+  "Gerente de Operaciones",
+  "Gerente de RRHH",
+  "Gestor de Cuentas",
+  "IDs inválidos detectados en asignaciones",
+  "Supervisor de Seguridad"
+ ],
+ "src/pages/admin/security-guards/SecurityGuardsPage.tsx": [
+  "Archivo con extensión no reconocida:",
+  "Asignar a estación",
+  "Error ejecutando acción masiva:",
+  "Estación",
+  "No se pudo crear preview FormData:",
+  "No se pudo parsear preview CSV:",
+  "Reenviar invitación",
+  "Sin vigilantes en este estado"
+ ],
+ "src/pages/admin/stations/StationCardsGrid.tsx": [
+  "Fuera de turno",
+  "Las estaciones se crean dentro de cada puesto.",
+  "Puesto sin cubrir",
+  "Sin estaciones",
+  "Sin turnos hoy",
+  "Sin vigilantes asignados"
+ ],
+ "src/components/GoogleMap/GoogleMapEmbed.tsx": [
+  "Centro de la manzana",
+  "Centro del barrio",
+  "Interpolada en la calle",
+  "Nivel de calle",
+  "Sin dirección conocida"
+ ],
+ "src/pages/admin/Configuration/department/DepartmentPage.tsx": [
+  "No se pudieron cargar los departamentos",
+  "No se pudo cambiar el estado",
+  "No se pudo eliminar el departamento",
+  "No se pudo eliminar un departamento",
+  "No se pudo guardar el departamento"
+ ],
+ "src/pages/admin/Configuration/components/ProfileUserForm.tsx": [
+  "Error al cambiar el correo.",
+  "Error al enviar el código.",
+  "Error al guardar el perfil.",
+  "Error al verificar el número."
+ ],
+ "src/components/maps/SitesMap.tsx": [
+  "Dirección",
+  "Sin operación",
+  "Sin ubicación registrada"
+ ],
+ "src/pages/admin/video/VideoEvents.tsx": [
+  "Aún no se han registrado eventos de video.",
+  "Crítica",
+  "Cámara desconocida"
+ ],
+ "src/lib/projectTypes.ts": [
+  "Consultoría",
+  "Evento de seguridad",
+  "Investigación"
+ ],
+ "src/pages/admin/Configuration/types-licenses/LicensesTypeDialog.tsx": [
+  "Formulario para crear o editar un tipo de licencia.",
+  "Nombre del Tipo de Licencia"
+ ],
+ "src/pages/admin/dispatcher/DispatchPrintablePage.tsx": [
+  "No se pudieron cargar detalles del Incidente",
+  "Sin archivos seleccionados"
+ ],
+ "src/pages/admin/dashboard/control-center/components/SystemStatus.tsx": [
+  "Dispositivos en línea",
+  "Equipos reportando posición"
+ ],
+ "src/pages/admin/routes/RouteDetailModal.tsx": [
+  "Empieza en la primera parada",
+  "Termina en la última parada"
+ ],
+ "src/lib/serviceTypes.ts": [
+  "Patrulla Móvil",
+  "Vigilancia con Vigilantes"
+ ],
+ "src/components/maps/StaticMapImage.tsx": [
+  "Mapa de la ubicación"
+ ],
+ "src/components/notifications/PanicAlertOverlay.tsx": [
+  "Un cliente activó el botón de SOS"
+ ],
+ "src/pages/admin/video/VideoMonitoring.tsx": [
+  "Aún no hay cámaras configuradas"
+ ],
+ "src/pages/admin/nomina/NominaDashboard.tsx": [
+  "Sin marcar salida"
+ ],
+ "src/pages/admin/supervisors/SupervisorSchedulePage.tsx": [
+  "Sin fecha"
+ ],
+ "src/pages/admin/administrative-office-users/AdminUserDetailPage.tsx": [
+  "Invitación pendiente"
+ ],
+ "src/pages/admin/Reports/PanicButtonLog.tsx": [
+  "Panel de alarma"
+ ]
+}

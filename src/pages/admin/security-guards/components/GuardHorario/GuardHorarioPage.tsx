@@ -15,16 +15,20 @@ import { localeActual } from '@/lib/localeActual'
 // (scheduleGridService) feeds both, so the codes must read the same too.
 // Día y noche NO son estados semánticos: el día toma el azul informativo y la
 // noche el acento de marca. El hueco de cobertura SÍ lo es y va en rojo fijo.
-const CELL: Record<string, { label: string; style: React.CSSProperties; title: string }> = {
+// `title` se traduce donde se pinta (`t(m.titleKey, m.title)`): este mapa se
+// evalúa al cargar el módulo, antes de que el idioma esté listo.
+const CELL: Record<string, { label: string; style: React.CSSProperties; title: string; titleKey?: string }> = {
   day: {
     label: 'D',
     style: { background: 'color-mix(in oklab, var(--info) 16%, transparent)', color: 'var(--info-text)' },
     title: 'Turno de día',
+    titleKey: 'ui.GuardHorario.turnoDeDia',
   },
   night: {
     label: 'N',
     style: { background: 'var(--brand-wash)', color: 'var(--brand-text)' },
     title: 'Turno de noche',
+    titleKey: 'ui.GuardHorario.turnoDeNoche',
   },
   rest: {
     label: 'L',
@@ -35,11 +39,13 @@ const CELL: Record<string, { label: string; style: React.CSSProperties; title: s
     label: '!',
     style: { background: 'color-mix(in oklab, var(--bad) 16%, transparent)', color: 'var(--bad-text)' },
     title: 'Sin turno generado (hueco de cobertura)',
+    titleKey: 'ui.GuardHorario.huecoCobertura',
   },
   none: {
     label: '·',
     style: { color: 'var(--ink-faint)' },
     title: 'Sin rotación configurada',
+    titleKey: 'ui.GuardHorario.sinRotacion',
   },
 };
 
@@ -139,7 +145,7 @@ export default function GuardHorarioPage() {
                           </td>
                           {(r.cells || []).map((c) => {
                             const m = CELL[c.status] || CELL.none;
-                            const tip = [m.title, c.hours, c.covering && c.guardName ? `Cubre: ${c.guardName}` : null]
+                            const tip = [m.titleKey ? t(m.titleKey, m.title) : m.title, c.hours, c.covering && c.guardName ? `Cubre: ${c.guardName}` : null]
                               .filter(Boolean).join(' · ');
                             return (
                               <td key={c.date} className="border-b p-0.5 text-center" style={{ borderColor: 'var(--hairline)' }}>
@@ -160,7 +166,7 @@ export default function GuardHorarioPage() {
                     { k: 'day', label: 'Día' },
                     { k: 'night', label: 'Noche' },
                     { k: 'rest', label: 'Libre' },
-                    { k: 'gap', label: 'Sin turno generado' },
+                    { k: 'gap', label: t('ui.GuardHorario.sinTurnoGenerado', 'Sin turno generado') },
                   ].map(({ k, label }) => (
                     <span key={k} className="inline-flex items-center gap-1.5">
                       <span className="grid h-4 w-4 place-items-center rounded text-[10px] font-bold" style={CELL[k].style}>{CELL[k].label}</span> {label}

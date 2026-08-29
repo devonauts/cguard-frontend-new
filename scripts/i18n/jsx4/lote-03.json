@@ -1,0 +1,117 @@
+[
+  {
+    "fichero": "src/components/maps/AddressAutocomplete.tsx",
+    "literales": [
+      "No se pudo cargar el mapa. Revisa la configuración de mapas de la cuenta.",
+      "Busca una dirección o arrastra la chincheta para fijar la ubicación exacta."
+    ]
+  },
+  {
+    "fichero": "src/components/post-sites/PostSiteImportDialog.tsx",
+    "literales": [
+      "Sube un archivo .xlsx/.xls/.csv para importar Puestos de Vigilancia."
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/Configuration/components/profile/AvatarUploader.tsx",
+    "literales": [
+      "alt=\"Foto de perfil\""
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/Reports/ReportPageShell.tsx",
+    "literales": [
+      "Enviar por correo"
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/alarm/AlarmReports.tsx",
+    "literales": [
+      "title=\"Por panel\""
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/clientes/components/ClientCoverage/ClientCoverage.tsx",
+    "literales": [
+      "Horario en Programador"
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/dashboard/control-center/OperationsMapFull.tsx",
+    "literales": [
+      "Operaciones en tiempo real"
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/gps-tracker/LiveTracking.tsx",
+    "literales": [
+      "title=\"Seguimiento en vivo\""
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/nomina/NominaHoursSummary.tsx",
+    "literales": [
+      "title=\"Detalle por persona\""
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/post-sites/PostSiteWizard.tsx",
+    "literales": [
+      "Sin turnos — añade Matutina, Nocturna o Sacafranco con los botones de arriba.",
+      "Cada jornada se guarda como un registro independiente en el puesto.",
+      "Ir al perfil"
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/programmer/Coverage.tsx",
+    "literales": [
+      "Reemplazo por vacaciones",
+      "title=\"Cobertura en vivo\"",
+      "label=\"En riesgo\""
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/projects/ProjectForm.tsx",
+    "literales": [
+      "title=\"Fechas y lugar\""
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/security-guards/SecurityGuardsPage.tsx",
+    "literales": [
+      "Se asignará al primer puesto disponible de la estación y aparecerá en el Horario."
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/security-guards/components/ProfilePhotoCapture.tsx",
+    "literales": [
+      "Iniciando cámara…",
+      "alt=\"Foto de perfil\""
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/supervisors/SupervisorPositionsPage.tsx",
+    "literales": [
+      "Supervisores por turno"
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/training/components/QuizManager.tsx",
+    "literales": [
+      "Preguntas por intento",
+      "Al guardar se reemplazarán las preguntas existentes del cuestionario."
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/visitor-management/Visits.tsx",
+    "literales": [
+      "En curso"
+    ]
+  },
+  {
+    "fichero": "src/pages/public/DispatchPublicView.tsx",
+    "literales": [
+      "N.º de ticket"
+    ]
+  }
+]

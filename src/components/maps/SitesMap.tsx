@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MapPin } from 'lucide-react';
 import GoogleMapEmbed, { type MapEmbedMarker } from '@/components/GoogleMap/GoogleMapEmbed';
 import StaticMapImage from '@/components/maps/StaticMapImage';
@@ -61,8 +62,9 @@ export default function SitesMap({
   clienteFallback,
   height = '300px',
   onSedeClick,
-  textoVacio = 'Sin ubicación registrada',
+  textoVacio,
 }: Props) {
+  const { t } = useTranslation();
   // Sólo las sedes geolocalizadas. Una sede sin coordenadas no se puede pintar,
   // pero tampoco puede tumbar el mapa de las demás.
   const conCoords = useMemo(
@@ -87,10 +89,10 @@ export default function SitesMap({
         role: (s.guards ?? 0) > 0 ? undefined : 'muted',
         status:
           (s.guards ?? 0) > 0
-            ? { label: 'Operativa', tone: 'ok' as const }
-            : { label: 'Sin operación', tone: 'neutral' as const },
+            ? { label: t('clients.overview.status.operativa', 'Operativa'), tone: 'ok' as const }
+            : { label: t('clients.overview.status.sinOp', 'Sin operación'), tone: 'neutral' as const },
       })),
-    [conCoords],
+    [conCoords, t],
   );
 
   const puntos = useMemo(() => conCoords.map(({ lat, lng }) => ({ lat, lng })), [conCoords]);
@@ -111,7 +113,7 @@ export default function SitesMap({
         className="flex flex-col items-center justify-center gap-1 rounded-xl border border-dashed text-sm"
         style={{ height, borderColor: 'var(--hairline)', background: 'var(--glass-sunken)', color: 'var(--ink-soft)' }}
       >
-        <MapPin className="h-5 w-5 opacity-50" /> {textoVacio}
+        <MapPin className="h-5 w-5 opacity-50" /> {textoVacio ?? t('maps.sites.noLocation', 'Sin ubicación registrada')}
       </div>
     );
   }
@@ -152,7 +154,7 @@ export default function SitesMap({
               return {
                 fields: mapPopupItems(
                   s.address || s.city
-                    ? { label: 'Dirección', value: [s.address, s.city].filter(Boolean).join(', '), wide: true }
+                    ? { label: t('clients.columns.address', 'Dirección'), value: [s.address, s.city].filter(Boolean).join(', '), wide: true }
                     : null,
                 ),
                 metrics: [

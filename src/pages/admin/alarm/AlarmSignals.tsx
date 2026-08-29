@@ -49,9 +49,12 @@ const FORMAT_META: Record<string, { label: string }> = {
 
 /** Aquí sí hay severidad: un evento es una alarma que entra; una restauración es
  *  que algo volvió a la normalidad. Semánticos fijos. */
-const QUALIFIER_META: Record<string, { label: string; tone: string }> = {
+const QUALIFIER_META: Record<string, { label: string; labelKey?: string; tone: string }> = {
   event: { label: "Evento", tone: "bad" },
-  restore: { label: "Restauración", tone: "ok" },
+  // La etiqueta se traduce DONDE SE PINTA: este objeto se evalúa al cargar el
+  // módulo, antes de que el idioma esté listo, y llamar a t() aquí congelaría
+  // el texto en el idioma de arranque para toda la sesión.
+  restore: { label: "Restauración", labelKey: "alarm.category.restore", tone: "ok" },
   status: { label: "Estado", tone: "neutral" },
 };
 
@@ -176,7 +179,7 @@ export default function AlarmSignals() {
             title={t("ui.AlarmSignals.sinSenales", "Sin señales")}
             description={
               query
-                ? "Ninguna señal coincide con la búsqueda."
+                ? t("ui.AlarmSignals.ningunaSenalCoincide", "Ninguna señal coincide con la búsqueda.")
                 : "Aún no se han recibido señales."
             }
           />
@@ -230,7 +233,7 @@ export default function AlarmSignals() {
                         </td>
                         <td className="px-4 py-3">
                           {qual ? (
-                            <StatusBadge tone={qual.tone}>{qual.label}</StatusBadge>
+                            <StatusBadge tone={qual.tone}>{qual.labelKey ? t(qual.labelKey, qual.label) : qual.label}</StatusBadge>
                           ) : (
                             <span className="text-muted-foreground">{s.qualifier || "—"}</span>
                           )}

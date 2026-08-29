@@ -15,11 +15,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { StatusBadge, EmptyState, IconTile } from '@/components/kit';
 
-const SCHEDULE_LABEL: Record<string, string> = {
-    '24h': '24 horas',
-    '12h-day': '12h Día',
-    '12h-night': '12h Noche',
-    custom: 'Personalizado',
+/* Constante de MÓDULO: guarda la CLAVE con el español de respaldo; se traduce
+   al pintar, dentro del componente (llamar a t() aquí congelaría el idioma). */
+const SCHEDULE_LABEL: Record<string, { label: string; labelKey: string }> = {
+    '24h': { label: '24 horas', labelKey: 'stations.scheduleType.24h' },
+    '12h-day': { label: '12h Día', labelKey: 'stations.scheduleType.12hDay' },
+    '12h-night': { label: '12h Noche', labelKey: 'stations.scheduleType.12hNight' },
+    custom: { label: 'Personalizado', labelKey: 'stations.scheduleType.custom' },
 };
 
 // The normalized station card shape produced by Stations.tsx.
@@ -56,7 +58,10 @@ export default function StationCardsGrid({
                 const id = st.id || st.stationId || '';
                 const name = st.name || 'Estación';
                 const guards = st.numberOfGuardsInStation ?? (Array.isArray(st.assignedGuards) ? st.assignedGuards.length : null);
-                const sched = st.scheduleType ? (SCHEDULE_LABEL[st.scheduleType] || st.scheduleType) : (Array.isArray(st.jornadas) && st.jornadas.length ? `${st.jornadas.length} jornada(s)` : null);
+                const schedEntry = st.scheduleType ? SCHEDULE_LABEL[st.scheduleType] : undefined;
+                const sched = st.scheduleType
+                    ? (schedEntry ? t(schedEntry.labelKey, schedEntry.label) : st.scheduleType)
+                    : (Array.isArray(st.jornadas) && st.jornadas.length ? t('stations.card.jornadas', '{{n}} jornada(s)', { n: st.jornadas.length }) : null);
                 const geo = st.hasPolygon ? 'Polígono' : (st.geofenceRadius ? `${st.geofenceRadius} m` : null);
                 return (
                     <div

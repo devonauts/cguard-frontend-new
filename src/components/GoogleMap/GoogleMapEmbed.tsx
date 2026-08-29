@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 
 import { loadGoogleMaps } from "@/utils/loadGoogleMaps";
 import { getTenantLocation } from "@/utils/tenantLocation";
@@ -139,16 +141,21 @@ function parsePlaceAddress(place: any) {
   return components;
 }
 
+interface GradoPrecision { texto: string; textoKey: string; tono: MapPopupTone }
+
 /**
  * Qué tan fina es la dirección que devolvió Google. Es la única medida de
  * precisión REAL que hay al colocar un pin a mano, y llega gratis en la misma
  * respuesta de la geocodificación inversa: no cuesta ni una petición más.
  */
-const PRECISION: Record<string, { texto: string; tono: MapPopupTone }> = {
-  ROOFTOP:             { texto: "Exacta · portal",          tono: "ok" },
-  RANGE_INTERPOLATED:  { texto: "Interpolada en la calle",  tono: "ok" },
-  GEOMETRIC_CENTER:    { texto: "Centro de la manzana",     tono: "warn" },
-  APPROXIMATE:         { texto: "Aproximada",               tono: "warn" },
+// `textoKey` viaja junto al texto en español: la traducción se hace al
+// PUBLICAR la lectura (ya en ejecución). Llamar a t() en esta constante la
+// congelaría en el idioma con el que arrancó la sesión.
+const PRECISION: Record<string, GradoPrecision> = {
+  ROOFTOP:             { texto: "Exacta · portal",          textoKey: "maps.precision.rooftop",           tono: "ok" },
+  RANGE_INTERPOLATED:  { texto: "Interpolada en la calle",  textoKey: "maps.precision.rangeInterpolated", tono: "ok" },
+  GEOMETRIC_CENTER:    { texto: "Centro de la manzana",     textoKey: "maps.precision.geometricCenter",   tono: "warn" },
+  APPROXIMATE:         { texto: "Aproximada",               textoKey: "maps.precision.approximate",       tono: "warn" },
 };
 
 /**
@@ -184,15 +191,15 @@ function componentesDeNominatim(a: Record<string, any> | undefined): Record<stri
  * y si no trae ni eso, es el centroide de un barrio o de una ciudad. Es la misma
  * escala, deducida de lo que sí viene.
  */
-function precisionDeNominatim(r: any): { texto: string; tono: MapPopupTone } | undefined {
+function precisionDeNominatim(r: any): GradoPrecision | undefined {
   const a = r?.address || {};
   const tipo = String(r?.addresstype || r?.type || "");
   if (a.house_number || tipo === "building" || tipo === "house") {
-    return { texto: "Exacta · portal", tono: "ok" };
+    return { texto: "Exacta · portal", textoKey: "maps.precision.rooftop", tono: "ok" };
   }
-  if (a.road || tipo === "road") return { texto: "Nivel de calle", tono: "ok" };
-  if (a.suburb || a.neighbourhood) return { texto: "Centro del barrio", tono: "warn" };
-  return { texto: "Aproximada", tono: "warn" };
+  if (a.road || tipo === "road") return { texto: "Nivel de calle", textoKey: "maps.precision.streetLevel", tono: "ok" };
+  if (a.suburb || a.neighbourhood) return { texto: "Centro del barrio", textoKey: "maps.precision.neighbourhoodCenter", tono: "warn" };
+  return { texto: "Aproximada", textoKey: "maps.precision.approximate", tono: "warn" };
 }
 
 interface EstadoPin {
@@ -299,6 +306,7 @@ export default function GoogleMapEmbed({
   /** Panel de cristal libre sobre el mapa (lo coloca quien lo pasa). */
   hud?: ReactNode;
 }) {
+  const { t } = useTranslation();
   const mapRef = useRef<HTMLDivElement | null>(null);
   const mapInstance = useRef<any>(null);
   const pooledRef = useRef<PooledMap | null>(null);
@@ -844,14 +852,14 @@ export default function GoogleMapEmbed({
     const publicar = (
       formatted: string,
       detalles: Record<string, any>,
-      grado?: { texto: string; tono: MapPopupTone },
+      grado?: GradoPrecision,
     ) => {
       setPin((p) =>
         p && p.lat === la && p.lng === ln
           ? {
               ...p,
               direccion: formatted,
-              precision: grado?.texto ?? null,
+              precision: grado ? i18n.t(grado.textoKey, grado.texto) : null,
               tonoPrecision: grado?.tono ?? "neutral",
               resolviendo: false,
             }
@@ -1275,7 +1283,7 @@ export default function GoogleMapEmbed({
               title={lectura.direccion || undefined}
             >
               {lectura.direccion ||
-                (lectura.resolviendo ? "…" : "Sin dirección conocida")}
+                (lectura.resolviendo ? "…" : t("maps.pin.noKnownAddress", "Sin dirección conocida"))}
             </div>
             <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5">
               <span

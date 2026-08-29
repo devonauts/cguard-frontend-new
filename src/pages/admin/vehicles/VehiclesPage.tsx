@@ -53,11 +53,14 @@ import {
 } from "@/lib/validators/vehicle-filters";
 import vehicleService from '@/lib/api/vehicleService';
 
-/** Cómo se llama la propiedad del vehículo en la ficha. */
-const OWNERSHIP_LABELS: Record<string, string> = {
-    propio: 'Propio',
-    alquilado: 'Alquilado',
-    cliente: 'Del cliente',
+/** Cómo se llama la propiedad del vehículo en la ficha. Constante de MÓDULO: la
+ *  clave viaja junto al español de respaldo y se traduce al PINTAR; llamar a t()
+ *  aquí dejaría la etiqueta clavada en el idioma de arranque. La clave del mapa
+ *  (`propio`, `alquilado`, `cliente`) es el valor guardado y no se toca. */
+const OWNERSHIP_LABELS: Record<string, { label: string; labelKey: string }> = {
+    propio: { label: 'Propio', labelKey: 'vehicles.ownership.propio' },
+    alquilado: { label: 'Alquilado', labelKey: 'vehicles.ownership.alquilado' },
+    cliente: { label: 'Del cliente', labelKey: 'vehicles.ownership.cliente' },
 };
 
 /** Primera foto utilizable del vehículo, si la hay. */
@@ -427,7 +430,7 @@ export default function VehiclesPage() {
                                             />
                                             <div className="min-w-0 flex-1">
                                                 <div className="truncate font-mono text-sm font-semibold text-foreground">
-                                                    {r.licensePlate || 'Sin placa'}
+                                                    {r.licensePlate || t('ui.Vehicles.sinPlaca', 'Sin placa')}
                                                 </div>
                                                 <div className="cg-eyebrow mt-1 truncate">
                                                     {[r.make, r.model, r.year].filter(Boolean).join(' · ') || 'Sin datos'}
@@ -461,7 +464,9 @@ export default function VehiclesPage() {
                                             </StatusBadge>
                                             {r.ownership && (
                                                 <StatusBadge tone="info" dot={false}>
-                                                    {OWNERSHIP_LABELS[r.ownership] || r.ownership}
+                                                    {OWNERSHIP_LABELS[r.ownership]
+                                                        ? t(OWNERSHIP_LABELS[r.ownership].labelKey, OWNERSHIP_LABELS[r.ownership].label)
+                                                        : r.ownership}
                                                 </StatusBadge>
                                             )}
                                         </div>
@@ -552,9 +557,9 @@ export default function VehiclesPage() {
                         <AlertDialogContent>
                             <AlertDialogHeader>
                                 <AlertDialogTitle>
-                                    {bulkActionConfirm === 'activar' && 'Activar vehículos'}
-                                    {bulkActionConfirm === 'inactivar' && 'Inactivar vehículos'}
-                                    {bulkActionConfirm === 'eliminar' && 'Eliminar vehículos'}
+                                    {bulkActionConfirm === 'activar' && t('ui.Vehicles.activarVehiculos', 'Activar vehículos')}
+                                    {bulkActionConfirm === 'inactivar' && t('ui.Vehicles.inactivarVehiculos', 'Inactivar vehículos')}
+                                    {bulkActionConfirm === 'eliminar' && t('ui.Vehicles.eliminarVehiculos', 'Eliminar vehículos')}
                                 </AlertDialogTitle>
                             </AlertDialogHeader>
                             <div className="p-4 text-sm" style={{ color: 'var(--ink-soft)' }}>
@@ -622,7 +627,7 @@ export default function VehiclesPage() {
                                         <IconTile size="lg"><Car /></IconTile>
                                         <div className="min-w-0 flex-1">
                                             <div className="truncate font-mono text-base font-semibold">
-                                                {detailsVehicle.licensePlate || 'Sin placa'}
+                                                {detailsVehicle.licensePlate || t('ui.Vehicles.sinPlaca', 'Sin placa')}
                                             </div>
                                             <div className="cg-eyebrow mt-1 truncate">{detailsVehicle.name || '—'}</div>
                                         </div>
@@ -663,7 +668,9 @@ export default function VehiclesPage() {
                                         <Field
                                             label="Propiedad"
                                             value={detailsVehicle.ownership
-                                                ? (OWNERSHIP_LABELS[detailsVehicle.ownership] || detailsVehicle.ownership)
+                                                ? (OWNERSHIP_LABELS[detailsVehicle.ownership]
+                                                    ? t(OWNERSHIP_LABELS[detailsVehicle.ownership].labelKey, OWNERSHIP_LABELS[detailsVehicle.ownership].label)
+                                                    : detailsVehicle.ownership)
                                                 : '—'}
                                         />
                                     </div>

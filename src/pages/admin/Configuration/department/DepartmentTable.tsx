@@ -1,4 +1,5 @@
 import { Users } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { CatalogTable, ActiveBadge, type CatalogColumn } from "../components/CatalogTable";
 
 export type DepartmentRow = {
@@ -67,6 +68,7 @@ export default function DepartmentsTable({
   onQueryChange, onPageChange, onPageSizeChange,
   onEdit, onToggleStatus, onDelete, onBulkDelete, canEdit = true,
 }: Props) {
+  const { t } = useTranslation();
   return (
     <CatalogTable<DepartmentRow>
       rows={rows}
@@ -88,8 +90,8 @@ export default function DepartmentsTable({
       ]}
       bulkActions={[{ label: "Eliminar", destructive: true, onRun: onBulkDelete }]}
       empty={{
-        title: "Sin departamentos",
-        description: 'Crea el primero con "Nuevo Departamento" — por ejemplo Operaciones, Talento Humano o Nómina.',
+        title: t("settings.departments.emptyTitle", "Sin departamentos"),
+        description: t("settings.departments.emptyDesc", 'Crea el primero con "Nuevo Departamento" — por ejemplo Operaciones, Talento Humano o Nómina.'),
       }}
     />
   );

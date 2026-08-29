@@ -119,7 +119,7 @@ export function ImportDialog({ open, onOpenChange, onSuccess }: ImportDialogProp
                         <label htmlFor="file-upload" className="cursor-pointer block">
                             <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-2" />
                             <p className="text-sm text-muted-foreground font-medium">
-                                {file ? file.name : "Explorar tu archivo Excel aquí...."}
+                                {file ? file.name : t('guards.list.importDialog.browsePlaceholder', "Explorar tu archivo Excel aquí....")}
                             </p>
                             <p className="text-xs text-muted-foreground mt-1">
                                 {t('guards.list.importDialog.clickToSelect', 'Click para seleccionar')}

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import AppLayout from "@/layouts/app-layout";
 import attendanceService from "@/lib/api/attendanceService";
 import { Button } from "@/components/ui/button";
@@ -30,18 +31,21 @@ interface Summary {
 
 type Accent = "primary" | "green" | "blue" | "red" | "orange" | "slate";
 
-const CARDS: { key: keyof Summary; label: string; icon: LucideIcon; accent: Accent }[] = [
-  { key: "scheduledToday", label: "Programados hoy", icon: CalendarCheck, accent: "primary" },
-  { key: "clockedInNow", label: "En servicio ahora", icon: UserCheck, accent: "green" },
-  { key: "lateToday", label: "Llegadas tarde", icon: Clock, accent: "orange" },
-  { key: "noShowsToday", label: "Inasistencias", icon: AlertTriangle, accent: "red" },
-  { key: "missedClockouts", label: "Sin marcar salida", icon: LogOut, accent: "orange" },
-  { key: "overtimeToday", label: "Tiempo extra", icon: Timer, accent: "blue" },
-  { key: "pendingApprovals", label: "Aprobaciones pendientes", icon: CheckSquare, accent: "primary" },
-  { key: "attendancePct", label: "Asistencia", icon: Percent, accent: "green" },
+// `labelKey` viaja en la constante y se traduce al pintar: llamar a t() aquí
+// congelaría el idioma de arranque para toda la sesión.
+const CARDS: { key: keyof Summary; label: string; labelKey: string; icon: LucideIcon; accent: Accent }[] = [
+  { key: "scheduledToday", label: "Programados hoy", labelKey: "nomina.dashboard.cards.scheduledToday", icon: CalendarCheck, accent: "primary" },
+  { key: "clockedInNow", label: "En servicio ahora", labelKey: "nomina.dashboard.cards.clockedInNow", icon: UserCheck, accent: "green" },
+  { key: "lateToday", label: "Llegadas tarde", labelKey: "nomina.dashboard.cards.lateToday", icon: Clock, accent: "orange" },
+  { key: "noShowsToday", label: "Inasistencias", labelKey: "nomina.dashboard.cards.noShowsToday", icon: AlertTriangle, accent: "red" },
+  { key: "missedClockouts", label: "Sin marcar salida", labelKey: "nomina.excepcion.missed_clockout", icon: LogOut, accent: "orange" },
+  { key: "overtimeToday", label: "Tiempo extra", labelKey: "nomina.dashboard.cards.overtimeToday", icon: Timer, accent: "blue" },
+  { key: "pendingApprovals", label: "Aprobaciones pendientes", labelKey: "nomina.dashboard.cards.pendingApprovals", icon: CheckSquare, accent: "primary" },
+  { key: "attendancePct", label: "Asistencia", labelKey: "nomina.dashboard.cards.attendancePct", icon: Percent, accent: "green" },
 ];
 
 export default function NominaDashboard() {
+  const { t } = useTranslation();
   const [data, setData] = useState<Summary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -91,7 +95,7 @@ export default function NominaDashboard() {
                 key={c.key}
                 icon={<Icon />}
                 accent={c.accent}
-                label={c.label}
+                label={t(c.labelKey, c.label)}
                 value={loading ? "…" : value}
               />
             );

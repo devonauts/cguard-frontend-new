@@ -585,7 +585,7 @@ export default function Visitors() {
         }
 
         buildAndPrint(rowsToExport, {
-            title: 'Bitácoras',
+            title: t('visitantes.bitacoras', 'Bitácoras'),
             headers: [
                 t('visitantes.logTable.date') || 'Fecha',
                 t('visitantes.logTable.lastName') || 'Apellidos',
@@ -615,7 +615,7 @@ export default function Visitors() {
         }
 
         buildAndPrint(rowsToPrint, {
-            title: 'Bitácoras - Imprimir',
+            title: t('visitantes.bitacorasImprimir', 'Bitácoras - Imprimir'),
             headers: ['Date', 'Last name', 'First name', 'ID', 'Reason of visit', 'Exit Time', 'Number of people', 'Station', 'Client', 'Site'],
         });
     };

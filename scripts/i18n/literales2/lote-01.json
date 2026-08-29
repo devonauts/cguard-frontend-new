@@ -1,0 +1,148 @@
+{
+ "src/pages/admin/Configuration/mobil/MobilPage.tsx": [
+  "Adquisición",
+  "Análisis de riesgos",
+  "App del cliente (Mi Seguridad)",
+  "App móvil del cliente (Mi Seguridad)",
+  "Asesoría en seguridad",
+  "Botón de pánico / SOS",
+  "Certificación actualizada.",
+  "Certificación creada.",
+  "Certificación eliminada.",
+  "Configura un servicio para la app móvil.",
+  "Control de acceso",
+  "Control de multitudes",
+  "Custodia de mercancía",
+  "Custodia de personas (guardaespaldas)",
+  "Código",
+  "Código interno",
+  "Descripción de la certificación",
+  "Descripción del banner",
+  "Editar Certificación",
+  "El título del banner es obligatorio.",
+  "En la app",
+  "Error al guardar el banner.",
+  "Error al guardar la certificación.",
+  "Esta acción no se puede deshacer.",
+  "Fecha de adquisición",
+  "Fecha de expiración",
+  "Icono certificación",
+  "Imagen certificación",
+  "Imágenes del servicio",
+  "Monitoreo de alarmas",
+  "No hay imagen para previsualizar.",
+  "No se ha seleccionado archivo",
+  "No se pudo cargar la información de Mobil.",
+  "No se pudo eliminar el banner.",
+  "No se pudo eliminar el servicio.",
+  "No se pudo eliminar la certificación.",
+  "No se pudo guardar el servicio.",
+  "Nueva Certificación",
+  "Nueva certificación",
+  "Plantillas de seguridad",
+  "Portería y recepción",
+  "Prevención de incendios",
+  "Primeros auxilios / paramédico",
+  "Rondas de seguridad",
+  "Seguridad de eventos",
+  "Seguridad electrónica",
+  "Seguridad en obra / construcción",
+  "Sin icono",
+  "Sin imagen",
+  "Todavía no hay banners",
+  "Todavía no hay certificaciones",
+  "Todavía no hay servicios",
+  "Transporte de valores",
+  "Título de la certificación",
+  "Título del banner",
+  "Título del servicio",
+  "Verificación de antecedentes",
+  "Vigilancia física",
+  "Vista previa de la imagen",
+  "Ícono (se envía a la app)"
+ ],
+ "src/pages/admin/Configuration/emergency/EmergencySettingsPage.tsx": [
+  "Dejar de insistir a los (min)",
+  "Emergencias y pánico",
+  "Escalar a los (min)",
+  "No se pudo cargar la configuración de emergencias.",
+  "Quién recibe un pánico",
+  "Supervisor de seguridad"
+ ],
+ "src/pages/admin/Configuration/user-roles/UserRolesPage.tsx": [
+  "Error al restablecer el rol",
+  "Los permisos de este rol no se pueden modificar",
+  "No se pudieron cargar los roles",
+  "No se pueden eliminar roles bloqueados",
+  "Roles de Usuario"
+ ],
+ "src/pages/admin/Configuration/types-licenses/LicensesTypePage.tsx": [
+  "Editar Tipo de Licencia",
+  "Error al cargar tipos de licencia",
+  "Nuevo Tipo de Licencia",
+  "Tipos de Licencia"
+ ],
+ "src/pages/admin/clientes/NewOrEditClientPage.tsx": [
+  "Actualiza la información del cliente.",
+  "No tienes permiso para crear clientes",
+  "No tienes permiso para editar clientes",
+  "Registra un nuevo cliente en la plataforma."
+ ],
+ "src/pages/admin/Configuration/mobil/CustomerAppPreview.tsx": [
+  "Agrega un banner para promocionar tus servicios.",
+  "Certificación",
+  "Tu banner aquí"
+ ],
+ "src/pages/admin/programmer/ShiftTemplates.tsx": [
+  "Editar plantilla de turno",
+  "Error al guardar la plantilla",
+  "Plantillas de turno"
+ ],
+ "src/components/video/VideoPlayer.tsx": [
+  "Error de transmisión",
+  "Tu navegador no soporta HLS"
+ ],
+ "src/pages/admin/Configuration/department/DepartmentTable.tsx": [
+  "Crea el primero con",
+  "Sin departamentos"
+ ],
+ "src/pages/admin/nomina/NominaExceptions.tsx": [
+  "Sin excepciones abiertas",
+  "Todos los tipos"
+ ],
+ "src/pages/admin/programmer/ScheduleTimeline.tsx": [
+  "Error al guardar el turno",
+  "Turno manual (bloque dibujado o turno único)."
+ ],
+ "src/pages/admin/analytics/_shared.tsx": [
+  "Fuera de geocerca",
+  "No se pudieron cargar las analíticas"
+ ],
+ "src/App.tsx": [
+  "Rol de Pagos"
+ ],
+ "src/components/TrialDaysBadge.tsx": [
+  "Ver detalles de tu prueba y suscripción"
+ ],
+ "src/components/categories/CategoryAssignDialog.tsx": [
+  "Mover Sitios a Categoría"
+ ],
+ "src/pages/admin/Configuration/change-password/ChangePasswordPage.tsx": [
+  "Actualiza tu contraseña de acceso."
+ ],
+ "src/pages/admin/dispatcher/DispatchDetailsPage.tsx": [
+  "Tenant no disponible"
+ ],
+ "src/pages/admin/Subscription/modules/ModulesTable.tsx": [
+  "Gestiona los visitantes..."
+ ],
+ "src/pages/admin/programmer/SupervisionSection.tsx": [
+  "Contraer supervisión"
+ ],
+ "src/pages/admin/Reports/SiteTour.tsx": [
+  "Revisión"
+ ],
+ "src/services/api/apiService.ts": [
+  "No se pudo conectar con el servidor."
+ ]
+}

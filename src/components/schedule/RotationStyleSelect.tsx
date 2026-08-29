@@ -102,7 +102,7 @@ export default function RotationStyleSelect({
         toast.success(t('ui.RotationStyleSelect.patronDeRotacionCreado'));
       }
     } catch (e: any) {
-      toast.error(e?.message || 'No se pudo crear el patrón');
+      toast.error(e?.message || t('ui.RotationStyleSelect.errorCrearPatron', 'No se pudo crear el patrón'));
     } finally { setCreating(false); }
   };
 
@@ -137,7 +137,7 @@ export default function RotationStyleSelect({
       {custom && (
         <div className="mt-1 flex flex-wrap items-end gap-2 rounded-xl border border-border/40 bg-muted/10 p-3">
           <div>
-            <label className="block text-[10px] font-medium text-muted-foreground mb-1 uppercase">{is24h ? 'Días' : 'Trabaja'}</label>
+            <label className="block text-[10px] font-medium text-muted-foreground mb-1 uppercase">{is24h ? t('ui.RotationStyleSelect.dias', 'Días') : t('ui.RotationStyleSelect.trabaja', 'Trabaja')}</label>
             <input type="number" min={1} max={30} value={cWork} onChange={(e) => setCWork(e.target.value)} className="w-20 rounded-lg border border-border/40 bg-background px-2 py-1.5 text-sm font-mono outline-none focus:border-primary" />
           </div>
           {is24h && (

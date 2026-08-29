@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useTranslation } from "react-i18next";
 import { Radio, Mic, Users, X, Loader2, Volume2, Megaphone, Square } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
@@ -22,6 +23,7 @@ import {
  * after this panel is closed.
  */
 export default function RadioVoiceWidget() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const myId = (user as any)?.id || (user as any)?._id;
   const snap = useSyncExternalStore(subscribeRadio, getRadioSnapshot);
@@ -56,14 +58,14 @@ export default function RadioVoiceWidget() {
       await radioCheckService.start("all");
       toast.success("Pase de novedades iniciado");
       await refreshPase();
-    } catch { toast.error("No se pudo iniciar el pase"); }
+    } catch { toast.error(t("radio.paseStartError", "No se pudo iniciar el pase")); }
     finally { setPaseBusy(false); }
   };
   const endPase = async () => {
     if (!runningId) return;
     setPaseBusy(true);
     try { await radioCheckService.cancelSession(runningId); setRunningId(null); }
-    catch { toast.error("No se pudo finalizar el pase"); }
+    catch { toast.error(t("radio.paseEndError", "No se pudo finalizar el pase")); }
     finally { setPaseBusy(false); }
   };
 

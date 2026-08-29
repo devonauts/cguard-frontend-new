@@ -12,14 +12,14 @@ const STATUS: Record<string, string> = {
 };
 
 const columns: ReportColumn<Passdown>[] = [
-  { key: "created", label: "Fecha", value: (r) => formatDateTime(r.createdAt) },
-  { key: "station", label: "Puesto", value: (r) => r.stationName || "—" },
-  { key: "outgoing", label: "Vigilante saliente", value: (r) => r.outgoingGuardName || "—", privacy: "guardName" },
-  { key: "shift", label: "Turno", value: (r) => r.shiftLabel || "—" },
-  { key: "notes", label: "Novedades", value: (r) => (r.notes ? (r.notes.length > 60 ? r.notes.slice(0, 60) + "…" : r.notes) : "Sin novedad") },
-  { key: "instr", label: "Instrucciones", value: (r) => String(r.instructionCount ?? 0), align: "right" },
-  { key: "status", label: "Estado", value: (r) => STATUS[String(r.status || "")] || r.status || "—" },
-  { key: "received", label: "Recibido por", value: (r) => r.receivedByName || "—" },
+  { key: "created", label: "Fecha", labelKey: "reports.col.passdown.created", value: (r) => formatDateTime(r.createdAt) },
+  { key: "station", label: "Puesto", labelKey: "reports.col.passdown.station", value: (r) => r.stationName || "—" },
+  { key: "outgoing", label: "Vigilante saliente", labelKey: "reports.col.passdown.outgoing", value: (r) => r.outgoingGuardName || "—", privacy: "guardName" },
+  { key: "shift", label: "Turno", labelKey: "reports.col.passdown.shift", value: (r) => r.shiftLabel || "—" },
+  { key: "notes", label: "Novedades", labelKey: "reports.col.passdown.notes", value: (r) => (r.notes ? (r.notes.length > 60 ? r.notes.slice(0, 60) + "…" : r.notes) : "Sin novedad") },
+  { key: "instr", label: "Instrucciones", labelKey: "reports.col.passdown.instr", value: (r) => String(r.instructionCount ?? 0), align: "right" },
+  { key: "status", label: "Estado", labelKey: "reports.col.passdown.status", value: (r) => STATUS[String(r.status || "")] || r.status || "—" },
+  { key: "received", label: "Recibido por", labelKey: "reports.col.passdown.received", value: (r) => r.receivedByName || "—" },
 ];
 
 export default function Passdown() {

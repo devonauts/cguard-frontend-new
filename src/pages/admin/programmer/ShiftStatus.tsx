@@ -123,7 +123,7 @@ export default function ShiftStatus() {
   const withStatus = rawShifts.map((r) => ({
     ...r,
     _status: computeStatus(r),
-    _guardName: r.guard?.fullName ?? "Sin asignar",
+    _guardName: r.guard?.fullName ?? t("comun.sinAsignar", "Sin asignar"),
     _stationName: r.station?.stationName ?? "Sin estación",
   }));
 
@@ -174,7 +174,7 @@ export default function ShiftStatus() {
       <Breadcrumb
         items={[
           { label: "Panel de control", path: "/dashboard" },
-          { label: "Estado del Turno" },
+          { label: t("ui.ShiftStatus.estadoDelTurno", "Estado del Turno") },
         ]}
       />
       <PageContainer width="wide" className="px-4 lg:px-6">

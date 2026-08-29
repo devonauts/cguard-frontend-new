@@ -23,24 +23,28 @@ function fmtDate(s?: string | null): string {
   return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString(localeActual());
 }
 
-/** Estado de la tarea → etiqueta + papel de color del sistema. */
-const STATUS_META: Record<string, { label: string; tone: "warn" | "info" | "ok" | "bad" | "neutral" }> = {
-  pending_approval: { label: "Por aprobar", tone: "warn" },
-  approved: { label: "Aprobada", tone: "info" },
-  completed: { label: "Completada", tone: "ok" },
-  rejected: { label: "Rechazada", tone: "bad" },
-  cancelled: { label: "Cancelada", tone: "neutral" },
+/**
+ * Estado de la tarea → etiqueta + papel de color del sistema.
+ * Constante de módulo: se construye al IMPORTAR, antes de que i18next sepa el
+ * idioma. Guarda la CLAVE; la traducción ocurre al pintar, dentro del componente.
+ */
+const STATUS_META: Record<string, { label: string; labelKey: string; tone: "warn" | "info" | "ok" | "bad" | "neutral" }> = {
+  pending_approval: { label: "Por aprobar", labelKey: "ui.TaskTracking.estado.pendingApproval", tone: "warn" },
+  approved: { label: "Aprobada", labelKey: "ui.TaskTracking.estado.approved", tone: "info" },
+  completed: { label: "Completada", labelKey: "ui.TaskTracking.estado.completed", tone: "ok" },
+  rejected: { label: "Rechazada", labelKey: "ui.TaskTracking.estado.rejected", tone: "bad" },
+  cancelled: { label: "Cancelada", labelKey: "ui.TaskTracking.estado.cancelled", tone: "neutral" },
 };
 
 const PRIORITY_LABEL: Record<string, string> = { alta: "Alta", media: "Media", baja: "Baja" };
 const PRIORITY_TONE: Record<string, "bad" | "warn" | "neutral"> = { alta: "bad", media: "warn", baja: "neutral" };
 
-const FILTERS: Array<{ key: TaskStatus | "all"; label: string }> = [
-  { key: "all", label: "Todas" },
-  { key: "pending_approval", label: "Por aprobar" },
-  { key: "approved", label: "Aprobadas" },
-  { key: "completed", label: "Completadas" },
-  { key: "rejected", label: "Rechazadas" },
+const FILTERS: Array<{ key: TaskStatus | "all"; label: string; labelKey: string }> = [
+  { key: "all", label: "Todas", labelKey: "ui.TaskTracking.filtro.all" },
+  { key: "pending_approval", label: "Por aprobar", labelKey: "ui.TaskTracking.filtro.pendingApproval" },
+  { key: "approved", label: "Aprobadas", labelKey: "ui.TaskTracking.filtro.approved" },
+  { key: "completed", label: "Completadas", labelKey: "ui.TaskTracking.filtro.completed" },
+  { key: "rejected", label: "Rechazadas", labelKey: "ui.TaskTracking.filtro.rejected" },
 ];
 
 export default function TaskTracking() {
@@ -124,7 +128,7 @@ export default function TaskTracking() {
     {
       key: "status", header: "Estado", render: (_v, r) => {
         const m = STATUS_META[r.status] || STATUS_META.pending_approval;
-        return <StatusBadge tone={m.tone}>{m.label}</StatusBadge>;
+        return <StatusBadge tone={m.tone}>{t(m.labelKey, m.label)}</StatusBadge>;
       },
     },
     {
@@ -159,7 +163,7 @@ export default function TaskTracking() {
               <Segmented<TaskStatus | "all">
                 value={filter}
                 onChange={setFilter}
-                options={FILTERS.map((f) => ({ value: f.key, label: f.label }))}
+                options={FILTERS.map((f) => ({ value: f.key, label: t(f.labelKey, f.label) }))}
               />
             </div>
           }>
@@ -225,7 +229,7 @@ export default function TaskTracking() {
               </div>
               <div className="grid grid-cols-2 gap-x-4 gap-y-3">
                 <DetailField label={t('comun.estado')}>
-                  {(() => { const m = STATUS_META[selected.status] || STATUS_META.pending_approval; return <StatusBadge tone={m.tone}>{m.label}</StatusBadge>; })()}
+                  {(() => { const m = STATUS_META[selected.status] || STATUS_META.pending_approval; return <StatusBadge tone={m.tone}>{t(m.labelKey, m.label)}</StatusBadge>; })()}
                 </DetailField>
                 <DetailField label="Prioridad">
                   {(() => { const k = selected.priority || "media"; return <StatusBadge tone={PRIORITY_TONE[k] ?? "neutral"} dot={false}>{PRIORITY_LABEL[k] ?? k}</StatusBadge>; })()}

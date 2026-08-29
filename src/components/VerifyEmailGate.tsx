@@ -58,7 +58,7 @@ export default function VerifyEmailGate() {
       toast.success("Te enviamos un nuevo correo de verificación.");
       setCooldown(60);
     } catch (e: any) {
-      toast.error(e?.message || "No se pudo reenviar el correo. Intenta de nuevo.");
+      toast.error(e?.message || t("ui.VerifyEmailGate.noSePudoReenviar", "No se pudo reenviar el correo. Intenta de nuevo."));
     } finally {
       setResending(false);
     }
@@ -75,7 +75,7 @@ export default function VerifyEmailGate() {
         toast.message("Aún no detectamos la verificación. Revisa tu correo (y la carpeta de spam).");
       }
     } catch {
-      toast.error("No se pudo comprobar el estado. Intenta de nuevo.");
+      toast.error(t("ui.VerifyEmailGate.noSePudoComprobar", "No se pudo comprobar el estado. Intenta de nuevo."));
     } finally {
       setChecking(false);
     }

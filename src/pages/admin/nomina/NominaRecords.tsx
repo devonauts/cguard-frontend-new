@@ -211,7 +211,7 @@ export default function NominaRecords() {
         </span>
       ),
     },
-    { key: "station", header: "Puesto", render: (_v, r) => r.stationName?.stationName || (r.role === "supervisor" ? "Supervisión" : r.role === "administrative" ? "Oficina" : "—") },
+    { key: "station", header: "Puesto", render: (_v, r) => r.stationName?.stationName || (r.role === "supervisor" ? t("ui.SupervisionSection.supervision", "Supervisión") : r.role === "administrative" ? "Oficina" : "—") },
     { key: "scheduledStart", header: "Programado", render: (_v, r) => `${fmtTime(r.scheduledStart)} – ${fmtTime(r.scheduledEnd)}` },
     {
       key: "punchInTime",
@@ -303,7 +303,7 @@ export default function NominaRecords() {
             value={period}
             onChange={setPeriod}
             options={[
-              { value: "day", label: "Día" },
+              { value: "day", label: t("comun.periodo.dia", "Día") },
               { value: "week", label: "Semana" },
               { value: "month", label: "Mes" },
             ]}
@@ -344,7 +344,7 @@ export default function NominaRecords() {
               style={{ color: "var(--ink)" }}
             >
               {STATUS_OPTIONS.map((s) => (
-                <option key={s} value={s}>{s === "" ? "Todos los estados" : (STATUS_META[s]?.label ?? s)}</option>
+                <option key={s} value={s}>{s === "" ? t("comun.todosLosEstados", "Todos los estados") : (STATUS_META[s]?.label ?? s)}</option>
               ))}
             </select>
           </label>
@@ -657,9 +657,9 @@ export default function NominaRecords() {
                         disabled={busy}
                         variant="outline"
                         onClick={async () => {
-                          const reason = await promptDialog({ title: "Motivo de la corrección", placeholder: "Ej.: marcó tarde por el tráfico" });
+                          const reason = await promptDialog({ title: t("nomina.records.correctionReasonTitle", "Motivo de la corrección"), placeholder: "Ej.: marcó tarde por el tráfico" });
                           if (!reason) return;
-                          const value = await promptDialog({ title: "Nueva hora de entrada", message: "Formato ISO, ej. 2026-06-06T13:00:00Z", defaultValue: selected.punchInTime });
+                          const value = await promptDialog({ title: t("nomina.records.newPunchInTitle", "Nueva hora de entrada"), message: "Formato ISO, ej. 2026-06-06T13:00:00Z", defaultValue: selected.punchInTime });
                           if (!value) return;
                           act(
                             () => attendanceService.correct(selected.id, { field: "punchInTime", correctedValue: value, reason }),

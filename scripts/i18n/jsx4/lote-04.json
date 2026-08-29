@@ -1,0 +1,120 @@
+[
+  {
+    "fichero": "src/components/maps/CheckpointLocationPicker.tsx",
+    "literales": [
+      "Toca el mapa o arrastra el pin para fijar la ubicación exacta del punto."
+    ]
+  },
+  {
+    "fichero": "src/components/video/VideoActionModals.tsx",
+    "literales": [
+      "Cámara:",
+      "title=\"Recortar y compartir clip\""
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/Configuration/integrations/IntegrationsList.tsx",
+    "literales": [
+      "Datos y conexiones › Informes",
+      "title=\"Conexiones y API\"",
+      "title=\"Conexiones y API\""
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/administrative-office-users/EditAdminUserPage.tsx",
+    "literales": [
+      "El alcance de verdad: limita turnos, nómina, cobertura, visitas y puestos.",
+      "Concede o revoca permisos específicos para este usuario, además de su rol."
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/analytics/Guard.tsx",
+    "literales": [
+      "Desglose de factores (puntaje × peso)",
+      "label=\"En servicio\""
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/clientes/components/ClientCoverage/ScheduleCard.tsx",
+    "literales": [
+      "Puesto · Posición · Vigilante"
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/dashboard/control-center/components/MobileCommandCenter.tsx",
+    "literales": [
+      "Ver en vivo"
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/gps-tracker/RouteTrackingMap.tsx",
+    "literales": [
+      "En servicio",
+      "No hay paradas con ubicación ni personal en servicio para mostrar."
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/nomina/NominaRecords.tsx",
+    "literales": [
+      "Aprobación:",
+      "Sin aprobación requerida — marcación válida.",
+      "alt=\"Selfie de entrada\""
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/post-sites/components/PostsiteIncidents/Incidents.tsx",
+    "literales": [
+      "En progreso"
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/programmer/Schedule.tsx",
+    "literales": [
+      "Rotaciones y coberturas",
+      "Duración:",
+      "Ya tiene turno ese día: el nuevo reemplazará al que se solape."
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/routes/OptimizacionPanel.tsx",
+    "literales": [
+      "label=\"Tiempo en ruta\""
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/security-guards/components/GuardDepartment/GuardDepartamentoPage.tsx",
+    "literales": [
+      "No hay departamentos creados. Créalos en Configuración › Departamentos."
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/security/SystemLogs.tsx",
+    "literales": [
+      "Código:"
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/supervisors/SupervisorSchedulePage.tsx",
+    "literales": [
+      "Próximos turnos generados a partir del puesto asignado y su rotación."
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/video/VideoMonitoring.tsx",
+    "literales": [
+      "label=\"Recortar y compartir\""
+    ]
+  },
+  {
+    "fichero": "src/pages/auth/AppAccessPending.tsx",
+    "literales": [
+      "Cerrar sesión"
+    ]
+  },
+  {
+    "fichero": "src/pages/radio/RadioDispatch.tsx",
+    "literales": [
+      "title=\"Radio · Pase de novedades\""
+    ]
+  }
+]

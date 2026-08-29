@@ -55,11 +55,11 @@ export default function GuardDashboard() {
         toast.success('Entrada registrada correctamente');
         loadDashboard();
       } else {
-        setGpsError(res.message || 'Error de geovalla');
+        setGpsError(res.message || t('ui.GuardDashboard.errorGeovalla', 'Error de geovalla'));
         toast.error(res.message || 'No pudiste marcar entrada');
       }
     } catch (e: any) {
-      const msg = e?.message || 'Error obteniendo ubicación';
+      const msg = e?.message || t('ui.GuardDashboard.errorObteniendoUbicacion', 'Error obteniendo ubicación');
       setGpsError(msg);
       toast.error(msg);
     } finally {

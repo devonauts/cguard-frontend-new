@@ -57,7 +57,7 @@ export function ClientDetailsDialog({
                     setCategories([]);
                 }
             } catch (e: any) {
-                setError(e?.message || "Error al cargar los detalles del cliente");
+                setError(e?.message || t("ui.ClientDetailsDialog.errorCargarDetalles", "Error al cargar los detalles del cliente"));
                 console.error(e);
             } finally {
                 setLoading(false);

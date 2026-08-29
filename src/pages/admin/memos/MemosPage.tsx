@@ -648,7 +648,7 @@ export default function MemosPage() {
             <div className="space-y-4 py-4">
               <div className="flex flex-wrap items-center gap-2">
                 <StatusBadge tone={viewMemo?.wasAccepted ? 'ok' : 'warn'}>
-                  {viewMemo?.wasAccepted ? 'Acuse de lectura recibido' : 'Pendiente de acuse'}
+                  {viewMemo?.wasAccepted ? t('memos.readReceiptReceived', 'Acuse de lectura recibido') : 'Pendiente de acuse'}
                 </StatusBadge>
               </div>
               <div className="glass-sunken grid grid-cols-1 gap-4 p-4 sm:grid-cols-2">

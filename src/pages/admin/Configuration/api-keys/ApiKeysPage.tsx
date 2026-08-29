@@ -17,9 +17,11 @@ import { localeActual } from '@/lib/localeActual'
  */
 
 type Scope = "employees:read" | "timesheets:read";
-const SCOPE_LABEL: Record<Scope, { title: string; desc: string }> = {
+const SCOPE_LABEL: Record<Scope, { title: string; titleKey?: string; desc: string }> = {
   "employees:read": { title: "Trabajadores", desc: "Leer la lista de personal (documento, nombre, estado)." },
-  "timesheets:read": { title: "Horas y días", desc: "Leer horas trabajadas, extra, festivos, faltas y retrasos." },
+  // El texto se traduce donde se pinta (ver `scopeTitle`): este mapa se evalúa
+  // al cargar el módulo, antes de que el idioma esté listo.
+  "timesheets:read": { title: "Horas y días", titleKey: "settings.apiKeys.scopeTimesheetsTitle", desc: "Leer horas trabajadas, extra, festivos, faltas y retrasos." },
 };
 
 interface ApiKey {
@@ -38,6 +40,10 @@ function fecha(v: string | null): string {
 
 export default function ApiKeysPage() {
   const { t } = useTranslation();
+  const scopeTitle = (s: Scope) => {
+    const l = SCOPE_LABEL[s];
+    return l.titleKey ? t(l.titleKey, l.title) : l.title;
+  };
   const [keys, setKeys] = useState<ApiKey[]>([]);
   const [loading, setLoading] = useState(true);
   const [openCreate, setOpenCreate] = useState(false);
@@ -57,7 +63,7 @@ export default function ApiKeysPage() {
       const res: any = await ApiService.get(`/tenant/${tid()}/api-keys`);
       setKeys((res && res.keys) || (res && res.data && res.data.keys) || []);
     } catch {
-      toast.error("No se pudieron cargar las llaves.");
+      toast.error(t("settings.apiKeys.loadError", "No se pudieron cargar las llaves."));
     } finally {
       setLoading(false);
     }
@@ -71,7 +77,7 @@ export default function ApiKeysPage() {
 
   const crear = async () => {
     const elegidos = (Object.keys(scopes) as Scope[]).filter((s) => scopes[s]);
-    if (!name.trim()) { toast.error("Ponle un nombre a la llave."); return; }
+    if (!name.trim()) { toast.error(t("settings.apiKeys.nameRequired", "Ponle un nombre a la llave.")); return; }
     if (!elegidos.length) { toast.error("Marca al menos un permiso."); return; }
     setSaving(true);
     try {
@@ -88,7 +94,7 @@ export default function ApiKeysPage() {
       resetForm();
       await cargar();
     } catch {
-      toast.error("No se pudo crear la llave.");
+      toast.error(t("settings.apiKeys.createError", "No se pudo crear la llave."));
     } finally {
       setSaving(false);
     }
@@ -101,13 +107,13 @@ export default function ApiKeysPage() {
       toast.success("Llave revocada.");
       await cargar();
     } catch {
-      toast.error("No se pudo revocar la llave.");
+      toast.error(t("settings.apiKeys.revokeError", "No se pudo revocar la llave."));
     }
   };
 
   const copiar = async (text: string) => {
     try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); }
-    catch { toast.error("No se pudo copiar."); }
+    catch { toast.error(t("settings.apiKeys.copyError", "No se pudo copiar.")); }
   };
 
   return (
@@ -206,7 +212,7 @@ export default function ApiKeysPage() {
                 <label key={s} className="flex cursor-pointer items-start gap-3 rounded-xl border border-[color:var(--hairline)] bg-[color:var(--surface)] p-3">
                   <input type="checkbox" checked={scopes[s]} onChange={(e) => setScopes((p) => ({ ...p, [s]: e.target.checked }))} className="mt-0.5" />
                   <span>
-                    <span className="block text-sm font-semibold text-[color:var(--ink)]">{SCOPE_LABEL[s].title} <code className="ml-1 text-[11px] font-normal text-[color:var(--ink-faint)]">{s}</code></span>
+                    <span className="block text-sm font-semibold text-[color:var(--ink)]">{scopeTitle(s)} <code className="ml-1 text-[11px] font-normal text-[color:var(--ink-faint)]">{s}</code></span>
                     <span className="block text-xs text-[color:var(--ink-soft)]">{SCOPE_LABEL[s].desc}</span>
                   </span>
                 </label>

@@ -57,7 +57,7 @@ export default function CategoryAssignDialog({ open, onOpenChange, targetIds, on
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>{targetIds.length > 1 ? 'Mover Sitios a Categoría' : 'Sectorizar Sitio'}</DialogTitle>
+          <DialogTitle>{targetIds.length > 1 ? t('ui.CategoryAssignDialog.moverSitiosACategoria', 'Mover Sitios a Categoría') : t('ui.CategoryAssignDialog.sectorizarSitio', 'Sectorizar Sitio')}</DialogTitle>
           <DialogDescription>{t("ui.CategoryAssignDialog.seleccionaLaCategoriaDestinoPara", "Selecciona la categoría destino para los sitios seleccionados.")}</DialogDescription>
         </DialogHeader>
 

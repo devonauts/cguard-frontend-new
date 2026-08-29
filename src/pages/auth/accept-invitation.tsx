@@ -10,6 +10,7 @@ import { AuthService } from "@/services/auth/authService";
 import { useAuth } from "@/contexts/AuthContext";
 import { IconTile } from "@/components/kit";
 import AuthShell, { CAMPO, BOTON_PRINCIPAL, AvisoError, Etiqueta } from "./AuthShell";
+import i18n from "@/i18n";
 
 /**
  * AcceptInvitation — onboarding for INTERNAL administrative users (admins,
@@ -26,26 +27,33 @@ const RULES = [
   { id: "special", label: "invite.rule.special", test: (p: string) => /[^A-Za-z0-9]/.test(p) },
 ];
 
-const ROLE_LABELS: Record<string, string> = {
-  admin: "Administrador",
-  operationsmanager: "Gerente de Operaciones",
-  securitysupervisor: "Supervisor de Seguridad",
-  supervisor: "Supervisor",
-  hrmanager: "Gerente de RR.HH.",
-  dispatcher: "Despachador",
-  clientaccountmanager: "Gerente de Cuentas",
-  administrativesupervisor: "Supervisor Administrativo",
-  administrativeassistant: "Asistente Administrativo",
-  secretary: "Secretaría",
+/**
+ * El rol llega en minúsculas desde el enlace, pero el catálogo de nombres de
+ * rol vive en `adminOfficeUsers.roleNames` (camelCase): esta tabla es sólo el
+ * puente entre los dos. Guarda la CLAVE, no el texto — se construye al importar
+ * el módulo, antes de que i18next sepa qué idioma quiere el usuario.
+ */
+const ROLE_LABEL_KEYS: Record<string, string> = {
+  admin: "adminOfficeUsers.roleNames.admin",
+  operationsmanager: "adminOfficeUsers.roleNames.operationsManager",
+  securitysupervisor: "adminOfficeUsers.roleNames.securitySupervisor",
+  supervisor: "adminOfficeUsers.roleNames.supervisor",
+  hrmanager: "adminOfficeUsers.roleNames.hrManager",
+  dispatcher: "adminOfficeUsers.roleNames.dispatcher",
+  clientaccountmanager: "adminOfficeUsers.roleNames.clientAccountManager",
+  administrativesupervisor: "adminOfficeUsers.roleNames.administrativeSupervisor",
+  administrativeassistant: "adminOfficeUsers.roleNames.administrativeAssistant",
+  secretary: "adminOfficeUsers.roleNames.secretary",
 };
 
+/** Se traduce DENTRO de la función: se llama al pintar, con el idioma vigente. */
 function roleLabel(roles?: any): string | null {
   const arr: string[] = Array.isArray(roles) ? roles : roles ? [roles] : [];
   for (const r of arr) {
     const key = String(r || "").toLowerCase();
-    if (ROLE_LABELS[key]) return ROLE_LABELS[key];
+    if (ROLE_LABEL_KEYS[key]) return i18n.t(ROLE_LABEL_KEYS[key]);
   }
-  return arr.length ? "Usuario administrativo" : null;
+  return arr.length ? i18n.t("invite.staff.role_generic", "Usuario administrativo") : null;
 }
 
 export default function AcceptInvitation() {
@@ -190,7 +198,9 @@ export default function AcceptInvitation() {
       title={t('ui.acceptinvitation.activaTuCuenta')}
       subtitle={
         role
-          ? `Te han invitado como ${role}${tenantName ? ` en ${tenantName}` : ''}. Crea tu contraseña y entra al panel.`
+          ? (tenantName
+              ? t('invite.staff.subtitleRoleAt', { role, empresa: tenantName, defaultValue: 'Te han invitado como {{role}} en {{empresa}}. Crea tu contraseña y entra al panel.' })
+              : t('invite.staff.subtitleRole', { role, defaultValue: 'Te han invitado como {{role}}. Crea tu contraseña y entra al panel.' }))
           : t('invite.staff.subtitle', 'Completa tu registro para entrar al panel.')
       }
     >

@@ -506,7 +506,7 @@ export default function AdminOfficeUsersPage() {
     } else {
       acts.push({ label: 'Editar', icon: <Pencil className="h-4 w-4" />, disabled: !hasPermission('userEdit'), onClick: () => navigate(`/back-office/edit/${u.id}`) });
       if (normalizeRolesForUser(u.roles || u.role || u.rolesList || u._rolesDisplay).includes('securitysupervisor')) {
-        acts.push({ label: 'Perfil de supervisor', icon: <UserCog className="h-4 w-4" />, onClick: () => navigate(`/supervisors/${u.id}`) });
+        acts.push({ label: t('adminOfficeUsers.rowActions.supervisorProfile', 'Perfil de supervisor'), icon: <UserCog className="h-4 w-4" />, onClick: () => navigate(`/supervisors/${u.id}`) });
       }
       if (!isUserAdmin(u)) {
         acts.push({ label: 'Suspender', icon: <Archive className="h-4 w-4" />, disabled: !hasPermission('userEdit'), onClick: () => { setSelectedUserToAct(u); handleSuspendUser(u); } });

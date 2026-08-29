@@ -165,7 +165,7 @@ function RondaDetailModal({ open, onOpenChange, tenantId, assignmentId, fallback
         const data = res && (res.data !== undefined ? res.data : res);
         if (mounted) setDetail(data as RondaDetail);
       } catch (e: any) {
-        if (mounted) setError(e?.message || 'Error al cargar el detalle de la ronda');
+        if (mounted) setError(e?.message || t('ui.StationRondaHistory.errorDetalleRonda', 'Error al cargar el detalle de la ronda'));
       } finally {
         if (mounted) setLoading(false);
       }

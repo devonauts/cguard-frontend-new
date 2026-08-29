@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import i18n from "@/i18n";
 import { useTranslation } from 'react-i18next';
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
@@ -12,20 +13,25 @@ import { supervisorPositionService, type SupervisorPosition } from "@/lib/api/su
 import { supervisorService, type Supervisor } from "@/lib/api/supervisorService";
 import { stationService } from "@/lib/api/stationService";
 import type { PostSite } from "@/types";
+import { conEtiqueta } from "@/lib/i18nLabel";
 
+/** `label` es una propiedad de acceso (`conEtiqueta`): la lista se construye al
+ *  importar el módulo, así que el texto tiene que resolverse al pintarlo. */
 const SCHEDULE_TYPES = [
-  { value: "12h-day", label: "Diurno (12h)" },
-  { value: "12h-night", label: "Nocturno (12h)" },
-  { value: "24h", label: "24h (día/noche)" },
-  { value: "custom", label: "Personalizado" },
+  conEtiqueta("supervisorPositions.scheduleType.12hDay", { value: "12h-day" }),
+  conEtiqueta("supervisorPositions.scheduleType.12hNight", { value: "12h-night" }),
+  conEtiqueta("supervisorPositions.scheduleType.24h", { value: "24h" }),
+  conEtiqueta("supervisorPositions.scheduleType.custom", { value: "custom" }),
 ];
 
+// No es un componente: se entra por i18n.t DENTRO de la función, que es donde
+// se evalúa al llamarla (precedente AppErrorBoundary).
 function rotationSummary(p: SupervisorPosition): string {
   const r = p.rotationStyle;
-  if (!r) return "Sin rotación";
-  const parts = [`${r.dayShifts} día`];
-  if (r.nightShifts) parts.push(`${r.nightShifts} noche`);
-  parts.push(`${r.restDays} descanso`);
+  if (!r) return i18n.t("rotation.none", "Sin rotación");
+  const parts = [i18n.t("rotation.days", { count: r.dayShifts, defaultValue: "{{count}} día" })];
+  if (r.nightShifts) parts.push(i18n.t("rotation.nights", { count: r.nightShifts, defaultValue: "{{count}} noche" }));
+  parts.push(i18n.t("rotation.rests", { count: r.restDays, defaultValue: "{{count}} descanso" }));
   return `${r.name} · ${parts.join(" · ")}`;
 }
 
@@ -61,7 +67,7 @@ export default function SupervisorPositionsPage() {
     try {
       const updated = await supervisorPositionService.update(pos.id, { stationIds: next });
       setRows((prev) => prev.map((p) => (p.id === pos.id ? updated : p)));
-    } catch (e: any) { toast.error(e?.message || "No se pudo actualizar"); }
+    } catch (e: any) { toast.error(e?.message || t('supervisorPositions.updateError', 'No se pudo actualizar')); }
   };
 
   const create = async () => {
@@ -78,7 +84,7 @@ export default function SupervisorPositionsPage() {
       setOpen(false);
       setForm({ name: "", zone: "", scheduleType: "24h", rotationStyleId: "", startTime: "07:00", endTime: "19:00", guardsNeeded: 2, stationIds: [] });
       load();
-    } catch (e: any) { toast.error(e?.message || "No se pudo crear"); } finally { setSaving(false); }
+    } catch (e: any) { toast.error(e?.message || t('supervisorPositions.createError', 'No se pudo crear')); } finally { setSaving(false); }
   };
 
   const assign = async (posId: string) => {
@@ -90,14 +96,14 @@ export default function SupervisorPositionsPage() {
       setAssignSel((s) => ({ ...s, [posId]: "" }));
       setOffsetSel((s) => ({ ...s, [posId]: "" }));
       toast.success(t('ui.SupervisorPositionsPage.supervisorAsignado'));
-    } catch (e: any) { toast.error(e?.message || "No se pudo asignar"); }
+    } catch (e: any) { toast.error(e?.message || t('supervisorPositions.assignError', 'No se pudo asignar')); }
   };
 
   const unassign = async (posId: string, asgId: string) => {
     try {
       const updated = await supervisorPositionService.unassign(posId, asgId);
       setRows((prev) => prev.map((p) => (p.id === posId ? updated : p)));
-    } catch (e: any) { toast.error(e?.message || "No se pudo quitar"); }
+    } catch (e: any) { toast.error(e?.message || t('supervisorPositions.unassignError', 'No se pudo quitar')); }
   };
 
   const removePos = async (posId: string) => {

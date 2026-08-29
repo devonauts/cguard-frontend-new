@@ -459,7 +459,7 @@ export default function OpenShifts() {
           {assignTarget && (
             <div className="space-y-4">
               <div className="glass-sunken p-3 text-sm">
-                <div className="font-semibold">{assignTarget.station?.stationName ?? "Sin puesto"}</div>
+                <div className="font-semibold">{assignTarget.station?.stationName ?? t("ui.OpenShifts.sinPuesto", "Sin puesto")}</div>
                 <div className="tabular-nums" style={{ color: "var(--ink-soft)" }}>
                   {formatDate(assignTarget.startTime)} · {formatTime(assignTarget.startTime)} – {formatTime(assignTarget.endTime)}
                   {" "}({durationHours(assignTarget.startTime, assignTarget.endTime)})

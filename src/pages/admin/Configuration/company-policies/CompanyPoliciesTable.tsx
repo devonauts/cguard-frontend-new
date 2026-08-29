@@ -31,22 +31,23 @@ const formatPolicyDate = (value?: string) => {
 // hasta que existió el servidor. Ya existe: /tenant/:id/company-policy.
 const tenantId = () => localStorage.getItem("tenantId");
 
-const columns: CatalogColumn<Policy>[] = [
-  { key: "title", header: "Título" },
-  { key: "kindLabel", header: "Tipo", render: (v) => String(v || "Reglamento") },
-  {
-    // El dato por el que existe la pantalla: un reglamento publicado que nadie
-    // ha firmado es un PDF en una carpeta.
-    key: "firmadas",
-    header: "Firmado por",
-    render: (_v, row) =>
-      row.obligadas ? `${row.firmadas ?? 0} de ${row.obligadas}` : "—",
-  },
-  { key: "createdAt", header: "Creado", align: "right", render: (v) => formatPolicyDate(v) },
-];
-
 export default function CompanyPoliciesTable() {
   const { t } = useTranslation();
+  // Las cabeceras se arman DENTRO del componente: fuera se evaluarían al cargar
+  // el módulo, antes de que el idioma esté listo, y el texto quedaría congelado.
+  const columns: CatalogColumn<Policy>[] = useMemo(() => [
+    { key: "title", header: t("settings.policies.colTitle", "Título") },
+    { key: "kindLabel", header: "Tipo", render: (v) => String(v || "Reglamento") },
+    {
+      // El dato por el que existe la pantalla: un reglamento publicado que nadie
+      // ha firmado es un PDF en una carpeta.
+      key: "firmadas",
+      header: "Firmado por",
+      render: (_v, row) =>
+        row.obligadas ? `${row.firmadas ?? 0} de ${row.obligadas}` : "—",
+    },
+    { key: "createdAt", header: "Creado", align: "right", render: (v) => formatPolicyDate(v) },
+  ], [t]);
   const [query, setQuery] = useState("");
   const [openNew, setOpenNew] = useState(false);
   const [pageSize, setPageSize] = useState(25);

@@ -211,7 +211,7 @@ export default function LessonsManager({ courseId, lessons, readOnly, onChange }
       <Modal
         open={open}
         onOpenChange={setOpen}
-        title={editing ? 'Editar lección' : 'Nueva lección'}
+        title={editing ? t('ui.LessonsManager.editarLeccion', 'Editar lección') : t('ui.LessonsManager.nuevaLeccion', 'Nueva lección')}
         icon={<BookOpen />}
         footer={
           <>

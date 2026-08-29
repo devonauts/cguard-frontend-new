@@ -12,7 +12,7 @@ import {
 import useScrollToTopOnMount from '@/hooks/useScrollToTopOnMount';
 import inventoryItemService, {
   InventoryItem, ItemCondition,
-  ITEM_TYPE_LABELS, ITEM_CONDITION_LABELS,
+  itemTypeLabel,
 } from '@/lib/api/inventoryItemService';
 import inventoryAssignmentService, { InventoryAssignment } from '@/lib/api/inventoryAssignmentService';
 import { securityGuardService } from '@/lib/api/securityGuardService';
@@ -143,7 +143,7 @@ function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
               <div className="flex items-center justify-between rounded-lg border px-3 py-2" style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)' }}>
                 <div>
                   <div className="font-medium text-foreground text-sm">{selectedItem.name}</div>
-                  <div className="text-xs text-muted-foreground">{ITEM_TYPE_LABELS[selectedItem.type]}{selectedItem.serialNumber && ' · #' + selectedItem.serialNumber}</div>
+                  <div className="text-xs text-muted-foreground">{itemTypeLabel(selectedItem.type)}{selectedItem.serialNumber && ' · #' + selectedItem.serialNumber}</div>
                 </div>
                 <button className="text-muted-foreground hover:text-foreground/70 p-1" onClick={() => setSelectedItem(null)}><X className="w-4 h-4" /></button>
               </div>
@@ -160,7 +160,7 @@ function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
                   ) : items.map((item) => (
                     <button key={item.id} className="w-full text-left px-3 py-2 hover:bg-muted/30 border-b border-border last:border-0 transition-colors" onClick={() => setSelectedItem(item)}>
                       <div className="text-sm font-medium text-foreground">{item.name}</div>
-                      <div className="text-xs text-muted-foreground">{ITEM_TYPE_LABELS[item.type]}{item.serialNumber && ' · #' + item.serialNumber}{item.brand && ' · ' + item.brand}</div>
+                      <div className="text-xs text-muted-foreground">{itemTypeLabel(item.type)}{item.serialNumber && ' · #' + item.serialNumber}{item.brand && ' · ' + item.brand}</div>
                     </button>
                   ))}
                 </div>
@@ -395,7 +395,7 @@ export default function Inventory({ site }: { site?: PostSite }) {
                         <div className="font-medium text-foreground">{item?.name || '—'}</div>
                         {item?.serialNumber && <div className="text-xs text-muted-foreground font-mono">#{item.serialNumber}</div>}
                       </td>
-                      <td className="px-2 py-2.5 text-foreground/70 hidden sm:table-cell">{item ? ((ITEM_TYPE_LABELS as any)[item.type] || item.type) : '—'}</td>
+                      <td className="px-2 py-2.5 text-foreground/70 hidden sm:table-cell">{item ? (itemTypeLabel(item.type) || item.type) : '—'}</td>
                       <td className="px-2 py-2.5 hidden md:table-cell">
                         <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium" style={conditionStyle(ck)}>
                           {CONDITION_DISPLAY[ck] || ck}

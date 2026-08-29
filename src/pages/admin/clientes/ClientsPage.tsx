@@ -1325,7 +1325,7 @@ export default function ClientesPage() {
                     ));
                     setOpenSendAccessDialog(false);
                   } catch (err: any) {
-                    toast.error(err?.response?.data?.message || err?.message || 'No se pudo enviar la invitación');
+                    toast.error(err?.response?.data?.message || err?.message || t('ui.ClientsPage.errorEnviarInvitacion', 'No se pudo enviar la invitación'));
                   } finally {
                     setSendingAccess(false);
                   }
@@ -1407,7 +1407,7 @@ export default function ClientesPage() {
                     toast.success(`Invitación a la app enviada a ${appInviteClient.email || appInviteClient.name}`);
                     setOpenAppInviteDialog(false);
                   } catch (err: any) {
-                    toast.error(err?.response?.data?.message || err?.message || 'No se pudo enviar la invitación');
+                    toast.error(err?.response?.data?.message || err?.message || t('ui.ClientsPage.errorEnviarInvitacion', 'No se pudo enviar la invitación'));
                   } finally {
                     setSendingAppInvite(false);
                   }

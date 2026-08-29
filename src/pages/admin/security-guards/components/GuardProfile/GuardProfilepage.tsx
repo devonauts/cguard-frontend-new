@@ -76,12 +76,38 @@ interface GuardShiftRow {
 }
 
 
-/** Dropdown options matching the backend isIn validators. */
+/** Dropdown options matching the backend isIn validators. TRAMPA: estas cadenas
+ *  en español son el VALOR que se guarda, no una etiqueta — el backend las valida
+ *  con isIn. No se traducen aquí: se traduce sólo lo que se PINTA, vía
+ *  FIELD_OPTION_KEYS, y el `value` del <option> sigue siendo la cadena original. */
 const FIELD_OPTIONS: Record<string, string[]> = {
   gender: ['Masculino', 'Femenino'],
   bloodType: ['A+', 'A-', 'AB+', 'AB-', 'O+', 'O-', 'B+', 'B-'],
   maritalStatus: ['Soltero', 'Casado', 'Unión libre', 'Divorciado'],
   academicInstruction: ['Primaria', 'Secundaria', 'Universitaria', 'Universidad', 'Especial'],
+};
+
+/** Valor guardado → clave de traducción para su etiqueta visible. Los tipos de
+ *  sangre (A+, O-…) no llevan clave: son iguales en todos los idiomas. */
+const FIELD_OPTION_KEYS: Record<string, string> = {
+  Masculino: 'invite.guard.male',
+  Femenino: 'invite.guard.female',
+  Soltero: 'invite.guard.single',
+  Casado: 'invite.guard.married',
+  'Unión libre': 'guards.profile.maritalStatus.freeUnion',
+  Divorciado: 'invite.guard.divorced',
+  Primaria: 'guards.profile.academic.primary',
+  Secundaria: 'guards.profile.academic.secondary',
+  Universitaria: 'guards.profile.academic.university',
+  Universidad: 'guards.profile.academic.universityDegree',
+  Especial: 'guards.profile.academic.special',
+};
+
+/** Etiqueta visible de un valor guardado. Se llama DENTRO del render. */
+const optionLabel = (value?: string | null) => {
+  if (!value) return value;
+  const key = FIELD_OPTION_KEYS[value];
+  return key ? i18n.t(key, value) : value;
 };
 
 /** ONLY these securityGuard fields are accepted by the update endpoint. The save
@@ -122,7 +148,7 @@ const EditSelect = ({ label, value, field, onChange }: { label: string; value: s
       className="cg-input flex h-9 w-full px-2 text-sm"
     >
       <option value="">{i18n.t('comun.seleccionar')}</option>
-      {(FIELD_OPTIONS[field] || []).map((o) => <option key={o} value={o}>{o}</option>)}
+      {(FIELD_OPTIONS[field] || []).map((o) => <option key={o} value={o}>{optionLabel(o)}</option>)}
     </select>
   </div>
 );
@@ -338,10 +364,10 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
                     </>
                   ) : (
                     <>
-                      <ReadField label={t('guards.profile.fields.gender') || 'Género'} value={data?.gender} />
+                      <ReadField label={t('guards.profile.fields.gender') || 'Género'} value={optionLabel(data?.gender)} />
                       <ReadField label={t('guards.profile.fields.bloodType') || 'Tipo de sangre'} value={data?.bloodType} />
-                      <ReadField label={t('guards.profile.fields.maritalStatus') || 'Estado civil'} value={data?.maritalStatus} />
-                      <ReadField label={t('guards.profile.fields.education') || 'Instrucción académica'} value={data?.academicInstruction} />
+                      <ReadField label={t('guards.profile.fields.maritalStatus') || 'Estado civil'} value={optionLabel(data?.maritalStatus)} />
+                      <ReadField label={t('guards.profile.fields.education') || 'Instrucción académica'} value={optionLabel(data?.academicInstruction)} />
                       <ReadField label={t('guards.profile.fields.guardCredentials') || 'Credencial'} value={data?.guardCredentials} />
                       <ReadField label={t('guards.profile.fields.hireDate', 'Fecha de contratación')} value={data?.hiringContractDate ? new Date(data.hiringContractDate).toLocaleDateString(localeActual()) : null} />
                     </>

@@ -1,0 +1,19 @@
+{
+  "adminOfficeUsers.roleNames.securitySupervisor": "Supervisor de Seguridad",
+  "alarm.category.desconocido": "Desconocido",
+  "dashboard.kpiCorto.clients": "Clientes",
+  "dashboard.kpiCorto.coverage": "Cobertura",
+  "dashboard.kpiCorto.onDuty": "En servicio",
+  "dashboard.kpiCorto.openIncidents": "Incidentes",
+  "dashboard.kpiCorto.patrolsToday": "Rondas hoy",
+  "dashboard.kpiCorto.response": "Respuesta",
+  "dashboard.kpiCorto.stations": "Puestos",
+  "dashboard.kpiCorto.supervisors": "Supervisores",
+  "invite.staff.role_generic": "Usuario administrativo",
+  "supervisorPositions.scheduleType.12hDay": "Diurno (12h)",
+  "supervisorPositions.scheduleType.12hNight": "Nocturno (12h)",
+  "supervisorPositions.scheduleType.24h": "24h (día/noche)",
+  "supervisorPositions.scheduleType.custom": "Personalizado",
+  "ui.ShiftTemplates.legacyDept.admin": "Administración",
+  "ui.ShiftTemplates.legacyDept.security": "Seguridad"
+}

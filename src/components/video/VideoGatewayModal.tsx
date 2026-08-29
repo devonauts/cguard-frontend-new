@@ -39,7 +39,7 @@ export default function VideoGatewayModal({
       onSaved?.();
       onClose();
     } catch (e: any) {
-      toast.error(e?.message || "No se pudo guardar el gateway");
+      toast.error(e?.message || t("ui.VideoGatewayModal.noSePudoGuardarElGateway", "No se pudo guardar el gateway"));
     } finally {
       setSaving(false);
     }
@@ -106,7 +106,7 @@ export default function VideoGatewayModal({
             {loadingYaml ? (
               <div className="flex items-center gap-2 py-2 text-xs" style={{ color: "var(--ink-soft)" }}><Loader2 size={12} className="animate-spin" /> Generando…</div>
             ) : (
-              <pre className="max-h-40 overflow-auto whitespace-pre-wrap rounded-lg p-2 text-[11px]" style={{ background: "var(--glass-solid)", color: "var(--ink-soft)" }}>{yaml || "Sincroniza las cámaras del dispositivo primero."}</pre>
+              <pre className="max-h-40 overflow-auto whitespace-pre-wrap rounded-lg p-2 text-[11px]" style={{ background: "var(--glass-solid)", color: "var(--ink-soft)" }}>{yaml || t("ui.VideoGatewayModal.sincronizaLasCamarasPrimero", "Sincroniza las cámaras del dispositivo primero.")}</pre>
             )}
             <p className="mt-1.5 text-[11px]" style={{ color: "var(--ink-faint)" }}>{t('ui.VideoGatewayModal.despliegaGo2rtcConEsteConfig')}</p>
           </div>

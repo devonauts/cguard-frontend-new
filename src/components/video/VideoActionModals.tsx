@@ -213,7 +213,7 @@ export function TrimShareModal({
       toast.success(i18n.t('ui.VideoActionModals.enlaceParaElClienteGenerado'));
       onShared?.(share);
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || "No se pudo generar el clip");
+      toast.error(e?.data?.message || e?.message || t("video.actions.clipError", "No se pudo generar el clip"));
     } finally {
       setBusy(false);
     }
@@ -408,7 +408,7 @@ export function CreateIncidentModal({
       onCreated?.(incident);
       onClose();
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || "No se pudo crear el incidente");
+      toast.error(e?.data?.message || e?.message || t("video.actions.incidentError", "No se pudo crear el incidente"));
     } finally {
       setBusy(false);
     }
@@ -520,7 +520,7 @@ export function DispatchModal({
       onDispatched?.(result);
       onClose();
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || "No se pudo despachar");
+      toast.error(e?.data?.message || e?.message || t("video.actions.dispatchError", "No se pudo despachar"));
     } finally {
       setBusy(false);
     }

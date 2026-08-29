@@ -1,0 +1,22 @@
+{
+  "panic.overlay.quickAction.contactGuard": "Contacté al vigilante en sitio",
+  "panic.overlay.quickAction.dispatchSupervisor": "Despaché supervisor / móvil",
+  "panic.overlay.quickAction.calledPolice": "Llamé a la policía (911)",
+  "panic.overlay.quickAction.contactClient": "Contacté al cliente",
+  "panic.overlay.quickAction.falseAlarm": "Falsa alarma / prueba",
+  "tasks.estado.approved": "Aprobada",
+  "tasks.estado.rejected": "Rechazada",
+  "tasks.estado.completed": "Completada",
+  "tasks.origen.staff": "Personal",
+  "tasks.origen.passdown": "Relevo",
+  "coverage.status.noGps": "Sin datos de GPS",
+  "invite.guard.freeUnion": "Unión libre",
+  "invite.guard.edu.primary": "Primaria",
+  "invite.guard.edu.secondary": "Secundaria",
+  "invite.guard.edu.universityStudies": "Universitaria",
+  "invite.guard.edu.university": "Universidad",
+  "invite.guard.edu.special": "Especial",
+  "video.relay.status.publishing": "Transmitiendo",
+  "video.relay.status.offline": "Sin conexión",
+  "video.relay.status.unknown": "Sin activar"
+}

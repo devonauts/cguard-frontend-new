@@ -1,0 +1,79 @@
+{
+  "ui.Schedule.ajustarLaRotacionDesdeEsteLibre": "Ajustar la rotación desde este libre",
+  "ui.Schedule.clicEnUnaCeldaParaSeleccionar": "Clic en una celda para seleccionar",
+  "ui.Schedule.duplicarAlDiaSiguiente": "Duplicar al día siguiente",
+  "ui.Schedule.duplicarTurnoAlDiaSiguiente": "Duplicar turno al día siguiente",
+  "ui.Schedule.eliminarTurnoDeEsteDia": "Eliminar turno de este día",
+  "ui.Schedule.errorAlAsignarLaCobertura": "Error al asignar la cobertura",
+  "ui.Schedule.errorAlCrearElTurno": "Error al crear el turno",
+  "ui.Schedule.errorEnAutoAsignacion": "Error en auto-asignación",
+  "ui.Schedule.errorEnOptimizacion": "Error en optimización",
+  "ui.Schedule.errorGenerandoElBorrador": "Error generando el borrador",
+  "ui.Schedule.horaDeLaEmpresaPunto": "Hora de la empresa.",
+  "ui.Schedule.moverVigilanteDePuesto": "Mover vigilante de puesto",
+  "ui.Schedule.cubrirEsteDia": "Cubrir este día",
+  "ui.Schedule.asignarVigilanteALaRotacion": "Asignar vigilante a la rotación",
+  "ui.Schedule.nadieCoincideConLaBusqueda": "Nadie coincide con la búsqueda.",
+  "ui.Schedule.noHayVigilantesParaMostrar": "No hay vigilantes para mostrar.",
+  "ui.Schedule.noSePudoReajustarLaRotacion": "No se pudo reajustar la rotación",
+  "ui.Schedule.planDeImplementacion": "Plan de implementación",
+  "ui.Schedule.borradorDeHorario": "Borrador de horario",
+  "ui.Schedule.removerAsignacion": "Remover asignación",
+  "ui.Schedule.soloEsteDia": "Sólo este día",
+  "ui.Schedule.turnoDe24Horas": "Turno de 24 horas.",
+  "ui.Schedule.terminaAlDiaSiguientePunto": "Termina al día siguiente.",
+
+  "ui.MessengerPage.conversacionesConTusClientes": "Conversaciones con tus clientes.",
+  "ui.MessengerPage.conversacionesConVigilantesSupervisores": "Conversaciones con vigilantes, supervisores y grupos por puesto.",
+  "ui.MessengerPage.eliminarConversacion": "Eliminar conversación",
+  "ui.MessengerPage.eliminarGrupo": "Eliminar grupo",
+  "ui.MessengerPage.noSePudieronCargarLasConversaciones": "No se pudieron cargar las conversaciones",
+  "ui.MessengerPage.noSePudieronCargarLosMiembros": "No se pudieron cargar los miembros",
+  "ui.MessengerPage.noSePudoAccederAlMicrofono": "No se pudo acceder al micrófono",
+  "ui.MessengerPage.noSePudoAnadir": "No se pudo añadir",
+  "ui.MessengerPage.noSePudoCargarLaConversacion": "No se pudo cargar la conversación",
+  "ui.MessengerPage.noSePudoCrearElGrupo": "No se pudo crear el grupo",
+  "ui.MessengerPage.noSePudoEliminarLaConversacion": "No se pudo eliminar la conversación",
+  "ui.MessengerPage.noSePudoEnviar": "No se pudo enviar",
+  "ui.MessengerPage.noSePudoEnviarLaNotaDeVoz": "No se pudo enviar la nota de voz",
+  "ui.MessengerPage.noSePudoSincronizar": "No se pudo sincronizar",
+  "ui.MessengerPage.noSePudoSubirElArchivo": "No se pudo subir el archivo",
+  "ui.MessengerPage.sinMensajesDeClientes": "Sin mensajes de clientes",
+  "ui.MessengerPage.sinConversaciones": "Sin conversaciones",
+  "ui.MessengerPage.todaviaNoHayMensajesDeTusClientes": "Todavía no hay mensajes de tus clientes.",
+  "ui.MessengerPage.empiezaUnaNuevaConElBoton": "Empieza una nueva con el botón «Nuevo».",
+
+  "ui.ClientCoverage.noSePudoEliminarLaEstacion": "No se pudo eliminar la estación",
+  "ui.ClientCoverage.parcial": "Parcial",
+  "ui.ClientCoverage.sinMarcar": "Sin marcar",
+
+  "ui.AlarmCaseDetail.dispatch.guard": "Vigilante",
+  "ui.AlarmCaseDetail.dispatch.police": "Policía",
+  "ui.AlarmCaseDetail.dispatch.fire": "Bomberos",
+  "ui.AlarmCaseDetail.dispatch.medical": "Médico",
+
+  "ui.VideoGatewayModal.noSePudoGuardarElGateway": "No se pudo guardar el gateway",
+  "ui.VideoGatewayModal.sincronizaLasCamarasPrimero": "Sincroniza las cámaras del dispositivo primero.",
+
+  "ui.AlarmVideoVerification.camara": "Cámara",
+  "ui.AlarmVideoVerification.clipDeVerificacion": "Clip de verificación",
+
+  "ui.TrainingCourses.progresoDeVigilantes": "Progreso de vigilantes",
+
+  "ui.StationVisitors.permisoDeCamaraDenegado": "Permiso de cámara denegado.",
+
+  "ui.DemoDataBanner.quitarDatosDeEjemplo": "Quitar datos de ejemplo",
+
+  "settings.form.saveConfig": "Guardar configuración",
+
+  "ui.LessonsManager.nuevaLeccion": "Nueva lección",
+
+  "ui.ShiftAssignModal.asignarRotacion": "Asignar rotación",
+  "ui.ShiftAssignModal.crearTurno": "Crear turno",
+
+  "ui.ClientPostSites.noSePudoEliminarLaSede": "No se pudo eliminar la sede",
+
+  "emailPreferences.previewLoadError": "No se pudo cargar el ejemplo.",
+
+  "offline.replay.noTenant": "Sin empresa para reproducir la mutación"
+}

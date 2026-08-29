@@ -17,14 +17,22 @@ const tint = (token: string, pct = 16): React.CSSProperties => ({
   color: `var(--${token}-text)`,
 });
 
-const CELL: Record<string, { label: string; style: React.CSSProperties; title: string }> = {
-  day: { label: 'D', style: tint('info'), title: 'Turno de día' },
-  night: { label: 'N', style: { background: 'var(--brand-wash)', color: 'var(--brand-text)' }, title: 'Turno de noche' },
-  rest: { label: 'L', style: { background: 'var(--glass-sunken)', color: 'var(--ink-soft)' }, title: 'Libre' },
+/* Constante de MÓDULO: guarda la CLAVE junto al español de respaldo. Nunca se
+   llama a t() aquí —congelaría el idioma de arranque—: se traduce al pintar.
+   La letra de la celda también es una etiqueta (D/N/L), así que lleva clave. */
+const CELL: Record<string, {
+  label: string; labelKey: string;
+  style: React.CSSProperties;
+  title: string; titleKey: string;
+  legend: string; legendKey: string;
+}> = {
+  day: { label: 'D', labelKey: 'clients.coverage.cell.day.letter', style: tint('info'), title: 'Turno de día', titleKey: 'clients.coverage.cell.day.title', legend: 'Día', legendKey: 'clients.coverage.cell.day.legend' },
+  night: { label: 'N', labelKey: 'clients.coverage.cell.night.letter', style: { background: 'var(--brand-wash)', color: 'var(--brand-text)' }, title: 'Turno de noche', titleKey: 'clients.coverage.cell.night.title', legend: 'Noche', legendKey: 'clients.coverage.cell.night.legend' },
+  rest: { label: 'L', labelKey: 'clients.coverage.cell.rest.letter', style: { background: 'var(--glass-sunken)', color: 'var(--ink-soft)' }, title: 'Libre', titleKey: 'clients.coverage.cell.rest.title', legend: 'Libre', legendKey: 'clients.coverage.cell.rest.legend' },
   // The rotation expected a work day but no turno was generated — a real hole in
   // the schedule, not a rest day. Painting it as 'L' hid missing coverage.
-  gap: { label: '!', style: tint('bad'), title: 'Sin turno generado (hueco de cobertura)' },
-  none: { label: '·', style: { color: 'var(--ink-faint)' }, title: 'Sin rotación configurada' },
+  gap: { label: '!', labelKey: 'clients.coverage.cell.gap.letter', style: tint('bad'), title: 'Sin turno generado (hueco de cobertura)', titleKey: 'clients.coverage.cell.gap.title', legend: 'Sin turno generado', legendKey: 'clients.coverage.cell.gap.legend' },
+  none: { label: '·', labelKey: 'clients.coverage.cell.none.letter', style: { color: 'var(--ink-faint)' }, title: 'Sin rotación configurada', titleKey: 'clients.coverage.cell.none.title', legend: 'Sin rotación', legendKey: 'clients.coverage.cell.none.legend' },
 };
 
 const ymd = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -124,14 +132,14 @@ export default function ScheduleCard({ clientId, sedeId }: { clientId: string; s
         toast.success('Asignación removida');
       }
       setEditRow(null);
-    } catch (e: any) { toast.error(e?.response?.data?.message || 'No se pudo actualizar la asignación'); }
+    } catch (e: any) { toast.error(e?.response?.data?.message || t('clients.coverage.assignUpdateError', 'No se pudo actualizar la asignación')); }
     finally { setSaving(false); await load(true); }
   };
   const removeGuard = async () => {
     if (!editRow?.assignmentId) { setEditRow(null); return; }
     setSaving(true);
     try { await clientService.removeGuardAssignment(editRow.assignmentId); toast.success('Asignación removida'); setEditRow(null); await load(true); }
-    catch { toast.error('No se pudo remover'); } finally { setSaving(false); }
+    catch { toast.error(t('clients.coverage.assignRemoveError', 'No se pudo remover')); } finally { setSaving(false); }
   };
 
   const rangeLabel = data?.startDate && data?.endDate
@@ -205,12 +213,15 @@ export default function ScheduleCard({ clientId, sedeId }: { clientId: string; s
                       const m = CELL[c.status] || CELL.none;
                       // Tooltip carries the real turno data so the compact grid
                       // stays readable while still answering "¿qué turno es?".
-                      const tip = [m.title, c.hours, c.covering && c.guardName ? `Cubre: ${c.guardName}` : null]
-                        .filter(Boolean).join(' · ');
+                      const tip = [
+                        t(m.titleKey, m.title),
+                        c.hours,
+                        c.covering && c.guardName ? t('clients.coverage.cell.coveredBy', 'Cubre: {{name}}', { name: c.guardName }) : null,
+                      ].filter(Boolean).join(' · ');
                       return (
                         <td key={c.date} className="border-b p-0.5 text-center" style={{ borderColor: 'var(--hairline)' }}>
                           <span title={tip} className="relative grid h-7 w-full min-w-[26px] place-items-center rounded text-[11px] font-bold" style={m.style}>
-                            {m.label}
+                            {t(m.labelKey, m.label)}
                             {/* El punto marca que ese día lo cubre otro vigilante (sacafranco) */}
                             {c.covering && <span className="absolute right-0.5 top-0.5 h-1.5 w-1.5 rounded-full" style={{ background: 'var(--warn)' }} />}
                           </span>
@@ -225,8 +236,8 @@ export default function ScheduleCard({ clientId, sedeId }: { clientId: string; s
           <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs" style={{ color: 'var(--ink-soft)' }}>
             {(['day', 'night', 'rest', 'gap'] as const).map((k) => (
               <span key={k} className="inline-flex items-center gap-1.5">
-                <span className="grid h-4 w-4 place-items-center rounded text-[10px] font-bold" style={CELL[k].style}>{CELL[k].label}</span>
-                {k === 'day' ? 'Día' : k === 'night' ? 'Noche' : k === 'rest' ? 'Libre' : 'Sin turno generado'}
+                <span className="grid h-4 w-4 place-items-center rounded text-[10px] font-bold" style={CELL[k].style}>{t(CELL[k].labelKey, CELL[k].label)}</span>
+                {t(CELL[k].legendKey, CELL[k].legend)}
               </span>
             ))}
             <span className="inline-flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full" style={{ background: 'var(--warn)' }} /> Cubre otro vigilante</span>

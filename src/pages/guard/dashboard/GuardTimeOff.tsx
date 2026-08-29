@@ -36,7 +36,7 @@ export default function GuardTimeOff() {
 
   const handleSubmit = async () => {
     if (!startDate || !endDate) {
-      toast.error('Selecciona fechas de inicio y fin');
+      toast.error(t('guard.timeOff.pickDates', 'Selecciona fechas de inicio y fin'));
       return;
     }
     setSaving(true);

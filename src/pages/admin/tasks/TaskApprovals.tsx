@@ -52,7 +52,7 @@ export default function TaskApprovals() {
   };
 
   const reject = async (r: TaskRow) => {
-    const notes = (await promptDialog({ title: "Motivo del rechazo", message: "Opcional", placeholder: "Ej.: falta la foto de evidencia" })) ?? undefined;
+    const notes = (await promptDialog({ title: t("tasks.approvals.rejectReasonTitle", "Motivo del rechazo"), message: "Opcional", placeholder: "Ej.: falta la foto de evidencia" })) ?? undefined;
     setBusy(true);
     try {
       await taskService.reject(r.id, notes);

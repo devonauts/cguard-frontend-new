@@ -79,11 +79,13 @@ interface WizardForm {
   website: string;
 }
 
+// Constante de módulo: se evalúa al cargar, antes de que el idioma esté listo.
+// Por eso guarda la CLAVE y el texto se traduce donde se pinta.
 const STEPS = [
-  { label: "Bienvenida", icon: Sparkles },
-  { label: "Tu empresa", icon: Building2 },
-  { label: "Contacto", icon: MapPin },
-  { label: "Revisar", icon: ClipboardCheck },
+  { labelKey: "onboarding.wizard.step.bienvenida", label: "Bienvenida", icon: Sparkles },
+  { labelKey: "onboarding.wizard.step.tuEmpresa", label: "Tu empresa", icon: Building2 },
+  { labelKey: "onboarding.wizard.step.contacto", label: "Contacto", icon: MapPin },
+  { labelKey: "onboarding.wizard.step.revisar", label: "Revisar", icon: ClipboardCheck },
 ];
 
 const emptyForm: WizardForm = {
@@ -257,7 +259,7 @@ export default function OnboardingWizard({
         try {
           await tenantService.uploadLogo(logoFile, tenant.id);
         } catch (e: any) {
-          toast.error(e?.message || "Datos guardados, pero no se pudo subir el logo.");
+          toast.error(e?.message || t("onboarding.wizard.logoUploadError", "Datos guardados, pero no se pudo subir el logo."));
         }
       }
 
@@ -283,7 +285,7 @@ export default function OnboardingWizard({
       }, 600);
       onOpenChange(false);
     } catch (e: any) {
-      toast.error(e?.message || "No se pudo guardar la configuración.");
+      toast.error(e?.message || t("settings.reportSettings.saveError", "No se pudo guardar la configuración."));
     } finally {
       setSubmitting(false);
     }
@@ -318,7 +320,7 @@ export default function OnboardingWizard({
                 {t('ui.OnboardingWizard.configuraTuEmpresa', 'Configura tu empresa')}
               </DialogTitle>
               <DialogDescription className="text-xs">
-                Paso {step + 1} de {STEPS.length} · {STEPS[step].label}
+                Paso {step + 1} de {STEPS.length} · {t(STEPS[step].labelKey, STEPS[step].label)}
               </DialogDescription>
             </div>
             <button
@@ -332,7 +334,7 @@ export default function OnboardingWizard({
           </div>
           <div className="pt-4">
             <StepIndicator
-              steps={STEPS.map((s) => ({ label: s.label }))}
+              steps={STEPS.map((s) => ({ label: t(s.labelKey, s.label) }))}
               current={step}
               onStepClick={(i) => { if (i < step) setStep(i); }}
             />
@@ -457,7 +459,7 @@ export default function OnboardingWizard({
                     className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
                   >
                     <Edit className="h-3 w-3" />
-                    {showManualAddress ? "Búsqueda automática" : "Ingresar manualmente"}
+                    {showManualAddress ? t("onboarding.wizard.autoSearch", "Búsqueda automática") : t("onboarding.wizard.manualEntry", "Ingresar manualmente")}
                   </button>
                 </div>
 
@@ -618,8 +620,8 @@ export default function OnboardingWizard({
 function WelcomeStep({ days, trialEnd }: { days: number | null; trialEnd: string | null }) {
   const { t } = useTranslation();
   const items = [
-    { icon: Building2, text: "Los datos de tu empresa (nombre, razón social, RUC)" },
-    { icon: Camera, text: "El logo que verán tus vigilantes y clientes" },
+    { icon: Building2, text: t("onboarding.wizard.welcome.companyData", "Los datos de tu empresa (nombre, razón social, RUC)") },
+    { icon: Camera, text: t("onboarding.wizard.welcome.logo", "El logo que verán tus vigilantes y clientes") },
     { icon: MapPin, text: "Contacto, dirección y zona horaria" },
   ];
   return (
@@ -706,7 +708,7 @@ function ReviewStep({
           )}
         </div>
         <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-foreground">{form.name || "Tu empresa"}</p>
+          <p className="truncate text-sm font-semibold text-foreground">{form.name || t("onboarding.wizard.step.tuEmpresa", "Tu empresa")}</p>
           <p className="truncate text-xs text-muted-foreground">{form.businessTitle}</p>
         </div>
       </div>

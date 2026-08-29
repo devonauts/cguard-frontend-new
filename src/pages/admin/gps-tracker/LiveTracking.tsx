@@ -110,7 +110,7 @@ export default function LiveTrackingPage() {
         setRoutes(r?.rows ?? []);
         setRuns(runRes || []);
       } catch (e: any) {
-        if (mounted) toast.error(e?.message || "No se pudieron cargar las rutas");
+        if (mounted) toast.error(e?.message || t('routes.live.loadError', 'No se pudieron cargar las rutas'));
       } finally {
         if (mounted) setLoading(false);
       }

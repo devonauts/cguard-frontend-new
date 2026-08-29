@@ -192,8 +192,8 @@ export default function PatrullaBoardPage() {
               value={showAll ? 'todas' : 'dia'}
               onChange={(v) => setShowAll(v === 'todas')}
               options={[
-                { value: 'dia', label: 'Del día' },
-                { value: 'todas', label: 'Todas' },
+                { value: 'dia', label: t('ui.PatrullaBoard.filtroDelDia', 'Del día') },
+                { value: 'todas', label: t('ui.PatrullaBoard.filtroTodas', 'Todas') },
               ]}
             />
           )}
@@ -203,7 +203,7 @@ export default function PatrullaBoardPage() {
         ) : shown.length === 0 ? (
           <EmptyState
             icon={<RouteIcon />}
-            title={showAll ? 'No hay rutas creadas' : 'No hay rutas programadas para este día'}
+            title={showAll ? t('ui.PatrullaBoard.sinRutasCreadas', 'No hay rutas creadas') : t('ui.PatrullaBoard.sinRutasEsteDia', 'No hay rutas programadas para este día')}
             description={t('ui.PatrullaBoardPage.creaUnaPatrullaVehicularCon')}
           />
         ) : (

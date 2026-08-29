@@ -83,17 +83,17 @@ export default function PostSiteKPIs({ site }: Props) {
 
   const handleAddEmail = () => {
     if (!currentEmail.trim()) {
-      setEmailError('Por favor ingresa un correo electrónico');
+      setEmailError(t('guards.KPI.modal.errors.emailRequired', 'Por favor ingresa un correo electrónico'));
       return;
     }
 
     if (!validateEmail(currentEmail)) {
-      setEmailError('Correo electrónico no válido');
+      setEmailError(t('guards.KPI.modal.errors.emailInvalid', 'Correo electrónico no válido'));
       return;
     }
 
     if (formData.emails.includes(currentEmail)) {
-      setEmailError('Este correo ya ha sido agregado');
+      setEmailError(t('guards.KPI.modal.errors.emailAlreadyAdded', 'Este correo ya ha sido agregado'));
       return;
     }
 

@@ -1301,7 +1301,7 @@ export default function PostSiteTours({ site, guards = [] }: { site?: SiteProp; 
         open={showSettingsModal}
         onOpenChange={(o) => { if (!o) setShowSettingsModal(false); }}
         title={t('station.siteTours.settingsTitle', 'Configuraciones de Rondas')}
-        description={site?.companyName || site?.name || 'Este sitio'}
+        description={site?.companyName || site?.name || t('station.siteTours.thisSite', 'Este sitio')}
         icon={<Settings className="h-5 w-5" />}
         size="lg"
       >

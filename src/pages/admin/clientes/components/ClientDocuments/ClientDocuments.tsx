@@ -67,11 +67,13 @@ const typeMeta = (t: string) => TYPE_META[t] || { icon: FileIcon, tone: 'neutral
 const CATEGORIES = ['Post Orders', 'Manuales', 'Procedimientos', 'Reportes', 'Políticas', 'Contratos', 'Mapas', 'Capacitación', 'Planos', 'Otros'];
 /* Cuatro tipos de archivo: categorías sin orden, a los escalones de serie del
    acento y siempre en la misma posición. */
+// Constante de módulo: guarda la CLAVE junto al texto por defecto. Se traduce
+// donde se pinta (leyenda del anillo, más abajo).
 const BREAK_META = [
-  { key: 'documents', label: 'Documentos', color: seriesVar(0) },
-  { key: 'images', label: 'Imágenes', color: seriesVar(1) },
-  { key: 'videos', label: 'Vídeos', color: seriesVar(2) },
-  { key: 'others', label: 'Otros', color: seriesVar(3) },
+  { key: 'documents', labelKey: 'clients.documents.breakdown.documents', label: 'Documentos', color: seriesVar(0) },
+  { key: 'images', labelKey: 'clients.documents.breakdown.images', label: 'Imágenes', color: seriesVar(1) },
+  { key: 'videos', labelKey: 'clients.documents.breakdown.videos', label: 'Vídeos', color: seriesVar(2) },
+  { key: 'others', labelKey: 'clients.documents.breakdown.others', label: 'Otros', color: seriesVar(3) },
 ];
 
 const fmtDT = (iso: string) => { const d = new Date(iso); return Number.isNaN(d.getTime()) ? '—' : d.toLocaleString(localeActual(), { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }); };
@@ -121,7 +123,7 @@ export default function ClientDocuments({ client }: { client: Client }) {
   const pageCount = Math.max(1, Math.ceil(total / perPage));
   const fmtUpdated = data?.updatedAt ? new Date(data.updatedAt).toLocaleString(localeActual(), { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
 
-  const donutSegments = useMemo(() => BREAK_META.map((b) => ({ value: breakdown[b.key]?.bytes || 0, color: b.color, label: b.label })).filter((s) => s.value > 0), [breakdown]);
+  const donutSegments = useMemo(() => BREAK_META.map((b) => ({ value: breakdown[b.key]?.bytes || 0, color: b.color, label: t(b.labelKey, b.label) })).filter((s) => s.value > 0), [breakdown, t]);
   const resetPage = (fn: (v: string) => void) => (v: string) => { fn(v); setPage(1); };
 
   const onPick = (files: FileList | null) => { if (files) setPending((prev) => [...prev, ...Array.from(files)]); };
@@ -237,7 +239,7 @@ export default function ClientDocuments({ client }: { client: Client }) {
               <div className="flex-1 space-y-2">
                 {BREAK_META.map((b) => (
                   <div key={b.key} className="flex items-center justify-between text-sm">
-                    <span className="inline-flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full" style={{ background: b.color }} />{b.label}</span>
+                    <span className="inline-flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full" style={{ background: b.color }} />{t(b.labelKey, b.label)}</span>
                     <span className="text-xs tabular-nums" style={{ color: 'var(--ink-soft)' }}>{breakdown[b.key]?.label ?? '0 B'}</span>
                   </div>
                 ))}

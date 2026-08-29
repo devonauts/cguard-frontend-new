@@ -1,0 +1,68 @@
+[
+  {
+    "fichero": "src/pages/admin/Configuration/communications/CommunicationsPage.tsx",
+    "constantes": [
+      {
+        "linea": 95,
+        "constante": "STATUS_LABELS"
+      },
+      {
+        "linea": 109,
+        "constante": "CHANNEL_LABELS"
+      },
+      {
+        "linea": 117,
+        "constante": "TYPE_LABELS"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/Reports/PanicButtonLog.tsx",
+    "constantes": [
+      {
+        "linea": 12,
+        "constante": "ORIGIN"
+      },
+      {
+        "linea": 29,
+        "constante": "PRIORITY"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/clientes/components/ClientStaff/ClientStaff.tsx",
+    "constantes": [
+      {
+        "linea": 66,
+        "constante": "ESTADO_META"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/post-sites/station-detail/components/StationOverview.tsx",
+    "constantes": [
+      {
+        "linea": 46,
+        "constante": "TURNO_LABELS"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/security-guards/components/GuardSummary/GuardSummarypage.tsx",
+    "constantes": [
+      {
+        "linea": 70,
+        "constante": "TIER_LABEL"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/video/VideoDevices.tsx",
+    "constantes": [
+      {
+        "linea": 72,
+        "constante": "TYPE_LABELS"
+      }
+    ]
+  }
+]

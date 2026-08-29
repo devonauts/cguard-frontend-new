@@ -33,11 +33,14 @@ import { videoService, type RelaySite, type RelayBundle } from "@/lib/api/videoS
  * Semánticos fijos: transmitir o no transmitir no depende del color de marca.
  * Escala común de equipos — un sitio caído deja sin vídeo a una sede entera y
  * se pinta igual de rojo que un grabador caído, no en tono neutro como antes.
+ *
+ * El texto guarda la CLAVE junto al español: el objeto se construye al importar
+ * el módulo, antes de que i18next sepa el idioma, así que se traduce al pintar.
  */
-const STATUS: Record<string, { health: DeviceHealth; label: string }> = {
-  publishing: { health: "up", label: "Transmitiendo" },
-  offline: { health: "down", label: "Sin conexión" },
-  unknown: { health: "unknown", label: "Sin activar" },
+const STATUS: Record<string, { health: DeviceHealth; label: string; labelKey: string }> = {
+  publishing: { health: "up", label: "Transmitiendo", labelKey: "video.relay.status.publishing" },
+  offline: { health: "down", label: "Sin conexión", labelKey: "video.relay.status.offline" },
+  unknown: { health: "unknown", label: "Sin activar", labelKey: "video.relay.status.unknown" },
 };
 
 export default function VideoRelaySites() {
@@ -74,7 +77,7 @@ export default function VideoRelaySites() {
       setNewOpen(false); setName(""); setNotes("");
       load();
     } catch (e) {
-      toast.error((e as Error)?.message || "No se pudo crear el sitio");
+      toast.error((e as Error)?.message || t("video.relay.createSiteError", "No se pudo crear el sitio"));
     } finally {
       setSaving(false);
     }
@@ -86,7 +89,7 @@ export default function VideoRelaySites() {
     try {
       setBundle(await videoService.relayBundle(s.id));
     } catch (e) {
-      toast.error((e as Error)?.message || "No se pudo generar el relay");
+      toast.error((e as Error)?.message || t("video.relay.generateError", "No se pudo generar el relay"));
       setBundleSite(null);
     }
   };
@@ -108,7 +111,7 @@ export default function VideoRelaySites() {
       toast.success(t('ui.VideoRelaySites.tokenRegeneradoVuelveADescargar'));
       load();
     } catch (e) {
-      toast.error((e as Error)?.message || "No se pudo regenerar el token");
+      toast.error((e as Error)?.message || t("video.relay.regenerateTokenError", "No se pudo regenerar el token"));
     }
   };
 
@@ -120,7 +123,7 @@ export default function VideoRelaySites() {
       setDeleteTarget(null);
       load();
     } catch (e) {
-      toast.error((e as Error)?.message || "No se pudo eliminar");
+      toast.error((e as Error)?.message || t("station.orders.deleteError", "No se pudo eliminar"));
     }
   };
 
@@ -166,7 +169,7 @@ export default function VideoRelaySites() {
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="truncate font-semibold text-foreground">{s.name}</p>
-                      <DeviceStatusBadge health={badge.health} label={badge.label} />
+                      <DeviceStatusBadge health={badge.health} label={t(badge.labelKey, badge.label)} />
                     </div>
                     <p className="mt-0.5 truncate text-xs" style={{ color: 'var(--ink-soft)' }}>
                       {t('ui.VideoRelaySites.claveDelSitio', 'Clave del sitio:')} <code>{s.siteKey}</code> · {String(s.ingestProtocol || "rtmps").toUpperCase()}

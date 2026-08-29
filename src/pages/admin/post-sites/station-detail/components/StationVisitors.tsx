@@ -121,7 +121,7 @@ function CameraModal({ open, mode, onClose, onCapture }: {
         videoRef.current.onloadedmetadata = () => { videoRef.current?.play(); setReady(true); };
       }
     } catch (e: any) {
-      setErr(e?.name === 'NotAllowedError' ? 'Permiso de cámara denegado.' : e?.name === 'NotFoundError' ? 'No se encontró cámara.' : 'No se pudo acceder a la cámara.');
+      setErr(e?.name === 'NotAllowedError' ? t('ui.StationVisitors.permisoDeCamaraDenegado', 'Permiso de cámara denegado.') : e?.name === 'NotFoundError' ? 'No se encontró cámara.' : 'No se pudo acceder a la cámara.');
     }
   }, [mode, setCapturedPhoto]);
 
@@ -152,7 +152,7 @@ function CameraModal({ open, mode, onClose, onCapture }: {
           `max-w-*` sin prefijo se la come (tailwind-merge). */}
       <DialogContent className="z-[60] max-h-[90vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>{mode === 'id-scan' ? 'Escanear cédula / ID' : 'Foto del visitante'}</DialogTitle>
+          <DialogTitle>{mode === 'id-scan' ? t('ui.StationVisitors.escanearCedulaId', 'Escanear cédula / ID') : t('ui.StationVisitors.fotoDelVisitante', 'Foto del visitante')}</DialogTitle>
         </DialogHeader>
         <div className="space-y-3">
           {err ? (

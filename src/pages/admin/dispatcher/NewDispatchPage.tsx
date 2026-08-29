@@ -1304,7 +1304,7 @@ export default function NewDispatchPage() {
                         }}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder={stations && stations.length > 0 ? 'Seleccionar estación' : (watchedSiteId || dupSiteId ? 'Sin estaciones' : 'Seleccione un puesto primero')} />
+                          <SelectValue placeholder={stations && stations.length > 0 ? t('incidents.selectStation', 'Seleccionar estación') : (watchedSiteId || dupSiteId ? 'Sin estaciones' : 'Seleccione un puesto primero')} />
                         </SelectTrigger>
                         <SelectContent>
                           <div className="px-2 py-2">

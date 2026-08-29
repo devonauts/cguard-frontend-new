@@ -1,0 +1,56 @@
+[
+  {
+    "fichero": "src/lib/validators/post-site.ts",
+    "constantes": [
+      {
+        "linea": 8,
+        "constante": "SERVICE_TYPE_VALUES"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/Configuration/sms/SmsBalancePage.tsx",
+    "constantes": [
+      {
+        "linea": 17,
+        "constante": "COUNTRIES"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/clientes/components/ClientCoverage/ScheduleCard.tsx",
+    "constantes": [
+      {
+        "linea": 20,
+        "constante": "CELL"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/post-sites/components/PostsiteStations/StationCardsGrid.tsx",
+    "constantes": [
+      {
+        "linea": 18,
+        "constante": "SCHEDULE_LABEL"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/security-guards/components/GuardProfile/GuardProfilepage.tsx",
+    "constantes": [
+      {
+        "linea": 80,
+        "constante": "FIELD_OPTIONS"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/vehicles/VehiclesPage.tsx",
+    "constantes": [
+      {
+        "linea": 57,
+        "constante": "OWNERSHIP_LABELS"
+      }
+    ]
+  }
+]

@@ -86,7 +86,7 @@ export default function Vehicles() {
     const { data, loading, refetch } = useAsyncList(
         () => vehicleService.list({ limit: perPageNum, offset: (page - 1) * perPageNum }),
         [page, perPageNum],
-        { onError: (err) => { console.error("Error cargando vehículos", err); toast.error("Error cargando vehículos"); } },
+        { onError: (err) => { console.error("Error cargando vehículos", err); toast.error(t("ui.Vehicles.errorCargandoVehiculos", "Error cargando vehículos")); } },
     );
     const rows: VehicleRow[] = (data?.rows as VehicleRow[]) || [];
     const count = data?.count || 0;
@@ -171,7 +171,7 @@ export default function Vehicles() {
         }
         if (
             !(await confirmDialog({
-                title: "Eliminar vehículos",
+                title: t("ui.Vehicles.eliminarVehiculos", "Eliminar vehículos"),
                 message: `¿Eliminar ${selectedIds.length} vehículo(s)? Esta acción no se puede deshacer.`,
                 confirmText: "Eliminar",
                 tone: "danger",
@@ -199,7 +199,7 @@ export default function Vehicles() {
             <Breadcrumb
                 items={[
                     { label: "Panel de control", path: "/dashboard" },
-                    { label: "Vehículos" },
+                    { label: t("ui.Vehicles.vehiculos", "Vehículos") },
                 ]}
             />
 

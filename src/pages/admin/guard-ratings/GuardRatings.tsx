@@ -262,7 +262,7 @@ export default function GuardRatings() {
                     key={rec.id}
                     className={rec.guardId ? "cursor-pointer" : undefined}
                     onClick={() => rec.guardId && navigate(`/guards/${rec.guardId}/reviews`)}
-                    title={rec.guardId ? "Ver reseñas del vigilante" : undefined}
+                    title={rec.guardId ? t("ui.GuardRatingLevel.verResenasDelVigilante", "Ver reseñas del vigilante") : undefined}
                   >
                     <TableCell className="whitespace-nowrap">{formatDate(rec.createdAt)}</TableCell>
                     <TableCell className="font-medium hover:underline" style={{ color: 'var(--brand-text)' }}>{rec.guardName ?? "—"}</TableCell>

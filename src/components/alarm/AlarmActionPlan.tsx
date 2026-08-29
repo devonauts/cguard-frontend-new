@@ -5,14 +5,16 @@ import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { alarmService, type ActionPlanStep } from "@/lib/api/alarmService";
 
-const STEP_META: Record<string, { label: string; icon: JSX.Element }> = {
-  verify: { label: "Verificar", icon: <ShieldCheck className="size-3.5" /> },
-  call: { label: "Llamar contacto", icon: <Phone className="size-3.5" /> },
-  video: { label: "Verificación por video", icon: <Video className="size-3.5" /> },
-  dispatch_guard: { label: "Despachar vigilante", icon: <UserCog className="size-3.5" /> },
-  notify_police: { label: "Notificar policía", icon: <Siren className="size-3.5" /> },
-  notify_customer: { label: "Notificar cliente", icon: <Bell className="size-3.5" /> },
-  note: { label: "Nota", icon: <StickyNote className="size-3.5" /> },
+// Constante de módulo: guarda la CLAVE, no el texto. Traducir aquí congelaría
+// la etiqueta en el idioma de arranque; la traducción se hace al pintar.
+const STEP_META: Record<string, { labelKey: string; label: string; icon: JSX.Element }> = {
+  verify: { labelKey: "alarm.actionPlan.step.verify", label: "Verificar", icon: <ShieldCheck className="size-3.5" /> },
+  call: { labelKey: "alarm.actionPlan.step.call", label: "Llamar contacto", icon: <Phone className="size-3.5" /> },
+  video: { labelKey: "alarm.actionPlan.step.video", label: "Verificación por video", icon: <Video className="size-3.5" /> },
+  dispatch_guard: { labelKey: "alarm.actionPlan.step.dispatchGuard", label: "Despachar vigilante", icon: <UserCog className="size-3.5" /> },
+  notify_police: { labelKey: "alarm.actionPlan.step.notifyPolice", label: "Notificar policía", icon: <Siren className="size-3.5" /> },
+  notify_customer: { labelKey: "alarm.actionPlan.step.notifyCustomer", label: "Notificar cliente", icon: <Bell className="size-3.5" /> },
+  note: { labelKey: "alarm.actionPlan.step.note", label: "Nota", icon: <StickyNote className="size-3.5" /> },
 };
 
 type Progress = Record<string, { done: boolean; note?: string | null; at?: string; by?: string | null }>;
@@ -43,7 +45,7 @@ export default function AlarmActionPlan({ caseId }: { caseId: string }) {
       const p = await alarmService.setStep(caseId, { stepIndex: i, done });
       setProgress((p as Progress) || {});
     } catch {
-      toast.error("No se pudo actualizar el paso");
+      toast.error(t("alarm.actionPlan.stepUpdateError", "No se pudo actualizar el paso"));
     } finally {
       setSavingIdx(null);
     }
@@ -81,7 +83,10 @@ export default function AlarmActionPlan({ caseId }: { caseId: string }) {
       </div>
       <ol className="space-y-1.5">
         {steps.map((s, i) => {
-          const meta = STEP_META[s.type] || { label: s.type, icon: <Check className="size-3.5" /> };
+          const known = STEP_META[s.type];
+          const meta = known
+            ? { label: t(known.labelKey, known.label), icon: known.icon }
+            : { label: s.type, icon: <Check className="size-3.5" /> };
           const done = !!progress[String(i)]?.done;
           return (
             <li key={i} className="glass-flat flex items-start gap-2 px-3 py-2">

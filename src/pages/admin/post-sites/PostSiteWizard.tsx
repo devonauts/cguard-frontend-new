@@ -134,11 +134,11 @@ function deriveScheduleType(jornadas: JornadaDraft[]): '24h' | '12h-day' | '12h-
 const STEP_LABELS = ['Tipo', 'Sitio', 'Config.', 'Estaciones', 'Crear'];
 const SCHEDULES = ['1 hora', '4 horas', '8 horas', '10 horas', '12 horas', '14 horas', '16 horas', '24 horas'];
 
-const JORNADA_PRESETS: { tipo: JornadaDraft['tipo']; label: string; startTime: string; endTime: string }[] = [
-  { tipo: 'matutina',     label: 'Matutina',     startTime: '06:00', endTime: '18:00' },
-  { tipo: 'nocturna',     label: 'Nocturna',     startTime: '18:00', endTime: '06:00' },
-  { tipo: 'sacafranco',   label: 'Sacafranco',   startTime: '06:00', endTime: '18:00' },
-  { tipo: 'personalizada',label: 'Personalizada',startTime: '',      endTime: ''      },
+const JORNADA_PRESETS: { tipo: JornadaDraft['tipo']; label: string; labelKey: string; startTime: string; endTime: string }[] = [
+  { tipo: 'matutina',     label: 'Matutina', labelKey: 'ui.PostSiteWizard.jornada.matutina',     startTime: '06:00', endTime: '18:00' },
+  { tipo: 'nocturna',     label: 'Nocturna', labelKey: 'ui.PostSiteWizard.jornada.nocturna',     startTime: '18:00', endTime: '06:00' },
+  { tipo: 'sacafranco',   label: 'Sacafranco', labelKey: 'ui.PostSiteWizard.jornada.sacafranco',   startTime: '06:00', endTime: '18:00' },
+  { tipo: 'personalizada',label: 'Personalizada', labelKey: 'ui.PostSiteWizard.jornada.personalizada',startTime: '',      endTime: ''      },
 ];
 
 // El tinte de cada jornada sale de los semánticos del sistema: matutina = día
@@ -172,19 +172,19 @@ function jornadaEdge(tipo: JornadaDraft['tipo']): React.CSSProperties {
   return { borderColor: `color-mix(in oklab, ${jornadaFill(tipo)} 30%, transparent)` };
 }
 
-const DEPLOY_CHECKS: { key: string; label: string; defaultOn?: boolean }[] = [
-  { key: 'armedService',    label: 'Vigilante armado' },
-  { key: 'uniformRequired', label: 'Uniforme obligatorio', defaultOn: true },
-  { key: 'periodicPatrol',  label: 'Patrullaje perimetral' },
-  { key: 'k9Service',       label: 'Canes / K9' },
-  { key: 'vehicleControl',  label: 'Control acceso vehicular' },
-  { key: 'cctvMonitoring',  label: 'Monitoreo CCTV' },
-  { key: 'visitorLog',      label: 'Registro de visitantes' },
-  { key: 'incidentLog',     label: 'Libro de novedades' },
-  { key: 'formalHandover',  label: 'Entrega de turno formal' },
-  { key: 'keyCustody',      label: 'Custodia de llaves' },
-  { key: 'alarmResponse',   label: 'Respuesta a alarmas' },
-  { key: 'radioComms',      label: 'Comunicación por radio' },
+const DEPLOY_CHECKS: { key: string; label: string; labelKey: string; defaultOn?: boolean }[] = [
+  { key: 'armedService',    labelKey: 'ui.PostSiteWizard.deploy.armedService',    label: 'Vigilante armado' },
+  { key: 'uniformRequired', labelKey: 'ui.PostSiteWizard.deploy.uniformRequired', label: 'Uniforme obligatorio', defaultOn: true },
+  { key: 'periodicPatrol',  labelKey: 'ui.PostSiteWizard.deploy.periodicPatrol',  label: 'Patrullaje perimetral' },
+  { key: 'k9Service',       labelKey: 'ui.PostSiteWizard.deploy.k9Service',       label: 'Canes / K9' },
+  { key: 'vehicleControl',  labelKey: 'ui.PostSiteWizard.deploy.vehicleControl',  label: 'Control acceso vehicular' },
+  { key: 'cctvMonitoring',  labelKey: 'ui.PostSiteWizard.deploy.cctvMonitoring',  label: 'Monitoreo CCTV' },
+  { key: 'visitorLog',      labelKey: 'ui.PostSiteWizard.deploy.visitorLog',      label: 'Registro de visitantes' },
+  { key: 'incidentLog',     labelKey: 'ui.PostSiteWizard.deploy.incidentLog',     label: 'Libro de novedades' },
+  { key: 'formalHandover',  labelKey: 'ui.PostSiteWizard.deploy.formalHandover',  label: 'Entrega de turno formal' },
+  { key: 'keyCustody',      labelKey: 'ui.PostSiteWizard.deploy.keyCustody',      label: 'Custodia de llaves' },
+  { key: 'alarmResponse',   labelKey: 'ui.PostSiteWizard.deploy.alarmResponse',   label: 'Respuesta a alarmas' },
+  { key: 'radioComms',      labelKey: 'ui.PostSiteWizard.deploy.radioComms',      label: 'Comunicación por radio' },
 ];
 
 const SERVICE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -201,7 +201,8 @@ interface ChipGroupProps {
   placeholder?: string;
 }
 
-function ChipGroup({ options, value, customItems, onChange, placeholder = 'Agregar personalizado…' }: ChipGroupProps) {
+function ChipGroup({ options, value, customItems, onChange, placeholder }: ChipGroupProps) {
+  const { t } = useTranslation();
   const [input, setInput] = useState('');
 
   const toggleKnown = (v: string) => {
@@ -271,7 +272,7 @@ function ChipGroup({ options, value, customItems, onChange, placeholder = 'Agreg
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCustom())}
-          placeholder={placeholder}
+          placeholder={placeholder ?? t("ui.PostSiteWizard.agregarPersonalizado", "Agregar personalizado…")}
           className="h-8 text-xs"
         />
         <button
@@ -478,7 +479,7 @@ function StationRow({
                 style={jornadaChip(p.tipo)}
               >
                 <Plus className="h-2.5 w-2.5" />
-                {p.label}
+                {t(p.labelKey, p.label)}
               </button>
             ))}
           </div>
@@ -845,7 +846,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id, pres
       toast.success(t('ui.PostSiteWizard.puestoDeVigilanciaCreado'));
       setStep(6);
     } catch (e: any) {
-      toast.error(e?.response?.data?.message ?? e?.message ?? 'Error al crear el sitio');
+      toast.error(e?.response?.data?.message ?? e?.message ?? t('ui.PostSiteWizard.errorAlCrearElSitio', 'Error al crear el sitio'));
     } finally {
       setSubmitting(false);
     }
@@ -871,33 +872,33 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id, pres
 
   // ── equipment / training option lists ────────────────────────────────────────
   const equipmentOptions = [
-    { value: 'radio', label: 'Radio comunicador' },
-    { value: 'metalDetector', label: 'Detector de metales' },
-    { value: 'flashlight', label: 'Linterna táctica' },
-    { value: 'vehicle', label: 'Vehículo asignado' },
-    { value: 'bodycam', label: 'Bodycam' },
-    { value: 'baton', label: 'Bastón' },
-    { value: 'handcuffs', label: 'Esposas' },
-    { value: 'gloves', label: 'Guantes anticorte' },
-    { value: 'firstAidKit', label: 'Botiquín de primeros auxilios' },
-    { value: 'umbrella', label: 'Impermeable / paraguas' },
-    { value: 'torch', label: 'Linterna de búsqueda' },
-    { value: 'binoculars', label: 'Binoculares' },
+    { value: 'radio', label: t('ui.PostSiteWizard.equipment.radio', 'Radio comunicador') },
+    { value: 'metalDetector', label: t('ui.PostSiteWizard.equipment.metalDetector', 'Detector de metales') },
+    { value: 'flashlight', label: t('ui.PostSiteWizard.equipment.flashlight', 'Linterna táctica') },
+    { value: 'vehicle', label: t('ui.PostSiteWizard.equipment.vehicle', 'Vehículo asignado') },
+    { value: 'bodycam', label: t('ui.PostSiteWizard.equipment.bodycam', 'Bodycam') },
+    { value: 'baton', label: t('ui.PostSiteWizard.equipment.baton', 'Bastón') },
+    { value: 'handcuffs', label: t('ui.PostSiteWizard.equipment.handcuffs', 'Esposas') },
+    { value: 'gloves', label: t('ui.PostSiteWizard.equipment.gloves', 'Guantes anticorte') },
+    { value: 'firstAidKit', label: t('ui.PostSiteWizard.equipment.firstAidKit', 'Botiquín de primeros auxilios') },
+    { value: 'umbrella', label: t('ui.PostSiteWizard.equipment.umbrella', 'Impermeable / paraguas') },
+    { value: 'torch', label: t('ui.PostSiteWizard.equipment.torch', 'Linterna de búsqueda') },
+    { value: 'binoculars', label: t('ui.PostSiteWizard.equipment.binoculars', 'Binoculares') },
   ];
 
   const trainingOptions = [
-    { value: 'firstAid', label: 'Primeros auxilios' },
-    { value: 'crowdControl', label: 'Control de multitudes' },
-    { value: 'firearms', label: 'Manejo de armas' },
-    { value: 'evacuation', label: 'Evacuación' },
-    { value: 'accessControl', label: 'Control de acceso' },
-    { value: 'cctv', label: 'Circuito cerrado (CCTV)' },
-    { value: 'customerService', label: 'Servicio al cliente' },
-    { value: 'defensiveTactics', label: 'Tácticas defensivas' },
-    { value: 'fireExtinguisher', label: 'Manejo de extintores' },
-    { value: 'panicProtocol', label: 'Protocolo antipánico' },
-    { value: 'communication', label: 'Comunicación por radio' },
-    { value: 'reportWriting', label: 'Redacción de informes' },
+    { value: 'firstAid', label: t('ui.PostSiteWizard.training.firstAid', 'Primeros auxilios') },
+    { value: 'crowdControl', label: t('ui.PostSiteWizard.training.crowdControl', 'Control de multitudes') },
+    { value: 'firearms', label: t('ui.PostSiteWizard.training.firearms', 'Manejo de armas') },
+    { value: 'evacuation', label: t('ui.PostSiteWizard.training.evacuation', 'Evacuación') },
+    { value: 'accessControl', label: t('ui.PostSiteWizard.training.accessControl', 'Control de acceso') },
+    { value: 'cctv', label: t('ui.PostSiteWizard.training.cctv', 'Circuito cerrado (CCTV)') },
+    { value: 'customerService', label: t('ui.PostSiteWizard.training.customerService', 'Servicio al cliente') },
+    { value: 'defensiveTactics', label: t('ui.PostSiteWizard.training.defensiveTactics', 'Tácticas defensivas') },
+    { value: 'fireExtinguisher', label: t('ui.PostSiteWizard.training.fireExtinguisher', 'Manejo de extintores') },
+    { value: 'panicProtocol', label: t('ui.PostSiteWizard.training.panicProtocol', 'Protocolo antipánico') },
+    { value: 'communication', label: t('ui.PostSiteWizard.training.communication', 'Comunicación por radio') },
+    { value: 'reportWriting', label: t('ui.PostSiteWizard.training.reportWriting', 'Redacción de informes') },
   ];
 
   // ── render step content ───────────────────────────────────────────────────────
@@ -1257,7 +1258,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id, pres
             <h2 className="font-display mb-1 text-xl font-bold">
               Configuración operativa
               {typeDef && (
-                <span className="ml-2 text-base font-normal" style={{ color: 'var(--brand-text)' }}>— {typeDef.label}</span>
+                <span className="ml-2 text-base font-normal" style={{ color: 'var(--brand-text)' }}>— {t(typeDef.labelKey, typeDef.label)}</span>
               )}
             </h2>
             <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t("ui.PostSiteWizard.equipamientoCapacitacionYParametrosDel", "Equipamiento, capacitación y parámetros del servicio.")}</p>
@@ -1313,7 +1314,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id, pres
             </div>
 
             <div className="grid grid-cols-2 gap-2">
-              {DEPLOY_CHECKS.map(({ key, label, defaultOn = false }) => {
+              {DEPLOY_CHECKS.map(({ key, label, labelKey, defaultOn = false }) => {
                 const on = !!cfgGet(key, defaultOn);
                 return (
                   <button
@@ -1336,7 +1337,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id, pres
                     >
                       {on && <Check className="h-2.5 w-2.5" />}
                     </span>
-                    <span className="text-xs font-medium leading-tight">{label}</span>
+                    <span className="text-xs font-medium leading-tight">{t(labelKey, label)}</span>
                   </button>
                 );
               })}

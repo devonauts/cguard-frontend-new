@@ -27,6 +27,7 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { ExternalLink, Loader2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -149,7 +150,7 @@ export function SettingDetail({ children, className }: { children: React.ReactNo
  * «Guardando…» y las otras tres no daban ninguna señal de que algo estaba
  * pasando.
  */
-export function SaveBar({ onSave, saving, disabled, label = 'Guardar configuración', type = 'button', children }: {
+export function SaveBar({ onSave, saving, disabled, label, type = 'button', children }: {
   onSave?: () => void;
   saving?: boolean;
   disabled?: boolean;
@@ -159,6 +160,7 @@ export function SaveBar({ onSave, saving, disabled, label = 'Guardar configuraci
   /** Secundarios a la izquierda del botón (Cancelar, Restablecer…). */
   children?: React.ReactNode;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="flex items-center justify-end gap-2">
       {children}
@@ -170,7 +172,7 @@ export function SaveBar({ onSave, saving, disabled, label = 'Guardar configuraci
         disabled={disabled || saving}
       >
         {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        {saving ? 'Guardando…' : label}
+        {saving ? 'Guardando…' : (label ?? t('settings.form.saveConfig', 'Guardar configuración'))}
       </Button>
     </div>
   );

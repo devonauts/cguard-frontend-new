@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Building2, Plus } from "lucide-react";
 import { toast } from "sonner";
 import AppLayout from "@/layouts/app-layout";
@@ -24,6 +25,7 @@ const errMsg = (e: unknown, fallback: string): string => {
 };
 
 export default function DepartmentPage() {
+  const { t } = useTranslation();
   const { hasPermission } = usePermissions();
   const canEdit = hasPermission("settingsEdit");
 
@@ -43,11 +45,11 @@ export default function DepartmentPage() {
       const { rows } = await departmentService.list();
       setAll(rows);
     } catch (e: any) {
-      toast.error(errMsg(e, "No se pudieron cargar los departamentos"));
+      toast.error(errMsg(e, t("settings.departments.errors.load", "No se pudieron cargar los departamentos")));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     load();
@@ -118,7 +120,7 @@ export default function DepartmentPage() {
       setEdit(null);
       await load();
     } catch (e: any) {
-      toast.error(errMsg(e, "No se pudo guardar el departamento"));
+      toast.error(errMsg(e, t("settings.departments.errors.save", "No se pudo guardar el departamento")));
     } finally {
       setSaving(false);
     }
@@ -130,7 +132,7 @@ export default function DepartmentPage() {
       toast.success(row.status === "inactive" ? "Departamento activado" : "Departamento desactivado");
       await load();
     } catch (e: any) {
-      toast.error(errMsg(e, "No se pudo cambiar el estado"));
+      toast.error(errMsg(e, t("settings.departments.errors.toggle", "No se pudo cambiar el estado")));
     }
   };
 
@@ -142,7 +144,7 @@ export default function DepartmentPage() {
       await load();
     } catch (e: any) {
       // Backend blocks deletion while the department still has members.
-      toast.error(errMsg(e, "No se pudo eliminar el departamento"));
+      toast.error(errMsg(e, t("settings.departments.errors.delete", "No se pudo eliminar el departamento")));
     }
   };
 
@@ -155,7 +157,7 @@ export default function DepartmentPage() {
         await departmentService.destroy(id);
         ok++;
       } catch (e: any) {
-        toast.error(errMsg(e, "No se pudo eliminar un departamento"));
+        toast.error(errMsg(e, t("settings.departments.errors.deleteOne", "No se pudo eliminar un departamento")));
       }
     }
     if (ok > 0) toast.success(`${ok} departamento(s) eliminado(s)`);

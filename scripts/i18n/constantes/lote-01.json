@@ -1,0 +1,69 @@
+[
+  {
+    "fichero": "src/components/notifications/PanicAlertOverlay.tsx",
+    "constantes": [
+      {
+        "linea": 75,
+        "constante": "QUICK_ACTIONS"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/Configuration/components/ProfileCompanyForm.tsx",
+    "constantes": [
+      {
+        "linea": 4,
+        "constante": "COUNTRY_TZ"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/Reports/Task.tsx",
+    "constantes": [
+      {
+        "linea": 15,
+        "constante": "PRIORITY"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/dashboard/control-center/components/OperationsMapCoverage.ts",
+    "constantes": [
+      {
+        "linea": 24,
+        "constante": "COBERTURA_LABEL"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/post-sites/station-detail/components/StationParking.tsx",
+    "constantes": [
+      {
+        "linea": 69,
+        "constante": "ESTADO"
+      },
+      {
+        "linea": 76,
+        "constante": "TIPO"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/supervisors/SupervisorDetailPage.tsx",
+    "constantes": [
+      {
+        "linea": 23,
+        "constante": "FIELD_OPTIONS"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/video/VideoRelaySites.tsx",
+    "constantes": [
+      {
+        "linea": 37,
+        "constante": "STATUS"
+      }
+    ]
+  }
+]

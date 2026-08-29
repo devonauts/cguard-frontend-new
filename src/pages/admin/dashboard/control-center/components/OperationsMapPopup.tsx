@@ -30,6 +30,11 @@ import {
   type MapPopupTone,
 } from "@/components/maps/MapPopup";
 import { Crosshair, Users } from "lucide-react";
+// Estas son funciones de módulo, no componentes: no hay `useTranslation` que
+// valga. Se entra por la instancia de i18next y SIEMPRE dentro de la función
+// (nunca en el cuerpo del módulo), que es lo que la mantiene perezosa.
+// Precedente: src/components/AppErrorBoundary.tsx
+import i18n from "@/i18n";
 import securityGuardService from "@/lib/api/securityGuardService";
 import type { MapEntity } from "../types";
 import { STATUS_LABEL, clockOf, timeAgo } from "../tone";
@@ -94,7 +99,7 @@ function tonoSenal(iso?: string): MapPopupTone {
 
 /** Etiqueta honesta cuando la posición que se ve ya no es de ahora mismo. */
 function etiquetaSenal(iso?: string): string[] | undefined {
-  if (!iso) return ["Sin marca de tiempo"];
+  if (!iso) return [i18n.t("map.popup.noTimestamp", "Sin marca de tiempo")];
   const t = tonoSenal(iso);
   return t === "ok" ? undefined : [t === "bad" ? "Sin señal" : "Señal rezagada"];
 }
@@ -163,10 +168,14 @@ export function globoDe(e: MapEntity, cob: PuestoEstado | undefined, mando: Mand
         kind: "station",
         title: e.label,
         subtitle: [m.clientName, m.postSiteName].filter(Boolean).join(" · ") || "Puesto de servicio",
-        status: { label: COBERTURA_LABEL[estado], tone: COBERTURA_TONO[estado], live: estado !== "sinDatos" },
+        status: {
+          label: i18n.t(COBERTURA_LABEL[estado].labelKey, COBERTURA_LABEL[estado].label),
+          tone: COBERTURA_TONO[estado],
+          live: estado !== "sinDatos",
+        },
         tone: COBERTURA_TONO[estado],
         metrics: [
-          { label: "Ahora en el puesto", value: cob?.n ?? 0, tone: COBERTURA_TONO[estado] },
+          { label: i18n.t("map.popup.nowOnPost", "Ahora en el puesto"), value: cob?.n ?? 0, tone: COBERTURA_TONO[estado] },
           ...(m.guardsCount != null ? [{ label: "Asignados", value: m.guardsCount }] : []),
         ],
         fields: campos,

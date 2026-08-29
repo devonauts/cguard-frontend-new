@@ -26,11 +26,13 @@ const photoOf = (u: AdminUser | null): string | null => {
   return (f?.downloadUrl || f?.publicUrl || (typeof f === 'string' ? f : null)) || u?.photoUrl || null;
 };
 
-const STATUS_META: Record<string, { label: string; tone: 'ok' | 'warn' | 'neutral' }> = {
-  active: { label: 'Activo', tone: 'ok' },
-  invited: { label: 'Invitación pendiente', tone: 'warn' },
-  pending: { label: 'Invitación pendiente', tone: 'warn' },
-  archived: { label: 'Archivado', tone: 'neutral' },
+// `labelKey` viaja en la constante y se traduce al pintar: un t() aquí se
+// evaluaría al cargar el módulo y dejaría el texto congelado.
+const STATUS_META: Record<string, { label: string; labelKey: string; tone: 'ok' | 'warn' | 'neutral' }> = {
+  active: { label: 'Activo', labelKey: 'adminOfficeUsers.statuses.active', tone: 'ok' },
+  invited: { label: 'Invitación pendiente', labelKey: 'guards.profile.access.statusPending', tone: 'warn' },
+  pending: { label: 'Invitación pendiente', labelKey: 'guards.profile.access.statusPending', tone: 'warn' },
+  archived: { label: 'Archivado', labelKey: 'adminOfficeUsers.statuses.archived', tone: 'neutral' },
 };
 
 const fmtDate = (v: string | number | Date | null | undefined) => (v ? new Date(v).toLocaleDateString(localeActual(), { day: '2-digit', month: 'short', year: 'numeric' }) : '—');
@@ -123,7 +125,7 @@ export default function AdminUserDetailPage() {
                 <h1 className="font-display truncate text-2xl font-bold tracking-tight text-foreground">{name}</h1>
                 <div className="mt-1.5 flex flex-wrap items-center gap-2">
                   <StatusBadge tone={status.tone} dot={false}>
-                    <ShieldCheck className="h-3 w-3" /> {status.label}
+                    <ShieldCheck className="h-3 w-3" /> {t(status.labelKey, status.label)}
                   </StatusBadge>
                   {roleName && <StatusBadge tone="brand" dot={false}>{roleName}</StatusBadge>}
                 </div>
@@ -189,7 +191,7 @@ export default function AdminUserDetailPage() {
                   <Field label={t("ui.AdminUserDetail.telefono", "Teléfono")} value={user.phoneNumber || user.phone} />
                   <Field label={t('ui.AdminUserDetail.rolDeAcceso', 'Rol de acceso')} value={roleName} />
                   <Field label={t('ui.AdminUserDetailPage.miembroDesde')} value={fmtDate(user.createdAt)} />
-                  <Field label={t('comun.estado')} value={status.label} />
+                  <Field label={t('comun.estado')} value={t(status.labelKey, status.label)} />
                 </div>
               </Section>
             </div>

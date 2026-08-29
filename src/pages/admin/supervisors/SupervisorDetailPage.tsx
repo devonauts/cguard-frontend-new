@@ -20,11 +20,34 @@ const WEEKDAYS = [
   { n: 4, label: "Jue" }, { n: 5, label: "Vie" }, { n: 6, label: "Sáb" }, { n: 0, label: "Dom" },
 ];
 
-const FIELD_OPTIONS: Record<string, string[]> = {
-  gender: ["Masculino", "Femenino"],
-  bloodType: ["A+", "A-", "AB+", "AB-", "O+", "O-", "B+", "B-"],
-  maritalStatus: ["Soltero", "Casado", "Unión libre", "Divorciado"],
-  academicInstruction: ["Primaria", "Secundaria", "Universitaria", "Universidad", "Especial"],
+/**
+ * ── CUIDADO: LA CADENA ESPAÑOLA ES EL DATO ─────────────────────────────────
+ * `value` es lo que se guarda en la ficha (y lo que ya hay en la base), así que
+ * NO se traduce nunca: si cambiara con el idioma, el mismo supervisor quedaría
+ * «Soltero» o «Single» según quién lo editara. Se traduce sólo `labelKey`, y
+ * sólo al pintar la opción. Mismo criterio que `src/pages/guard/registration.tsx`.
+ * Los grupos de sangre no llevan clave: no hay nada que traducir en «A+».
+ */
+type OpcionCampo = { value: string; labelKey?: string };
+const FIELD_OPTIONS: Record<string, OpcionCampo[]> = {
+  gender: [
+    { value: "Masculino", labelKey: "invite.guard.male" },
+    { value: "Femenino", labelKey: "invite.guard.female" },
+  ],
+  bloodType: ["A+", "A-", "AB+", "AB-", "O+", "O-", "B+", "B-"].map((value) => ({ value })),
+  maritalStatus: [
+    { value: "Soltero", labelKey: "invite.guard.single" },
+    { value: "Casado", labelKey: "invite.guard.married" },
+    { value: "Unión libre", labelKey: "invite.guard.freeUnion" },
+    { value: "Divorciado", labelKey: "invite.guard.divorced" },
+  ],
+  academicInstruction: [
+    { value: "Primaria", labelKey: "invite.guard.edu.primary" },
+    { value: "Secundaria", labelKey: "invite.guard.edu.secondary" },
+    { value: "Universitaria", labelKey: "invite.guard.edu.universityStudies" },
+    { value: "Universidad", labelKey: "invite.guard.edu.university" },
+    { value: "Especial", labelKey: "invite.guard.edu.special" },
+  ],
 };
 
 function toDateInput(v: string | number | Date | null | undefined): string {
@@ -157,7 +180,9 @@ const EditSelect = ({ label, value, field, onChange }: { label: string; value: s
     <div className="cg-eyebrow mb-1">{label}</div>
     <select value={value || ""} onChange={(e) => onChange(e.target.value)} className="cg-input cg-focus flex h-9 w-full px-2 text-sm">
       <option value="">{i18n.t('comun.seleccionar')}</option>
-      {(FIELD_OPTIONS[field] || []).map((o) => <option key={o} value={o}>{o}</option>)}
+      {(FIELD_OPTIONS[field] || []).map((o) => (
+        <option key={o.value} value={o.value}>{o.labelKey ? i18n.t(o.labelKey, o.value) : o.value}</option>
+      ))}
     </select>
   </div>
 );
@@ -207,7 +232,7 @@ export default function SupervisorDetailPage() {
       setEditing(false);
       toast.success("Perfil actualizado");
     } catch (e: any) {
-      toast.error(e?.message || "No se pudo guardar");
+      toast.error(e?.message || t("comun.noSePudoGuardar", "No se pudo guardar"));
     } finally {
       setSaving(false);
     }

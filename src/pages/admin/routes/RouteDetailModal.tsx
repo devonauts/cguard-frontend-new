@@ -64,14 +64,17 @@ interface RouteType {
   roadPolyline?: string | null;
 }
 
-const DAY_LABEL: Record<string, string> = {
-  sun: 'Domingo',
-  mon: 'Lunes',
-  tue: 'Martes',
-  wed: 'Miércoles',
-  thu: 'Jueves',
-  fri: 'Viernes',
-  sat: 'Sábado',
+/** Constante de módulo: guarda la CLAVE, no la etiqueta. Traducir aquí
+ *  congelaría el idioma de arranque; el español queda de valor por defecto y
+ *  se resuelve al pintar, dentro del componente. */
+const DAY_LABEL: Record<string, { clave: string; etiqueta: string }> = {
+  sun: { clave: 'siteTour.options.sunday', etiqueta: 'Domingo' },
+  mon: { clave: 'siteTour.options.monday', etiqueta: 'Lunes' },
+  tue: { clave: 'siteTour.options.tuesday', etiqueta: 'Martes' },
+  wed: { clave: 'siteTour.options.wednesday', etiqueta: 'Miércoles' },
+  thu: { clave: 'siteTour.options.thursday', etiqueta: 'Jueves' },
+  fri: { clave: 'siteTour.options.friday', etiqueta: 'Viernes' },
+  sat: { clave: 'siteTour.options.saturday', etiqueta: 'Sábado' },
 };
 
 export default function RouteDetailModal({ open, onOpenChange, routeId }: Props) {
@@ -305,10 +308,10 @@ export default function RouteDetailModal({ open, onOpenChange, routeId }: Props)
               value={(route.windowEnd ? new Date(route.windowEnd).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : route.endTime) || '—'}
             />
             {route.days && route.days.length > 0 && (
-              <Field className="sm:col-span-2" label={t("ui.RouteDetailModal.dias", "Días")} value={route.days.map((day) => DAY_LABEL[day] || day).join(', ')} />
+              <Field className="sm:col-span-2" label={t("ui.RouteDetailModal.dias", "Días")} value={route.days.map((day) => (DAY_LABEL[day] ? t(DAY_LABEL[day].clave, DAY_LABEL[day].etiqueta) : day)).join(', ')} />
             )}
-            <Field label="Origen" value={origen ? origen.label : 'Empieza en la primera parada'} />
-            <Field label="Destino" value={destino ? destino.label : 'Termina en la última parada'} />
+            <Field label="Origen" value={origen ? origen.label : t('routes.detail.originFallback', 'Empieza en la primera parada')} />
+            <Field label="Destino" value={destino ? destino.label : t('routes.detail.destinationFallback', 'Termina en la última parada')} />
           </div>
 
           {/* El estado del orden y, si lo hay, lo que se ahorró. Va antes que la

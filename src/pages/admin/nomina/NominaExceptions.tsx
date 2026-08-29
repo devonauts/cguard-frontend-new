@@ -202,8 +202,8 @@ export default function NominaExceptions() {
             ))}
           </FilterSelect>
           <FilterSelect icon={<Filter />} value={type} onChange={setType}>
-            {TYPE_OPTIONS.map((t) => (
-              <option key={t} value={t}>{t === "" ? "Todos los tipos" : EXCEPTION_LABEL[t] || t}</option>
+            {TYPE_OPTIONS.map((tipo) => (
+              <option key={tipo} value={tipo}>{tipo === "" ? t('comun.todosLosTipos', "Todos los tipos") : EXCEPTION_LABEL[tipo] || tipo}</option>
             ))}
           </FilterSelect>
           <span className="ml-auto pr-1 text-xs tabular-nums" style={{ color: "var(--ink-soft)" }}>
@@ -257,7 +257,7 @@ export default function NominaExceptions() {
               emptyState={
                 <EmptyState
                   icon={<PartyPopper />}
-                  title={status === "open" ? "Sin excepciones abiertas" : "Sin excepciones"}
+                  title={status === "open" ? t('ui.NominaExceptions.sinExcepcionesAbiertas', "Sin excepciones abiertas") : t('ui.NominaExceptions.sinExcepciones', "Sin excepciones")}
                   description={t('ui.NominaExceptions.noHayDesviacionesDeAsistencia')}
                 />
               }

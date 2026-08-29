@@ -19,6 +19,7 @@
  */
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import i18n from '@/i18n';
 import {
   LogIn, LogOut, Smartphone, AlertTriangle, Search, ShieldCheck, Loader2,
 } from 'lucide-react';
@@ -34,20 +35,30 @@ export type SeverityTone = 'ok' | 'bad' | 'warn' | 'info' | 'neutral';
  * acento, y un inicio correcto en verde aunque el acento sea verde. Por eso cada
  * evento declara un `tone` del sistema y no un color propio.
  */
-export const EVENT_META: Record<string, { label: string; icon: ReactNode; tone: SeverityTone }> = {
-  login: { label: 'Inicio de sesión', icon: <LogIn className="size-3.5" />, tone: 'ok' },
-  login_failed: { label: 'Intento fallido', icon: <AlertTriangle className="size-3.5" />, tone: 'bad' },
-  logout: { label: 'Cierre de sesión', icon: <LogOut className="size-3.5" />, tone: 'neutral' },
-  device_registered: { label: 'Dispositivo registrado', icon: <Smartphone className="size-3.5" />, tone: 'info' },
-  device_evicted: { label: 'Dispositivo retirado', icon: <Smartphone className="size-3.5" />, tone: 'warn' },
+/**
+ * Constante de MÓDULO: guarda la CLAVE, no el texto traducido. Llamar a `t()`
+ * aquí se evaluaría al cargar el archivo —antes de que el idioma esté listo— y
+ * la etiqueta quedaría congelada en el idioma de arranque para toda la sesión.
+ * La traducción se hace en `metaFor`, que corre durante el render.
+ */
+export const EVENT_META: Record<string, { labelKey: string; label: string; icon: ReactNode; tone: SeverityTone }> = {
+  login: { labelKey: 'security.event.login', label: 'Inicio de sesión', icon: <LogIn className="size-3.5" />, tone: 'ok' },
+  login_failed: { labelKey: 'security.event.loginFailed', label: 'Intento fallido', icon: <AlertTriangle className="size-3.5" />, tone: 'bad' },
+  logout: { labelKey: 'security.event.logout', label: 'Cierre de sesión', icon: <LogOut className="size-3.5" />, tone: 'neutral' },
+  device_registered: { labelKey: 'security.event.deviceRegistered', label: 'Dispositivo registrado', icon: <Smartphone className="size-3.5" />, tone: 'info' },
+  device_evicted: { labelKey: 'security.event.deviceEvicted', label: 'Dispositivo retirado', icon: <Smartphone className="size-3.5" />, tone: 'warn' },
   // El proveedor entrando al CRM de la empresa (soporte). En ámbar a propósito:
   // no es un fallo, pero es exactamente lo que el dueño quiere notar de un
   // vistazo en su historial.
-  provider_access: { label: 'Acceso de soporte (CGuardPro)', icon: <ShieldCheck className="size-3.5" />, tone: 'warn' },
+  provider_access: { labelKey: 'security.event.providerAccess', label: 'Acceso de soporte (CGuardPro)', icon: <ShieldCheck className="size-3.5" />, tone: 'warn' },
 };
 
-export const metaFor = (event: string): { label: string; icon: ReactNode; tone: SeverityTone } =>
-  EVENT_META[event] || { label: event, icon: <ShieldCheck className="size-3.5" />, tone: 'neutral' };
+/** Se traduce AQUÍ (en tiempo de render), no en la constante de arriba. */
+export const metaFor = (event: string): { label: string; icon: ReactNode; tone: SeverityTone } => {
+  const m = EVENT_META[event];
+  if (!m) return { label: event, icon: <ShieldCheck className="size-3.5" />, tone: 'neutral' };
+  return { label: i18n.t(m.labelKey, m.label), icon: m.icon, tone: m.tone };
+};
 
 // ── Formato ─────────────────────────────────────────────────────────────────
 /** Fecha larga con segundos: en una auditoría el segundo es el dato. */

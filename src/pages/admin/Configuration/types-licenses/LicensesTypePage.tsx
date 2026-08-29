@@ -37,7 +37,7 @@ export default function LicenseTypePage() {
       setRows(mapped);
       setTotal(resp?.count || 0);
     } catch (e: any) {
-      toast.error(e?.message || 'Error al cargar tipos de licencia');
+      toast.error(e?.message || t('licenseTypes.loadError', 'Error al cargar tipos de licencia'));
       setRows([]);
       setTotal(0);
     } finally {

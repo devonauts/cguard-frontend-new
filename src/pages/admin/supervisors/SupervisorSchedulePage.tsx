@@ -92,7 +92,7 @@ export default function SupervisorSchedulePage() {
               </div>
 
               {groups.map((g) => (
-                <ListSection key={g.date} title={g.date === "—" ? "Sin fecha" : fmtDateHeading(g.date)} icon={<CalendarClock />}>
+                <ListSection key={g.date} title={g.date === "—" ? t('supervisors.schedule.noDate', 'Sin fecha') : fmtDateHeading(g.date)} icon={<CalendarClock />}>
                   <div className="space-y-2">
                     {g.rows.map((r, i) => {
                       const night = r.kind === 'night';

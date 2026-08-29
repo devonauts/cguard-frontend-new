@@ -47,7 +47,7 @@ function masCercano(puntos: [number, number, number], px: number): PasoHoja {
 export function BottomSheet({
   alto,
   resumen,
-  etiqueta = "Detalle de la operación",
+  etiqueta,
   onMover,
   children,
 }: {
@@ -185,7 +185,7 @@ export function BottomSheet({
       ref={hojaRef}
       className="cg-hoja cc-hoja"
       style={{ height: MAX, transform: `translateY(${MAX - altoActual}px)` }}
-      aria-label={etiqueta}
+      aria-label={etiqueta ?? t("controlCenter.sheet.label", "Detalle de la operación")}
     >
       <div
         ref={cabeceraRef}

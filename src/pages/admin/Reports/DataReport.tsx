@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { LucideIcon } from "lucide-react";
 import { toast } from "sonner";
 import ReportPageShell from "./ReportPageShell";
@@ -8,6 +9,11 @@ import { Segmented } from "@/components/kit";
 export interface ReportColumn<T> {
   key: string;
   label: string;
+  /** Clave i18n del rótulo. Los `columns[]` son constantes de MÓDULO: se
+   *  evalúan al importar el fichero, antes de que i18next sepa el idioma, así
+   *  que ahí no se puede llamar a `t()`. El texto se resuelve aquí, al pintar
+   *  —y también al exportar, porque el rótulo viaja al CSV y a la impresión. */
+  labelKey?: string;
   /** Cell value as a string (used for the table, CSV and print alike). */
   value: (row: T) => string;
   align?: "left" | "right" | "center";
@@ -95,6 +101,8 @@ function download(filename: string, blob: Blob) {
 export default function DataReport<T>({
   title, description, icon, tone, columns: columnsProp, load, searchable = true, defaultDays = 30, emptyMessage, rowTone, onRowClick, reloadRef,
 }: DataReportProps<T>) {
+  const { t } = useTranslation();
+  const rotulo = (c: ReportColumn<T>) => (c.labelKey ? t(c.labelKey, c.label) : c.label);
   // «Ocultar nombre del vigilante» (Configuración › Informes) también rige lo
   // que se arma en el navegador. Falla abierto: sin ajuste legible, se muestra
   // todo — igual que siempre.
@@ -126,7 +134,7 @@ export default function DataReport<T>({
     setLoading(true);
     load({ from, to })
       .then((r) => setRows(Array.isArray(r) ? r : []))
-      .catch(() => { setRows([]); toast.error("No se pudo cargar el informe"); })
+      .catch(() => { setRows([]); toast.error(t("ui.DataReport.errorCargarInforme", "No se pudo cargar el informe")); })
       .finally(() => setLoading(false));
   }, [from, to, load]);
 
@@ -185,7 +193,7 @@ export default function DataReport<T>({
   const fileBase = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
   const exportExcel = () => {
-    const header = columns.map((c) => csvCell(c.label)).join(",");
+    const header = columns.map((c) => csvCell(rotulo(c))).join(",");
     const body = filtered.map((row) => columns.map((c) => csvCell(c.value(row))).join(",")).join("\n");
     // UTF-8 BOM so Excel opens accents correctly.
     download(`${fileBase}-${to}.csv`, new Blob(["﻿" + header + "\n" + body], { type: "text/csv;charset=utf-8;" }));
@@ -196,7 +204,7 @@ export default function DataReport<T>({
   // así que sus neutros van escritos en oklch (los mismos valores acromáticos
   // del sistema) en vez de un azul marino a mano.
   const printableHtml = () => {
-    const head = columns.map((c) => `<th>${escapeHtml(c.label)}</th>`).join("");
+    const head = columns.map((c) => `<th>${escapeHtml(rotulo(c))}</th>`).join("");
     const body = filtered
       .map((row) => `<tr>${columns.map((c) => `<td>${escapeHtml(c.value(row))}</td>`).join("")}</tr>`)
       .join("");
@@ -219,7 +227,7 @@ export default function DataReport<T>({
 
   const openPrint = (autoPrint: boolean) => {
     const w = window.open("", "_blank");
-    if (!w) { toast.error("Habilita las ventanas emergentes para exportar"); return; }
+    if (!w) { toast.error(t("ui.DataReport.habilitaVentanasEmergentes", "Habilita las ventanas emergentes para exportar")); return; }
     w.document.write(printableHtml());
     w.document.close();
     if (autoPrint) { w.focus(); setTimeout(() => w.print(), 300); }
@@ -280,7 +288,7 @@ export default function DataReport<T>({
                 style={{ borderColor: "var(--hairline)", background: "var(--glass-sunken)" }}
               >
                 {columns.map((c) => (
-                  <th key={c.key} className={`px-4 py-3 ${c.align === "right" ? "text-right" : c.align === "center" ? "text-center" : ""}`}>{c.label}</th>
+                  <th key={c.key} className={`px-4 py-3 ${c.align === "right" ? "text-right" : c.align === "center" ? "text-center" : ""}`}>{rotulo(c)}</th>
                 ))}
               </tr>
             </thead>

@@ -67,12 +67,19 @@ const PRIO: Record<string, { label: string; tone: BadgeTone }> = {
   alta: { label: 'Alta', tone: 'bad' }, media: { label: 'Media', tone: 'warn' }, baja: { label: 'Baja', tone: 'info' },
 };
 /** El punto sale del semántico: nunca de un color escrito a mano. */
-const ESTADO: Record<string, { label: string; tone: BadgeTone; dot: string }> = {
+/* Estas tablas se evalúan al CARGAR el módulo, antes de que el idioma esté
+   listo: llamar a t() aquí congelaría el texto en el idioma de arranque para
+   toda la sesión. Se guarda la clave y se traduce donde se pinta. */
+const ESTADO: Record<string, { label: string; labelKey?: string; tone: BadgeTone; dot: string }> = {
   abierto: { label: 'Abierto', tone: 'bad', dot: 'var(--bad)' },
-  investigacion: { label: 'En investigación', tone: 'warn', dot: 'var(--warn)' },
+  investigacion: { label: 'En investigación', labelKey: 'ui.ClientIncidents.enInvestigacion', tone: 'warn', dot: 'var(--warn)' },
   resuelto: { label: 'Resuelto', tone: 'ok', dot: 'var(--ok)' },
 };
-const WS_OPTIONS = [{ v: 'open', l: 'Abierto' }, { v: 'inProgress', l: 'En investigación' }, { v: 'resolved', l: 'Resuelto' }];
+const WS_OPTIONS: { v: string; l: string; lKey?: string }[] = [
+  { v: 'open', l: 'Abierto' },
+  { v: 'inProgress', l: 'En investigación', lKey: 'ui.ClientIncidents.enInvestigacion' },
+  { v: 'resolved', l: 'Resuelto' },
+];
 
 const fmtDT = (iso: string) => { const d = new Date(iso); return Number.isNaN(d.getTime()) ? '—' : d.toLocaleString(localeActual(), { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }); };
 const fmtDate = (iso: string) => { const d = new Date(iso); return Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString(localeActual(), { day: '2-digit', month: '2-digit', year: 'numeric' }); };
@@ -218,7 +225,7 @@ export default function ClientIncidents({ client }: { client: Client }) {
                         <td className="px-2 py-2.5"><div className="max-w-[150px] truncate">{i.sedeName || '—'}</div><div className="max-w-[150px] truncate text-xs" style={{ color: 'var(--ink-faint)' }}>{i.puestoName || ''}</div></td>
                         <td className="px-2 py-2.5"><div className="max-w-[130px] truncate">{i.reportedBy?.name || '—'}</div>{i.reportedBy?.role && <div className="text-xs" style={{ color: 'var(--ink-faint)' }}>{i.reportedBy.role}</div>}</td>
                         <td className="px-2 py-2.5">{pm ? <StatusBadge tone={pm.tone} dot={false}>{pm.label}</StatusBadge> : <span style={{ color: 'var(--ink-faint)' }}>—</span>}</td>
-                        <td className="px-2 py-2.5"><StatusBadge tone={em.tone}>{em.label}</StatusBadge></td>
+                        <td className="px-2 py-2.5"><StatusBadge tone={em.tone}>{em.labelKey ? t(em.labelKey, em.label) : em.label}</StatusBadge></td>
                         <td className="px-2 py-2.5 tabular-nums">{i.responseMin != null ? `${i.responseMin} min` : '—'}</td>
                         <td className="px-2 py-2.5 tabular-nums">{resLabel(i.resolutionMs)}</td>
                       </Tr>
@@ -239,12 +246,12 @@ export default function ClientIncidents({ client }: { client: Client }) {
             <GlassPanel className="space-y-4 p-5">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <div className="flex items-center gap-2"><span className="font-mono text-sm font-semibold">{selected.code}</span><StatusBadge tone={(ESTADO[selected.estado] || ESTADO.abierto).tone}>{(ESTADO[selected.estado] || ESTADO.abierto).label}</StatusBadge></div>
+                  <div className="flex items-center gap-2"><span className="font-mono text-sm font-semibold">{selected.code}</span><StatusBadge tone={(ESTADO[selected.estado] || ESTADO.abierto).tone}>{(() => { const e = ESTADO[selected.estado] || ESTADO.abierto; return e.labelKey ? t(e.labelKey, e.label) : e.label; })()}</StatusBadge></div>
                   <h3 className="mt-1 font-display text-lg font-bold leading-tight">{selected.title}</h3>
                   {selected.description && <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>{selected.description}</p>}
                 </div>
                 <select className={`${FIELD_CLS} w-auto`} value={selected.estado === 'investigacion' ? 'inProgress' : selected.estado === 'resuelto' ? 'resolved' : 'open'} onChange={(e) => changeStatus(e.target.value)}>
-                  {WS_OPTIONS.map((o) => <option key={o.v} value={o.v}>{o.l}</option>)}
+                  {WS_OPTIONS.map((o) => <option key={o.v} value={o.v}>{o.lKey ? t(o.lKey, o.l) : o.l}</option>)}
                 </select>
               </div>
 

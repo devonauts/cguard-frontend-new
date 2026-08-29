@@ -1,0 +1,122 @@
+[
+  {
+    "fichero": "src/App.tsx",
+    "literales": [
+      "Ir al Dashboard"
+    ]
+  },
+  {
+    "fichero": "src/components/maps/SitesMap.tsx",
+    "literales": [
+      "Dirección del cliente · las sedes aún no tienen ubicación",
+      "alt=\"Mapa del cliente\"",
+      "alt=\"Mapa de las sedes del cliente\""
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/Configuration/api-keys/ApiKeysPage.tsx",
+    "literales": [
+      "Si la pierdes, no se puede recuperar: tendrás que crear una nueva y revocar esta.",
+      "placeholder=\"Buk – nómina\""
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/Configuration/mobil/CustomerAppPreview.tsx",
+    "literales": [
+      "SOS — Solicitud de emergencia"
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/administrative-office-users/NewAdminUserPage.tsx",
+    "literales": [
+      "Ve todos los clientes y todas las sedes. Es lo normal para la oficina.",
+      "Para quien lleva unas cuentas concretas y no debe ver el resto.",
+      "Sin ninguna sede marcada seguirá viendo TODO. Marca al menos una."
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/analytics/Reporting.tsx",
+    "literales": [
+      "label=\"Vigilantes en servicio\""
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/clientes/components/ClientPortal/ClientPortal.tsx",
+    "literales": [
+      "label=\"Acceso al portal\""
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/dashboard/control-center/components/OperationsMap.tsx",
+    "literales": [
+      "En servicio",
+      "En vivo",
+      "En riesgo"
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/gps-tracker/TrailMap.tsx",
+    "literales": [
+      "title=\"Volver al inicio\""
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/nomina/NominaSettings.tsx",
+    "literales": [
+      "Código de tres letras: USD, MXN, COP…",
+      "label=\"Requerir selfie al marcar\"",
+      "title=\"Periodo y horas extra\""
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/post-sites/components/PostsiteProfile/Profile.tsx",
+    "literales": [
+      "Abrir en Google Maps",
+      "En turno"
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/programmer/ScheduleTimeline.tsx",
+    "literales": [
+      "Si el vigilante tiene turnos que se solapan con este bloque, se reemplazan."
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/routes/RouteForm.tsx",
+    "literales": [
+      "Puntos y tiempos",
+      "Forzar al supervisor a seguir la ruta de patrulla vehicular en orden",
+      "Registro automático de entrada y salida en Puestos de Vigilancia según geocerca"
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/security-guards/components/GuardProfile/GuardProfilepage.tsx",
+    "literales": [
+      "En curso"
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/security/shared.tsx",
+    "literales": [
+      "Cargando más…"
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/training/TrainingCourseDetailPage.tsx",
+    "literales": [
+      "Puntos al completar"
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/video/VideoRelaySites.tsx",
+    "literales": [
+      "Ejecuta esto en un equipo siempre encendido del sitio del DVR:"
+    ]
+  },
+  {
+    "fichero": "src/pages/auth/accept-invitation.tsx",
+    "literales": [
+      "Activar y entrar al panel"
+    ]
+  }
+]

@@ -1,0 +1,153 @@
+{
+ "src/pages/admin/post-sites/PostSiteWizard.tsx": [
+  "Bastón",
+  "Botiquín de primeros auxilios",
+  "Comunicación por radio",
+  "Custodia de llaves",
+  "Detector de metales",
+  "Entrega de turno formal",
+  "Error al crear el sitio",
+  "Evacuación",
+  "Libro de novedades",
+  "Linterna de búsqueda",
+  "Linterna táctica",
+  "Manejo de armas",
+  "Manejo de extintores",
+  "Protocolo antipánico",
+  "Redacción de informes",
+  "Registro de visitantes",
+  "Tácticas defensivas",
+  "Vehículo asignado"
+ ],
+ "src/pages/admin/administrative-office-users/AdminOfficeUsersPage.tsx": [
+  "Error cargando clientes para filtros",
+  "Error reenviando invitación",
+  "Invitación reenviada",
+  "Nivel de Acceso",
+  "No se pudieron cerrar las sesiones.",
+  "No se pudo activar a todos los usuarios",
+  "No se pudo exportar usuarios",
+  "No se pudo obtener usuario actual",
+  "No se pudo suspender a todos los usuarios",
+  "No se puede eliminar a un usuario administrador",
+  "No se puede suspender a un usuario administrador",
+  "Nombre de Contacto",
+  "Perfil de supervisor",
+  "Reenviar Invitación",
+  "Todos los Usuarios",
+  "Usuarios de Oficina Administrativa",
+  "Último Inicio de Sesión"
+ ],
+ "src/pages/admin/Configuration/report-settings/ReportSettingsForm.tsx": [
+  "Correo electrónico de la empresa",
+  "Dirección de la empresa",
+  "Encabezado del informe",
+  "Incluir los puntos de control del recorrido",
+  "No se pudo cargar la configuración de informes.",
+  "Nombre de la empresa",
+  "Número de licencia",
+  "Ocultar el nombre del cliente",
+  "Ocultar el nombre del puesto de vigilancia",
+  "Ocultar el nombre del vigilante",
+  "Pie de página",
+  "Texto que aparece al final de cada informe"
+ ],
+ "src/pages/admin/security-guards/components/GuardDocumentos/GuardDocumentosPage.tsx": [
+  "Arrastra archivos o haz clic para seleccionar",
+  "El archivo supera el tamaño máximo (10MB)",
+  "No pudimos cargar los documentos. Intenta de nuevo.",
+  "No se pudieron cargar los documentos",
+  "No se pudieron guardar los documentos",
+  "No se pudo eliminar el documento",
+  "Sin documentos todavía",
+  "Solo se permiten imágenes y PDF",
+  "Sube fotos o documentos (PDF) de este vigilante."
+ ],
+ "src/pages/radio/RadioDispatch.tsx": [
+  "Automático",
+  "Respondió",
+  "Resumen no disponible (sin clave de IA).",
+  "Sin novedad",
+  "Sin vigilante",
+  "Sin vigilante en turno"
+ ],
+ "src/pages/admin/vehicles/NewVehiclePage.tsx": [
+  "Editar vehículo",
+  "Error cargando vehículo para edición",
+  "Error creando vehículo",
+  "No se pudo validar existencia de Placa",
+  "Nuevo vehículo",
+  "Ya existe un vehículo con esa Placa"
+ ],
+ "src/pages/admin/Configuration/profile-fields/ProfileFieldsPage.tsx": [
+  "Campos de Perfil",
+  "Clasifica al personal por área sin tocar la ficha.",
+  "Perfil de la Empresa",
+  "Tipos de Licencias"
+ ],
+ "src/pages/admin/Configuration/company-policies/PolicyDialog.tsx": [
+  "Agregar Política de Empresa",
+  "Escribir aquí",
+  "Seleccionar Vigilantes Específicos",
+  "Sin nombre"
+ ],
+ "src/components/SubscriptionLockedScreen.tsx": [
+  "Cerrar sesión",
+  "Reactivar suscripción",
+  "Suscripción cancelada"
+ ],
+ "src/pages/admin/visitor-management/Vehicles.tsx": [
+  "Eliminar vehículos",
+  "Error cargando vehículos",
+  "Vehículos"
+ ],
+ "src/pages/admin/programmer/Coverage.tsx": [
+  "Con sueldo",
+  "En el puesto",
+  "No se pudo completar la acción"
+ ],
+ "src/pages/auth/login.tsx": [
+  "Mostrar contraseña",
+  "Ocultar contraseña"
+ ],
+ "src/pages/admin/training/components/QuizManager.tsx": [
+  "Agrega al menos una pregunta con dos opciones.",
+  "No se pudo guardar el cuestionario."
+ ],
+ "src/pages/admin/dashboard/control-center/components/MobileCommandCenter.tsx": [
+  "Buenos días",
+  "Demostración"
+ ],
+ "src/pages/admin/routes/RouteForm.tsx": [
+  "Error cargando Puestos de Vigilancia",
+  "Optimizar el orden de las paradas"
+ ],
+ "src/components/onboarding/onboardingUtils.ts": [
+  "RUC / Cédula",
+  "Razón social"
+ ],
+ "src/components/MultiSelectDeSedes.tsx": [
+  "Sin opciones"
+ ],
+ "src/components/post-sites/PostSiteDetailsDialog.tsx": [
+  "Error al cargar detalles del sitio"
+ ],
+ "src/pages/admin/Configuration/components/profile/CompanyPhoneField.tsx": [
+  "Ingresa número de teléfono"
+ ],
+ "src/pages/admin/training/components/AssignGuardsPanel.tsx": [
+  "No se pudo asignar el curso."
+ ],
+ "src/pages/admin/post-sites/station-detail/components/SacafrancoAssignModal.tsx": [
+  "No se pudo asignar el sacafranco"
+ ],
+ "src/pages/admin/programmer/OpenShifts.tsx": [
+  "Sin puesto"
+ ],
+ "src/pages/admin/clientes/components/ClientStaff/ClientStaff.tsx": [
+  "No se pudo quitar la asignación"
+ ],
+ "src/pages/admin/training/trainingConstants.ts": [
+  "Prevención"
+ ]
+}

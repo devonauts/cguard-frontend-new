@@ -1,0 +1,153 @@
+{
+ "src/pages/admin/programmer/Schedule.tsx": [
+  "Ajustar la rotación desde este libre",
+  "Clic en una celda para seleccionar",
+  "Duplicar al día siguiente",
+  "Duplicar turno al día siguiente",
+  "Eliminar posición",
+  "Eliminar turno de este día",
+  "Error al asignar la cobertura",
+  "Error al crear el turno",
+  "Error en auto-asignación",
+  "Error en optimización",
+  "Error generando el borrador",
+  "Hora de la empresa.",
+  "Mover vigilante de puesto",
+  "Nadie coincide con la búsqueda.",
+  "No se pudo reajustar la rotación",
+  "Plan de implementación",
+  "Remover asignación",
+  "Rotación",
+  "Sólo este día",
+  "Turno de 24 horas."
+ ],
+ "src/pages/admin/messenger/MessengerPage.tsx": [
+  "Conversaciones con tus clientes.",
+  "Eliminar conversación",
+  "Mensajería",
+  "No se pudieron cargar las conversaciones",
+  "No se pudieron cargar los miembros",
+  "No se pudo acceder al micrófono",
+  "No se pudo añadir",
+  "No se pudo cargar la conversación",
+  "No se pudo crear el grupo",
+  "No se pudo eliminar la conversación",
+  "No se pudo enviar",
+  "No se pudo enviar la nota de voz",
+  "No se pudo sincronizar",
+  "No se pudo subir el archivo",
+  "Sin mensajes de clientes",
+  "Todavía no hay mensajes de tus clientes."
+ ],
+ "src/pages/admin/Configuration/central/CentralPage.tsx": [
+  "A dónde van las alertas",
+  "Avisar primero a quien tiene la consola",
+  "Central de Operaciones",
+  "Central de operaciones guardada.",
+  "Dónde está la consola",
+  "En la consola ahora",
+  "Mi empresa opera una central",
+  "Nadie fichado en la central",
+  "Quién entra al panel por la consola",
+  "Quién la atiende"
+ ],
+ "src/pages/admin/Configuration/scheduling/JornadaPage.tsx": [
+  "Descanso mínimo entre turnos",
+  "Guardar política",
+  "Máximo de días seguidos de trabajo",
+  "Máximo de horas por semana",
+  "No se pudo cargar la política de jornada.",
+  "Permitir asignar en día de descanso",
+  "Política de jornada guardada.",
+  "Qué se puede hacer al cubrir un puesto",
+  "Tope por vigilante. Se cuenta de lunes a domingo."
+ ],
+ "src/pages/admin/Configuration/email-preferences/EmailPreferencesPage.tsx": [
+  "Así verá tu cliente un correo de la empresa.",
+  "Color de la marca",
+  "Color del encabezado",
+  "No se pudieron cargar las preferencias",
+  "No se pudo cargar el ejemplo.",
+  "Personalización de marca",
+  "Preferencias de correo"
+ ],
+ "src/pages/admin/security-guards/components/GuardLicenses/GuardLicensespage.tsx": [
+  "Documentos y credenciales del vigilante",
+  "Ingresa número",
+  "No tiene permiso para crear tipos de licencia",
+  "Sin número",
+  "Sin vencimiento",
+  "Vence el"
+ ],
+ "src/pages/auth/register.tsx": [
+  "Confirma que no eres un robot para continuar.",
+  "Correo electrónico",
+  "No rellenar",
+  "Teléfono"
+ ],
+ "src/pages/admin/Configuration/user-roles/UserRolesTable.tsx": [
+  "Acción",
+  "Buscar rol de usuario",
+  "Descripción",
+  "Sin datos para mostrar"
+ ],
+ "src/pages/admin/clientes/components/ClientCoverage/ClientCoverage.tsx": [
+  "No se pudo eliminar la estación",
+  "Sin cobertura",
+  "Sin marcar",
+  "Sin turno"
+ ],
+ "src/pages/admin/security-guards/components/GuardKPIs/GuardKPIspage.tsx": [
+  "Indicadores de rendimiento",
+  "KPIs y desempeño del vigilante.",
+  "No KPI data"
+ ],
+ "src/components/video/VideoGatewayModal.tsx": [
+  "No se pudo guardar el gateway",
+  "Sincroniza las cámaras del dispositivo primero."
+ ],
+ "src/components/alarm/AlarmVideoVerification.tsx": [
+  "Clip de verificación",
+  "Cámara"
+ ],
+ "src/pages/admin/training/TrainingCoursesPage.tsx": [
+  "Categoría",
+  "Progreso de vigilantes"
+ ],
+ "src/pages/admin/post-sites/station-detail/components/StationVisitors.tsx": [
+  "Escanear cédula / ID",
+  "Permiso de cámara denegado."
+ ],
+ "src/pages/admin/alarm/AlarmCaseDetail.tsx": [
+  "Médico",
+  "Policía"
+ ],
+ "src/config/permissionLabels.ts": [
+  "Acceso a la app del supervisor",
+  "Acceso al autoservicio del personal"
+ ],
+ "src/components/DemoDataBanner.tsx": [
+  "Quitar datos de ejemplo"
+ ],
+ "src/components/post-sites/PostSiteMiniInfo.tsx": [
+  "No se pudo cargar el puesto"
+ ],
+ "src/pages/admin/Configuration/components/SettingsForm.tsx": [
+  "Guardar configuración"
+ ],
+ "src/pages/admin/training/components/LessonsManager.tsx": [
+  "Editar lección"
+ ],
+ "src/pages/admin/post-sites/station-detail/components/ShiftAssignModal.tsx": [
+  "Asignar rotación"
+ ],
+ "src/pages/admin/security-guards/components/GuardAvailability/GuardAvailabilitypage.tsx": [
+  "No availability"
+ ],
+ "src/pages/admin/clientes/components/ClientPostSites/ClientPostSites.tsx": [
+  "No se pudo eliminar la sede"
+ ],
+ "src/lib/offline/replayers.ts": [
+  "Sin empresa para reproducir la mutación"
+ ]
+}

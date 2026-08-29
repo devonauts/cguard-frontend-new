@@ -40,11 +40,14 @@ function hueStepFor(name: string): number {
     return HUE_STEPS[h % HUE_STEPS.length];
 }
 
-const SCHEDULE_LABEL: Record<string, string> = {
-    "24h": "24 horas",
-    "12h-day": "12h diurno",
-    "12h-night": "12h nocturno",
-    custom: "Personalizado",
+// Constante de módulo: guarda la CLAVE, nunca llama a t() (se evaluaría al
+// cargar el fichero y congelaría el idioma). Las claves son las mismas que usa
+// StationCardsGrid: es el mismo dato pintado en dos sitios.
+const SCHEDULE_LABEL: Record<string, { label: string; labelKey: string }> = {
+    "24h": { label: "24 horas", labelKey: "station.schedule.24h" },
+    "12h-day": { label: "12h diurno", labelKey: "station.schedule.12h-day" },
+    "12h-night": { label: "12h nocturno", labelKey: "station.schedule.12h-night" },
+    custom: { label: "Personalizado", labelKey: "station.schedule.custom" },
 };
 
 export default function StationHero({
@@ -121,7 +124,7 @@ export default function StationHero({
             toast.success(t('ui.StationHero.puestoRenombrado'));
             setEditing(false);
         } catch (e: any) {
-            toast.error(e?.message || "No se pudo renombrar");
+            toast.error(e?.message || t("ui.StationHero.errorRenombrar", "No se pudo renombrar"));
         } finally {
             setSaving(false);
         }
@@ -195,7 +198,7 @@ export default function StationHero({
                                 <Clock className="h-3.5 w-3.5" />
                                 {station?.startingTimeInDay || station?.finishTimeInDay
                                     ? `${station?.startingTimeInDay || "?"} – ${station?.finishTimeInDay || "?"}`
-                                    : SCHEDULE_LABEL[station?.scheduleType || ""] || "Horario sin definir"}
+                                    : (() => { const h = SCHEDULE_LABEL[station?.scheduleType || ""]; return h ? t(h.labelKey, h.label) : t("station.schedule.undefined", "Horario sin definir"); })()}
                             </span>
                             {!station?.isMobile && (
                                 <span className="flex items-center gap-1.5">

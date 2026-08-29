@@ -324,7 +324,7 @@ export default function SecurityGuardsPage() {
       api.get(`/tenant/${tenantId}/stations?limit=200&offset=0`)
         .then((resp: any) => {
           const rows: any[] = resp?.data?.rows ?? resp?.rows ?? [];
-          setAssignStations(rows.map((s: any) => ({ id: s.id, name: s.stationName || s.name || 'Estación', postSiteId: s.postSiteId || s.businessInfoId || '' })));
+          setAssignStations(rows.map((s: any) => ({ id: s.id, name: s.stationName || s.name || t('ui.SecurityGuards.estacion', 'Estación'), postSiteId: s.postSiteId || s.businessInfoId || '' })));
         })
         .catch(() => {});
     });
@@ -618,13 +618,15 @@ export default function SecurityGuardsPage() {
       acts.push({ label: 'Ver detalles', icon: <Eye className="h-4 w-4" />, onClick: () => navigate(`/guards/${realId}/resumen`) });
     }
     if (hasPermission('securityGuardEdit') && guard.status !== 'Archivado') {
-      acts.push({ label: 'Asignar a estación', icon: <ShieldCheck className="h-4 w-4" />, onClick: () => { setAssignGuard(guard); setAssignStationId(''); setAssignDialogOpen(true); } });
+      acts.push({ label: t('guards.list.actions.assignStation', 'Asignar a estación'), icon: <ShieldCheck className="h-4 w-4" />, onClick: () => { setAssignGuard(guard); setAssignStationId(''); setAssignDialogOpen(true); } });
       // Sólo a quien todavía no ha creado su acceso. Ofrecérselo a quien ya
       // entra a diario sería invitar ruido: el enlace de invitación no le
       // sirve de nada, y para el que olvidó su clave está «Restablecer».
       if (necesitaInvitacion(guard)) {
         acts.push({
-          label: invitacionCaducada(guard) ? 'Reenviar invitación (caducada)' : 'Reenviar invitación',
+          label: invitacionCaducada(guard)
+            ? t('guards.list.actions.resendInviteExpired', 'Reenviar invitación (caducada)')
+            : t('guards.list.actions.resendInvite', 'Reenviar invitación'),
           icon: <Send className="h-4 w-4" />,
           onClick: () => reenviarInvitacion(guard),
         });
@@ -651,7 +653,7 @@ export default function SecurityGuardsPage() {
       acts.push({ label: 'Remover', icon: <Trash className="h-4 w-4" />, destructive: true, onClick: () => { setGuardToDelete(guard); setDeleteDialogOpen(true); } });
     }
     return acts;
-  }, [hasPermission, navigate]);
+  }, [hasPermission, navigate, t]);
 
   return (
     <AppLayout>
@@ -1210,8 +1212,8 @@ export default function SecurityGuardsPage() {
                       <EmptyState
                         icon={<Users />}
                         title={filterStatus !== 'todos'
-                          ? 'Sin vigilantes en este estado'
-                          : 'No se encontraron vigilantes'}
+                          ? t('guards.list.empty.byStatusTitle', 'Sin vigilantes en este estado')
+                          : t('guards.list.empty.noneFoundTitle', 'No se encontraron vigilantes')}
                         description={filterStatus !== 'todos'
                           ? 'Prueba con otro filtro de estado.'
                           : searchQuery

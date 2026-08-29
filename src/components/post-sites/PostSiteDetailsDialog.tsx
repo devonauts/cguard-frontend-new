@@ -54,7 +54,7 @@ export default function PostSiteDetailsDialog({ open, onOpenChange, siteId }: Pr
         }
       } catch (e: any) {
         console.error(e);
-        setError(e?.message || "Error al cargar detalles del sitio");
+        setError(e?.message || t("ui.PostSiteDetailsDialog.errorAlCargarDetallesDelSitio", "Error al cargar detalles del sitio"));
       } finally {
         setLoading(false);
       }

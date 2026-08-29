@@ -1,0 +1,64 @@
+[
+  {
+    "fichero": "src/lib/api/inventoryItemService.ts",
+    "constantes": [
+      {
+        "linea": 18,
+        "constante": "ITEM_TYPE_LABELS"
+      },
+      {
+        "linea": 34,
+        "constante": "ITEM_STATUS_LABELS"
+      },
+      {
+        "linea": 41,
+        "constante": "ITEM_CONDITION_LABELS"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/Configuration/mobile-hub/MobileHubPage.tsx",
+    "constantes": [
+      {
+        "linea": 59,
+        "constante": "MODULE_META"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/analytics/Guard.tsx",
+    "constantes": [
+      {
+        "linea": 26,
+        "constante": "FACTOR_ES"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/gps-tracker/RouteTrackingMap.tsx",
+    "constantes": [
+      {
+        "linea": 109,
+        "constante": "ESTADO"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/routes/RouteDetailModal.tsx",
+    "constantes": [
+      {
+        "linea": 67,
+        "constante": "DAY_LABEL"
+      }
+    ]
+  },
+  {
+    "fichero": "src/pages/admin/training/trainingConstants.ts",
+    "constantes": [
+      {
+        "linea": 21,
+        "constante": "ENROLLMENT_STATUS_LABELS"
+      }
+    ]
+  }
+]

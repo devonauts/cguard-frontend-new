@@ -1,0 +1,82 @@
+{
+  "ui.TrailMap.bateria": "Batería",
+  "ui.TrailMap.duracion": "Duración",
+  "ui.TrailMap.precision": "Precisión",
+  "ui.TrailMap.recorridoHastaAqui": "Recorrido hasta aquí",
+  "ui.TrailMap.irAEsteMomento": "Ir a este momento",
+  "ui.TrailMap.posicionEnElInstanteMostrado": "Posición en el instante mostrado",
+  "ui.TrailMap.camaraSigueElRecorrido": "La cámara sigue el recorrido",
+  "ui.TrailMap.camaraSuelta": "La cámara está suelta",
+
+  "onboarding.wizard.step.bienvenida": "Bienvenida",
+  "onboarding.wizard.step.tuEmpresa": "Tu empresa",
+  "onboarding.wizard.step.contacto": "Contacto",
+  "onboarding.wizard.step.revisar": "Revisar",
+  "onboarding.wizard.logoUploadError": "Datos guardados, pero no se pudo subir el logo.",
+  "onboarding.wizard.autoSearch": "Búsqueda automática",
+  "onboarding.wizard.manualEntry": "Ingresar manualmente",
+  "onboarding.wizard.welcome.companyData": "Los datos de tu empresa (nombre, razón social, RUC)",
+  "onboarding.wizard.welcome.logo": "El logo que verán tus vigilantes y clientes",
+  "settings.reportSettings.saveError": "No se pudo guardar la configuración.",
+
+  "misAvisos.fila.panicButton": "Botón de pánico",
+  "misAvisos.fila.coverageUncovered": "Puesto sin cubrir",
+  "misAvisos.fila.checkInOut": "Entradas y salidas de vigilantes",
+  "misAvisos.fila.attendanceExceptions": "Novedades de asistencia",
+  "misAvisos.fila.attendanceApprovals": "Aprobaciones de asistencia",
+  "misAvisos.fila.dispatchUpdates": "Tickets de incidente",
+  "misAvisos.fila.inactiveGuardAlert": "Vigilante inactivo en turno",
+  "misAvisos.fila.geofenceAlert": "Entradas y salidas de geocerca",
+  "misAvisos.fila.taskCompleted": "Tareas completadas",
+  "misAvisos.fila.ptoRequest": "Solicitudes de tiempo libre",
+  "misAvisos.fila.licenseExpiry": "Credenciales por vencer",
+  "misAvisos.fila.contractExpiry": "Contratos de cliente por vencer",
+  "misAvisos.hint.panicButton": "Una emergencia llega siempre",
+  "misAvisos.hint.coverageUncovered": "Nadie llegó al puesto",
+  "misAvisos.via.dashboard": "Panel y teléfono",
+  "misAvisos.via.email": "Correo",
+  "misAvisos.via.sms": "SMS",
+
+  "clients.contract.service.fixedGuard": "Vigilancia fija 24/7",
+  "clients.contract.service.mobilePatrol": "Patrullaje móvil",
+  "clients.contract.service.cameraMonitoring": "Monitoreo de cámaras",
+  "clients.contract.service.accessControl": "Control de acceso",
+  "clients.contract.service.visitorManagement": "Gestión de visitantes",
+  "clients.contract.service.alarmResponse": "Respuesta a alarmas",
+  "clients.contract.service.assetCustody": "Custodia de activos",
+  "clients.contract.service.eventSecurity": "Seguridad para eventos",
+  "clients.contract.service.custom": "Personalizado",
+
+  "ui.Vehicles.sinPlaca": "Sin placa",
+  "ui.Vehicles.activarVehiculos": "Activar vehículos",
+  "ui.Vehicles.inactivarVehiculos": "Inactivar vehículos",
+  "ui.Vehicles.eliminarVehiculos": "Eliminar vehículos",
+
+  "ui.DispatchIncidentMap.sinVigilanteAhora": "Sin vigilante ahora",
+  "ui.DispatchIncidentMap.masCercanoConVigilante": "Más cercano con vigilante",
+  "ui.NominaRecords.ubicacion": "Ubicación",
+
+  "radio.paseStartError": "No se pudo iniciar el pase",
+  "radio.paseEndError": "No se pudo finalizar el pase",
+
+  "visitantes.bitacoras": "Bitácoras",
+  "visitantes.bitacorasImprimir": "Bitácoras - Imprimir",
+
+  "passdown.loadDetailError": "No se pudo cargar el pase de turno",
+  "passdown.noNotes": "Sin novedades registradas.",
+
+  "ui.ShiftStatus.estadoDelTurno": "Estado del Turno",
+  "comun.sinAsignar": "Sin asignar",
+
+  "ui.AppErrorBoundary.errorDeRenderizado": "Error de renderizado",
+  "training.enrollments.title": "Progreso del curso",
+  "station.siteTours.deleteCpTitle": "Eliminar punto de control",
+  "guards.reviews.saveError": "No se pudo registrar",
+
+  "clients.onboarding.not_invited": "Sin acceso",
+  "clients.onboarding.invited": "Invitado",
+  "clients.onboarding.active": "En app",
+  "clients.onboarding.suspended": "Suspendido",
+
+  "validation.inviteByLink.invalidLink": "Enlace inválido"
+}

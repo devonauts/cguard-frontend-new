@@ -367,7 +367,7 @@ export default function EditAdminUserPage() {
       if (clear) setOffice({ address: "", lat: "", lng: "", radius: "150" });
       toast.success(clear ? "Ubicación de oficina eliminada" : "Ubicación de oficina guardada");
     } catch (e: any) {
-      toast.error(e?.message || "No se pudo guardar la ubicación");
+      toast.error(e?.message || t("ui.EditAdminUser.noSePudoGuardarUbicacion", "No se pudo guardar la ubicación"));
     } finally {
       setOfficeSaving(false);
     }

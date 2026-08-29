@@ -116,7 +116,7 @@ export default function SacafrancoAssignModal({
       onAssigned();
       onClose();
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || 'No se pudo asignar el sacafranco');
+      toast.error(e?.data?.message || e?.message || t('ui.SacafrancoAssignModal.noSePudoAsignarElSacafranco', 'No se pudo asignar el sacafranco'));
     } finally { setAssigning(null); }
   };
 

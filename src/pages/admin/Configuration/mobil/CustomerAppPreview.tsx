@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Bell, Moon, Sun, ShieldCheck, AlertTriangle, Footprints, Building2, Home, ShieldAlert,
   User2, ChevronRight, ChevronLeft, Camera, Siren, KeyRound, Truck, UserCheck, Cpu,
@@ -48,9 +49,10 @@ export default function CustomerAppPreview({
      y su propio acento; si aquí usáramos los tokens del panel, la vista previa
      mentiría sobre lo que verá el cliente. El chasis del teléfono y los controles
      de alrededor sí van con el sistema de cristal. */
+  const { t: tr } = useTranslation();
   const [dark, setDark] = useState(true);
   const [slide, setSlide] = useState(0);
-  const bannerItems = banners.length ? banners : [{ title: "Tu banner aquí", description: "Agrega un banner para promocionar tus servicios.", image: null }];
+  const bannerItems = banners.length ? banners : [{ title: tr('settings.mobil.preview.bannerPlaceholderTitle', 'Tu banner aquí'), description: tr('settings.mobil.preview.bannerPlaceholderDesc', 'Agrega un banner para promocionar tus servicios.'), image: null }];
   const active = bannerItems[Math.min(slide, bannerItems.length - 1)];
 
   const t = dark
@@ -176,12 +178,12 @@ export default function CustomerAppPreview({
                   {certifications.map((c, i) => (
                     <div key={i} className={`w-[40%] shrink-0 snap-start overflow-hidden rounded-xl border ${t.chip}`}>
                       {c.image ? (
-                        <img src={c.image} alt={c.title || "Certificación"} className="h-20 w-full object-contain bg-white p-1" />
+                        <img src={c.image} alt={c.title || tr('settings.mobil.preview.certification', 'Certificación')} className="h-20 w-full object-contain bg-white p-1" />
                       ) : (
                         <div className={`flex h-20 items-center justify-center ${t.iconWrap}`}><ShieldCheck className="size-6" /></div>
                       )}
                       <div className="p-2">
-                        <div className="truncate text-[11px] font-semibold">{c.title || "Certificación"}</div>
+                        <div className="truncate text-[11px] font-semibold">{c.title || tr('settings.mobil.preview.certification', 'Certificación')}</div>
                         {c.description && <div className={`mt-0.5 line-clamp-2 text-[9px] ${t.sub}`}>{c.description}</div>}
                       </div>
                     </div>

@@ -16,37 +16,37 @@ import CustomerAppPreview, { serviceIcon, SERVICE_ICONS } from './CustomerAppPre
 
 /** Pre-made security-service templates: pick one to pre-fill title/description + a
  * named icon (rendered in the app + preview without an uploaded image). */
-const SERVICE_TEMPLATES: { title: string; description: string; iconName: string }[] = [
-  { title: 'Vigilancia física', description: 'Vigilantes uniformados en sitio, 24/7, para disuasión y control de accesos.', iconName: 'guard' },
-  { title: 'Vigilante armado', description: 'Personal de seguridad armado y certificado para entornos de alto riesgo.', iconName: 'shield' },
-  { title: 'Monitoreo CCTV', description: 'Videovigilancia con cámaras y monitoreo remoto en tiempo real desde nuestra central.', iconName: 'cctv' },
-  { title: 'Monitoreo de alarmas', description: 'Recepción y verificación de señales de alarma con respuesta inmediata.', iconName: 'monitoring' },
-  { title: 'Botón de pánico / SOS', description: 'Alerta de emergencia con un toque y despacho prioritario de unidades.', iconName: 'panic' },
-  { title: 'Rondas de seguridad', description: 'Recorridos programados con verificación por QR/GPS y reporte de novedades.', iconName: 'patrol' },
-  { title: 'Control de acceso', description: 'Gestión de ingreso de personas y vehículos con registro y credenciales.', iconName: 'access' },
-  { title: 'Investigaciones privadas', description: 'Investigación, inteligencia y recopilación de evidencia confidencial.', iconName: 'investigation' },
-  { title: 'Verificación de antecedentes', description: 'Estudios de confiabilidad y verificación de antecedentes del personal.', iconName: 'verification' },
-  { title: 'Custodia de mercancía', description: 'Resguardo y acompañamiento de bienes y mercancía en sitio o en ruta.', iconName: 'custody' },
-  { title: 'Transporte de valores', description: 'Traslado blindado de efectivo y valores con personal especializado.', iconName: 'cash' },
-  { title: 'Escolta ejecutiva', description: 'Protección personal y acompañamiento para ejecutivos y VIP.', iconName: 'escort' },
-  { title: 'Custodia de personas (guardaespaldas)', description: 'Protección cercana y permanente para personas en riesgo.', iconName: 'escort' },
-  { title: 'Seguridad bancaria', description: 'Protección de sucursales, cajeros y operaciones bancarias.', iconName: 'bank' },
-  { title: 'Seguridad industrial', description: 'Protección de plantas, bodegas y procesos industriales.', iconName: 'industrial' },
-  { title: 'Seguridad en obra / construcción', description: 'Vigilancia y control de acceso en proyectos de construcción.', iconName: 'construction' },
-  { title: 'Seguridad residencial', description: 'Protección de conjuntos, urbanizaciones y residencias.', iconName: 'residential' },
-  { title: 'Seguridad de eventos', description: 'Control de acceso, aforo y orden en eventos y espectáculos.', iconName: 'events' },
-  { title: 'Control de multitudes', description: 'Manejo de aforo y multitudes con protocolos de evacuación.', iconName: 'crowd' },
-  { title: 'Rastreo GPS / vehicular', description: 'Localización y monitoreo GPS de flotas y unidades en tiempo real.', iconName: 'gps' },
-  { title: 'Custodia vehicular', description: 'Acompañamiento de vehículos y caravanas con unidades de seguridad.', iconName: 'vehicle' },
-  { title: 'Seguridad electrónica', description: 'Instalación y mantenimiento de alarmas, sensores y sistemas integrados.', iconName: 'electronic' },
-  { title: 'Portería y recepción', description: 'Control de ingreso, registro de visitas y atención en recepción.', iconName: 'reception' },
-  { title: 'Respuesta a emergencias', description: 'Unidades móviles de reacción ante incidentes y emergencias.', iconName: 'response' },
-  { title: 'Primeros auxilios / paramédico', description: 'Atención prehospitalaria y respuesta médica en sitio.', iconName: 'firstaid' },
-  { title: 'Unidad canina (K9)', description: 'Detección y patrullaje con binomios caninos certificados.', iconName: 'k9' },
-  { title: 'Prevención de incendios', description: 'Inspección, prevención y respuesta ante conatos de incendio.', iconName: 'fire' },
-  { title: 'Ciberseguridad', description: 'Protección de redes, datos y sistemas frente a amenazas digitales.', iconName: 'cyber' },
-  { title: 'Análisis de riesgos', description: 'Evaluación de vulnerabilidades y planes de mitigación de riesgos.', iconName: 'risk' },
-  { title: 'Asesoría en seguridad', description: 'Consultoría y diseño de esquemas de seguridad a la medida.', iconName: 'advisory' },
+const SERVICE_TEMPLATES: { titleKey: string; title: string; description: string; iconName: string }[] = [
+  { titleKey: 'settings.mobil.serviceTemplates.guard', title: 'Vigilancia física', description: 'Vigilantes uniformados en sitio, 24/7, para disuasión y control de accesos.', iconName: 'guard' },
+  { titleKey: 'settings.mobil.serviceTemplates.armed', title: 'Vigilante armado', description: 'Personal de seguridad armado y certificado para entornos de alto riesgo.', iconName: 'shield' },
+  { titleKey: 'settings.mobil.serviceTemplates.cctv', title: 'Monitoreo CCTV', description: 'Videovigilancia con cámaras y monitoreo remoto en tiempo real desde nuestra central.', iconName: 'cctv' },
+  { titleKey: 'settings.mobil.serviceTemplates.alarms', title: 'Monitoreo de alarmas', description: 'Recepción y verificación de señales de alarma con respuesta inmediata.', iconName: 'monitoring' },
+  { titleKey: 'settings.mobil.serviceTemplates.panic', title: 'Botón de pánico / SOS', description: 'Alerta de emergencia con un toque y despacho prioritario de unidades.', iconName: 'panic' },
+  { titleKey: 'settings.mobil.serviceTemplates.patrol', title: 'Rondas de seguridad', description: 'Recorridos programados con verificación por QR/GPS y reporte de novedades.', iconName: 'patrol' },
+  { titleKey: 'settings.mobil.serviceTemplates.access', title: 'Control de acceso', description: 'Gestión de ingreso de personas y vehículos con registro y credenciales.', iconName: 'access' },
+  { titleKey: 'settings.mobil.serviceTemplates.investigation', title: 'Investigaciones privadas', description: 'Investigación, inteligencia y recopilación de evidencia confidencial.', iconName: 'investigation' },
+  { titleKey: 'settings.mobil.serviceTemplates.verification', title: 'Verificación de antecedentes', description: 'Estudios de confiabilidad y verificación de antecedentes del personal.', iconName: 'verification' },
+  { titleKey: 'settings.mobil.serviceTemplates.custody', title: 'Custodia de mercancía', description: 'Resguardo y acompañamiento de bienes y mercancía en sitio o en ruta.', iconName: 'custody' },
+  { titleKey: 'settings.mobil.serviceTemplates.cash', title: 'Transporte de valores', description: 'Traslado blindado de efectivo y valores con personal especializado.', iconName: 'cash' },
+  { titleKey: 'settings.mobil.serviceTemplates.escort', title: 'Escolta ejecutiva', description: 'Protección personal y acompañamiento para ejecutivos y VIP.', iconName: 'escort' },
+  { titleKey: 'settings.mobil.serviceTemplates.bodyguard', title: 'Custodia de personas (guardaespaldas)', description: 'Protección cercana y permanente para personas en riesgo.', iconName: 'escort' },
+  { titleKey: 'settings.mobil.serviceTemplates.bank', title: 'Seguridad bancaria', description: 'Protección de sucursales, cajeros y operaciones bancarias.', iconName: 'bank' },
+  { titleKey: 'settings.mobil.serviceTemplates.industrial', title: 'Seguridad industrial', description: 'Protección de plantas, bodegas y procesos industriales.', iconName: 'industrial' },
+  { titleKey: 'settings.mobil.serviceTemplates.construction', title: 'Seguridad en obra / construcción', description: 'Vigilancia y control de acceso en proyectos de construcción.', iconName: 'construction' },
+  { titleKey: 'settings.mobil.serviceTemplates.residential', title: 'Seguridad residencial', description: 'Protección de conjuntos, urbanizaciones y residencias.', iconName: 'residential' },
+  { titleKey: 'settings.mobil.serviceTemplates.events', title: 'Seguridad de eventos', description: 'Control de acceso, aforo y orden en eventos y espectáculos.', iconName: 'events' },
+  { titleKey: 'settings.mobil.serviceTemplates.crowd', title: 'Control de multitudes', description: 'Manejo de aforo y multitudes con protocolos de evacuación.', iconName: 'crowd' },
+  { titleKey: 'settings.mobil.serviceTemplates.gps', title: 'Rastreo GPS / vehicular', description: 'Localización y monitoreo GPS de flotas y unidades en tiempo real.', iconName: 'gps' },
+  { titleKey: 'settings.mobil.serviceTemplates.vehicle', title: 'Custodia vehicular', description: 'Acompañamiento de vehículos y caravanas con unidades de seguridad.', iconName: 'vehicle' },
+  { titleKey: 'settings.mobil.serviceTemplates.electronic', title: 'Seguridad electrónica', description: 'Instalación y mantenimiento de alarmas, sensores y sistemas integrados.', iconName: 'electronic' },
+  { titleKey: 'settings.mobil.serviceTemplates.reception', title: 'Portería y recepción', description: 'Control de ingreso, registro de visitas y atención en recepción.', iconName: 'reception' },
+  { titleKey: 'settings.mobil.serviceTemplates.response', title: 'Respuesta a emergencias', description: 'Unidades móviles de reacción ante incidentes y emergencias.', iconName: 'response' },
+  { titleKey: 'settings.mobil.serviceTemplates.firstaid', title: 'Primeros auxilios / paramédico', description: 'Atención prehospitalaria y respuesta médica en sitio.', iconName: 'firstaid' },
+  { titleKey: 'settings.mobil.serviceTemplates.k9', title: 'Unidad canina (K9)', description: 'Detección y patrullaje con binomios caninos certificados.', iconName: 'k9' },
+  { titleKey: 'settings.mobil.serviceTemplates.fire', title: 'Prevención de incendios', description: 'Inspección, prevención y respuesta ante conatos de incendio.', iconName: 'fire' },
+  { titleKey: 'settings.mobil.serviceTemplates.cyber', title: 'Ciberseguridad', description: 'Protección de redes, datos y sistemas frente a amenazas digitales.', iconName: 'cyber' },
+  { titleKey: 'settings.mobil.serviceTemplates.risk', title: 'Análisis de riesgos', description: 'Evaluación de vulnerabilidades y planes de mitigación de riesgos.', iconName: 'risk' },
+  { titleKey: 'settings.mobil.serviceTemplates.advisory', title: 'Asesoría en seguridad', description: 'Consultoría y diseño de esquemas de seguridad a la medida.', iconName: 'advisory' },
 ];
 import { toast } from 'sonner';
 import { PageContainer, PageHeader, Section, EmptyState, StatusBadge, SkeletonBlock, SmartImage } from '@/components/kit';
@@ -641,12 +641,13 @@ export default function MobilPage() {
                         <div className="mt-1.5 flex max-h-24 flex-wrap gap-1.5 overflow-y-auto">
                           {SERVICE_TEMPLATES.map((tpl) => {
                             const Ic = serviceIcon(tpl.iconName);
-                            const activa = serviceForm.title === tpl.title;
+                            const tplTitle = t(tpl.titleKey, tpl.title);
+                            const activa = serviceForm.title === tplTitle;
                             return (
                               <button
                                 key={tpl.title}
                                 type="button"
-                                onClick={() => setServiceForm((p) => ({ ...p, title: tpl.title, description: tpl.description, iconName: tpl.iconName, publishedOnMobile: true }))}
+                                onClick={() => setServiceForm((p) => ({ ...p, title: tplTitle, description: tpl.description, iconName: tpl.iconName, publishedOnMobile: true }))}
                                 className="cg-focus inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition"
                                 style={{
                                   background: activa ? 'var(--brand-wash)' : 'var(--glass-sunken)',
@@ -654,7 +655,7 @@ export default function MobilPage() {
                                   color: activa ? 'var(--brand-text)' : 'var(--ink-soft)',
                                 }}
                               >
-                                <Ic className="size-3.5" /> {tpl.title}
+                                <Ic className="size-3.5" /> {tplTitle}
                               </button>
                             );
                           })}

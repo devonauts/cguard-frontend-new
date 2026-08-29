@@ -159,7 +159,7 @@ export default function StationGeofencePolygon({
             position: center,
             map,
             draggable: true,
-            title: "Ubicación del puesto (arrastra para ajustar)",
+            title: t("station.geofence.centerPinTitle", "Ubicación del puesto (arrastra para ajustar)"),
             zIndex: 5000,
           });
           // Retorno visual del agarre: el marcador salta al cogerlo y vuelve a
@@ -402,7 +402,7 @@ export default function StationGeofencePolygon({
     const ruta = rutaViva ?? pts;
     if (!ruta.length) return null;
     if (ruta.length < 3) {
-      return { tono: "warn", texto: "Agrega al menos 3 puntos para cerrar la geocerca." };
+      return { tono: "warn", texto: t("station.geofence.needThreePoints", "Agrega al menos 3 puntos para cerrar la geocerca.") };
     }
     if (!medidas) return null;
     const r = medidas.radio;
@@ -424,8 +424,8 @@ export default function StationGeofencePolygon({
     if (r > 250) {
       return { tono: "warn", texto: "Bastante amplia: revisa que no se salga de la propiedad del cliente." };
     }
-    return { tono: "ok", texto: "Tamaño adecuado para marcar entrada y salida." };
-  }, [medidas, pts, rutaViva]);
+    return { tono: "ok", texto: t("station.geofence.sizeOk", "Tamaño adecuado para marcar entrada y salida.") };
+  }, [medidas, pts, rutaViva, t]);
 
   const undo = () => onChange(pts.slice(0, -1));
   const clear = () => onChange([]);

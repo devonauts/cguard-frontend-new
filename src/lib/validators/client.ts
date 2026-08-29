@@ -1,69 +1,81 @@
 import { z } from "zod";
+import i18n from "@/i18n";
 import { validateCedulaOrRuc } from "./id";
+
+// Este esquema vive en el módulo: un t() suelto aquí se evaluaría al cargar y
+// congelaría el idioma de arranque. Por eso el texto se resuelve TARDE — dentro
+// de la función `error`, que zod llama en cada validación.
+const msj = (clave: string, texto: string) => () => i18n.t(clave, texto);
+
+/** Mensaje de longitud máxima. Igual que `msj`: es una FUNCIÓN, así que zod la
+ *  ejecuta al validar, ya con el idioma del usuario puesto. */
+const maxChars = (n: number) => ({
+    error: () => i18n.t("validation.postSite.maxChars", { n, defaultValue: "Máximo {{n}} caracteres" }),
+});
 
 export const clientSchema = z
     .object({
     name: z
         .string()
         .trim()
-        .min(1, "Nombre del cliente requerido")
-        .max(200, "Máximo 200 caracteres"),
+        .min(1, { error: msj("validation.client.nameRequired", "Nombre del cliente requerido") })
+        .max(200, maxChars(200)),
     lastName: z
         .string()
         .trim()
-        .max(200, "Máximo 200 caracteres")
+        .max(200, maxChars(200))
         .optional()
         .or(z.literal("")),
     email: z
         .string()
         .trim()
-        .min(1, "Email requerido")
-        .email("Correo inválido")
-        .max(150, "Máximo 150 caracteres"),
+        .min(1, { error: msj("validation.client.emailRequired", "Email requerido") })
+        .email({ error: msj("clients.contacts.errors.invalidEmail", "Correo inválido") })
+        .max(150, maxChars(150)),
     phoneNumber: z
         .string()
         .trim()
-        .min(1, "Teléfono requerido")
-        .max(20, "Máximo 20 caracteres"),
+        .min(1, { error: msj("validation.client.phoneRequired", "Teléfono requerido") })
+        .max(20, maxChars(20)),
     address: z
         .string()
         .trim()
-        .min(1, "Dirección requerida")
-        .max(200, "Máximo 200 caracteres"),
+        .min(1, { error: msj("validation.client.addressRequired", "Dirección requerida") })
+        .max(200, maxChars(200)),
     addressLine2: z
         .string()
         .trim()
-        .max(200, "Máximo 200 caracteres")
+        .max(200, maxChars(200))
         .optional()
         .or(z.literal("")),
     postalCode: z
         .string()
         .trim()
-        .min(1, "Código postal requerido")
-        .max(20, "Máximo 20 caracteres"),
+        .min(1, { error: msj("validation.client.postalCodeRequired", "Código postal requerido") })
+        .max(20, maxChars(20)),
     city: z
         .string()
         .trim()
-        .max(100, "Máximo 100 caracteres")
+        .max(100, maxChars(100))
         .optional()
         .or(z.literal("")),
     country: z
         .string()
         .trim()
-        .max(100, "Máximo 100 caracteres")
+        .max(100, maxChars(100))
         .optional()
         .or(z.literal("")),
     faxNumber: z
         .string()
         .trim()
-        .max(20, "Máximo 20 caracteres")
+        .max(20, maxChars(20))
         .optional()
         .or(z.literal("")),
     website: z
         .string()
         .trim()
-        .url("URL inválida")
-        .max(255, "Máximo 255 caracteres")
+        .url({ error: msj("validation.client.websiteInvalid", "URL inválida") })
+        .max(255, maxChars(255))
         .optional()
         .or(z.literal("")),
     latitude: z
@@ -72,10 +84,10 @@ export const clientSchema = z
         .optional()
         .or(z.literal(""))
         .refine((val) => !val || !Number.isNaN(Number(val)), {
-            message: "Latitud debe ser numérica",
+            error: msj("clients.validation.latitude_numeric", "Latitud debe ser numérica"),
         })
         .refine((val) => !val || (Number(val) >= -90 && Number(val) <= 90), {
-            message: "Latitud entre -90 y 90",
+            error: msj("validation.client.latitudeRange", "Latitud entre -90 y 90"),
         }),
     longitude: z
         .coerce.string()
@@ -83,16 +95,16 @@ export const clientSchema = z
         .optional()
         .or(z.literal(""))
         .refine((val) => !val || !Number.isNaN(Number(val)), {
-            message: "Longitud debe ser numérica",
+            error: msj("clients.validation.longitude_numeric", "Longitud debe ser numérica"),
         })
         .refine((val) => !val || (Number(val) >= -180 && Number(val) <= 180), {
-            message: "Longitud entre -180 y 180",
+            error: msj("validation.client.longitudeRange", "Longitud entre -180 y 180"),
         }),
     active: z.boolean().optional(),
     commercialName: z
         .string()
         .trim()
-        .max(200, "Máximo 200 caracteres")
+        .max(200, maxChars(200))
         .optional()
         .or(z.literal("")),
     contractDate: z
@@ -104,7 +116,7 @@ export const clientSchema = z
     // Orden de compra (opcional) — clientes públicos/estatales que contratan
     // por orden de compra en lugar de contrato directo.
     purchaseOrder: z.string().max(120).optional().or(z.literal("")),
-    code: z.string().trim().max(50, "Máximo 50 caracteres").optional().or(z.literal("")),
+    code: z.string().trim().max(50, maxChars(50)).optional().or(z.literal("")),
     accountExecutiveId: z.string().optional().or(z.literal("")),
     // Representante legal (persona) — separado de la empresa.
     legalRepFirstName: z.string().trim().max(150).optional().or(z.literal("")),
@@ -118,7 +130,7 @@ export const clientSchema = z
     documentNumber: z
         .string()
         .trim()
-        .max(50, "Máximo 50 caracteres")
+        .max(50, maxChars(50))
         .optional()
         .or(z.literal("")),
     // Coerce ANY incoming shape (a single string, category objects, or an array
@@ -137,7 +149,9 @@ export const clientSchema = z
     const personType = data.personType || 'PN';
     const doc = (data.documentNumber || '').toString().trim();
     if (!doc) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['documentNumber'], message: 'RUC/Cédula requerido' });
+        // Aquí ya estamos DENTRO de la validación: i18n.t() directo es correcto,
+        // se resuelve con el idioma vivo.
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['documentNumber'], message: i18n.t('validation.client.documentRequired', 'RUC/Cédula requerido') });
         return;
     }
 
@@ -145,12 +159,12 @@ export const clientSchema = z
     if (personType === 'PN') {
         // Persona natural: debe ser una cédula válida de 10 dígitos
         if (!validateCedulaOrRuc(digits) || digits.length !== 10) {
-            ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['documentNumber'], message: 'Cédula inválida' });
+            ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['documentNumber'], message: i18n.t('clients.validation.cedula_invalid', 'Cédula inválida') });
         }
     } else if (personType === 'PJ') {
         // Persona jurídica: RUC de 13 dígitos que termina en 001 y cuyos primeros 10 conforman una cédula válida
         if (!validateCedulaOrRuc(digits) || digits.length !== 13) {
-            ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['documentNumber'], message: 'RUC inválido (debe terminar en 001 y contener cédula válida)' });
+            ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['documentNumber'], message: i18n.t('clients.validation.ruc_invalid', 'RUC inválido (debe terminar en 001 y contener cédula válida)') });
         }
     }
 });

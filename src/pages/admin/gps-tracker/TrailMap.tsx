@@ -208,19 +208,19 @@ export default function TrailMap({
       subtitle: fechaHora(p.at),
       metrics: mapPopupItems<MapPopupMetric>(
         { label: "Velocidad", value: kmh(v) },
-        bat != null ? { label: "Batería", value: `${bat}%`, tone: bat <= 20 ? "bad" : undefined } : null,
+        bat != null ? { label: tr("ui.TrailMap.bateria", "Batería"), value: `${bat}%`, tone: bat <= 20 ? "bad" : undefined } : null,
       ),
       fields: mapPopupItems(
         { label: "Hora", value: hora(p.at), mono: true },
         {
-          label: "Precisión",
+          label: tr("ui.TrailMap.precision", "Precisión"),
           value: typeof p.accuracy === "number" ? `± ${Math.round(p.accuracy)} m` : "—",
           mono: true,
           // Por encima de 60 m el punto no dice dónde estuvo, dice por dónde
           // andaba: se avisa en vez de dibujarlo como si fuera exacto.
           tone: typeof p.accuracy === "number" && p.accuracy > 60 ? "warn" : undefined,
         },
-        { label: "Recorrido hasta aquí", value: distancia(analisis.acumulado[i] || 0), mono: true, wide: true },
+        { label: tr("ui.TrailMap.recorridoHastaAqui", "Recorrido hasta aquí"), value: distancia(analisis.acumulado[i] || 0), mono: true, wide: true },
         { label: "Coordenadas", value: `${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}`, mono: true, wide: true },
       ),
       actions: mapPopupItems(
@@ -236,7 +236,7 @@ export default function TrailMap({
     // enfoque re-centraría el mapa por un punto que ya se está mirando.
     ultimoFocoRef.current = i;
     onFocusIndex?.(i);
-  }, [analisis, motor, onFocusIndex, validos]);
+  }, [analisis, motor, onFocusIndex, validos, tr]);
 
   const globoDeParada = useCallback((parada: Parada, numero: number) => {
     const datos: MapPopupData = {
@@ -246,7 +246,7 @@ export default function TrailMap({
       subtitle: `${hora(parada.inicio)} – ${hora(parada.fin)}`,
       status: { label: "Detenido", tone: "warn" },
       metrics: mapPopupItems<MapPopupMetric>(
-        { label: "Duración", value: duracion(parada.ms), tone: "warn" },
+        { label: tr("ui.TrailMap.duracion", "Duración"), value: duracion(parada.ms), tone: "warn" },
         { label: "Pings", value: parada.hasta - parada.desde + 1 },
       ),
       fields: mapPopupItems(
@@ -257,7 +257,7 @@ export default function TrailMap({
       actions: mapPopupItems(
         {
           id: "ir-al-momento",
-          label: "Ir a este momento",
+          label: tr("ui.TrailMap.irAEsteMomento", "Ir a este momento"),
           icon: <Play />,
           onClick: () => {
             setReproduciendo(false);
@@ -272,7 +272,7 @@ export default function TrailMap({
     popRef.current.open({ lat: parada.lat, lng: parada.lng }, datos);
     ultimoFocoRef.current = parada.desde;
     onFocusIndex?.(parada.desde);
-  }, [onFocusIndex]);
+  }, [onFocusIndex, tr]);
 
   /* ── Dibujo del trazo ─────────────────────────────────────────────────── */
 
@@ -396,7 +396,7 @@ export default function TrailMap({
       position: camino[camino.length - 1],
       icon: iconoDe(g, orbPin({ color: pal.brand, insignia: "•", piel, version })),
       zIndex: 900,
-      title: "Posición en el instante mostrado",
+      title: tr("ui.TrailMap.posicionEnElInstanteMostrado", "Posición en el instante mostrado"),
     });
     puckRef.current = puck;
     overlaysRef.current.push(() => puck.setMap(null));
@@ -410,7 +410,7 @@ export default function TrailMap({
       else mapRef.current.setCenter(camino[0]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [validos, trazo, paradas, ready, pal, piel, version, motor]);
+  }, [validos, trazo, paradas, ready, pal, piel, version, motor, tr]);
 
   /* ── Avance en el tiempo ──────────────────────────────────────────────── */
 
@@ -646,7 +646,7 @@ export default function TrailMap({
                     color: seguir ? "var(--brand-text)" : "var(--ink-faint)",
                   }}
                   aria-pressed={seguir}
-                  title={seguir ? "La cámara sigue el recorrido" : "La cámara está suelta"}
+                  title={seguir ? tr("ui.TrailMap.camaraSigueElRecorrido", "La cámara sigue el recorrido") : tr("ui.TrailMap.camaraSuelta", "La cámara está suelta")}
                 >
                   <Crosshair className="size-3.5" />
                 </button>

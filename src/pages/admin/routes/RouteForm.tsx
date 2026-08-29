@@ -69,6 +69,8 @@ import {
 
 const notifyTimes = ["00:05", "00:10", "00:15", "00:30", "01:00"];
 
+/** Respaldo en español. Es una constante de módulo: `t()` aquí congelaría el
+ *  idioma de arranque, así que se traduce al pintar con `DAY_LABEL_KEY`. */
 const DAY_LABEL: Record<string, string> = {
   sun: "Domingo",
   mon: "Lunes",
@@ -77,6 +79,16 @@ const DAY_LABEL: Record<string, string> = {
   thu: "Jueves",
   fri: "Viernes",
   sat: "Sábado",
+};
+/** Clave i18n de cada día. Uso: `t(DAY_LABEL_KEY[d], DAY_LABEL[d])`. */
+const DAY_LABEL_KEY: Record<string, string> = {
+  sun: "siteTour.options.sunday",
+  mon: "siteTour.options.monday",
+  tue: "siteTour.options.tuesday",
+  wed: "siteTour.options.wednesday",
+  thu: "siteTour.options.thursday",
+  fri: "siteTour.options.friday",
+  sat: "siteTour.options.saturday",
 };
 const ALL_DAYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
 
@@ -448,7 +460,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
         });
       } catch (e) {
         console.error('Error loading sites', e);
-        try { toast.error(String((e as any)?.message || (e as any)?.toString() || 'Error cargando Puestos de Vigilancia')); } catch {}
+        try { toast.error(String((e as any)?.message || (e as any)?.toString() || t('ui.RouteForm.errorCargandoPuestosDeVigilancia', 'Error cargando Puestos de Vigilancia'))); } catch {}
         try { telemetryService.log({ level: 'error', message: 'Error cargando Puestos de Vigilancia', details: e }); } catch {}
       }
     })();
@@ -488,8 +500,8 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
   const daysText = useMemo(() => {
     const d = watchedDays ?? [];
     if (!d.length) return ", , , , , ,";
-    return d.map((k: any) => DAY_LABEL[k]).join(", ");
-  }, [watchedDays]);
+    return d.map((k: any) => t(DAY_LABEL_KEY[k], DAY_LABEL[k])).join(", ");
+  }, [watchedDays, t]);
 
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
@@ -717,7 +729,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
     }
     if (
       !(await confirmDialog({
-        title: 'Optimizar el orden de las paradas',
+        title: t('ui.RouteForm.optimizarElOrdenDeLasParadas', 'Optimizar el orden de las paradas'),
         message:
           'Se reordenarán las paradas para recortar kilómetros y minutos, contando el tiempo de permanencia en cada una y una marcha efectiva de tráfico urbano. El orden manual actual se reemplaza; puedes volver a cambiarlo a mano cuando quieras.',
         confirmText: 'Optimizar',
@@ -1014,7 +1026,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
                                   field.onChange(Array.from(cur));
                                 }}
                               >
-                                {DAY_LABEL[d]}
+                                {t(DAY_LABEL_KEY[d], DAY_LABEL[d])}
                               </DropdownMenuCheckboxItem>
                             );
                           })}
@@ -1479,9 +1491,9 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
                   <SelectValue placeholder="00:15" />
                 </SelectTrigger>
                 <SelectContent>
-                  {notifyTimes.map((t) => (
-                    <SelectItem key={t} value={t}>
-                      {t}
+                  {notifyTimes.map((hora) => (
+                    <SelectItem key={hora} value={hora}>
+                      {hora}
                     </SelectItem>
                   ))}
                 </SelectContent>

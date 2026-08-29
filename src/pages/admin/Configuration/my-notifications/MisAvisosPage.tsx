@@ -29,26 +29,28 @@ import api from "@/lib/api";
 type Via = "dashboard" | "email" | "sms";
 type Prefs = Record<string, Partial<Record<Via, boolean>>>;
 
-/** Las mismas filas que ve el administrador, con su mismo id. */
-const FILAS: { id: string; label: string; bloqueada?: boolean; hint?: string }[] = [
-  { id: "panic-button", label: "Botón de pánico", bloqueada: true, hint: "Una emergencia llega siempre" },
-  { id: "coverage-uncovered", label: "Puesto sin cubrir", bloqueada: true, hint: "Nadie llegó al puesto" },
-  { id: "check-in-out", label: "Entradas y salidas de vigilantes" },
-  { id: "attendance-exceptions", label: "Novedades de asistencia" },
-  { id: "attendance-approvals", label: "Aprobaciones de asistencia" },
-  { id: "dispatch-updates", label: "Tickets de incidente" },
-  { id: "inactive-guard-alert", label: "Vigilante inactivo en turno" },
-  { id: "geofence-alert", label: "Entradas y salidas de geocerca" },
-  { id: "task-completed", label: "Tareas completadas" },
-  { id: "pto-request", label: "Solicitudes de tiempo libre" },
-  { id: "license-expiry", label: "Credenciales por vencer" },
-  { id: "contract-expiry", label: "Contratos de cliente por vencer" },
+/** Las mismas filas que ve el administrador, con su mismo id.
+ *  Constante de módulo: se evalúa al cargar, antes de que el idioma esté listo.
+ *  Por eso lleva la CLAVE y el texto se traduce donde se pinta. */
+const FILAS: { id: string; labelKey: string; label: string; bloqueada?: boolean; hintKey?: string; hint?: string }[] = [
+  { id: "panic-button", labelKey: "misAvisos.fila.panicButton", label: "Botón de pánico", bloqueada: true, hintKey: "misAvisos.hint.panicButton", hint: "Una emergencia llega siempre" },
+  { id: "coverage-uncovered", labelKey: "misAvisos.fila.coverageUncovered", label: "Puesto sin cubrir", bloqueada: true, hintKey: "misAvisos.hint.coverageUncovered", hint: "Nadie llegó al puesto" },
+  { id: "check-in-out", labelKey: "misAvisos.fila.checkInOut", label: "Entradas y salidas de vigilantes" },
+  { id: "attendance-exceptions", labelKey: "misAvisos.fila.attendanceExceptions", label: "Novedades de asistencia" },
+  { id: "attendance-approvals", labelKey: "misAvisos.fila.attendanceApprovals", label: "Aprobaciones de asistencia" },
+  { id: "dispatch-updates", labelKey: "misAvisos.fila.dispatchUpdates", label: "Tickets de incidente" },
+  { id: "inactive-guard-alert", labelKey: "misAvisos.fila.inactiveGuardAlert", label: "Vigilante inactivo en turno" },
+  { id: "geofence-alert", labelKey: "misAvisos.fila.geofenceAlert", label: "Entradas y salidas de geocerca" },
+  { id: "task-completed", labelKey: "misAvisos.fila.taskCompleted", label: "Tareas completadas" },
+  { id: "pto-request", labelKey: "misAvisos.fila.ptoRequest", label: "Solicitudes de tiempo libre" },
+  { id: "license-expiry", labelKey: "misAvisos.fila.licenseExpiry", label: "Credenciales por vencer" },
+  { id: "contract-expiry", labelKey: "misAvisos.fila.contractExpiry", label: "Contratos de cliente por vencer" },
 ];
 
-const VIAS: { key: Via; label: string; icon: React.ReactNode }[] = [
-  { key: "dashboard", label: "Panel y teléfono", icon: <Monitor className="h-3.5 w-3.5" /> },
-  { key: "email", label: "Correo", icon: <Mail className="h-3.5 w-3.5" /> },
-  { key: "sms", label: "SMS", icon: <MessageSquare className="h-3.5 w-3.5" /> },
+const VIAS: { key: Via; labelKey: string; label: string; icon: React.ReactNode }[] = [
+  { key: "dashboard", labelKey: "misAvisos.via.dashboard", label: "Panel y teléfono", icon: <Monitor className="h-3.5 w-3.5" /> },
+  { key: "email", labelKey: "misAvisos.via.email", label: "Correo", icon: <Mail className="h-3.5 w-3.5" /> },
+  { key: "sms", labelKey: "misAvisos.via.sms", label: "SMS", icon: <MessageSquare className="h-3.5 w-3.5" /> },
 ];
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
@@ -122,7 +124,7 @@ export default function MisAvisosPage() {
                       {VIAS.map((v) => (
                         <div key={v.key} className="flex items-center justify-center gap-1.5">
                           {v.icon}
-                          <span className="cg-eyebrow">{v.label}</span>
+                          <span className="cg-eyebrow">{t(v.labelKey, v.label)}</span>
                         </div>
                       ))}
                     </div>
@@ -138,11 +140,11 @@ export default function MisAvisosPage() {
                               {f.bloqueada && (
                                 <Lock className="h-3 w-3 shrink-0" style={{ color: "var(--ink-faint)" }} />
                               )}
-                              {f.label}
+                              {t(f.labelKey, f.label)}
                             </p>
                             {f.hint && (
                               <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
-                                {f.hint}
+                                {f.hintKey ? t(f.hintKey, f.hint) : f.hint}
                               </p>
                             )}
                           </div>
@@ -152,7 +154,7 @@ export default function MisAvisosPage() {
                                 checked={f.bloqueada ? true : activo(f.id, v.key)}
                                 disabled={f.bloqueada}
                                 onCheckedChange={() => alternar(f.id, v.key)}
-                                aria-label={`${f.label} por ${v.label}`}
+                                aria-label={`${t(f.labelKey, f.label)} por ${t(v.labelKey, v.label)}`}
                               />
                             </div>
                           ))}

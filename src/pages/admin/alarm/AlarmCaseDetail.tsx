@@ -58,11 +58,14 @@ import {
 /* Metadata                                                            */
 /* ------------------------------------------------------------------ */
 
-const DISPATCH_TYPES: { value: AlarmDispatchType; label: string }[] = [
-  { value: "guard", label: "Vigilante" },
-  { value: "police", label: "Policía" },
-  { value: "fire", label: "Bomberos" },
-  { value: "medical", label: "Médico" },
+/* `label` es el texto por defecto (español) y `labelKey` la clave que se traduce
+   DONDE SE PINTA. No se llama a t() aquí: el módulo se evalúa al cargar y el
+   texto quedaría congelado en el idioma de arranque. */
+const DISPATCH_TYPES: { value: AlarmDispatchType; labelKey: string; label: string }[] = [
+  { value: "guard", labelKey: "ui.AlarmCaseDetail.dispatch.guard", label: "Vigilante" },
+  { value: "police", labelKey: "ui.AlarmCaseDetail.dispatch.police", label: "Policía" },
+  { value: "fire", labelKey: "ui.AlarmCaseDetail.dispatch.fire", label: "Bomberos" },
+  { value: "medical", labelKey: "ui.AlarmCaseDetail.dispatch.medical", label: "Médico" },
 ];
 
 /** Fields present on the case payload but not on the base AlarmCase model. */
@@ -584,9 +587,9 @@ export default function AlarmCaseDetail() {
               value={dType}
               onChange={(e) => setDType(e.target.value as AlarmDispatchType)}
             >
-              {DISPATCH_TYPES.map((t) => (
-                <option key={t.value} value={t.value}>
-                  {t.label}
+              {DISPATCH_TYPES.map((dt) => (
+                <option key={dt.value} value={dt.value}>
+                  {t(dt.labelKey, dt.label)}
                 </option>
               ))}
             </select>

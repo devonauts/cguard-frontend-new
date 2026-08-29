@@ -7,37 +7,51 @@
  * ese mapa está indexado por el texto visible.
  */
 import type { KeyboardEvent } from "react";
+import { useTranslation } from "react-i18next";
 import { Activity, Cpu, Radio, Users, type LucideIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { IconTile } from "@/components/kit";
 import { HEALTH_ROUTES } from "../navigation";
 import { toneFill, type Tone } from "../tone";
 
-interface Celda { icon: LucideIcon; label: string; value: string; hint: string; tone: Tone }
+// `label` es además la CLAVE de `HEALTH_ROUTES` (indexado por el texto en
+// español): no se traduce el campo, se traduce al pintar con `labelKey`.
+interface Celda { icon: LucideIcon; label: string; labelKey: string; value: string; hint: string; hintKey: string; tone: Tone }
 
 export function SystemStatus({ sseConnected, onlineDevices, stations, clients, team }: {
   sseConnected: boolean; onlineDevices: number; stations: number; clients: number; team: number;
 }) {
+  const { t } = useTranslation();
   const celdas: Celda[] = [
     {
       icon: Radio, label: "Enlace en tiempo real",
+      labelKey: "dashboard.controlCenter.systemStatus.realtime.label",
       value: sseConnected ? "Conectado" : "Sondeo",
       hint: sseConnected ? "Los eventos llegan al instante" : "Actualizando cada pocos segundos",
+      hintKey: sseConnected
+        ? "dashboard.controlCenter.systemStatus.realtime.hintLive"
+        : "dashboard.controlCenter.systemStatus.realtime.hintPolling",
       tone: sseConnected ? "ok" : "warn",
     },
     {
       icon: Cpu, label: "Dispositivos en línea",
+      labelKey: "dashboard.controlCenter.systemStatus.devices.label",
       value: String(onlineDevices), hint: "Equipos reportando posición",
+      hintKey: "dashboard.controlCenter.systemStatus.devices.hint",
       tone: onlineDevices > 0 ? "ok" : "neutral",
     },
     {
       icon: Activity, label: "Puestos / Clientes",
+      labelKey: "dashboard.controlCenter.systemStatus.stations.label",
       value: `${stations} / ${clients}`, hint: "Puestos activos y cuentas atendidas",
+      hintKey: "dashboard.controlCenter.systemStatus.stations.hint",
       tone: "brand",
     },
     {
       icon: Users, label: "Equipo administrativo",
+      labelKey: "dashboard.controlCenter.systemStatus.team.label",
       value: String(team), hint: "Usuarios con acceso al sistema",
+      hintKey: "dashboard.controlCenter.systemStatus.team.hint",
       tone: "neutral",
     },
   ];
@@ -50,6 +64,7 @@ export function SystemStatus({ sseConnected, onlineDevices, stations, clients, t
 }
 
 function CeldaEstado({ celda }: { celda: Celda }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const to = HEALTH_ROUTES[celda.label];
   const ir = to ? () => navigate(to) : undefined;
@@ -61,7 +76,7 @@ function CeldaEstado({ celda }: { celda: Celda }) {
         ? {
             role: "button" as const,
             tabIndex: 0,
-            "aria-label": celda.label,
+            "aria-label": t(celda.labelKey, celda.label),
             onClick: ir,
             onKeyDown: (e: KeyboardEvent) => {
               if (e.key === "Enter" || e.key === " ") { e.preventDefault(); ir(); }
@@ -71,12 +86,12 @@ function CeldaEstado({ celda }: { celda: Celda }) {
     >
       <IconTile tone={celda.tone} size="sm"><Icon /></IconTile>
       <div className="min-w-0">
-        <div className="cg-eyebrow truncate">{celda.label}</div>
+        <div className="cg-eyebrow truncate">{t(celda.labelKey, celda.label)}</div>
         <div className="mt-1 flex items-center gap-1.5">
           <span className="inline-block size-1.5 shrink-0 rounded-full" style={{ background: toneFill(celda.tone) }} />
           <span className="truncate text-sm font-semibold tabular-nums">{celda.value}</span>
         </div>
-        <div className="truncate text-[11px]" style={{ color: "var(--ink-faint)" }}>{celda.hint}</div>
+        <div className="truncate text-[11px]" style={{ color: "var(--ink-faint)" }}>{t(celda.hintKey, celda.hint)}</div>
       </div>
     </div>
   );

@@ -23,9 +23,17 @@ const TIER: Record<string, { label: string; tone: "ok" | "info" | "warn" | "bad"
 };
 const tierOf = (t: string) => TIER[t] || TIER.poor;
 
-const FACTOR_ES: Record<string, string> = {
-  punctuality: "Puntualidad", uniform: "Uniforme", inventory: "Inventario",
-  consignas: "Consignas", rondas: "Rondas", quiz: "Quiz", training: "Capacitación",
+/** Constante de módulo: guarda la CLAVE, no la etiqueta. Un t() aquí se
+ *  evaluaría al importar el fichero y congelaría el idioma de arranque; el
+ *  español queda como valor por defecto y se traduce donde se pinta. */
+const FACTOR_ES: Record<string, { clave: string; etiqueta: string }> = {
+  punctuality: { clave: "performance.factor.punctuality", etiqueta: "Puntualidad" },
+  uniform: { clave: "performance.factor.uniform", etiqueta: "Uniforme" },
+  inventory: { clave: "performance.factor.inventory", etiqueta: "Inventario" },
+  consignas: { clave: "performance.factor.consignas", etiqueta: "Consignas" },
+  rondas: { clave: "performance.factor.rondas", etiqueta: "Rondas" },
+  quiz: { clave: "performance.factor.quiz", etiqueta: "Examen" },
+  training: { clave: "performance.factor.training", etiqueta: "Capacitación" },
 };
 
 function ScoreBadge({ score, tier, enabled = true }: { score: number | null; tier: string; enabled?: boolean }) {
@@ -43,6 +51,7 @@ function ScoreBadge({ score, tier, enabled = true }: { score: number | null; tie
 }
 
 function FactorBars({ g }: { g: GuardPerformance }) {
+  const { t } = useTranslation();
   if (g.enabled === false) {
     return (
       <p className="text-xs text-muted-foreground">
@@ -59,15 +68,19 @@ function FactorBars({ g }: { g: GuardPerformance }) {
   }
   return (
     <div className="grid gap-x-6 gap-y-2 sm:grid-cols-2">
-      {g.components.map((c) => (
+      {g.components.map((c) => {
+        const f = FACTOR_ES[c.key];
+        const etiqueta = f ? t(f.clave, f.etiqueta) : c.key;
+        return (
         <div key={c.key} className="flex items-center gap-2">
-          <span className="w-24 shrink-0 text-xs text-foreground/80">{FACTOR_ES[c.key] || c.key}</span>
-          <MeterBar className="flex-1" height={8} pct={c.score} ariaLabel={FACTOR_ES[c.key] || c.key}
+          <span className="w-24 shrink-0 text-xs text-foreground/80">{etiqueta}</span>
+          <MeterBar className="flex-1" height={8} pct={c.score} ariaLabel={etiqueta}
             tone={c.score >= 75 ? "ok" : c.score >= 50 ? "warn" : "bad"} />
           <span className="w-8 shrink-0 text-right text-xs font-semibold text-foreground">{c.score}</span>
           <span className="w-10 shrink-0 text-right text-[10px] text-muted-foreground">×{Math.round(c.weight * 100)}%</span>
         </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
