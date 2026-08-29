@@ -47,11 +47,12 @@ import shiftExchangeRequestService, { ShiftExchangeRecord } from "@/lib/api/shif
 import { securityGuardService } from "@/lib/api/securityGuardService";
 import { getTenantTimezone } from "@/utils/tenantLocation";
 
+import { localeActual } from '@/lib/localeActual'
 // ── helpers ──────────────────────────────────────────────────────────────────
 
 function formatDate(iso: string | null) {
   if (!iso) return "—";
-  return new Date(iso).toLocaleDateString("es-EC", {
+  return new Date(iso).toLocaleDateString(localeActual(), {
     day: "2-digit",
     month: "short",
     year: "numeric",

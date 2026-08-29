@@ -5,6 +5,7 @@ import { Loader2, MessageCircle, Unplug, RefreshCw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Section, StatusBadge, Field, Modal, SkeletonBlock } from "@/components/kit";
+import { localeActual } from '@/lib/localeActual'
 import {
   communicationService,
   WhatsAppStatus,
@@ -98,7 +99,7 @@ function fmtDate(value?: string | null) {
   if (!value) return "—";
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return String(value);
-  return d.toLocaleString("es-ES", {
+  return d.toLocaleString(localeActual(), {
     year: "numeric",
     month: "short",
     day: "2-digit",

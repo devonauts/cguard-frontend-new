@@ -1,3 +1,5 @@
+
+import { localeActual } from '@/lib/localeActual'
 /**
  * ════════════════════════════════════════════════════════════════════════════
  * OPTIMIZACIÓN DE RUTAS — lo que el CRM sabe leer del servidor
@@ -250,7 +252,7 @@ export function leerAhorro(raw: unknown): AhorroRuta | null {
   };
 }
 
-const nf = (dec: number) => new Intl.NumberFormat('es', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+const nf = (dec: number) => new Intl.NumberFormat(localeActual(), { minimumFractionDigits: dec, maximumFractionDigits: dec });
 
 /** «8,4 km» · «14 km». */
 export function km(v: number | null | undefined): string {
@@ -289,7 +291,7 @@ export function fechaOptimizacion(iso: unknown): string | null {
   if (!iso) return null;
   const d = new Date(String(iso));
   if (Number.isNaN(d.getTime())) return null;
-  return d.toLocaleString('es', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleString(localeActual(), { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
 }
 
 /* ── Origen y destino ────────────────────────────────────────────────────── */

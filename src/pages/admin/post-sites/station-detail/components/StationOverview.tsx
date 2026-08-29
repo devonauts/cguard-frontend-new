@@ -13,6 +13,7 @@ import { reverseGeocode } from '@/lib/geocodeClient';
 import { Section, StatCard, Stagger } from '@/components/kit';
 import type { Station } from '@/types';
 
+import { localeActual } from '@/lib/localeActual'
 interface StationDetail extends Station {
   name?: string;
   latitude?: number | string | null;
@@ -303,8 +304,8 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
       overtime: { label: 'Horas extra', tone: 'primary' },
       pending_review: { label: 'En revisión', tone: 'slate' },
     };
-    const fmtHM = (d: any) => (d ? new Date(d).toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' }) : null);
-    const fmtDay = (d: any) => (d ? new Date(d).toLocaleDateString('es', { day: '2-digit', month: 'short' }) : '');
+    const fmtHM = (d: any) => (d ? new Date(d).toLocaleTimeString(localeActual(), { hour: '2-digit', minute: '2-digit' }) : null);
+    const fmtDay = (d: any) => (d ? new Date(d).toLocaleDateString(localeActual(), { day: '2-digit', month: 'short' }) : '');
     // Tinte estable por vigilante: el acento del usuario ROTADO de tono. No es un
     // color escrito — se repinta solo al cambiar el acento y funciona en ambos temas.
     const guardHue = (nm: string) => { let h = 0; for (let i = 0; i < nm.length; i++) h = (h * 31 + nm.charCodeAt(i)) >>> 0; return [0, 200, 45, 250, 100, 310, 155, 25][h % 8]; };

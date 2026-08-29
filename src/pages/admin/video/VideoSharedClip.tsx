@@ -4,6 +4,7 @@ import { Loader2, ShieldAlert, Film, Clock } from "lucide-react";
 import { EmptyState, IconTile } from "@/components/kit";
 import { ApiService } from "@/services/api/apiService";
 
+import { localeActual } from '@/lib/localeActual'
 interface SharedClip {
   label?: string;
   url?: string;
@@ -37,7 +38,7 @@ export default function VideoSharedClip() {
     return () => { on = false; };
   }, [token]);
 
-  const fmt = (v?: string) => { try { return v ? new Intl.DateTimeFormat("es", { dateStyle: "medium", timeStyle: "short" }).format(new Date(v)) : ""; } catch { return v || ""; } };
+  const fmt = (v?: string) => { try { return v ? new Intl.DateTimeFormat(localeActual(), { dateStyle: "medium", timeStyle: "short" }).format(new Date(v)) : ""; } catch { return v || ""; } };
 
   return (
     /* `app-shell` trae los halos del lienzo: es lo que le da al cristal algo que

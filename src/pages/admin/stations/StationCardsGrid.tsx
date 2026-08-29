@@ -10,6 +10,7 @@ import { StatusBadge, SkeletonCards, EmptyState, GlassPanel, SmartImage } from "
 import type { StationCard } from "@/lib/api/stationService";
 import { getTenantTimezone } from "@/utils/tenantLocation";
 
+import { localeActual } from '@/lib/localeActual'
 /**
  * ════════════════════════════════════════════════════════════════════════════
  * «CON COBERTURA» NO QUERÍA DECIR LO QUE PARECÍA
@@ -38,7 +39,7 @@ function horaCorta(iso?: string | null): string | null {
   if (!iso) return null;
   try {
     const tz = getTenantTimezone();
-    return new Date(iso).toLocaleTimeString("es-EC", {
+    return new Date(iso).toLocaleTimeString(localeActual(), {
       hour: "2-digit", minute: "2-digit", hour12: false,
       ...(tz ? { timeZone: tz } : {}),
     });

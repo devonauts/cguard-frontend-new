@@ -1,3 +1,5 @@
+
+import { localeActual } from '@/lib/localeActual'
 export function getServerErrorMessage(error: any, fallback = 'Error desconocido') {
   try {
     if (!error) return fallback;
@@ -81,10 +83,10 @@ export function weeklyRestWeekday(style: RotationCycle, platoonOffset: number): 
   const cycle = style.dayShifts + style.nightShifts + style.restDays;
   if (cycle <= 0 || cycle % 7 !== 0) return null;
   const d = nextRestDates(style, platoonOffset, new Date(), 1, cycle + 7)[0];
-  return d ? d.toLocaleDateString('es-ES', { weekday: 'long' }) : null;
+  return d ? d.toLocaleDateString(localeActual(), { weekday: 'long' }) : null;
 }
 
 /** Short human date, e.g. "lun 27 jul". */
 export function shortRestLabel(d: Date): string {
-  return d.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
+  return d.toLocaleDateString(localeActual(), { weekday: 'short', day: 'numeric', month: 'short' });
 }

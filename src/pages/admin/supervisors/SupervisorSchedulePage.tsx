@@ -9,6 +9,7 @@ import { PageContainer, EmptyState, StatusBadge, SkeletonCards, GlassPanel } fro
 import { ListSection } from './ListSection';
 import { supervisorService } from '@/lib/api/supervisorService';
 
+import { localeActual } from '@/lib/localeActual'
 interface ScheduleRow {
   date: string | null;
   start: string | null;
@@ -20,7 +21,7 @@ interface ScheduleRow {
 function fmtTime(v: string | null): string {
   if (!v) return '—';
   const d = new Date(v);
-  return isNaN(d.getTime()) ? '—' : d.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' });
+  return isNaN(d.getTime()) ? '—' : d.toLocaleTimeString(localeActual(), { hour: '2-digit', minute: '2-digit' });
 }
 
 function fmtDateHeading(v: string): string {
@@ -28,7 +29,7 @@ function fmtDateHeading(v: string): string {
   const [y, m, d] = v.split('-').map(Number);
   const date = new Date(y, (m || 1) - 1, d || 1);
   if (isNaN(date.getTime())) return v;
-  const s = date.toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' });
+  const s = date.toLocaleDateString(localeActual(), { weekday: 'long', day: 'numeric', month: 'long' });
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 

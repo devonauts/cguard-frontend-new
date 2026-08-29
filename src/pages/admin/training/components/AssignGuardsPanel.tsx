@@ -22,6 +22,7 @@ import {
 } from '@/lib/api/trainingEnrollmentService';
 import { ENROLLMENT_STATUS_LABELS, ENROLLMENT_STATUS_TONE } from '../trainingConstants';
 
+import { localeActual } from '@/lib/localeActual'
 interface GuardOption {
   id: string;
   name: string;
@@ -163,7 +164,7 @@ export default function AssignGuardsPanel({ courseId, published }: Props) {
       header: 'Completado',
       render: (_v, e) => (
         <span className="tabular-nums" style={{ color: 'var(--ink-soft)' }}>
-          {e.completedAt ? new Date(e.completedAt).toLocaleDateString('es-EC') : '—'}
+          {e.completedAt ? new Date(e.completedAt).toLocaleDateString(localeActual()) : '—'}
         </span>
       ),
     },

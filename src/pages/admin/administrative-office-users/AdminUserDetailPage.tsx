@@ -19,6 +19,7 @@ import {
 import type { LucideIcon } from 'lucide-react';
 import type { AdminUser, RoleRef, TenantUser } from './adminUserTypes';
 
+import { localeActual } from '@/lib/localeActual'
 const photoOf = (u: AdminUser | null): string | null => {
   const a = u?.avatars ?? u?.avatar ?? u?.profileImage;
   const f = Array.isArray(a) ? a[0] : a;
@@ -32,7 +33,7 @@ const STATUS_META: Record<string, { label: string; tone: 'ok' | 'warn' | 'neutra
   archived: { label: 'Archivado', tone: 'neutral' },
 };
 
-const fmtDate = (v: string | number | Date | null | undefined) => (v ? new Date(v).toLocaleDateString('es-EC', { day: '2-digit', month: 'short', year: 'numeric' }) : '—');
+const fmtDate = (v: string | number | Date | null | undefined) => (v ? new Date(v).toLocaleDateString(localeActual(), { day: '2-digit', month: 'short', year: 'numeric' }) : '—');
 
 export default function AdminUserDetailPage() {
   const { t } = useTranslation();

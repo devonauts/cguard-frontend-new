@@ -20,6 +20,7 @@ import RouteDetailModal from '../routes/RouteDetailModal';
 import { InsigniaOptimizada, LineaAhorro } from '../routes/OptimizacionPanel';
 import { leerAhorro, km as fmtKm, minutos as fmtMin } from '../routes/routeOptimizacion';
 
+import { localeActual } from '@/lib/localeActual'
 const DOW_NUM: Record<string, number> = {
   sun: 0, sunday: 0, dom: 0, domingo: 0,
   mon: 1, monday: 1, lun: 1, lunes: 1,
@@ -231,7 +232,7 @@ export default function PatrullaBoardPage() {
                         <span className="flex items-center gap-1"><MapPin className="size-3.5" style={{ color: 'var(--brand-text)' }} />{stops} paradas</span>
                         {route.vehicleName || route.vehicle?.name ? <span className="flex items-center gap-1"><Car className="size-3.5" />{route.vehicleName || route.vehicle?.name}</span> : null}
                         {route.assignedGuardName || route.guardName ? <span className="flex items-center gap-1"><User className="size-3.5" />{route.assignedGuardName || route.guardName}</span> : null}
-                        {route.windowStart && <span className="flex items-center gap-1"><Clock className="size-3.5" />{new Date(route.windowStart).toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit' })}</span>}
+                        {route.windowStart && <span className="flex items-center gap-1"><Clock className="size-3.5" />{new Date(route.windowStart).toLocaleTimeString(localeActual(), { hour: '2-digit', minute: '2-digit' })}</span>}
                       </div>
                       {/* El ahorro no se esconde: es lo que convierte «optimizar»
                           en una decisión y no en un botón de adorno. */}

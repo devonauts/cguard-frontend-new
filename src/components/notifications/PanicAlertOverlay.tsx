@@ -6,6 +6,7 @@ import { startPanicAlarm, stopPanicAlarm } from "@/lib/notificationSound";
 import { ApiService } from "@/services/api/apiService";
 import type { PlatformNotification } from "@/hooks/useNotificationStream";
 
+import { localeActual } from '@/lib/localeActual'
 /**
  * AHORRO · El mapa llega SÓLO cuando hay un pánico en pantalla.
  *
@@ -150,7 +151,7 @@ export function PanicAlertOverlay({
   const hasCoords = !isNaN(lat) && !isNaN(lng) && (lat !== 0 || lng !== 0);
   const when = (() => {
     try {
-      return new Date(p.at || latest.createdAt).toLocaleString("es", {
+      return new Date(p.at || latest.createdAt).toLocaleString(localeActual(), {
         hour: "2-digit",
         minute: "2-digit",
         day: "2-digit",

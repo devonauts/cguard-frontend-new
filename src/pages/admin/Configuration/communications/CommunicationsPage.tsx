@@ -44,6 +44,7 @@ import {
 } from "@/lib/api/communicationService";
 import WhatsAppBusinessCard from "./WhatsAppBusinessCard";
 
+import { localeActual } from '@/lib/localeActual'
 const RECHARGE_PRESETS = [10, 25, 50, 100];
 const CHANNEL_OPTIONS = ["push", "whatsapp", "sms", "email"];
 const PROVIDER_OPTIONS = ["fcm", "meta", "twilio", "smtp"];
@@ -63,7 +64,7 @@ const TYPE_OPTIONS = [
 ];
 
 function money(cents: number, currency = "USD") {
-  return new Intl.NumberFormat("es-EC", { style: "currency", currency }).format(
+  return new Intl.NumberFormat(localeActual(), { style: "currency", currency }).format(
     (cents || 0) / 100,
   );
 }
@@ -72,7 +73,7 @@ function fmtDate(value?: string | null) {
   if (!value) return "—";
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return String(value);
-  return d.toLocaleString("es-ES", {
+  return d.toLocaleString(localeActual(), {
     year: "numeric",
     month: "short",
     day: "2-digit",

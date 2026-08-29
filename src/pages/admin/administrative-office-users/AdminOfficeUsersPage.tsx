@@ -60,6 +60,7 @@ import { PermissionedButton } from '@/components/permissions/Permissioned';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import MobileCardList from '@/components/responsive/MobileCardList';
 
+import { localeActual } from '@/lib/localeActual'
 /* Debounce helper */
 function useDebounced<T>(value: T, delay = 400) {
   const [deb, setDeb] = useState(value);
@@ -934,7 +935,7 @@ export default function AdminOfficeUsersPage() {
                         if (u.active === false) return <StatusBadge tone="bad">{t('adminOfficeUsers.statuses.inactive', { defaultValue: 'Inactivo' })}</StatusBadge>;
                         return <StatusBadge tone="ok">{t('adminOfficeUsers.statuses.active', { defaultValue: 'Activo' })}</StatusBadge>;
                       })()}
-                      <div className="text-xs tabular-nums" style={{ color: 'var(--ink-soft)' }}>{u.lastLoginAt ? new Date(u.lastLoginAt as string).toLocaleString('es-EC') : '—'}</div>
+                      <div className="text-xs tabular-nums" style={{ color: 'var(--ink-soft)' }}>{u.lastLoginAt ? new Date(u.lastLoginAt as string).toLocaleString(localeActual()) : '—'}</div>
                     </div>
                   </div>
                 </GlassPanel>

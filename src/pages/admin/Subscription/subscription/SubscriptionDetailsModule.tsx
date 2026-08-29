@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Sparkles, CreditCard, Check } from "lucide-react";
+import { localeActual } from '@/lib/localeActual'
 import {
   PageContainer,
   PageHeader,
@@ -62,7 +63,7 @@ function fmtDate(iso: string | null | undefined): string {
   if (!iso) return "—";
   const d = new Date(iso);
   if (isNaN(d.getTime())) return "—";
-  return d.toLocaleDateString("es-ES", {
+  return d.toLocaleDateString(localeActual(), {
     day: "2-digit",
     month: "short",
     year: "numeric",

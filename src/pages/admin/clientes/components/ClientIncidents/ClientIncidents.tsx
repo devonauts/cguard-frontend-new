@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Search, AlertTriangle, ShieldCheck, Clock, Timer, CheckCircle2, Gauge, MapPin, Paperclip, ListChecks, FileText, Play, ShieldAlert } from 'lucide-react';
 
+import { localeActual } from '@/lib/localeActual'
 type BadgeTone = 'bad' | 'warn' | 'info' | 'ok';
 
 // ── Shape of GET /client-account/:id/incidents-board (clientAccountIncidentsBoard.ts) ──
@@ -73,9 +74,9 @@ const ESTADO: Record<string, { label: string; tone: BadgeTone; dot: string }> = 
 };
 const WS_OPTIONS = [{ v: 'open', l: 'Abierto' }, { v: 'inProgress', l: 'En investigación' }, { v: 'resolved', l: 'Resuelto' }];
 
-const fmtDT = (iso: string) => { const d = new Date(iso); return Number.isNaN(d.getTime()) ? '—' : d.toLocaleString('es-EC', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }); };
-const fmtDate = (iso: string) => { const d = new Date(iso); return Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString('es-EC', { day: '2-digit', month: '2-digit', year: 'numeric' }); };
-const fmtTime = (iso: string) => { const d = new Date(iso); return Number.isNaN(d.getTime()) ? '' : d.toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit' }); };
+const fmtDT = (iso: string) => { const d = new Date(iso); return Number.isNaN(d.getTime()) ? '—' : d.toLocaleString(localeActual(), { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }); };
+const fmtDate = (iso: string) => { const d = new Date(iso); return Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString(localeActual(), { day: '2-digit', month: '2-digit', year: 'numeric' }); };
+const fmtTime = (iso: string) => { const d = new Date(iso); return Number.isNaN(d.getTime()) ? '' : d.toLocaleTimeString(localeActual(), { hour: '2-digit', minute: '2-digit' }); };
 const resLabel = (ms: number | null) => {
   if (ms == null) return '—';
   const h = ms / 3600000;
@@ -126,7 +127,7 @@ export default function ClientIncidents({ client }: { client: Client }) {
   const total = data?.total ?? 0;
   const pageCount = Math.max(1, Math.ceil(total / perPage));
   const selected = incidents.find((i) => i.id === selectedId) || null;
-  const fmtUpdated = data?.updatedAt ? new Date(data.updatedAt).toLocaleString('es-EC', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
+  const fmtUpdated = data?.updatedAt ? new Date(data.updatedAt).toLocaleString(localeActual(), { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
 
   // Load evidence when selection changes.
   useEffect(() => {

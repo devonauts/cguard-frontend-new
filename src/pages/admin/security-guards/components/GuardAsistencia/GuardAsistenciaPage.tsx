@@ -9,6 +9,7 @@ import attendanceService, { type AttendanceRecord } from '@/lib/api/attendanceSe
 import { StatusBadge, ApprovalBadge, STATUS_META, approvalLabel, fmtDateTime, fmtTime, fmtHours } from '@/pages/admin/nomina/shared';
 import { CalendarClock, ChevronLeft, ChevronRight, Download, Clock, CalendarDays, Timer, ExternalLink } from 'lucide-react';
 
+import { localeActual } from '@/lib/localeActual'
 type Period = 'week' | 'month';
 
 /** [start, end] bounds for the period containing `anchor` (local time). */
@@ -32,9 +33,9 @@ function shiftAnchor(period: Period, anchor: Date, dir: number): Date {
 
 function rangeLabel(period: Period, anchor: Date): string {
   const [s, e] = rangeFor(period, anchor);
-  if (period === 'month') return s.toLocaleDateString('es', { month: 'long', year: 'numeric' });
+  if (period === 'month') return s.toLocaleDateString(localeActual(), { month: 'long', year: 'numeric' });
   const sameMonth = s.getMonth() === e.getMonth();
-  return `${s.toLocaleDateString('es', { day: '2-digit', month: sameMonth ? undefined : 'short' })} – ${e.toLocaleDateString('es', { day: '2-digit', month: 'short', year: 'numeric' })}`;
+  return `${s.toLocaleDateString(localeActual(), { day: '2-digit', month: sameMonth ? undefined : 'short' })} – ${e.toLocaleDateString(localeActual(), { day: '2-digit', month: 'short', year: 'numeric' })}`;
 }
 
 function csvCell(v: unknown): string {
@@ -79,7 +80,7 @@ export default function GuardAsistenciaPage() {
     const days = new Set<string>();
     let hours = 0, late = 0;
     for (const r of rows) {
-      if (r.punchInTime) days.add(new Date(r.punchInTime).toLocaleDateString('es'));
+      if (r.punchInTime) days.add(new Date(r.punchInTime).toLocaleDateString(localeActual()));
       hours += Number(r.hoursWorked || 0);
       if (r.status === 'late' || Number(r.lateMinutes || 0) > 0) late += 1;
     }
@@ -90,11 +91,11 @@ export default function GuardAsistenciaPage() {
     if (!rows.length) { toast.error(t('comun.noHayRegistrosParaExportar')); return; }
     const headers = ['Fecha', 'Puesto', 'Programado inicio', 'Programado fin', 'Entrada', 'Salida', 'Horas', 'Tarde (min)', 'Extra (min)', 'Fuera de geocerca', 'Estado', 'Aprobación'];
     const body = rows.map((r) => [
-      r.punchInTime ? new Date(r.punchInTime).toLocaleDateString('es') : '',
+      r.punchInTime ? new Date(r.punchInTime).toLocaleDateString(localeActual()) : '',
       r.stationName?.stationName || '',
       fmtTime(r.scheduledStart), fmtTime(r.scheduledEnd),
-      r.punchInTime ? new Date(r.punchInTime).toLocaleString('es') : '',
-      r.punchOutTime ? new Date(r.punchOutTime).toLocaleString('es') : '',
+      r.punchInTime ? new Date(r.punchInTime).toLocaleString(localeActual()) : '',
+      r.punchOutTime ? new Date(r.punchOutTime).toLocaleString(localeActual()) : '',
       r.hoursWorked ?? '', r.lateMinutes ?? 0, r.overtimeMinutes ?? 0,
       r.punchInOutsideGeofence ? 'Sí' : 'No',
       STATUS_META[r.status]?.label || r.status || '', approvalLabel(r.approvalStatus),
@@ -172,7 +173,7 @@ export default function GuardAsistenciaPage() {
                 <tbody>
                   {rows.map((r) => (
                     <tr key={r.id} className="border-b border-border/20 hover:bg-muted/20">
-                      <td className="px-3 py-2.5 text-foreground">{r.punchInTime ? new Date(r.punchInTime).toLocaleDateString('es', { day: '2-digit', month: 'short' }) : '—'}</td>
+                      <td className="px-3 py-2.5 text-foreground">{r.punchInTime ? new Date(r.punchInTime).toLocaleDateString(localeActual(), { day: '2-digit', month: 'short' }) : '—'}</td>
                       <td className="px-3 py-2.5 text-muted-foreground">{r.stationName?.stationName || '—'}</td>
                       <td className="px-3 py-2.5 tabular-nums">{fmtDateTime(r.punchInTime)}</td>
                       <td className="px-3 py-2.5 tabular-nums">{r.punchOutTime ? fmtDateTime(r.punchOutTime) : <span className="text-muted-foreground">—</span>}</td>

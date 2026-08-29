@@ -19,6 +19,7 @@ import {
 import type { LucideIcon } from 'lucide-react';
 import { confirmDialog } from "@/components/ui/confirmDialog";
 
+import { localeActual } from '@/lib/localeActual'
 // ── Shape of GET /client-account/:id/contract (clientAccountContract.ts) ──
 interface ContractTerms {
   id: string; name: string; code: string | null; active: boolean;
@@ -81,7 +82,7 @@ const SERVICE_KEYS = Object.keys(SERVICE_PRESETS);
 const fmtDate = (d: string | number | Date | null | undefined) => {
   if (!d) return '—';
   const dt = new Date(typeof d === 'string' && d.length <= 10 ? `${d}T00:00:00` : d);
-  return Number.isNaN(dt.getTime()) ? '—' : dt.toLocaleDateString('es-EC', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  return Number.isNaN(dt.getTime()) ? '—' : dt.toLocaleDateString(localeActual(), { day: '2-digit', month: '2-digit', year: 'numeric' });
 };
 const orDash = (v: unknown) => (v === null || v === undefined || v === '' ? '—' : (v as ReactNode));
 
@@ -334,7 +335,7 @@ export default function ClientContract({ client }: { client: Client }) {
                 {services.map((s) => {
                   const Icon = SERVICE_PRESETS[s.serviceKey]?.icon || ClipboardList;
                   const contracted = s.contractedQty == null ? 'Ilimitado' : s.contractedQty;
-                  const used = s.used == null ? '—' : s.used.toLocaleString('es-EC');
+                  const used = s.used == null ? '—' : s.used.toLocaleString(localeActual());
                   const comp = s.compliance;
                   const target = s.slaTarget ?? 90;
                   const estado = comp == null ? 'Activo' : comp >= target ? 'Cumple' : 'Atención';
@@ -378,11 +379,11 @@ export default function ClientContract({ client }: { client: Client }) {
 
       {/* Stat cards */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard label="Horas contratadas / mes" value={derived.hoursContracted != null ? `${derived.hoursContracted.toLocaleString('es-EC')} h` : '—'} icon={<Clock className="h-4 w-4" />} hint={t("ui.ClientContract.segunElContrato", "Según el contrato")} />
-        <StatCard label="Horas utilizadas (mes)" value={`${(derived.hoursUsed || 0).toLocaleString('es-EC')} h`} icon={<Timer className="h-4 w-4" />} hint="De turnos reales" />
+        <StatCard label="Horas contratadas / mes" value={derived.hoursContracted != null ? `${derived.hoursContracted.toLocaleString(localeActual())} h` : '—'} icon={<Clock className="h-4 w-4" />} hint={t("ui.ClientContract.segunElContrato", "Según el contrato")} />
+        <StatCard label="Horas utilizadas (mes)" value={`${(derived.hoursUsed || 0).toLocaleString(localeActual())} h`} icon={<Timer className="h-4 w-4" />} hint="De turnos reales" />
         <StatCard
           label="Diferencia"
-          value={diff == null ? '—' : `${diff > 0 ? '+' : ''}${diff.toLocaleString('es-EC')} h`}
+          value={diff == null ? '—' : `${diff > 0 ? '+' : ''}${diff.toLocaleString(localeActual())} h`}
           accent={diff != null && diff < 0 ? 'red' : 'green'}
           icon={<Gauge className="h-4 w-4" />}
           hint={diff == null ? 'Define horas contratadas' : diff < 0 ? 'Por debajo de lo contratado' : 'Dentro / sobre lo contratado'}

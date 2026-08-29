@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import guardMeService from '@/lib/api/guardMeService';
 import { PageContainer, PageHeader, Section, StatusBadge, FadeIn, IconTile } from '@/components/kit';
 
+import { localeActual } from '@/lib/localeActual'
 export default function GuardDashboard() {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
@@ -110,7 +111,7 @@ export default function GuardDashboard() {
 
   const fmtTime = (v: any) => {
     if (!v) return '-';
-    try { return new Intl.DateTimeFormat('es', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(v)); }
+    try { return new Intl.DateTimeFormat(localeActual(), { dateStyle: 'short', timeStyle: 'short' }).format(new Date(v)); }
     catch { return String(v); }
   };
 

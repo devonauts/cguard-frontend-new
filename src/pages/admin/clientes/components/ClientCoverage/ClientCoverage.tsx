@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { ApiService } from '@/services/api/apiService';
 import { confirmDialog } from '@/components/ui/confirmDialog';
+import { localeActual } from '@/lib/localeActual'
 import {
   DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
@@ -204,7 +205,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
     : sede && Number.isFinite(sede.lat) ? { lat: sede.lat!, lng: sede.lng! }
     : mapMarkers[0] ? { lat: mapMarkers[0].lat, lng: mapMarkers[0].lng } : null;
 
-  const fmtUpdated = data?.updatedAt ? new Date(data.updatedAt).toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '';
+  const fmtUpdated = data?.updatedAt ? new Date(data.updatedAt).toLocaleTimeString(localeActual(), { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '';
 
   if (loading && !data) return <TabLoading />;
 

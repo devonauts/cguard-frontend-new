@@ -9,6 +9,7 @@ import ContextMenu, { CtxMenuState } from './ContextMenu';
 import type { Station, ShiftRecord, GuardOption } from '@/types';
 import { stationLabel, stationShort } from "@/lib/stationName";
 
+import { localeActual } from '@/lib/localeActual'
 /**
  * Semana/Día timeline for Programador › Horario, Google-Calendar style with a
  * PUESTO sub-axis: DAYS are the top-level COLUMNS and inside each day there is
@@ -508,7 +509,7 @@ export default function ScheduleTimeline({
                         className="truncate px-2 pt-0.5 text-[11px] font-semibold"
                         style={{ color: isToday ? 'var(--brand-text)' : 'var(--ink)' }}
                       >
-                        {DAYS_ES[day.getDay()]} {day.getDate()} <span className="font-normal" style={{ color: 'var(--ink-faint)' }}>{day.toLocaleDateString('es', { month: 'short' })}</span>
+                        {DAYS_ES[day.getDay()]} {day.getDate()} <span className="font-normal" style={{ color: 'var(--ink-faint)' }}>{day.toLocaleDateString(localeActual(), { month: 'short' })}</span>
                         {view === 'day' && di === 1 && <span className="ml-1 text-[9px] font-normal" style={{ color: 'var(--ink-faint)' }}>{t('ui.ScheduleTimeline.siguiente')}</span>}
                       </div>
                       {/* Estación sub-columns */}

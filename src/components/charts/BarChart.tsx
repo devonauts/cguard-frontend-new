@@ -4,6 +4,7 @@ import { useElementWidth, useSvgId, topRoundedRect, clamp } from './internals';
 import { useSeriesColor } from './useSeriesColor';
 import ChartTooltip from './ChartTooltip';
 
+import { localeActual } from '@/lib/localeActual'
 export interface BarDatum {
   /** Etiqueta de la categoría — es lo que sale en el globo. */
   label: string;
@@ -53,7 +54,7 @@ export default function BarChart({
   tone = 'brand',
   color,
   gridLines = 3,
-  formatValue = (v) => v.toLocaleString('es-EC'),
+  formatValue = (v) => v.toLocaleString(localeActual()),
   showEdgeLabels = false,
   className,
   ariaLabel,

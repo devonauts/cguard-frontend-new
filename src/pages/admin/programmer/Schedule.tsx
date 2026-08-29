@@ -46,6 +46,7 @@ import SupervisionSection from './SupervisionSection';
 import MonthStationBlock, { type BlockSel, type MonthGridHandlers } from './MonthStationBlock';
 import { COL_W, COL_STICKY_W } from './gridBand';
 
+import { localeActual } from '@/lib/localeActual'
 import {
   type Tone, tonePill, toneCard, toneInk,
   OVERRIDE_TONE, CODE_LABEL, CODE_ORDER, codeFill, codePill, codeCard, columnRules,
@@ -1536,7 +1537,7 @@ export default function Schedule() {
         const fmt = (d: Date) =>
           `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
         const fmtHuman = (s: string) =>
-          toLocal(s).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+          toLocal(s).toLocaleDateString(localeActual(), { weekday: 'long', day: 'numeric', month: 'long' });
         const guardId = target.guardId;
         const assignmentId = target.assignmentId;
 
@@ -1931,17 +1932,17 @@ export default function Schedule() {
   }, [loading, bannerVisible, coverage]);
 
   const monthLabel = useMemo(() => {
-    return visibleMonth.toLocaleDateString('es', { month: 'long', year: 'numeric' }).replace(/^./, c => c.toUpperCase());
+    return visibleMonth.toLocaleDateString(localeActual(), { month: 'long', year: 'numeric' }).replace(/^./, c => c.toUpperCase());
   }, [visibleMonth]);
 
   const rangeLabel = useMemo(() => {
     if (view === 'month') return monthLabel;
-    const fmt = (d: Date) => d.toLocaleDateString('es', { day: 'numeric', month: 'short' });
+    const fmt = (d: Date) => d.toLocaleDateString(localeActual(), { day: 'numeric', month: 'short' });
     if (view === 'week') {
       const a = timelineDays[0], b = timelineDays[timelineDays.length - 1];
       return `${fmt(a)} – ${fmt(b)} ${b.getFullYear()}`;
     }
-    return currentDate.toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' }).replace(/^./, c => c.toUpperCase());
+    return currentDate.toLocaleDateString(localeActual(), { weekday: 'long', day: 'numeric', month: 'long' }).replace(/^./, c => c.toUpperCase());
   }, [view, monthLabel, timelineDays, currentDate]);
 
   const todayStr = tzToday();
@@ -2697,7 +2698,7 @@ export default function Schedule() {
         const nextDay = eMinRaw <= sMin;
         const durH = ((nextDay ? eMinRaw + 1440 : eMinRaw) - sMin) / 60;
         const quick = (start: string, end: string) => setSfCover(m => m ? { ...m, startStr: start, endStr: end } : m);
-        const fechaHuman = new Date(sfCover.dateStr + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+        const fechaHuman = new Date(sfCover.dateStr + 'T00:00:00').toLocaleDateString(localeActual(), { weekday: 'long', day: 'numeric', month: 'long' });
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'oklch(0 0 0 / 0.55)' }} onClick={() => setSfCover(null)}>
             <div className="glass-raised mx-4 w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
@@ -2772,7 +2773,7 @@ export default function Schedule() {
       {/* ─── Sacafranco picker (click on an "L" cell) ─────────────────────── */}
       {sfPick && (() => {
         const { station, pos, dateStr } = sfPick;
-        const fecha = new Date(dateStr + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+        const fecha = new Date(dateStr + 'T00:00:00').toLocaleDateString(localeActual(), { weekday: 'long', day: 'numeric', month: 'long' });
         const q = sfPickQuery.trim().toLowerCase();
         const todos = candidatosParaCubrir(dateStr);
         const filas = q ? todos.filter(r => r.nombre.toLowerCase().includes(q)) : todos;

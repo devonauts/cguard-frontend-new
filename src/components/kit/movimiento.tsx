@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import { localeActual } from '@/lib/localeActual'
 /**
  * ════════════════════════════════════════════════════════════════════════════
  * MOVIMIENTO QUE INFORMA
@@ -70,7 +71,7 @@ export function Cifra({
 
   return (
     <span className={className} style={{ fontVariantNumeric: 'tabular-nums', ...style }}>
-      {mostrado.toLocaleString('es-EC', {
+      {mostrado.toLocaleString(localeActual(), {
         minimumFractionDigits: decimales,
         maximumFractionDigits: decimales,
       })}

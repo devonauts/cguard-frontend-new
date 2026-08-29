@@ -31,6 +31,7 @@ import {
   Toolbar,
 } from "@/components/kit";
 import { FaultRail } from "./deviceStatus";
+import { localeActual } from '@/lib/localeActual'
 import {
   CreateIncidentModal,
   DispatchModal,
@@ -92,7 +93,7 @@ function formatWhen(iso?: string | null): string {
   if (!iso) return "—";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "—";
-  return d.toLocaleString("es", {
+  return d.toLocaleString(localeActual(), {
     day: "2-digit",
     month: "short",
     hour: "2-digit",

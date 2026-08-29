@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 import { videoService, type Camera } from "@/lib/api/videoService";
 import i18n from "@/i18n";
 
+import { localeActual } from '@/lib/localeActual'
 /* ------------------------------------------------------------------ */
 /* Shared shell                                                        */
 /* ------------------------------------------------------------------ */
@@ -318,7 +319,7 @@ export function TrimShareModal({
           </Button>
           {expiresAt ? (
             <p className="text-center text-xs text-muted-foreground">
-              Expira el {new Date(expiresAt).toLocaleString("es")}
+              Expira el {new Date(expiresAt).toLocaleString(localeActual())}
             </p>
           ) : null}
         </div>

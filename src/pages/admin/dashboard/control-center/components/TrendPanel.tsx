@@ -13,6 +13,7 @@ import type { MonthPoint } from "../types";
 import { fmtValue, toneFill, toneInk, toneWash, type Tone } from "../tone";
 import { Panel, PanelLink } from "./Panel";
 
+import { localeActual } from '@/lib/localeActual'
 type SerieKey = "incidentes" | "respuesta" | "clientes";
 
 export function TrendPanel({ incidents, response, acquisition, className }: {
@@ -117,7 +118,7 @@ function MovePill({ cambio, mejorSi }: { cambio: number; mejorSi: "menor" | "may
       style={{ background: toneWash(tone, 14), color: toneInk(tone) }}
     >
       <span aria-hidden style={{ color: toneFill(tone) }}>{plano ? "—" : sube ? "▲" : "▼"}</span>
-      {new Intl.NumberFormat("es-EC", { maximumFractionDigits: 1 }).format(Math.abs(cambio) * 100)} %
+      {new Intl.NumberFormat(localeActual(), { maximumFractionDigits: 1 }).format(Math.abs(cambio) * 100)} %
     </span>
   );
 }

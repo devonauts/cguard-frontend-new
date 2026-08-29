@@ -46,6 +46,7 @@ import { PageContainer, PageHeader, Section, MetricTile, Stagger, StatusBadge, E
 import timeOffRequestService, { TimeOffRecord } from "@/lib/api/timeOffRequestService";
 import { securityGuardService } from "@/lib/api/securityGuardService";
 
+import { localeActual } from '@/lib/localeActual'
 // ── helpers ──────────────────────────────────────────────────────────────────
 
 function formatDate(iso: string | null) {
@@ -56,7 +57,7 @@ function formatDate(iso: string | null) {
   const s = String(iso).slice(0, 10);
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
   const d = m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : new Date(iso);
-  return d.toLocaleDateString("es-EC", {
+  return d.toLocaleDateString(localeActual(), {
     day: "2-digit",
     month: "short",
     year: "numeric",

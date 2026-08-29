@@ -14,6 +14,7 @@ import { Search, FileText, FileSpreadsheet, FileImage, FileArchive, File as File
 import type { LucideIcon } from 'lucide-react';
 import { confirmDialog } from "@/components/ui/confirmDialog";
 
+import { localeActual } from '@/lib/localeActual'
 // ── Shape of GET /client-account/:id/documents (clientAccountDocuments.ts) ──
 interface DocRow {
   id: string;
@@ -73,7 +74,7 @@ const BREAK_META = [
   { key: 'others', label: 'Otros', color: seriesVar(3) },
 ];
 
-const fmtDT = (iso: string) => { const d = new Date(iso); return Number.isNaN(d.getTime()) ? '—' : d.toLocaleString('es-EC', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }); };
+const fmtDT = (iso: string) => { const d = new Date(iso); return Number.isNaN(d.getTime()) ? '—' : d.toLocaleString(localeActual(), { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }); };
 const ago = (iso: string) => {
   const s = Math.max(0, (Date.now() - new Date(iso).getTime()) / 1000);
   if (s < 60) return 'hace instantes';
@@ -118,7 +119,7 @@ export default function ClientDocuments({ client }: { client: Client }) {
   const docs: DocRow[] = data?.documents || [];
   const total = data?.total ?? 0;
   const pageCount = Math.max(1, Math.ceil(total / perPage));
-  const fmtUpdated = data?.updatedAt ? new Date(data.updatedAt).toLocaleString('es-EC', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
+  const fmtUpdated = data?.updatedAt ? new Date(data.updatedAt).toLocaleString(localeActual(), { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
 
   const donutSegments = useMemo(() => BREAK_META.map((b) => ({ value: breakdown[b.key]?.bytes || 0, color: b.color, label: b.label })).filter((s) => s.value > 0), [breakdown]);
   const resetPage = (fn: (v: string) => void) => (v: string) => { fn(v); setPage(1); };

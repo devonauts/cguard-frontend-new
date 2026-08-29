@@ -10,6 +10,7 @@ import securityGuardService from '@/lib/api/securityGuardService';
 import { CalendarDays, ChevronLeft, ChevronRight, RefreshCw } from 'lucide-react';
 import type { ScheduleSnapshot } from '../../guardDetailTypes';
 
+import { localeActual } from '@/lib/localeActual'
 // Must stay identical to the client ScheduleCard legend — same engine
 // (scheduleGridService) feeds both, so the codes must read the same too.
 // Día y noche NO son estados semánticos: el día toma el azul informativo y la
@@ -77,7 +78,7 @@ export default function GuardHorarioPage() {
   };
 
   const rangeLabel = data?.startDate && data?.endDate
-    ? `${new Date(`${data.startDate}T00:00:00`).toLocaleDateString('es-EC', { day: '2-digit', month: 'short' })} – ${new Date(`${data.endDate}T00:00:00`).toLocaleDateString('es-EC', { day: '2-digit', month: 'short' })}`
+    ? `${new Date(`${data.startDate}T00:00:00`).toLocaleDateString(localeActual(), { day: '2-digit', month: 'short' })} – ${new Date(`${data.endDate}T00:00:00`).toLocaleDateString(localeActual(), { day: '2-digit', month: 'short' })}`
     : '';
 
   return (

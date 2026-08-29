@@ -29,6 +29,7 @@
 
 import { metrosEntre, rumboEntre, type Punto } from "@/utils/mapMotion";
 
+import { localeActual } from '@/lib/localeActual'
 /** Un ping del GPS tal y como lo entrega `securityGuardService.trail()`. */
 export interface PuntoRecorrido extends Punto {
   at: string;
@@ -398,13 +399,13 @@ export function hora(iso: string | number | Date | null | undefined): string {
   const d = new Date(iso);
   return Number.isNaN(d.getTime())
     ? "—"
-    : d.toLocaleTimeString("es-EC", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    : d.toLocaleTimeString(localeActual(), { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 }
 
 export function fechaHora(iso: string | number | Date | null | undefined): string {
   if (iso == null) return "—";
   const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString("es-EC");
+  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString(localeActual());
 }
 
 /** «hace 40 s», «hace 12 min», «hace 3 h». Sin `Intl.RelativeTimeFormat` para
@@ -438,7 +439,7 @@ export function duracion(ms: number): string {
 export function kmh(ms: number | null | undefined): string {
   if (typeof ms !== "number" || !Number.isFinite(ms) || ms < 0) return "—";
   const v = ms * 3.6;
-  return `${v.toLocaleString("es-EC", { minimumFractionDigits: v < 10 ? 1 : 0, maximumFractionDigits: 1 })} km/h`;
+  return `${v.toLocaleString(localeActual(), { minimumFractionDigits: v < 10 ? 1 : 0, maximumFractionDigits: 1 })} km/h`;
 }
 
 /** Metros → «820 m» / «12,4 km». */
@@ -446,5 +447,5 @@ export function distancia(m: number): string {
   if (!Number.isFinite(m) || m < 0) return "—";
   if (m < 1000) return `${Math.round(m)} m`;
   const km = m / 1000;
-  return `${km.toLocaleString("es-EC", { minimumFractionDigits: km < 10 ? 2 : 1, maximumFractionDigits: 2 })} km`;
+  return `${km.toLocaleString(localeActual(), { minimumFractionDigits: km < 10 ? 2 : 1, maximumFractionDigits: 2 })} km`;
 }

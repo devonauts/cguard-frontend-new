@@ -1,3 +1,5 @@
+
+import { localeActual } from '@/lib/localeActual'
 // Shared helpers for the first-login business onboarding feature.
 // Keeps tenant extraction, completeness, trial math and timezone options
 // consistent across the wizard, banner, header badge and provider.
@@ -172,7 +174,7 @@ export function formatTrialEndDate(trialEndsAt?: string | null): string | null {
   const d = new Date(trialEndsAt);
   if (Number.isNaN(d.getTime())) return null;
   try {
-    return d.toLocaleDateString("es-EC", { day: "numeric", month: "long", year: "numeric" });
+    return d.toLocaleDateString(localeActual(), { day: "numeric", month: "long", year: "numeric" });
   } catch {
     return d.toLocaleDateString();
   }

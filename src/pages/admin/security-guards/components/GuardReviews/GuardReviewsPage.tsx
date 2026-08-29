@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import type { GuardDetail } from '../../guardDetailTypes';
 
+import { localeActual } from '@/lib/localeActual'
 function Stars({ value, size = 'h-4 w-4' }: { value: number; size?: string }) {
   return (
     <span className="inline-flex items-center gap-0.5" aria-label={`${value} de 5`}>
@@ -35,7 +36,7 @@ function Stars({ value, size = 'h-4 w-4' }: { value: number; size?: string }) {
 }
 
 const fmtDate = (iso: string | null) =>
-  iso ? new Date(iso).toLocaleDateString('es-EC', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+  iso ? new Date(iso).toLocaleDateString(localeActual(), { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
 
 export default function GuardReviewsPage() {
   const { t } = useTranslation();

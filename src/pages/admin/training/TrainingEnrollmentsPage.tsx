@@ -31,6 +31,7 @@ import { ENROLLMENT_STATUS_LABELS, ENROLLMENT_STATUS_TONE } from './trainingCons
 import { PageContainer, PageHeader, Section, StatCard, Stagger, StatusBadge, EmptyState, SkeletonCards } from '@/components/kit';
 import { DataTable, type Column } from '@/components/table/DataTable';
 
+import { localeActual } from '@/lib/localeActual'
 export default function TrainingEnrollmentsPage() {
   const { t } = useTranslation();
   const { courseId } = useParams<{ courseId: string }>();
@@ -142,7 +143,7 @@ export default function TrainingEnrollmentsPage() {
       header: 'Fecha límite',
       render: (_v, r) => (
         <span className="tabular-nums" style={{ color: 'var(--ink-soft)' }}>
-          {r.dueDate ? new Date(r.dueDate).toLocaleDateString('es-EC') : '—'}
+          {r.dueDate ? new Date(r.dueDate).toLocaleDateString(localeActual()) : '—'}
         </span>
       ),
     },
@@ -151,7 +152,7 @@ export default function TrainingEnrollmentsPage() {
       header: 'Completado',
       render: (_v, r) => (
         <span className="tabular-nums" style={{ color: 'var(--ink-soft)' }}>
-          {r.completedAt ? new Date(r.completedAt).toLocaleDateString('es-EC') : '—'}
+          {r.completedAt ? new Date(r.completedAt).toLocaleDateString(localeActual()) : '—'}
         </span>
       ),
     },
@@ -257,7 +258,7 @@ export default function TrainingEnrollmentsPage() {
                         : <Clock className="h-4 w-4" style={{ color: 'var(--ink-faint)' }} />}
                       <span className="flex-1">{lc.title}</span>
                       <span className="text-xs tabular-nums" style={{ color: 'var(--ink-soft)' }}>
-                        {lc.completedAt ? new Date(lc.completedAt).toLocaleDateString('es-EC') : 'Pendiente'}
+                        {lc.completedAt ? new Date(lc.completedAt).toLocaleDateString(localeActual()) : 'Pendiente'}
                       </span>
                     </div>
                   ))}

@@ -151,7 +151,9 @@
       "desc": "Reimposta la password del tuo account guardia per rientrare nell'app C-Guard Pro.",
       "eyebrow": "App per guardie",
       "tag_incidents": "Segnalazione incidenti",
-      "title_part1": "Il tuo turno,"
+      "title_part1": "Il tuo turno,",
+      "tag_clock": "Entrate e uscite",
+      "tag_patrol": "Ronde e pattugliamenti"
     },
     "forgot_subtitle": "Scrivi la tua email e ti inviamo un link per crearne una nuova.",
     "forgot_title": "Hai dimenticato la password?",
@@ -176,12 +178,17 @@
     "phone_invalid": "Quel numero di telefono non sembra valido. Controlla il paese e il numero.",
     "captcha_pending": "Conferma di non essere un robot per continuare.",
     "send_reset": "Invia link",
-    "honeypot_label": "Non compilare"
+    "honeypot_label": "Non compilare",
+    "enter_password": "Inserisci la tua password",
+    "invalid_email": "Indirizzo email non valido",
+    "reset_error": "Errore durante l'invio del link. Riprova",
+    "sending": "Invio del link…"
   },
   "client": {
     "invite_not_found": "Invito non trovato o non valido.",
     "registration_title": "Registrazione committente",
-    "register": "Attiva il mio account"
+    "register": "Attiva il mio account",
+    "registering": "Registrazione…"
   },
   "clients": {
     "accept": "Accetta",
@@ -293,7 +300,9 @@
       "guardOne": "guardia",
       "manageInStation": "Gestisci nella postazione",
       "siteRosterHint": "Le guardie appartengono alle postazioni di questo sito. Qui vedi il riepilogo; per assegnare, rimuovere o cambiare una guardia, apri la sua postazione.",
-      "view": "Vedi"
+      "view": "Vedi",
+      "guardMany": "guardie",
+      "roleSf": "Sostituto"
     },
     "breadcrumb": {
       "clients": "Committenti",
@@ -312,7 +321,8 @@
       "name": "Committente",
       "phone": "Telefono",
       "status": "Stato",
-      "more": "Altro"
+      "more": "Altro",
+      "appAccess": "App"
     },
     "contacts": {
       "addcontact": "Aggiungi contatto",
@@ -344,7 +354,9 @@
         "Mobile Number": "Numero di cellulare *",
         "Name": "Nome *",
         "checkbox": "Consenti alla guardia di vedere il contatto",
-        "descriptioninput": "Inserisci la descrizione del contatto"
+        "descriptioninput": "Inserisci la descrizione del contatto",
+        "addContact": "Aggiungi contatto",
+        "mobilePlaceholder": "es. +593987654321"
       },
       "loadError": "Impossibile caricare i contatti"
     },
@@ -414,7 +426,14 @@
       "ruc": "P. IVA dell'azienda",
       "searchAddress": "Cerca indirizzo...",
       "selectRisk": "Non definito",
-      "switchToAutocomplete": "Ricerca"
+      "switchToAutocomplete": "Ricerca",
+      "addPerson": "Aggiungi persona",
+      "commercialNamePlaceholder": "Es. Sicurezza Affidabile S.p.A.",
+      "contactInfo": "Contatto",
+      "coordinates": "Coordinate GPS",
+      "legalRep": "Rappresentante legale",
+      "optional": "Facoltativo",
+      "switchToManual": "Manuale"
     },
     "nav": {
       "clientPortal": "Portale del committente",
@@ -470,10 +489,19 @@
         "Title": "Aggiungi nuova nota",
         "Titleinput": "Inserisci il titolo della nota",
         "Titlenote": "Titolo *",
-        "NoFilesSelected": "Nessun file selezionato"
+        "NoFilesSelected": "Nessun file selezionato",
+        "selectDate": "Seleziona"
       },
       "addedBy": "Aggiunto da",
-      "detailsTitle": "Dettaglio della nota"
+      "detailsTitle": "Dettaglio della nota",
+      "Save": "Salva",
+      "SaveChanges": "Salva le modifiche",
+      "delete": "Elimina",
+      "validation": {
+        "dateRequired": "La data è obbligatoria",
+        "descriptionRequired": "La descrizione è obbligatoria",
+        "titleRequired": "Il titolo è obbligatorio"
+      }
     },
     "pagination": {
       "itemsPerPage": "Elementi per pagina",
@@ -562,7 +590,10 @@
         "toursCompleted": "Percorsi completati (ultimi 7 giorni)",
         "onsite": "In turno adesso",
         "viewIncidents": "Vedi incidenti",
-        "viewStaff": "Vedi personale"
+        "viewStaff": "Vedi personale",
+        "contract": "Contratto",
+        "now": "In questo momento",
+        "stations": "Postazioni"
       },
       "contactDetails": {
         "email": "Email",
@@ -583,7 +614,13 @@
         "critical": "Critico",
         "last7": "negli ultimi 7 giorni",
         "noneHint": "Non ci sono pendenze per questo committente.",
-        "uncovered": "Sedi senza copertura"
+        "uncovered": "Sedi senza copertura",
+        "inProgress": "in corso",
+        "info": "Info",
+        "none": "Tutto in ordine",
+        "openIncidents": "Incidenti recenti",
+        "projects": "Progetti attivi",
+        "title": "Avvisi e sospesi"
       },
       "contactPerson": {
         "add": "Aggiungi una persona di contatto",
@@ -602,15 +639,20 @@
       "otherStations": "Postazioni senza sede",
       "recent": {
         "none": "Nessuna attività recente",
-        "noneHint": "Qui vedrai l'attività del personale nelle sedi del committente: turni, incidenti, visite, attività e ronde."
+        "noneHint": "Qui vedrai l'attività del personale nelle sedi del committente: turni, incidenti, visite, attività e ronde.",
+        "title": "Attività recente"
       },
       "sedesStatus": "Stato delle sedi",
       "status": {
-        "sinOp": "Nessuna operatività"
+        "sinOp": "Nessuna operatività",
+        "operativa": "Operativa"
       },
       "tbl": {
         "sede": "Sede",
-        "status": "Stato"
+        "status": "Stato",
+        "guards": "Guardie",
+        "incidents": "Incidenti",
+        "stations": "Postazioni"
       }
     },
     "clientCreatedSiteHint": "È stata creata anche la sua prima sede con questi dati. Resta da configurare la sua operatività prima di creare posti di servizio e assegnare le guardie.",
@@ -640,13 +682,29 @@
     "newClientSubtitle": "Registra un nuovo committente sulla piattaforma.",
     "noChanges": "Non ci sono state modifiche da salvare",
     "onboarding": {
-      "not_invited": "Nessun accesso"
+      "not_invited": "Nessun accesso",
+      "active": "Nell'app",
+      "invited": "Invitato",
+      "suspended": "Sospeso"
     },
     "resendAppAccess": "Invia di nuovo l'invito",
     "sendAppAccess": "Invia accesso all'app",
     "deleteError": "Impossibile eliminare il committente",
     "duplicateFound": "Esiste già un committente con questi dati",
-    "errorLoadingClients": "Impossibile caricare i committenti"
+    "errorLoadingClients": "Impossibile caricare i committenti",
+    "accountExec": "Rappresentante legale",
+    "creating": "Creazione…",
+    "exportExcel": "Esporta in Excel",
+    "exportPDF": "Esporta in PDF",
+    "generateReport": "Genera il report",
+    "newIncident": "Crea incidente",
+    "risk": "Rischio",
+    "riskLevel": {
+      "high": "Alto",
+      "low": "Basso",
+      "medium": "Medio"
+    },
+    "timezone": "Fuso orario"
   },
   "common": {
     "active": "Attivo",
@@ -660,7 +718,17 @@
     "viewAll": "Vedi tutte",
     "viewDetail": "Vedi dettaglio",
     "loading": "Caricamento…",
-    "send": "Invia"
+    "send": "Invia",
+    "apply": "Filtra",
+    "archived": "Inattiva",
+    "clear": "Cancella",
+    "close": "Chiudi",
+    "download": "Scarica",
+    "or": "o",
+    "print": "Stampa",
+    "private": "Privato",
+    "saving": "Salvataggio…",
+    "yes": "Sì"
   },
   "comms": {
     "wa": {
@@ -1180,11 +1248,16 @@
       "kpisearch": "Cerca KPI",
       "kpitable": {
         "kpicreatedfor": "Aggiunto da",
-        "kpidate": "Data/Ora"
+        "kpidate": "Data/Ora",
+        "kpitype": "Tipo"
       },
       "subtitle": "KPI e rendimento della guardia.",
       "table": {
-        "noTargets": "Nessun obiettivo definito"
+        "noTargets": "Nessun obiettivo definito",
+        "actual": "Attuale",
+        "name": "Nome",
+        "status": "Stato",
+        "target": "Obiettivo"
       },
       "title": "Indicatori di rendimento",
       "toasts": {
@@ -1192,8 +1265,32 @@
         "deleteNoneSelected": "Nessun elemento selezionato",
         "pdfOpenError": "Errore nell'apertura del PDF",
         "saveError": "Errore nel salvataggio del KPI",
-        "selectAtLeastOne": "Devi selezionare almeno un KPI"
-      }
+        "selectAtLeastOne": "Devi selezionare almeno un KPI",
+        "created": "KPI creato correttamente",
+        "deleted": "KPI eliminato",
+        "deletedMultiple": "KPI eliminati",
+        "excelDownloaded": "Excel scaricato",
+        "excelError": "Impossibile generare o ottenere l'Excel",
+        "excelExportError": "Errore durante l'esportazione in Excel",
+        "pdfError": "Impossibile generare o ottenere il PDF",
+        "pdfGenerated": "PDF generato",
+        "pdfOpened": "PDF aperto",
+        "updated": "KPI aggiornato correttamente"
+      },
+      "descriptionLabel": "DESCRIZIONE :",
+      "exportExcel": "Esporta in Excel",
+      "exportPdf": "Esporta in PDF",
+      "feedTitle": "Indicatori chiave (KPI)",
+      "metrics": {
+        "incidentReports": "Report incidenti",
+        "routeReports": "Report delle ronde",
+        "taskReports": "Report delle attività"
+      },
+      "status": {
+        "achieved": "Raggiunto",
+        "notAchieved": "Non raggiunto"
+      },
+      "totalKpis": "KPI"
     },
     "assignSites": {
       "assignButton": "Assegna postazione",
@@ -1214,7 +1311,8 @@
         "deleteFailed": "Impossibile eliminare l'assegnazione",
         "deleted": "Assegnazione eliminata",
         "removeFromPost": "Rimuovi dal posto di servizio",
-        "selectPair": "Seleziona almeno una postazione da eliminare"
+        "selectPair": "Seleziona almeno una postazione da eliminare",
+        "deleteConfirm": "Rimuovi"
       },
       "form": {
         "client": "Committente",
@@ -1222,7 +1320,9 @@
         "selectClient": "Seleziona committente",
         "selectPostSite": "Seleziona posto di servizio",
         "selectStation": "Seleziona postazione",
-        "station": "Postazione"
+        "station": "Postazione",
+        "end": "Fine",
+        "start": "Inizio"
       },
       "modal": {
         "assign": "Assegna",
@@ -1248,7 +1348,11 @@
       "loadingPostSite": "Caricamento delle informazioni del posto di servizio…",
       "noResults": "Nessun risultato",
       "noResultsHint": "Nessuna assegnazione corrisponde alla ricerca.",
-      "thisPost": "questo posto di servizio"
+      "thisPost": "questo posto di servizio",
+      "assignedCount": "Posti di servizio assegnati",
+      "nStations": "{{count}} postazioni",
+      "selectAll": "Seleziona tutto",
+      "shiftCount": "{{count}} turni"
     },
     "availability": {
       "save": "Salva",
@@ -1272,7 +1376,8 @@
         "saved": "Disponibilità salvata",
         "saveError": "Identificativo della guardia mancante"
       },
-      "empty": "Nessuna disponibilità"
+      "empty": "Nessuna disponibilità",
+      "notAvailable": "Non disponibile"
     },
     "files": {
       "loadError": "Impossibile caricare la guardia",
@@ -1302,7 +1407,11 @@
         "file": "File"
       },
       "feedTitle": "File della guardia",
-      "subtitle": "Documenti e file della guardia."
+      "subtitle": "Documenti e file della guardia.",
+      "title": "File",
+      "toasts": {
+        "loadError": "Impossibile caricare la guardia"
+      }
     },
     "licenses": {
       "newLicense": "Nuova licenza",
@@ -1333,13 +1442,16 @@
           "other": "Altra",
           "security": "Licenza di sicurezza",
           "weapons": "Porto d'armi"
-        }
+        },
+        "fileSelected": "File selezionato",
+        "issueDate": "Rilasciata"
       },
       "modal": {
         "cancel": "Annulla",
         "save": "Salva",
         "title": "Aggiungi nuova licenza",
-        "editTitle": "Modifica licenza"
+        "editTitle": "Modifica licenza",
+        "close": "Chiudi"
       },
       "table": {
         "addedBy": "Aggiunto da",
@@ -1348,17 +1460,32 @@
         "type": "Tipo di licenza"
       },
       "details": {
-        "edit": "Modifica"
+        "edit": "Modifica",
+        "download": "Scarica",
+        "notFound": "Dettagli non disponibili",
+        "title": "Dettagli della licenza"
       },
       "noNumber": "Senza numero",
       "status": {
         "noExpiry": "Senza scadenza",
-        "soon": "In scadenza"
+        "soon": "In scadenza",
+        "expired": "Scaduta",
+        "valid": "Valida"
       },
       "subtitle": "Documenti e credenziali della guardia",
       "toasts": {
-        "noPermissionCreateType": "Non hai l'autorizzazione per creare tipi di licenza"
-      }
+        "noPermissionCreateType": "Non hai l'autorizzazione per creare tipi di licenza",
+        "createError": "Impossibile creare la licenza",
+        "created": "Licenza creata",
+        "deleteError": "Impossibile eliminare",
+        "deleted": "Eliminata",
+        "deletedBulk": "Eliminate",
+        "downloadError": "Impossibile scaricare il report",
+        "loadError": "Impossibile caricare le licenze",
+        "updated": "Licenza aggiornata"
+      },
+      "selected": "selezionate",
+      "untitled": "Licenza"
     },
     "list": {
       "applyFilters": "Applica filtri",
@@ -1510,7 +1637,9 @@
           "date": "Ultimo giorno lavorato",
           "equipment": "Quale dotazione ha riconsegnato oggi? Ciò che non selezioni resta in sospeso.",
           "notePh": "Dettaglio del motivo",
-          "rehire": "Riassumibile in futuro"
+          "rehire": "Riassumibile in futuro",
+          "note": "Nota (facoltativa)",
+          "reason": "Motivo"
         },
         "bulk": {
           "archiveDescription": "Vuoi davvero archiviare {{count}} guardia/e? L'operazione può essere annullata dal filtro delle archiviate.",
@@ -1534,7 +1663,11 @@
         }
       },
       "noData": "Nessuna guardia trovata",
-      "subtitle": "Gestisci il personale di sicurezza della tua organizzazione"
+      "subtitle": "Gestisci il personale di sicurezza della tua organizzazione",
+      "error": {
+        "loading": "Errore durante il caricamento delle guardie: {{msg}}"
+      },
+      "title": "Guardie"
     },
     "nav": {
       "archivos": "File",
@@ -1648,7 +1781,9 @@
           "label": "Allegati",
           "noFiles": "Nessun file selezionato",
           "invalidType": "Tipo di file non consentito",
-          "metadataCreateFailed": "Impossibile salvare i dati del file"
+          "metadataCreateFailed": "Impossibile salvare i dati del file",
+          "tooLarge": "File più grande di 3 MB",
+          "uploadFailed": "Caricamento del file non riuscito"
         },
         "date": {
           "label": "Data"
@@ -1669,7 +1804,12 @@
       "missingId": "Identificativo non trovato",
       "noteCreateFailed": "Impossibile creare la nota",
       "noteDeleteFailed": "Impossibile eliminare la nota",
-      "untitled": "Senza titolo"
+      "untitled": "Senza titolo",
+      "attachment": "Allegato",
+      "loadError": "Errore durante il caricamento delle note",
+      "noteCreated": "Nota creata correttamente",
+      "noteDeleted": "Nota eliminata",
+      "sectionTitle": "Note"
     },
     "profile": {
       "noLicense": "Nessuna licenza trovata",
@@ -1916,7 +2056,8 @@
       },
       "offDuty": "Fuori servizio",
       "onDutyNo": "No",
-      "onDutyYes": "Sì"
+      "onDutyYes": "Sì",
+      "onDuty": "In servizio"
     },
     "tabs": {
       "create_profile": "Crea profilo",
@@ -1933,7 +2074,15 @@
       "resetError": "Impossibile reimpostare l'abbinamento.",
       "subtitle": "Il primo dispositivo da cui la guardia accede resta abbinato. Se compare un altro dispositivo, viene segnalato come non riconosciuto (non viene bloccato). Reimposta l'abbinamento se la guardia ha cambiato telefono.",
       "title": "Dispositivo della guardia",
-      "unrecognized": "Non riconosciuto"
+      "unrecognized": "Non riconosciuto",
+      "bound": "Abbinato",
+      "boundDevice": "Dispositivo abbinato",
+      "deviceCount": "{{n}} dispositivo/i",
+      "lastSeen": "Visto",
+      "os": "Sistema",
+      "otherDevices": "Altri dispositivi",
+      "platform": "Piattaforma",
+      "unknownDevice": "Dispositivo sconosciuto"
     },
     "documents": {
       "deleteConfirm": "Vuoi davvero eliminare \"{{name}}\"? L'operazione non può essere annullata.",
@@ -1950,14 +2099,23 @@
       "loadError": "Impossibile caricare i documenti",
       "saveError": "Impossibile salvare i documenti",
       "tooLarge": "Il file supera la dimensione massima (10MB)",
-      "uploadFailed": "Caricamento di {{name}} non riuscito"
+      "uploadFailed": "Caricamento di {{name}} non riuscito",
+      "deleted": "Documento eliminato",
+      "errorTitle": "Errore durante il caricamento",
+      "retry": "Riprova",
+      "sectionTitle": "Documenti",
+      "untitled": "Documento",
+      "uploaded": "Documenti caricati correttamente",
+      "uploading": "Caricamento…"
     },
     "employment": {
       "cycles": "Periodi in azienda",
       "equipmentPending": "{{n}} articoli non restituiti",
       "hiredOn": "Data di assunzione",
       "noRehire": "Non riassumibile",
-      "terminations": "Storico delle cessazioni"
+      "terminations": "Storico delle cessazioni",
+      "seniority": "Anzianità",
+      "title": "Fascicolo del personale"
     },
     "memos": {
       "addButton": "Nuova comunicazione",
@@ -1972,18 +2130,26 @@
       "feedTitle": "Storico delle comunicazioni",
       "form": {
         "contentPlaceholder": "Scrivi la comunicazione...",
-        "subjectPlaceholder": "Oggetto della comunicazione"
+        "subjectPlaceholder": "Oggetto della comunicazione",
+        "content": "Contenuto",
+        "subject": "Oggetto"
       },
       "loadError": "Impossibile caricare le comunicazioni",
       "modal": {
         "title": "Nuova comunicazione",
-        "to": "A"
+        "to": "A",
+        "send": "Invia"
       },
       "noResults": "Nessun risultato",
       "noResultsHint": "Nessuna comunicazione corrisponde alla tua ricerca.",
       "searchPlaceholder": "Cerca comunicazione...",
       "subjectRequired": "L'oggetto è obbligatorio",
-      "subtitle": "Comunicazioni indirizzate a questa guardia."
+      "subtitle": "Comunicazioni indirizzate a questa guardia.",
+      "accepted": "Accettato",
+      "deleted": "Comunicazione eliminata",
+      "pending": "In attesa",
+      "title": "Comunicazioni",
+      "total": "comunicazioni"
     },
     "actionNotImplemented": "Azione non ancora disponibile",
     "overview": {
@@ -2012,6 +2178,9 @@
       "error": "Impossibile cambiare il ruolo.",
       "hasBothRoles": "Al momento ricopre entrambi i ruoli. Scegliendone uno, resterà solo con quello.",
       "welcomeSent": "Gli abbiamo inviato un'email di benvenuto con il link per scaricare l'app supervisore."
+    },
+    "department": {
+      "title": "Reparto"
     }
   },
   "incidents": {
@@ -2070,7 +2239,8 @@
       "incidentTo": "Data dell'incidente al",
       "showArchived": "Mostra archiviati",
       "station": "Posto di servizio",
-      "status": "Stato"
+      "status": "Stato",
+      "stations": "Postazioni"
     },
     "labels": {
       "description": "Descrizione",
@@ -2082,7 +2252,11 @@
       "open": "Aperto"
     },
     "dispatchHint": "Il supervisore riceverà una notifica per accettare e segnalare in viaggio / sul posto.",
-    "selectSupervisor": "— Seleziona un supervisore —"
+    "selectSupervisor": "— Seleziona un supervisore —",
+    "dispatch": "Invia",
+    "dispatchToSupervisor": "Invia al supervisore",
+    "dispatched": "Incidente inviato al supervisore",
+    "dispatching": "Invio in corso…"
   },
   "invite": {
     "staff": {
@@ -2183,7 +2357,8 @@
       "title": {
         "edit": "Modifica tipo di licenza",
         "create": "Nuovo tipo di licenza"
-      }
+      },
+      "createError": "Impossibile creare il tipo di licenza"
     },
     "table": {
       "column": {
@@ -4904,7 +5079,8 @@
       "edit": "Modifica",
       "missingTenant": "Azienda mancante",
       "noSelection": "Nessun elemento selezionato",
-      "view": "Vedi dettagli"
+      "view": "Vedi dettagli",
+      "archive": "Archivia"
     },
     "buttons": {
       "cancel": "Annulla",
@@ -4950,8 +5126,15 @@
       "noPostSiteId": "Nessun posto di servizio selezionato",
       "scheduledDaysPlaceholder": "Seleziona i giorni...",
       "validation": {
-        "scheduledDaysRequired": "Seleziona almeno un giorno"
-      }
+        "scheduledDaysRequired": "Seleziona almeno un giorno",
+        "fillRequired": "Compila i campi obbligatori",
+        "stationRequired": "La postazione è obbligatoria",
+        "tourNameRequired": "Il nome della ronda è obbligatorio"
+      },
+      "errorCreating": "Errore durante la creazione della ronda",
+      "errorLoadingGuards": "Errore durante il caricamento delle guardie",
+      "errorLoadingTours": "Errore durante il caricamento delle ronde",
+      "openTimePicker": "Apri il selettore dell'ora"
     },
     "menu": {
       "action": "Azione",
@@ -4972,7 +5155,12 @@
       "monFri": "Lun - Ven",
       "weekend": "Fine settimana",
       "saturday": "Sabato",
-      "wednesday": "Mercoledì"
+      "wednesday": "Mercoledì",
+      "friday": "Venerdì",
+      "monday": "Lunedì",
+      "sunday": "Domenica",
+      "thursday": "Giovedì",
+      "tuesday": "Martedì"
     },
     "placeholders": {
       "tourNameFallback": "Nome del percorso"
@@ -4980,11 +5168,28 @@
     "table": {
       "duration": "Durata",
       "name": "Nome del percorso",
-      "type": "Tipo"
+      "type": "Tipo",
+      "station": "Postazione"
     },
     "detail": {
       "title": "Dettagli della ronda"
-    }
+    },
+    "field": {
+      "active": "Attiva",
+      "assignedGuard": "Guardia assegnata",
+      "continuous": "Continua",
+      "description": "Descrizione",
+      "maxDuration": "Durata massima",
+      "scheduledDays": "Giorni programmati",
+      "selectTime": "Seleziona l'orario",
+      "station": "Postazione",
+      "timeMode": "Modalità oraria"
+    },
+    "list": {
+      "selectAllAria": "Seleziona tutto",
+      "selectAria": "Seleziona"
+    },
+    "loading": "Caricamento..."
   },
   "staff": {
     "registration_title": "Registrazione utente"
@@ -5043,7 +5248,16 @@
     "historyEmpty": "Non ci sono ancora conversazioni salvate. Chiudendone una con la X, resta qui per 7 giorni.",
     "untitled": "Conversazione",
     "messages": "messaggi",
-    "deleteConvo": "Elimina conversazione"
+    "deleteConvo": "Elimina conversazione",
+    "attachCv": "Allega il curriculum",
+    "cvEmpty": "Non sono riuscito a estrarre dati da quel file. Verifica che sia leggibile, oppure compila la scheda a mano.",
+    "cvError": "Non siamo riusciti a leggere il curriculum.",
+    "cvNoContact": "Non ho trovato né email né telefono: senza uno dei due non è possibile invitarlo.",
+    "cvOpen": "Apri la registrazione con questi dati",
+    "cvRead": "Ecco cosa ho letto:",
+    "cvReview": "Aprilo per rivederlo e salvarlo.",
+    "cvSent": "Curriculum: {{n}}",
+    "cvTitle": "Curriculum letto"
   },
   "actions": {
     "action": "Azione",
@@ -5069,7 +5283,10 @@
     "save": "Salva",
     "view": "Vedi",
     "viewDetails": "Vedi dettagli",
-    "back": "Indietro"
+    "back": "Indietro",
+    "discard": "Scarta",
+    "download": "Scarica",
+    "send": "Invia"
   },
   "admin": {
     "registration_title": "Registrazione amministratore"
@@ -5119,7 +5336,12 @@
       "supervisor": "Supervisore",
       "clientAccountManager": "Responsabile clienti",
       "hrManager": "Responsabile risorse umane",
-      "operationsManager": "Responsabile operativo"
+      "operationsManager": "Responsabile operativo",
+      "admin": "Amministratore",
+      "administrativeAssistant": "Assistente amministrativo",
+      "administrativeSupervisor": "Responsabile amministrativo",
+      "dispatcher": "Operatore di centrale",
+      "secretary": "Segreteria / reception"
     },
     "rowActions": {
       "delete": "Elimina",
@@ -5127,7 +5349,8 @@
       "resendInvitation": "Invia di nuovo l'invito",
       "restore": "Ripristina",
       "suspend": "Sospendi",
-      "supervisorProfile": "Profilo supervisore"
+      "supervisorProfile": "Profilo supervisore",
+      "closeSessions": "Chiudi le sessioni"
     },
     "statuses": {
       "active": "Attivo",
@@ -5379,7 +5602,12 @@
     "title": "Gestione settori",
     "titleDescription": "Gestisci i settori del modulo selezionato. I settori in uso non possono essere eliminati.",
     "categoryCreateFailed": "Errore durante la creazione del settore",
-    "searchOrCreate": "Cerca o crea settore…"
+    "searchOrCreate": "Cerca o crea settore…",
+    "createNamed": "Crea",
+    "edit": "Modifica",
+    "editcategory": "Modifica categoria",
+    "errorDeleting": "Errore durante l'eliminazione della categoria",
+    "save": "Salva"
   },
   "categoriesnotloaded": "Impossibile caricare i settori",
   "clientPostSites": {
@@ -5730,21 +5958,31 @@
   },
   "guard": {
     "dashboard": {
-      "offDuty": "Fuori servizio"
+      "offDuty": "Fuori servizio",
+      "onDuty": "In servizio",
+      "shifts": "Turni",
+      "stations": "I miei posti",
+      "title": "Il mio pannello"
     },
     "registration_subtitle": "Completa i tuoi dati per attivare l'account.",
     "registration_success": "Registrazione completata.",
     "registration_title": "Registrazione guardia",
     "schedule": {
       "freeDays": "Giorni liberi",
-      "upcoming": "Prossimi turni"
+      "upcoming": "Prossimi turni",
+      "approvedTimeOff": "Permessi approvati",
+      "title": "I miei turni"
     },
     "nav": {
       "home": "Inizio",
       "schedule": "Orario",
       "timeOff": "Permessi"
     },
-    "roleLabel": "Guardia"
+    "roleLabel": "Guardia",
+    "invite_not_found": "Invito non trovato o non valido: puoi compilare il modulo manualmente.",
+    "timeOff": {
+      "title": "I miei permessi"
+    }
   },
   "header": {
     "account": "Account utente",
@@ -5876,7 +6114,12 @@
   "notes": {
     "deleteError": "Impossibile eliminare le note",
     "noSelection": "Nessuna nota selezionata",
-    "noSite": "Nessun posto di servizio selezionato"
+    "noSite": "Nessun posto di servizio selezionato",
+    "created": "Nota creata",
+    "deleted": "Note eliminate",
+    "loadError": "Impossibile caricare le note",
+    "saveError": "Impossibile salvare la nota",
+    "updated": "Nota aggiornata"
   },
   "postSites": {
     "action": "Azione",
@@ -6134,7 +6377,8 @@
         "Roadmap": "Stradale",
         "Satellite": "Satellite",
         "title": "Mappa",
-        "noCoords": "Questo sito non ha coordinate configurate."
+        "noCoords": "Questo sito non ha coordinate configurate.",
+        "openInMaps": "Apri in Google Maps"
       },
       "Stats": {
         "guardOnSite": "Guardie sul posto",
@@ -6176,7 +6420,8 @@
       },
       "Filter": {
         "fromDate": "Dal",
-        "toDate": "Al"
+        "toDate": "Al",
+        "type": "Tipo"
       },
       "last7days": "ultimi 7 giorni"
     },
@@ -6219,7 +6464,9 @@
         "postSitePayRate": "Tariffa oraria del posto di servizio",
         "postalCode": "CAP",
         "title": "Altre informazioni"
-      }
+      },
+      "rateSaveError": "Impossibile salvare la tariffa",
+      "rateSaved": "Tariffa salvata"
     },
     "stations": {
       "action": "Azione",
@@ -6283,7 +6530,14 @@
         "nicknameHint": "Visibile solo alle operazioni della tua azienda. Il committente non lo vede.",
         "restCoverage": "Copertura delle pause",
         "wholeWindow": "Tutta la giornata",
-        "withSf": "Il sostituto copre le pause"
+        "withSf": "Il sostituto copre le pause",
+        "endTime": "Fine",
+        "geofenceRadius": "Raggio del geofence (metri)",
+        "guard": "Guardia",
+        "nickname": "Nominativo",
+        "selectGuard": "Seleziona guardia",
+        "shiftEnd": "Fine",
+        "shiftStart": "Inizio"
       },
       "table": {
         "description": "Descrizione",
@@ -6295,7 +6549,17 @@
       "createSubtitle": "Definisci il turno, l'orario e il geofence del posto.",
       "horarioConfigFailed": "Postazione creata, ma non è stato possibile configurare l'orario. Configuralo in Programmazione › Turni.",
       "noResults": "Nessun risultato per la ricerca.",
-      "provideCustomTimes": "Definisci l'ora di inizio e di fine"
+      "provideCustomTimes": "Definisci l'ora di inizio e di fine",
+      "backToStations": "Postazioni",
+      "createShift": "Crea turno",
+      "editShift": "Modifica turno",
+      "guards": "guardie",
+      "placeholderNickname": "Soprannome / nominativo interno",
+      "provideName": "Inserisci un nome",
+      "selectStationFirst": "Seleziona prima una postazione",
+      "shiftCreated": "Turno creato",
+      "shiftSaveFailed": "Salvataggio del turno non riuscito",
+      "shiftUpdated": "Turno aggiornato"
     },
     "tasks": {
       "action": "Azione",
@@ -6848,7 +7112,29 @@
       "previewTraining": "Formazione",
       "previewMyData": "I miei dati",
       "navTraining": "Formazione",
-      "navMessages": "Messaggi"
+      "navMessages": "Messaggi",
+      "previewAppGuard": "App della guardia",
+      "previewAppSupervisor": "App del supervisore",
+      "svNavDashboard": "Cruscotto",
+      "svNavGuards": "Guardie",
+      "svNavMessages": "Messaggi",
+      "svNavReports": "Report",
+      "svNavStations": "Posti",
+      "svPreviewActive": "Attivi",
+      "svPreviewAll": "Tutti",
+      "svPreviewAttention": "Attenzione",
+      "svPreviewEta": "ETA",
+      "svPreviewIncidents": "Incidenti oggi",
+      "svPreviewLate": "In ritardo",
+      "svPreviewOff": "Offline",
+      "svPreviewOffline": "Non connesso",
+      "svPreviewOnDuty": "In turno",
+      "svPreviewRole": "Supervisore",
+      "svPreviewStations": "Posti",
+      "svPreviewStationsSub": "Tutte le sedi del committente",
+      "svPreviewStationsTitle": "Posti",
+      "svPreviewTasks": "Attività",
+      "svPreviewYou": "Tu"
     },
     "appearance": {
       "layoutTitle": "Aspetto",
@@ -7455,7 +7741,15 @@
       "loadError": "Errore durante il caricamento del posto",
       "patrolQr": "QR delle ronde",
       "station": "Postazione",
-      "parking": "Controllo veicoli"
+      "parking": "Controllo veicoli",
+      "guards": "Guardie",
+      "incidents": "Incidenti",
+      "inventory": "Inventario",
+      "overview": "Panoramica",
+      "rondaHistory": "Storico",
+      "shifts": "Turni",
+      "siteTours": "Ronde",
+      "visitors": "Visitatori"
     },
     "orders": {
       "title": "Consegne specifiche",
@@ -7532,7 +7826,16 @@
       "save": "Salva",
       "selectGuard": "Seleziona guardia…",
       "startDay": "Primo giorno di turno",
-      "startDayHint": "Questa guardia lavora quel giorno e poi a giorni alterni. Assegna il suo cambio a partire dal giorno successivo."
+      "startDayHint": "Questa guardia lavora quel giorno e poi a giorni alterni. Assegna il suo cambio a partire dal giorno successivo.",
+      "addSaca": "Aggiungi sostituto",
+      "assignBtn": "Assegna",
+      "change": "Cambia",
+      "loadError": "Errore durante il caricamento delle guardie",
+      "remove": "Rimuovi",
+      "replacing": "In sostituzione di",
+      "sacaAdded": "Sostituto assegnato",
+      "sacaTitle": "Aggiungi sostituto",
+      "title": "Guardie assegnate"
     },
     "incidents": {
       "col": {
@@ -7541,26 +7844,66 @@
         "guard": "Guardia",
         "status": "Stato"
       },
-      "empty": "Nessun incidente per questo posto."
+      "empty": "Nessun incidente per questo posto.",
+      "loadError": "Errore durante il caricamento degli incidenti",
+      "title": "Incidenti"
     },
     "inventory": {
       "col": {
         "condition": "Stato",
         "item": "Articolo",
-        "serial": "Serie / codice"
+        "serial": "Serie / codice",
+        "assignedTo": "Assegnato a"
       },
       "empty": "Nessuna dotazione per questo posto.",
-      "title": "Inventario ed equipaggiamento"
+      "title": "Inventario ed equipaggiamento",
+      "loadError": "Errore durante il caricamento dell'inventario"
     },
     "parking": {
       "col": {
         "guard": "Guardia",
-        "visitor": "Visitatore / veicolo"
+        "visitor": "Visitatore / veicolo",
+        "condition": "Stato",
+        "driver": "Conducente / azienda",
+        "entry": "Entrata",
+        "exit": "Uscita",
+        "photo": "Foto",
+        "plate": "Targa",
+        "stay": "Permanenza",
+        "vehicle": "Veicolo"
       },
       "empty": "In questo posto non è ancora stato registrato nessun veicolo.",
       "loadError": "Errore durante il caricamento dei dati",
       "subtitle": "Entrata e uscita dei veicoli in questo posto. La guardia li registra dall'app e segna l'uscita quando se ne vanno.",
-      "title": "Controllo veicoli"
+      "title": "Controllo veicoli",
+      "bays": "Stalli (facoltativo)",
+      "baysHelp": "Separati da virgole. Con l'elenco impostato, la guardia sceglie lo stallo invece di scriverlo, e qui si vede quali sono liberi.",
+      "blacklist": "Avvisare per targhe vietate",
+      "blacklistHint": "Digitando la targa, la guardia vede un avviso se è vietata. Non le impedisce di registrarla: la decisione al cancello è sua.",
+      "capacity": "Capienza di veicoli",
+      "capacityHelp": "Vuoto = nessun limite. La guardia vede quanti posti restano al momento della registrazione.",
+      "capacityHint": "Veicoli all'interno rispetto alla capienza del posto",
+      "emptyHint": "La guardia li registra dall'app, in Visite › Veicolo.",
+      "emptyInside": "In questo momento non ci sono veicoli all'interno.",
+      "enable": "Attiva le regole in questo posto",
+      "enableHint": "Senza attivarle, il posto continua a registrare entrate e uscite: si disattivano soltanto la capienza, l'avviso di permanenza e le targhe vietate.",
+      "exitPhoto": "Vedi l'uscita",
+      "free": "liberi",
+      "freeBays": "Stalli liberi ora",
+      "full": "pieno",
+      "inside": "All'interno",
+      "maxStay": "Avviso per permanenza (min)",
+      "maxStayHelp": "Vuoto = nessun avviso. L'avviso arriva una sola volta per veicolo.",
+      "noAlert": "Nessun avviso",
+      "noLimit": "Nessun limite",
+      "onExit": "All'uscita",
+      "onlyInside": "Solo quelli all'interno",
+      "photoEntry": "foto di entrata",
+      "photoExit": "foto di uscita",
+      "rules": "Regole del controllo veicoli",
+      "saveError": "Impossibile salvare le regole",
+      "saved": "Regole salvate",
+      "viewPhoto": "Vedi la foto"
     },
     "patrolQr": {
       "empty": "Non ci sono ancora punti di controllo. Creali nella sezione \"Ronde di sicurezza\" e torna qui per generare i loro QR.",
@@ -7605,7 +7948,20 @@
       "reorderFailed": "Impossibile salvare l'ordine",
       "settingsTitle": "Impostazioni delle ronde",
       "title": "Ronde di sicurezza",
-      "useStationLoc": "Usa la posizione del posto"
+      "useStationLoc": "Usa la posizione del posto",
+      "active": "Attiva",
+      "cpPlaceholder": "Es. Ingresso principale",
+      "create": "Crea ronda",
+      "created": "Ronda creata",
+      "deleted": "Ronda eliminata",
+      "inactive": "Inattiva",
+      "loadError": "Errore durante il caricamento delle ronde",
+      "moveDown": "Sposta giù",
+      "moveUp": "Sposta su",
+      "namePlaceholder": "Es. Ronda notturna",
+      "point": "punto",
+      "points": "punti",
+      "settings": "Impostazioni"
     }
   },
   "supervisor": {
@@ -9116,7 +9472,11 @@
       "zonaPosicionPEjAguila2": "Zona / posizione (es. Aquila2)",
       "vehiculoAsignado": "Veicolo assegnato",
       "zonaPosicion": "Zona / posizione",
-      "vehiculoAsignado2": "Veicolo assegnato"
+      "vehiculoAsignado2": "Veicolo assegnato",
+      "sedesAsignadas": "Sedi assegnate",
+      "sedesError": "Impossibile salvare le sedi",
+      "sedesGuardadas": "Sedi salvate",
+      "sedesSinRoles": "I dati del supervisore non sono ancora stati caricati"
     },
     "SupervisorPositions": {
       "aunNoHayPuestosDe": "Ancora nessun posto da supervisore",
@@ -9808,5 +10168,10 @@
     "subtitle": "Controllo di entrata e uscita dei visitatori",
     "placeTypeLabel": "Tipo di luogo",
     "tagLabel": "Tag"
-  }
+  },
+  "app": {
+    "loading": "Caricamento…",
+    "refresh": "Aggiorna"
+  },
+  "loading": "Caricamento..."
 }

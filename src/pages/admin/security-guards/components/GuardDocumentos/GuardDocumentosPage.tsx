@@ -9,6 +9,7 @@ import { Section, EmptyState, SkeletonCards, Modal, IconTile, SmartImage } from 
 import securityGuardService from '@/lib/api/securityGuardService';
 import type { FileDescriptor } from '../../guardDetailTypes';
 
+import { localeActual } from '@/lib/localeActual'
 const ACCEPT = 'image/*,application/pdf';
 const MAX_BYTES = 10 * 1024 * 1024; // 10MB
 
@@ -32,7 +33,7 @@ function fmtDate(v?: string | null): string {
   if (!v) return '';
   const d = new Date(v);
   if (isNaN(d.getTime())) return '';
-  return d.toLocaleDateString('es', { day: '2-digit', month: 'short', year: 'numeric' });
+  return d.toLocaleDateString(localeActual(), { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
 function isImage(name?: string): boolean {

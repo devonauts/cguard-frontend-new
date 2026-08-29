@@ -13,6 +13,7 @@ import StaticMapImage from "@/components/maps/StaticMapImage";
 import { ApiService } from "@/services/api/apiService";
 import { getTenantTimezone } from "@/utils/tenantLocation";
 
+import { localeActual } from '@/lib/localeActual'
 /**
  * ════════════════════════════════════════════════════════════════════════════
  * EL DETALLE DE UN PUNTO DE RONDA — Y SU REVISIÓN
@@ -68,7 +69,7 @@ function fechaHora(v?: string | null): string {
   if (!v) return "—";
   try {
     const tz = getTenantTimezone();
-    return new Date(v).toLocaleString("es-EC", {
+    return new Date(v).toLocaleString(localeActual(), {
       day: "2-digit", month: "2-digit", year: "numeric",
       hour: "2-digit", minute: "2-digit",
       ...(tz ? { timeZone: tz } : {}),

@@ -24,10 +24,11 @@ import passdownService, {
 } from "@/lib/api/passdownService";
 import i18n from "@/i18n";
 
+import { localeActual } from '@/lib/localeActual'
 function fmtDate(s?: string | null): string {
   if (!s) return "—";
   const d = new Date(s);
-  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString("es-EC");
+  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString(localeActual());
 }
 
 const PRIORITY_META: Record<string, { label: string; tone: "bad" | "warn" | "neutral" }> = {

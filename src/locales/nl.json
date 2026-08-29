@@ -151,7 +151,9 @@
       "desc": "Herstel het wachtwoord van je beveiligersaccount om weer in de C-Guard Pro-app te komen.",
       "eyebrow": "App voor beveiligers",
       "tag_incidents": "Incidenten melden",
-      "title_part1": "Je dienst,"
+      "title_part1": "Je dienst,",
+      "tag_clock": "In- en uitklokken",
+      "tag_patrol": "Rondes en patrouilles"
     },
     "forgot_subtitle": "Vul je e-mailadres in, dan sturen we je een link om een nieuw wachtwoord te maken.",
     "forgot_title": "Wachtwoord vergeten?",
@@ -176,12 +178,17 @@
     "phone_invalid": "Dit telefoonnummer lijkt niet te kloppen. Controleer het land en het nummer.",
     "captcha_pending": "Bevestig dat je geen robot bent om verder te gaan.",
     "send_reset": "Link versturen",
-    "honeypot_label": "Niet invullen"
+    "honeypot_label": "Niet invullen",
+    "enter_password": "Voer uw wachtwoord in",
+    "invalid_email": "Ongeldig e-mailadres",
+    "reset_error": "De link kon niet worden verstuurd. Probeer het opnieuw",
+    "sending": "Link versturen…"
   },
   "client": {
     "invite_not_found": "Uitnodiging niet gevonden of ongeldig.",
     "registration_title": "Registratie opdrachtgever",
-    "register": "Mijn account activeren"
+    "register": "Mijn account activeren",
+    "registering": "Registreren…"
   },
   "clients": {
     "accept": "Oké",
@@ -293,7 +300,9 @@
       "guardOne": "beveiliger",
       "manageInStation": "Beheren in de post",
       "siteRosterHint": "Beveiligers horen bij de posten van deze locatie. Dit is het overzicht; ga naar de post om een beveiliger toe te wijzen, te verwijderen of te wijzigen.",
-      "view": "Bekijken"
+      "view": "Bekijken",
+      "guardMany": "beveiligers",
+      "roleSf": "Invaller"
     },
     "breadcrumb": {
       "clients": "Opdrachtgevers",
@@ -312,7 +321,8 @@
       "name": "Opdrachtgever",
       "phone": "Telefoon",
       "status": "Status",
-      "more": "Meer"
+      "more": "Meer",
+      "appAccess": "App"
     },
     "contacts": {
       "addcontact": "Contact toevoegen",
@@ -344,7 +354,9 @@
         "Mobile Number": "Mobiel nummer *",
         "Name": "Naam *",
         "checkbox": "Beveiliger mag dit contact zien",
-        "descriptioninput": "Voer de omschrijving van het contact in"
+        "descriptioninput": "Voer de omschrijving van het contact in",
+        "addContact": "Contact toevoegen",
+        "mobilePlaceholder": "bijv. +593987654321"
       },
       "loadError": "Contacten laden mislukt"
     },
@@ -414,7 +426,14 @@
       "ruc": "Fiscaal nummer van het bedrijf",
       "searchAddress": "Adres zoeken...",
       "selectRisk": "Niet ingesteld",
-      "switchToAutocomplete": "Zoeken"
+      "switchToAutocomplete": "Zoeken",
+      "addPerson": "Persoon toevoegen",
+      "commercialNamePlaceholder": "Bijv. Veilig Bedrijf B.V.",
+      "contactInfo": "Contact",
+      "coordinates": "Gps-coördinaten",
+      "legalRep": "Wettelijk vertegenwoordiger",
+      "optional": "Optioneel",
+      "switchToManual": "Handmatig"
     },
     "nav": {
       "clientPortal": "Opdrachtgeversportaal",
@@ -470,10 +489,19 @@
         "Title": "Nieuwe notitie toevoegen",
         "Titleinput": "Voer de titel van de notitie in",
         "Titlenote": "Titel *",
-        "NoFilesSelected": "Geen bestanden gekozen"
+        "NoFilesSelected": "Geen bestanden gekozen",
+        "selectDate": "Selecteren"
       },
       "addedBy": "Toegevoegd door",
-      "detailsTitle": "Details van de notitie"
+      "detailsTitle": "Details van de notitie",
+      "Save": "Opslaan",
+      "SaveChanges": "Wijzigingen opslaan",
+      "delete": "Verwijderen",
+      "validation": {
+        "dateRequired": "De datum is verplicht",
+        "descriptionRequired": "De omschrijving is verplicht",
+        "titleRequired": "De titel is verplicht"
+      }
     },
     "pagination": {
       "itemsPerPage": "Items per pagina",
@@ -562,7 +590,10 @@
         "toursCompleted": "Afgeronde rondes (afgelopen 7 dagen)",
         "onsite": "Nu in dienst",
         "viewIncidents": "Incidenten bekijken",
-        "viewStaff": "Personeel bekijken"
+        "viewStaff": "Personeel bekijken",
+        "contract": "Contract",
+        "now": "Op dit moment",
+        "stations": "Posten"
       },
       "contactDetails": {
         "email": "E-mailadres",
@@ -583,7 +614,13 @@
         "critical": "Kritiek",
         "last7": "in de afgelopen 7 dagen",
         "noneHint": "Er staat niets open voor deze opdrachtgever.",
-        "uncovered": "Locaties zonder dekking"
+        "uncovered": "Locaties zonder dekking",
+        "inProgress": "lopend",
+        "info": "Info",
+        "none": "Alles in orde",
+        "openIncidents": "Recente incidenten",
+        "projects": "Lopende projecten",
+        "title": "Meldingen en acties"
       },
       "contactPerson": {
         "add": "Contactpersoon toevoegen",
@@ -602,15 +639,20 @@
       "otherStations": "Posten zonder locatie",
       "recent": {
         "none": "Geen recente activiteit",
-        "noneHint": "Hier zie je de activiteit van het personeel op de locaties van de opdrachtgever: diensten, incidenten, bezoeken, taken en rondes."
+        "noneHint": "Hier zie je de activiteit van het personeel op de locaties van de opdrachtgever: diensten, incidenten, bezoeken, taken en rondes.",
+        "title": "Recente activiteit"
       },
       "sedesStatus": "Status van de locaties",
       "status": {
-        "sinOp": "Geen operatie"
+        "sinOp": "Geen operatie",
+        "operativa": "Operatie actief"
       },
       "tbl": {
         "sede": "Locatie",
-        "status": "Status"
+        "status": "Status",
+        "guards": "Beveiligers",
+        "incidents": "Incidenten",
+        "stations": "Posten"
       }
     },
     "clientCreatedSiteHint": "De eerste locatie is met dezelfde gegevens aangemaakt. De operatie moet nog worden ingericht voordat je posten aanmaakt en beveiligers toewijst.",
@@ -640,13 +682,29 @@
     "newClientSubtitle": "Registreer een nieuwe opdrachtgever op het platform.",
     "noChanges": "Er waren geen wijzigingen om op te slaan",
     "onboarding": {
-      "not_invited": "Geen toegang"
+      "not_invited": "Geen toegang",
+      "active": "In de app",
+      "invited": "Uitgenodigd",
+      "suspended": "Geblokkeerd"
     },
     "resendAppAccess": "Uitnodiging opnieuw sturen",
     "sendAppAccess": "App-toegang versturen",
     "deleteError": "Opdrachtgever verwijderen mislukt",
     "duplicateFound": "Er bestaat al een opdrachtgever met deze gegevens",
-    "errorLoadingClients": "Opdrachtgevers laden mislukt"
+    "errorLoadingClients": "Opdrachtgevers laden mislukt",
+    "accountExec": "Wettelijk vertegenwoordiger",
+    "creating": "Aanmaken…",
+    "exportExcel": "Excel exporteren",
+    "exportPDF": "PDF exporteren",
+    "generateReport": "Rapport genereren",
+    "newIncident": "Incident aanmaken",
+    "risk": "Risico",
+    "riskLevel": {
+      "high": "Hoog",
+      "low": "Laag",
+      "medium": "Gemiddeld"
+    },
+    "timezone": "Tijdzone"
   },
   "common": {
     "active": "Actief",
@@ -660,7 +718,17 @@
     "viewAll": "Alles bekijken",
     "viewDetail": "Details bekijken",
     "loading": "Laden…",
-    "send": "Versturen"
+    "send": "Versturen",
+    "apply": "Filteren",
+    "archived": "Inactief",
+    "clear": "Wissen",
+    "close": "Sluiten",
+    "download": "Downloaden",
+    "or": "of",
+    "print": "Afdrukken",
+    "private": "Privé",
+    "saving": "Opslaan…",
+    "yes": "Ja"
   },
   "comms": {
     "wa": {
@@ -1180,11 +1248,16 @@
       "kpisearch": "KPI zoeken",
       "kpitable": {
         "kpicreatedfor": "Toegevoegd door",
-        "kpidate": "Datum/tijd"
+        "kpidate": "Datum/tijd",
+        "kpitype": "Type"
       },
       "subtitle": "KPI's en prestaties van de beveiliger.",
       "table": {
-        "noTargets": "Geen doelen ingesteld"
+        "noTargets": "Geen doelen ingesteld",
+        "actual": "Huidig",
+        "name": "Naam",
+        "status": "Status",
+        "target": "Doel"
       },
       "title": "Prestatie-indicatoren",
       "toasts": {
@@ -1192,8 +1265,32 @@
         "deleteNoneSelected": "Niets geselecteerd",
         "pdfOpenError": "PDF openen mislukt",
         "saveError": "KPI opslaan mislukt",
-        "selectAtLeastOne": "Selecteer minstens één KPI"
-      }
+        "selectAtLeastOne": "Selecteer minstens één KPI",
+        "created": "KPI aangemaakt",
+        "deleted": "KPI verwijderd",
+        "deletedMultiple": "KPI's verwijderd",
+        "excelDownloaded": "Excel gedownload",
+        "excelError": "Het Excel-bestand kon niet worden gemaakt of opgehaald",
+        "excelExportError": "Exporteren naar Excel mislukt",
+        "pdfError": "Het PDF-bestand kon niet worden gemaakt of opgehaald",
+        "pdfGenerated": "PDF gemaakt",
+        "pdfOpened": "PDF geopend",
+        "updated": "KPI bijgewerkt"
+      },
+      "descriptionLabel": "OMSCHRIJVING :",
+      "exportExcel": "Excel exporteren",
+      "exportPdf": "PDF exporteren",
+      "feedTitle": "Kernindicatoren (KPI's)",
+      "metrics": {
+        "incidentReports": "Incidentrapporten",
+        "routeReports": "Ronderapporten",
+        "taskReports": "Taakrapporten"
+      },
+      "status": {
+        "achieved": "Behaald",
+        "notAchieved": "Niet behaald"
+      },
+      "totalKpis": "KPI's"
     },
     "assignSites": {
       "assignButton": "Post toewijzen",
@@ -1214,7 +1311,8 @@
         "deleteFailed": "De toewijzing kon niet worden verwijderd",
         "deleted": "Toewijzing verwijderd",
         "removeFromPost": "Van de post halen",
-        "selectPair": "Selecteer minstens één post om te verwijderen"
+        "selectPair": "Selecteer minstens één post om te verwijderen",
+        "deleteConfirm": "Verwijderen"
       },
       "form": {
         "client": "Opdrachtgever",
@@ -1222,7 +1320,9 @@
         "selectClient": "Opdrachtgever selecteren",
         "selectPostSite": "Bewaakte locatie selecteren",
         "selectStation": "Post selecteren",
-        "station": "Post"
+        "station": "Post",
+        "end": "Eind",
+        "start": "Start"
       },
       "modal": {
         "assign": "Toewijzen",
@@ -1248,7 +1348,11 @@
       "loadingPostSite": "Gegevens van de post laden…",
       "noResults": "Geen resultaten",
       "noResultsHint": "Geen enkele toewijzing komt overeen met de zoekopdracht.",
-      "thisPost": "deze post"
+      "thisPost": "deze post",
+      "assignedCount": "Toegewezen posten",
+      "nStations": "{{count}} posten",
+      "selectAll": "Alles selecteren",
+      "shiftCount": "{{count}} diensten"
     },
     "availability": {
       "save": "Opslaan",
@@ -1272,7 +1376,8 @@
         "saved": "Beschikbaarheid opgeslagen",
         "saveError": "Geen beveiliger-ID"
       },
-      "empty": "Geen beschikbaarheid"
+      "empty": "Geen beschikbaarheid",
+      "notAvailable": "Niet beschikbaar"
     },
     "files": {
       "loadError": "De beveiliger kon niet worden geladen",
@@ -1302,7 +1407,11 @@
         "file": "Bestand"
       },
       "feedTitle": "Bestanden van de beveiliger",
-      "subtitle": "Documenten en bestanden van de beveiliger."
+      "subtitle": "Documenten en bestanden van de beveiliger.",
+      "title": "Bestanden",
+      "toasts": {
+        "loadError": "De beveiliger kon niet worden geladen"
+      }
     },
     "licenses": {
       "newLicense": "Nieuwe pas",
@@ -1333,13 +1442,16 @@
           "other": "Anders",
           "security": "Beveiligingspas",
           "weapons": "Wapenvergunning"
-        }
+        },
+        "fileSelected": "Geselecteerd bestand",
+        "issueDate": "Afgegeven"
       },
       "modal": {
         "cancel": "Annuleren",
         "save": "Opslaan",
         "title": "Nieuwe pas toevoegen",
-        "editTitle": "Pas bewerken"
+        "editTitle": "Pas bewerken",
+        "close": "Sluiten"
       },
       "table": {
         "addedBy": "Toegevoegd door",
@@ -1348,17 +1460,32 @@
         "type": "Type pas"
       },
       "details": {
-        "edit": "Bewerken"
+        "edit": "Bewerken",
+        "download": "Downloaden",
+        "notFound": "Details niet beschikbaar",
+        "title": "Details van de vergunning"
       },
       "noNumber": "Geen nummer",
       "status": {
         "noExpiry": "Geen vervaldatum",
-        "soon": "Verloopt binnenkort"
+        "soon": "Verloopt binnenkort",
+        "expired": "Verlopen",
+        "valid": "Geldig"
       },
       "subtitle": "Documenten en pasjes van de beveiliger",
       "toasts": {
-        "noPermissionCreateType": "Je hebt geen rechten om pastypen aan te maken"
-      }
+        "noPermissionCreateType": "Je hebt geen rechten om pastypen aan te maken",
+        "createError": "De vergunning kon niet worden aangemaakt",
+        "created": "Vergunning aangemaakt",
+        "deleteError": "Verwijderen mislukt",
+        "deleted": "Verwijderd",
+        "deletedBulk": "Verwijderd",
+        "downloadError": "Het rapport kon niet worden gedownload",
+        "loadError": "De vergunningen konden niet worden geladen",
+        "updated": "Vergunning bijgewerkt"
+      },
+      "selected": "geselecteerd",
+      "untitled": "Vergunning"
     },
     "list": {
       "applyFilters": "Filters toepassen",
@@ -1510,7 +1637,9 @@
           "date": "Laatste werkdag",
           "equipment": "Welke uitrusting heeft hij vandaag ingeleverd? Wat niet is aangevinkt, blijft openstaan.",
           "notePh": "Toelichting op de reden",
-          "rehire": "Mag opnieuw worden aangenomen"
+          "rehire": "Mag opnieuw worden aangenomen",
+          "note": "Notitie (optioneel)",
+          "reason": "Reden"
         },
         "bulk": {
           "archiveDescription": "Weet je zeker dat je {{count}} beveiliger(s) wilt archiveren? Je kunt dit terugdraaien via het filter Gearchiveerd.",
@@ -1534,7 +1663,11 @@
         }
       },
       "noData": "Geen beveiligers gevonden",
-      "subtitle": "Beheer het beveiligingspersoneel van je organisatie"
+      "subtitle": "Beheer het beveiligingspersoneel van je organisatie",
+      "error": {
+        "loading": "Fout bij het laden van de beveiligers: {{msg}}"
+      },
+      "title": "Beveiligers"
     },
     "nav": {
       "archivos": "Bestanden",
@@ -1648,7 +1781,9 @@
           "label": "Bijlagen",
           "noFiles": "Geen bestanden gekozen",
           "invalidType": "Bestandstype niet toegestaan",
-          "metadataCreateFailed": "De bestandsgegevens konden niet worden opgeslagen"
+          "metadataCreateFailed": "De bestandsgegevens konden niet worden opgeslagen",
+          "tooLarge": "Bestand groter dan 3 MB",
+          "uploadFailed": "Uploaden van het bestand mislukt"
         },
         "date": {
           "label": "Datum"
@@ -1669,7 +1804,12 @@
       "missingId": "De identificatie is niet gevonden",
       "noteCreateFailed": "Notitie aanmaken mislukt",
       "noteDeleteFailed": "Notitie verwijderen mislukt",
-      "untitled": "Zonder titel"
+      "untitled": "Zonder titel",
+      "attachment": "Bijlage",
+      "loadError": "De notities konden niet worden geladen",
+      "noteCreated": "Notitie aangemaakt",
+      "noteDeleted": "Notitie verwijderd",
+      "sectionTitle": "Notities"
     },
     "profile": {
       "noLicense": "Geen pas gevonden",
@@ -1916,7 +2056,8 @@
       },
       "offDuty": "Niet in dienst",
       "onDutyNo": "Nee",
-      "onDutyYes": "Ja"
+      "onDutyYes": "Ja",
+      "onDuty": "In dienst"
     },
     "tabs": {
       "create_profile": "Profiel aanmaken",
@@ -1933,7 +2074,15 @@
       "resetError": "De koppeling kon niet worden gereset.",
       "subtitle": "Het eerste apparaat waarmee de beveiliger inlogt, wordt gekoppeld. Verschijnt er een ander apparaat, dan wordt dat gemarkeerd als niet herkend (het wordt niet geblokkeerd). Reset de koppeling als de beveiliger een andere telefoon heeft.",
       "title": "Apparaat van de beveiliger",
-      "unrecognized": "Niet herkend"
+      "unrecognized": "Niet herkend",
+      "bound": "Gekoppeld",
+      "boundDevice": "Gekoppeld apparaat",
+      "deviceCount": "{{n}} apparaat/apparaten",
+      "lastSeen": "Laatst gezien",
+      "os": "Systeem",
+      "otherDevices": "Andere apparaten",
+      "platform": "Platform",
+      "unknownDevice": "Onbekend apparaat"
     },
     "documents": {
       "deleteConfirm": "\"{{name}}\" verwijderen? Dit kan niet ongedaan worden gemaakt.",
@@ -1950,14 +2099,23 @@
       "loadError": "De documenten konden niet worden geladen",
       "saveError": "De documenten konden niet worden opgeslagen",
       "tooLarge": "Het bestand is groter dan de maximale grootte (10 MB)",
-      "uploadFailed": "Uploaden van {{name}} mislukt"
+      "uploadFailed": "Uploaden van {{name}} mislukt",
+      "deleted": "Document verwijderd",
+      "errorTitle": "Laden mislukt",
+      "retry": "Opnieuw proberen",
+      "sectionTitle": "Documenten",
+      "untitled": "Document",
+      "uploaded": "Documenten geüpload",
+      "uploading": "Uploaden…"
     },
     "employment": {
       "cycles": "Periodes bij het bedrijf",
       "equipmentPending": "{{n}} artikelen niet ingeleverd",
       "hiredOn": "Datum in dienst",
       "noRehire": "Niet opnieuw aannemen",
-      "terminations": "Geschiedenis van uitdiensttredingen"
+      "terminations": "Geschiedenis van uitdiensttredingen",
+      "seniority": "Dienstjaren",
+      "title": "Personeelsdossier"
     },
     "memos": {
       "addButton": "Nieuwe memo",
@@ -1972,18 +2130,26 @@
       "feedTitle": "Memogeschiedenis",
       "form": {
         "contentPlaceholder": "Schrijf de memo...",
-        "subjectPlaceholder": "Onderwerp van de memo"
+        "subjectPlaceholder": "Onderwerp van de memo",
+        "content": "Inhoud",
+        "subject": "Onderwerp"
       },
       "loadError": "De memo's konden niet worden geladen",
       "modal": {
         "title": "Nieuwe memo",
-        "to": "Aan"
+        "to": "Aan",
+        "send": "Versturen"
       },
       "noResults": "Geen resultaten",
       "noResultsHint": "Geen enkele memo komt overeen met je zoekopdracht.",
       "searchPlaceholder": "Memo zoeken...",
       "subjectRequired": "Het onderwerp is verplicht",
-      "subtitle": "Mededelingen gericht aan deze beveiliger."
+      "subtitle": "Mededelingen gericht aan deze beveiliger.",
+      "accepted": "Geaccepteerd",
+      "deleted": "Memo verwijderd",
+      "pending": "In behandeling",
+      "title": "Memo's",
+      "total": "memo's"
     },
     "actionNotImplemented": "Deze actie is nog niet beschikbaar",
     "overview": {
@@ -2012,6 +2178,9 @@
       "error": "De rol kon niet worden gewijzigd.",
       "hasBothRoles": "Hij heeft nu beide rollen. Kies je er één, dan houdt hij alleen die.",
       "welcomeSent": "We hebben hem een welkomstmail gestuurd met de link om de supervisorapp te downloaden."
+    },
+    "department": {
+      "title": "Afdeling"
     }
   },
   "incidents": {
@@ -2070,7 +2239,8 @@
       "incidentTo": "Incidentdatum tot",
       "showArchived": "Gearchiveerde tonen",
       "station": "Bewaakte locatie",
-      "status": "Status"
+      "status": "Status",
+      "stations": "Posten"
     },
     "labels": {
       "description": "Omschrijving",
@@ -2082,7 +2252,11 @@
       "open": "Open"
     },
     "dispatchHint": "De supervisor krijgt een melding om te accepteren en zich onderweg / ter plaatse te melden.",
-    "selectSupervisor": "— Kies een supervisor —"
+    "selectSupervisor": "— Kies een supervisor —",
+    "dispatch": "Doorsturen",
+    "dispatchToSupervisor": "Naar de supervisor sturen",
+    "dispatched": "Incident naar de supervisor gestuurd",
+    "dispatching": "Versturen…"
   },
   "invite": {
     "staff": {
@@ -2183,7 +2357,8 @@
       "title": {
         "edit": "Pastype bewerken",
         "create": "Nieuw pastype"
-      }
+      },
+      "createError": "Het vergunningstype kon niet worden aangemaakt"
     },
     "table": {
       "column": {
@@ -4904,7 +5079,8 @@
       "edit": "Bewerken",
       "missingTenant": "Bedrijf ontbreekt",
       "noSelection": "Niets geselecteerd",
-      "view": "Details bekijken"
+      "view": "Details bekijken",
+      "archive": "Archiveren"
     },
     "buttons": {
       "cancel": "Annuleren",
@@ -4950,8 +5126,15 @@
       "noPostSiteId": "Geen locatie geselecteerd",
       "scheduledDaysPlaceholder": "Kies de dagen...",
       "validation": {
-        "scheduledDaysRequired": "Kies minstens één dag"
-      }
+        "scheduledDaysRequired": "Kies minstens één dag",
+        "fillRequired": "Vul de verplichte velden in",
+        "stationRequired": "De post is verplicht",
+        "tourNameRequired": "De naam van de ronde is verplicht"
+      },
+      "errorCreating": "De ronde kon niet worden aangemaakt",
+      "errorLoadingGuards": "De beveiligers konden niet worden geladen",
+      "errorLoadingTours": "De rondes konden niet worden geladen",
+      "openTimePicker": "Tijdkiezer openen"
     },
     "menu": {
       "action": "Actie",
@@ -4972,7 +5155,12 @@
       "monFri": "Ma - vr",
       "weekend": "Weekend",
       "saturday": "Zaterdag",
-      "wednesday": "Woensdag"
+      "wednesday": "Woensdag",
+      "friday": "Vrijdag",
+      "monday": "Maandag",
+      "sunday": "Zondag",
+      "thursday": "Donderdag",
+      "tuesday": "Dinsdag"
     },
     "placeholders": {
       "tourNameFallback": "Naam van de ronde"
@@ -4980,11 +5168,28 @@
     "table": {
       "duration": "Duur",
       "name": "Naam van de ronde",
-      "type": "Type"
+      "type": "Type",
+      "station": "Post"
     },
     "detail": {
       "title": "Details van de ronde"
-    }
+    },
+    "field": {
+      "active": "Actief",
+      "assignedGuard": "Toegewezen beveiliger",
+      "continuous": "Doorlopend",
+      "description": "Omschrijving",
+      "maxDuration": "Maximale duur",
+      "scheduledDays": "Ingeplande dagen",
+      "selectTime": "Tijd kiezen",
+      "station": "Post",
+      "timeMode": "Tijdmodus"
+    },
+    "list": {
+      "selectAllAria": "Alles selecteren",
+      "selectAria": "Selecteren"
+    },
+    "loading": "Laden..."
   },
   "staff": {
     "registration_title": "Gebruikersregistratie"
@@ -5043,7 +5248,16 @@
     "historyEmpty": "Er zijn nog geen bewaarde gesprekken. Sluit je er een met de X, dan blijft het hier 7 dagen staan.",
     "untitled": "Gesprek",
     "messages": "berichten",
-    "deleteConvo": "Gesprek verwijderen"
+    "deleteConvo": "Gesprek verwijderen",
+    "attachCv": "Cv bijvoegen",
+    "cvEmpty": "Ik kon geen gegevens uit dat bestand halen. Controleer of het goed leesbaar is, of vul de kaart handmatig in.",
+    "cvError": "We konden het cv niet lezen.",
+    "cvNoContact": "Ik heb geen e-mailadres en geen telefoonnummer gevonden: zonder een van beide kun je geen uitnodiging sturen.",
+    "cvOpen": "Het aanmaakformulier met deze gegevens openen",
+    "cvRead": "Dit heb ik gelezen:",
+    "cvReview": "Open het om het na te kijken en op te slaan.",
+    "cvSent": "Cv: {{n}}",
+    "cvTitle": "Cv gelezen"
   },
   "actions": {
     "action": "Actie",
@@ -5069,7 +5283,10 @@
     "save": "Opslaan",
     "view": "Bekijken",
     "viewDetails": "Details bekijken",
-    "back": "Terug"
+    "back": "Terug",
+    "discard": "Verwerpen",
+    "download": "Downloaden",
+    "send": "Versturen"
   },
   "admin": {
     "registration_title": "Registratie beheerder"
@@ -5119,7 +5336,12 @@
       "supervisor": "Supervisor",
       "clientAccountManager": "Accountmanager",
       "hrManager": "HR-manager",
-      "operationsManager": "Operationeel manager"
+      "operationsManager": "Operationeel manager",
+      "admin": "Beheerder",
+      "administrativeAssistant": "Administratief medewerker",
+      "administrativeSupervisor": "Administratief supervisor",
+      "dispatcher": "Meldkamer",
+      "secretary": "Secretariaat / receptie"
     },
     "rowActions": {
       "delete": "Verwijderen",
@@ -5127,7 +5349,8 @@
       "resendInvitation": "Uitnodiging opnieuw sturen",
       "restore": "Herstellen",
       "suspend": "Schorsen",
-      "supervisorProfile": "Supervisorprofiel"
+      "supervisorProfile": "Supervisorprofiel",
+      "closeSessions": "Sessies afsluiten"
     },
     "statuses": {
       "active": "Actief",
@@ -5379,7 +5602,12 @@
     "title": "Sectorbeheer",
     "titleDescription": "Beheer de sectoren van de geselecteerde module. Sectoren die in gebruik zijn, kunnen niet worden verwijderd.",
     "categoryCreateFailed": "De sector kon niet worden aangemaakt",
-    "searchOrCreate": "Sector zoeken of aanmaken…"
+    "searchOrCreate": "Sector zoeken of aanmaken…",
+    "createNamed": "Aanmaken",
+    "edit": "Bewerken",
+    "editcategory": "Categorie bewerken",
+    "errorDeleting": "De categorie kon niet worden verwijderd",
+    "save": "Opslaan"
   },
   "categoriesnotloaded": "De sectoren konden niet worden geladen",
   "clientPostSites": {
@@ -5730,21 +5958,31 @@
   },
   "guard": {
     "dashboard": {
-      "offDuty": "Niet in dienst"
+      "offDuty": "Niet in dienst",
+      "onDuty": "In dienst",
+      "shifts": "Diensten",
+      "stations": "Mijn posten",
+      "title": "Mijn dashboard"
     },
     "registration_subtitle": "Vul uw gegevens in om uw account te activeren.",
     "registration_success": "Registratie voltooid.",
     "registration_title": "Registratie beveiliger",
     "schedule": {
       "freeDays": "Vrije dagen",
-      "upcoming": "Volgende diensten"
+      "upcoming": "Volgende diensten",
+      "approvedTimeOff": "Goedgekeurd verlof",
+      "title": "Mijn rooster"
     },
     "nav": {
       "home": "Start",
       "schedule": "Rooster",
       "timeOff": "Verlof"
     },
-    "roleLabel": "Beveiliger"
+    "roleLabel": "Beveiliger",
+    "invite_not_found": "Uitnodiging niet gevonden of ongeldig — u kunt het formulier handmatig invullen.",
+    "timeOff": {
+      "title": "Mijn verlof"
+    }
   },
   "header": {
     "account": "Gebruikersaccount",
@@ -5876,7 +6114,12 @@
   "notes": {
     "deleteError": "De notities konden niet worden verwijderd",
     "noSelection": "Geen notities geselecteerd",
-    "noSite": "Geen locatie geselecteerd"
+    "noSite": "Geen locatie geselecteerd",
+    "created": "Notitie aangemaakt",
+    "deleted": "Notities verwijderd",
+    "loadError": "De notities konden niet worden geladen",
+    "saveError": "De notitie kon niet worden opgeslagen",
+    "updated": "Notitie bijgewerkt"
   },
   "postSites": {
     "action": "Actie",
@@ -6134,7 +6377,8 @@
         "Roadmap": "Wegenkaart",
         "Satellite": "Satelliet",
         "title": "Kaart",
-        "noCoords": "Voor deze locatie zijn geen coördinaten ingesteld."
+        "noCoords": "Voor deze locatie zijn geen coördinaten ingesteld.",
+        "openInMaps": "Openen in Google Maps"
       },
       "Stats": {
         "guardOnSite": "Beveiligers op locatie",
@@ -6176,7 +6420,8 @@
       },
       "Filter": {
         "fromDate": "Van",
-        "toDate": "Tot"
+        "toDate": "Tot",
+        "type": "Type"
       },
       "last7days": "laatste 7 dagen"
     },
@@ -6219,7 +6464,9 @@
         "postSitePayRate": "Uurloon op deze locatie",
         "postalCode": "Postcode",
         "title": "Meer informatie"
-      }
+      },
+      "rateSaveError": "Het tarief kon niet worden opgeslagen",
+      "rateSaved": "Tarief opgeslagen"
     },
     "stations": {
       "action": "Actie",
@@ -6283,7 +6530,14 @@
         "nicknameHint": "Alleen zichtbaar voor uw eigen operatie. De opdrachtgever ziet dit niet.",
         "restCoverage": "Pauzebezetting",
         "wholeWindow": "De hele dag",
-        "withSf": "Een invaller neemt de pauzes over"
+        "withSf": "Een invaller neemt de pauzes over",
+        "endTime": "Eind",
+        "geofenceRadius": "Straal geofence (meter)",
+        "guard": "Beveiliger",
+        "nickname": "Roepnaam",
+        "selectGuard": "Beveiliger selecteren",
+        "shiftEnd": "Eind",
+        "shiftStart": "Start"
       },
       "table": {
         "description": "Omschrijving",
@@ -6295,7 +6549,17 @@
       "createSubtitle": "Bepaal de dienst, de tijden en de geofence van de post.",
       "horarioConfigFailed": "Post aangemaakt, maar het rooster kon niet worden ingesteld. Stel het in bij Planning › Rooster.",
       "noResults": "Geen resultaten voor deze zoekopdracht.",
-      "provideCustomTimes": "Bepaal de begin- en eindtijd"
+      "provideCustomTimes": "Bepaal de begin- en eindtijd",
+      "backToStations": "Posten",
+      "createShift": "Dienst aanmaken",
+      "editShift": "Dienst bewerken",
+      "guards": "beveiligers",
+      "placeholderNickname": "Bijnaam / interne roepnaam",
+      "provideName": "Voer een naam in",
+      "selectStationFirst": "Kies eerst een post",
+      "shiftCreated": "Dienst aangemaakt",
+      "shiftSaveFailed": "De dienst kon niet worden opgeslagen",
+      "shiftUpdated": "Dienst bijgewerkt"
     },
     "tasks": {
       "action": "Actie",
@@ -6848,7 +7112,29 @@
       "previewTraining": "Training",
       "previewMyData": "Mijn gegevens",
       "navTraining": "Training",
-      "navMessages": "Berichten"
+      "navMessages": "Berichten",
+      "previewAppGuard": "App van de beveiliger",
+      "previewAppSupervisor": "App van de supervisor",
+      "svNavDashboard": "Dashboard",
+      "svNavGuards": "Beveiligers",
+      "svNavMessages": "Berichten",
+      "svNavReports": "Rapporten",
+      "svNavStations": "Posten",
+      "svPreviewActive": "Actief",
+      "svPreviewAll": "Alle",
+      "svPreviewAttention": "Let op",
+      "svPreviewEta": "ETA",
+      "svPreviewIncidents": "Incidenten vandaag",
+      "svPreviewLate": "Te laat",
+      "svPreviewOff": "Offline",
+      "svPreviewOffline": "Geen verbinding",
+      "svPreviewOnDuty": "In dienst",
+      "svPreviewRole": "Supervisor",
+      "svPreviewStations": "Posten",
+      "svPreviewStationsSub": "Alle locaties van de opdrachtgever",
+      "svPreviewStationsTitle": "Posten",
+      "svPreviewTasks": "Taken",
+      "svPreviewYou": "Jij"
     },
     "appearance": {
       "layoutTitle": "Weergave",
@@ -7455,7 +7741,15 @@
       "loadError": "De post kon niet worden geladen",
       "patrolQr": "QR-codes voor rondes",
       "station": "Post",
-      "parking": "Voertuigcontrole"
+      "parking": "Voertuigcontrole",
+      "guards": "Beveiligers",
+      "incidents": "Incidenten",
+      "inventory": "Inventaris",
+      "overview": "Overzicht",
+      "rondaHistory": "Geschiedenis",
+      "shifts": "Diensten",
+      "siteTours": "Rondes",
+      "visitors": "Bezoekers"
     },
     "orders": {
       "title": "Specifieke werkinstructies",
@@ -7532,7 +7826,16 @@
       "save": "Opslaan",
       "selectGuard": "Beveiliger selecteren…",
       "startDay": "Eerste dienstdag",
-      "startDayHint": "Deze beveiliger werkt die dag en daarna om de dag. Wijs zijn aflossing toe vanaf de volgende dag."
+      "startDayHint": "Deze beveiliger werkt die dag en daarna om de dag. Wijs zijn aflossing toe vanaf de volgende dag.",
+      "addSaca": "Invaller toevoegen",
+      "assignBtn": "Toewijzen",
+      "change": "Wijzigen",
+      "loadError": "De beveiligers konden niet worden geladen",
+      "remove": "Verwijderen",
+      "replacing": "Vervangt",
+      "sacaAdded": "Invaller toegewezen",
+      "sacaTitle": "Invaller toevoegen",
+      "title": "Toegewezen beveiligers"
     },
     "incidents": {
       "col": {
@@ -7541,26 +7844,66 @@
         "guard": "Beveiliger",
         "status": "Status"
       },
-      "empty": "Er zijn geen incidenten voor deze post."
+      "empty": "Er zijn geen incidenten voor deze post.",
+      "loadError": "De incidenten konden niet worden geladen",
+      "title": "Incidenten"
     },
     "inventory": {
       "col": {
         "condition": "Status",
         "item": "Artikel",
-        "serial": "Serie / code"
+        "serial": "Serie / code",
+        "assignedTo": "Toegewezen aan"
       },
       "empty": "Er is geen inventaris voor deze post.",
-      "title": "Inventaris / uitrusting"
+      "title": "Inventaris / uitrusting",
+      "loadError": "De inventaris kon niet worden geladen"
     },
     "parking": {
       "col": {
         "guard": "Beveiliger",
-        "visitor": "Bezoeker / voertuig"
+        "visitor": "Bezoeker / voertuig",
+        "condition": "Staat",
+        "driver": "Bestuurder / bedrijf",
+        "entry": "Binnenkomst",
+        "exit": "Vertrek",
+        "photo": "Foto",
+        "plate": "Kenteken",
+        "stay": "Verblijfsduur",
+        "vehicle": "Voertuig"
       },
       "empty": "Er is nog geen voertuig geregistreerd op deze post.",
       "loadError": "De registraties konden niet worden geladen",
       "subtitle": "Voertuigen in en uit op deze post. De beveiliger registreert ze in de app en meldt ze af wanneer ze vertrekken.",
-      "title": "Voertuigcontrole"
+      "title": "Voertuigcontrole",
+      "bays": "Parkeerplaatsen (optioneel)",
+      "baysHelp": "Gescheiden door komma's. Met een ingevulde lijst kiest de beveiliger een plaats in plaats van die te typen, en ziet u hier welke vrij zijn.",
+      "blacklist": "Waarschuwen bij geweerde kentekens",
+      "blacklistHint": "Bij het invoeren van het kenteken ziet de beveiliger een waarschuwing als het geweerd is. Registreren blijft mogelijk: de beslissing bij de poort is aan hem.",
+      "capacity": "Voertuigcapaciteit",
+      "capacityHelp": "Leeg = geen limiet. De beveiliger ziet bij het registreren hoeveel plaatsen er nog vrij zijn.",
+      "capacityHint": "Voertuigen binnen ten opzichte van de capaciteit van de post",
+      "emptyHint": "De beveiliger registreert ze in de app, bij Bezoeken › Voertuig.",
+      "emptyInside": "Op dit moment staan er geen voertuigen binnen.",
+      "enable": "Regels op deze post inschakelen",
+      "enableHint": "Zonder inschakeling blijft de post in- en uitgaand verkeer registreren: alleen de capaciteit, de waarschuwing voor verblijfsduur en de geweerde kentekens gaan uit.",
+      "exitPhoto": "Vertrek bekijken",
+      "free": "vrij",
+      "freeBays": "Nu vrije plaatsen",
+      "full": "vol",
+      "inside": "Binnen",
+      "maxStay": "Waarschuwing verblijfsduur (min)",
+      "maxStayHelp": "Leeg = geen waarschuwing. Er komt één waarschuwing per voertuig.",
+      "noAlert": "Geen waarschuwing",
+      "noLimit": "Geen limiet",
+      "onExit": "Bij vertrek",
+      "onlyInside": "Alleen die binnen staan",
+      "photoEntry": "foto bij binnenkomst",
+      "photoExit": "foto bij vertrek",
+      "rules": "Regels voor de voertuigcontrole",
+      "saveError": "De regels konden niet worden opgeslagen",
+      "saved": "Regels opgeslagen",
+      "viewPhoto": "Foto bekijken"
     },
     "patrolQr": {
       "empty": "Er zijn nog geen controlepunten. Maak ze aan bij \"Beveiligingsrondes\" en kom hier terug om hun QR-codes te genereren.",
@@ -7605,7 +7948,20 @@
       "reorderFailed": "De volgorde kon niet worden opgeslagen",
       "settingsTitle": "Instellingen voor rondes",
       "title": "Beveiligingsrondes",
-      "useStationLoc": "Positie van de post gebruiken"
+      "useStationLoc": "Positie van de post gebruiken",
+      "active": "Actief",
+      "cpPlaceholder": "Bijv. Hoofdingang",
+      "create": "Ronde aanmaken",
+      "created": "Ronde aangemaakt",
+      "deleted": "Ronde verwijderd",
+      "inactive": "Inactief",
+      "loadError": "De rondes konden niet worden geladen",
+      "moveDown": "Omlaag",
+      "moveUp": "Omhoog",
+      "namePlaceholder": "Bijv. Nachtronde",
+      "point": "punt",
+      "points": "punten",
+      "settings": "Instellingen"
     }
   },
   "supervisor": {
@@ -9116,7 +9472,11 @@
       "zonaPosicionPEjAguila2": "Gebied / positie (bijv. Aguila2)",
       "vehiculoAsignado": "Toegewezen voertuig",
       "zonaPosicion": "Gebied / positie",
-      "vehiculoAsignado2": "Toegewezen voertuig"
+      "vehiculoAsignado2": "Toegewezen voertuig",
+      "sedesAsignadas": "Toegewezen locaties",
+      "sedesError": "De locaties konden niet worden opgeslagen",
+      "sedesGuardadas": "Locaties opgeslagen",
+      "sedesSinRoles": "De gegevens van de supervisor zijn nog niet geladen"
     },
     "SupervisorPositions": {
       "aunNoHayPuestosDe": "Nog geen supervisorposten",
@@ -9808,5 +10168,10 @@
     "subtitle": "Registratie van binnenkomst en vertrek van bezoekers",
     "placeTypeLabel": "Soort plek",
     "tagLabel": "Label"
-  }
+  },
+  "app": {
+    "loading": "Laden…",
+    "refresh": "Vernieuwen"
+  },
+  "loading": "Laden..."
 }

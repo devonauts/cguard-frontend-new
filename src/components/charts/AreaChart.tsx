@@ -4,6 +4,7 @@ import { useElementWidth, useSvgId, clamp } from './internals';
 import { useSeriesColor } from './useSeriesColor';
 import ChartTooltip from './ChartTooltip';
 
+import { localeActual } from '@/lib/localeActual'
 export interface AreaPoint {
   /** Etiqueta del eje X — lo que se enseña en el globo. */
   label: string;
@@ -45,7 +46,7 @@ export default function AreaChart({
   color,
   gridLines = 4,
   xTicks = 6,
-  formatValue = (v) => v.toLocaleString('es-EC'),
+  formatValue = (v) => v.toLocaleString(localeActual()),
   area = true,
   className,
   ariaLabel,

@@ -24,6 +24,7 @@
 
 import { metrosEntre, type Punto } from "@/utils/mapMotion";
 
+import { localeActual } from '@/lib/localeActual'
 export type Coord = Punto;
 
 const R_TIERRA = 6_371_008.8; // radio medio de la Tierra, en metros (IUGG)
@@ -114,7 +115,7 @@ export function radioMaximo(pts: Coord[]): number {
 /* ── Presentación ────────────────────────────────────────────────────────── */
 
 const nf = (dec: number) =>
-  new Intl.NumberFormat("es", { minimumFractionDigits: dec, maximumFractionDigits: dec });
+  new Intl.NumberFormat(localeActual(), { minimumFractionDigits: dec, maximumFractionDigits: dec });
 
 /** «34 m», «780 m», «1,2 km», «14 km». */
 export function formatearDistancia(metros: number): string {

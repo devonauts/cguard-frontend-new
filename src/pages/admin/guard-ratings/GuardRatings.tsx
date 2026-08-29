@@ -23,6 +23,7 @@ import { Search, Star, Loader2, RotateCcw, AlertCircle, ChevronLeft, ChevronRigh
 import Breadcrumb from "@/components/ui/breadcrumb";
 import guardRatingService, { GuardRatingRecord } from "@/lib/api/guardRatingService";
 import { securityGuardService } from "@/lib/api/securityGuardService";
+import { localeActual } from '@/lib/localeActual'
 import {
   PageContainer,
   PageHeader,
@@ -36,7 +37,7 @@ import {
 
 function formatDate(iso: string | null) {
   if (!iso) return "—";
-  return new Date(iso).toLocaleDateString("es-EC", {
+  return new Date(iso).toLocaleDateString(localeActual(), {
     day: "2-digit",
     month: "short",
     year: "numeric",

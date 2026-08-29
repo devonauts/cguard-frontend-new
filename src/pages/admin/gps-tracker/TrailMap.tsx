@@ -17,6 +17,7 @@ import {
 import "@/styles/map.css";
 import i18n from "@/i18n";
 
+import { localeActual } from '@/lib/localeActual'
 /** Un ping del GPS. Se re-exporta desde la geometría para no partir el tipo en
  *  dos: la página del historial lo importa desde aquí desde siempre. */
 export type TrailPoint = PuntoRecorrido;
@@ -565,9 +566,9 @@ export default function TrailMap({
                 <span className="cc-map-key"><i style={{ color: "var(--warn)" }} />Parada</span>
                 <span className="cc-map-key"><i style={{ color: "var(--brand)" }} />Fin</span>
                 <span style={{ fontSize: 10, color: "var(--ink-faint)" }}>
-                  {validos.length.toLocaleString("es-EC")} puntos
+                  {validos.length.toLocaleString(localeActual())} puntos
                   {trazo.toleranciaM > 0
-                    ? ` · trazo simplificado a ${trazo.indices.length.toLocaleString("es-EC")} vértices (±${trazo.toleranciaM} m)`
+                    ? ` · trazo simplificado a ${trazo.indices.length.toLocaleString(localeActual())} vértices (±${trazo.toleranciaM} m)`
                     : ""}
                 </span>
               </div>

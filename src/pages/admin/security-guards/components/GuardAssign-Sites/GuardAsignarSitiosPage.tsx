@@ -15,6 +15,7 @@ import { clientDisplayName } from '@/lib/clientName';
 import { Button } from '@/components/ui/button';
 
 
+import { localeActual } from '@/lib/localeActual'
 // ── Safe label extraction ────────────────────────────────────────────────────
 // The backend may return raw association OBJECTS (full Sequelize models) for
 // client / postSite / station. Rendering an object directly as a JSX child
@@ -43,7 +44,7 @@ const fmtDateTime = (v: any): string | null => {
   if (!v) return null;
   const d = new Date(v);
   if (isNaN(d.getTime())) return String(v);
-  return d.toLocaleString('es-EC', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleString(localeActual(), { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
 };
 const shiftWindow = (start: any, end: any): string | null => {
   const a = fmtDateTime(start);
@@ -57,7 +58,7 @@ const fmtDateOnly = (v: any): string | null => {
   if (!v) return null;
   const d = new Date(v);
   if (isNaN(d.getTime())) return String(v);
-  return d.toLocaleDateString('es-EC', { day: '2-digit', month: 'short', year: 'numeric' });
+  return d.toLocaleDateString(localeActual(), { day: '2-digit', month: 'short', year: 'numeric' });
 };
 const dateRange = (start: any, end: any): string | null => {
   const a = fmtDateOnly(start);

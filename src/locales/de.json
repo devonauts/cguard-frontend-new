@@ -151,7 +151,9 @@
       "desc": "Setzen Sie das Passwort Ihres Kontos als Sicherheitskraft zurück, um wieder in die C-Guard Pro App zu gelangen.",
       "eyebrow": "App für Sicherheitskräfte",
       "tag_incidents": "Vorfälle melden",
-      "title_part1": "Ihre Schicht,"
+      "title_part1": "Ihre Schicht,",
+      "tag_clock": "Ein- und Ausstempeln",
+      "tag_patrol": "Rundgänge und Streifen"
     },
     "forgot_subtitle": "Geben Sie Ihre E-Mail-Adresse ein und wir senden Ihnen einen Link, um ein neues zu erstellen.",
     "forgot_title": "Passwort vergessen?",
@@ -176,12 +178,17 @@
     "phone_invalid": "Diese Telefonnummer sieht nicht gültig aus. Prüfen Sie Land und Nummer.",
     "captcha_pending": "Bestätigen Sie, dass Sie kein Roboter sind, um fortzufahren.",
     "send_reset": "Link senden",
-    "honeypot_label": "Nicht ausfüllen"
+    "honeypot_label": "Nicht ausfüllen",
+    "enter_password": "Bitte geben Sie Ihr Passwort ein",
+    "invalid_email": "Ungültige E-Mail-Adresse",
+    "reset_error": "Der Link konnte nicht gesendet werden. Bitte versuchen Sie es erneut",
+    "sending": "Link wird gesendet…"
   },
   "client": {
     "invite_not_found": "Die Einladung wurde nicht gefunden oder ist ungültig.",
     "registration_title": "Registrierung des Auftraggebers",
-    "register": "Mein Konto aktivieren"
+    "register": "Mein Konto aktivieren",
+    "registering": "Registrierung läuft…"
   },
   "clients": {
     "accept": "Annehmen",
@@ -293,7 +300,9 @@
       "guardOne": "Sicherheitskraft",
       "manageInStation": "Im Objekt verwalten",
       "siteRosterHint": "Die Sicherheitskräfte gehören zu den Objekten dieses Einsatzobjekts. Hier sehen Sie die Übersicht; zum Zuweisen, Entfernen oder Wechseln einer Kraft öffnen Sie das jeweilige Objekt.",
-      "view": "Ansehen"
+      "view": "Ansehen",
+      "guardMany": "Sicherheitskräfte",
+      "roleSf": "Springer"
     },
     "breadcrumb": {
       "clients": "Auftraggeber",
@@ -312,7 +321,8 @@
       "name": "Auftraggeber",
       "phone": "Telefon",
       "status": "Status",
-      "more": "Mehr"
+      "more": "Mehr",
+      "appAccess": "App"
     },
     "contacts": {
       "addcontact": "Kontakt hinzufügen",
@@ -344,7 +354,9 @@
         "Mobile Number": "Mobilnummer *",
         "Name": "Name *",
         "checkbox": "Sicherheitskraft darf diesen Kontakt sehen",
-        "descriptioninput": "Beschreibung des Kontakts eingeben"
+        "descriptioninput": "Beschreibung des Kontakts eingeben",
+        "addContact": "Kontakt hinzufügen",
+        "mobilePlaceholder": "z. B. +593987654321"
       },
       "loadError": "Die Kontakte konnten nicht geladen werden"
     },
@@ -414,7 +426,14 @@
       "ruc": "Steuernummer (RUC)",
       "searchAddress": "Adresse suchen...",
       "selectRisk": "Nicht festgelegt",
-      "switchToAutocomplete": "Suche"
+      "switchToAutocomplete": "Suche",
+      "addPerson": "Person hinzufügen",
+      "commercialNamePlaceholder": "z. B. Empresa Segura S.A.",
+      "contactInfo": "Kontakt",
+      "coordinates": "GPS-Koordinaten",
+      "legalRep": "Gesetzliche Vertretung",
+      "optional": "Optional",
+      "switchToManual": "Manuell"
     },
     "nav": {
       "clientPortal": "Auftraggeberportal",
@@ -470,10 +489,19 @@
         "Title": "Neue Notiz hinzufügen",
         "Titleinput": "Titel der Notiz eingeben",
         "Titlenote": "Titel *",
-        "NoFilesSelected": "Keine Dateien ausgewählt"
+        "NoFilesSelected": "Keine Dateien ausgewählt",
+        "selectDate": "Auswählen"
       },
       "addedBy": "Hinzugefügt von",
-      "detailsTitle": "Details der Notiz"
+      "detailsTitle": "Details der Notiz",
+      "Save": "Speichern",
+      "SaveChanges": "Änderungen speichern",
+      "delete": "Löschen",
+      "validation": {
+        "dateRequired": "Das Datum ist erforderlich",
+        "descriptionRequired": "Die Beschreibung ist erforderlich",
+        "titleRequired": "Der Titel ist erforderlich"
+      }
     },
     "pagination": {
       "itemsPerPage": "Einträge pro Seite",
@@ -562,7 +590,10 @@
         "toursCompleted": "Erledigte Rundgänge (letzte 7 Tage)",
         "onsite": "Jetzt im Dienst",
         "viewIncidents": "Vorfälle ansehen",
-        "viewStaff": "Personal ansehen"
+        "viewStaff": "Personal ansehen",
+        "contract": "Vertrag",
+        "now": "Gerade jetzt",
+        "stations": "Objekte"
       },
       "contactDetails": {
         "email": "E-Mail-Adresse",
@@ -583,7 +614,13 @@
         "critical": "Kritisch",
         "last7": "in den letzten 7 Tagen",
         "noneHint": "Für diesen Auftraggeber steht nichts an.",
-        "uncovered": "Einsatzobjekte ohne Besetzung"
+        "uncovered": "Einsatzobjekte ohne Besetzung",
+        "inProgress": "in Bearbeitung",
+        "info": "Info",
+        "none": "Alles in Ordnung",
+        "openIncidents": "Aktuelle Vorfälle",
+        "projects": "Aktive Projekte",
+        "title": "Warnungen und Offenes"
       },
       "contactPerson": {
         "add": "Ansprechperson hinzufügen",
@@ -602,15 +639,20 @@
       "otherStations": "Nicht zugeordnete Objekte",
       "recent": {
         "none": "Keine Tätigkeit in letzter Zeit",
-        "noneHint": "Hier sehen Sie die Tätigkeit des Personals an den Einsatzobjekten des Auftraggebers: Schichten, Vorfälle, Besuche, Aufgaben und Rundgänge."
+        "noneHint": "Hier sehen Sie die Tätigkeit des Personals an den Einsatzobjekten des Auftraggebers: Schichten, Vorfälle, Besuche, Aufgaben und Rundgänge.",
+        "title": "Letzte Aktivität"
       },
       "sedesStatus": "Status der Einsatzobjekte",
       "status": {
-        "sinOp": "Kein Betrieb"
+        "sinOp": "Kein Betrieb",
+        "operativa": "In Betrieb"
       },
       "tbl": {
         "sede": "Einsatzobjekt",
-        "status": "Status"
+        "status": "Status",
+        "guards": "Sicherheitskräfte",
+        "incidents": "Vorfälle",
+        "stations": "Objekte"
       }
     },
     "clientCreatedSiteHint": "Mit denselben Daten wurde auch das erste Einsatzobjekt angelegt. Bevor Sie Objekte anlegen und Sicherheitskräfte zuweisen, muss dessen Betrieb noch eingerichtet werden.",
@@ -640,13 +682,29 @@
     "newClientSubtitle": "Registrieren Sie einen neuen Auftraggeber auf der Plattform.",
     "noChanges": "Es gab keine Änderungen zum Speichern",
     "onboarding": {
-      "not_invited": "Kein Zugang"
+      "not_invited": "Kein Zugang",
+      "active": "In der App",
+      "invited": "Eingeladen",
+      "suspended": "Gesperrt"
     },
     "resendAppAccess": "Einladung erneut senden",
     "sendAppAccess": "App-Zugang senden",
     "deleteError": "Der Auftraggeber konnte nicht gelöscht werden",
     "duplicateFound": "Es gibt bereits einen Auftraggeber mit diesen Daten",
-    "errorLoadingClients": "Die Auftraggeber konnten nicht geladen werden"
+    "errorLoadingClients": "Die Auftraggeber konnten nicht geladen werden",
+    "accountExec": "Gesetzliche Vertretung",
+    "creating": "Wird erstellt…",
+    "exportExcel": "Excel exportieren",
+    "exportPDF": "PDF exportieren",
+    "generateReport": "Bericht erstellen",
+    "newIncident": "Vorfall anlegen",
+    "risk": "Risiko",
+    "riskLevel": {
+      "high": "Hoch",
+      "low": "Niedrig",
+      "medium": "Mittel"
+    },
+    "timezone": "Zeitzone"
   },
   "common": {
     "active": "Aktiv",
@@ -660,7 +718,17 @@
     "viewAll": "Alle ansehen",
     "viewDetail": "Details ansehen",
     "loading": "Wird geladen…",
-    "send": "Senden"
+    "send": "Senden",
+    "apply": "Filtern",
+    "archived": "Inaktiv",
+    "clear": "Leeren",
+    "close": "Schließen",
+    "download": "Herunterladen",
+    "or": "oder",
+    "print": "Drucken",
+    "private": "Privat",
+    "saving": "Wird gespeichert…",
+    "yes": "Ja"
   },
   "comms": {
     "wa": {
@@ -1180,11 +1248,16 @@
       "kpisearch": "KPI suchen",
       "kpitable": {
         "kpicreatedfor": "Hinzugefügt von",
-        "kpidate": "Datum/Uhrzeit"
+        "kpidate": "Datum/Uhrzeit",
+        "kpitype": "Art"
       },
       "subtitle": "KPIs und Leistung der Sicherheitskraft.",
       "table": {
-        "noTargets": "Keine Zielwerte festgelegt"
+        "noTargets": "Keine Zielwerte festgelegt",
+        "actual": "Ist-Wert",
+        "name": "Name",
+        "status": "Status",
+        "target": "Zielwert"
       },
       "title": "Leistungskennzahlen",
       "toasts": {
@@ -1192,8 +1265,32 @@
         "deleteNoneSelected": "Keine Einträge ausgewählt",
         "pdfOpenError": "Das PDF konnte nicht geöffnet werden",
         "saveError": "Der KPI konnte nicht gespeichert werden",
-        "selectAtLeastOne": "Bitte wählen Sie mindestens einen KPI aus"
-      }
+        "selectAtLeastOne": "Bitte wählen Sie mindestens einen KPI aus",
+        "created": "KPI erfolgreich angelegt",
+        "deleted": "KPI gelöscht",
+        "deletedMultiple": "KPIs gelöscht",
+        "excelDownloaded": "Excel heruntergeladen",
+        "excelError": "Excel konnte nicht erstellt oder abgerufen werden",
+        "excelExportError": "Fehler beim Excel-Export",
+        "pdfError": "PDF konnte nicht erstellt oder abgerufen werden",
+        "pdfGenerated": "PDF erstellt",
+        "pdfOpened": "PDF geöffnet",
+        "updated": "KPI erfolgreich aktualisiert"
+      },
+      "descriptionLabel": "BESCHREIBUNG:",
+      "exportExcel": "Als Excel exportieren",
+      "exportPdf": "Als PDF exportieren",
+      "feedTitle": "Leistungskennzahlen (KPIs)",
+      "metrics": {
+        "incidentReports": "Vorfallberichte",
+        "routeReports": "Rundgangberichte",
+        "taskReports": "Aufgabenberichte"
+      },
+      "status": {
+        "achieved": "Erreicht",
+        "notAchieved": "Nicht erreicht"
+      },
+      "totalKpis": "KPIs"
     },
     "assignSites": {
       "assignButton": "Objekt zuweisen",
@@ -1214,7 +1311,8 @@
         "deleteFailed": "Die Zuweisung konnte nicht entfernt werden",
         "deleted": "Zuweisung entfernt",
         "removeFromPost": "Zuweisung entfernen",
-        "selectPair": "Wählen Sie mindestens ein Objekt zum Entfernen aus"
+        "selectPair": "Wählen Sie mindestens ein Objekt zum Entfernen aus",
+        "deleteConfirm": "Entfernen"
       },
       "form": {
         "client": "Auftraggeber",
@@ -1222,7 +1320,9 @@
         "selectClient": "Auftraggeber auswählen",
         "selectPostSite": "Objekt auswählen",
         "selectStation": "Objekt auswählen",
-        "station": "Objekt"
+        "station": "Objekt",
+        "end": "Ende",
+        "start": "Beginn"
       },
       "modal": {
         "assign": "Zuweisen",
@@ -1248,7 +1348,11 @@
       "loadingPostSite": "Angaben zum Einsatzobjekt werden geladen …",
       "noResults": "Keine Ergebnisse",
       "noResultsHint": "Keine Zuweisung entspricht Ihrer Suche.",
-      "thisPost": "dieses Einsatzobjekt"
+      "thisPost": "dieses Einsatzobjekt",
+      "assignedCount": "Zugewiesene Objekte",
+      "nStations": "{{count}} Objekte",
+      "selectAll": "Alle auswählen",
+      "shiftCount": "{{count}} Schichten"
     },
     "availability": {
       "save": "Speichern",
@@ -1272,7 +1376,8 @@
         "saved": "Verfügbarkeit gespeichert",
         "saveError": "Keine Kennung der Sicherheitskraft"
       },
-      "empty": "Keine Verfügbarkeit hinterlegt"
+      "empty": "Keine Verfügbarkeit hinterlegt",
+      "notAvailable": "Nicht verfügbar"
     },
     "files": {
       "loadError": "Die Wachkraft konnte nicht geladen werden",
@@ -1302,7 +1407,11 @@
         "file": "Datei"
       },
       "feedTitle": "Dateien der Sicherheitskraft",
-      "subtitle": "Dokumente und Dateien der Sicherheitskraft."
+      "subtitle": "Dokumente und Dateien der Sicherheitskraft.",
+      "title": "Dateien",
+      "toasts": {
+        "loadError": "Die Sicherheitskraft konnte nicht geladen werden"
+      }
     },
     "licenses": {
       "newLicense": "Neue Lizenz",
@@ -1333,13 +1442,16 @@
           "other": "Andere",
           "security": "Sicherheitslizenz",
           "weapons": "Waffenschein"
-        }
+        },
+        "fileSelected": "Datei ausgewählt",
+        "issueDate": "Ausgestellt"
       },
       "modal": {
         "cancel": "Abbrechen",
         "save": "Speichern",
         "title": "Neue Lizenz hinzufügen",
-        "editTitle": "Lizenz bearbeiten"
+        "editTitle": "Lizenz bearbeiten",
+        "close": "Schließen"
       },
       "table": {
         "addedBy": "Hinzugefügt von",
@@ -1348,17 +1460,32 @@
         "type": "Lizenzart"
       },
       "details": {
-        "edit": "Bearbeiten"
+        "edit": "Bearbeiten",
+        "download": "Herunterladen",
+        "notFound": "Details nicht verfügbar",
+        "title": "Lizenzdetails"
       },
       "noNumber": "Ohne Nummer",
       "status": {
         "noExpiry": "Ohne Ablauf",
-        "soon": "Läuft bald ab"
+        "soon": "Läuft bald ab",
+        "expired": "Abgelaufen",
+        "valid": "Gültig"
       },
       "subtitle": "Dokumente und Nachweise der Sicherheitskraft",
       "toasts": {
-        "noPermissionCreateType": "Sie haben keine Berechtigung, Lizenzarten anzulegen"
-      }
+        "noPermissionCreateType": "Sie haben keine Berechtigung, Lizenzarten anzulegen",
+        "createError": "Die Lizenz konnte nicht angelegt werden",
+        "created": "Lizenz angelegt",
+        "deleteError": "Löschen nicht möglich",
+        "deleted": "Gelöscht",
+        "deletedBulk": "Gelöscht",
+        "downloadError": "Der Bericht konnte nicht heruntergeladen werden",
+        "loadError": "Die Lizenzen konnten nicht geladen werden",
+        "updated": "Lizenz aktualisiert"
+      },
+      "selected": "ausgewählt",
+      "untitled": "Lizenz"
     },
     "list": {
       "applyFilters": "Filter anwenden",
@@ -1510,7 +1637,9 @@
           "date": "Letzter Arbeitstag",
           "equipment": "Welche Ausrüstung wurde heute zurückgegeben? Nicht Markiertes bleibt offen.",
           "notePh": "Grund im Detail",
-          "rehire": "Für Wiedereinstellung geeignet"
+          "rehire": "Für Wiedereinstellung geeignet",
+          "note": "Notiz (optional)",
+          "reason": "Grund"
         },
         "bulk": {
           "archiveDescription": "Möchten Sie {{count}} Wachkraft/Wachkräfte wirklich archivieren? Das lässt sich über den Filter „Archivierte“ wieder rückgängig machen.",
@@ -1534,7 +1663,11 @@
         }
       },
       "noData": "Keine Sicherheitskräfte gefunden",
-      "subtitle": "Verwalten Sie das Sicherheitspersonal Ihrer Firma"
+      "subtitle": "Verwalten Sie das Sicherheitspersonal Ihrer Firma",
+      "error": {
+        "loading": "Fehler beim Laden der Sicherheitskräfte: {{msg}}"
+      },
+      "title": "Sicherheitskräfte"
     },
     "nav": {
       "archivos": "Dateien",
@@ -1648,7 +1781,9 @@
           "label": "Anhänge",
           "noFiles": "Keine Dateien ausgewählt",
           "invalidType": "Dateityp nicht zulässig",
-          "metadataCreateFailed": "Die Angaben zur Datei konnten nicht gespeichert werden"
+          "metadataCreateFailed": "Die Angaben zur Datei konnten nicht gespeichert werden",
+          "tooLarge": "Datei größer als 3 MB",
+          "uploadFailed": "Die Datei konnte nicht hochgeladen werden"
         },
         "date": {
           "label": "Datum"
@@ -1669,7 +1804,12 @@
       "missingId": "Die Kennung wurde nicht gefunden",
       "noteCreateFailed": "Die Notiz konnte nicht angelegt werden",
       "noteDeleteFailed": "Die Notiz konnte nicht gelöscht werden",
-      "untitled": "Ohne Titel"
+      "untitled": "Ohne Titel",
+      "attachment": "Anhang",
+      "loadError": "Die Notizen konnten nicht geladen werden",
+      "noteCreated": "Notiz erfolgreich angelegt",
+      "noteDeleted": "Notiz gelöscht",
+      "sectionTitle": "Notizen"
     },
     "profile": {
       "noLicense": "Es wurde keine Lizenz gefunden",
@@ -1916,7 +2056,8 @@
       },
       "offDuty": "Außer Dienst",
       "onDutyNo": "Nein",
-      "onDutyYes": "Ja"
+      "onDutyYes": "Ja",
+      "onDuty": "Im Dienst"
     },
     "tabs": {
       "create_profile": "Profil anlegen",
@@ -1933,7 +2074,15 @@
       "resetError": "Die Verknüpfung konnte nicht zurückgesetzt werden.",
       "subtitle": "Das erste Gerät, mit dem sich die Sicherheitskraft anmeldet, wird verknüpft. Meldet sich ein weiteres Gerät an, wird es als nicht erkannt markiert (aber nicht gesperrt). Setzen Sie die Verknüpfung zurück, wenn die Sicherheitskraft das Telefon gewechselt hat.",
       "title": "Gerät der Sicherheitskraft",
-      "unrecognized": "Nicht erkannt"
+      "unrecognized": "Nicht erkannt",
+      "bound": "Verknüpft",
+      "boundDevice": "Verknüpftes Gerät",
+      "deviceCount": "{{n}} Gerät(e)",
+      "lastSeen": "Zuletzt gesehen",
+      "os": "System",
+      "otherDevices": "Weitere Geräte",
+      "platform": "Plattform",
+      "unknownDevice": "Unbekanntes Gerät"
     },
     "documents": {
       "deleteConfirm": "Möchten Sie „{{name}}“ wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
@@ -1950,14 +2099,23 @@
       "loadError": "Die Dokumente konnten nicht geladen werden",
       "saveError": "Die Dokumente konnten nicht gespeichert werden",
       "tooLarge": "Die Datei überschreitet die maximale Größe (10 MB)",
-      "uploadFailed": "Hochladen von {{name}} fehlgeschlagen"
+      "uploadFailed": "Hochladen von {{name}} fehlgeschlagen",
+      "deleted": "Dokument gelöscht",
+      "errorTitle": "Fehler beim Laden",
+      "retry": "Erneut versuchen",
+      "sectionTitle": "Dokumente",
+      "untitled": "Dokument",
+      "uploaded": "Dokumente erfolgreich hochgeladen",
+      "uploading": "Wird hochgeladen…"
     },
     "employment": {
       "cycles": "Beschäftigungszeiten in der Firma",
       "equipmentPending": "{{n}} Gegenstände nicht zurückgegeben",
       "hiredOn": "Eintrittsdatum",
       "noRehire": "Keine Wiedereinstellung",
-      "terminations": "Verlauf der Austritte"
+      "terminations": "Verlauf der Austritte",
+      "seniority": "Betriebszugehörigkeit",
+      "title": "Personalakte"
     },
     "memos": {
       "addButton": "Neue Mitteilung",
@@ -1972,18 +2130,26 @@
       "feedTitle": "Verlauf der Mitteilungen",
       "form": {
         "contentPlaceholder": "Mitteilung schreiben ...",
-        "subjectPlaceholder": "Betreff der Mitteilung"
+        "subjectPlaceholder": "Betreff der Mitteilung",
+        "content": "Inhalt",
+        "subject": "Betreff"
       },
       "loadError": "Die Mitteilungen konnten nicht geladen werden",
       "modal": {
         "title": "Neue Mitteilung",
-        "to": "An"
+        "to": "An",
+        "send": "Senden"
       },
       "noResults": "Keine Ergebnisse",
       "noResultsHint": "Keine Mitteilung entspricht Ihrer Suche.",
       "searchPlaceholder": "Mitteilung suchen ...",
       "subjectRequired": "Der Betreff ist erforderlich",
-      "subtitle": "Mitteilungen an diese Sicherheitskraft."
+      "subtitle": "Mitteilungen an diese Sicherheitskraft.",
+      "accepted": "Angenommen",
+      "deleted": "Mitteilung gelöscht",
+      "pending": "Offen",
+      "title": "Mitteilungen",
+      "total": "Mitteilungen"
     },
     "actionNotImplemented": "Aktion noch nicht verfügbar",
     "overview": {
@@ -2012,6 +2178,9 @@
       "error": "Die Rolle konnte nicht gewechselt werden.",
       "hasBothRoles": "Aktuell bestehen beide Rollen. Mit der Auswahl bleibt nur die gewählte bestehen.",
       "welcomeSent": "Wir haben eine Willkommens-E-Mail mit dem Link zum Herunterladen der Supervisor-App gesendet."
+    },
+    "department": {
+      "title": "Abteilung"
     }
   },
   "incidents": {
@@ -2070,7 +2239,8 @@
       "incidentTo": "Vorfall bis",
       "showArchived": "Archivierte anzeigen",
       "station": "Objekt",
-      "status": "Status"
+      "status": "Status",
+      "stations": "Objekte"
     },
     "labels": {
       "description": "Beschreibung",
@@ -2082,7 +2252,11 @@
       "open": "Offen"
     },
     "dispatchHint": "Der Einsatzleiter erhält eine Benachrichtigung, um den Einsatz anzunehmen und „unterwegs“ bzw. „vor Ort“ zu melden.",
-    "selectSupervisor": "— Einsatzleiter auswählen —"
+    "selectSupervisor": "— Einsatzleiter auswählen —",
+    "dispatch": "Disponieren",
+    "dispatchToSupervisor": "An Einsatzleiter disponieren",
+    "dispatched": "Vorfall an den Einsatzleiter disponiert",
+    "dispatching": "Wird disponiert…"
   },
   "invite": {
     "staff": {
@@ -2183,7 +2357,8 @@
       "title": {
         "edit": "Lizenzart bearbeiten",
         "create": "Neue Lizenzart"
-      }
+      },
+      "createError": "Die Lizenzart konnte nicht angelegt werden"
     },
     "table": {
       "column": {
@@ -4904,7 +5079,8 @@
       "edit": "Bearbeiten",
       "missingTenant": "Firma fehlt",
       "noSelection": "Keine Einträge ausgewählt",
-      "view": "Details ansehen"
+      "view": "Details ansehen",
+      "archive": "Archivieren"
     },
     "buttons": {
       "cancel": "Abbrechen",
@@ -4950,8 +5126,15 @@
       "noPostSiteId": "Kein Objekt ausgewählt",
       "scheduledDaysPlaceholder": "Tage auswählen...",
       "validation": {
-        "scheduledDaysRequired": "Wählen Sie mindestens einen Tag"
-      }
+        "scheduledDaysRequired": "Wählen Sie mindestens einen Tag",
+        "fillRequired": "Bitte füllen Sie die Pflichtfelder aus",
+        "stationRequired": "Das Objekt ist erforderlich",
+        "tourNameRequired": "Der Name des Rundgangs ist erforderlich"
+      },
+      "errorCreating": "Fehler beim Anlegen des Rundgangs",
+      "errorLoadingGuards": "Fehler beim Laden der Sicherheitskräfte",
+      "errorLoadingTours": "Fehler beim Laden der Rundgänge",
+      "openTimePicker": "Zeitauswahl öffnen"
     },
     "menu": {
       "action": "Aktion",
@@ -4972,7 +5155,12 @@
       "monFri": "Mo – Fr",
       "weekend": "Wochenende",
       "saturday": "Samstag",
-      "wednesday": "Mittwoch"
+      "wednesday": "Mittwoch",
+      "friday": "Freitag",
+      "monday": "Montag",
+      "sunday": "Sonntag",
+      "thursday": "Donnerstag",
+      "tuesday": "Dienstag"
     },
     "placeholders": {
       "tourNameFallback": "Name des Rundgangs"
@@ -4980,11 +5168,28 @@
     "table": {
       "duration": "Dauer",
       "name": "Name des Rundgangs",
-      "type": "Art"
+      "type": "Art",
+      "station": "Objekt"
     },
     "detail": {
       "title": "Rundgang-Details"
-    }
+    },
+    "field": {
+      "active": "Aktiv",
+      "assignedGuard": "Zugewiesene Sicherheitskraft",
+      "continuous": "Fortlaufend",
+      "description": "Beschreibung",
+      "maxDuration": "Maximale Dauer",
+      "scheduledDays": "Geplante Tage",
+      "selectTime": "Uhrzeit auswählen",
+      "station": "Objekt",
+      "timeMode": "Zeitmodus"
+    },
+    "list": {
+      "selectAllAria": "Alle auswählen",
+      "selectAria": "Auswählen"
+    },
+    "loading": "Wird geladen..."
   },
   "staff": {
     "registration_title": "Registrierung des Benutzers"
@@ -5043,7 +5248,16 @@
     "historyEmpty": "Es sind noch keine Unterhaltungen gespeichert. Wenn Sie eine mit dem X schließen, bleibt sie hier 7 Tage lang.",
     "untitled": "Unterhaltung",
     "messages": "Nachrichten",
-    "deleteConvo": "Unterhaltung löschen"
+    "deleteConvo": "Unterhaltung löschen",
+    "attachCv": "Lebenslauf anhängen",
+    "cvEmpty": "Aus dieser Datei konnte ich keine Daten auslesen. Prüfen Sie, ob sie gut lesbar ist, oder füllen Sie den Datensatz von Hand aus.",
+    "cvError": "Der Lebenslauf konnte nicht gelesen werden.",
+    "cvNoContact": "Ich habe weder E-Mail-Adresse noch Telefonnummer gefunden: Ohne eines von beiden kann die Person nicht eingeladen werden.",
+    "cvOpen": "Neuanlage mit diesen Daten öffnen",
+    "cvRead": "Das habe ich gelesen:",
+    "cvReview": "Öffnen Sie es zum Prüfen und Speichern.",
+    "cvSent": "Lebenslauf: {{n}}",
+    "cvTitle": "Lebenslauf ausgelesen"
   },
   "actions": {
     "action": "Aktion",
@@ -5069,7 +5283,10 @@
     "save": "Speichern",
     "view": "Ansehen",
     "viewDetails": "Details ansehen",
-    "back": "Zurück"
+    "back": "Zurück",
+    "discard": "Verwerfen",
+    "download": "Herunterladen",
+    "send": "Senden"
   },
   "admin": {
     "registration_title": "Registrierung als Administrator"
@@ -5119,7 +5336,12 @@
       "supervisor": "Einsatzleiter",
       "clientAccountManager": "Kundenbetreuer",
       "hrManager": "Personalleiter",
-      "operationsManager": "Betriebsleiter"
+      "operationsManager": "Betriebsleiter",
+      "admin": "Administrator",
+      "administrativeAssistant": "Verwaltungsassistenz",
+      "administrativeSupervisor": "Verwaltungsleitung",
+      "dispatcher": "Leitstelle",
+      "secretary": "Sekretariat / Empfang"
     },
     "rowActions": {
       "delete": "Löschen",
@@ -5127,7 +5349,8 @@
       "resendInvitation": "Einladung erneut senden",
       "restore": "Wiederherstellen",
       "suspend": "Sperren",
-      "supervisorProfile": "Supervisor-Profil"
+      "supervisorProfile": "Supervisor-Profil",
+      "closeSessions": "Sitzungen beenden"
     },
     "statuses": {
       "active": "Aktiv",
@@ -5379,7 +5602,12 @@
     "title": "Sektorenverwaltung",
     "titleDescription": "Verwalten Sie die Sektoren für das ausgewählte Modul. Sektoren, die in Verwendung sind, können nicht gelöscht werden.",
     "categoryCreateFailed": "Der Sektor konnte nicht erstellt werden",
-    "searchOrCreate": "Sektor suchen oder erstellen…"
+    "searchOrCreate": "Sektor suchen oder erstellen…",
+    "createNamed": "Anlegen",
+    "edit": "Bearbeiten",
+    "editcategory": "Sektor bearbeiten",
+    "errorDeleting": "Fehler beim Löschen des Sektors",
+    "save": "Speichern"
   },
   "categoriesnotloaded": "Die Sektoren konnten nicht geladen werden",
   "clientPostSites": {
@@ -5730,21 +5958,31 @@
   },
   "guard": {
     "dashboard": {
-      "offDuty": "Außer Dienst"
+      "offDuty": "Außer Dienst",
+      "onDuty": "Im Dienst",
+      "shifts": "Schichten",
+      "stations": "Meine Objekte",
+      "title": "Meine Übersicht"
     },
     "registration_subtitle": "Vervollständigen Sie Ihre Daten, um Ihr Konto zu aktivieren.",
     "registration_success": "Registrierung abgeschlossen.",
     "registration_title": "Registrierung als Wachkraft",
     "schedule": {
       "freeDays": "Freie Tage",
-      "upcoming": "Nächste Schichten"
+      "upcoming": "Nächste Schichten",
+      "approvedTimeOff": "Genehmigte Abwesenheiten",
+      "title": "Mein Dienstplan"
     },
     "nav": {
       "home": "Beginn",
       "schedule": "Dienstplan",
       "timeOff": "Abwesenheit"
     },
-    "roleLabel": "Sicherheitskraft"
+    "roleLabel": "Sicherheitskraft",
+    "invite_not_found": "Die Einladung wurde nicht gefunden oder ist ungültig – Sie können das Formular manuell ausfüllen.",
+    "timeOff": {
+      "title": "Meine Abwesenheiten"
+    }
   },
   "header": {
     "account": "Benutzerkonto",
@@ -5876,7 +6114,12 @@
   "notes": {
     "deleteError": "Die Notizen konnten nicht gelöscht werden",
     "noSelection": "Keine Notizen ausgewählt",
-    "noSite": "Kein Objekt ausgewählt"
+    "noSite": "Kein Objekt ausgewählt",
+    "created": "Notiz angelegt",
+    "deleted": "Notizen gelöscht",
+    "loadError": "Die Notizen konnten nicht geladen werden",
+    "saveError": "Die Notiz konnte nicht gespeichert werden",
+    "updated": "Notiz aktualisiert"
   },
   "postSites": {
     "action": "Aktion",
@@ -6134,7 +6377,8 @@
         "Roadmap": "Straßenkarte",
         "Satellite": "Satellit",
         "title": "Karte",
-        "noCoords": "Für dieses Einsatzobjekt sind keine Koordinaten hinterlegt."
+        "noCoords": "Für dieses Einsatzobjekt sind keine Koordinaten hinterlegt.",
+        "openInMaps": "In Google Maps öffnen"
       },
       "Stats": {
         "guardOnSite": "Kräfte vor Ort",
@@ -6176,7 +6420,8 @@
       },
       "Filter": {
         "fromDate": "Von",
-        "toDate": "Bis"
+        "toDate": "Bis",
+        "type": "Art"
       },
       "last7days": "letzte 7 Tage"
     },
@@ -6219,7 +6464,9 @@
         "postSitePayRate": "Vergütungssatz des Einsatzobjekts",
         "postalCode": "Postleitzahl",
         "title": "Weitere Angaben"
-      }
+      },
+      "rateSaveError": "Der Tarif konnte nicht gespeichert werden",
+      "rateSaved": "Tarif gespeichert"
     },
     "stations": {
       "action": "Aktion",
@@ -6283,7 +6530,14 @@
         "nicknameHint": "Nur für Ihr eigenes Einsatzteam sichtbar. Der Auftraggeber sieht es nicht.",
         "restCoverage": "Pausenabdeckung",
         "wholeWindow": "Der ganze Tag",
-        "withSf": "Ein Springer übernimmt die Pausen"
+        "withSf": "Ein Springer übernimmt die Pausen",
+        "endTime": "Ende",
+        "geofenceRadius": "Geofence-Radius (Meter)",
+        "guard": "Sicherheitskraft",
+        "nickname": "Rufname",
+        "selectGuard": "Sicherheitskraft auswählen",
+        "shiftEnd": "Ende",
+        "shiftStart": "Beginn"
       },
       "table": {
         "description": "Beschreibung",
@@ -6295,7 +6549,17 @@
       "createSubtitle": "Legen Sie Schicht, Zeiten und Geofence des Objekts fest.",
       "horarioConfigFailed": "Objekt erstellt, aber der Dienstplan konnte nicht eingerichtet werden. Richten Sie ihn unter Planer › Dienstplan ein.",
       "noResults": "Keine Ergebnisse für diese Suche.",
-      "provideCustomTimes": "Legen Sie Beginn und Ende fest"
+      "provideCustomTimes": "Legen Sie Beginn und Ende fest",
+      "backToStations": "Objekte",
+      "createShift": "Schicht anlegen",
+      "editShift": "Schicht bearbeiten",
+      "guards": "Sicherheitskräfte",
+      "placeholderNickname": "Spitzname / interner Rufname",
+      "provideName": "Bitte geben Sie einen Namen an",
+      "selectStationFirst": "Wählen Sie zuerst ein Objekt aus",
+      "shiftCreated": "Schicht angelegt",
+      "shiftSaveFailed": "Die Schicht konnte nicht gespeichert werden",
+      "shiftUpdated": "Schicht aktualisiert"
     },
     "tasks": {
       "action": "Aktion",
@@ -6848,7 +7112,29 @@
       "previewTraining": "Schulung",
       "previewMyData": "Meine Daten",
       "navTraining": "Schulung",
-      "navMessages": "Nachrichten"
+      "navMessages": "Nachrichten",
+      "previewAppGuard": "App der Sicherheitskraft",
+      "previewAppSupervisor": "App des Einsatzleiters",
+      "svNavDashboard": "Übersicht",
+      "svNavGuards": "Sicherheitskräfte",
+      "svNavMessages": "Nachrichten",
+      "svNavReports": "Berichte",
+      "svNavStations": "Objekte",
+      "svPreviewActive": "Aktive",
+      "svPreviewAll": "Alle",
+      "svPreviewAttention": "Achtung",
+      "svPreviewEta": "ETA",
+      "svPreviewIncidents": "Vorfälle heute",
+      "svPreviewLate": "Zu spät",
+      "svPreviewOff": "Offline",
+      "svPreviewOffline": "Offline",
+      "svPreviewOnDuty": "Im Dienst",
+      "svPreviewRole": "Einsatzleiter",
+      "svPreviewStations": "Objekte",
+      "svPreviewStationsSub": "Alle Standorte des Auftraggebers",
+      "svPreviewStationsTitle": "Objekte",
+      "svPreviewTasks": "Aufgaben",
+      "svPreviewYou": "Sie"
     },
     "appearance": {
       "layoutTitle": "Erscheinungsbild",
@@ -7455,7 +7741,15 @@
       "loadError": "Das Objekt konnte nicht geladen werden",
       "patrolQr": "Rundgang-QR",
       "station": "Objekt",
-      "parking": "Fahrzeugkontrolle"
+      "parking": "Fahrzeugkontrolle",
+      "guards": "Sicherheitskräfte",
+      "incidents": "Vorfälle",
+      "inventory": "Ausrüstung",
+      "overview": "Überblick",
+      "rondaHistory": "Verlauf",
+      "shifts": "Schichten",
+      "siteTours": "Rundgänge",
+      "visitors": "Besucher"
     },
     "orders": {
       "title": "Besondere Anweisungen",
@@ -7532,7 +7826,16 @@
       "save": "Speichern",
       "selectGuard": "Wachkraft auswählen…",
       "startDay": "Erster Schichttag",
-      "startDayHint": "Diese Wachkraft arbeitet an diesem Tag und danach jeden zweiten Tag. Weisen Sie ihre Vertretung ab dem Folgetag zu."
+      "startDayHint": "Diese Wachkraft arbeitet an diesem Tag und danach jeden zweiten Tag. Weisen Sie ihre Vertretung ab dem Folgetag zu.",
+      "addSaca": "Springer hinzufügen",
+      "assignBtn": "Zuweisen",
+      "change": "Ändern",
+      "loadError": "Die Sicherheitskräfte konnten nicht geladen werden",
+      "remove": "Entfernen",
+      "replacing": "Vertretung für",
+      "sacaAdded": "Springer zugewiesen",
+      "sacaTitle": "Springer hinzufügen",
+      "title": "Zugewiesene Sicherheitskräfte"
     },
     "incidents": {
       "col": {
@@ -7541,26 +7844,66 @@
         "guard": "Sicherheitskraft",
         "status": "Status"
       },
-      "empty": "Für dieses Objekt liegen keine Vorfälle vor."
+      "empty": "Für dieses Objekt liegen keine Vorfälle vor.",
+      "loadError": "Die Vorfälle konnten nicht geladen werden",
+      "title": "Vorfälle"
     },
     "inventory": {
       "col": {
         "condition": "Status",
         "item": "Artikel",
-        "serial": "Serien-Nr. / Code"
+        "serial": "Serien-Nr. / Code",
+        "assignedTo": "Zugewiesen an"
       },
       "empty": "Für dieses Objekt gibt es kein Inventar.",
-      "title": "Inventar / Ausrüstung"
+      "title": "Inventar / Ausrüstung",
+      "loadError": "Das Inventar konnte nicht geladen werden"
     },
     "parking": {
       "col": {
         "guard": "Sicherheitskraft",
-        "visitor": "Besucher / Fahrzeug"
+        "visitor": "Besucher / Fahrzeug",
+        "condition": "Status",
+        "driver": "Fahrer / Firma",
+        "entry": "Einfahrt",
+        "exit": "Ausfahrt",
+        "photo": "Foto",
+        "plate": "Kennzeichen",
+        "stay": "Standzeit",
+        "vehicle": "Fahrzeug"
       },
       "empty": "In diesem Objekt wurde noch kein Fahrzeug erfasst.",
       "loadError": "Die Einträge konnten nicht geladen werden",
       "subtitle": "Ein- und Ausfahrt von Fahrzeugen in diesem Objekt. Die Wachkraft erfasst sie in der App und trägt die Ausfahrt ein, wenn die Fahrzeuge wegfahren.",
-      "title": "Fahrzeugkontrolle"
+      "title": "Fahrzeugkontrolle",
+      "bays": "Stellplätze (optional)",
+      "baysHelp": "Durch Kommas getrennt. Mit hinterlegter Liste wählt die Sicherheitskraft den Stellplatz aus, statt ihn einzutippen, und hier sehen Sie, welche frei sind.",
+      "blacklist": "Vor gesperrten Kennzeichen warnen",
+      "blacklistHint": "Beim Eingeben des Kennzeichens sieht die Sicherheitskraft einen Hinweis, wenn es gesperrt ist. Das Erfassen wird dadurch nicht verhindert: Die Entscheidung am Tor trifft sie selbst.",
+      "capacity": "Fahrzeugkapazität",
+      "capacityHelp": "Leer = kein Limit. Die Sicherheitskraft sieht beim Erfassen, wie viele noch frei sind.",
+      "capacityHint": "Fahrzeuge vor Ort im Verhältnis zur Kapazität des Objekts",
+      "emptyHint": "Die Sicherheitskraft erfasst sie in der App unter Besuche › Fahrzeug.",
+      "emptyInside": "Derzeit sind keine Fahrzeuge vor Ort.",
+      "enable": "Regeln in diesem Objekt aktivieren",
+      "enableHint": "Ohne Aktivierung erfasst das Objekt weiterhin Ein- und Ausfahrten: Nur Kapazität, Aufenthaltswarnung und gesperrte Kennzeichen werden abgeschaltet.",
+      "exitPhoto": "Ausfahrt ansehen",
+      "free": "frei",
+      "freeBays": "Jetzt freie Stellplätze",
+      "full": "voll",
+      "inside": "Vor Ort",
+      "maxStay": "Warnung bei Aufenthaltsdauer (Min.)",
+      "maxStayHelp": "Leer = keine Warnung. Pro Fahrzeug wird nur einmal gewarnt.",
+      "noAlert": "Keine Warnung",
+      "noLimit": "Kein Limit",
+      "onExit": "Bei Ausfahrt",
+      "onlyInside": "Nur die vor Ort",
+      "photoEntry": "Foto bei der Einfahrt",
+      "photoExit": "Foto bei der Ausfahrt",
+      "rules": "Regeln der Fahrzeugkontrolle",
+      "saveError": "Die Regeln konnten nicht gespeichert werden",
+      "saved": "Regeln gespeichert",
+      "viewPhoto": "Foto ansehen"
     },
     "patrolQr": {
       "empty": "Es gibt noch keine Kontrollpunkte. Legen Sie sie im Bereich „Sicherheitsrundgänge“ an und kehren Sie hierher zurück, um die QR-Codes zu erzeugen.",
@@ -7605,7 +7948,20 @@
       "reorderFailed": "Die Reihenfolge konnte nicht gespeichert werden",
       "settingsTitle": "Einstellungen für Rundgänge",
       "title": "Sicherheitsrundgänge",
-      "useStationLoc": "Standort des Objekts verwenden"
+      "useStationLoc": "Standort des Objekts verwenden",
+      "active": "Aktiv",
+      "cpPlaceholder": "z. B. Haupteingang",
+      "create": "Rundgang anlegen",
+      "created": "Rundgang angelegt",
+      "deleted": "Rundgang gelöscht",
+      "inactive": "Inaktiv",
+      "loadError": "Die Rundgänge konnten nicht geladen werden",
+      "moveDown": "Nach unten",
+      "moveUp": "Nach oben",
+      "namePlaceholder": "z. B. Nachtrundgang",
+      "point": "Punkt",
+      "points": "Punkte",
+      "settings": "Einstellungen"
     }
   },
   "supervisor": {
@@ -9116,7 +9472,11 @@
       "zonaPosicionPEjAguila2": "Zone / Position (z. B. Adler2)",
       "vehiculoAsignado": "Zugewiesenes Fahrzeug",
       "zonaPosicion": "Zone / Position",
-      "vehiculoAsignado2": "Zugewiesenes Fahrzeug"
+      "vehiculoAsignado2": "Zugewiesenes Fahrzeug",
+      "sedesAsignadas": "Zugewiesene Einsatzobjekte",
+      "sedesError": "Die Einsatzobjekte konnten nicht gespeichert werden",
+      "sedesGuardadas": "Einsatzobjekte gespeichert",
+      "sedesSinRoles": "Die Angaben zum Supervisor wurden noch nicht geladen"
     },
     "SupervisorPositions": {
       "aunNoHayPuestosDe": "Noch keine Supervisor-Positionen",
@@ -9808,5 +10168,10 @@
     "subtitle": "Ein- und Austragung von Besuchern",
     "placeTypeLabel": "Ortsart",
     "tagLabel": "Kennzeichnung"
-  }
+  },
+  "app": {
+    "loading": "Wird geladen…",
+    "refresh": "Aktualisieren"
+  },
+  "loading": "Wird geladen..."
 }

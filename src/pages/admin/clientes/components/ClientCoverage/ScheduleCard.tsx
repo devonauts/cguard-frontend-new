@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { CalendarDays, ChevronLeft, ChevronRight, RefreshCw, UserPlus, UserMinus, Loader2 } from 'lucide-react';
 
+import { localeActual } from '@/lib/localeActual'
 /** Tinte de celda desde los tokens: el día usa el informativo, la noche el
  *  acento configurable, el hueco el semántico de peligro. Ningún color a mano. */
 const tint = (token: string, pct = 16): React.CSSProperties => ({
@@ -132,7 +133,7 @@ export default function ScheduleCard({ clientId, sedeId }: { clientId: string; s
   };
 
   const rangeLabel = data?.startDate && data?.endDate
-    ? `${new Date(`${data.startDate}T00:00:00`).toLocaleDateString('es-EC', { day: '2-digit', month: 'short' })} – ${new Date(`${data.endDate}T00:00:00`).toLocaleDateString('es-EC', { day: '2-digit', month: 'short' })}`
+    ? `${new Date(`${data.startDate}T00:00:00`).toLocaleDateString(localeActual(), { day: '2-digit', month: 'short' })} – ${new Date(`${data.endDate}T00:00:00`).toLocaleDateString(localeActual(), { day: '2-digit', month: 'short' })}`
     : '';
 
   return (

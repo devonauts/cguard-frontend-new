@@ -715,9 +715,9 @@ export default function ClientForm({
                                             <FormControl>
                                                 <select className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm" {...field} value={typeof field.value === "string" ? field.value : ""}>
                                                     <option value="">{t('clients.form.selectRisk', 'Sin definir')}</option>
-                                                    <option value="Bajo">{t('clients.risk.low', 'Bajo')}</option>
-                                                    <option value="Medio">{t('clients.risk.medium', 'Medio')}</option>
-                                                    <option value="Alto">{t('clients.risk.high', 'Alto')}</option>
+                                                    <option value="Bajo">{t('clients.riskLevel.low', 'Bajo')}</option>
+                                                    <option value="Medio">{t('clients.riskLevel.medium', 'Medio')}</option>
+                                                    <option value="Alto">{t('clients.riskLevel.high', 'Alto')}</option>
                                                 </select>
                                             </FormControl>
                                             <FormMessage />

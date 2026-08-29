@@ -20,6 +20,7 @@ import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { confirmDialog } from "@/components/ui/confirmDialog";
 
+import { localeActual } from '@/lib/localeActual'
 // ── Shape of GET /client-account/:id/reports (clientAccountReports.ts) ──
 interface ReportKpi {
   key: string; label: string; value: number | null; deltaPct: number;
@@ -69,20 +70,20 @@ const toneVar = (t: string) => TONE_VAR[t] || CHART_VARS.series[0];
 
 const QUICK_ICON: Record<string, LucideIcon> = { incidents: AlertTriangle, rounds: RouteIcon, visitors: UserCheck, attendance: Users, coverage: MapPin, 'guard-activity': Users };
 const ymd = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-const fmtDT = (iso: string) => { const d = new Date(iso); return Number.isNaN(d.getTime()) ? '—' : d.toLocaleString('es-EC', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }); };
-const fmtD = (iso: string) => { const d = new Date(iso); return Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString('es-EC', { day: '2-digit', month: '2-digit', year: 'numeric' }); };
+const fmtDT = (iso: string) => { const d = new Date(iso); return Number.isNaN(d.getTime()) ? '—' : d.toLocaleString(localeActual(), { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }); };
+const fmtD = (iso: string) => { const d = new Date(iso); return Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString(localeActual(), { day: '2-digit', month: '2-digit', year: 'numeric' }); };
 
 /** Actividad diaria — la serie temporal de la pestaña. */
 function ActividadChart({ data }: { data: Array<{ date: string; value: number }> }) {
   const { t } = useTranslation();
   if (!data || data.length < 2) return <EmptyState icon={<FileBarChart className="h-5 w-5" />} title={t('comun.sinDatos')} description={t("ui.ClientReports.noHayActividadEnEl", "No hay actividad en el período.")} />;
-  const dia = (iso: string) => new Date(iso).toLocaleDateString('es-EC', { day: '2-digit', month: 'short' });
+  const dia = (iso: string) => new Date(iso).toLocaleDateString(localeActual(), { day: '2-digit', month: 'short' });
   return (
     <AreaChart
       height={190}
       ariaLabel="Actividades por día"
       data={data.map((d) => ({ label: dia(d.date), value: d.value }))}
-      formatValue={(v) => `${v.toLocaleString('es-EC')} actividades`}
+      formatValue={(v) => `${v.toLocaleString(localeActual())} actividades`}
     />
   );
 }
@@ -91,7 +92,7 @@ function Kpi({ icon, k }: { icon: ReactNode; k: ReportKpi }) {
   const { t } = useTranslation();
   const up = (k.deltaPct || 0) >= 0;
   const good = k.invert ? !up : up; // for incidents/response, up is bad
-  const val = k.isTime && k.value != null ? `${Math.floor(k.value / 60).toString().padStart(2, '0')}:${(k.value % 60).toString().padStart(2, '0')}` : (k.value ?? 0).toLocaleString('es-EC');
+  const val = k.isTime && k.value != null ? `${Math.floor(k.value / 60).toString().padStart(2, '0')}:${(k.value % 60).toString().padStart(2, '0')}` : (k.value ?? 0).toLocaleString(localeActual());
   return (
     <GlassPanel flat className="p-4">
       <div className="mb-2 flex items-center justify-between">
@@ -146,7 +147,7 @@ export default function ClientReports({ client }: { client: Client & { companyNa
   const reportsList: ReportRow[] = data?.reportsList || [];
   const reportsTotal = data?.reportsTotal ?? 0;
   const pageCount = Math.max(1, Math.ceil(reportsTotal / perPage));
-  const fmtUpdated = data?.updatedAt ? new Date(data.updatedAt).toLocaleString('es-EC', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
+  const fmtUpdated = data?.updatedAt ? new Date(data.updatedAt).toLocaleString(localeActual(), { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
 
   const KPI_ICONS: Record<string, ReactNode> = { incidentes: <AlertTriangle />, rondas: <RouteIcon />, asistencias: <Users />, checkpoints: <MapPin />, respuesta: <Clock /> };
 

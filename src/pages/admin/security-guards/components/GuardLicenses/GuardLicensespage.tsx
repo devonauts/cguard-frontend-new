@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/select';
 import type { GuardDetail, GuardLicense, LicenseTypeOption, FileDescriptor } from '../../guardDetailTypes';
 
+import { localeActual } from '@/lib/localeActual'
 /** Payload for creating/updating a guard license. */
 type LicensePayload = {
   licenseTypeId?: string;
@@ -457,11 +458,11 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
                     <div className="mt-4 grid grid-cols-2 gap-3">
                       <Field
                         label={t('guards.licenses.form.issueDate', { defaultValue: 'Emitida' })}
-                        value={lic.issueDate ? new Date(lic.issueDate).toLocaleDateString('es') : null}
+                        value={lic.issueDate ? new Date(lic.issueDate).toLocaleDateString(localeActual()) : null}
                       />
                       <Field
                         label={t('guards.licenses.table.expires', { defaultValue: 'Expires On' })}
-                        value={lic.expiryDate ? new Date(lic.expiryDate).toLocaleDateString('es') : null}
+                        value={lic.expiryDate ? new Date(lic.expiryDate).toLocaleDateString(localeActual()) : null}
                       />
                     </div>
 
@@ -726,8 +727,8 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
                     <div className="grid grid-cols-2 gap-4">
                       <Field label={t('guards.licenses.table.type', { defaultValue: 'License Type' })} value={detailsData.licenseType?.name || detailsData.customName} />
                       <Field label={t('guards.licenses.form.licenseNumber', { defaultValue: 'Número de licencia' })} value={detailsData.number} />
-                      <Field label={t('guards.licenses.form.issueDate', { defaultValue: 'Issued' })} value={detailsData.issueDate ? new Date(detailsData.issueDate).toLocaleDateString('es') : null} />
-                      <Field label={t('guards.licenses.form.expiryDate', { defaultValue: 'Vence el' })} value={detailsData.expiryDate ? new Date(detailsData.expiryDate).toLocaleDateString('es') : null} />
+                      <Field label={t('guards.licenses.form.issueDate', { defaultValue: 'Issued' })} value={detailsData.issueDate ? new Date(detailsData.issueDate).toLocaleDateString(localeActual()) : null} />
+                      <Field label={t('guards.licenses.form.expiryDate', { defaultValue: 'Vence el' })} value={detailsData.expiryDate ? new Date(detailsData.expiryDate).toLocaleDateString(localeActual()) : null} />
                       <Field label={t('guards.licenses.table.addedBy', { defaultValue: 'Added By' })} value={detailsData.createdBy?.fullName || detailsData.createdBy?.email} />
                     </div>
 

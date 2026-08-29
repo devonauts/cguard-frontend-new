@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import type { GuardDetail } from '../../guardDetailTypes';
+import { localeActual } from '@/lib/localeActual'
 import {
   PageContainer, PageHeader, Section, StatusBadge, IconTile, EmptyState, SkeletonCards, Field,
 } from '@/components/kit';
@@ -36,7 +37,7 @@ function fmt(value?: string): string {
   if (!value) return '';
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return String(value);
-  return d.toLocaleString('es-ES', { year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleString(localeActual(), { year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' });
 }
 
 export default function GuardMemosPage() {

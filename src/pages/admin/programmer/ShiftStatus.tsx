@@ -33,11 +33,12 @@ import Breadcrumb from "@/components/ui/breadcrumb";
 import { PageContainer, PageHeader, Section, MetricTile, Stagger, StatusBadge, EmptyState, Toolbar } from "@/components/kit";
 import shiftService, { ShiftRecord } from "@/lib/api/shiftService";
 
+import { localeActual } from '@/lib/localeActual'
 // ── helpers ──────────────────────────────────────────────────────────────────
 
 function formatDate(iso: string | null) {
   if (!iso) return "—";
-  return new Date(iso).toLocaleDateString("es-EC", {
+  return new Date(iso).toLocaleDateString(localeActual(), {
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -49,7 +50,7 @@ function formatDate(iso: string | null) {
 
 function formatTime(iso: string | null) {
   if (!iso) return "—";
-  return new Date(iso).toLocaleTimeString("es-EC", {
+  return new Date(iso).toLocaleTimeString(localeActual(), {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,

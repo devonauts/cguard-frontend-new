@@ -8,6 +8,7 @@ import { Section, EmptyState, SkeletonCards, FadeIn, StatusBadge, SmartImage } f
 import { fileUrlFromFile } from '@/lib/fileUrl';
 import type { Station } from '@/types';
 
+import { localeActual } from '@/lib/localeActual'
 type Props = { station: Station; stationId: string; postSiteId: string };
 
 /**
@@ -77,7 +78,7 @@ const TIPO: Record<string, string> = {
 
 function formatDate(val: string | null | undefined) {
   if (!val) return '—';
-  try { return new Date(val).toLocaleString('es-EC', { dateStyle: 'short', timeStyle: 'short' }); }
+  try { return new Date(val).toLocaleString(localeActual(), { dateStyle: 'short', timeStyle: 'short' }); }
   catch { return val; }
 }
 

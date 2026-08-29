@@ -16,6 +16,7 @@ import {
 import { toast } from "sonner";
 import GuardTypeahead, { GuardPick } from "./GuardTypeahead";
 import { confirmDialog } from "@/components/ui/confirmDialog";
+import { localeActual } from '@/lib/localeActual'
 import coverageService, {
   COVERAGE_REASONS, REASON_LABEL, STATUS_LABEL, coverageErrorCode,
   stationLabel,
@@ -44,7 +45,7 @@ const STATUS_TONE: Record<string, "bad" | "warn" | "ok" | "neutral"> = {
 type ConfirmFlags = { allowRestDay: boolean; allowDoubleShift: boolean };
 
 const fmtTime = (iso: string) =>
-  new Date(iso).toLocaleTimeString("es-EC", { hour: "2-digit", minute: "2-digit" });
+  new Date(iso).toLocaleTimeString(localeActual(), { hour: "2-digit", minute: "2-digit" });
 
 export default function Coverage() {
   const { t } = useTranslation();
@@ -433,12 +434,12 @@ export default function Coverage() {
                         {stationLabel(ev.originStation)}
                         {ev.targetStation ? ` → ${stationLabel(ev.targetStation)}` : ""}
                         {" · "}
-                        {new Date(ev.windowStart).toLocaleDateString("es-EC")}
+                        {new Date(ev.windowStart).toLocaleDateString(localeActual())}
                         {/* Same day start/end reads as one turno; otherwise show
                             the span so a multi-day traslado is legible. */}
-                        {new Date(ev.windowEnd).toLocaleDateString("es-EC") !==
-                          new Date(ev.windowStart).toLocaleDateString("es-EC") &&
-                          ` – ${new Date(ev.windowEnd).toLocaleDateString("es-EC")}`}
+                        {new Date(ev.windowEnd).toLocaleDateString(localeActual()) !==
+                          new Date(ev.windowStart).toLocaleDateString(localeActual()) &&
+                          ` – ${new Date(ev.windowEnd).toLocaleDateString(localeActual())}`}
                         {ev.coveringGuard && ` · Cubre ${[ev.coveringGuard.firstName, ev.coveringGuard.lastName].filter(Boolean).join(" ")}`}
                       </p>
                       {/* A traslado expires on its own — say where they go back
@@ -446,7 +447,7 @@ export default function Coverage() {
                       {ev.kind === "transfer" && ev.status !== "cancelled" && ev.originStation && (
                         <p className="mt-0.5 text-[11px] font-medium" style={{ color: "var(--brand-text)" }}>
                           Vuelve a {stationLabel(ev.originStation)} después del{" "}
-                          {new Date(ev.windowEnd).toLocaleDateString("es-EC")}
+                          {new Date(ev.windowEnd).toLocaleDateString(localeActual())}
                         </p>
                       )}
                     </div>

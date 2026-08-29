@@ -16,6 +16,7 @@ import { PageContainer, PageHeader, Section, EmptyState, SkeletonCards, Segmente
 import { MapPin, ImageOff, ClipboardCheck, ClipboardList, Filter, Download, ChevronLeft, ChevronRight, LogIn, LogOut } from "lucide-react";
 import { promptDialog } from "@/components/ui/promptDialog";
 
+import { localeActual } from '@/lib/localeActual'
 const STATUS_OPTIONS = [
   "", "on_time", "late", "early_departure", "missed_clockout",
   "no_call_no_show", "overtime", "pending_review", "approved", "rejected",
@@ -49,10 +50,10 @@ function shiftAnchor(period: Period, anchor: Date, dir: number): Date {
 
 function rangeLabel(period: Period, anchor: Date): string {
   const [s, e] = rangeFor(period, anchor);
-  if (period === "day") return s.toLocaleDateString("es", { weekday: "short", day: "2-digit", month: "short", year: "numeric" });
-  if (period === "month") return s.toLocaleDateString("es", { month: "long", year: "numeric" });
+  if (period === "day") return s.toLocaleDateString(localeActual(), { weekday: "short", day: "2-digit", month: "short", year: "numeric" });
+  if (period === "month") return s.toLocaleDateString(localeActual(), { month: "long", year: "numeric" });
   const sameMonth = s.getMonth() === e.getMonth();
-  return `${s.toLocaleDateString("es", { day: "2-digit", month: sameMonth ? undefined : "short" })} – ${e.toLocaleDateString("es", { day: "2-digit", month: "short", year: "numeric" })}`;
+  return `${s.toLocaleDateString(localeActual(), { day: "2-digit", month: sameMonth ? undefined : "short" })} – ${e.toLocaleDateString(localeActual(), { day: "2-digit", month: "short", year: "numeric" })}`;
 }
 
 function csvCell(v: unknown): string {
@@ -130,12 +131,12 @@ export default function NominaRecords() {
       "Rondas", "Incidentes", "Fuera de geocerca", "Estado", "Aprobación",
     ];
     const body = rows.map((r) => [
-      r.punchInTime ? new Date(r.punchInTime).toLocaleDateString("es") : "",
+      r.punchInTime ? new Date(r.punchInTime).toLocaleDateString(localeActual()) : "",
       r.guardName?.fullName || "",
       r.stationName?.stationName || "",
       fmtTime(r.scheduledStart), fmtTime(r.scheduledEnd),
-      r.punchInTime ? new Date(r.punchInTime).toLocaleString("es") : "",
-      r.punchOutTime ? new Date(r.punchOutTime).toLocaleString("es") : "",
+      r.punchInTime ? new Date(r.punchInTime).toLocaleString(localeActual()) : "",
+      r.punchOutTime ? new Date(r.punchOutTime).toLocaleString(localeActual()) : "",
       r.hoursWorked ?? "", r.lateMinutes ?? 0, r.overtimeMinutes ?? 0,
       r.numberOfPatrolsDuringShift ?? 0, r.numberOfIncidentsDurindShift ?? 0,
       r.punchInOutsideGeofence ? "Sí" : "No",

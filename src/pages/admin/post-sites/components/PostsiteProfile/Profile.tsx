@@ -14,6 +14,7 @@ import { StatusBadge, EmptyState, SkeletonCards, SmartImage } from '@/components
 import { MapPin, Phone, Mail, Building2, Globe, Tag, Pencil, Check, X, Shield, ShieldCheck, ShieldOff, Clock, UserCircle2 } from 'lucide-react';
 import i18n from "@/i18n";
 
+import { localeActual } from '@/lib/localeActual'
 function formatDate(d?: string) {
     if (!d) return '-';
     try {
@@ -547,13 +548,13 @@ export default function PostSiteProfile({ site }: { site?: any }) {
                                             <div className="text-sm">
                                                 <span className="cg-eyebrow mb-0.5 block">{t("ui.Profile.proximoTurno", "Próximo turno")}</span>
                                                 <span className="font-semibold">
-                                                    {new Date(station.nextShift.startTime).toLocaleString('es', { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: getTenantTimezone() })}
+                                                    {new Date(station.nextShift.startTime).toLocaleString(localeActual(), { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: getTenantTimezone() })}
                                                 </span>
                                                 {station.nextShift.guard && (
                                                     <span style={{ color: 'var(--ink-soft)' }}> · {station.nextShift.guard.fullName}</span>
                                                 )}
                                                 <span className="ml-1 text-xs" style={{ color: 'var(--ink-soft)' }}>
-                                                    hasta {new Date(station.nextShift.endTime).toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit', timeZone: getTenantTimezone() })}
+                                                    hasta {new Date(station.nextShift.endTime).toLocaleTimeString(localeActual(), { hour: '2-digit', minute: '2-digit', timeZone: getTenantTimezone() })}
                                                 </span>
                                             </div>
                                         ) : (

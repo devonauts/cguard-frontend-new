@@ -9,10 +9,11 @@ import { PageContainer, PageHeader, Section, StatusBadge, SkeletonCards, EmptySt
 import taskService, { type TaskRow } from "@/lib/api/taskService";
 import { promptDialog } from "@/components/ui/promptDialog";
 
+import { localeActual } from '@/lib/localeActual'
 function fmtDate(s?: string | null): string {
   if (!s) return "—";
   const d = new Date(s);
-  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString("es-EC");
+  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString(localeActual());
 }
 
 const PRIORITY_META: Record<string, { label: string; tone: "bad" | "warn" | "neutral" }> = {

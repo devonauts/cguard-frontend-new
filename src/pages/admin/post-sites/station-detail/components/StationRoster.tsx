@@ -4,6 +4,7 @@ import { Shield, User, Sun, Moon } from 'lucide-react';
 import { ApiService } from '@/services/api/apiService';
 import { getTenantTimezone } from '@/utils/tenantLocation';
 
+import { localeActual } from '@/lib/localeActual'
 /** Tenant-tz date key + hour of a shift start. */
 function localParts(iso: string | Date): { dateKey: string; hour: number } {
   const parts = new Intl.DateTimeFormat('en-CA', {
@@ -102,7 +103,7 @@ export default function StationRoster({ stationId, tenantId, events, guardColorM
           // window with no shift = descanso. Makes the libre day visible at a glance
           // (a fijo's rest should be a consistent weekday when the cycle is weekly).
           const restWeekdays = Array.from(new Set(
-            days.filter((d) => !g.pattern[d]).map((d) => new Date(d + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'long' })),
+            days.filter((d) => !g.pattern[d]).map((d) => new Date(d + 'T12:00:00').toLocaleDateString(localeActual(), { weekday: 'long' })),
           ));
           const restLabel = restWeekdays.length === 1 ? restWeekdays[0] : restWeekdays.slice(0, 2).join(', ');
           return (

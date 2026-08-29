@@ -14,6 +14,7 @@ import userService from "@/lib/api/userService";
 import { MultiSelectDeSedes } from "@/components/MultiSelectDeSedes";
 import i18n from "@/i18n";
 
+import { localeActual } from '@/lib/localeActual'
 const WEEKDAYS = [
   { n: 1, label: "Lun" }, { n: 2, label: "Mar" }, { n: 3, label: "Mié" },
   { n: 4, label: "Jue" }, { n: 5, label: "Vie" }, { n: 6, label: "Sáb" }, { n: 0, label: "Dom" },
@@ -34,7 +35,7 @@ function toDateInput(v: string | number | Date | null | undefined): string {
 function fmtDate(v: string | number | Date | null | undefined): string | null {
   if (!v) return null;
   const d = new Date(v);
-  return isNaN(d.getTime()) ? String(v) : d.toLocaleDateString("es");
+  return isNaN(d.getTime()) ? String(v) : d.toLocaleDateString(localeActual());
 }
 
 /**

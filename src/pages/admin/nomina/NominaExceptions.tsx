@@ -10,6 +10,7 @@ import { EXCEPTION_LABEL, SEVERITY_META, EXC_STATUS_META, fmtDateTime } from "./
 import { PageContainer, PageHeader, Section, EmptyState, SkeletonCards, StatusBadge, Toolbar } from "@/components/kit";
 import { AlertTriangle, Filter, ListChecks, PartyPopper, CheckCircle2, Eye } from "lucide-react";
 
+import { localeActual } from '@/lib/localeActual'
 interface ExceptionRow {
   id: string;
   type: string;
@@ -119,7 +120,7 @@ export default function NominaExceptions() {
 
   const cerrarAtraso = async () => {
     if (!corte || !alcance) return;
-    const fecha = new Date(`${corte}T00:00:00`).toLocaleDateString("es");
+    const fecha = new Date(`${corte}T00:00:00`).toLocaleDateString(localeActual());
     if (!window.confirm(`Se darán por resueltas ${alcance} excepción(es) abiertas anteriores al ${fecha}. Esta acción queda registrada en auditoría. ¿Continuar?`)) return;
     setCerrando(true);
     try {

@@ -9,6 +9,7 @@ import { FIELD_CLS_LG, LabeledField } from '@/pages/admin/clientes/components/_s
 import { Button } from '@/components/ui/button';
 import type { Station } from '@/types';
 
+import { localeActual } from '@/lib/localeActual'
 // Local YYYY-MM-DD (avoid toISOString — it shifts day in negative-UTC zones).
 const dateKey = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
@@ -104,7 +105,7 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
     return {
       weekday: weeklyRestWeekday(style, offset),
       dates,
-      startWeekday: start.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' }),
+      startWeekday: start.toLocaleDateString(localeActual(), { weekday: 'long', day: 'numeric', month: 'short' }),
     };
   }, [positions, selectedPositionId, rotationStyles, station, rotationStartDate]);
 

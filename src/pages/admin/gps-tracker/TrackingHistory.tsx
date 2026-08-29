@@ -15,6 +15,7 @@ import { securityGuardService } from "@/lib/api/securityGuardService";
 import TrailMap, { type TrailPoint } from "./TrailMap";
 import { hora, kmh } from "./trackGeometry";
 
+import { localeActual } from '@/lib/localeActual'
 type MapType = "roadmap" | "satellite" | "hybrid" | "terrain";
 
 interface GuardOpt { id: string; name: string; }
@@ -110,7 +111,7 @@ export default function TrackingHistoryPage() {
     };
     const header = "Fecha/Hora,Latitud,Longitud,Velocidad(m/s),Precisión(m),Batería(%)";
     const body = points
-      .map((p) => [new Date(p.at).toLocaleString("es-EC"), p.lat, p.lng, p.speed ?? "", p.accuracy ?? "", p.battery ?? ""].map(csvCell).join(","))
+      .map((p) => [new Date(p.at).toLocaleString(localeActual()), p.lat, p.lng, p.speed ?? "", p.accuracy ?? "", p.battery ?? ""].map(csvCell).join(","))
       .join("\r\n");
     const blob = new Blob(["﻿" + header + "\n" + body], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -307,7 +308,7 @@ export default function TrackingHistoryPage() {
 
               {points.length > 0 && (
                 <div className="border-t px-3 py-2 text-xs text-muted-foreground">
-                  {points.length.toLocaleString("es-EC")} punto(s) · pulsa uno para verlo en el mapa
+                  {points.length.toLocaleString(localeActual())} punto(s) · pulsa uno para verlo en el mapa
                 </div>
               )}
             </div>

@@ -4,6 +4,7 @@ import { Calendar, Loader2, Clock, CalendarCheck, Plane } from 'lucide-react';
 import guardMeService from '@/lib/api/guardMeService';
 import { PageContainer, PageHeader, Section, StatusBadge } from '@/components/kit';
 
+import { localeActual } from '@/lib/localeActual'
 export default function GuardSchedule() {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
@@ -36,13 +37,13 @@ export default function GuardSchedule() {
 
   const fmtDate = (v: any) => {
     if (!v) return '-';
-    try { return new Intl.DateTimeFormat('es', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(v)); }
+    try { return new Intl.DateTimeFormat(localeActual(), { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(v)); }
     catch { return String(v); }
   };
 
   const fmtDay = (v: any) => {
     if (!v) return '-';
-    try { return new Intl.DateTimeFormat('es', { weekday: 'short', day: 'numeric', month: 'short' }).format(new Date(v)); }
+    try { return new Intl.DateTimeFormat(localeActual(), { weekday: 'short', day: 'numeric', month: 'short' }).format(new Date(v)); }
     catch { return String(v); }
   };
 

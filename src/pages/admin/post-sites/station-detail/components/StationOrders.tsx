@@ -9,6 +9,7 @@ import { FIELD_CLS_LG, LabeledField } from '@/pages/admin/clientes/components/_s
 import { Button } from '@/components/ui/button';
 import type { Station } from '@/types';
 
+import { localeActual } from '@/lib/localeActual'
 type Props = { station: Station; stationId: string; postSiteId: string };
 
 type Recurrence = 'daily' | 'weekdays' | 'weekend' | 'weekly' | 'monthly' | 'once';
@@ -335,7 +336,7 @@ function ActivityLog({ stationId, t }: { stationId: string; t: (key: string, def
               </span>
               <div>
                 <p className="text-sm font-semibold text-foreground">{c.order?.title || t('station.orders.order', 'Consigna')}</p>
-                <p className="flex items-center gap-1 text-xs text-muted-foreground"><User size={11} />{c.guardName || '—'} · {new Date(c.completedAt).toLocaleString('es-EC', { dateStyle: 'short', timeStyle: 'short' })}</p>
+                <p className="flex items-center gap-1 text-xs text-muted-foreground"><User size={11} />{c.guardName || '—'} · {new Date(c.completedAt).toLocaleString(localeActual(), { dateStyle: 'short', timeStyle: 'short' })}</p>
               </div>
             </div>
             {c.order?.time && <span className="flex items-center gap-1 text-xs text-muted-foreground"><Clock size={11} />{c.order.time}</span>}

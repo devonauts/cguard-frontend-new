@@ -16,10 +16,11 @@ import { CheckSquare, Plus, ListChecks } from "lucide-react";
 import { PageContainer, PageHeader, Section, SkeletonCards, StatusBadge, Segmented, EmptyState, SmartImage } from "@/components/kit";
 import taskService, { type TaskRow, type TaskStatus, type TaskImage } from "@/lib/api/taskService";
 
+import { localeActual } from '@/lib/localeActual'
 function fmtDate(s?: string | null): string {
   if (!s) return "—";
   const d = new Date(s);
-  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString("es-EC");
+  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString(localeActual());
 }
 
 /** Estado de la tarea → etiqueta + papel de color del sistema. */

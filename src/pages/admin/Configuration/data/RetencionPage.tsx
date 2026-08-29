@@ -50,6 +50,7 @@ import { Button } from "@/components/ui/button";
 import { usePermissions } from "@/hooks/usePermissions";
 import api from "@/lib/api";
 
+import { localeActual } from '@/lib/localeActual'
 type Clave = "locationTrailDays" | "communicationLogsDays" | "auditLogDays";
 type Retencion = Record<Clave, number>;
 
@@ -110,12 +111,12 @@ const DATOS: Dato[] = [
 type Estimacion = { clave: Clave; total: number; masAntigua: string | null; aBorrar: number };
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
-const nf = new Intl.NumberFormat("es");
+const nf = new Intl.NumberFormat(localeActual());
 
 function fecha(iso: string | null) {
   if (!iso) return null;
   try {
-    return new Date(iso).toLocaleDateString("es", { day: "numeric", month: "long", year: "numeric" });
+    return new Date(iso).toLocaleDateString(localeActual(), { day: "numeric", month: "long", year: "numeric" });
   } catch {
     return null;
   }

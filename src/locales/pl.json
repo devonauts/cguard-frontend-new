@@ -151,7 +151,9 @@
       "desc": "Zresetuj hasło do konta pracownika ochrony, aby wrócić do aplikacji C-Guard Pro.",
       "eyebrow": "Aplikacja dla ochrony",
       "tag_incidents": "Zgłaszanie zdarzeń",
-      "title_part1": "Twoja zmiana,"
+      "title_part1": "Twoja zmiana,",
+      "tag_clock": "Wejścia i wyjścia",
+      "tag_patrol": "Obchody i patrole"
     },
     "forgot_subtitle": "Proszę podać swój adres e-mail, a wyślemy link do utworzenia nowego hasła.",
     "forgot_title": "Nie pamiętasz hasła?",
@@ -176,12 +178,17 @@
     "phone_invalid": "Ten numer telefonu wygląda na nieprawidłowy. Proszę sprawdzić kraj i numer.",
     "captcha_pending": "Proszę potwierdzić, że nie jesteś robotem, aby kontynuować.",
     "send_reset": "Wyślij link",
-    "honeypot_label": "Nie wypełniać"
+    "honeypot_label": "Nie wypełniać",
+    "enter_password": "Proszę wpisać hasło",
+    "invalid_email": "Nieprawidłowy adres e-mail",
+    "reset_error": "Nie udało się wysłać linku. Proszę spróbować ponownie",
+    "sending": "Wysyłanie linku…"
   },
   "client": {
     "invite_not_found": "Nie znaleziono zaproszenia lub jest ono nieprawidłowe.",
     "registration_title": "Rejestracja zleceniodawcy",
-    "register": "Aktywuj moje konto"
+    "register": "Aktywuj moje konto",
+    "registering": "Rejestrowanie…"
   },
   "clients": {
     "accept": "Akceptuj",
@@ -293,7 +300,9 @@
       "guardOne": "ochroniarz",
       "manageInStation": "Zarządzaj na posterunku",
       "siteRosterHint": "Pracownicy ochrony należą do posterunków tego obiektu. Tutaj widać podsumowanie; aby przypisać, usunąć lub zmienić pracownika, proszę wejść na jego posterunek.",
-      "view": "Zobacz"
+      "view": "Zobacz",
+      "guardMany": "ochroniarzy",
+      "roleSf": "Zmiennik"
     },
     "breadcrumb": {
       "clients": "Zleceniodawcy",
@@ -312,7 +321,8 @@
       "name": "Zleceniodawca",
       "phone": "Telefon",
       "status": "Status",
-      "more": "Więcej"
+      "more": "Więcej",
+      "appAccess": "Aplikacja"
     },
     "contacts": {
       "addcontact": "Dodaj kontakt",
@@ -344,7 +354,9 @@
         "Mobile Number": "Numer telefonu *",
         "Name": "Imię *",
         "checkbox": "Pozwól pracownikowi ochrony widzieć ten kontakt",
-        "descriptioninput": "Proszę wpisać opis kontaktu"
+        "descriptioninput": "Proszę wpisać opis kontaktu",
+        "addContact": "Dodaj kontakt",
+        "mobilePlaceholder": "np. +593987654321"
       },
       "loadError": "Nie udało się wczytać kontaktów"
     },
@@ -414,7 +426,14 @@
       "ruc": "NIP firmy",
       "searchAddress": "Szukaj adresu...",
       "selectRisk": "Nieokreślony",
-      "switchToAutocomplete": "Wyszukiwanie"
+      "switchToAutocomplete": "Wyszukiwanie",
+      "addPerson": "Dodaj osobę",
+      "commercialNamePlaceholder": "Np. Bezpieczna Firma sp. z o.o.",
+      "contactInfo": "Kontakt",
+      "coordinates": "Współrzędne GPS",
+      "legalRep": "Reprezentant prawny",
+      "optional": "Opcjonalnie",
+      "switchToManual": "Ręcznie"
     },
     "nav": {
       "clientPortal": "Portal zleceniodawcy",
@@ -470,10 +489,19 @@
         "Title": "Dodaj nową notatkę",
         "Titleinput": "Proszę wpisać tytuł notatki",
         "Titlenote": "Tytuł *",
-        "NoFilesSelected": "Nie wybrano plików"
+        "NoFilesSelected": "Nie wybrano plików",
+        "selectDate": "Wybierz"
       },
       "addedBy": "Dodane przez",
-      "detailsTitle": "Szczegóły notatki"
+      "detailsTitle": "Szczegóły notatki",
+      "Save": "Zapisz",
+      "SaveChanges": "Zapisz zmiany",
+      "delete": "Usuń",
+      "validation": {
+        "dateRequired": "Data jest wymagana",
+        "descriptionRequired": "Opis jest wymagany",
+        "titleRequired": "Tytuł jest wymagany"
+      }
     },
     "pagination": {
       "itemsPerPage": "Pozycji na stronę",
@@ -562,7 +590,10 @@
         "toursCompleted": "Ukończone obchody (ostatnie 7 dni)",
         "onsite": "Teraz na zmianie",
         "viewIncidents": "Zobacz zdarzenia",
-        "viewStaff": "Zobacz personel"
+        "viewStaff": "Zobacz personel",
+        "contract": "Umowa",
+        "now": "W tej chwili",
+        "stations": "Posterunki"
       },
       "contactDetails": {
         "email": "Adres e-mail",
@@ -583,7 +614,13 @@
         "critical": "Krytyczne",
         "last7": "w ostatnich 7 dniach",
         "noneHint": "Brak spraw otwartych dla tego zleceniodawcy.",
-        "uncovered": "Obiekty bez obsady"
+        "uncovered": "Obiekty bez obsady",
+        "inProgress": "w toku",
+        "info": "Info",
+        "none": "Wszystko w porządku",
+        "openIncidents": "Ostatnie zdarzenia",
+        "projects": "Aktywne projekty",
+        "title": "Alerty i sprawy otwarte"
       },
       "contactPerson": {
         "add": "Dodaj osobę kontaktową",
@@ -602,15 +639,20 @@
       "otherStations": "Posterunki bez obiektu",
       "recent": {
         "none": "Brak ostatniej aktywności",
-        "noneHint": "Tutaj zobaczysz aktywność personelu na obiektach tego zleceniodawcy: zmiany, zdarzenia, wizyty, zadania i obchody."
+        "noneHint": "Tutaj zobaczysz aktywność personelu na obiektach tego zleceniodawcy: zmiany, zdarzenia, wizyty, zadania i obchody.",
+        "title": "Ostatnia aktywność"
       },
       "sedesStatus": "Status obiektów",
       "status": {
-        "sinOp": "Bez operacji"
+        "sinOp": "Bez operacji",
+        "operativa": "Operacja aktywna"
       },
       "tbl": {
         "sede": "Obiekt",
-        "status": "Status"
+        "status": "Status",
+        "guards": "Ochrona",
+        "incidents": "Zdarzenia",
+        "stations": "Posterunki"
       }
     },
     "clientCreatedSiteHint": "Utworzono również jego pierwszy obiekt na podstawie tych samych danych. Przed utworzeniem posterunków i przypisaniem ochrony trzeba jeszcze skonfigurować jego operację.",
@@ -640,13 +682,29 @@
     "newClientSubtitle": "Zarejestruj nowego zleceniodawcę na platformie.",
     "noChanges": "Nie było zmian do zapisania",
     "onboarding": {
-      "not_invited": "Brak dostępu"
+      "not_invited": "Brak dostępu",
+      "active": "W aplikacji",
+      "invited": "Zaproszony",
+      "suspended": "Zawieszony"
     },
     "resendAppAccess": "Wyślij zaproszenie ponownie",
     "sendAppAccess": "Wyślij dostęp do aplikacji",
     "deleteError": "Nie udało się usunąć zleceniodawcy",
     "duplicateFound": "Zleceniodawca o takich danych już istnieje",
-    "errorLoadingClients": "Nie udało się wczytać zleceniodawców"
+    "errorLoadingClients": "Nie udało się wczytać zleceniodawców",
+    "accountExec": "Reprezentant prawny",
+    "creating": "Tworzenie…",
+    "exportExcel": "Eksportuj do Excela",
+    "exportPDF": "Eksportuj do PDF",
+    "generateReport": "Generuj raport",
+    "newIncident": "Utwórz zdarzenie",
+    "risk": "Ryzyko",
+    "riskLevel": {
+      "high": "Wysokie",
+      "low": "Niskie",
+      "medium": "Średnie"
+    },
+    "timezone": "Strefa czasowa"
   },
   "common": {
     "active": "Aktywny",
@@ -660,7 +718,17 @@
     "viewAll": "Zobacz wszystkie",
     "viewDetail": "Zobacz szczegóły",
     "loading": "Ładowanie…",
-    "send": "Wyślij"
+    "send": "Wyślij",
+    "apply": "Filtruj",
+    "archived": "Nieaktywna",
+    "clear": "Wyczyść",
+    "close": "Zamknij",
+    "download": "Pobierz",
+    "or": "lub",
+    "print": "Drukuj",
+    "private": "Prywatne",
+    "saving": "Zapisywanie…",
+    "yes": "Tak"
   },
   "comms": {
     "wa": {
@@ -1180,11 +1248,16 @@
       "kpisearch": "Szukaj KPI",
       "kpitable": {
         "kpicreatedfor": "Dodane przez",
-        "kpidate": "Data/godzina"
+        "kpidate": "Data/godzina",
+        "kpitype": "Typ"
       },
       "subtitle": "Wskaźniki KPI i wyniki pracownika ochrony.",
       "table": {
-        "noTargets": "Nie zdefiniowano celów"
+        "noTargets": "Nie zdefiniowano celów",
+        "actual": "Wykonanie",
+        "name": "Nazwa",
+        "status": "Status",
+        "target": "Cel"
       },
       "title": "Wskaźniki efektywności",
       "toasts": {
@@ -1192,8 +1265,32 @@
         "deleteNoneSelected": "Nie zaznaczono żadnych pozycji",
         "pdfOpenError": "Nie udało się otworzyć pliku PDF",
         "saveError": "Nie udało się zapisać wskaźnika KPI",
-        "selectAtLeastOne": "Proszę wybrać co najmniej jeden wskaźnik KPI"
-      }
+        "selectAtLeastOne": "Proszę wybrać co najmniej jeden wskaźnik KPI",
+        "created": "KPI utworzony",
+        "deleted": "KPI usunięty",
+        "deletedMultiple": "Wskaźniki KPI usunięte",
+        "excelDownloaded": "Plik Excel pobrany",
+        "excelError": "Nie udało się utworzyć ani pobrać pliku Excel",
+        "excelExportError": "Błąd podczas eksportu do Excela",
+        "pdfError": "Nie udało się utworzyć ani pobrać pliku PDF",
+        "pdfGenerated": "Plik PDF utworzony",
+        "pdfOpened": "Plik PDF otwarty",
+        "updated": "KPI zaktualizowany"
+      },
+      "descriptionLabel": "OPIS :",
+      "exportExcel": "Eksportuj do Excela",
+      "exportPdf": "Eksportuj do PDF",
+      "feedTitle": "Kluczowe wskaźniki (KPI)",
+      "metrics": {
+        "incidentReports": "Raporty zdarzeń",
+        "routeReports": "Raporty obchodów",
+        "taskReports": "Raporty zadań"
+      },
+      "status": {
+        "achieved": "Osiągnięty",
+        "notAchieved": "Nieosiągnięty"
+      },
+      "totalKpis": "KPI"
     },
     "assignSites": {
       "assignButton": "Przypisz posterunek",
@@ -1214,7 +1311,8 @@
         "deleteFailed": "Nie udało się usunąć przypisania",
         "deleted": "Przypisanie usunięte",
         "removeFromPost": "Usuń z posterunku",
-        "selectPair": "Proszę wybrać co najmniej jeden posterunek do usunięcia"
+        "selectPair": "Proszę wybrać co najmniej jeden posterunek do usunięcia",
+        "deleteConfirm": "Usuń"
       },
       "form": {
         "client": "Zleceniodawca",
@@ -1222,7 +1320,9 @@
         "selectClient": "Wybierz zleceniodawcę",
         "selectPostSite": "Wybierz chroniony obiekt",
         "selectStation": "Wybierz posterunek",
-        "station": "Posterunek"
+        "station": "Posterunek",
+        "end": "Koniec",
+        "start": "Początek"
       },
       "modal": {
         "assign": "Przypisz",
@@ -1248,7 +1348,11 @@
       "loadingPostSite": "Wczytywanie danych obiektu…",
       "noResults": "Brak wyników",
       "noResultsHint": "Żadne przypisanie nie pasuje do wyszukiwania.",
-      "thisPost": "ten posterunek"
+      "thisPost": "ten posterunek",
+      "assignedCount": "Przypisane posterunki",
+      "nStations": "posterunki: {{count}}",
+      "selectAll": "Zaznacz wszystko",
+      "shiftCount": "zmiany: {{count}}"
     },
     "availability": {
       "save": "Zapisz",
@@ -1272,7 +1376,8 @@
         "saved": "Dostępność zapisana",
         "saveError": "Brak identyfikatora pracownika ochrony"
       },
-      "empty": "Brak dostępności"
+      "empty": "Brak dostępności",
+      "notAvailable": "Niedostępny"
     },
     "files": {
       "loadError": "Nie udało się wczytać pracownika ochrony",
@@ -1302,7 +1407,11 @@
         "file": "Plik"
       },
       "feedTitle": "Pliki pracownika ochrony",
-      "subtitle": "Dokumenty i pliki pracownika ochrony."
+      "subtitle": "Dokumenty i pliki pracownika ochrony.",
+      "title": "Pliki",
+      "toasts": {
+        "loadError": "Nie udało się wczytać pracownika ochrony"
+      }
     },
     "licenses": {
       "newLicense": "Nowe uprawnienie",
@@ -1333,13 +1442,16 @@
           "other": "Inne",
           "security": "Licencja pracownika ochrony",
           "weapons": "Pozwolenie na broń"
-        }
+        },
+        "fileSelected": "Wybrany plik",
+        "issueDate": "Data wydania"
       },
       "modal": {
         "cancel": "Anuluj",
         "save": "Zapisz",
         "title": "Dodaj nowe uprawnienie",
-        "editTitle": "Edytuj uprawnienie"
+        "editTitle": "Edytuj uprawnienie",
+        "close": "Zamknij"
       },
       "table": {
         "addedBy": "Dodane przez",
@@ -1348,17 +1460,32 @@
         "type": "Rodzaj uprawnienia"
       },
       "details": {
-        "edit": "Edytuj"
+        "edit": "Edytuj",
+        "download": "Pobierz",
+        "notFound": "Szczegóły niedostępne",
+        "title": "Szczegóły koncesji"
       },
       "noNumber": "Brak numeru",
       "status": {
         "noExpiry": "Bezterminowe",
-        "soon": "Wkrótce wygasa"
+        "soon": "Wkrótce wygasa",
+        "expired": "Wygasła",
+        "valid": "Ważna"
       },
       "subtitle": "Dokumenty i uprawnienia pracownika ochrony",
       "toasts": {
-        "noPermissionCreateType": "Nie masz uprawnień do tworzenia rodzajów uprawnień"
-      }
+        "noPermissionCreateType": "Nie masz uprawnień do tworzenia rodzajów uprawnień",
+        "createError": "Nie udało się utworzyć koncesji",
+        "created": "Koncesja utworzona",
+        "deleteError": "Nie udało się usunąć",
+        "deleted": "Usunięto",
+        "deletedBulk": "Usunięto",
+        "downloadError": "Nie udało się pobrać raportu",
+        "loadError": "Nie udało się wczytać koncesji",
+        "updated": "Koncesja zaktualizowana"
+      },
+      "selected": "wybrane",
+      "untitled": "Koncesja"
     },
     "list": {
       "applyFilters": "Zastosuj filtry",
@@ -1510,7 +1637,9 @@
           "date": "Ostatni przepracowany dzień",
           "equipment": "Jakie wyposażenie zdał dzisiaj? Wszystko niezaznaczone pozostaje do zwrotu.",
           "notePh": "Szczegóły powodu",
-          "rehire": "Możliwe ponowne zatrudnienie"
+          "rehire": "Możliwe ponowne zatrudnienie",
+          "note": "Notatka (opcjonalnie)",
+          "reason": "Powód"
         },
         "bulk": {
           "archiveDescription": "Czy na pewno zarchiwizować {{count}} pracowników ochrony? Operację można cofnąć z poziomu filtra zarchiwizowanych.",
@@ -1534,7 +1663,11 @@
         }
       },
       "noData": "Nie znaleziono pracowników ochrony",
-      "subtitle": "Zarządzaj personelem ochrony swojej organizacji"
+      "subtitle": "Zarządzaj personelem ochrony swojej organizacji",
+      "error": {
+        "loading": "Błąd podczas wczytywania pracowników ochrony: {{msg}}"
+      },
+      "title": "Ochrona"
     },
     "nav": {
       "archivos": "Pliki",
@@ -1648,7 +1781,9 @@
           "label": "Załączniki",
           "noFiles": "Nie wybrano plików",
           "invalidType": "Niedozwolony typ pliku",
-          "metadataCreateFailed": "Nie udało się zapisać danych pliku"
+          "metadataCreateFailed": "Nie udało się zapisać danych pliku",
+          "tooLarge": "Plik większy niż 3 MB",
+          "uploadFailed": "Nie udało się wgrać pliku"
         },
         "date": {
           "label": "Data"
@@ -1669,7 +1804,12 @@
       "missingId": "Nie znaleziono identyfikatora",
       "noteCreateFailed": "Nie udało się utworzyć notatki",
       "noteDeleteFailed": "Nie udało się usunąć notatki",
-      "untitled": "Bez tytułu"
+      "untitled": "Bez tytułu",
+      "attachment": "Załącznik",
+      "loadError": "Błąd podczas wczytywania notatek",
+      "noteCreated": "Notatka utworzona",
+      "noteDeleted": "Notatka usunięta",
+      "sectionTitle": "Notatki"
     },
     "profile": {
       "noLicense": "Nie znaleziono żadnego uprawnienia",
@@ -1916,7 +2056,8 @@
       },
       "offDuty": "Poza służbą",
       "onDutyNo": "Nie",
-      "onDutyYes": "Tak"
+      "onDutyYes": "Tak",
+      "onDuty": "Na służbie"
     },
     "tabs": {
       "create_profile": "Utwórz profil",
@@ -1933,7 +2074,15 @@
       "resetError": "Nie udało się zresetować powiązania.",
       "subtitle": "Pierwsze urządzenie, z którego pracownik ochrony się loguje, zostaje powiązane. Jeśli pojawi się inne urządzenie, zostanie oznaczone jako nierozpoznane (nie jest blokowane). Proszę zresetować powiązanie, jeśli pracownik zmienił telefon.",
       "title": "Urządzenie pracownika ochrony",
-      "unrecognized": "Nierozpoznane"
+      "unrecognized": "Nierozpoznane",
+      "bound": "Powiązane",
+      "boundDevice": "Powiązane urządzenie",
+      "deviceCount": "urządzenia: {{n}}",
+      "lastSeen": "Ostatnio widziane",
+      "os": "System",
+      "otherDevices": "Inne urządzenia",
+      "platform": "Platforma",
+      "unknownDevice": "Nieznane urządzenie"
     },
     "documents": {
       "deleteConfirm": "Czy na pewno usunąć „{{name}}”? Tej operacji nie można cofnąć.",
@@ -1950,14 +2099,23 @@
       "loadError": "Nie udało się wczytać dokumentów",
       "saveError": "Nie udało się zapisać dokumentów",
       "tooLarge": "Plik przekracza maksymalny rozmiar (10 MB)",
-      "uploadFailed": "Nie udało się wgrać pliku {{name}}"
+      "uploadFailed": "Nie udało się wgrać pliku {{name}}",
+      "deleted": "Dokument usunięty",
+      "errorTitle": "Błąd podczas wczytywania",
+      "retry": "Spróbuj ponownie",
+      "sectionTitle": "Dokumenty",
+      "untitled": "Dokument",
+      "uploaded": "Dokumenty wgrane",
+      "uploading": "Wgrywanie…"
     },
     "employment": {
       "cycles": "Okresy zatrudnienia w firmie",
       "equipmentPending": "{{n}} niezwróconych przedmiotów",
       "hiredOn": "Data zatrudnienia",
       "noRehire": "Bez możliwości ponownego zatrudnienia",
-      "terminations": "Historia zwolnień"
+      "terminations": "Historia zwolnień",
+      "seniority": "Staż pracy",
+      "title": "Akta pracownicze"
     },
     "memos": {
       "addButton": "Nowa notatka służbowa",
@@ -1972,18 +2130,26 @@
       "feedTitle": "Historia notatek służbowych",
       "form": {
         "contentPlaceholder": "Proszę wpisać treść notatki...",
-        "subjectPlaceholder": "Temat notatki służbowej"
+        "subjectPlaceholder": "Temat notatki służbowej",
+        "content": "Treść",
+        "subject": "Temat"
       },
       "loadError": "Nie udało się wczytać notatek służbowych",
       "modal": {
         "title": "Nowa notatka służbowa",
-        "to": "Do"
+        "to": "Do",
+        "send": "Wyślij"
       },
       "noResults": "Brak wyników",
       "noResultsHint": "Żadna notatka służbowa nie pasuje do wyszukiwania.",
       "searchPlaceholder": "Szukaj notatki służbowej...",
       "subjectRequired": "Temat jest wymagany",
-      "subtitle": "Komunikaty skierowane do tego pracownika ochrony."
+      "subtitle": "Komunikaty skierowane do tego pracownika ochrony.",
+      "accepted": "Zaakceptowane",
+      "deleted": "Notatka służbowa usunięta",
+      "pending": "Oczekuje",
+      "title": "Notatki służbowe",
+      "total": "notatki służbowe"
     },
     "actionNotImplemented": "Ta akcja nie jest jeszcze dostępna",
     "overview": {
@@ -2012,6 +2178,9 @@
       "error": "Nie udało się zmienić roli.",
       "hasBothRoles": "Obecnie pełni obie role. Wybór jednej pozostawi tylko tę jedną.",
       "welcomeSent": "Wysłaliśmy powitalną wiadomość e-mail z linkiem do pobrania aplikacji nadzorcy."
+    },
+    "department": {
+      "title": "Dział"
     }
   },
   "incidents": {
@@ -2070,7 +2239,8 @@
       "incidentTo": "Data zdarzenia do",
       "showArchived": "Pokaż zarchiwizowane",
       "station": "Chroniony obiekt",
-      "status": "Status"
+      "status": "Status",
+      "stations": "Posterunki"
     },
     "labels": {
       "description": "Opis",
@@ -2082,7 +2252,11 @@
       "open": "Otwarte"
     },
     "dispatchHint": "Nadzorca otrzyma powiadomienie, aby przyjąć zgłoszenie i oznaczyć: w drodze / na miejscu.",
-    "selectSupervisor": "— Proszę wybrać nadzorcę —"
+    "selectSupervisor": "— Proszę wybrać nadzorcę —",
+    "dispatch": "Skieruj",
+    "dispatchToSupervisor": "Skieruj do nadzorcy",
+    "dispatched": "Zdarzenie skierowane do nadzorcy",
+    "dispatching": "Kierowanie…"
   },
   "invite": {
     "staff": {
@@ -2183,7 +2357,8 @@
       "title": {
         "edit": "Edytuj rodzaj uprawnienia",
         "create": "Nowy rodzaj uprawnienia"
-      }
+      },
+      "createError": "Nie udało się utworzyć typu koncesji"
     },
     "table": {
       "column": {
@@ -4904,7 +5079,8 @@
       "edit": "Edytuj",
       "missingTenant": "Brak firmy",
       "noSelection": "Nie zaznaczono żadnych pozycji",
-      "view": "Zobacz szczegóły"
+      "view": "Zobacz szczegóły",
+      "archive": "Archiwizuj"
     },
     "buttons": {
       "cancel": "Anuluj",
@@ -4950,8 +5126,15 @@
       "noPostSiteId": "Nie wybrano obiektu",
       "scheduledDaysPlaceholder": "Proszę wybrać dni...",
       "validation": {
-        "scheduledDaysRequired": "Proszę wybrać co najmniej jeden dzień"
-      }
+        "scheduledDaysRequired": "Proszę wybrać co najmniej jeden dzień",
+        "fillRequired": "Proszę wypełnić wymagane pola",
+        "stationRequired": "Posterunek jest wymagany",
+        "tourNameRequired": "Nazwa obchodu jest wymagana"
+      },
+      "errorCreating": "Nie udało się utworzyć obchodu",
+      "errorLoadingGuards": "Błąd podczas wczytywania pracowników ochrony",
+      "errorLoadingTours": "Błąd podczas wczytywania obchodów",
+      "openTimePicker": "Otwórz wybór godziny"
     },
     "menu": {
       "action": "Akcja",
@@ -4972,7 +5155,12 @@
       "monFri": "Pn - Pt",
       "weekend": "Weekend",
       "saturday": "Sobota",
-      "wednesday": "Środa"
+      "wednesday": "Środa",
+      "friday": "Piątek",
+      "monday": "Poniedziałek",
+      "sunday": "Niedziela",
+      "thursday": "Czwartek",
+      "tuesday": "Wtorek"
     },
     "placeholders": {
       "tourNameFallback": "Nazwa obchodu"
@@ -4980,11 +5168,28 @@
     "table": {
       "duration": "Czas trwania",
       "name": "Nazwa obchodu",
-      "type": "Typ"
+      "type": "Typ",
+      "station": "Posterunek"
     },
     "detail": {
       "title": "Szczegóły obchodu"
-    }
+    },
+    "field": {
+      "active": "Aktywny",
+      "assignedGuard": "Przypisany pracownik ochrony",
+      "continuous": "Ciągły",
+      "description": "Opis",
+      "maxDuration": "Maks. czas trwania",
+      "scheduledDays": "Zaplanowane dni",
+      "selectTime": "Wybierz godzinę",
+      "station": "Posterunek",
+      "timeMode": "Tryb czasu"
+    },
+    "list": {
+      "selectAllAria": "Zaznacz wszystko",
+      "selectAria": "Zaznacz"
+    },
+    "loading": "Ładowanie..."
   },
   "staff": {
     "registration_title": "Rejestracja użytkownika"
@@ -5043,7 +5248,16 @@
     "historyEmpty": "Brak zapisanych rozmów. Rozmowa zamknięta przyciskiem X zostaje tutaj przez 7 dni.",
     "untitled": "Rozmowa",
     "messages": "wiadomości",
-    "deleteConvo": "Usuń rozmowę"
+    "deleteConvo": "Usuń rozmowę",
+    "attachCv": "Załącz CV",
+    "cvEmpty": "Nie udało mi się odczytać danych z tego pliku. Proszę sprawdzić, czy jest czytelny, albo wypełnić kartę ręcznie.",
+    "cvError": "Nie udało się odczytać CV.",
+    "cvNoContact": "Nie znalazłem ani adresu e-mail, ani telefonu: bez jednego z nich nie można wysłać zaproszenia.",
+    "cvOpen": "Otwórz formularz dodania z tymi danymi",
+    "cvRead": "Oto co odczytałem:",
+    "cvReview": "Proszę otworzyć, aby sprawdzić i zapisać.",
+    "cvSent": "CV: {{n}}",
+    "cvTitle": "CV odczytane"
   },
   "actions": {
     "action": "Akcja",
@@ -5069,7 +5283,10 @@
     "save": "Zapisz",
     "view": "Zobacz",
     "viewDetails": "Zobacz szczegóły",
-    "back": "Wstecz"
+    "back": "Wstecz",
+    "discard": "Odrzuć",
+    "download": "Pobierz",
+    "send": "Wyślij"
   },
   "admin": {
     "registration_title": "Rejestracja administratora"
@@ -5119,7 +5336,12 @@
       "supervisor": "Nadzorca",
       "clientAccountManager": "Opiekun zleceniodawców",
       "hrManager": "Kierownik działu kadr",
-      "operationsManager": "Kierownik operacyjny"
+      "operationsManager": "Kierownik operacyjny",
+      "admin": "Administrator",
+      "administrativeAssistant": "Asystent administracyjny",
+      "administrativeSupervisor": "Kierownik administracyjny",
+      "dispatcher": "Dyspozytor",
+      "secretary": "Sekretariat / recepcja"
     },
     "rowActions": {
       "delete": "Usuń",
@@ -5127,7 +5349,8 @@
       "resendInvitation": "Wyślij zaproszenie ponownie",
       "restore": "Przywróć",
       "suspend": "Zawieś",
-      "supervisorProfile": "Profil nadzorcy"
+      "supervisorProfile": "Profil nadzorcy",
+      "closeSessions": "Zamknij sesje"
     },
     "statuses": {
       "active": "Aktywny",
@@ -5379,7 +5602,12 @@
     "title": "Menedżer sektorów",
     "titleDescription": "Zarządzanie sektorami wybranego modułu. Sektorów będących w użyciu nie można usunąć.",
     "categoryCreateFailed": "Nie udało się utworzyć sektora",
-    "searchOrCreate": "Szukaj lub utwórz sektor…"
+    "searchOrCreate": "Szukaj lub utwórz sektor…",
+    "createNamed": "Utwórz",
+    "edit": "Edytuj",
+    "editcategory": "Edytuj kategorię",
+    "errorDeleting": "Nie udało się usunąć kategorii",
+    "save": "Zapisz"
   },
   "categoriesnotloaded": "Nie udało się wczytać sektorów",
   "clientPostSites": {
@@ -5730,21 +5958,31 @@
   },
   "guard": {
     "dashboard": {
-      "offDuty": "Poza służbą"
+      "offDuty": "Poza służbą",
+      "onDuty": "Na służbie",
+      "shifts": "Zmiany",
+      "stations": "Moje posterunki",
+      "title": "Mój panel"
     },
     "registration_subtitle": "Prosimy uzupełnić dane, aby aktywować konto.",
     "registration_success": "Rejestracja zakończona!",
     "registration_title": "Rejestracja pracownika ochrony",
     "schedule": {
       "freeDays": "Dni wolne",
-      "upcoming": "Najbliższe zmiany"
+      "upcoming": "Najbliższe zmiany",
+      "approvedTimeOff": "Zatwierdzone urlopy",
+      "title": "Mój grafik"
     },
     "nav": {
       "home": "Początek",
       "schedule": "Grafik",
       "timeOff": "Urlopy"
     },
-    "roleLabel": "Ochroniarz"
+    "roleLabel": "Ochroniarz",
+    "invite_not_found": "Nie znaleziono zaproszenia lub jest ono nieważne — formularz można wypełnić ręcznie.",
+    "timeOff": {
+      "title": "Moje urlopy"
+    }
   },
   "header": {
     "account": "Konto użytkownika",
@@ -5876,7 +6114,12 @@
   "notes": {
     "deleteError": "Nie udało się usunąć notatek",
     "noSelection": "Nie wybrano notatek",
-    "noSite": "Nie wybrano obiektu"
+    "noSite": "Nie wybrano obiektu",
+    "created": "Notatka utworzona",
+    "deleted": "Notatki usunięte",
+    "loadError": "Nie udało się wczytać notatek",
+    "saveError": "Nie udało się zapisać notatki",
+    "updated": "Notatka zaktualizowana"
   },
   "postSites": {
     "action": "Akcja",
@@ -6134,7 +6377,8 @@
         "Roadmap": "Mapa drogowa",
         "Satellite": "Satelita",
         "title": "Mapa",
-        "noCoords": "Ten obiekt nie ma ustawionych współrzędnych."
+        "noCoords": "Ten obiekt nie ma ustawionych współrzędnych.",
+        "openInMaps": "Otwórz w Google Maps"
       },
       "Stats": {
         "guardOnSite": "Ochrona na obiekcie",
@@ -6176,7 +6420,8 @@
       },
       "Filter": {
         "fromDate": "Od",
-        "toDate": "Do"
+        "toDate": "Do",
+        "type": "Typ"
       },
       "last7days": "ostatnie 7 dni"
     },
@@ -6219,7 +6464,9 @@
         "postSitePayRate": "Stawka wynagrodzenia na obiekcie",
         "postalCode": "Kod pocztowy",
         "title": "Więcej informacji"
-      }
+      },
+      "rateSaveError": "Nie udało się zapisać stawki",
+      "rateSaved": "Stawka zapisana"
     },
     "stations": {
       "action": "Akcja",
@@ -6283,7 +6530,14 @@
         "nicknameHint": "Widoczne wyłącznie dla działu operacyjnego firmy. Zleceniodawca tego nie widzi.",
         "restCoverage": "Obsada dni wolnych",
         "wholeWindow": "Cała doba służbowa",
-        "withSf": "Zmiennik pokrywa dni wolne"
+        "withSf": "Zmiennik pokrywa dni wolne",
+        "endTime": "Koniec",
+        "geofenceRadius": "Promień geostrefy (metry)",
+        "guard": "Pracownik ochrony",
+        "nickname": "Kryptonim",
+        "selectGuard": "Wybierz pracownika ochrony",
+        "shiftEnd": "Koniec",
+        "shiftStart": "Początek"
       },
       "table": {
         "description": "Opis",
@@ -6295,7 +6549,17 @@
       "createSubtitle": "Prosimy określić zmianę, grafik i geostrefę posterunku.",
       "horarioConfigFailed": "Posterunek utworzony, ale nie udało się skonfigurować grafiku. Prosimy ustawić go w sekcji Planowanie › Grafik.",
       "noResults": "Brak wyników wyszukiwania.",
-      "provideCustomTimes": "Prosimy podać godzinę rozpoczęcia i zakończenia"
+      "provideCustomTimes": "Prosimy podać godzinę rozpoczęcia i zakończenia",
+      "backToStations": "Posterunki",
+      "createShift": "Utwórz zmianę",
+      "editShift": "Edytuj zmianę",
+      "guards": "ochrona",
+      "placeholderNickname": "Pseudonim / kryptonim wewnętrzny",
+      "provideName": "Proszę podać nazwę",
+      "selectStationFirst": "Proszę najpierw wybrać posterunek",
+      "shiftCreated": "Zmiana utworzona",
+      "shiftSaveFailed": "Nie udało się zapisać zmiany",
+      "shiftUpdated": "Zmiana zaktualizowana"
     },
     "tasks": {
       "action": "Akcja",
@@ -6848,7 +7112,29 @@
       "previewTraining": "Szkolenia",
       "previewMyData": "Moje dane",
       "navTraining": "Szkolenia",
-      "navMessages": "Wiadomości"
+      "navMessages": "Wiadomości",
+      "previewAppGuard": "Aplikacja ochroniarza",
+      "previewAppSupervisor": "Aplikacja nadzorcy",
+      "svNavDashboard": "Pulpit",
+      "svNavGuards": "Ochrona",
+      "svNavMessages": "Wiadomości",
+      "svNavReports": "Raporty",
+      "svNavStations": "Posterunki",
+      "svPreviewActive": "Aktywni",
+      "svPreviewAll": "Wszyscy",
+      "svPreviewAttention": "Uwaga",
+      "svPreviewEta": "ETA",
+      "svPreviewIncidents": "Zdarzenia dziś",
+      "svPreviewLate": "Spóźnienie",
+      "svPreviewOff": "Offline",
+      "svPreviewOffline": "Brak połączenia",
+      "svPreviewOnDuty": "Na zmianie",
+      "svPreviewRole": "Nadzorca",
+      "svPreviewStations": "Posterunki",
+      "svPreviewStationsSub": "Wszystkie obiekty zleceniodawcy",
+      "svPreviewStationsTitle": "Posterunki",
+      "svPreviewTasks": "Zadania",
+      "svPreviewYou": "Ty"
     },
     "appearance": {
       "layoutTitle": "Wygląd",
@@ -7455,7 +7741,15 @@
       "loadError": "Błąd podczas wczytywania posterunku",
       "patrolQr": "Kody QR obchodów",
       "station": "Posterunek",
-      "parking": "Kontrola pojazdów"
+      "parking": "Kontrola pojazdów",
+      "guards": "Ochrona",
+      "incidents": "Zdarzenia",
+      "inventory": "Wyposażenie",
+      "overview": "Przegląd",
+      "rondaHistory": "Historia",
+      "shifts": "Zmiany",
+      "siteTours": "Obchody",
+      "visitors": "Goście"
     },
     "orders": {
       "title": "Instrukcje szczegółowe",
@@ -7532,7 +7826,16 @@
       "save": "Zapisz",
       "selectGuard": "Wybierz pracownika ochrony…",
       "startDay": "Pierwszy dzień zmiany",
-      "startDayHint": "Ten pracownik ochrony pracuje tego dnia, a następnie co drugi dzień. Prosimy przypisać jego zmiennika, zaczynając od dnia następnego."
+      "startDayHint": "Ten pracownik ochrony pracuje tego dnia, a następnie co drugi dzień. Prosimy przypisać jego zmiennika, zaczynając od dnia następnego.",
+      "addSaca": "Dodaj zmiennika",
+      "assignBtn": "Przypisz",
+      "change": "Zmień",
+      "loadError": "Błąd podczas wczytywania pracowników ochrony",
+      "remove": "Usuń",
+      "replacing": "Zastępuje",
+      "sacaAdded": "Zmiennik przypisany",
+      "sacaTitle": "Dodaj zmiennika",
+      "title": "Przypisani pracownicy ochrony"
     },
     "incidents": {
       "col": {
@@ -7541,26 +7844,66 @@
         "guard": "Ochroniarz",
         "status": "Status"
       },
-      "empty": "Brak zdarzeń dla tego posterunku."
+      "empty": "Brak zdarzeń dla tego posterunku.",
+      "loadError": "Błąd podczas wczytywania zdarzeń",
+      "title": "Zdarzenia"
     },
     "inventory": {
       "col": {
         "condition": "Status",
         "item": "Przedmiot",
-        "serial": "Numer seryjny / kod"
+        "serial": "Numer seryjny / kod",
+        "assignedTo": "Przypisano do"
       },
       "empty": "Brak wyposażenia dla tego posterunku.",
-      "title": "Wyposażenie / wydane środki"
+      "title": "Wyposażenie / wydane środki",
+      "loadError": "Błąd podczas wczytywania wyposażenia"
     },
     "parking": {
       "col": {
         "guard": "Ochroniarz",
-        "visitor": "Gość / pojazd"
+        "visitor": "Gość / pojazd",
+        "condition": "Stan",
+        "driver": "Kierowca / firma",
+        "entry": "Wjazd",
+        "exit": "Wyjazd",
+        "photo": "Zdjęcie",
+        "plate": "Nr rejestracyjny",
+        "stay": "Czas postoju",
+        "vehicle": "Pojazd"
       },
       "empty": "Na tym posterunku nie zarejestrowano jeszcze żadnego pojazdu.",
       "loadError": "Błąd podczas wczytywania wpisów",
       "subtitle": "Wjazd i wyjazd pojazdów na tym posterunku. Pracownik ochrony rejestruje je w aplikacji i odnotowuje wyjazd, gdy pojazd odjeżdża.",
-      "title": "Kontrola pojazdów"
+      "title": "Kontrola pojazdów",
+      "bays": "Miejsca postojowe (opcjonalnie)",
+      "baysHelp": "Rozdzielone przecinkami. Gdy lista jest uzupełniona, pracownik ochrony wybiera miejsce z listy zamiast je wpisywać, a tutaj widać, które są wolne.",
+      "blacklist": "Ostrzegaj o zakazanych tablicach",
+      "blacklistHint": "Po wpisaniu numeru rejestracyjnego pracownik ochrony zobaczy ostrzeżenie, jeśli pojazd jest zakazany. Nie blokuje to rejestracji: decyzja na bramie należy do niego.",
+      "capacity": "Limit pojazdów",
+      "capacityHelp": "Puste = bez limitu. Pracownik ochrony widzi przy rejestracji, ile miejsc zostało.",
+      "capacityHint": "Pojazdy na terenie w stosunku do limitu posterunku",
+      "emptyHint": "Pracownik ochrony rejestruje je w aplikacji, w Wizyty › Pojazd.",
+      "emptyInside": "W tej chwili na terenie nie ma żadnych pojazdów.",
+      "enable": "Włącz zasady na tym posterunku",
+      "enableHint": "Bez włączenia posterunek nadal rejestruje wjazdy i wyjazdy: wyłączone zostają tylko limit, ostrzeżenie o czasie postoju i zakazane numery rejestracyjne.",
+      "exitPhoto": "Zobacz wyjazd",
+      "free": "wolnych",
+      "freeBays": "Wolne miejsca teraz",
+      "full": "pełny",
+      "inside": "Na terenie",
+      "maxStay": "Ostrzeżenie o czasie postoju (min)",
+      "maxStayHelp": "Puste = bez ostrzeżenia. Ostrzeżenie wysyłane jest raz na pojazd.",
+      "noAlert": "Bez ostrzeżenia",
+      "noLimit": "Bez limitu",
+      "onExit": "Przy wyjeździe",
+      "onlyInside": "Tylko te na terenie",
+      "photoEntry": "zdjęcie przy wjeździe",
+      "photoExit": "zdjęcie przy wyjeździe",
+      "rules": "Zasady kontroli pojazdów",
+      "saveError": "Nie udało się zapisać zasad",
+      "saved": "Zasady zapisane",
+      "viewPhoto": "Zobacz zdjęcie"
     },
     "patrolQr": {
       "empty": "Nie ma jeszcze punktów kontrolnych. Prosimy utworzyć je w sekcji „Obchody ochrony” i wrócić tutaj, aby wygenerować kody QR.",
@@ -7605,7 +7948,20 @@
       "reorderFailed": "Nie udało się zapisać kolejności",
       "settingsTitle": "Ustawienia obchodów",
       "title": "Obchody ochrony",
-      "useStationLoc": "Użyj lokalizacji posterunku"
+      "useStationLoc": "Użyj lokalizacji posterunku",
+      "active": "Aktywny",
+      "cpPlaceholder": "Np. Wejście główne",
+      "create": "Utwórz obchód",
+      "created": "Obchód utworzony",
+      "deleted": "Obchód usunięty",
+      "inactive": "Nieaktywny",
+      "loadError": "Błąd podczas wczytywania obchodów",
+      "moveDown": "W dół",
+      "moveUp": "W górę",
+      "namePlaceholder": "Np. Obchód nocny",
+      "point": "punkt",
+      "points": "punkty",
+      "settings": "Ustawienia"
     }
   },
   "supervisor": {
@@ -9116,7 +9472,11 @@
       "zonaPosicionPEjAguila2": "Rejon / pozycja (np. Orzeł 2)",
       "vehiculoAsignado": "Przypisany pojazd",
       "zonaPosicion": "Rejon / pozycja",
-      "vehiculoAsignado2": "Przypisany pojazd"
+      "vehiculoAsignado2": "Przypisany pojazd",
+      "sedesAsignadas": "Przypisane obiekty",
+      "sedesError": "Nie udało się zapisać obiektów",
+      "sedesGuardadas": "Obiekty zapisane",
+      "sedesSinRoles": "Dane nadzorcy nie zostały jeszcze wczytane"
     },
     "SupervisorPositions": {
       "aunNoHayPuestosDe": "Nie ma jeszcze pozycji nadzorcy",
@@ -9808,5 +10168,10 @@
     "subtitle": "Kontrola wejść i wyjść gości",
     "placeTypeLabel": "Rodzaj miejsca",
     "tagLabel": "Identyfikator"
-  }
+  },
+  "app": {
+    "loading": "Ładowanie…",
+    "refresh": "Odśwież"
+  },
+  "loading": "Ładowanie..."
 }

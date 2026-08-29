@@ -16,6 +16,7 @@ import { ApiService } from '@/services/api/apiService';
 import { confirmDialog } from '@/components/ui/confirmDialog';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 
+import { localeActual } from '@/lib/localeActual'
 type BadgeTone = 'green' | 'blue' | 'orange' | 'red' | 'primary' | 'slate';
 
 // ── Shape of GET /client-account/:id/personnel (clientAccountPersonnel.ts) ──
@@ -135,7 +136,7 @@ export default function ClientStaff({ client }: { client: Client }) {
   const certs: Certificacion[] = data?.certificaciones || [];
   const ausencias: Ausencia[] = data?.ausenciasHoy || [];
   const pageCount = Math.max(1, Math.ceil(total / perPage));
-  const fmtUpdated = data?.updatedAt ? new Date(data.updatedAt).toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '';
+  const fmtUpdated = data?.updatedAt ? new Date(data.updatedAt).toLocaleTimeString(localeActual(), { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '';
 
   const donutSegments = useMemo(() => dist.filter((d) => d.count > 0).map((d) => ({ value: d.count, color: ROLE_META[d.key]?.color, tone: 'neutral' as const, label: d.label })), [dist]);
 

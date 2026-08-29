@@ -6,6 +6,7 @@ import SettingsLayout from "@/layouts/SettingsLayout";
 import { PageContainer, PageHeader, Section, Modal, InfoNote, EmptyState, StatusBadge } from "@/components/kit";
 import { ApiService } from "@/services/api/apiService";
 
+import { localeActual } from '@/lib/localeActual'
 /**
  * Configuración › Conexiones y API › Llaves de API
  *
@@ -30,7 +31,7 @@ const tid = () => localStorage.getItem("tenantId") || "";
 
 function fecha(v: string | null): string {
   if (!v) return "—";
-  try { return new Date(v).toLocaleDateString("es", { day: "2-digit", month: "short", year: "numeric" }); }
+  try { return new Date(v).toLocaleDateString(localeActual(), { day: "2-digit", month: "short", year: "numeric" }); }
   catch { return "—"; }
 }
 

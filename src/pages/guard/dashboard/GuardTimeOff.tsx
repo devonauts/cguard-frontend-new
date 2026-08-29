@@ -6,6 +6,7 @@ import guardMeService from '@/lib/api/guardMeService';
 import { PageContainer, PageHeader, Section, EmptyState, FadeIn } from '@/components/kit';
 import { Button } from '@/components/ui/button';
 
+import { localeActual } from '@/lib/localeActual'
 export default function GuardTimeOff() {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
@@ -73,7 +74,7 @@ export default function GuardTimeOff() {
 
   const fmtDay = (v: any) => {
     if (!v) return '-';
-    try { return new Intl.DateTimeFormat('es', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(v)); }
+    try { return new Intl.DateTimeFormat(localeActual(), { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(v)); }
     catch { return String(v); }
   };
 

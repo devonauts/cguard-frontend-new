@@ -3,6 +3,7 @@ import { StatusBadge as KitStatusBadge } from "@/components/kit";
 import { conEtiqueta, tablaDeEtiquetas } from "@/lib/i18nLabel";
 import i18n from "@/i18n";
 
+import { localeActual } from '@/lib/localeActual'
 /**
  * Vocabulario de estados de asistencia.
  *
@@ -107,7 +108,7 @@ export function StatusBadge({
 export function fmtDateTime(v: string | null | undefined): string {
   if (!v) return "—";
   try {
-    return new Date(v).toLocaleString("es-ES", {
+    return new Date(v).toLocaleString(localeActual(), {
       day: "2-digit",
       month: "short",
       hour: "2-digit",
@@ -122,7 +123,7 @@ export function fmtDateTime(v: string | null | undefined): string {
 export function fmtTime(v: string | null | undefined): string {
   if (!v) return "—";
   try {
-    return new Date(v).toLocaleTimeString("es-ES", {
+    return new Date(v).toLocaleTimeString(localeActual(), {
       hour: "2-digit",
       minute: "2-digit",
       timeZone: getTenantTimezone(),

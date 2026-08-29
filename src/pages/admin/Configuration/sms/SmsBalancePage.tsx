@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { PageContainer, PageHeader, Section, StatusBadge, EmptyState, Modal, SkeletonCards, IconTile } from "@/components/kit";
 import { smsAccountService, SmsAccount, SmsTransaction, AvailableNumber } from "@/lib/api/smsAccountService";
 
+import { localeActual } from '@/lib/localeActual'
 const COUNTRIES = [
   { code: "US", label: "Estados Unidos (+1)" },
   { code: "CA", label: "Canadá (+1)" },
@@ -40,14 +41,14 @@ function Aviso({ tone, icon, children }: {
 }
 
 function money(cents: number, currency = "USD") {
-  return new Intl.NumberFormat("es-EC", { style: "currency", currency }).format((cents || 0) / 100);
+  return new Intl.NumberFormat(localeActual(), { style: "currency", currency }).format((cents || 0) / 100);
 }
 
 function fmtDate(value?: string) {
   if (!value) return "";
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return String(value);
-  return d.toLocaleString("es-ES", { year: "numeric", month: "short", day: "2-digit", hour: "2-digit", minute: "2-digit" });
+  return d.toLocaleString(localeActual(), { year: "numeric", month: "short", day: "2-digit", hour: "2-digit", minute: "2-digit" });
 }
 
 export default function SmsBalancePage() {

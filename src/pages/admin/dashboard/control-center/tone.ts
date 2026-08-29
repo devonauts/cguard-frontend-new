@@ -12,6 +12,7 @@
  */
 import type { LiveStatus } from "./types";
 
+import { localeActual } from '@/lib/localeActual'
 export type Tone = "brand" | "neutral" | "ok" | "warn" | "bad" | "info";
 
 /**
@@ -67,7 +68,7 @@ export function toneGlow(t: Tone, pct = 26): string {
 
 // ── Formato ────────────────────────────────────────────────────────────────
 /** Números con la coma decimal y el punto de millar de la región. */
-const NUM = new Intl.NumberFormat("es-EC", { maximumFractionDigits: 1 });
+const NUM = new Intl.NumberFormat(localeActual(), { maximumFractionDigits: 1 });
 
 export function fmtValue(v: number | string): string {
   if (typeof v === "number") return Number.isFinite(v) ? NUM.format(v) : "—";
@@ -98,7 +99,7 @@ export function timeAgo(iso: string): string {
 export function clockOf(iso: string): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "";
-  return d.toLocaleTimeString("es-EC", { hour: "2-digit", minute: "2-digit" });
+  return d.toLocaleTimeString(localeActual(), { hour: "2-digit", minute: "2-digit" });
 }
 
 /** Iniciales para el avatar de una fila de actividad. */

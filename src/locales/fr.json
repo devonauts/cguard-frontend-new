@@ -151,7 +151,9 @@
       "desc": "Réinitialisez le mot de passe de votre compte agent de sécurité pour revenir dans l'app C-Guard Pro.",
       "eyebrow": "App pour agents de sécurité",
       "tag_incidents": "Signalement d'incidents",
-      "title_part1": "Votre vacation,"
+      "title_part1": "Votre vacation,",
+      "tag_clock": "Entrées et sorties",
+      "tag_patrol": "Rondes et patrouilles"
     },
     "forgot_subtitle": "Saisissez votre e-mail et nous vous enverrons un lien pour en créer un nouveau.",
     "forgot_title": "Mot de passe oublié ?",
@@ -176,12 +178,17 @@
     "phone_invalid": "Ce numéro de téléphone ne semble pas valide. Vérifiez le pays et le numéro.",
     "captcha_pending": "Confirmez que vous n'êtes pas un robot pour continuer.",
     "send_reset": "Envoyer le lien",
-    "honeypot_label": "Ne pas remplir"
+    "honeypot_label": "Ne pas remplir",
+    "enter_password": "Veuillez saisir votre mot de passe",
+    "invalid_email": "Adresse e-mail non valide",
+    "reset_error": "Impossible d'envoyer le lien. Réessayez",
+    "sending": "Envoi du lien…"
   },
   "client": {
     "invite_not_found": "Invitation introuvable ou non valide.",
     "registration_title": "Inscription client",
-    "register": "Activer mon compte"
+    "register": "Activer mon compte",
+    "registering": "Inscription en cours…"
   },
   "clients": {
     "accept": "Accepter",
@@ -293,7 +300,9 @@
       "guardOne": "agent",
       "manageInStation": "Gérer dans le poste",
       "siteRosterHint": "Les agents appartiennent aux postes de ce site. Vous voyez ici le récapitulatif ; pour affecter, retirer ou changer un agent, ouvrez son poste.",
-      "view": "Voir"
+      "view": "Voir",
+      "guardMany": "Agents",
+      "roleSf": "Agent volant"
     },
     "breadcrumb": {
       "clients": "Clients",
@@ -312,7 +321,8 @@
       "name": "Client",
       "phone": "Téléphone",
       "status": "Statut",
-      "more": "Plus"
+      "more": "Plus",
+      "appAccess": "App"
     },
     "contacts": {
       "addcontact": "Ajouter un contact",
@@ -344,7 +354,9 @@
         "Mobile Number": "Numéro de mobile *",
         "Name": "Prénom *",
         "checkbox": "Autoriser l'agent à voir ce contact",
-        "descriptioninput": "Saisissez la description du contact"
+        "descriptioninput": "Saisissez la description du contact",
+        "addContact": "Ajouter un contact",
+        "mobilePlaceholder": "ex. : +593987654321"
       },
       "loadError": "Impossible de charger les contacts"
     },
@@ -414,7 +426,14 @@
       "ruc": "RUC de l'entreprise",
       "searchAddress": "Rechercher une adresse...",
       "selectRisk": "Non défini",
-      "switchToAutocomplete": "Recherche"
+      "switchToAutocomplete": "Recherche",
+      "addPerson": "Ajouter une personne",
+      "commercialNamePlaceholder": "Ex. : Empresa Segura S.A.",
+      "contactInfo": "Contact",
+      "coordinates": "Coordonnées GPS",
+      "legalRep": "Représentant légal",
+      "optional": "Facultatif",
+      "switchToManual": "Manuel"
     },
     "nav": {
       "clientPortal": "Portail client",
@@ -470,10 +489,19 @@
         "Title": "Ajouter une nouvelle note",
         "Titleinput": "Saisissez le titre de la note",
         "Titlenote": "Titre *",
-        "NoFilesSelected": "Aucun fichier sélectionné"
+        "NoFilesSelected": "Aucun fichier sélectionné",
+        "selectDate": "Sélectionner"
       },
       "addedBy": "Ajouté par",
-      "detailsTitle": "Détail de la note"
+      "detailsTitle": "Détail de la note",
+      "Save": "Enregistrer",
+      "SaveChanges": "Enregistrer les modifications",
+      "delete": "Supprimer",
+      "validation": {
+        "dateRequired": "La date est obligatoire",
+        "descriptionRequired": "La description est obligatoire",
+        "titleRequired": "Le titre est obligatoire"
+      }
     },
     "pagination": {
       "itemsPerPage": "Éléments par page",
@@ -562,7 +590,10 @@
         "toursCompleted": "Rondes effectuées (7 derniers jours)",
         "onsite": "En vacation maintenant",
         "viewIncidents": "Voir les incidents",
-        "viewStaff": "Voir le personnel"
+        "viewStaff": "Voir le personnel",
+        "contract": "Contrat",
+        "now": "En ce moment",
+        "stations": "Postes"
       },
       "contactDetails": {
         "email": "E-mail",
@@ -583,7 +614,13 @@
         "critical": "Critique",
         "last7": "au cours des 7 derniers jours",
         "noneHint": "Aucun point en attente pour ce client.",
-        "uncovered": "Sites sans couverture"
+        "uncovered": "Sites sans couverture",
+        "inProgress": "en cours",
+        "info": "Info",
+        "none": "Tout est en ordre",
+        "openIncidents": "Incidents récents",
+        "projects": "Projets actifs",
+        "title": "Alertes et à traiter"
       },
       "contactPerson": {
         "add": "Ajouter une personne de contact",
@@ -602,15 +639,20 @@
       "otherStations": "Postes sans site",
       "recent": {
         "none": "Aucune activité récente",
-        "noneHint": "Vous verrez ici l'activité du personnel sur les sites du client : vacations, incidents, visites, tâches et rondes."
+        "noneHint": "Vous verrez ici l'activité du personnel sur les sites du client : vacations, incidents, visites, tâches et rondes.",
+        "title": "Activité récente"
       },
       "sedesStatus": "État des sites",
       "status": {
-        "sinOp": "Sans opération"
+        "sinOp": "Sans opération",
+        "operativa": "En activité"
       },
       "tbl": {
         "sede": "Site",
-        "status": "Statut"
+        "status": "Statut",
+        "guards": "Agents",
+        "incidents": "Incidents",
+        "stations": "Postes"
       }
     },
     "clientCreatedSiteHint": "Son premier site a également été créé avec ces données. Il reste à configurer son opération avant de créer des postes et d'affecter des agents.",
@@ -640,13 +682,29 @@
     "newClientSubtitle": "Enregistrez un nouveau client sur la plateforme.",
     "noChanges": "Aucune modification à enregistrer",
     "onboarding": {
-      "not_invited": "Sans accès"
+      "not_invited": "Sans accès",
+      "active": "Dans l'app",
+      "invited": "Invité",
+      "suspended": "Suspendu"
     },
     "resendAppAccess": "Renvoyer l'invitation",
     "sendAppAccess": "Envoyer l'accès à l'application",
     "deleteError": "Impossible de supprimer le client",
     "duplicateFound": "Un client avec ces données existe déjà",
-    "errorLoadingClients": "Impossible de charger les clients"
+    "errorLoadingClients": "Impossible de charger les clients",
+    "accountExec": "Représentant légal",
+    "creating": "Création…",
+    "exportExcel": "Exporter Excel",
+    "exportPDF": "Exporter PDF",
+    "generateReport": "Générer un rapport",
+    "newIncident": "Créer un incident",
+    "risk": "Risque",
+    "riskLevel": {
+      "high": "Élevé",
+      "low": "Faible",
+      "medium": "Moyen"
+    },
+    "timezone": "Fuseau horaire"
   },
   "common": {
     "active": "Actif",
@@ -660,7 +718,17 @@
     "viewAll": "Tout voir",
     "viewDetail": "Voir le détail",
     "loading": "Chargement…",
-    "send": "Envoyer"
+    "send": "Envoyer",
+    "apply": "Filtrer",
+    "archived": "Inactive",
+    "clear": "Effacer",
+    "close": "Fermer",
+    "download": "Télécharger",
+    "or": "ou",
+    "print": "Imprimer",
+    "private": "Privé",
+    "saving": "Enregistrement…",
+    "yes": "Oui"
   },
   "comms": {
     "wa": {
@@ -1180,11 +1248,16 @@
       "kpisearch": "Rechercher un KPI",
       "kpitable": {
         "kpicreatedfor": "Ajouté par",
-        "kpidate": "Date/Heure"
+        "kpidate": "Date/Heure",
+        "kpitype": "Type"
       },
       "subtitle": "KPI et performance de l'agent.",
       "table": {
-        "noTargets": "Aucun objectif défini"
+        "noTargets": "Aucun objectif défini",
+        "actual": "Réel",
+        "name": "Nom",
+        "status": "Statut",
+        "target": "Objectif"
       },
       "title": "Indicateurs de performance",
       "toasts": {
@@ -1192,8 +1265,32 @@
         "deleteNoneSelected": "Aucun élément sélectionné",
         "pdfOpenError": "Erreur à l'ouverture du PDF",
         "saveError": "Impossible d'enregistrer le KPI",
-        "selectAtLeastOne": "Sélectionnez au moins un KPI"
-      }
+        "selectAtLeastOne": "Sélectionnez au moins un KPI",
+        "created": "KPI créé avec succès",
+        "deleted": "KPI supprimé",
+        "deletedMultiple": "KPI supprimés",
+        "excelDownloaded": "Excel téléchargé",
+        "excelError": "Impossible de générer ou de récupérer l'Excel",
+        "excelExportError": "Erreur lors de l'export Excel",
+        "pdfError": "Impossible de générer ou de récupérer le PDF",
+        "pdfGenerated": "PDF généré",
+        "pdfOpened": "PDF ouvert",
+        "updated": "KPI mis à jour avec succès"
+      },
+      "descriptionLabel": "DESCRIPTION :",
+      "exportExcel": "Exporter en Excel",
+      "exportPdf": "Exporter en PDF",
+      "feedTitle": "Indicateurs clés (KPI)",
+      "metrics": {
+        "incidentReports": "Rapports d'incidents",
+        "routeReports": "Rapports de rondes",
+        "taskReports": "Rapports de tâches"
+      },
+      "status": {
+        "achieved": "Atteint",
+        "notAchieved": "Non atteint"
+      },
+      "totalKpis": "KPI"
     },
     "assignSites": {
       "assignButton": "Attribuer un poste",
@@ -1214,7 +1311,8 @@
         "deleteFailed": "Impossible de supprimer l'affectation",
         "deleted": "Affectation supprimée",
         "removeFromPost": "Retirer du poste",
-        "selectPair": "Sélectionnez au moins un poste à retirer"
+        "selectPair": "Sélectionnez au moins un poste à retirer",
+        "deleteConfirm": "Retirer"
       },
       "form": {
         "client": "Client",
@@ -1222,7 +1320,9 @@
         "selectClient": "Sélectionner un client",
         "selectPostSite": "Sélectionner un site surveillé",
         "selectStation": "Sélectionner un poste",
-        "station": "Site"
+        "station": "Site",
+        "end": "Fin",
+        "start": "Début"
       },
       "modal": {
         "assign": "Attribuer",
@@ -1248,7 +1348,11 @@
       "loadingPostSite": "Chargement des informations du site…",
       "noResults": "Aucun résultat",
       "noResultsHint": "Aucune affectation ne correspond à la recherche.",
-      "thisPost": "ce poste"
+      "thisPost": "ce poste",
+      "assignedCount": "Postes attribués",
+      "nStations": "{{count}} postes",
+      "selectAll": "Tout sélectionner",
+      "shiftCount": "{{count}} vacations"
     },
     "availability": {
       "save": "Enregistrer",
@@ -1272,7 +1376,8 @@
         "saved": "Disponibilité enregistrée",
         "saveError": "Identifiant d'agent manquant"
       },
-      "empty": "Aucune disponibilité"
+      "empty": "Aucune disponibilité",
+      "notAvailable": "Non disponible"
     },
     "files": {
       "loadError": "Impossible de charger l'agent",
@@ -1302,7 +1407,11 @@
         "file": "Fichier"
       },
       "feedTitle": "Fichiers de l'agent",
-      "subtitle": "Documents et fichiers de l'agent."
+      "subtitle": "Documents et fichiers de l'agent.",
+      "title": "Fichiers",
+      "toasts": {
+        "loadError": "Impossible de charger l'agent"
+      }
     },
     "licenses": {
       "newLicense": "Nouvelle licence",
@@ -1333,13 +1442,16 @@
           "other": "Autre",
           "security": "Carte professionnelle de sécurité",
           "weapons": "Permis de port d'arme"
-        }
+        },
+        "fileSelected": "Fichier sélectionné",
+        "issueDate": "Délivrée"
       },
       "modal": {
         "cancel": "Annuler",
         "save": "Enregistrer",
         "title": "Ajouter une licence",
-        "editTitle": "Modifier la licence"
+        "editTitle": "Modifier la licence",
+        "close": "Fermer"
       },
       "table": {
         "addedBy": "Ajouté par",
@@ -1348,17 +1460,32 @@
         "type": "Type de licence"
       },
       "details": {
-        "edit": "Modifier"
+        "edit": "Modifier",
+        "download": "Télécharger",
+        "notFound": "Détails non disponibles",
+        "title": "Détails de la licence"
       },
       "noNumber": "Sans numéro",
       "status": {
         "noExpiry": "Sans expiration",
-        "soon": "Expire bientôt"
+        "soon": "Expire bientôt",
+        "expired": "Expirée",
+        "valid": "Valide"
       },
       "subtitle": "Documents et habilitations de l'agent",
       "toasts": {
-        "noPermissionCreateType": "Vous n'avez pas le droit de créer des types de licence"
-      }
+        "noPermissionCreateType": "Vous n'avez pas le droit de créer des types de licence",
+        "createError": "Impossible de créer la licence",
+        "created": "Licence créée",
+        "deleteError": "Impossible de supprimer",
+        "deleted": "Supprimée",
+        "deletedBulk": "Supprimées",
+        "downloadError": "Impossible de télécharger le rapport",
+        "loadError": "Impossible de charger les licences",
+        "updated": "Licence mise à jour"
+      },
+      "selected": "sélectionnées",
+      "untitled": "Licence"
     },
     "list": {
       "applyFilters": "Appliquer les filtres",
@@ -1510,7 +1637,9 @@
           "date": "Dernier jour travaillé",
           "equipment": "Quel matériel a-t-il rendu aujourd'hui ? Tout ce qui n'est pas coché reste en souffrance.",
           "notePh": "Détail du motif",
-          "rehire": "Éligible à une réembauche"
+          "rehire": "Éligible à une réembauche",
+          "note": "Note (facultative)",
+          "reason": "Motif"
         },
         "bulk": {
           "archiveDescription": "Voulez-vous vraiment archiver {{count}} agent(s) ? Cette action peut être annulée depuis le filtre des archivés.",
@@ -1534,7 +1663,11 @@
         }
       },
       "noData": "Aucun agent trouvé",
-      "subtitle": "Gérez le personnel de sécurité de votre entreprise"
+      "subtitle": "Gérez le personnel de sécurité de votre entreprise",
+      "error": {
+        "loading": "Erreur lors du chargement des agents : {{msg}}"
+      },
+      "title": "Agents"
     },
     "nav": {
       "archivos": "Fichiers",
@@ -1648,7 +1781,9 @@
           "label": "Pièces jointes",
           "noFiles": "Aucun fichier sélectionné",
           "invalidType": "Type de fichier non autorisé",
-          "metadataCreateFailed": "Impossible d'enregistrer les informations du fichier"
+          "metadataCreateFailed": "Impossible d'enregistrer les informations du fichier",
+          "tooLarge": "Fichier de plus de 3 Mo",
+          "uploadFailed": "Impossible d'envoyer le fichier"
         },
         "date": {
           "label": "Date"
@@ -1669,7 +1804,12 @@
       "missingId": "Identifiant introuvable",
       "noteCreateFailed": "Impossible de créer la note",
       "noteDeleteFailed": "Impossible de supprimer la note",
-      "untitled": "Sans titre"
+      "untitled": "Sans titre",
+      "attachment": "Pièce jointe",
+      "loadError": "Impossible de charger les notes",
+      "noteCreated": "Note créée",
+      "noteDeleted": "Note supprimée",
+      "sectionTitle": "Notes"
     },
     "profile": {
       "noLicense": "Aucune licence trouvée",
@@ -1916,7 +2056,8 @@
       },
       "offDuty": "Hors service",
       "onDutyNo": "Non",
-      "onDutyYes": "Oui"
+      "onDutyYes": "Oui",
+      "onDuty": "En service"
     },
     "tabs": {
       "create_profile": "Créer une fiche",
@@ -1933,7 +2074,15 @@
       "resetError": "Impossible de réinitialiser le lien.",
       "subtitle": "Le premier appareil depuis lequel l'agent se connecte devient l'appareil lié. Si un autre appareil apparaît, il est signalé comme non reconnu (il n'est pas bloqué). Réinitialisez le lien si l'agent a changé de téléphone.",
       "title": "Appareil de l'agent",
-      "unrecognized": "Non reconnu"
+      "unrecognized": "Non reconnu",
+      "bound": "Lié",
+      "boundDevice": "Appareil lié",
+      "deviceCount": "{{n}} appareil(s)",
+      "lastSeen": "Vu",
+      "os": "Système",
+      "otherDevices": "Autres appareils",
+      "platform": "Plateforme",
+      "unknownDevice": "Appareil inconnu"
     },
     "documents": {
       "deleteConfirm": "Voulez-vous vraiment supprimer « {{name}} » ? Cette action est irréversible.",
@@ -1950,14 +2099,23 @@
       "loadError": "Impossible de charger les documents",
       "saveError": "Impossible d'enregistrer les documents",
       "tooLarge": "Le fichier dépasse la taille maximale (10 Mo)",
-      "uploadFailed": "L'envoi de {{name}} a échoué"
+      "uploadFailed": "L'envoi de {{name}} a échoué",
+      "deleted": "Document supprimé",
+      "errorTitle": "Erreur de chargement",
+      "retry": "Réessayer",
+      "sectionTitle": "Documents",
+      "untitled": "Document",
+      "uploaded": "Documents envoyés",
+      "uploading": "Envoi…"
     },
     "employment": {
       "cycles": "Périodes dans l'entreprise",
       "equipmentPending": "{{n}} articles non rendus",
       "hiredOn": "Date d'entrée",
       "noRehire": "Non réembauchable",
-      "terminations": "Historique des départs"
+      "terminations": "Historique des départs",
+      "seniority": "Ancienneté",
+      "title": "Dossier professionnel"
     },
     "memos": {
       "addButton": "Nouveau mémo",
@@ -1972,18 +2130,26 @@
       "feedTitle": "Historique des mémos",
       "form": {
         "contentPlaceholder": "Rédigez le mémo...",
-        "subjectPlaceholder": "Objet du mémo"
+        "subjectPlaceholder": "Objet du mémo",
+        "content": "Contenu",
+        "subject": "Objet"
       },
       "loadError": "Impossible de charger les mémos",
       "modal": {
         "title": "Nouveau mémo",
-        "to": "Pour"
+        "to": "Pour",
+        "send": "Envoyer"
       },
       "noResults": "Aucun résultat",
       "noResultsHint": "Aucun mémo ne correspond à votre recherche.",
       "searchPlaceholder": "Rechercher un mémo...",
       "subjectRequired": "L'objet est obligatoire",
-      "subtitle": "Communications adressées à cet agent."
+      "subtitle": "Communications adressées à cet agent.",
+      "accepted": "Accepté",
+      "deleted": "Mémo supprimé",
+      "pending": "En attente",
+      "title": "Mémos",
+      "total": "mémos"
     },
     "actionNotImplemented": "Action pas encore disponible",
     "overview": {
@@ -2012,6 +2178,9 @@
       "error": "Impossible de changer le rôle.",
       "hasBothRoles": "La personne cumule les deux rôles. En choisir un ne lui laissera que celui-là.",
       "welcomeSent": "Un e-mail de bienvenue lui a été envoyé avec le lien de téléchargement de l'app superviseur."
+    },
+    "department": {
+      "title": "Département"
     }
   },
   "incidents": {
@@ -2070,7 +2239,8 @@
       "incidentTo": "Date de l'incident jusqu'au",
       "showArchived": "Afficher les archivés",
       "station": "Site surveillé",
-      "status": "Statut"
+      "status": "Statut",
+      "stations": "Postes"
     },
     "labels": {
       "description": "Description",
@@ -2082,7 +2252,11 @@
       "open": "Ouvert"
     },
     "dispatchHint": "Le superviseur recevra une notification pour accepter et indiquer « en route » / « sur site ».",
-    "selectSupervisor": "— Sélectionnez un superviseur —"
+    "selectSupervisor": "— Sélectionnez un superviseur —",
+    "dispatch": "Répartir",
+    "dispatchToSupervisor": "Répartir au superviseur",
+    "dispatched": "Incident transmis au superviseur",
+    "dispatching": "Répartition…"
   },
   "invite": {
     "staff": {
@@ -2183,7 +2357,8 @@
       "title": {
         "edit": "Modifier le type de licence",
         "create": "Nouveau type de licence"
-      }
+      },
+      "createError": "Impossible de créer le type de licence"
     },
     "table": {
       "column": {
@@ -4904,7 +5079,8 @@
       "edit": "Modifier",
       "missingTenant": "Entreprise manquante",
       "noSelection": "Aucun élément sélectionné",
-      "view": "Voir les détails"
+      "view": "Voir les détails",
+      "archive": "Archiver"
     },
     "buttons": {
       "cancel": "Annuler",
@@ -4950,8 +5126,15 @@
       "noPostSiteId": "Aucun site sélectionné",
       "scheduledDaysPlaceholder": "Sélectionnez les jours...",
       "validation": {
-        "scheduledDaysRequired": "Sélectionnez au moins un jour"
-      }
+        "scheduledDaysRequired": "Sélectionnez au moins un jour",
+        "fillRequired": "Veuillez remplir les champs obligatoires",
+        "stationRequired": "Le poste est obligatoire",
+        "tourNameRequired": "Le nom de la ronde est obligatoire"
+      },
+      "errorCreating": "Erreur lors de la création de la ronde",
+      "errorLoadingGuards": "Erreur lors du chargement des agents",
+      "errorLoadingTours": "Erreur lors du chargement des rondes",
+      "openTimePicker": "Ouvrir le sélecteur d'heure"
     },
     "menu": {
       "action": "Action",
@@ -4972,7 +5155,12 @@
       "monFri": "Lun - Ven",
       "weekend": "Week-end",
       "saturday": "Samedi",
-      "wednesday": "Mercredi"
+      "wednesday": "Mercredi",
+      "friday": "Vendredi",
+      "monday": "Lundi",
+      "sunday": "Dimanche",
+      "thursday": "Jeudi",
+      "tuesday": "Mardi"
     },
     "placeholders": {
       "tourNameFallback": "Nom de la ronde"
@@ -4980,11 +5168,28 @@
     "table": {
       "duration": "Durée",
       "name": "Nom de la ronde",
-      "type": "Type"
+      "type": "Type",
+      "station": "Poste"
     },
     "detail": {
       "title": "Détails de la ronde"
-    }
+    },
+    "field": {
+      "active": "Active",
+      "assignedGuard": "Agent affecté",
+      "continuous": "Continu",
+      "description": "Description",
+      "maxDuration": "Durée maximale",
+      "scheduledDays": "Jours planifiés",
+      "selectTime": "Sélectionner l'heure",
+      "station": "Poste",
+      "timeMode": "Mode horaire"
+    },
+    "list": {
+      "selectAllAria": "Tout sélectionner",
+      "selectAria": "Sélectionner"
+    },
+    "loading": "Chargement..."
   },
   "staff": {
     "registration_title": "Inscription de l'utilisateur"
@@ -5043,7 +5248,16 @@
     "historyEmpty": "Aucune conversation enregistrée pour l'instant. En fermant une conversation avec la croix, elle reste ici 7 jours.",
     "untitled": "Conversation",
     "messages": "messages",
-    "deleteConvo": "Supprimer la conversation"
+    "deleteConvo": "Supprimer la conversation",
+    "attachCv": "Joindre un CV",
+    "cvEmpty": "Je n'ai pas pu extraire de données de ce fichier. Vérifiez qu'il est lisible, ou remplissez la fiche à la main.",
+    "cvError": "Nous n'avons pas pu lire le CV.",
+    "cvNoContact": "Je n'ai trouvé ni e-mail ni téléphone : sans l'un des deux, impossible de l'inviter.",
+    "cvOpen": "Ouvrir la création avec ces données",
+    "cvRead": "Voici ce que j'ai lu :",
+    "cvReview": "Ouvrez-le pour le vérifier et l'enregistrer.",
+    "cvSent": "CV : {{n}}",
+    "cvTitle": "CV analysé"
   },
   "actions": {
     "action": "Action",
@@ -5069,7 +5283,10 @@
     "save": "Enregistrer",
     "view": "Voir",
     "viewDetails": "Voir les détails",
-    "back": "Retour"
+    "back": "Retour",
+    "discard": "Abandonner",
+    "download": "Télécharger",
+    "send": "Envoyer"
   },
   "admin": {
     "registration_title": "Inscription administrateur"
@@ -5119,7 +5336,12 @@
       "supervisor": "Superviseur",
       "clientAccountManager": "Gestionnaire de comptes",
       "hrManager": "Responsable RH",
-      "operationsManager": "Responsable des opérations"
+      "operationsManager": "Responsable des opérations",
+      "admin": "Administrateur",
+      "administrativeAssistant": "Assistant administratif",
+      "administrativeSupervisor": "Superviseur administratif",
+      "dispatcher": "Répartiteur",
+      "secretary": "Secrétaire / Réceptionniste"
     },
     "rowActions": {
       "delete": "Supprimer",
@@ -5127,7 +5349,8 @@
       "resendInvitation": "Renvoyer l'invitation",
       "restore": "Restaurer",
       "suspend": "Suspendre",
-      "supervisorProfile": "Profil du superviseur"
+      "supervisorProfile": "Profil du superviseur",
+      "closeSessions": "Fermer les sessions"
     },
     "statuses": {
       "active": "Actif",
@@ -5379,7 +5602,12 @@
     "title": "Gestion des secteurs",
     "titleDescription": "Gérez les secteurs du module sélectionné. Les secteurs utilisés ne peuvent pas être supprimés.",
     "categoryCreateFailed": "Impossible de créer le secteur",
-    "searchOrCreate": "Rechercher ou créer un secteur…"
+    "searchOrCreate": "Rechercher ou créer un secteur…",
+    "createNamed": "Créer",
+    "edit": "Modifier",
+    "editcategory": "Modifier le secteur",
+    "errorDeleting": "Erreur lors de la suppression du secteur",
+    "save": "Enregistrer"
   },
   "categoriesnotloaded": "Impossible de charger les secteurs",
   "clientPostSites": {
@@ -5730,21 +5958,31 @@
   },
   "guard": {
     "dashboard": {
-      "offDuty": "Hors service"
+      "offDuty": "Hors service",
+      "onDuty": "En service",
+      "shifts": "Vacations",
+      "stations": "Mes postes",
+      "title": "Mon tableau de bord"
     },
     "registration_subtitle": "Complétez vos informations pour activer votre compte.",
     "registration_success": "Inscription terminée !",
     "registration_title": "Inscription de l'agent",
     "schedule": {
       "freeDays": "Jours de repos",
-      "upcoming": "Prochaines vacations"
+      "upcoming": "Prochaines vacations",
+      "approvedTimeOff": "Congés approuvés",
+      "title": "Mon planning"
     },
     "nav": {
       "home": "Début",
       "schedule": "Planning",
       "timeOff": "Congés"
     },
-    "roleLabel": "Agent"
+    "roleLabel": "Agent",
+    "invite_not_found": "Invitation introuvable ou non valide — vous pouvez remplir le formulaire manuellement.",
+    "timeOff": {
+      "title": "Mes congés"
+    }
   },
   "header": {
     "account": "Compte utilisateur",
@@ -5876,7 +6114,12 @@
   "notes": {
     "deleteError": "Impossible de supprimer les notes",
     "noSelection": "Aucune note sélectionnée",
-    "noSite": "Aucun site sélectionné"
+    "noSite": "Aucun site sélectionné",
+    "created": "Note créée",
+    "deleted": "Notes supprimées",
+    "loadError": "Impossible de charger les notes",
+    "saveError": "Impossible d'enregistrer la note",
+    "updated": "Note mise à jour"
   },
   "postSites": {
     "action": "Action",
@@ -6134,7 +6377,8 @@
         "Roadmap": "Plan",
         "Satellite": "Satellite",
         "title": "Carte",
-        "noCoords": "Ce site n'a pas de coordonnées configurées."
+        "noCoords": "Ce site n'a pas de coordonnées configurées.",
+        "openInMaps": "Ouvrir dans Google Maps"
       },
       "Stats": {
         "guardOnSite": "Agents sur site",
@@ -6176,7 +6420,8 @@
       },
       "Filter": {
         "fromDate": "Du",
-        "toDate": "Au"
+        "toDate": "Au",
+        "type": "Type"
       },
       "last7days": "7 derniers jours"
     },
@@ -6219,7 +6464,9 @@
         "postSitePayRate": "Tarif payé du site",
         "postalCode": "Code postal",
         "title": "Plus d'informations"
-      }
+      },
+      "rateSaveError": "Impossible d'enregistrer le tarif",
+      "rateSaved": "Tarif enregistré"
     },
     "stations": {
       "action": "Action",
@@ -6283,7 +6530,14 @@
         "nicknameHint": "Visible uniquement par vos équipes d'exploitation. Le client ne le voit pas.",
         "restCoverage": "Couverture des pauses",
         "wholeWindow": "Toute la journée",
-        "withSf": "Un agent volant couvre les pauses"
+        "withSf": "Un agent volant couvre les pauses",
+        "endTime": "Fin",
+        "geofenceRadius": "Rayon du géorepérage (mètres)",
+        "guard": "Agent",
+        "nickname": "Indicatif",
+        "selectGuard": "Sélectionner un agent",
+        "shiftEnd": "Fin",
+        "shiftStart": "Début"
       },
       "table": {
         "description": "Description",
@@ -6295,7 +6549,17 @@
       "createSubtitle": "Définissez la vacation, les horaires et le géorepérage du poste.",
       "horarioConfigFailed": "Site créé, mais son planning n'a pas pu être configuré. Configurez-le dans Planificateur › Planning.",
       "noResults": "Aucun résultat pour cette recherche.",
-      "provideCustomTimes": "Définissez l'heure de début et de fin"
+      "provideCustomTimes": "Définissez l'heure de début et de fin",
+      "backToStations": "Postes",
+      "createShift": "Créer une vacation",
+      "editShift": "Modifier la vacation",
+      "guards": "agents",
+      "placeholderNickname": "Surnom / indicatif interne",
+      "provideName": "Saisissez un nom",
+      "selectStationFirst": "Sélectionnez d'abord un poste",
+      "shiftCreated": "Vacation créée",
+      "shiftSaveFailed": "Impossible d'enregistrer la vacation",
+      "shiftUpdated": "Vacation mise à jour"
     },
     "tasks": {
       "action": "Action",
@@ -6848,7 +7112,29 @@
       "previewTraining": "Formation",
       "previewMyData": "Mes informations",
       "navTraining": "Formation",
-      "navMessages": "Messages"
+      "navMessages": "Messages",
+      "previewAppGuard": "App de l'agent",
+      "previewAppSupervisor": "App du superviseur",
+      "svNavDashboard": "Tableau de bord",
+      "svNavGuards": "Agents",
+      "svNavMessages": "Messages",
+      "svNavReports": "Rapports",
+      "svNavStations": "Postes",
+      "svPreviewActive": "Actifs",
+      "svPreviewAll": "Tous",
+      "svPreviewAttention": "Attention",
+      "svPreviewEta": "ETA",
+      "svPreviewIncidents": "Incidents du jour",
+      "svPreviewLate": "Retard",
+      "svPreviewOff": "Hors ligne",
+      "svPreviewOffline": "Hors ligne",
+      "svPreviewOnDuty": "En service",
+      "svPreviewRole": "Superviseur",
+      "svPreviewStations": "Postes",
+      "svPreviewStationsSub": "Tous les lieux du client",
+      "svPreviewStationsTitle": "Postes",
+      "svPreviewTasks": "Tâches",
+      "svPreviewYou": "Vous"
     },
     "appearance": {
       "layoutTitle": "Apparence",
@@ -7455,7 +7741,15 @@
       "loadError": "Impossible de charger le poste",
       "patrolQr": "QR des rondes",
       "station": "Site",
-      "parking": "Contrôle véhicules"
+      "parking": "Contrôle véhicules",
+      "guards": "Agents",
+      "incidents": "Incidents",
+      "inventory": "Inventaire",
+      "overview": "Vue d'ensemble",
+      "rondaHistory": "Historique",
+      "shifts": "Vacations",
+      "siteTours": "Rondes",
+      "visitors": "Visiteurs"
     },
     "orders": {
       "title": "Consignes particulières",
@@ -7532,7 +7826,16 @@
       "save": "Enregistrer",
       "selectGuard": "Sélectionner un agent…",
       "startDay": "Premier jour de vacation",
-      "startDayHint": "Cet agent travaille ce jour-là, puis un jour sur deux. Assignez sa relève à partir du lendemain."
+      "startDayHint": "Cet agent travaille ce jour-là, puis un jour sur deux. Assignez sa relève à partir du lendemain.",
+      "addSaca": "Ajouter un agent volant",
+      "assignBtn": "Attribuer",
+      "change": "Changer",
+      "loadError": "Impossible de charger les agents",
+      "remove": "Retirer",
+      "replacing": "Remplace",
+      "sacaAdded": "Agent volant affecté",
+      "sacaTitle": "Ajouter un agent volant",
+      "title": "Agents affectés"
     },
     "incidents": {
       "col": {
@@ -7541,26 +7844,66 @@
         "guard": "Agent",
         "status": "Statut"
       },
-      "empty": "Aucun incident pour ce poste."
+      "empty": "Aucun incident pour ce poste.",
+      "loadError": "Impossible de charger les incidents",
+      "title": "Incidents"
     },
     "inventory": {
       "col": {
         "condition": "Statut",
         "item": "Article",
-        "serial": "N° de série / code"
+        "serial": "N° de série / code",
+        "assignedTo": "Attribué à"
       },
       "empty": "Aucun inventaire pour ce poste.",
-      "title": "Inventaire / dotation"
+      "title": "Inventaire / dotation",
+      "loadError": "Impossible de charger l'inventaire"
     },
     "parking": {
       "col": {
         "guard": "Agent",
-        "visitor": "Visiteur / véhicule"
+        "visitor": "Visiteur / véhicule",
+        "condition": "Statut",
+        "driver": "Conducteur / entreprise",
+        "entry": "Entrée",
+        "exit": "Sortie",
+        "photo": "Photo",
+        "plate": "Plaque",
+        "stay": "Durée sur site",
+        "vehicle": "Véhicule"
       },
       "empty": "Aucun véhicule n'a encore été enregistré à ce poste.",
       "loadError": "Impossible de charger les enregistrements",
       "subtitle": "Entrées et sorties de véhicules à ce poste. L'agent les enregistre depuis l'app et note la sortie à leur départ.",
-      "title": "Contrôle véhicules"
+      "title": "Contrôle véhicules",
+      "bays": "Places (facultatif)",
+      "baysHelp": "Séparées par des virgules. Avec la liste renseignée, l'agent choisit la place au lieu de la saisir, et vous voyez ici lesquelles sont libres.",
+      "blacklist": "Signaler les plaques interdites",
+      "blacklistHint": "À la saisie de la plaque, l'agent voit un avertissement si elle est interdite. Cela ne l'empêche pas de l'enregistrer : la décision à l'entrée lui revient.",
+      "capacity": "Capacité de véhicules",
+      "capacityHelp": "Vide = sans limite. L'agent voit combien il en reste au moment d'enregistrer.",
+      "capacityHint": "Véhicules présents par rapport à la capacité du poste",
+      "emptyHint": "L'agent les enregistre depuis l'app, dans Visites › Véhicule.",
+      "emptyInside": "Aucun véhicule n'est présent en ce moment.",
+      "enable": "Activer les règles à ce poste",
+      "enableHint": "Sans activation, le poste continue d'enregistrer les entrées et les sorties : seuls la capacité, l'alerte de durée et les plaques interdites sont désactivés.",
+      "exitPhoto": "Voir la sortie",
+      "free": "libres",
+      "freeBays": "Places libres maintenant",
+      "full": "complet",
+      "inside": "À l'intérieur",
+      "maxStay": "Alerte de durée sur site (min)",
+      "maxStayHelp": "Vide = aucune alerte. L'alerte n'est envoyée qu'une seule fois par véhicule.",
+      "noAlert": "Sans alerte",
+      "noLimit": "Sans limite",
+      "onExit": "À la sortie",
+      "onlyInside": "Uniquement ceux présents",
+      "photoEntry": "photo d'entrée",
+      "photoExit": "photo de sortie",
+      "rules": "Règles du contrôle véhicules",
+      "saveError": "Impossible d'enregistrer les règles",
+      "saved": "Règles enregistrées",
+      "viewPhoto": "Voir la photo"
     },
     "patrolQr": {
       "empty": "Aucun point de contrôle pour l'instant. Créez-les dans la section « Rondes de sécurité », puis revenez ici pour générer leurs QR.",
@@ -7605,7 +7948,20 @@
       "reorderFailed": "Impossible d'enregistrer l'ordre",
       "settingsTitle": "Paramètres des rondes",
       "title": "Rondes de sécurité",
-      "useStationLoc": "Utiliser la position du poste"
+      "useStationLoc": "Utiliser la position du poste",
+      "active": "Active",
+      "cpPlaceholder": "Ex. : Entrée principale",
+      "create": "Créer une ronde",
+      "created": "Ronde créée",
+      "deleted": "Ronde supprimée",
+      "inactive": "Inactive",
+      "loadError": "Impossible de charger les rondes",
+      "moveDown": "Descendre",
+      "moveUp": "Monter",
+      "namePlaceholder": "Ex. : Ronde de nuit",
+      "point": "point",
+      "points": "points",
+      "settings": "Paramètres"
     }
   },
   "supervisor": {
@@ -9116,7 +9472,11 @@
       "zonaPosicionPEjAguila2": "Zone / position (p. ex. Aigle2)",
       "vehiculoAsignado": "Véhicule attribué",
       "zonaPosicion": "Zone / position",
-      "vehiculoAsignado2": "Véhicule attribué"
+      "vehiculoAsignado2": "Véhicule attribué",
+      "sedesAsignadas": "Sites affectés",
+      "sedesError": "Impossible d'enregistrer les sites",
+      "sedesGuardadas": "Sites enregistrés",
+      "sedesSinRoles": "Les informations du superviseur ne sont pas encore chargées"
     },
     "SupervisorPositions": {
       "aunNoHayPuestosDe": "Aucun poste de superviseur pour l'instant",
@@ -9808,5 +10168,10 @@
     "subtitle": "Contrôle des entrées et sorties des visiteurs",
     "placeTypeLabel": "Type de lieu",
     "tagLabel": "Étiquette"
-  }
+  },
+  "app": {
+    "loading": "Chargement…",
+    "refresh": "Actualiser"
+  },
+  "loading": "Chargement..."
 }

@@ -14,6 +14,7 @@ import AppLayout from '@/layouts/app-layout';
 import type { GuardDetail } from '../../guardDetailTypes';
 import i18n from "@/i18n";
 
+import { localeActual } from '@/lib/localeActual'
 /** The linked app user carried under `guard` on the securityGuard record. */
 interface ProfileUser {
   id?: string;
@@ -316,7 +317,7 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
                   ) : (
                     <>
                       <ReadField label={t('guards.profile.fields.id1') || 'Cédula / ID'} value={data?.governmentId} />
-                      <ReadField label={t('guards.profile.fields.birthDate') || 'Fecha de nacimiento'} value={data?.birthDate ? new Date(data.birthDate).toLocaleDateString('es') : null} />
+                      <ReadField label={t('guards.profile.fields.birthDate') || 'Fecha de nacimiento'} value={data?.birthDate ? new Date(data.birthDate).toLocaleDateString(localeActual()) : null} />
                       <ReadField label={t('guards.profile.fields.birthPlace') || 'Lugar de nacimiento'} value={data?.birthPlace} />
                       <ReadField label={t('guards.profile.fields.address') || 'Dirección'} value={data?.address || data?.guard?.homeAddress} />
                     </>
@@ -342,7 +343,7 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
                       <ReadField label={t('guards.profile.fields.maritalStatus') || 'Estado civil'} value={data?.maritalStatus} />
                       <ReadField label={t('guards.profile.fields.education') || 'Instrucción académica'} value={data?.academicInstruction} />
                       <ReadField label={t('guards.profile.fields.guardCredentials') || 'Credencial'} value={data?.guardCredentials} />
-                      <ReadField label={t('guards.profile.fields.hireDate', 'Fecha de contratación')} value={data?.hiringContractDate ? new Date(data.hiringContractDate).toLocaleDateString('es') : null} />
+                      <ReadField label={t('guards.profile.fields.hireDate', 'Fecha de contratación')} value={data?.hiringContractDate ? new Date(data.hiringContractDate).toLocaleDateString(localeActual()) : null} />
                     </>
                   )}
                 </div>
@@ -410,9 +411,9 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
                           <div className="min-w-0">
                             <div className="truncate text-sm font-medium">{stationLabel}</div>
                             <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>
-                              {punchIn ? new Date(punchIn).toLocaleString('es', { timeZone: getTenantTimezone() }) : '—'}
+                              {punchIn ? new Date(punchIn).toLocaleString(localeActual(), { timeZone: getTenantTimezone() }) : '—'}
                               {' → '}
-                              {punchOut ? new Date(punchOut).toLocaleString('es', { timeZone: getTenantTimezone() }) : <span className="font-medium" style={{ color: 'var(--ok-text)' }}>En curso</span>}
+                              {punchOut ? new Date(punchOut).toLocaleString(localeActual(), { timeZone: getTenantTimezone() }) : <span className="font-medium" style={{ color: 'var(--ok-text)' }}>En curso</span>}
                             </div>
                           </div>
                           <StatusBadge tone={punchOut ? 'neutral' : 'ok'} dot={!punchOut} className="shrink-0">
@@ -433,7 +434,7 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
                 <div className="space-y-3">
                   <StatusBadge tone={accessBadge.tone}>{accessBadge.txt}</StatusBadge>
                   {data?.guard?.lastLoginAt && (
-                    <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{t('guards.profile.access.lastLogin') || 'Último ingreso'}: <span className="font-medium" style={{ color: 'var(--ink)' }}>{new Date(data.guard.lastLoginAt).toLocaleString('es')}</span></div>
+                    <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{t('guards.profile.access.lastLogin') || 'Último ingreso'}: <span className="font-medium" style={{ color: 'var(--ink)' }}>{new Date(data.guard.lastLoginAt).toLocaleString(localeActual())}</span></div>
                   )}
                   {data?.guard?.email && (
                     <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{t('guards.profile.access.sendTo') || 'Enviar a'}: <span className="font-medium" style={{ color: 'var(--ink)' }}>{data.guard.email}</span></div>
@@ -467,7 +468,7 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
                         <div className="grid grid-cols-2 gap-2">
                           <ReadField label={t('guards.profile.fields.licenseType') || 'Tipo'} value={lic.type} />
                           <ReadField label={t('guards.profile.fields.licenseNumber') || 'Número'} value={lic.number} />
-                          <ReadField label={t('guards.profile.fields.expiryDate') || 'Vence'} value={lic.expiryDate ? new Date(lic.expiryDate).toLocaleDateString('es') : null} />
+                          <ReadField label={t('guards.profile.fields.expiryDate') || 'Vence'} value={lic.expiryDate ? new Date(lic.expiryDate).toLocaleDateString(localeActual()) : null} />
                         </div>
                       </div>
                     ))}

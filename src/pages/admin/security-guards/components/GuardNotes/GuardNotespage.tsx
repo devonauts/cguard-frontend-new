@@ -14,6 +14,7 @@ import api from '@/lib/api';
 import type { GuardDetail, GuardNote, NoteAttachment, FileDescriptor } from '../../guardDetailTypes';
 
 
+import { localeActual } from '@/lib/localeActual'
 // Notes API shape the page consumes. Defaults to the guard endpoints; a
 // supervisor route injects `notesApi` + `entityId` (+navKey/title) to reuse this
 // exact page against the supervisor's user-keyed notes. Guard usage passes none
@@ -57,7 +58,7 @@ function fmtDate(v: string | number | Date | null | undefined): string {
     if (!v) return '';
     const d = new Date(v);
     if (isNaN(d.getTime())) return String(v);
-    return d.toLocaleDateString('es', { day: '2-digit', month: 'short', year: 'numeric' });
+    return d.toLocaleDateString(localeActual(), { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
 function initials(name: string): string {

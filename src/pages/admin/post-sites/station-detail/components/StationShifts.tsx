@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Segmented, IconTile, EmptyState } from '@/components/kit';
 import type { Station } from '@/types';
 
+import { localeActual } from '@/lib/localeActual'
 interface StationDetail extends Station { stationSchedule?: string | null }
 
 // Minutes-of-day of a UTC instant rendered in the tenant timezone. Shift times
@@ -449,8 +450,8 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
     : [];
   const selectedDayCoverage = selectedDate ? coverageByDate[selectedDate] : null;
 
-  const fmtTime = (d: Date) => d.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: getTenantTimezone() });
-  const fmtDate = (d: Date) => d.toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' });
+  const fmtTime = (d: Date) => d.toLocaleTimeString(localeActual(), { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: getTenantTimezone() });
+  const fmtDate = (d: Date) => d.toLocaleDateString(localeActual(), { weekday: 'long', day: 'numeric', month: 'long' });
 
   // Guard currently assigned to this station (the predominant guard across its
   // existing shifts) — used to pre-select the dropdown when creating a turno.
@@ -500,7 +501,7 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
 
 
   const title = useMemo(() => {
-    if (viewMode === 'day') return currentDate.toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    if (viewMode === 'day') return currentDate.toLocaleDateString(localeActual(), { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     if (viewMode === 'month') return `${MONTHS_ES[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
     const days = getWeekDays();
     const first = days[0], last = days[6];
@@ -718,7 +719,7 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
                                 <p className="text-[10px]" style={{ color: 'var(--ink-soft)' }}>
                                   {toDateKey(ev.start) === toDateKey(ev.end)
                                     ? `${fmtTime(ev.start)} – ${fmtTime(ev.end)}`
-                                    : `${ev.start.toLocaleDateString('es', { day: 'numeric', month: 'short' })} ${fmtTime(ev.start)} – ${ev.end.toLocaleDateString('es', { day: 'numeric', month: 'short' })} ${fmtTime(ev.end)}`
+                                    : `${ev.start.toLocaleDateString(localeActual(), { day: 'numeric', month: 'short' })} ${fmtTime(ev.start)} – ${ev.end.toLocaleDateString(localeActual(), { day: 'numeric', month: 'short' })} ${fmtTime(ev.end)}`
                                   }
                                 </p>
                               </div>
@@ -1005,7 +1006,7 @@ function DayView({ date, coverage, dayEvents, guardColorMap, onAssign }: {
   const dayK = dateKey(date);
   const slots: ScheduleSlot[] = coverage?.slots || [];
   const covered = slots.filter((s) => s.isCovered).length;
-  const fmtT = (d: Date) => d.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: getTenantTimezone() });
+  const fmtT = (d: Date) => d.toLocaleTimeString(localeActual(), { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: getTenantTimezone() });
 
   // An event's [startH,endH] on THIS day's 0–24 axis (clamped across midnight).
   const eventSeg = (ev: ShiftEvent) => {
