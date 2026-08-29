@@ -180,7 +180,7 @@ export default function ClientReports({ client }: { client: Client & { companyNa
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7">
         {kpis.map((k) => <Kpi key={k.key} k={k} icon={KPI_ICONS[k.key] || <FileBarChart />} />)}
         <GlassPanel flat className="p-4 sm:col-span-2 lg:col-span-3 xl:col-span-2">
-          <div className="mb-2 text-xs text-muted-foreground">Cumplimiento de estaciones</div>
+          <div className="mb-2 text-xs text-muted-foreground">{t("ui.ClientReports.cumplimientoDeEstaciones", "Cumplimiento de estaciones")}</div>
           {cumplimiento.hasData === false ? (
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
               <Donut segments={[]} centerTop="—" centerBottom="Sin datos" />
@@ -322,7 +322,7 @@ export default function ClientReports({ client }: { client: Client & { companyNa
           <LabeledField label={t('comun.nombre')}><input className={FIELD_CLS} placeholder={t('ui.ClientReports.informeSemanalDeOperaciones')} value={schedForm.name} onChange={(e) => setSchedForm({ ...schedForm, name: e.target.value })} /></LabeledField>
           <LabeledField label={t('ui.ClientReports.reporte')}>
             <select className={FIELD_CLS} value={schedForm.type} onChange={(e) => setSchedForm({ ...schedForm, type: e.target.value })}>
-              <option value="incidents">{t('ui.ClientReports.reporteDeIncidentes')}</option><option value="rounds">{t('ui.ClientReports.reporteDeRondas')}</option><option value="visitors">{t('ui.ClientReports.reporteDeVisitas')}</option><option value="attendance">{t('ui.ClientReports.reporteDeAsistencia')}</option><option value="coverage">Cumplimiento de estaciones</option><option value="guard-activity">{t('ui.ClientReports.actividadPorGuardia')}</option>
+              <option value="incidents">{t('ui.ClientReports.reporteDeIncidentes')}</option><option value="rounds">{t('ui.ClientReports.reporteDeRondas')}</option><option value="visitors">{t('ui.ClientReports.reporteDeVisitas')}</option><option value="attendance">{t('ui.ClientReports.reporteDeAsistencia')}</option><option value="coverage">{t("ui.ClientReports.cumplimientoDeEstaciones", "Cumplimiento de estaciones")}</option><option value="guard-activity">{t('ui.ClientReports.actividadPorGuardia')}</option>
             </select>
           </LabeledField>
           <LabeledField label="Frecuencia">

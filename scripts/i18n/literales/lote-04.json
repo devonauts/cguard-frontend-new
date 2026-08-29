@@ -1,0 +1,61 @@
+{
+ "src/pages/admin/dashboard/control-center/components/CustomizePanel.tsx": [
+  "Centro de mando",
+  "Exigir GPS en punto de control",
+  "Exigir foto en punto de control",
+  "Operaciones de seguridad",
+  "Radio de geocerca (m)",
+  "Volver al color de la marca"
+ ],
+ "src/pages/admin/nomina/NominaSettings.tsx": [
+  "Tolerancia de retraso (gracia)",
+  "Umbral de salida anticipada",
+  "Umbral inasistencia (no-show)",
+  "Ventanas de tiempo (minutos)"
+ ],
+ "src/pages/admin/memos/MemosPage.tsx": [
+  "Crea un memo rápido para el equipo de seguridad.",
+  "Filtros de memo",
+  "Pendientes de acuse"
+ ],
+ "src/components/maps/StaticMapImage.tsx": [
+  "Abrir el mapa interactivo",
+  "Explorar el mapa"
+ ],
+ "src/pages/admin/video/VideoEvents.tsx": [
+  "Eventos de video",
+  "No hay eventos"
+ ],
+ "src/pages/admin/supervisors/SupervisorDetailPage.tsx": [
+  "Lugar de nacimiento",
+  "Sin ninguna sede marcada seguirá viendo TODO."
+ ],
+ "src/pages/admin/administrative-office-users/AdminUserCardsGrid.tsx": [
+  "Sin rol",
+  "Sin usuarios"
+ ],
+ "src/components/DemoDataBanner.tsx": [
+  "Estás explorando con una"
+ ],
+ "src/components/alarm/AlarmActionPlan.tsx": [
+  "Plan de acción"
+ ],
+ "src/pages/admin/Configuration/mobile-hub/MobileHubPage.tsx": [
+  "Juan Ramírez"
+ ],
+ "src/pages/admin/projects/ProjectForm.tsx": [
+  "Centro de convenciones, Quito"
+ ],
+ "src/pages/admin/supervisors/SupervisorCoveragePage.tsx": [
+  "Puesto móvil"
+ ],
+ "src/pages/admin/programmer/TransferShiftModal.tsx": [
+  "Después vuelve automáticamente a"
+ ],
+ "src/pages/admin/Reports/WatchMode.tsx": [
+  "Registros de Modo Vigilancia"
+ ],
+ "src/pages/guard/dashboard/GuardTimeOff.tsx": [
+  "No tienes solicitudes de permiso."
+ ]
+}

@@ -302,7 +302,7 @@ export default function RoutesPage() {
           </div>
         </Toolbar>
 
-        <Section icon={<RouteIcon />} title="Listado de rutas" contentClassName="overflow-hidden rounded-xl border">
+        <Section icon={<RouteIcon />} title={t('ui.RoutesPage.listadoDeRutas', 'Listado de rutas')} contentClassName="overflow-hidden rounded-xl border">
           <div className="overflow-x-auto">
           <table className="w-full min-w-[900px] border-collapse text-left text-sm">
             <thead className="bg-muted/30">

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
   Activity,
@@ -106,6 +107,7 @@ function formatWhen(iso?: string | null): string {
 /* ------------------------------------------------------------------ */
 
 export default function VideoEvents() {
+  const { t } = useTranslation();
   const [events, setEvents] = React.useState<VideoEvent[]>([]);
   const [cameras, setCameras] = React.useState<Record<string, Camera>>({});
   const [loading, setLoading] = React.useState(true);
@@ -187,7 +189,7 @@ export default function VideoEvents() {
       <PageContainer width="wide">
         <PageHeader
           icon={<Activity />}
-          title="Eventos de video"
+          title={t('ui.VideoEvents.eventosDeVideo', 'Eventos de video')}
           subtitle="Alertas de movimiento, alarmas y sabotaje de sus cámaras"
           actions={
             <Button
@@ -236,7 +238,7 @@ export default function VideoEvents() {
         ) : events.length === 0 ? (
           <EmptyState
             icon={<Video />}
-            title="No hay eventos"
+            title={t('ui.VideoEvents.noHayEventos', 'No hay eventos')}
             description={
               status === "all"
                 ? "Aún no se han registrado eventos de video."

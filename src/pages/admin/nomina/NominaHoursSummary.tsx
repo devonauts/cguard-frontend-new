@@ -1,5 +1,6 @@
 import { loadXlsx } from '../../../lib/lazyXlsx';
 import { useEffect, useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import AppLayout from "@/layouts/app-layout";
 import { DataTable, type Column } from "@/components/table/DataTable";
 import { Button } from "@/components/ui/button";
@@ -59,6 +60,7 @@ function Num({ v, strong, tone }: { v: React.ReactNode; strong?: boolean; tone?:
 }
 
 export default function NominaHoursSummary() {
+  const { t } = useTranslation();
   // Arranca en 14 días sólo hasta que el servidor diga cuál es el periodo real.
   // Antes se quedaba ahí para siempre: el selector «semanal / quincenal /
   // mensual» de Configuración se guardaba y no cambiaba una sola cifra de este
@@ -165,7 +167,7 @@ export default function NominaHoursSummary() {
       th,td{border:1px solid ${line || "currentColor"};padding:6px;text-align:left}
       th{background:${brand || "transparent"};color:${brandInk || "inherit"}}
       td:not(:first-child){text-align:right;font-variant-numeric:tabular-nums}</style></head>
-      <body><h1>Resumen de horas · ${esc(from)} a ${esc(to)}</h1>
+      <body><h1>${esc(t('ui.NominaHoursSummary.resumenDeHoras', 'Resumen de horas'))} · ${esc(from)} a ${esc(to)}</h1>
       <table><thead><tr>${head.map((h) => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${body}</tbody></table>
       </body></html>`);
     w.document.close();
@@ -218,7 +220,7 @@ export default function NominaHoursSummary() {
       <PageContainer width="wide" className="p-4 sm:p-6">
         <PageHeader
           icon={<Clock />}
-          title="Resumen de horas"
+          title={t('ui.NominaHoursSummary.resumenDeHoras', 'Resumen de horas')}
           subtitle={
             periodo
               ? `Días trabajados y horas por persona · periodo ${periodo.label.toLowerCase()}`
@@ -301,8 +303,8 @@ export default function NominaHoursSummary() {
               emptyState={
                 <EmptyState
                   icon={<Clock />}
-                  title="Sin datos en el rango"
-                  description="Elige otro rango de fechas y vuelve a generar el resumen."
+                  title={t('ui.NominaHoursSummary.sinDatosEnElRango', 'Sin datos en el rango')}
+                  description={t('ui.NominaHoursSummary.eligeOtroRangoDeFechas', 'Elige otro rango de fechas y vuelve a generar el resumen.')}
                 />
               }
             />

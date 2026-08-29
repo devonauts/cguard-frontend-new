@@ -1,0 +1,58 @@
+{
+ "src/pages/admin/post-sites/station-detail/components/StationOverview.tsx": [
+  "Aún no hay marcaciones en este puesto.",
+  "Cobertura de descansos",
+  "Definir ubicación",
+  "Sin ubicación configurada",
+  "Tolerancia de entrada anticipada (min)"
+ ],
+ "src/components/onboarding/OnboardingWizard.tsx": [
+  "Atrás",
+  "Completar más tarde",
+  "Configura tu empresa",
+  "Detectar por dirección"
+ ],
+ "src/components/NoWorkspaceAccess.tsx": [
+  "Cerrar sesión",
+  "Sesión iniciada como",
+  "Sin acceso a un espacio de trabajo"
+ ],
+ "src/pages/admin/security-guards/NewSecurityGuardPage.tsx": [
+  "Certificado de no antecedentes de violencia familiar",
+  "Documento de credencial profesional",
+  "Lugar de Nacimiento"
+ ],
+ "src/pages/admin/nomina/NominaExceptions.tsx": [
+  "Cerrar el atraso",
+  "Resolución"
+ ],
+ "src/pages/admin/programmer/ShiftExchange.tsx": [
+  "Intercambio de turnos",
+  "Solicitudes de intercambio"
+ ],
+ "src/pages/admin/Reports/PostKpi.tsx": [
+  "Indicadores de desempeño por puesto: cobertura, rondas e incidentes.",
+  "Informe de KPI del Puesto"
+ ],
+ "src/components/projects/ProjectBadge.tsx": [
+  "Sin tipo"
+ ],
+ "src/pages/admin/Configuration/types-licenses/LicensesTypeDialog.tsx": [
+  "Nuevo Tipo de Licencia"
+ ],
+ "src/pages/admin/radio/RadioDevices.tsx": [
+  "Activo (se intentará mantener conectado)"
+ ],
+ "src/pages/admin/post-sites/components/PostsiteSiteTours/SiteTours.tsx": [
+  "Configuraciones de Rondas"
+ ],
+ "src/pages/admin/security-guards/GuardRatingLevel.tsx": [
+  "Sin reseñas"
+ ],
+ "src/pages/admin/clientes/components/ClientDocuments/ClientDocuments.tsx": [
+  "Biblioteca de documentos"
+ ],
+ "src/pages/admin/Reports/Incident.tsx": [
+  "Informe de Incidente"
+ ]
+}

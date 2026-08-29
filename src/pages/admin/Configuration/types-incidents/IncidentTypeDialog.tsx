@@ -20,7 +20,7 @@ type Props = {
   onSubmit: (v: IncidentTypeDialogValues) => void | Promise<void>;
 };
 
-export default function IncidentTypeDialog({ open, onOpenChange, title = "Nuevo Tipo de Incidente", defaultValues, onSubmit }: Props) {
+export default function IncidentTypeDialog({ open, onOpenChange, title, defaultValues, onSubmit }: Props) {
   const { t } = useTranslation();
   const form = useForm<IncidentTypeDialogValues>({ resolver: zodResolver(schema), defaultValues: { name: "" } });
   useEffect(() => { form.reset(defaultValues ?? { name: "" }); }, [defaultValues, form]);
@@ -31,7 +31,7 @@ export default function IncidentTypeDialog({ open, onOpenChange, title = "Nuevo 
       open={open}
       onOpenChange={onOpenChange}
       icon={<AlertTriangle />}
-      title={title}
+      title={title ?? t('settings.incidentTypes.dialogNewTitle', 'Nuevo Tipo de Incidente')}
       description={t('ui.IncidentTypeDialog.asignaUnNombreParaIdentificar')}
     >
       <Form {...form}>

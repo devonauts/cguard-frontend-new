@@ -218,7 +218,7 @@ export default function NominaExceptions() {
             arriba también acota el cierre. */}
         {status === "open" && (
           <div className="mb-4 flex flex-wrap items-center gap-3 rounded-xl border p-3" style={{ borderColor: "var(--hairline)" }}>
-            <span className="text-sm font-semibold">Cerrar el atraso</span>
+            <span className="text-sm font-semibold">{t('ui.NominaExceptions.cerrarElAtraso', 'Cerrar el atraso')}</span>
             <label className="flex items-center gap-2 text-sm" style={{ color: "var(--ink-soft)" }}>
               anteriores al
               <input
@@ -300,7 +300,7 @@ export default function NominaExceptions() {
                 {(selected.status === "resolved" || selected.status === "acknowledged" || selected.status === "approved" || selected.status === "rejected") && (
                   <div className="glass-flat p-3">
                     <p className="flex items-center gap-1.5 text-xs font-semibold">
-                      <CheckCircle2 className="size-3.5" style={{ color: "var(--ok-text)" }} /> Resolución
+                      <CheckCircle2 className="size-3.5" style={{ color: "var(--ok-text)" }} /> {t('ui.ClientIncidents.resolucion', 'Resolución')}
                     </p>
                     <div className="mt-2 grid grid-cols-2 gap-3">
                       <Field label={t('comun.fecha')} value={selected.resolvedAt ? fmtDateTime(selected.resolvedAt) : "—"} />

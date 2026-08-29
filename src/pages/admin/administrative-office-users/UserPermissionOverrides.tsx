@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { PERMISSIONS, groupPermissions, ADMIN_FLOOR_PERMISSIONS } from "@/config/permissions";
 import { formatPermissionLabel, getResourceLabel } from "@/config/permissionLabels";
 import { GlassPanel, EmptyState } from "@/components/kit";
@@ -28,6 +29,7 @@ export default function UserPermissionOverrides({
   query = "",
   disabled = false,
 }: Props) {
+  const { t } = useTranslation();
   const inherited = React.useMemo(() => new Set(rolePermissions), [rolePermissions]);
   const grantSet = React.useMemo(() => new Set(grant), [grant]);
   const denySet = React.useMemo(() => new Set(deny), [deny]);
@@ -88,7 +90,7 @@ export default function UserPermissionOverrides({
         Lo denegado tiene prioridad sobre el rol.
       </p>
       {Object.keys(filtered).length === 0 ? (
-        <EmptyState title="No se encontraron permisos" description="Prueba con otro texto de búsqueda." />
+        <EmptyState title={t('ui.PermissionsEditor.noSeEncontraronPermisos', 'No se encontraron permisos')} description={t('ui.UserPermissionOverrides.pruebaConOtroTextoDe', 'Prueba con otro texto de búsqueda.')} />
       ) : (
         Object.keys(filtered)
           .filter((g) => !HIDDEN_GROUPS.has(g))

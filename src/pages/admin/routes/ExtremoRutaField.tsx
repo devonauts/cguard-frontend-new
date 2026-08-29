@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Modal } from '@/components/kit';
 import { Home, Flag, X, MapPin, Pencil } from 'lucide-react';
@@ -53,6 +54,7 @@ const COPIA = {
 export default function ExtremoRutaField({ clase, valor, onChange, soloLectura = false }: Props) {
   const [abierto, setAbierto] = useState(false);
   const [borrador, setBorrador] = useState<ExtremoRuta | null>(null);
+  const { t } = useTranslation();
   const c = COPIA[clase];
 
   const abrir = () => {
@@ -143,7 +145,7 @@ export default function ExtremoRutaField({ clase, valor, onChange, soloLectura =
               Cancelar
             </Button>
             <Button type="button" variant="brand" size="lg" disabled={!borrador} onClick={confirmar}>
-              Usar esta ubicación
+              {t('ui.ExtremoRutaField.usarEstaUbicacion', 'Usar esta ubicación')}
             </Button>
           </div>
         }

@@ -132,8 +132,8 @@ export default function AlarmAnalytics() {
               <MetricCard icon={<Send size={16} />} accent={TONES.serie2} value={fmtDur(d.avgTtdSec)} label="Despacho prom." sub="tiempo a despachar" />
               <MetricCard icon={<TrendingUp size={16} />} accent={TONES.ok} value={fmtDur(d.avgTtrSec)} label={t("ui.AlarmAnalytics.resolucionProm", "Resolución prom.")} sub="tiempo a resolver" />
               <MetricCard icon={<ShieldCheck size={16} />} accent={TONES.ok} value={`${d.slaAckCompliance}%`} label="Plazos cumplidos" sub="reconocidos a tiempo" pct={d.slaAckCompliance} />
-              <MetricCard icon={<AlertTriangle size={16} />} accent={TONES.warn} value={`${d.escalationRate}%`} label="Tasa de escalado" sub={t('ui.AlarmAnalytics.superaronElPlazo')} pct={d.escalationRate} />
-              <MetricCard icon={<AlertTriangle size={16} />} accent={TONES.bad} value={`${d.falseRate}%`} label="Tasa de falsas" sub="falsas y reincidentes" pct={d.falseRate} />
+              <MetricCard icon={<AlertTriangle size={16} />} accent={TONES.warn} value={`${d.escalationRate}%`} label={t('ui.AlarmAnalytics.tasaDeEscalado', 'Tasa de escalado')} sub={t('ui.AlarmAnalytics.superaronElPlazo')} pct={d.escalationRate} />
+              <MetricCard icon={<AlertTriangle size={16} />} accent={TONES.bad} value={`${d.falseRate}%`} label={t('ui.AlarmAnalytics.tasaDeFalsas', 'Tasa de falsas')} sub="falsas y reincidentes" pct={d.falseRate} />
               <MetricCard icon={<PhoneCall size={16} />} accent={TONES.info} value={d.ecvSatisfiedCases} label={t("ui.AlarmAnalytics.verificacionPorLlamada", "Verificación por llamada")} sub={`${d.totalCalls} llamadas`} />
             </Stagger>
 

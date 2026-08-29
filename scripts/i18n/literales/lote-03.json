@@ -1,0 +1,59 @@
+{
+ "src/pages/admin/Configuration/api-keys/ApiKeysPage.tsx": [
+  "Aún no hay llaves",
+  "Copia tu clave ahora",
+  "Crear llave de API",
+  "Cómo se usa",
+  "El sistema externo llama a",
+  "Llaves de API",
+  "Ya la guardé"
+ ],
+ "src/pages/admin/programmer/SupervisionSection.tsx": [
+  "Configurar puestos de supervisión",
+  "Puestos de supervisión sin cubrir",
+  "Sin supervisores asignados",
+  "Supervisión"
+ ],
+ "src/pages/admin/post-sites/station-detail/components/StationShifts.tsx": [
+  "Completa los fijos del puesto y asigna un",
+  "Quitar del puesto",
+  "Sin turnos"
+ ],
+ "src/pages/admin/Configuration/components/profile/documents/CompanyDocumentsSection.tsx": [
+  "Documentos legales de la empresa",
+  "Sin documentos"
+ ],
+ "src/pages/admin/supervisors/SupervisorSchedulePage.tsx": [
+  "Configurar rotación",
+  "Sin horario generado"
+ ],
+ "src/pages/admin/administrative-office-users/AdminUserDetailPage.tsx": [
+  "Perfil de supervisor",
+  "Rol de acceso"
+ ],
+ "src/pages/admin/Reports/License.tsx": [
+  "Credenciales y licencias del personal, con sus fechas de vencimiento.",
+  "Registro de Licencias"
+ ],
+ "src/components/GoogleMap/StationGeofencePolygon.tsx": [
+  "Igual que el sitio"
+ ],
+ "src/pages/admin/Configuration/my-notifications/MisAvisosPage.tsx": [
+  "Aquí sólo puedes"
+ ],
+ "src/pages/admin/training/TrainingCoursesPage.tsx": [
+  "Cursos de Entrenamiento"
+ ],
+ "src/pages/admin/supervisors/SupervisorKpisPage.tsx": [
+  "Indicadores del supervisor"
+ ],
+ "src/pages/admin/programmer/TimeOff.tsx": [
+  "Solicitudes de tiempo libre"
+ ],
+ "src/pages/admin/Reports/Passdown.tsx": [
+  "Registros de Entrega"
+ ],
+ "src/pages/public/DispatchPublicView.tsx": [
+  "No disponible"
+ ]
+}

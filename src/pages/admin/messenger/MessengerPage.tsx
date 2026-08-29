@@ -539,6 +539,7 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
 }
 
 function ComposeDialog({ scope, onClose, onSent }: { scope: "operational" | "client"; onClose: () => void; onSent: (conv: unknown) => void }) {
+  const { t } = useTranslation();
   const isClient = scope === "client";
   const [mode, setMode] = useState<"direct" | "group">("direct");
   // Direct mode
@@ -705,7 +706,7 @@ function ComposeDialog({ scope, onClose, onSent }: { scope: "operational" | "cli
               )}
               <label className="flex items-center gap-2 text-sm">
                 <Checkbox checked={oneWay} onCheckedChange={(v) => setOneWay(Boolean(v))} />
-                Solo anuncios (los miembros no pueden responder)
+                {t('ui.MessengerPage.soloAnunciosLosMiembrosNo', 'Solo anuncios (los miembros no pueden responder)')}
               </label>
               <textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="Primer mensaje (opcional)…" rows={3} className="cg-input w-full resize-none px-3 py-2 text-sm" />
             </>
@@ -791,7 +792,7 @@ function MembersPanel({ conversation, onClose, onChanged }: { conversation: Conv
             </div>
           )}
           <button onClick={resync} disabled={busy} className="cg-btn-glass cg-focus mt-2 flex w-full items-center justify-center gap-2 rounded-xl py-2 text-xs font-medium disabled:opacity-50">
-            <RefreshCw size={13} className={busy ? "animate-spin" : ""} /> Sincronizar con asignaciones
+            <RefreshCw size={13} className={busy ? "animate-spin" : ""} /> {t('ui.MessengerPage.sincronizarConAsignaciones', 'Sincronizar con asignaciones')}
           </button>
         </div>
         <div className="flex-1 space-y-2 overflow-auto p-2">

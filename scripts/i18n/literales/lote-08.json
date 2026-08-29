@@ -1,0 +1,58 @@
+{
+ "src/pages/admin/post-sites/PostSiteWizard.tsx": [
+  "Añadir estación",
+  "Continuar sin seleccionar tipo",
+  "Estaciones de vigilancia",
+  "Instrucciones del puesto (SOP)",
+  "Nivel de riesgo"
+ ],
+ "src/components/alarm/AlarmECV.tsx": [
+  "Despacho inmediato (exento de ECV)",
+  "Registro de llamadas",
+  "Sin contactos configurados para este panel.",
+  "Verificación (ECV)"
+ ],
+ "src/pages/admin/routes/OptimizacionPanel.tsx": [
+  "Ahorro de esta optimización",
+  "Distancia del recorrido",
+  "Sin optimizar",
+  "Ya estaba en el mejor orden posible"
+ ],
+ "src/pages/admin/Configuration/components/profile/AvatarUploader.tsx": [
+  "Cambiar foto de perfil",
+  "Haz clic o arrastra una imagen"
+ ],
+ "src/pages/admin/dispatcher/NewDispatchPage.tsx": [
+  "No hay vigilantes asignados a esta estación",
+  "Seleccione una estación primero"
+ ],
+ "src/pages/admin/inventory/GlobalInventoryPage.tsx": [
+  "Agregar primer artículo",
+  "Nuevo artículo"
+ ],
+ "src/pages/admin/clientes/ClientsDetails.tsx": [
+  "No se pudo cargar el cliente",
+  "Vuelve a intentarlo o revisa que el cliente exista."
+ ],
+ "src/components/app/guard-tabs.tsx": [
+  "Unirse por Código"
+ ],
+ "src/pages/admin/Configuration/ProfileUserPage.tsx": [
+  "Perfil del usuario"
+ ],
+ "src/pages/admin/tasks/TaskTracking.tsx": [
+  "Imagen de referencia"
+ ],
+ "src/pages/admin/post-sites/components/PostsiteProfile/Profile.tsx": [
+  "Estaciones de servicio"
+ ],
+ "src/pages/admin/dashboard/control-center/components/ErrorBoundary.tsx": [
+  "No se pudo cargar el centro de mando"
+ ],
+ "src/pages/admin/clientes/components/ClientCardsGrid.tsx": [
+  "Sin clientes"
+ ],
+ "src/pages/admin/Reports/CheckInOut.tsx": [
+  "Informe de Entrada/Salida"
+ ]
+}

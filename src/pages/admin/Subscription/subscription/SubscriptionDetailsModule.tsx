@@ -147,7 +147,7 @@ export default function SubscriptionDetailsModule() {
         icon={<CreditCard />}
         action={
           <Button variant="outline" onClick={goToBilling}>
-            Gestionar Suscripción
+            {t('ui.SubscriptionDetailsModule.gestionarSuscripcion', 'Gestionar Suscripción')}
           </Button>
         }
       >
@@ -169,7 +169,7 @@ export default function SubscriptionDetailsModule() {
             value={data?.plan?.name || (currentPlan ? PLAN_LABEL[currentPlan] : "—")}
           />
           <Field
-            label="Periodo de prueba"
+            label={t('ui.SubscriptionDetailsModule.periodoDePrueba', 'Periodo de prueba')}
             value={
               data?.trial?.endsAt
                 ? `Termina el ${fmtDate(data.trial.endsAt)}`
@@ -215,7 +215,7 @@ export default function SubscriptionDetailsModule() {
             style={{ color: 'var(--brand-text)' }}
             onClick={goToBilling}
           >
-            Suscripción / Facturación
+            {t('ui.SubscriptionDetailsModule.suscripcionFacturacion', 'Suscripción / Facturación')}
           </button>
           .
         </p>
@@ -273,7 +273,7 @@ export default function SubscriptionDetailsModule() {
                         disabled
                         title={t("ui.SubscriptionDetailsModule.gestionaTuPlanEnSuscripcion", "Gestiona tu plan en Suscripción / Facturación")}
                       >
-                        Próximamente
+                        {t('ui.Reports.proximamente', 'Próximamente')}
                       </Button>
                     )}
                   </div>

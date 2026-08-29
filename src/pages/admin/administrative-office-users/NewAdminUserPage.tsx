@@ -629,7 +629,7 @@ export default function NewAdminUserPage() {
                         <Input placeholder={t('ui.NewAdminUserPage.nombreEmpresaCom')} {...field} />
                       </FormControl>
                       <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>
-                        Aquí le llega la invitación para crear su contraseña.
+                        {t("ui.NewAdminUser.aquiLeLlegaLaInvitacionParaCrearSuContrasena", "Aquí le llega la invitación para crear su contraseña.")}
                       </p>
                       <FormMessage />
                     </FormItem>
@@ -687,7 +687,7 @@ export default function NewAdminUserPage() {
                    al usuario que configurara algo que el servidor descarta. */
                 <div className="rounded-xl border px-4 py-3 text-sm"
                      style={{ borderColor: 'var(--hairline)', background: 'var(--float)' }}>
-                  Este rol ve <strong>{t("ui.NewAdminUser.todaLaOperacion", "toda la operación")}</strong> por definición: no se puede acotar.
+                  {t("ui.NewAdminUser.esteRolVe", "Este rol ve")} <strong>{t("ui.NewAdminUser.todaLaOperacion", "toda la operación")}</strong> por definición: no se puede acotar.
                 </div>
               ) : (
                 <div className="space-y-4">

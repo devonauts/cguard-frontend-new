@@ -38,7 +38,7 @@ export default function AvatarUploader({ src, onChange, size = 128 }: Props) {
             setDragging(false);
             take(e.dataTransfer.files?.[0]);
           }}
-          aria-label="Cambiar foto de perfil"
+          aria-label={t("ui.AvatarUploader.cambiarFotoDePerfil", "Cambiar foto de perfil")}
           className="glass-sunken cg-focus group grid h-full w-full place-items-center overflow-hidden transition-colors"
           style={{
             borderStyle: "dashed",
@@ -85,7 +85,7 @@ export default function AvatarUploader({ src, onChange, size = 128 }: Props) {
         />
       </div>
       <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
-        Haz clic o arrastra una imagen
+        {t("ui.AvatarUploader.hazClicOArrastraUnaImagen", "Haz clic o arrastra una imagen")}
       </p>
     </div>
   );

@@ -1,0 +1,59 @@
+{
+ "src/pages/admin/programmer/Schedule.tsx": [
+  "Arrastra sobre la fila de un puesto para",
+  "Cobertura de fijos",
+  "No hubo vigilantes afectados.",
+  "Patrón de rotación:",
+  "Revisa antes de publicar:",
+  "Rotación SF:",
+  "Se moverá desde",
+  "Sugerido según lo que falta ese día:"
+ ],
+ "src/pages/admin/routes/RouteForm.tsx": [
+  "Enviar notificación antes de las pasadas programadas",
+  "Forzar registro de entrada antes de comenzar la ruta",
+  "No hay puntos definidos",
+  "Sin ubicación"
+ ],
+ "src/pages/admin/Subscription/subscription/SubscriptionDetailsModule.tsx": [
+  "Gestionar Suscripción",
+  "Periodo de prueba",
+  "Suscripción / Facturación"
+ ],
+ "src/pages/admin/visitor-management/Vehicles.tsx": [
+  "Añadir vehículo",
+  "Próximamente"
+ ],
+ "src/pages/admin/supervisors/SupervisorsPage.tsx": [
+  "Reenviar invitación",
+  "Restablecer contraseña"
+ ],
+ "src/pages/admin/administrative-office-users/NewAdminUserPage.tsx": [
+  "Aquí le llega la invitación para crear su contraseña.",
+  "Este rol ve"
+ ],
+ "src/components/AppErrorBoundary.tsx": [
+  "Esta sección no se pudo mostrar"
+ ],
+ "src/components/post-sites/ServiceTypeBadge.tsx": [
+  "Especifique un tipo de servicio personalizado."
+ ],
+ "src/pages/admin/Configuration/integrations/IntegrationsList.tsx": [
+  "¿Buscas conectar otro sistema?"
+ ],
+ "src/pages/admin/training/TrainingEnrollmentsPage.tsx": [
+  "Progreso de vigilantes"
+ ],
+ "src/pages/admin/requests/CustomerRequests.tsx": [
+  "Solicitudes de clientes"
+ ],
+ "src/pages/admin/programmer/GuardTypeahead.tsx": [
+  "Sin resultados."
+ ],
+ "src/pages/admin/analytics/Reporting.tsx": [
+  "Cobertura de turnos"
+ ],
+ "src/pages/admin/Reports/GeoFenceLog.tsx": [
+  "Registros de Geo Vallas"
+ ]
+}

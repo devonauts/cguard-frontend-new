@@ -351,7 +351,7 @@ export function PanicAlertOverlay({
                   className="flex h-full min-h-[220px] items-center justify-center text-sm"
                   style={{ background: "var(--glass-sunken)", color: "var(--ink-soft)" }}
                 >
-                  Sin coordenadas
+                  {t("ui.PanicAlertOverlay.sinCoordenadas", "Sin coordenadas")}
                 </div>
               )}
             </div>
@@ -360,7 +360,7 @@ export function PanicAlertOverlay({
           {/* Action — REQUIRED to silence. Logged to the case history. */}
           <div className="glass-sunken p-3">
             <div className="text-sm font-semibold" style={{ color: "var(--ink)" }}>
-              Acción tomada <span style={{ color: "var(--bad-text)" }}>*</span>
+              {t("ui.PanicAlertOverlay.accionTomada", "Acción tomada")} <span style={{ color: "var(--bad-text)" }}>*</span>
             </div>
             <div className="mt-2 flex flex-wrap gap-2">
               {QUICK_ACTIONS.map((a) => {
@@ -423,7 +423,7 @@ export function PanicAlertOverlay({
           </button>
           {!action.trim() && (
             <p className="mt-1.5 text-center text-xs" style={{ color: "var(--ink-soft)" }}>
-              Registra la acción tomada para poder silenciar la alarma.
+              {t("ui.PanicAlertOverlay.registraLaAccionTomadaParaPoderSilenciarLaAlarma", "Registra la acción tomada para poder silenciar la alarma.")}
             </p>
           )}
         </div>

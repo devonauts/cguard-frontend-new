@@ -193,7 +193,7 @@ export default function ProfilePhotoCapture({ value, onChange, previewUrl }: Pro
 
         {/* Instruction label */}
         <p className="max-w-[200px] text-center text-xs leading-snug" style={{ color: 'var(--ink-soft)' }}>
-          Foto del vigilante con uniforme completo en fondo neutro
+          {t('ui.ProfilePhotoCapture.fotoDelVigilanteConUniforme', 'Foto del vigilante con uniforme completo en fondo neutro')}
         </p>
 
         {/* Action buttons */}
@@ -216,7 +216,7 @@ export default function ProfilePhotoCapture({ value, onChange, previewUrl }: Pro
             className="gap-1.5"
           >
             <Upload className="w-4 h-4" />
-            Galería
+            {t('ui.ProfilePhotoCapture.galeria', 'Galería')}
           </Button>
         </div>
 
@@ -235,7 +235,7 @@ export default function ProfilePhotoCapture({ value, onChange, previewUrl }: Pro
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Camera className="brand-text h-5 w-5" />
-              Capturar Foto del Vigilante
+              {t('ui.ProfilePhotoCapture.capturarFotoDelVigilante', 'Capturar Foto del Vigilante')}
             </DialogTitle>
           </DialogHeader>
 
@@ -296,7 +296,7 @@ export default function ProfilePhotoCapture({ value, onChange, previewUrl }: Pro
                 </Button>
                 <Button type="button" variant="brand" onClick={confirmPhoto} className="gap-1.5">
                   <Check className="w-4 h-4" />
-                  Usar esta foto
+                  {t('ui.ProfilePhotoCapture.usarEstaFoto', 'Usar esta foto')}
                 </Button>
               </>
             ) : (

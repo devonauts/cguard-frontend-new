@@ -659,7 +659,7 @@ export default function TrailMap({
       {ready && !hayRecorrido && (
         <div className="pointer-events-none absolute inset-0 z-[3] flex items-center justify-center">
           <span className="cc-map-card px-3 py-1.5 text-sm" style={{ color: "var(--ink-soft)" }}>
-            Sin recorrido para este rango
+            {tr("ui.TrailMap.sinRecorridoParaEsteRango", "Sin recorrido para este rango")}
           </span>
         </div>
       )}

@@ -242,7 +242,7 @@ export default function TaskTracking() {
                   <span className="whitespace-pre-wrap">{selected.approvalNotes}</span>
                 </DetailField>
               )}
-              <TaskImages label="Imagen de referencia" images={selected.imageOptional} />
+              <TaskImages label={t('ui.TaskTracking.imagenDeReferencia', 'Imagen de referencia')} images={selected.imageOptional} />
               <TaskImages label={t("ui.TaskTracking.fotoDeFinalizacion", "Foto de finalización")} images={selected.taskCompletedImage} />
             </div>
           )}

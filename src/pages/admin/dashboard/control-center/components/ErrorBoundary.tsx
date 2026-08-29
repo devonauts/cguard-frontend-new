@@ -1,6 +1,7 @@
 import { Component, type ReactNode } from "react";
 import { AlertTriangle, RotateCcw } from "lucide-react";
 import { IconTile } from "@/components/kit";
+import i18n from "@/i18n";
 
 /** Evita que un error de render deje la página en blanco: muestra el motivo y
  *  una salida. El cristal es el mismo del sistema, así que el fallo no parece
@@ -18,7 +19,7 @@ export class DashboardErrorBoundary extends Component<
       return (
         <div className="glass m-6 flex flex-col items-center p-8 text-center">
           <IconTile tone="bad" size="lg" className="mb-4"><AlertTriangle /></IconTile>
-          <p className="font-display text-base font-semibold">No se pudo cargar el centro de mando</p>
+          <p className="font-display text-base font-semibold">{i18n.t("controlCenter.errorBoundary.title", "No se pudo cargar el centro de mando")}</p>
           <p className="mt-1 text-sm" style={{ color: "var(--ink-soft)" }}>{this.state.error.message}</p>
           <button
             onClick={() => location.reload()}

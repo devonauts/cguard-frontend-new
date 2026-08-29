@@ -250,7 +250,7 @@ export default function TimeOff() {
       <Breadcrumb
         items={[
           { label: "Panel de control", path: "/dashboard" },
-          { label: "Solicitudes de tiempo libre" },
+          { label: t('ui.TimeOff.solicitudesDeTiempoLibre', 'Solicitudes de tiempo libre') },
         ]}
       />
       <PageContainer width="wide" className="px-4 lg:px-6">
@@ -428,7 +428,7 @@ export default function TimeOff() {
         </Toolbar>
 
         {/* Tabla */}
-        <Section title="Solicitudes de tiempo libre" icon={<CalendarOff />} contentClassName="overflow-x-auto -mx-1">
+        <Section title={t('ui.TimeOff.solicitudesDeTiempoLibre', 'Solicitudes de tiempo libre')} icon={<CalendarOff />} contentClassName="overflow-x-auto -mx-1">
           <Table>
             <TableHeader style={{ background: "var(--glass-sunken)" }}>
               <TableRow>

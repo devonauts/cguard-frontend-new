@@ -526,7 +526,7 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
               {futureUncovered} turno{futureUncovered > 1 ? 's' : ''} por cubrir (próximos 14 días)
             </p>
             <p className="mt-0.5 text-xs" style={{ color: 'var(--ink-soft)' }}>
-              Completa los fijos del puesto y asigna un <strong>sacafranco</strong> (relevo) para cubrir sus días de descanso — 2 fijos no alcanzan a cubrir 24/7.
+              {t('ui.StationShifts.completaLosFijosDelPuesto', 'Completa los fijos del puesto y asigna un')} <strong>sacafranco</strong> (relevo) para cubrir sus días de descanso — 2 fijos no alcanzan a cubrir 24/7.
             </p>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
@@ -749,7 +749,7 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
                                     color: 'var(--bad-text)',
                                   }}
                                 >
-                                  <Trash2 size={10} /> Quitar del puesto
+                                  <Trash2 size={10} /> {t('guards.assignSites.actions.removeFromPost', 'Quitar del puesto')}
                                 </div>
                               </div>
                             )}
@@ -816,6 +816,7 @@ function WeekView({ days, eventsByDate, coverageByDate, guardColorMap, selectedD
   station: StationDetail;
   jornadas: Jornada[];
 }) {
+  const { t } = useTranslation();
   void station; void jornadas;
   const toDateKey = dateKey;
   const isToday = (d: Date) => toDateKey(d) === toDateKey(new Date());
@@ -912,7 +913,7 @@ function WeekView({ days, eventsByDate, coverageByDate, guardColorMap, selectedD
                     className="flex flex-1 items-center justify-center text-[10px]"
                     style={{ color: 'var(--ink-faint)' }}
                   >
-                    Sin turnos
+                    {t('ui.Scheduling.sinTurnos', 'Sin turnos')}
                   </button>
                 ) : slots.map((slot, si) => {
                   const isNight = String(slot.jornada.tipo || '').toLowerCase().includes('noct');

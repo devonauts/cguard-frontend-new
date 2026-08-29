@@ -155,12 +155,12 @@ export default function NominaSettings() {
               <Toggle label={t('ui.NominaSettings.requerirNotasEnExcepciones')} path="general.requireNotesOnException" />
             </SettingsSection>
 
-            <SettingsSection title="Ventanas de tiempo (minutos)" icon={<Timer />}>
+            <SettingsSection title={t('ui.NominaSettings.ventanasDeTiempoMinutos', 'Ventanas de tiempo (minutos)')} icon={<Timer />}>
               <Num label="Entrada anticipada permitida" path="windows.earlyClockInMin" />
-              <Num label="Tolerancia de retraso (gracia)" path="windows.lateGraceMin" />
-              <Num label="Umbral de salida anticipada" path="windows.earlyClockoutThresholdMin" />
+              <Num label={t('ui.NominaSettings.toleranciaDeRetrasoGracia', 'Tolerancia de retraso (gracia)')} path="windows.lateGraceMin" />
+              <Num label={t('ui.NominaSettings.umbralDeSalidaAnticipada', 'Umbral de salida anticipada')} path="windows.earlyClockoutThresholdMin" />
               <Num label={t('ui.NominaSettings.umbralSinMarcarSalida')} path="windows.missedClockoutThresholdMin" />
-              <Num label="Umbral inasistencia (no-show)" path="windows.noShowThresholdMin" />
+              <Num label={t('ui.NominaSettings.umbralInasistenciaNoShow', 'Umbral inasistencia (no-show)')} path="windows.noShowThresholdMin" />
             </SettingsSection>
 
             <SettingsSection title="Geocerca" icon={<MapPinned />}>

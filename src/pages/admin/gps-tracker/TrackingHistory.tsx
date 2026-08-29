@@ -163,13 +163,13 @@ export default function TrackingHistoryPage() {
         <Breadcrumb
           items={[
             { label: "Panel de control", path: "/dashboard" },
-            { label: "Historial de seguimiento" },
+            { label: t('sidebar.rastreador.historial', 'Historial de seguimiento') },
           ]}
         />
 
         <PageHeader
           icon={<History />}
-          title="Historial de seguimiento"
+          title={t('sidebar.rastreador.historial', 'Historial de seguimiento')}
           subtitle={t('ui.TrackingHistory.reproduceElRecorridoGpsReal')}
           actions={
             <Button variant="outline" onClick={exportCsv} disabled={!points.length}>
@@ -222,7 +222,7 @@ export default function TrackingHistoryPage() {
             <Select value={mapType} onValueChange={(v) => setMapType(v as MapType)}>
               <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="roadmap">Hoja de ruta</SelectItem>
+                <SelectItem value="roadmap">{t('ui.TrackingHistory.hojaDeRuta', 'Hoja de ruta')}</SelectItem>
                 <SelectItem value="satellite">{t("ui.TrackingHistory.satelite", "Satélite")}</SelectItem>
                 <SelectItem value="hybrid">{t("ui.TrackingHistory.hibrido", "Híbrido")}</SelectItem>
                 <SelectItem value="terrain">Terreno</SelectItem>

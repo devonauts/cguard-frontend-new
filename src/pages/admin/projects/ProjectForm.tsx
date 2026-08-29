@@ -251,7 +251,7 @@ export default function ProjectForm({
                 <FormItem>
                   <FormLabel>{t("ui.ProjectForm.lugarUbicacion", "Lugar / ubicación")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Centro de convenciones, Quito" {...field} value={field.value ?? ''} />
+                    <Input placeholder={t("ui.ProjectForm.centroDeConvencionesQuito", "Centro de convenciones, Quito")} {...field} value={field.value ?? ''} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

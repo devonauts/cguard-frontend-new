@@ -263,11 +263,11 @@ export default function NewVehiclePage() {
               }}
             />
             <p className="text-center text-xs" style={{ color: 'var(--ink-faint)' }}>
-              Toca la imagen para elegir una fotografía del vehículo.
+              {t('ui.NewVehiclePage.tocaLaImagenParaElegir', 'Toca la imagen para elegir una fotografía del vehículo.')}
             </p>
             {preview && (
               <Button type="button" variant="ghost" size="sm" onClick={quitarFoto}>
-                <Trash2 className="mr-1 h-3.5 w-3.5" /> Quitar fotografía
+                <Trash2 className="mr-1 h-3.5 w-3.5" /> {t('ui.NewVehiclePage.quitarFotografia', 'Quitar fotografía')}
               </Button>
             )}
            </Section>

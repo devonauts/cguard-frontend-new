@@ -1,5 +1,9 @@
 import { Component, type ReactNode } from "react";
 import { AlertTriangle, RotateCcw, ArrowLeft } from "lucide-react";
+// Es un componente de CLASE: los hooks no valen aquí, así que el traductor
+// entra por la instancia de i18next, siempre dentro de render (nunca en el
+// cuerpo del módulo, donde se congelaría en el idioma de arranque).
+import i18n from "@/i18n";
 
 /**
  * Red de seguridad de toda la aplicación.
@@ -69,7 +73,7 @@ export class AppErrorBoundary extends Component<Props, State> {
             <AlertTriangle className="size-6 text-red-500" />
           </div>
           <h2 className="mt-4 text-lg font-semibold text-foreground">
-            Esta sección no se pudo mostrar
+            {i18n.t("ui.AppErrorBoundary.estaSeccionNoSePudoMostrar", "Esta sección no se pudo mostrar")}
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
             El resto de la plataforma sigue funcionando. Puedes reintentar o volver a la

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Bell, BellOff, Trash2, Wifi, WifiOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -35,6 +36,7 @@ export function NotificationsPanel({
   onMarkRead,
   onMarkAllRead,
 }: NotificationsPanelProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   // The bell is an UNREAD inbox: reading or clearing removes items from here
@@ -128,7 +130,7 @@ export function NotificationsPanel({
           {visible.length === 0 ? (
             <div className="flex h-32 flex-col items-center justify-center gap-2 text-sm" style={{ color: 'var(--ink-faint)' }}>
               <Bell className="h-8 w-8 opacity-40" />
-              <span>Sin notificaciones</span>
+              <span>{t('ui.NotificationsPanel.sinNotificaciones', 'Sin notificaciones')}</span>
             </div>
           ) : (
             <div className="divide-y" style={{ borderColor: 'var(--hairline)' }}>
@@ -156,6 +158,7 @@ function NotificationItem({
 }) {
   // Migrated to token URLs: NotificationItem is a component, so a hook is safe.
   // payload carries only a raw privateUrl string, so useFileUrl fetches a token.
+  const { t } = useTranslation();
   const photoUrl = useFileUrl(n.payload?.photoUrl);
   return (
     // Fila de lista: SIN desenfoque. Se dibuja una por notificación y el panel
@@ -199,7 +202,7 @@ function NotificationItem({
               className="cg-focus mb-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
               style={{ background: "color-mix(in oklab, var(--brand) 15%, transparent)", color: "var(--brand-text)" }}
             >
-              Resolver con VigIA
+              {t('ui.NotificationsPanel.resolverConVigia', 'Resolver con VigIA')}
             </button>
           )}
           {n.body && (

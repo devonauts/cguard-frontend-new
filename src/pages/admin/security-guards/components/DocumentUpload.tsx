@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Upload, X, FileText, Image as ImageIcon, File } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -42,6 +43,7 @@ export default function DocumentUpload({
   accept = DEFAULT_ACCEPT,
   required = false,
 }: DocumentUploadProps) {
+  const { t } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -154,7 +156,7 @@ export default function DocumentUpload({
           <Upload className="h-5 w-5" style={{ color: 'var(--brand-text)' }} />
           <div>
             <p className="text-sm font-medium">
-              Arrastra o haz clic para adjuntar
+              {t("ui.DocumentUpload.arrastraOHazClicParaAdjuntar", "Arrastra o haz clic para adjuntar")}
             </p>
             <p className="mt-0.5 text-xs" style={{ color: 'var(--ink-faint)' }}>
               PDF, PNG, JPG, WebP — máx. {MAX_MB} MB

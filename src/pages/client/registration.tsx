@@ -241,7 +241,7 @@ export default function ClientRegistration() {
             <IconTile tone="ok" size="lg"><CheckCircle2 /></IconTile>
           </div>
           <p className="text-sm leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
-            Tu cuenta con <strong style={{ color: 'var(--ink)' }}>{empresa || 'tu proveedor de seguridad'}</strong> está lista.
+            {t('client.done.accountWith', 'Tu cuenta con')} <strong style={{ color: 'var(--ink)' }}>{empresa || 'tu proveedor de seguridad'}</strong> está lista.
             Descarga <strong style={{ color: 'var(--ink)' }}>Mi Seguridad</strong> para monitorear y gestionar tu servicio de seguridad desde tu teléfono.
           </p>
 

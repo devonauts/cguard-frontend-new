@@ -1,0 +1,57 @@
+{
+ "src/pages/admin/alarm/AlarmPanels.tsx": [
+  "Cola de casos",
+  "Cámara vinculada (verificación por video)",
+  "Código de verificación",
+  "Identificador de agencia ASAP",
+  "Intervalo de prueba (h)",
+  "Número de zona",
+  "Orden de llamada",
+  "Paneles de alarma",
+  "Partición",
+  "Teléfono"
+ ],
+ "src/pages/admin/video/VideoDevices.tsx": [
+  "Configura los datos de conexión del DVR/NVR o cámara.",
+  "Dispositivos de video",
+  "Punto de servicio (opcional)"
+ ],
+ "src/pages/admin/clientes/components/ClientCoverage/ScheduleCard.tsx": [
+  "Sin asignar",
+  "Sin horario",
+  "Toca un vigilante para cambiarlo."
+ ],
+ "src/pages/admin/supervisors/SupervisorPositionsPage.tsx": [
+  "Entrada (día)",
+  "Salida (día)"
+ ],
+ "src/pages/admin/vehicles/NewVehiclePage.tsx": [
+  "Quitar fotografía",
+  "Toca la imagen para elegir una fotografía del vehículo."
+ ],
+ "src/pages/admin/Reports/VehiclePatrol.tsx": [
+  "Informe de Patrulla Vehicular",
+  "Recorridos de patrullaje vehicular: rutas, paradas y tiempos."
+ ],
+ "src/components/post-sites/PostSiteImportDialog.tsx": [
+  "Estructura de columnas requerida"
+ ],
+ "src/pages/admin/Configuration/types-incidents/IncidentTypeDialog.tsx": [
+  "Nuevo Tipo de Incidente"
+ ],
+ "src/pages/admin/security/AuditLogs.tsx": [
+  "Registro de seguridad"
+ ],
+ "src/pages/admin/post-sites/station-detail/components/StationRondaHistory.tsx": [
+  "No escaneado"
+ ],
+ "src/pages/admin/security-guards/components/GuardReviews/GuardReviewsPage.tsx": [
+  "Observación"
+ ],
+ "src/pages/admin/clientes/components/ClientStaff/ClientStaff.tsx": [
+  "Quitar de la estación"
+ ],
+ "src/pages/admin/Reports/GuardKpi.tsx": [
+  "Informe de KPI del Vigilante"
+ ]
+}

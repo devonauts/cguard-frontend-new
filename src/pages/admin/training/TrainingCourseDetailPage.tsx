@@ -130,7 +130,7 @@ export default function TrainingCourseDetailPage() {
         <PageContainer className="p-4">
           <EmptyState
             icon={<GraduationCap />}
-            title="Curso no encontrado"
+            title={t('ui.TrainingCourseDetailPage.cursoNoEncontrado', 'Curso no encontrado')}
             description={t('ui.TrainingCourseDetailPage.elCursoQueBuscasNo')}
           />
         </PageContainer>
@@ -191,7 +191,7 @@ export default function TrainingCourseDetailPage() {
                   <Textarea disabled={readOnly} rows={3} value={meta.description} onChange={(e) => setMeta({ ...meta, description: e.target.value })} />
                 </div>
                 <div className="space-y-2">
-                  <Label>URL de portada</Label>
+                  <Label>{t('ui.TrainingCourseDetailPage.urlDePortada', 'URL de portada')}</Label>
                   <Input disabled={readOnly} value={meta.coverUrl} onChange={(e) => setMeta({ ...meta, coverUrl: e.target.value })} placeholder="https://..." />
                 </div>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -225,7 +225,7 @@ export default function TrainingCourseDetailPage() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label>Plantilla de certificado (HTML opcional)</Label>
+                  <Label>{t('ui.TrainingCourseDetailPage.plantillaDeCertificadoHtmlOpcional', 'Plantilla de certificado (HTML opcional)')}</Label>
                   <Textarea
                     disabled={readOnly}
                     rows={4}

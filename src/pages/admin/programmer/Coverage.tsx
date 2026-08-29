@@ -694,7 +694,7 @@ export default function Coverage() {
                   : "Cubre el destino solo en este turno."}
               </p>
               <p className="mt-1" style={{ color: "var(--ink-soft)" }}>
-                Después vuelve automáticamente a <strong>{transferFor?.stationName || "su puesto"}</strong>.
+                {t('ui.Coverage.despuesVuelveAutomaticamenteA', 'Después vuelve automáticamente a')} <strong>{transferFor?.stationName || "su puesto"}</strong>.
                 No hace falta revertirlo: solo se trasladan los turnos del rango.
               </p>
             </div>

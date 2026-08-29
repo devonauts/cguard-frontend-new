@@ -1,0 +1,23 @@
+{
+  "ui.StationOverview.aunNoHayMarcacionesEnEstePuesto": "Aún no hay marcaciones en este puesto.",
+  "ui.StationOverview.sinUbicacionConfigurada": "Sin ubicación configurada",
+  "ui.StationOverview.definirUbicacion": "Definir ubicación",
+  "ui.OnboardingWizard.configuraTuEmpresa": "Configura tu empresa",
+  "ui.OnboardingWizard.detectarPorDireccion": "Detectar por dirección",
+  "ui.OnboardingWizard.completarMasTarde": "Completar más tarde",
+  "ui.NoWorkspaceAccess.sinAccesoAUnEspacioDeTrabajo": "Sin acceso a un espacio de trabajo",
+  "ui.NoWorkspaceAccess.sesionIniciadaComo": "Sesión iniciada como",
+  "guards.new.form.birthPlace": "Lugar de Nacimiento",
+  "ui.NewSecurityGuardPage.documentoDeCredencialProfesional": "Documento de credencial profesional",
+  "ui.NewSecurityGuardPage.certificadoDeNoAntecedentesDeViolenciaFamiliar": "Certificado de no antecedentes de violencia familiar",
+  "ui.NominaExceptions.cerrarElAtraso": "Cerrar el atraso",
+  "ui.ShiftExchange.intercambioDeTurnos": "Intercambio de turnos",
+  "ui.ShiftExchange.solicitudesDeIntercambio": "Solicitudes de intercambio",
+  "ui.PostKpi.informeDeKpiDelPuesto": "Informe de KPI del Puesto",
+  "ui.PostKpi.indicadoresDeDesempenoPorPuesto": "Indicadores de desempeño por puesto: cobertura, rondas e incidentes.",
+  "ui.Incident.informeDeIncidente": "Informe de Incidente",
+  "ui.ProjectBadge.sinTipo": "Sin tipo",
+  "ui.RadioDevices.activoSeIntentaraMantenerConectado": "Activo (se intentará mantener conectado)",
+  "ui.GuardRatingLevel.sinResenas": "Sin reseñas",
+  "ui.ClientDocuments.bibliotecaDeDocumentos": "Biblioteca de documentos"
+}

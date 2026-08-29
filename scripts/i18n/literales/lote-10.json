@@ -1,0 +1,58 @@
+{
+ "src/pages/admin/clientes/components/ClientContract/ClientContract.tsx": [
+  "Acuerdo de nivel de servicio (SLA)",
+  "Cumplimiento de rondas",
+  "Forma de pago",
+  "Historial de renovaciones",
+  "Tiempo de respuesta"
+ ],
+ "src/pages/admin/video/VideoSharedClip.tsx": [
+  "Enlace no disponible",
+  "Este enlace es privado y puede caducar. No lo compartas.",
+  "Procesando el video",
+  "Video compartido de forma segura"
+ ],
+ "src/components/notifications/PanicAlertOverlay.tsx": [
+  "Acción tomada",
+  "Registra la acción tomada para poder silenciar la alarma.",
+  "Sin coordenadas"
+ ],
+ "src/pages/admin/alarm/AlarmReports.tsx": [
+  "Reportes de falsas alarmas",
+  "Sin casos cerrados con disposición en el período.",
+  "Sin datos"
+ ],
+ "src/pages/admin/post-sites/components/PostsiteInventory/Inventory.tsx": [
+  "Asignar artículo",
+  "Asignar primer artículo"
+ ],
+ "src/pages/admin/vehicles/VehiclesPage.tsx": [
+  "Información completa del vehículo.",
+  "Nuevo vehículo"
+ ],
+ "src/pages/admin/Reports/Reports.tsx": [
+  "Centro de Reportes",
+  "Limpiar búsqueda"
+ ],
+ "src/components/post-sites/PostSiteDetailsDialog.tsx": [
+  "Información detallada del Puesto de seguridad seleccionada."
+ ],
+ "src/pages/admin/Configuration/company-policies/CompanyPoliciesTable.tsx": [
+  "Nueva política"
+ ],
+ "src/pages/admin/gps-tracker/TrailMap.tsx": [
+  "Sin recorrido para este rango"
+ ],
+ "src/pages/admin/post-sites/station-detail/components/StationHero.tsx": [
+  "Nadie de turno en este momento"
+ ],
+ "src/pages/admin/security-guards/components/DocumentUpload.tsx": [
+  "Arrastra o haz clic para adjuntar"
+ ],
+ "src/pages/admin/clientes/components/ClientReports/ClientReports.tsx": [
+  "Cumplimiento de estaciones"
+ ],
+ "src/pages/admin/Reports/TourCheckPoint.tsx": [
+  "Registros de Puntos de Control"
+ ]
+}

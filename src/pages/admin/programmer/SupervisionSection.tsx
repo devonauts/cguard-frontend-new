@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronRight, ShieldCheck, AlertTriangle, Settings2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ApiService } from '@/services/api/apiService';
@@ -63,6 +64,7 @@ export default function SupervisionSection({
   /** Tinte de columna (hoy / domingo) que ya calcula la hoja. */
   tintFor?: (day: Date, index: number) => string | undefined;
 }) {
+  const { t } = useTranslation();
   const visibleDays = monthDays.slice(colA, colB);
   const [abierta, setAbierta] = useState(true);
   const [datos, setDatos] = useState<Rejilla | null>(null);
@@ -122,12 +124,12 @@ export default function SupervisionSection({
             {abierta ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
           </button>
           <ShieldCheck size={14} style={{ color: 'var(--brand-text)' }} />
-          <span className="truncate text-xs font-semibold uppercase tracking-wide">Supervisión</span>
+          <span className="truncate text-xs font-semibold uppercase tracking-wide">{t('ui.SupervisionSection.supervision', 'Supervisión')}</span>
           {(faltan > 0 || sinPuesto.length > 0) && (
             <span
               className="ml-auto inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold"
               style={{ background: 'color-mix(in oklab, var(--warn) 16%, transparent)', color: 'var(--warn-text)' }}
-              title="Puestos de supervisión sin cubrir"
+              title={t('ui.SupervisionSection.puestosDeSupervisionSinCubrir', 'Puestos de supervisión sin cubrir')}
             >
               <AlertTriangle size={11} />
               {faltan > 0 ? `faltan ${faltan}` : `${sinPuesto.length} sin puesto`}
@@ -136,7 +138,7 @@ export default function SupervisionSection({
           <Link
             to="/supervisor-positions"
             className="cg-btn-ghost cg-focus rounded p-1"
-            title="Configurar puestos de supervisión"
+            title={t('ui.SupervisionSection.configurarPuestosDeSupervision', 'Configurar puestos de supervisión')}
           >
             <Settings2 size={14} />
           </Link>
@@ -250,7 +252,7 @@ export default function SupervisionSection({
           {!p.supervisors.length && (
             <div className="grid" style={{ gridTemplateColumns: gridCols, borderTop: '1px solid var(--hairline)' }}>
               <div className="sticky left-0 z-20 px-4 py-1.5 pl-10 text-[11px]" style={{ background: 'var(--card)', color: 'var(--warn-text)' }}>
-                Sin supervisores asignados
+                {t('ui.SupervisionSection.sinSupervisoresAsignados', 'Sin supervisores asignados')}
               </div>
               <div style={{ gridColumn: '2 / -1', ...columnRules() }} />
             </div>

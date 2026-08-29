@@ -675,7 +675,7 @@ export default function Visits() {
                         </DropdownMenu>
                 </Toolbar>
 
-                <Section title="Registro de visitas" icon={<ClipboardList />}>
+                <Section title={t('ui.Visits.registroDeVisitas', 'Registro de visitas')} icon={<ClipboardList />}>
                 <div className="overflow-hidden rounded-xl border">
                     <div className="overflow-x-auto">
                     <table className="w-full min-w-[960px] border-collapse text-left text-sm">

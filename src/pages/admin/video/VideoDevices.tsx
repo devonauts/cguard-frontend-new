@@ -334,7 +334,7 @@ export default function VideoDevices() {
         {/* Header */}
         <PageHeader
           icon={<Video />}
-          title="Dispositivos de video"
+          title={t("ui.VideoDevices.dispositivosDeVideo", "Dispositivos de video")}
           subtitle={t('ui.VideoDevices.conectaYAdministraTusDvr')}
           actions={
             <>
@@ -477,7 +477,7 @@ export default function VideoDevices() {
               {editing ? "Editar dispositivo" : "Agregar dispositivo"}
             </DialogTitle>
             <DialogDescription>
-              Configura los datos de conexión del DVR/NVR o cámara.
+              {t("ui.VideoDevices.configuraLosDatosDeConexion", "Configura los datos de conexión del DVR/NVR o cámara.")}
             </DialogDescription>
           </DialogHeader>
 
@@ -650,7 +650,7 @@ export default function VideoDevices() {
               <div className="hidden sm:block" />
 
               <div>
-                <Label htmlFor="vd-postSite">Punto de servicio (opcional)</Label>
+                <Label htmlFor="vd-postSite">{t("ui.VideoDevices.puntoDeServicioOpcional", "Punto de servicio (opcional)")}</Label>
                 <Input
                   id="vd-postSite"
                   value={form.postSiteId}

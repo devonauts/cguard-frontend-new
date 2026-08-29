@@ -9,6 +9,7 @@
  */
 import { AlertTriangle, LogIn, Route, Siren, Activity as ActivityIcon, Radio } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { EmptyState, IconTile } from "@/components/kit";
 import type { ActivityItem } from "../types";
 import { activityRoute } from "../navigation";
@@ -26,12 +27,13 @@ const KIND_LABEL: Record<ActivityItem["kind"], string> = {
 
 export function ActivityStream({ items, live, className }: { items: ActivityItem[]; live?: boolean; className?: string }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <Panel
       className={className}
       icon={<ActivityIcon />}
-      title="Parte de novedades"
+      title={t('ui.ActivityStream.parteDeNovedades', 'Parte de novedades')}
       subtitle={items.length ? `${items.length} eventos recientes` : "Sin eventos todavía"}
       live={live}
       action={<PanelLink to="/activities" />}
@@ -41,7 +43,7 @@ export function ActivityStream({ items, live, className }: { items: ActivityItem
         <EmptyState
           className="m-3 border-0"
           icon={<ActivityIcon />}
-          title="Sin novedades"
+          title={t('ui.Coverage.sinNovedades', 'Sin novedades')}
           description="Fichajes, rondas, incidentes y alertas aparecerán aquí conforme ocurran."
         />
       ) : (

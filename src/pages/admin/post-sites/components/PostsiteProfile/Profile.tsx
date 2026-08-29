@@ -319,7 +319,7 @@ export default function PostSiteProfile({ site }: { site?: any }) {
                         return (
                             <div className="glass-sunken mb-5 space-y-3 p-4">
                                 <h4 className="cg-eyebrow">{t('ui.Profile.condicionesDelServicio')}</h4>
-                                {cfg.riskLevel && <InfoRow label="Nivel de riesgo" value={String(cfg.riskLevel)} />}
+                                {cfg.riskLevel && <InfoRow label={t('clients.form.riskLevel', 'Nivel de riesgo')} value={String(cfg.riskLevel)} />}
                                 {cfg.stationsRequired ? (
                                     <InfoRow label="Puestos requeridos" value={String(cfg.stationsRequired)} />
                                 ) : null}
@@ -465,7 +465,7 @@ export default function PostSiteProfile({ site }: { site?: any }) {
                 <div className="flex items-center justify-between border-b px-6 py-4" style={{ borderColor: 'var(--hairline)' }}>
                     <div className="flex items-center gap-2">
                         <Shield size={16} style={{ color: 'var(--brand-text)' }} />
-                        <h3 className="text-sm font-bold uppercase tracking-wide">Estaciones de servicio</h3>
+                        <h3 className="text-sm font-bold uppercase tracking-wide">{t("ui.Profile.estacionesDeServicio", "Estaciones de servicio")}</h3>
                     </div>
                     {activeStatusLoading && (
                         <span

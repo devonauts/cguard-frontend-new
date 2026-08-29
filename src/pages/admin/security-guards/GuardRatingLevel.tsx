@@ -39,7 +39,7 @@ export default function GuardRatingLevel({
     if (!showEmpty) return null;
     return (
       <StatusBadge tone="neutral" dot={false} className={className}>
-        <Star className="h-3 w-3" /> Sin reseñas
+        <Star className="h-3 w-3" /> {t('ui.GuardRatingLevel.sinResenas', 'Sin reseñas')}
       </StatusBadge>
     );
   }

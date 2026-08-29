@@ -205,7 +205,7 @@ export default function TrainingEnrollmentsPage() {
           <StatCard label="Pendientes" value={Math.max(realEnrollments.length - completedCount, 0)} icon={<Clock />} accent="warn" />
         </Stagger>
 
-        <Section title="Progreso de vigilantes" icon={<Users />} contentClassName="-mx-5 -mb-5">
+        <Section title={t('ui.TrainingEnrollmentsPage.progresoDeVigilantes', 'Progreso de vigilantes')} icon={<Users />} contentClassName="-mx-5 -mb-5">
           <DataTable
             surface="none"
             loading={loading}

@@ -4,6 +4,7 @@
  * cristal, nombre → detalle de la estación, horario, vigilantes requeridos y
  * geocerca. Menú Ver/Eliminar inyectado desde la página.
  */
+import { useTranslation } from 'react-i18next';
 import { EllipsisVertical, Building2, Users, Clock, MapPin, Eye, Trash } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -44,8 +45,9 @@ export default function StationCardsGrid({
     onOpen: (id: string) => void;
     onDelete: (id: string) => void;
 }) {
+    const { t } = useTranslation();
     if (!stations.length) {
-        return <EmptyState icon={<Building2 />} title="Sin estaciones" description="Agrega la primera estación con “Crear estación”." />;
+        return <EmptyState icon={<Building2 />} title={t('stations.empty.title', 'Sin estaciones')} description="Agrega la primera estación con “Crear estación”." />;
     }
 
     return (

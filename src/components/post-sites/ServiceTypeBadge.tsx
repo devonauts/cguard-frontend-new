@@ -21,6 +21,7 @@ interface ServiceTypeBadgeProps {
 }
 
 export function ServiceTypeBadge({ value, className, size = 'sm' }: ServiceTypeBadgeProps) {
+  const { t } = useTranslation();
   const def = getServiceType(value);
   if (!value) {
     return (
@@ -29,7 +30,7 @@ export function ServiceTypeBadge({ value, className, size = 'sm' }: ServiceTypeB
         size === 'sm' ? 'px-2 py-0.5 text-xs' : 'px-3 py-1 text-sm',
         className,
       )}>
-        Sin tipo
+        {t('ui.ServiceTypeBadge.sinTipo', 'Sin tipo')}
       </span>
     );
   }
@@ -152,7 +153,7 @@ export function ServiceTypePicker({ value, onChange, error }: ServiceTypePickerP
               Otro...
             </span>
             <span className="mt-0.5 block text-xs text-muted-foreground leading-relaxed">
-              Especifique un tipo de servicio personalizado.
+              {t('ui.ServiceTypeBadge.especifiqueUnTipoDeServicioPersonalizado', 'Especifique un tipo de servicio personalizado.')}
             </span>
           </span>
         </button>

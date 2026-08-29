@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Smartphone, LogOut } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,7 @@ import { FadeIn, IconTile } from '@/components/kit';
  */
 export default function AppAccessPending() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   let signOut: undefined | (() => Promise<void> | void);
   try { signOut = useAuth()?.signOut as any; } catch { signOut = undefined; }
 
@@ -42,7 +44,7 @@ export default function AppAccessPending() {
           )}
 
           <h1 className="font-display text-xl font-bold tracking-tight">
-            Tu acceso es desde la aplicación
+            {t('auth.appAccessPending.title', 'Tu acceso es desde la aplicación')}
           </h1>
           <p className="mt-3 text-sm leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
             Este panel es solo para el personal administrativo. Tu trabajo se

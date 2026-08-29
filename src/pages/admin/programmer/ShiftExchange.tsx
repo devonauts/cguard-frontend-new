@@ -242,13 +242,13 @@ export default function ShiftExchange() {
       <Breadcrumb
         items={[
           { label: "Panel de control", path: "/dashboard" },
-          { label: "Intercambio de turnos" },
+          { label: t('ui.ShiftExchange.intercambioDeTurnos', 'Intercambio de turnos') },
         ]}
       />
       <PageContainer width="wide" className="px-4 lg:px-6">
         <PageHeader
           icon={<ArrowLeftRight />}
-          title="Intercambio de turnos"
+          title={t('ui.ShiftExchange.intercambioDeTurnos', 'Intercambio de turnos')}
           subtitle="Solicitudes de intercambio de turnos entre vigilantes."
         />
 
@@ -377,7 +377,7 @@ export default function ShiftExchange() {
         </Toolbar>
 
         {/* Tabla */}
-        <Section title="Solicitudes de intercambio" icon={<ArrowLeftRight />} contentClassName="overflow-x-auto -mx-1">
+        <Section title={t('ui.ShiftExchange.solicitudesDeIntercambio', 'Solicitudes de intercambio')} icon={<ArrowLeftRight />} contentClassName="overflow-x-auto -mx-1">
           <Table>
             <TableHeader style={{ background: "var(--glass-sunken)" }}>
               <TableRow>

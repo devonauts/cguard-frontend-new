@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import {
   getProjectType,
@@ -14,6 +15,7 @@ interface ProjectTypeBadgeProps {
 }
 
 export function ProjectTypeBadge({ value, className, size = 'sm' }: ProjectTypeBadgeProps) {
+  const { t } = useTranslation();
   const def = getProjectType(value);
   if (!def) {
     return (
@@ -22,7 +24,7 @@ export function ProjectTypeBadge({ value, className, size = 'sm' }: ProjectTypeB
         size === 'sm' ? 'px-2 py-0.5 text-xs' : 'px-3 py-1 text-sm',
         className,
       )}>
-        Sin tipo
+        {t('ui.ProjectBadge.sinTipo', 'Sin tipo')}
       </span>
     );
   }

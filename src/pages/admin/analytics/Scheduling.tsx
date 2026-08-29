@@ -49,7 +49,7 @@ export default function Scheduling() {
       {data && k && (
         <>
           <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <MetricCard icon={<ClipboardCheck size={16} />} accent={TONES.info} value={`${k.coveragePct}%`} label="Cobertura de turnos" sub={`${k.shiftsCovered}/${k.shiftsTotal}`} pct={k.coveragePct} />
+            <MetricCard icon={<ClipboardCheck size={16} />} accent={TONES.info} value={`${k.coveragePct}%`} label={t('ui.Scheduling.coberturaDeTurnos', 'Cobertura de turnos')} sub={`${k.shiftsCovered}/${k.shiftsTotal}`} pct={k.coveragePct} />
             <MetricCard icon={<CheckCircle2 size={16} />} accent={TONES.ok} value={k.shiftsCovered} label="Turnos cubiertos" sub={t("ui.Scheduling.enElPeriodo", "en el período")} />
             <MetricCard icon={<AlertCircle size={16} />} accent={TONES.bad} value={k.shiftsOpen ?? (k.shiftsTotal - k.shiftsCovered)} label={t('ui.Scheduling.turnosSinCubrir')} sub={t("ui.Scheduling.enElPeriodo2", "en el período")} />
             <MetricCard icon={<CalendarClock size={16} />} accent={GOLD} value={data.upcomingUncoveredTotal} label={t("ui.Scheduling.proximosSinCubrir", "Próximos sin cubrir")} sub={t("ui.Scheduling.proximos7Dias", "próximos 7 días")} />

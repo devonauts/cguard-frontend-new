@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ClipboardList, Check, ShieldCheck, Phone, Video, UserCog, Siren, Bell, StickyNote, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
@@ -19,6 +20,7 @@ type Progress = Record<string, { done: boolean; note?: string | null; at?: strin
 /** Guided action-plan checklist for an alarm case. Self-contained: fetches the
  *  applicable plan + per-step progress and toggles steps via the API. */
 export default function AlarmActionPlan({ caseId }: { caseId: string }) {
+  const { t } = useTranslation();
   const [steps, setSteps] = useState<ActionPlanStep[]>([]);
   const [planName, setPlanName] = useState<string | null>(null);
   const [progress, setProgress] = useState<Progress>({});
@@ -53,7 +55,7 @@ export default function AlarmActionPlan({ caseId }: { caseId: string }) {
     return (
       <Card className="p-4">
         <div className="mb-1 flex items-center gap-2 text-sm font-semibold text-foreground">
-          <ClipboardList className="size-4 text-primary" /> Plan de acción
+          <ClipboardList className="size-4 text-primary" /> {t("ui.AlarmActionPlan.planDeAccion", "Plan de acción")}
         </div>
         <p className="text-xs text-muted-foreground">
           Sin plan de acción configurado para este caso. Crea uno en Paneles para guiar la respuesta del operador.
@@ -69,7 +71,7 @@ export default function AlarmActionPlan({ caseId }: { caseId: string }) {
     <Card className="p-4">
       <div className="mb-2 flex items-center justify-between">
         <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-          <ClipboardList className="size-4 text-primary" /> Plan de acción
+          <ClipboardList className="size-4 text-primary" /> {t("ui.AlarmActionPlan.planDeAccion", "Plan de acción")}
           {planName && <span className="text-xs font-normal text-muted-foreground">· {planName}</span>}
         </div>
         <span className="text-xs font-semibold text-muted-foreground">{doneCount}/{steps.length}</span>

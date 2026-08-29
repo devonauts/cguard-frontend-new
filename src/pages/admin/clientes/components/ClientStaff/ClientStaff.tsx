@@ -152,7 +152,7 @@ export default function ClientStaff({ client }: { client: Client }) {
   const removeFromStation = async (p: PersonnelRow) => {
     if (!p.assignmentId) { toast.error(t('ui.ClientStaff.esteTrabajadorNoTieneUna')); return; }
     const ok = await confirmDialog({
-      title: 'Quitar de la estación',
+      title: t('ui.ClientStaff.quitarDeLaEstacion', 'Quitar de la estación'),
       message: `¿Quitar a ${p.name} de "${p.puesto || 'su estación'}"? Volverá al grupo de vigilantes sin asignación y se eliminarán sus turnos futuros generados.`,
       confirmText: 'Quitar',
       tone: 'danger',
@@ -279,7 +279,7 @@ export default function ClientStaff({ client }: { client: Client }) {
                                       style={{ color: 'var(--bad-text)' }}
                                       onClick={() => void removeFromStation(p)}
                                     >
-                                      <UserMinus className="mr-2 h-3.5 w-3.5" /> Quitar de la estación
+                                      <UserMinus className="mr-2 h-3.5 w-3.5" /> {t('ui.ClientStaff.quitarDeLaEstacion', 'Quitar de la estación')}
                                     </DropdownMenuItem>
                                   </>
                                 )}

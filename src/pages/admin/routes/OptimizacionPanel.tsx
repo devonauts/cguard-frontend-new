@@ -1,5 +1,6 @@
 import { StatusBadge, MetricTile, DeltaPill, InfoNote, Cifra } from '@/components/kit';
 import { Sparkles, Route as RouteIcon, Timer, Info } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { fechaOptimizacion, fraseAhorro, km, minutos, type AhorroRuta } from './routeOptimizacion';
 
 /**
@@ -30,7 +31,8 @@ export function InsigniaOptimizada({
   /** Sin la fecha — para las filas de una lista, donde no cabe. */
   compacta?: boolean;
 }) {
-  if (!optimizada) return <StatusBadge tone="neutral">Sin optimizar</StatusBadge>;
+  const { t } = useTranslation();
+  if (!optimizada) return <StatusBadge tone="neutral">{t('routes.optimizacion.sinOptimizar', 'Sin optimizar')}</StatusBadge>;
   const fecha = compacta ? null : fechaOptimizacion(optimizadaEn);
   return <StatusBadge tone="ok">{fecha ? `Optimizada · ${fecha}` : 'Optimizada'}</StatusBadge>;
 }
@@ -52,13 +54,14 @@ export function PanelAhorro({
   optimizadaEn?: string | null;
   className?: string;
 }) {
+  const { t } = useTranslation();
   const frase = fraseAhorro(ahorro);
 
   if (!ahorro) return null;
 
   if (!frase) {
     return (
-      <InfoNote tone="neutral" icon={<Info />} title="Ya estaba en el mejor orden posible" className={className}>
+      <InfoNote tone="neutral" icon={<Info />} title={t('routes.optimizacion.yaEnMejorOrden', 'Ya estaba en el mejor orden posible')} className={className}>
         Se recalculó el recorrido y no hizo falta mover ninguna parada. El orden que había ya era el más corto.
       </InfoNote>
     );
@@ -76,7 +79,7 @@ export function PanelAhorro({
         }}
       >
         <div className="cg-eyebrow flex items-center gap-1.5" style={{ color: 'var(--ok-text)' }}>
-          <Sparkles className="size-3.5" /> Ahorro de esta optimización
+          <Sparkles className="size-3.5" /> {t('routes.optimizacion.ahorroDeEstaOptimizacion', 'Ahorro de esta optimización')}
         </div>
         <div
           className="font-display text-2xl font-bold leading-tight tracking-tight tabular-nums sm:text-3xl"
@@ -115,7 +118,7 @@ export function PanelAhorro({
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           {ahorro.kmDespues != null && (
             <MetricTile
-              label="Distancia del recorrido"
+              label={t('routes.optimizacion.distanciaDelRecorrido', 'Distancia del recorrido')}
               icon={<RouteIcon />}
               value={<Cifra valor={ahorro.kmDespues} decimales={ahorro.kmDespues < 10 ? 1 : 0} />}
               delta={ahorro.km != null && ahorro.km >= 0.05 ? { value: `-${km(ahorro.km)}`, direction: 'down' } : undefined}

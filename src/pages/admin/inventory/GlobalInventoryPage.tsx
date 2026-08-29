@@ -289,7 +289,7 @@ export default function GlobalInventoryPage() {
           )}
           actions={(
             <Button variant="brand" onClick={openCreate} className="shrink-0">
-              <Plus className="mr-1 h-4 w-4" /> Nuevo artículo
+              <Plus className="mr-1 h-4 w-4" /> {t('ui.GlobalInventoryPage.nuevoArticulo', 'Nuevo artículo')}
             </Button>
           )}
         />
@@ -380,7 +380,7 @@ export default function GlobalInventoryPage() {
                   </Button>
                 ) : (
                   <Button size="sm" variant="brand" onClick={openCreate}>
-                    <Plus className="mr-1 h-3.5 w-3.5" /> Agregar primer artículo
+                    <Plus className="mr-1 h-3.5 w-3.5" /> {t('ui.GlobalInventoryPage.agregarPrimerArticulo', 'Agregar primer artículo')}
                   </Button>
                 )}
               />
@@ -606,7 +606,7 @@ export default function GlobalInventoryPage() {
       <Modal
         open={showModal}
         onOpenChange={(o) => { if (!o) closeModal(); }}
-        title={editingItem ? 'Editar artículo' : 'Nuevo artículo'}
+        title={editingItem ? 'Editar artículo' : t('ui.GlobalInventoryPage.nuevoArticulo', 'Nuevo artículo')}
         icon={<Package className="h-5 w-5" />}
         size="md"
         footer={(

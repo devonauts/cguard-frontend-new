@@ -970,7 +970,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id, pres
               onClick={() => { setServiceType(undefined); setStep(2); }}
               className="cg-btn-link cg-focus rounded-md text-sm underline underline-offset-4 transition-colors"
             >
-              Continuar sin seleccionar tipo
+              {t('ui.PostSiteWizard.continuarSinSeleccionarTipo', 'Continuar sin seleccionar tipo')}
             </button>
           </div>
         </div>
@@ -1289,7 +1289,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id, pres
           <Section title="Despliegue operativo" icon={<Shield />} contentClassName="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="cg-eyebrow mb-1 block">Nivel de riesgo</label>
+                <label className="cg-eyebrow mb-1 block">{t('clients.form.riskLevel', 'Nivel de riesgo')}</label>
                 <select
                   value={cfgGet('riskLevel')}
                   onChange={(e) => cfgSet('riskLevel', e.target.value)}
@@ -1347,7 +1347,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id, pres
           <div>
             <label className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold">
               <AlertTriangle className="h-4 w-4" style={{ color: 'var(--warn-text)' }} />
-              Instrucciones del puesto (SOP)
+              {t('ui.PostSiteWizard.instruccionesDelPuestoSop', 'Instrucciones del puesto (SOP)')}
             </label>
             <Textarea
               placeholder={t("ui.PostSiteWizard.protocoloDeAccesoManejoDe", "Protocolo de acceso, manejo de visitantes, emergencias, comunicación con supervisores…")}
@@ -1365,7 +1365,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id, pres
       return (
         <div className="space-y-6">
           <div>
-            <h2 className="font-display mb-1 text-xl font-bold">Estaciones de vigilancia</h2>
+            <h2 className="font-display mb-1 text-xl font-bold">{t('ui.PostSiteWizard.estacionesDeVigilancia', 'Estaciones de vigilancia')}</h2>
             <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
               Define los puestos de vigilante. Cada estación tiene su propio horario y número de vigilantes.
             </p>
@@ -1396,7 +1396,7 @@ export default function PostSiteWizard({ clients = [], mode = 'create', id, pres
               style={{ borderColor: 'var(--hairline)', color: 'var(--ink-soft)' }}
             >
               <Plus className="h-4 w-4" />
-              Añadir estación
+              {t('ui.PostSiteWizard.anadirEstacion', 'Añadir estación')}
             </button>
           </div>
 

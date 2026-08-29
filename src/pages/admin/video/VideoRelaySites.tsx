@@ -169,7 +169,7 @@ export default function VideoRelaySites() {
                       <DeviceStatusBadge health={badge.health} label={badge.label} />
                     </div>
                     <p className="mt-0.5 truncate text-xs" style={{ color: 'var(--ink-soft)' }}>
-                      Clave del sitio: <code>{s.siteKey}</code> · {String(s.ingestProtocol || "rtmps").toUpperCase()}
+                      {t('ui.VideoRelaySites.claveDelSitio', 'Clave del sitio:')} <code>{s.siteKey}</code> · {String(s.ingestProtocol || "rtmps").toUpperCase()}
                       {s.publishTokenConfigured ? " · clave de envío lista" : " · sin clave de envío"}
                     </p>
                     <div className="mt-2.5 flex flex-wrap gap-2">

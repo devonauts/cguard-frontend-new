@@ -1,4 +1,5 @@
 import { LogIn } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import DataReport, { type ReportColumn } from "./DataReport";
 import { formatDateTime, rangeBounds, REPORT_ROW_LIMIT, warnIfCapped } from "./reportFormat";
 import attendanceService from "@/lib/api/attendanceService";
@@ -29,9 +30,10 @@ const columns: ReportColumn<Rec>[] = [
 ];
 
 export default function CheckInOut() {
+  const { t } = useTranslation();
   return (
     <DataReport<Rec>
-      title="Informe de Entrada/Salida"
+      title={t("ui.CheckInOut.informeDeEntradaSalida", "Informe de Entrada/Salida")}
       description="Marcajes de asistencia (entrada, salida, horas y atrasos) por vigilante."
       icon={LogIn}
       columns={columns}

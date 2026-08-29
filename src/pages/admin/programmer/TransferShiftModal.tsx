@@ -183,7 +183,7 @@ export default function TransferShiftModal({
               : `Cubre ${dest ? stationLabel(dest) : "el destino"} solo en este turno.`}
           </p>
           <p className="mt-1" style={{ color: "var(--ink-soft)" }}>
-            Después vuelve automáticamente a <strong>{target?.stationName || "su puesto"}</strong>.
+            {t("ui.TransferShiftModal.despuesVuelveAutomaticamenteA", "Después vuelve automáticamente a")} <strong>{target?.stationName || "su puesto"}</strong>.
             Podrá marcar entrada en el destino como en cualquier turno normal.
           </p>
         </div>

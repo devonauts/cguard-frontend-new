@@ -309,7 +309,7 @@ export default function VideoMonitoring() {
         {/* Header */}
         <PageHeader
           icon={<MonitorPlay />}
-          title="Monitoreo de video"
+          title={t('ui.VideoMonitoring.monitoreoDeVideo', 'Monitoreo de video')}
           subtitle={t('ui.VideoMonitoring.vigilanciaEnVivoDeTodas')}
           badges={
             loading ? null : enLinea > 0 ? (

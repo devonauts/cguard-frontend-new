@@ -137,7 +137,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
 
   const deleteStation = async (p: CoveragePuesto) => {
     const ok = await confirmDialog({
-      title: 'Eliminar estación',
+      title: t('ui.ClientCoverage.eliminarEstacion', 'Eliminar estación'),
       message: `¿Eliminar la estación "${p.name}"? Sus horarios, asignaciones y rondas (QR) quedan huérfanos — si la vuelves a crear, las rondas NO se reconectan solas. Considera editarla en su lugar.`,
       confirmText: 'Eliminar',
       tone: 'danger',
@@ -214,7 +214,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
       {/* Sede selector */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--ink-soft)' }}>
-          <LayoutGrid className="h-4 w-4" /> Puestos y cobertura en vivo de la sede seleccionada
+          <LayoutGrid className="h-4 w-4" /> {t('ui.ClientCoverage.puestosYCoberturaEnVivo', 'Puestos y cobertura en vivo de la sede seleccionada')}
         </div>
         <div className="flex items-center gap-2">
           <label className="cg-eyebrow">Sede / Sitio</label>
@@ -357,7 +357,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
                                 <DropdownMenuItem onClick={() => navigate(`/post-sites/${sedeId}/stations/${p.id}`)}>
-                                  <ExternalLink className="mr-2 h-3.5 w-3.5" /> Abrir estación
+                                  <ExternalLink className="mr-2 h-3.5 w-3.5" /> {t('ui.ClientCoverage.abrirEstacion', 'Abrir estación')}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => navigate(`/post-sites/${sedeId}/stations/${p.id}/guards`)}>
                                   <Users className="mr-2 h-3.5 w-3.5" /> Vigilantes asignados
@@ -369,14 +369,14 @@ export default function ClientCoverage({ client }: { client: Client }) {
                                 <DropdownMenuItem onClick={() => selectPuesto(p)}>
                                   <Locate className="mr-2 h-3.5 w-3.5" />{" "}{t('comun.verEnElMapa')}{" "}</DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => { selectPuesto(p); setPlacing(true); }}>
-                                  <Crosshair className="mr-2 h-3.5 w-3.5" /> Fijar ubicación en el mapa
+                                  <Crosshair className="mr-2 h-3.5 w-3.5" /> {t('ui.ClientCoverage.fijarUbicacionEnElMapa', 'Fijar ubicación en el mapa')}
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem
                                   style={{ color: 'var(--bad-text)' }}
                                   onClick={() => void deleteStation(p)}
                                 >
-                                  <Trash2 className="mr-2 h-3.5 w-3.5" /> Eliminar estación
+                                  <Trash2 className="mr-2 h-3.5 w-3.5" /> {t('ui.ClientCoverage.eliminarEstacion', 'Eliminar estación')}
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
@@ -462,7 +462,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
                     <Crosshair className="mr-1.5 h-4 w-4" /> {placing ? 'Fijando…' : 'Fijar ubicación exacta'}
                   </Button>
                   <Button size="sm" variant="ghost" onClick={() => navigate(`/post-sites/${sedeId}/stations/${selected.id}/overview`)}>
-                    <ExternalLink className="mr-1.5 h-4 w-4" /> Ver estación
+                    <ExternalLink className="mr-1.5 h-4 w-4" /> {t('ui.ClientCoverage.verEstacion', 'Ver estación')}
                   </Button>
                 </div>
               </div>

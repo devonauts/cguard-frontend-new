@@ -1,4 +1,5 @@
 import { MapPin } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import DataReport, { type ReportColumn } from "./DataReport";
 import { formatDateTime, formatMeters, rangeBounds, REPORT_ROW_LIMIT, warnIfCapped } from "./reportFormat";
 import attendanceService from "@/lib/api/attendanceService";
@@ -26,9 +27,10 @@ const columns: ReportColumn<Rec>[] = [
 ];
 
 export default function GeoFenceLog() {
+  const { t } = useTranslation();
   return (
     <DataReport<Rec>
-      title="Registros de Geo Vallas"
+      title={t('ui.GeoFenceLog.registrosDeGeoVallas', 'Registros de Geo Vallas')}
       description="Marcajes realizados FUERA del perímetro (geo valla) del puesto, con la distancia al centro."
       icon={MapPin}
       // Todo lo que sale en este informe ES una salida del perímetro.

@@ -271,7 +271,7 @@ export default function VehiclesPage() {
                         <>
                             <Button variant="brand" asChild>
                                 <Link to="/vehicle-patrol/vehicles/add-vehicle">
-                                    <Plus className="mr-1 h-4 w-4" /> Nuevo vehículo
+                                    <Plus className="mr-1 h-4 w-4" /> {t("ui.Vehicles.nuevoVehiculo", "Nuevo vehículo")}
                                 </Link>
                             </Button>
                             <Sheet open={openFilter} onOpenChange={setOpenFilter}>
@@ -400,7 +400,7 @@ export default function VehiclesPage() {
                                 action={(
                                     <Button size="sm" variant="brand" asChild>
                                         <Link to="/vehicle-patrol/vehicles/add-vehicle">
-                                            <Plus className="mr-1 h-3.5 w-3.5" /> Nuevo vehículo
+                                            <Plus className="mr-1 h-3.5 w-3.5" /> {t("ui.Vehicles.nuevoVehiculo", "Nuevo vehículo")}
                                         </Link>
                                     </Button>
                                 )}
@@ -608,7 +608,7 @@ export default function VehiclesPage() {
                             <DialogHeader>
                                 <DialogTitle>{t("ui.Vehicles.detallesDelVehiculo", "Detalles del vehículo")}</DialogTitle>
                                 <DialogDescription>
-                                    Información completa del vehículo.
+                                    {t("ui.Vehicles.informacionCompletaDelVehiculo", "Información completa del vehículo.")}
                                 </DialogDescription>
                             </DialogHeader>
 

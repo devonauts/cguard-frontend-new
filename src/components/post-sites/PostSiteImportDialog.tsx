@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +15,7 @@ interface ImportDialogProps {
 }
 
 export default function PostSiteImportDialog({ open, onOpenChange, onSuccess }: ImportDialogProps) {
+  const { t } = useTranslation();
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [autoCreateClients, setAutoCreateClients] = useState<boolean>(true);
@@ -526,7 +528,7 @@ export default function PostSiteImportDialog({ open, onOpenChange, onSuccess }: 
             <div className="space-y-1">
               <h4 className="text-sm font-medium flex items-center gap-2">
                 <FileSpreadsheet className="h-4 w-4 text-primary" />
-                Estructura de columnas requerida
+                {t('ui.PostSiteImportDialog.estructuraDeColumnasRequerida', 'Estructura de columnas requerida')}
               </h4>
               <p className="text-xs text-muted-foreground">
                 Todos los campos marcados con (*) son obligatorios para la carga masiva. Para asociar cliente, proporciona `clientId` o los campos `clientName` / `clientLastName` / `clientEmail` / `clientPhone`.
@@ -590,7 +592,7 @@ export default function PostSiteImportDialog({ open, onOpenChange, onSuccess }: 
               <label htmlFor="postsite-file-upload" className="cursor-pointer block">
                 <Upload className="mx-auto h-10 w-10 text-muted-foreground mb-1" />
                 <p className="text-sm text-muted-foreground font-medium">{file ? file.name : "Explorar tu archivo Excel aquí...."}</p>
-                <p className="text-xs text-muted-foreground mt-1">Click para seleccionar</p>
+                <p className="text-xs text-muted-foreground mt-1">{t('guards.list.importDialog.clickToSelect', 'Click para seleccionar')}</p>
               </label>
             </div>
 

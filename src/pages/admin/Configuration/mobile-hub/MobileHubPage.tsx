@@ -675,7 +675,7 @@ function PhonePreview({ accent, name, tagline, logoUrl, light, modules, font }: 
     <div className="space-y-3">
       <div className="flex flex-col items-center py-2">
         <span className="grid h-20 w-20 place-items-center rounded-full text-[26px] font-black" style={{ background: `${accent}22`, color: accent }}>JR</span>
-        <p className="mt-2.5 text-[16px] font-bold">Juan Ramírez</p>
+        <p className="mt-2.5 text-[16px] font-bold">{t('settings.mobileHub.previewGuardName', { defaultValue: 'Juan Ramírez' })}</p>
         <p className="text-[11.5px]" style={{ color: muted }}>{t('settings.mobileHub.previewPost', { defaultValue: 'Puesto' })} BRAVO 4</p>
       </div>
       {modules.performance && (

@@ -46,7 +46,7 @@ export default function IntegrationsList() {
               <KeyRound size={18} />
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block font-semibold text-[color:var(--ink)]">Llaves de API</span>
+              <span className="block font-semibold text-[color:var(--ink)]">{t('ui.IntegrationsList.llavesDeApi', 'Llaves de API')}</span>
               <span className="block text-sm text-[color:var(--ink-soft)]">
                 Da a un sistema externo acceso de solo lectura a tus trabajadores y horas — por ejemplo, para pagar la nómina.
               </span>
@@ -57,7 +57,7 @@ export default function IntegrationsList() {
           <EmptyState
             className="mt-5"
             icon={<Plug />}
-            title="¿Buscas conectar otro sistema?"
+            title={t('ui.IntegrationsList.buscasConectarOtroSistema', '¿Buscas conectar otro sistema?')}
             description="Las integraciones con catálogo aparecerán aquí cuando existan. Si necesitas conectar uno concreto hoy, dínoslo — saber cuál decide en qué orden se construyen."
           />
 

@@ -107,7 +107,7 @@ export default function MisAvisosPage() {
           ) : (
             <div className="space-y-5">
               <InfoNote tone="info">
-                Aquí sólo puedes <strong>quitarte</strong> avisos de los que tu empresa ya
+                {t('ui.MisAvisosPage.aquiSoloPuedes', 'Aquí sólo puedes')} <strong>quitarte</strong> avisos de los que tu empresa ya
                 envía. Las emergencias llegan siempre, aunque las desmarques.
               </InfoNote>
 

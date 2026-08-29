@@ -6,6 +6,7 @@
  * /client-account/card-meta para no engordar la lista principal.
  */
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Building2, MapPin, Phone, Mail, Shield, EllipsisVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -52,6 +53,7 @@ export default function ClientCardsGrid({
     onOpen: (c: Client) => void;
     rowActions: (c: Client) => CardRowAction[];
 }) {
+    const { t } = useTranslation();
     const cards = useMemo(() => clients, [clients]);
 
     if (loading) return <SkeletonCards count={8} className="sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" />;
@@ -59,7 +61,7 @@ export default function ClientCardsGrid({
         return (
             <EmptyState
                 icon={<Building2 />}
-                title="Sin clientes"
+                title={t("ui.ClientCardsGrid.sinClientes", "Sin clientes")}
                 description="Da de alta al primer cliente con «Agregar cliente»."
             />
         );

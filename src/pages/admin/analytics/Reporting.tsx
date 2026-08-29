@@ -32,7 +32,7 @@ export default function Reporting() {
         <>
           <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
             <MetricCard icon={<Shield size={16} />} accent={GOLD} value={k.guardsOnDuty} label="Vigilantes en servicio" sub="ahora mismo" />
-            <MetricCard icon={<ClipboardCheck size={16} />} accent={TONES.info} value={`${k.coveragePct}%`} label="Cobertura de turnos" sub={`${k.shiftsCovered}/${k.shiftsTotal} cubiertos`} pct={k.coveragePct} />
+            <MetricCard icon={<ClipboardCheck size={16} />} accent={TONES.info} value={`${k.coveragePct}%`} label={t('ui.Reporting.coberturaDeTurnos', 'Cobertura de turnos')} sub={`${k.shiftsCovered}/${k.shiftsTotal} cubiertos`} pct={k.coveragePct} />
             <MetricCard icon={<TrendingUp size={16} />} accent={TONES.ok} value={`${k.rondaCompletionPct}%`} label="Rondas completadas" sub={`${k.rondasCompleted}/${k.rondasTotal}`} pct={k.rondaCompletionPct} />
             <MetricCard icon={<MapPin size={16} />} accent={TONES.serie2} value={`${k.locationCompliancePct}%`} label={t("ui.Reporting.cumplimientoDeUbicacion", "Cumplimiento de ubicación")} sub={`${k.scansValid}/${k.scansTotal} escaneos`} pct={k.locationCompliancePct} />
             <MetricCard icon={<AlertTriangle size={16} />} accent={TONES.bad} value={k.incidentsTotal} label="Incidentes" sub={`${k.incidentsOpen} abiertos`} />

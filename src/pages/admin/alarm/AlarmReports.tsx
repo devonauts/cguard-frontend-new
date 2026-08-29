@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { ShieldAlert, ShieldCheck, Siren, FlaskConical, RefreshCw, BarChart3 } from "lucide-react";
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,7 @@ interface FalseAlarmReport {
 }
 
 export default function AlarmReports() {
+  const { t } = useTranslation();
   const [days, setDays] = useState(30);
   const [data, setData] = useState<FalseAlarmReport | null>(null);
   const [loading, setLoading] = useState(true);
@@ -48,7 +50,7 @@ export default function AlarmReports() {
       <PageContainer width="wide">
         <PageHeader
           icon={<BarChart3 />}
-          title="Reportes de falsas alarmas"
+          title={t("ui.AlarmReports.reportesDeFalsasAlarmas", "Reportes de falsas alarmas")}
           subtitle="Cómo se cerró cada caso y qué proporción resultó ser falsa, panel por panel."
           actions={
             <>
@@ -89,8 +91,8 @@ export default function AlarmReports() {
               {(!data?.panels || data.panels.length === 0) ? (
                 <EmptyState
                   icon={<BarChart3 />}
-                  title="Sin datos"
-                  description="Sin casos cerrados con disposición en el período."
+                  title={t("comun.sinDatos", "Sin datos")}
+                  description={t("ui.AlarmReports.sinCasosCerradosConDisposicionEnElPeriodo", "Sin casos cerrados con disposición en el período.")}
                 />
               ) : (
                 <div className="overflow-x-auto -mx-1">

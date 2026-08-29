@@ -439,7 +439,7 @@ export default function RadioDevices() {
                 checked={form.active}
                 onChange={(e) => set({ active: e.target.checked })}
               />
-              Activo (se intentará mantener conectado)
+              {t('ui.RadioDevices.activoSeIntentaraMantenerConectado', 'Activo (se intentará mantener conectado)')}
             </label>
           </div>
 

@@ -79,6 +79,12 @@
       "manualShort": "Manuell",
       "panel": "Alarmanlage",
       "panelShort": "Anlage"
+    },
+    "ecv": {
+      "callLog": "Anrufprotokoll",
+      "immediateDispatch": "Sofortige Entsendung (ECV-befreit)",
+      "noContacts": "Für diese Anlage sind keine Kontakte hinterlegt.",
+      "title": "Verifizierung (ECV)"
     }
   },
   "auth": {
@@ -182,13 +188,19 @@
     "enter_password": "Bitte geben Sie Ihr Passwort ein",
     "invalid_email": "Ungültige E-Mail-Adresse",
     "reset_error": "Der Link konnte nicht gesendet werden. Bitte versuchen Sie es erneut",
-    "sending": "Link wird gesendet…"
+    "sending": "Link wird gesendet…",
+    "appAccessPending": {
+      "title": "Ihr Zugang erfolgt über die App"
+    }
   },
   "client": {
     "invite_not_found": "Die Einladung wurde nicht gefunden oder ist ungültig.",
     "registration_title": "Registrierung des Auftraggebers",
     "register": "Mein Konto aktivieren",
-    "registering": "Registrierung läuft…"
+    "registering": "Registrierung läuft…",
+    "done": {
+      "accountWith": "Ihr Konto bei"
+    }
   },
   "clients": {
     "accept": "Annehmen",
@@ -704,7 +716,11 @@
       "low": "Niedrig",
       "medium": "Mittel"
     },
-    "timezone": "Zeitzone"
+    "timezone": "Zeitzone",
+    "importDialog": {
+      "description": "Laden Sie eine .xlsx/.xls/.csv-Datei hoch, um Auftraggeber zu importieren."
+    },
+    "loadClientErrorHint": "Versuchen Sie es erneut oder prüfen Sie, ob der Auftraggeber existiert."
   },
   "common": {
     "active": "Aktiv",
@@ -1107,7 +1123,12 @@
     "select_station": "Objekt auswählen",
     "station": "Objekt",
     "subtitle": "Nehmen Sie Meldungen Ihrer Objekte auf, disponieren Sie sie und verfolgen Sie sie nach",
-    "you": "Sie"
+    "you": "Sie",
+    "map": {
+      "legendEmpty": "Objekt unbesetzt",
+      "legendStaffed": "Objekt besetzt",
+      "whoIsNear": "Wer ist in der Nähe"
+    }
   },
   "emailPreferences": {
     "loadError": "Die Einstellungen konnten nicht geladen werden",
@@ -1667,7 +1688,8 @@
       "error": {
         "loading": "Fehler beim Laden der Sicherheitskräfte: {{msg}}"
       },
-      "title": "Sicherheitskräfte"
+      "title": "Sicherheitskräfte",
+      "headerTitle": "Sicherheitskräfte"
     },
     "nav": {
       "archivos": "Dateien",
@@ -1729,7 +1751,8 @@
         "passwordPlaceholder": "Passwort *",
         "selectClient": "Auftraggeber auswählen",
         "selectMethodPlaceholder": "Methode auswählen",
-        "send": "Senden"
+        "send": "Senden",
+        "birthPlace": "Geburtsort"
       },
       "invite": {
         "description": "Geben Sie Name und E-Mail-Adresse bzw. Mobilnummer der Wachkraft ein. Sie erhält eine Nachricht mit einem Link."
@@ -7134,7 +7157,8 @@
       "svPreviewStationsSub": "Alle Standorte des Auftraggebers",
       "svPreviewStationsTitle": "Objekte",
       "svPreviewTasks": "Aufgaben",
-      "svPreviewYou": "Sie"
+      "svPreviewYou": "Sie",
+      "previewGuardName": "Juan Ramírez"
     },
     "appearance": {
       "layoutTitle": "Erscheinungsbild",
@@ -8065,11 +8089,16 @@
       "todaLaOperacion": "der gesamte Betrieb",
       "todaLaOperacion2": "Der gesamte Betrieb",
       "ubicacionDeOficinaAsistencia": "Bürostandort (Anwesenheit)",
-      "usarMiUbicacionActual": "Meinen aktuellen Standort verwenden"
+      "usarMiUbicacionActual": "Meinen aktuellen Standort verwenden",
+      "esteRolVe": "Diese Rolle sieht",
+      "paraQuienLlevaUnasCuentas": "Für Personen, die bestimmte Kunden betreuen.",
+      "sinSedeMarcadaVeTodo": "Ohne ein markiertes Einsatzobjekt sieht die Person weiterhin ALLES.",
+      "todosLosClientesYTodas": "Alle Auftraggeber und alle Einsatzobjekte."
     },
     "GuardDashboard": {
       "proximoTurno": "Nächste Schicht",
-      "sinEntradaActiva": "Kein aktives Einstempeln"
+      "sinEntradaActiva": "Kein aktives Einstempeln",
+      "noTienesPuestosAsignados": "Ihnen sind keine Objekte zugewiesen."
     },
     "GuardSchedule": {
       "noTienesDiasLibresAprobados": "Sie haben keine genehmigten freien Tage in nächster Zeit."
@@ -8087,7 +8116,8 @@
       "calamidadDomestica": "Familiärer Notfall",
       "nuevaSolicitud": "Neuer Antrag",
       "describeElMotivo": "Beschreiben Sie den Grund...",
-      "sinSolicitudes": "Keine Anträge"
+      "sinSolicitudes": "Keine Anträge",
+      "noTienesSolicitudesDePermiso": "Sie haben keine Abwesenheitsanträge."
     },
     "Incidents": {
       "masAcciones": "Weitere Aktionen",
@@ -8116,14 +8146,18 @@
       "seleccionaUnArticulo": "Wählen Sie einen Artikel",
       "responsableVigilante": "Verantwortlich (Wachkraft)",
       "articuloDevueltoCorrectamente": "Artikel zurückgegeben",
-      "buscarPorNombreTipoVigilante": "Nach Name, Art oder Wachkraft suchen..."
+      "buscarPorNombreTipoVigilante": "Nach Name, Art oder Wachkraft suchen...",
+      "asignarArticulo": "Artikel zuweisen",
+      "asignarPrimerArticulo": "Ersten Artikel zuweisen"
     },
     "NewAdminUser": {
       "1QuienEs": "1 · Wer ist das",
       "2QuePuedeHacer": "2 · Was diese Person tun darf",
       "3QuePuedeVer": "3 · Was diese Person sehen darf",
       "todaLaOperacion": "der gesamte Betrieb",
-      "todaLaOperacion2": "Der gesamte Betrieb"
+      "todaLaOperacion2": "Der gesamte Betrieb",
+      "aquiLeLlegaLaInvitacionParaCrearSuContrasena": "Hierhin geht die Einladung zum Erstellen des Passworts.",
+      "esteRolVe": "Diese Rolle sieht"
     },
     "NewSecurityGuard": {
       "buscarDireccionDelVigilante": "Adresse der Wachkraft suchen...",
@@ -8159,7 +8193,8 @@
       "editarTarifa": "Tarif bearbeiten",
       "condicionesDelServicio": "Einsatzbedingungen",
       "consignasDelPuesto": "Objektanweisungen",
-      "noHayEstacionesRegistradasPara": "Für dieses Einsatzobjekt sind keine Objekte erfasst."
+      "noHayEstacionesRegistradasPara": "Für dieses Einsatzobjekt sind keine Objekte erfasst.",
+      "estacionesDeServicio": "Dienstobjekte"
     },
     "ProfileUserForm": {
       "espanol": "🇪🇸 Spanisch",
@@ -8209,7 +8244,10 @@
       "enTurno": "im Dienst",
       "configurarPuesto": "Objekt einrichten",
       "horarioDelTurno": "Schichtzeiten",
-      "todaLaJornada1Fijo": "Ganzer Tag (1 feste Kraft)"
+      "todaLaJornada1Fijo": "Ganzer Tag (1 feste Kraft)",
+      "aunNoHayMarcacionesEnEstePuesto": "Für dieses Objekt gibt es noch keine Stempelungen.",
+      "definirUbicacion": "Standort festlegen",
+      "sinUbicacionConfigurada": "Kein Standort hinterlegt"
     },
     "StationShifts": {
       "dia": "Tag",
@@ -8220,7 +8258,8 @@
       "vigilanteRemovidoDelPuesto": "Wachkraft vom Objekt entfernt",
       "periodoAnterior": "Vorheriger Zeitraum",
       "periodoSiguiente": "Nächster Zeitraum",
-      "sinHorarioProgramadoParaEsta": "Für dieses Datum ist kein Dienst geplant."
+      "sinHorarioProgramadoParaEsta": "Für dieses Datum ist kein Dienst geplant.",
+      "completaLosFijosDelPuesto": "Vervollständigen Sie die Stammbesetzung des Objekts und weisen Sie einen"
     },
     "Stations": {
       "masAcciones": "Weitere Aktionen",
@@ -8310,7 +8349,8 @@
       "sinUbicacionDeOficinaConfigurada": "Kein Bürostandort festgelegt.",
       "ubicacionDeOficina": "Bürostandort",
       "correoElectronico": "E-Mail-Adresse",
-      "telefono": "Telefon"
+      "telefono": "Telefon",
+      "rolDeAcceso": "Zugriffsrolle"
     },
     "AlarmAnalytics": {
       "analisisDeMonitoreo": "Monitoring-Auswertung",
@@ -8325,7 +8365,9 @@
       "porPrioridad": "Nach Priorität",
       "sinDespachos": "Keine Einsätze",
       "sinOperadores": "Keine Operatoren",
-      "sinCasosAsignadosAOperadores": "Im Zeitraum wurden keine Fälle an Operatoren zugewiesen."
+      "sinCasosAsignadosAOperadores": "Im Zeitraum wurden keine Fälle an Operatoren zugewiesen.",
+      "tasaDeEscalado": "Eskalationsquote",
+      "tasaDeFalsas": "Fehlalarmquote"
     },
     "AlarmCaseDetail": {
       "descripcion": "Beschreibung",
@@ -8345,7 +8387,12 @@
       "cerrarCaso": "Fall schließen",
       "detalleDelIncidente": "Details zum Vorfall…",
       "agregarNota": "Notiz hinzufügen",
-      "observacionesDelOperador": "Bemerkungen des Operators…"
+      "observacionesDelOperador": "Bemerkungen des Operators…",
+      "casoNoEncontrado": "Fall nicht gefunden",
+      "clasifiqueElDesenlaceDelCaso": "Ordnen Sie den Ausgang des Falls ein, bevor Sie ihn schließen.",
+      "cronologiaDeEventos": "Ereignisverlauf",
+      "registroDeAuditoria": "Prüfprotokoll",
+      "volverALaCola": "Zur Warteschlange"
     },
     "AlarmPanels": {
       "agenciaPsapPolicia": "Behörde / PSAP (Polizei)",
@@ -8385,7 +8432,16 @@
       "administraLosPanelesMonitoreadosSus": "Verwalten Sie die aufgeschalteten Alarmanlagen, ihre Zonen und ihre Benachrichtigungskontakte.",
       "noHayPaneles": "Keine Alarmanlagen",
       "agregaTuPrimerPanelDe": "Fügen Sie Ihre erste Alarmanlage hinzu, um Signale zu empfangen.",
-      "eliminarPanel": "Alarmanlage löschen"
+      "eliminarPanel": "Alarmanlage löschen",
+      "camaraVinculadaVerificacionPorVideo": "Verknüpfte Kamera (Videoverifizierung)",
+      "codigoDeVerificacion": "Verifizierungscode",
+      "colaDeCasos": "Fallwarteschlange",
+      "identificadorDeAgenciaAsap": "ASAP-Behördenkennung",
+      "intervaloDePruebaH": "Testintervall (Std.)",
+      "numeroDeZona": "Zonennummer",
+      "ordenDeLlamada": "Anrufreihenfolge",
+      "panelesDeAlarma": "Alarmanlagen",
+      "puntoDeServicioOpcional": "Einsatzort (optional)"
     },
     "AlarmSignals": {
       "buscarPorCuentaCodigoZona": "Nach Konto, Code oder Zone suchen…",
@@ -8416,10 +8472,13 @@
       "direccion": "Adresse",
       "noSePudoDescargarEl": "Das Protokoll konnte nicht heruntergeladen werden.",
       "iniciosYCierresDeSesion": "An- und Abmeldungen, fehlgeschlagene Versuche und Geräteereignisse.",
-      "noSePudoCargarEl": "Das Sicherheitsprotokoll konnte nicht geladen werden"
+      "noSePudoCargarEl": "Das Sicherheitsprotokoll konnte nicht geladen werden",
+      "registroDeSeguridad": "Sicherheitsprotokoll"
     },
     "AvatarUploader": {
-      "anadirFoto": "Foto hinzufügen"
+      "anadirFoto": "Foto hinzufügen",
+      "cambiarFotoDePerfil": "Profilfoto ändern",
+      "hazClicOArrastraUnaImagen": "Klicken oder ein Bild hierherziehen"
     },
     "CatalogTable": {
       "elementosPorPagina": "Einträge pro Seite"
@@ -8483,7 +8542,12 @@
       "editarPeriodo": "Zeitraum bearbeiten",
       "eliminarPeriodo": "Zeitraum löschen",
       "tipoDeServicio": "Art der Leistung",
-      "actualAnterior": "Aktuell / Vorher"
+      "actualAnterior": "Aktuell / Vorher",
+      "acuerdoDeNivelDeServicioSla": "Service-Level-Vereinbarung (SLA)",
+      "cumplimientoDeRondas": "Erfüllung der Rundgänge",
+      "formaDePago": "Zahlungsweise",
+      "historialDeRenovaciones": "Verlängerungsverlauf",
+      "tiempoDeRespuesta": "Reaktionszeit"
     },
     "ClientCoverage": {
       "abrirElDetalleDeLa": "Objektdetails öffnen",
@@ -8513,7 +8577,12 @@
       "sinUbicaciones": "Keine Standorte",
       "ningunaEstacionDeEstaSede": "Kein Objekt dieses Einsatzobjekts hat Koordinaten. Wählen Sie ein Objekt aus und nutzen Sie „Genauen Standort festlegen“.",
       "resumenDeCoberturaPorTurno": "Übersicht der Besetzung nach Schicht",
-      "coberturaGeneralDelSitio": "Gesamtbesetzung des Einsatzobjekts"
+      "coberturaGeneralDelSitio": "Gesamtbesetzung des Einsatzobjekts",
+      "abrirEstacion": "Objekt öffnen",
+      "eliminarEstacion": "Objekt löschen",
+      "fijarUbicacionEnElMapa": "Standort auf der Karte festlegen",
+      "puestosYCoberturaEnVivo": "Objekte und Live-Besetzung des ausgewählten Einsatzobjekts",
+      "verEstacion": "Objekt ansehen"
     },
     "ClientDetailsDialog": {
       "codigoPostal": "Postleitzahl",
@@ -8522,7 +8591,9 @@
       "direccionComplementaria": "Adresszusatz",
       "pais": "Land",
       "telefono": "Telefon",
-      "telefonoFijo": "Festnetz"
+      "telefonoFijo": "Festnetz",
+      "detallesDelCliente": "Details zum Auftraggeber",
+      "informacionDetalladaDelCliente": "Ausführliche Angaben zum ausgewählten Auftraggeber."
     },
     "ClientDocuments": {
       "arrastraArchivosAquiOHaz": "Dateien hierher ziehen oder klicken, um auszuwählen",
@@ -8538,7 +8609,8 @@
       "subeElPrimerDocumentoDe": "Laden Sie das erste Dokument dieses Auftraggebers hoch (Verträge, Handbücher, Pläne…).",
       "nombreDelDocumento": "Name des Dokuments",
       "actualizadoPor": "Aktualisiert von",
-      "sinActividadReciente": "Keine Aktivität in letzter Zeit."
+      "sinActividadReciente": "Keine Aktivität in letzter Zeit.",
+      "bibliotecaDeDocumentos": "Dokumentenbibliothek"
     },
     "ClientIncidents": {
       "buscarPorIdTituloO": "Nach ID, Titel oder Standort suchen",
@@ -8590,7 +8662,12 @@
       "abrirElDetalleDeLa": "Details des Einsatzobjekts öffnen",
       "detallesDeLaSedeSeleccionada": "Details des ausgewählten Einsatzobjekts",
       "seleccionaUnaSede": "Einsatzobjekt auswählen",
-      "tocaUnaFilaParaVer": "Tippen Sie auf eine Zeile, um die Details zu sehen."
+      "tocaUnaFilaParaVer": "Tippen Sie auf eine Zeile, um die Details zu sehen.",
+      "dashboardDeLaSede": "Übersicht des Einsatzobjekts",
+      "lasSedesNoTienenUbicacion": "Für die Einsatzobjekte ist kein Standort hinterlegt",
+      "mapaDeSedes": "Karte der Einsatzobjekte",
+      "verElPanelDeLaSede": "Zur Objektübersicht",
+      "vigilantesAsignadosVsEstaciones": "Zugewiesene Sicherheitskräfte vs. Objekte (keine Live-Besetzung)"
     },
     "ClientProjects": {
       "eliminarEsteProyecto": "Dieses Projekt löschen?",
@@ -8634,7 +8711,8 @@
       "reporteDeVisitas": "Besucherbericht",
       "reporteDeAsistencia": "Anwesenheitsbericht",
       "actividadPorGuardia": "Aktivität nach Wachkraft",
-      "semanalLunes0800": "Wöchentlich (montags 08:00)"
+      "semanalLunes0800": "Wöchentlich (montags 08:00)",
+      "cumplimientoDeEstaciones": "Erfüllung der Objekte"
     },
     "ClientStaff": {
       "buscarPorNombreIdO": "Nach Name, ID oder Objekt suchen",
@@ -8650,7 +8728,8 @@
       "noHayPersonalQueCoincida": "Für diesen Auftraggeber entspricht kein Personal den Filtern.",
       "coberturaPorTurno": "Besetzung nach Schicht",
       "sinTurnosConfigurados": "Keine Schichten eingerichtet.",
-      "sinAusenciasHoy": "Heute keine Abwesenheiten."
+      "sinAusenciasHoy": "Heute keine Abwesenheiten.",
+      "quitarDeLaEstacion": "Vom Objekt entfernen"
     },
     "ClientUserAccess": {
       "losAccesosOtorganAlCliente": "Die Zugänge geben dem Auftraggeber ausschließlich Einblick in seinen eigenen Betrieb.",
@@ -8698,7 +8777,8 @@
       "vigilanteQueSale": "Abwesende Wachkraft",
       "detalleOpcional": "Details (optional)",
       "ejRefuerzoPorEventoEn": "Z. B.: Verstärkung für eine Veranstaltung beim Auftraggeber",
-      "sinCubrir": "unbesetzt"
+      "sinCubrir": "unbesetzt",
+      "despuesVuelveAutomaticamenteA": "Danach geht es automatisch zurück zu"
     },
     "CustomerRequests": {
       "elementosPorPagina": "Einträge pro Seite",
@@ -8726,12 +8806,18 @@
       "notificacionAutomaticaDeEmergencia": "Automatische Notfallbenachrichtigung",
       "estiloDelMapa": "Kartenstil",
       "coloresDeEstadoSeveridad": "Farben für Status / Schweregrad",
-      "exigirEscaneoQrEnRonda": "QR-Scan im Rundgang verlangen"
+      "exigirEscaneoQrEnRonda": "QR-Scan im Rundgang verlangen",
+      "exigirFotoEnPuntoDeControl": "Foto am Kontrollpunkt verlangen",
+      "exigirGpsEnPuntoDeControl": "GPS am Kontrollpunkt verlangen",
+      "operacionesDeSeguridad": "Sicherheitsbetrieb",
+      "radioDeGeocercaM": "Geofence-Radius (m)",
+      "volverAlColorDeLaMarca": "Zurück zur Markenfarbe"
     },
     "DemoDataBanner": {
       "operacionDeEjemplo": "Beispielbetrieb",
       "datosDeEjemploRetiradosEsta": "Beispieldaten entfernt. Dies ist jetzt Ihr echter Betrieb.",
-      "noPudimosQuitarLosDatos": "Die Beispieldaten konnten nicht entfernt werden. Bitte versuchen Sie es erneut."
+      "noPudimosQuitarLosDatos": "Die Beispieldaten konnten nicht entfernt werden. Bitte versuchen Sie es erneut.",
+      "estasExplorandoConUna": "Sie erkunden gerade mit"
     },
     "DepartmentDialog": {
       "descripcion": "Beschreibung",
@@ -8744,7 +8830,8 @@
       "ubicacionDelIncidente": "Ort des Vorfalls",
       "vigilanteAsignado": "Zugewiesene Wachkraft",
       "esteEnlaceNoExisteO": "Dieser Link existiert nicht oder ist abgelaufen.",
-      "datosDelDespacho": "Angaben zum Einsatz"
+      "datosDelDespacho": "Angaben zum Einsatz",
+      "noDisponible": "Nicht verfügbar"
     },
     "DocPolicyAck": {
       "reconocimientoDeDocumentosYPoliticas": "Bestätigung von Dokumenten und Richtlinien",
@@ -8813,7 +8900,8 @@
       "laRotacionSeConfiguraEn": "Die Rotation wird am Objekt eingerichtet."
     },
     "GuardRatingLevel": {
-      "verResenasDelVigilante": "Bewertungen der Wachkraft ansehen"
+      "verResenasDelVigilante": "Bewertungen der Wachkraft ansehen",
+      "sinResenas": "Keine Bewertungen"
     },
     "GuardRatings": {
       "calificacion": "Bewertung",
@@ -8842,7 +8930,9 @@
     "IntegrationsList": {
       "operacion": "Einsatz",
       "todaviaNoHayIntegracionesDisponibles": "Noch keine Integrationen verfügbar",
-      "conectarCGuardProCon": "C-Guard Pro mit anderen Systemen Ihrer Firma verbinden."
+      "conectarCGuardProCon": "C-Guard Pro mit anderen Systemen Ihrer Firma verbinden.",
+      "buscasConectarOtroSistema": "Möchten Sie ein weiteres System anbinden?",
+      "llavesDeApi": "API-Schlüssel"
     },
     "LessonsManager": {
       "descripcion": "Beschreibung",
@@ -8862,7 +8952,9 @@
       "noSePudoEliminarLa": "Die Lektion konnte nicht gelöscht werden.",
       "noSePudoReordenar": "Die Reihenfolge konnte nicht geändert werden.",
       "agregaLeccionesConVideoTexto": "Fügen Sie Lektionen mit Video, Text und Materialien hinzu, um den Kurs aufzubauen.",
-      "eliminarRecurso": "Material löschen"
+      "eliminarRecurso": "Material löschen",
+      "agregarLeccion": "Lektion hinzufügen",
+      "urlDeVideoYoutubeVimeo": "Video-URL (YouTube, Vimeo usw.)"
     },
     "LiveTracking": {
       "direccion": "Adresse",
@@ -8871,7 +8963,9 @@
       "todasLasRutas": "Alle Routen",
       "vigilantesYSupervisoresEnServicio": "Kräfte und Supervisoren im Dienst, über den Haltepunkten der heutigen Patrouillenrouten.",
       "personalEnElMapa": "Personal auf der Karte",
-      "tipoDeMapa": "Kartentyp"
+      "tipoDeMapa": "Kartentyp",
+      "hojaDeRuta": "Fahrtenblatt",
+      "mostrarTodasLasRutasNo": "Alle Routen anzeigen (nicht nur die des Tages)"
     },
     "LoginHistory": {
       "buscarPorUsuarioDireccionO": "Nach Benutzer, Adresse oder Gerät suchen…",
@@ -8937,7 +9031,8 @@
       "notaDeResolucionQuedaEn": "Lösungsnotiz (bleibt im Verlauf)",
       "desviacionesDeAsistenciaRegistroE": "Abweichungen bei der Anwesenheit — Protokoll und Verlauf des Betriebs",
       "noHayDesviacionesDeAsistencia": "Für die gewählten Filter gibt es keine Abweichungen bei der Anwesenheit.",
-      "por": "Von"
+      "por": "Von",
+      "cerrarElAtraso": "Verspätung abschließen"
     },
     "NominaRecords": {
       "salidaSinUbicacion": "Ausstempeln ohne Standort",
@@ -8982,14 +9077,19 @@
       "tarifaPorHoraPorDefecto": "Stundensatz (Standard)",
       "multiplicadorDeHoraExtra": "Überstundenfaktor",
       "laNocheEmpiezaALas": "Die Nacht beginnt um (Ortszeit)",
-      "laNocheTerminaALas": "Die Nacht endet um (Ortszeit)"
+      "laNocheTerminaALas": "Die Nacht endet um (Ortszeit)",
+      "toleranciaDeRetrasoGracia": "Verspätungstoleranz (Karenz)",
+      "umbralDeSalidaAnticipada": "Schwelle für vorzeitiges Gehen",
+      "umbralInasistenciaNoShow": "Schwelle für Nichterscheinen (No-Show)",
+      "ventanasDeTiempoMinutos": "Zeitfenster (Minuten)"
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Wo werden Sie arbeiten?",
       "relojDeAsistencia": "Stempeluhr",
       "seleccionaUnPuesto": "Objekt auswählen",
       "miraALaCamara": "Schauen Sie in die Kamera…",
-      "sinPuestosAsignados": "Keine Objekte zugewiesen"
+      "sinPuestosAsignados": "Keine Objekte zugewiesen",
+      "enLaOficina": "Im Büro"
     },
     "Notification": {
       "configuracionDeAvisos": "Einstellungen für Benachrichtigungen"
@@ -8999,7 +9099,8 @@
       "enviarAhora": "Jetzt senden"
     },
     "OnboardingBanner": {
-      "completaLaConfiguracionDeTu": "Schließen Sie die Einrichtung Ihrer Firma ab"
+      "completaLaConfiguracionDeTu": "Schließen Sie die Einrichtung Ihrer Firma ab",
+      "continuarConfiguracion": "Einrichtung fortsetzen"
     },
     "OnboardingWizard": {
       "buscarDireccion": "Adresse suchen...",
@@ -9029,7 +9130,10 @@
       "completaTodosLosCamposRequeridos": "Füllen Sie alle Pflichtfelder aus.",
       "configuracionCompletadaBienvenidoACguardpro": "Einrichtung abgeschlossen! Willkommen bei CGuardPro.",
       "miEmpresaDeSeguridad": "Meine Sicherheitsfirma",
-      "noSePudoDetectarSeleccionala": "Konnte nicht erkannt werden; bitte wählen Sie sie manuell aus."
+      "noSePudoDetectarSeleccionala": "Konnte nicht erkannt werden; bitte wählen Sie sie manuell aus.",
+      "completarMasTarde": "Später abschließen",
+      "configuraTuEmpresa": "Unternehmen einrichten",
+      "detectarPorDireccion": "Anhand der Adresse ermitteln"
     },
     "OpenShifts": {
       "accion": "Aktion",
@@ -9047,7 +9151,8 @@
       "todosLosTurnosTienenVigilante": "Allen Schichten ist eine Wachkraft zugewiesen, oder es gibt im gewählten Zeitraum keine Schichten."
     },
     "OperationSetupAlert": {
-      "faltaLaConfiguracionOperativa": "Die betriebliche Einrichtung fehlt"
+      "faltaLaConfiguracionOperativa": "Die betriebliche Einrichtung fehlt",
+      "configurarLaOperacion": "Betrieb einrichten"
     },
     "OperationsMap": {
       "puestosSinNingunaPosicionDe": "Objekte ohne GPS-Position zur Bestätigung der Besetzung"
@@ -9056,7 +9161,10 @@
       "aQuienLlamar": "Wen anrufen",
       "describeLaAccionTomadaPara": "Beschreiben Sie die Maßnahme zur Bearbeitung des SOS…",
       "ubicacion": "Standort",
-      "telefonoDelSitio": "Telefon des Einsatzobjekts"
+      "telefonoDelSitio": "Telefon des Einsatzobjekts",
+      "accionTomada": "Ergriffene Maßnahme",
+      "registraLaAccionTomadaParaPoderSilenciarLaAlarma": "Erfassen Sie die ergriffene Maßnahme, um den Alarm stummschalten zu können.",
+      "sinCoordenadas": "Keine Koordinaten"
     },
     "PanicButtonLog": {
       "registrosDelBotonDePanico": "Einträge der Notruftaste",
@@ -9098,7 +9206,8 @@
       "telefono2": "Telefon",
       "telefonoFijo": "Festnetz",
       "detallesDelSitio": "Details des Einsatzobjekts",
-      "clienteAsociado": "Zugeordneter Auftraggeber"
+      "clienteAsociado": "Zugeordneter Auftraggeber",
+      "informacionDetalladaDelPuestoDeSeguridadSeleccionada": "Ausführliche Angaben zum ausgewählten Sicherheitsobjekt."
     },
     "PostSiteWizard": {
       "agregarOtraCapacitacion": "Weitere Schulung hinzufügen…",
@@ -9136,7 +9245,11 @@
       "puedesAnadirlasAhoraODesde": "Sie können sie jetzt oder später im Profil des Einsatzobjekts hinzufügen.",
       "estadoDelSitio": "Status des Einsatzobjekts",
       "revisarYCrear": "Prüfen und anlegen",
-      "sinJornadasDefinidas": "Keine Dienstzeiten definiert"
+      "sinJornadasDefinidas": "Keine Dienstzeiten definiert",
+      "anadirEstacion": "Objekt hinzufügen",
+      "continuarSinSeleccionarTipo": "Ohne Typauswahl fortfahren",
+      "estacionesDeVigilancia": "Wachobjekte",
+      "instruccionesDelPuestoSop": "Objektanweisung (SOP)"
     },
     "ProfilePhotoCapture": {
       "buenaIluminacionEviteSombrasY": "Gute Beleuchtung — vermeiden Sie Schatten und Gegenlicht",
@@ -9146,7 +9259,11 @@
       "useUnFondo": "Verwenden Sie einen Hintergrund",
       "laFotoDebeMostrar": "Das Foto muss zeigen",
       "rostroYParteSuperiorDel": "Gesicht und Oberkörper",
-      "noUseLentesOscurosNi": "Verwenden Sie keine Sonnenbrille und keine Kopfbedeckung"
+      "noUseLentesOscurosNi": "Verwenden Sie keine Sonnenbrille und keine Kopfbedeckung",
+      "capturarFotoDelVigilante": "Foto der Sicherheitskraft aufnehmen",
+      "fotoDelVigilanteConUniforme": "Foto der Sicherheitskraft in vollständiger Uniform vor neutralem Hintergrund",
+      "galeria": "Galerie",
+      "usarEstaFoto": "Dieses Foto verwenden"
     },
     "ProjectForm": {
       "descripcion": "Beschreibung",
@@ -9160,7 +9277,8 @@
       "noSePudoCargarEl": "Das Projekt konnte nicht geladen werden",
       "tipoDeProyecto": "Projektart",
       "estadoYNotas": "Status und Notizen",
-      "notasPrivadasInstruccionesEspeciales": "Private Notizen, besondere Anweisungen…"
+      "notasPrivadasInstruccionesEspeciales": "Private Notizen, besondere Anweisungen…",
+      "centroDeConvencionesQuito": "Kongresszentrum, Quito"
     },
     "RadioDevices": {
       "aunNoHayRadiosIp": "Noch keine IP-Funkgeräte",
@@ -9175,7 +9293,8 @@
       "usuarioSip": "SIP-Benutzer",
       "dejaEnBlancoParaConservar": "Leer lassen, um das aktuelle beizubehalten.",
       "porDefectoElHost": "Standard: der Host",
-      "eliminarRadioIp": "IP-Funkgerät löschen"
+      "eliminarRadioIp": "IP-Funkgerät löschen",
+      "activoSeIntentaraMantenerConectado": "Aktiv (die Verbindung wird aufrechterhalten)"
     },
     "RadioDispatch": {
       "configuracion": "Einstellungen",
@@ -9213,14 +9332,16 @@
       "sinActividadRegistradaEnEl": "Keine Aktivität im Zeitraum erfasst.",
       "indicadoresClaveDelServicioDe": "Kennzahlen des Wachdienstes für Ihren Betrieb.",
       "incidentesPorPrioridad": "Vorfälle nach Priorität",
-      "resumenPorSitioDeServicio": "Übersicht nach Einsatzobjekt"
+      "resumenPorSitioDeServicio": "Übersicht nach Einsatzobjekt",
+      "coberturaDeTurnos": "Schichtbesetzung"
     },
     "Reports": {
       "configuracion": "Einstellungen",
       "configuracionDeLaSeccion": "Einstellungen des Bereichs",
       "limpiarBusqueda": "Suche löschen",
       "proximamente": "Demnächst",
-      "buscarUnInforme": "Bericht suchen…"
+      "buscarUnInforme": "Bericht suchen…",
+      "centroDeReportes": "Berichtszentrale"
     },
     "RotationStyleSelect": {
       "patronDeRotacion": "Rotationsmuster",
@@ -9252,7 +9373,11 @@
       "seleccionarPuestosDeVigilancia": "Objekte auswählen*",
       "noHayPuestosDisponibles": "Es sind keine Objekte verfügbar",
       "inicioYFinDelRecorrido": "Beginn und Ende der Fahrt",
-      "eligePuestosDeVigilanciaCon": "Wählen Sie Objekte mit Standort aus, dann zeigt die Karte Reihenfolge und Richtung der Route."
+      "eligePuestosDeVigilanciaCon": "Wählen Sie Objekte mit Standort aus, dann zeigt die Karte Reihenfolge und Richtung der Route.",
+      "enviarNotificacionAntesDeLasPasadasProgramadas": "Benachrichtigung vor den geplanten Anfahrten senden",
+      "forzarRegistroDeEntradaAntesDeComenzarLaRuta": "Einstempeln vor Beginn der Route erzwingen",
+      "noHayPuntosDefinidos": "Keine Punkte definiert",
+      "sinUbicacion": "Kein Standort"
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "Bei Stadtverkehrstempo, ohne die Standzeit an jedem Halt",
@@ -9310,7 +9435,16 @@
       "sacafrancoPuedeCubrirVariosPuestos": "Springer: kann mehrere Objekte besetzen",
       "fijoExclusivoDeEstePuesto": "Stammkraft: nur für dieses Objekt",
       "tipoDeCobertura": "Art der Besetzung",
-      "noHayCambiosQueAplicar": "Es gibt keine Änderungen zu übernehmen."
+      "noHayCambiosQueAplicar": "Es gibt keine Änderungen zu übernehmen.",
+      "arrastraSobreLaFilaDeUnPuestoPara": "Ziehen Sie über die Zeile eines Objekts, um",
+      "coberturaDeDescansos": "Vertretung an Ruhetagen",
+      "coberturaDeFijos": "Besetzung der Stammposten",
+      "noHuboVigilantesAfectados": "Es waren keine Sicherheitskräfte betroffen.",
+      "patronDeRotacion": "Rotationsmuster:",
+      "revisaAntesDePublicar": "Vor dem Veröffentlichen prüfen:",
+      "rotacionSf": "SF-Rotation:",
+      "seMoveraDesde": "Wird verschoben von",
+      "sugeridoSegunLoQueFaltaEseDia": "Vorschlag anhand der Lücken an diesem Tag:"
     },
     "ScheduleTimeline": {
       "duracion": "Dauer:",
@@ -9335,10 +9469,13 @@
       "turnosSinCubrir": "Unbesetzte Schichten",
       "sinTurnosProgramados": "Keine Schichten geplant",
       "coberturaPorSitio": "Besetzung nach Einsatzobjekt",
-      "sinTurnos": "Keine Schichten"
+      "sinTurnos": "Keine Schichten",
+      "coberturaDeTurnos": "Schichtbesetzung"
     },
     "ServiceTypeBadge": {
-      "ejGestionDeAccesoSeguridad": "Z. B. Zutrittsmanagement, Werkschutz, VIP-Schutz..."
+      "ejGestionDeAccesoSeguridad": "Z. B. Zutrittsmanagement, Werkschutz, VIP-Schutz...",
+      "especifiqueUnTipoDeServicioPersonalizado": "Geben Sie eine eigene Dienstleistungsart an.",
+      "sinTipo": "Kein Typ"
     },
     "ShiftAssignModal": {
       "cambialaParaMoverElDia": "— ändern Sie es, um den Ruhetag zu verschieben.",
@@ -9371,7 +9508,9 @@
       "vigilanteReceptorOpcional": "Empfangende Kraft (optional)",
       "cualquierVigilante": "Beliebige Kraft",
       "describeLosDetallesDelIntercambio": "Beschreiben Sie die Einzelheiten des Tauschs…",
-      "enviadaPor": "Gesendet von"
+      "enviadaPor": "Gesendet von",
+      "intercambioDeTurnos": "Schichttausch",
+      "solicitudesDeIntercambio": "Tauschanträge"
     },
     "ShiftStatus": {
       "elementosPorPagina": "Einträge pro Seite",
@@ -9407,12 +9546,14 @@
     "StationGeofencePolygon": {
       "area": "Fläche",
       "buscarDireccionDelPuesto": "Adresse des Objekts suchen…",
-      "perimetro": "Perimeter"
+      "perimetro": "Perimeter",
+      "igualQueElSitio": "Wie das Einsatzobjekt"
     },
     "StationHero": {
       "puestoMovil": "Mobiles Objekt",
       "puestoRenombrado": "Objekt umbenannt",
-      "renombrarPuesto": "Objekt umbenennen"
+      "renombrarPuesto": "Objekt umbenennen",
+      "nadieDeTurnoEnEsteMomento": "Derzeit niemand im Dienst"
     },
     "StationRoster": {
       "dia": "Tag",
@@ -9448,7 +9589,10 @@
       "informacionDeSuscripcion": "Angaben zum Abonnement",
       "suscripcion": "Abonnement",
       "noSePudoCargarLa": "Das Abonnement konnte nicht geladen werden",
-      "gestionaTuPlanPeriodoDe": "Verwalten Sie Ihren Tarif, den Abrechnungszeitraum und die gebuchten Module."
+      "gestionaTuPlanPeriodoDe": "Verwalten Sie Ihren Tarif, den Abrechnungszeitraum und die gebuchten Module.",
+      "gestionarSuscripcion": "Abonnement verwalten",
+      "periodoDePrueba": "Testphase",
+      "suscripcionFacturacion": "Abonnement / Abrechnung"
     },
     "SupervisorCoverage": {
       "ningunPuestoAsignado": "Kein Objekt zugewiesen.",
@@ -9476,7 +9620,8 @@
       "sedesAsignadas": "Zugewiesene Einsatzobjekte",
       "sedesError": "Die Einsatzobjekte konnten nicht gespeichert werden",
       "sedesGuardadas": "Einsatzobjekte gespeichert",
-      "sedesSinRoles": "Die Angaben zum Supervisor wurden noch nicht geladen"
+      "sedesSinRoles": "Die Angaben zum Supervisor wurden noch nicht geladen",
+      "sinNingunaSedeMarcadaSeguiraViendoTodo": "Ohne ein markiertes Einsatzobjekt sieht die Person weiterhin ALLES."
     },
     "SupervisorPositions": {
       "aunNoHayPuestosDe": "Noch keine Supervisor-Positionen",
@@ -9522,7 +9667,8 @@
       "desde": "Von*",
       "hasta": "Bis*",
       "motivo": "Grund*",
-      "describeElMotivo": "Beschreiben Sie den Grund…"
+      "describeElMotivo": "Beschreiben Sie den Grund…",
+      "solicitudesDeTiempoLibre": "Abwesenheitsanträge"
     },
     "TrackingHistory": {
       "hibrido": "Hybrid",
@@ -9533,7 +9679,8 @@
       "noSePudoCargarEl": "Die Strecke konnte nicht geladen werden",
       "reproduceElRecorridoGpsReal": "Spielen Sie die tatsächliche GPS-Strecke Ihrer Kräfte für einen Zeitraum ab.",
       "seleccionaUnVigilanteYUn": "Wählen Sie eine Kraft und einen Zeitraum",
-      "eligeUnVigilanteYLas": "Wählen Sie eine Kraft und die Daten aus und klicken Sie dann auf „Strecke ansehen“, um ihre GPS-Route zu zeichnen."
+      "eligeUnVigilanteYLas": "Wählen Sie eine Kraft und die Daten aus und klicken Sie dann auf „Strecke ansehen“, um ihre GPS-Route zu zeichnen.",
+      "hojaDeRuta": "Fahrtenblatt"
     },
     "TrailMap": {
       "bateria": "Akku",
@@ -9541,7 +9688,8 @@
       "velocidadDeReproduccion": "Wiedergabegeschwindigkeit",
       "velMedia": "Ø-Geschw.",
       "volverAlInicioDelRecorrido": "Zurück zum Anfang der Strecke",
-      "instanteDelRecorrido": "Zeitpunkt der Strecke"
+      "instanteDelRecorrido": "Zeitpunkt der Strecke",
+      "sinRecorridoParaEsteRango": "Keine Wegstrecke für diesen Zeitraum"
     },
     "TrainingCatalog": {
       "sinAccesoAlCatalogo": "Kein Zugriff auf den Katalog"
@@ -9566,7 +9714,8 @@
     "TransferShiftModal": {
       "duracion": "Dauer",
       "trasladarAOtroPuesto": "In ein anderes Objekt versetzen",
-      "ejCubreFaltaEnEl": "Z. B.: Vertretung wegen Ausfall im anderen Objekt"
+      "ejCubreFaltaEnEl": "Z. B.: Vertretung wegen Ausfall im anderen Objekt",
+      "despuesVuelveAutomaticamenteA": "Danach geht es automatisch zurück zu"
     },
     "UserRoleDialog": {
       "descripcion": "Beschreibung",
@@ -9607,7 +9756,9 @@
       "errorEliminandoVehiculos": "Die Fahrzeuge konnten nicht gelöscht werden",
       "registroDeVehiculosDeVisitantes": "Erfassung von Besucher- und Firmenfahrzeugen",
       "propiedadDeLaEmpresa": "Eigentum der Firma",
-      "propiedadDelVigilante": "Eigentum der Wachkraft"
+      "propiedadDelVigilante": "Eigentum der Wachkraft",
+      "anadirVehiculo": "Fahrzeug hinzufügen",
+      "informacionCompletaDelVehiculo": "Vollständige Angaben zum Fahrzeug."
     },
     "VideoActionModals": {
       "critica": "Kritisch",
@@ -9624,7 +9775,8 @@
       "noHayOrigenParaCrear": "Es gibt keine Quelle, aus der der Vorfall erstellt werden kann",
       "supervisorNotificado": "Supervisor benachrichtigt",
       "notaParaElSupervisor": "Notiz für den Supervisor",
-      "detallesDelIncidente": "Einzelheiten des Vorfalls…"
+      "detallesDelIncidente": "Einzelheiten des Vorfalls…",
+      "enlaceParaElCliente": "Link für den Auftraggeber"
     },
     "VideoDevices": {
       "conexion": "Verbindung",
@@ -9639,14 +9791,18 @@
       "conectaYAdministraTusDvr": "Verbinden und verwalten Sie Ihre DVR, NVR und Überwachungskameras.",
       "noHayDispositivos": "Es gibt keine Geräte",
       "agregaTuPrimerDvrNvr": "Fügen Sie Ihr erstes DVR, NVR oder Ihre erste Kamera hinzu, um mit der Videoüberwachung zu beginnen.",
-      "eliminarDispositivo": "Gerät löschen"
+      "eliminarDispositivo": "Gerät löschen",
+      "configuraLosDatosDeConexion": "Legen Sie die Verbindungsdaten des DVR/NVR oder der Kamera fest.",
+      "dispositivosDeVideo": "Videogeräte",
+      "puntoDeServicioOpcional": "Einsatzort (optional)"
     },
     "VideoGatewayModal": {
       "configuracionGo2rtcPegalaEnGo2rtc": "go2rtc-Konfiguration (in go2rtc.yaml einfügen)",
       "configuracionGo2rtcCopiada": "go2rtc-Konfiguration kopiert",
       "urlBaseDelGatewayGo2rtc": "Basis-URL des Gateways (go2rtc)",
       "dondeCorreGo2rtcEnLa": "Wo go2rtc läuft — in der Cloud (wenn das DVR über DDNS erreichbar ist) oder als Bridge vor Ort.",
-      "despliegaGo2rtcConEsteConfig": "Richten Sie go2rtc mit dieser Konfiguration ein; sie holt den RTSP-Stream des DVR und stellt ihn im CRM bereit."
+      "despliegaGo2rtcConEsteConfig": "Richten Sie go2rtc mit dieser Konfiguration ein; sie holt den RTSP-Stream des DVR und stellt ihn im CRM bereit.",
+      "gatewayDeVideo": "Video-Gateway"
     },
     "VideoMonitoring": {
       "ningunaCamaraTransmitiendo": "Keine Kamera überträgt",
@@ -9657,7 +9813,8 @@
       "filtrarPorEquipoGrabador": "Nach Aufzeichnungsgerät filtern",
       "todosLosEquipos": "Alle Geräte",
       "filtrarPorPuesto": "Nach Objekt filtern",
-      "todosLosPuestos": "Alle Objekte"
+      "todosLosPuestos": "Alle Objekte",
+      "monitoreoDeVideo": "Videoüberwachung"
     },
     "VideoPlayer": {
       "camaraFueraDeLinea": "Kamera offline",
@@ -9672,7 +9829,8 @@
       "noSePudieronCargarLos": "Die Standorte konnten nicht geladen werden",
       "creaUnSitioDescargaSu": "Legen Sie einen Standort an, laden Sie dessen Relay (docker-compose) herunter und führen Sie es auf einem Rechner am Standort des DVR aus.",
       "nuevoSitioRelay": "Neuer Relay-Standort",
-      "eliminarSitioRelay": "Relay-Standort löschen"
+      "eliminarSitioRelay": "Relay-Standort löschen",
+      "claveDelSitio": "Objektschlüssel:"
     },
     "VigiaUsage": {
       "actividadUltimos30Dias": "Aktivität · letzte 30 Tage",
@@ -9690,7 +9848,8 @@
       "noSePudoAbrirVentana": "Das Druckfenster konnte nicht geöffnet werden",
       "buscarRegistroDeVisitas": "Besuchsprotokoll durchsuchen",
       "registradoPor": "Erfasst von",
-      "salidoPor": "Ausgetragen von"
+      "salidoPor": "Ausgetragen von",
+      "registroDeVisitas": "Besucherbuch"
     },
     "configuracion": {
       "espanol": "Spanisch",
@@ -9726,11 +9885,13 @@
       "lasTareasDeLosPuestos": "Die Objektaufgaben erscheinen hier, sobald sie erstellt werden.",
       "nuevaTarea": "Neue Aufgabe",
       "describeLaTarea": "Beschreiben Sie die Aufgabe…",
-      "detalleDeLaTarea": "Aufgabendetails"
+      "detalleDeLaTarea": "Aufgabendetails",
+      "imagenDeReferencia": "Referenzbild"
     },
     "TrendPanel": {
       "maximo": "Maximum",
-      "vsMesAnterior": "vs. Vormonat"
+      "vsMesAnterior": "vs. Vormonat",
+      "sinDatosParaElPeriodo": "Keine Daten für den Zeitraum"
     },
     "RouteDetailModal": {
       "vehiculo": "Fahrzeug",
@@ -9756,7 +9917,10 @@
       "seleccionaUnaVigilante": "Wachkraft auswählen",
       "seleccionaElEstado": "Status auswählen",
       "detallesDelMemo": "Memo-Details",
-      "detalleDelMemo": "Memo-Details"
+      "detalleDelMemo": "Memo-Details",
+      "creaUnMemoRapidoParaElEquipo": "Erstellen Sie eine kurze Mitteilung für das Sicherheitsteam.",
+      "filtrosDeMemo": "Mitteilungsfilter",
+      "pendientesDeAcuse": "Lesebestätigung ausstehend"
     },
     "EditRoutePage": {
       "editarRuta": "Route bearbeiten",
@@ -9774,7 +9938,9 @@
       "losVigilantesAsignadosAEste": "Die diesem Objekt zugewiesenen Wachkräfte werden automatisch hinzugefügt, und die Gruppe bleibt mit den Zuweisungen aktuell.",
       "miembrosActualizadosDesdeLasAsignaciones": "Mitglieder aus den Zuweisungen aktualisiert",
       "elGrupoNoTieneMiembros": "Die Gruppe hat keine Mitglieder",
-      "anadeVigilantesConElBuscador": "Fügen Sie Wachkräfte über die Suche hinzu oder synchronisieren Sie mit den Zuweisungen des Objekts."
+      "anadeVigilantesConElBuscador": "Fügen Sie Wachkräfte über die Suche hinzu oder synchronisieren Sie mit den Zuweisungen des Objekts.",
+      "sincronizarConAsignaciones": "Mit Zuweisungen synchronisieren",
+      "soloAnunciosLosMiembrosNo": "Nur Ankündigungen (Mitglieder können nicht antworten)"
     },
     "PassdownsPage": {
       "pasesDeTurno": "Schichtübergaben",
@@ -9806,7 +9972,9 @@
       "nuevoPuestoDeSupervisor": "Neues Supervisor-Objekt",
       "configuraElTurnoYLa": "Legen Sie Schicht und Rotation fest (Tag/Nacht). Die zugewiesenen Supervisoren folgen dieser Rotation.",
       "nombrePEjAguila2": "Name (z. B. Aguila2) *",
-      "tipoDeTurno": "Schichtart"
+      "tipoDeTurno": "Schichtart",
+      "entradaDia": "Beginn (Tag)",
+      "salidaDia": "Ende (Tag)"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Neuer Supervisor",
@@ -9846,7 +10014,9 @@
       "errorAlCrearIncidente": "Der Vorfall konnte nicht erstellt werden",
       "nuevoIncidente": "Neuer Vorfall",
       "registraUnNuevoIncidenteY": "Erfassen Sie einen neuen Vorfall und benachrichtigen Sie die zuständige Wachkraft.",
-      "vigilanteAInformar": "Zu benachrichtigende Wachkraft"
+      "vigilanteAInformar": "Zu benachrichtigende Wachkraft",
+      "noHayVigilantesAsignadosAEstaEstacion": "Diesem Objekt sind keine Sicherheitskräfte zugewiesen",
+      "seleccioneUnaEstacionPrimero": "Wählen Sie zuerst ein Objekt"
     },
     "NewSecurityGuardPage": {
       "segundoNombre": "Zweiter Vorname",
@@ -9863,7 +10033,9 @@
       "certificadoMedicoVigente": "Gültiges ärztliches Attest",
       "evaluacionPsicologicaActualizada": "Aktuelle psychologische Begutachtung",
       "certificacionDeVigilanteNivel1": "Zertifizierung Wachkraft Stufe 1",
-      "certificacionDeVigilanteNivel2": "Zertifizierung Wachkraft Stufe 2"
+      "certificacionDeVigilanteNivel2": "Zertifizierung Wachkraft Stufe 2",
+      "certificadoDeNoAntecedentesDeViolenciaFamiliar": "Bescheinigung über keine Vorstrafen wegen häuslicher Gewalt",
+      "documentoDeCredencialProfesional": "Nachweis des Dienstausweises"
     },
     "SecurityGuardsPage": {
       "telefono": "Telefon",
@@ -9887,7 +10059,10 @@
       "noSePudoActualizarEl": "Der Kurs konnte nicht aktualisiert werden.",
       "elCursoQueBuscasNo": "Der gesuchte Kurs existiert nicht oder ist nicht verfügbar.",
       "detallesDelCurso": "Kursdetails",
-      "losCursosPublicadosPuedenAsignarse": "Veröffentlichte Kurse können den Wachkräften zugewiesen werden."
+      "losCursosPublicadosPuedenAsignarse": "Veröffentlichte Kurse können den Wachkräften zugewiesen werden.",
+      "cursoNoEncontrado": "Kurs nicht gefunden",
+      "plantillaDeCertificadoHtmlOpcional": "Zertifikatsvorlage (HTML optional)",
+      "urlDePortada": "URL des Titelbilds"
     },
     "TrainingEnrollmentsPage": {
       "sinAcceso": "Kein Zugang",
@@ -9897,7 +10072,8 @@
       "noHayInscripciones": "Keine Anmeldungen vorhanden",
       "cuandoAsignesEsteCursoA": "Sobald Sie diesen Kurs einer Wachkraft zuweisen, erscheint hier deren Fortschritt.",
       "detalleDeProgreso": "Fortschrittsdetails",
-      "noAprobado": "Nicht bestanden"
+      "noAprobado": "Nicht bestanden",
+      "progresoDeVigilantes": "Fortschritt der Sicherheitskräfte"
     },
     "VehiclesPage": {
       "vehiculo": "Fahrzeug",
@@ -9924,7 +10100,8 @@
       "sinDatosDeLaRonda": "Keine Daten zum Rundgang",
       "estaRondaNoTienePuntos": "Dieser Rundgang hat keine Kontrollpunkte.",
       "fotoDelEscaneo": "Foto des Scans",
-      "fotoDeLaRonda": "Foto des Rundgangs"
+      "fotoDeLaRonda": "Foto des Rundgangs",
+      "noEscaneado": "Nicht gescannt"
     },
     "EditSecurityGuardPage": {
       "noTienesPermisoParaEditar": "Sie haben keine Berechtigung, Wachkräfte zu bearbeiten",
@@ -9946,7 +10123,8 @@
     "GuardReviewsPage": {
       "promedioDelVigilante": "Durchschnitt der Wachkraft",
       "cuandoUnClienteCalifiqueA": "Sobald ein Auftraggeber diese Wachkraft in seiner App bewertet, erscheint die Bewertung hier.",
-      "detalleParaConversarConEl": "Details für das Gespräch mit der Wachkraft…"
+      "detalleParaConversarConEl": "Details für das Gespräch mit der Wachkraft…",
+      "observacion": "Anmerkung"
     },
     "GuardSummarypage": {
       "esteVigilanteTodaviaNoTiene": "Dieser Wachkraft ist noch kein Objekt und kein Einsatzobjekt zugewiesen. Weisen Sie sie im Reiter „Einsatzobjekt und Objekte“ zu.",
@@ -9971,7 +10149,8 @@
     "MisAvisosPage": {
       "noSePudieronCargarTus": "Ihre Einstellungen konnten nicht geladen werden.",
       "guardadoAplicaDesdeElProximo": "Gespeichert. Gilt ab der nächsten Benachrichtigung.",
-      "queQuieresRecibirTuY": "Was Sie persönlich erhalten möchten und auf welchem Weg. Es betrifft niemanden sonst in Ihrer Firma."
+      "queQuieresRecibirTuY": "Was Sie persönlich erhalten möchten und auf welchem Weg. Es betrifft niemanden sonst in Ihrer Firma.",
+      "aquiSoloPuedes": "Hier können Sie nur"
     },
     "LicensesTypePage": {
       "losPermisosYLicenciasQue": "Die Abwesenheiten und Zertifikate, die Ihr Personal beantragen oder nachweisen kann.",
@@ -10005,7 +10184,9 @@
       "articuloEliminado": "Artikel gelöscht",
       "catalogoDeEquiposYRecursos": "Katalog der Ausrüstung und Ressourcen der Firma",
       "enMalEstado": "In schlechtem Zustand",
-      "buscarPorNombre": "Nach Namen suchen…"
+      "buscarPorNombre": "Nach Namen suchen…",
+      "agregarPrimerArticulo": "Ersten Artikel hinzufügen",
+      "nuevoArticulo": "Neuer Artikel"
     },
     "RoutesPage": {
       "seleccionaAlMenosUnaRuta": "Wählen Sie mindestens eine Route aus.",
@@ -10013,7 +10194,8 @@
       "buscarRuta": "Route suchen",
       "turnoNoche": "Nachtschicht",
       "noPudimosEncontrarNingunaRuta": "Wir konnten keine Route finden, die zu Ihrer Suche passt.",
-      "seleccionarRuta": "Route auswählen"
+      "seleccionarRuta": "Route auswählen",
+      "listadoDeRutas": "Routenliste"
     },
     "TrainingCatalogPage": {
       "noSePudoCargarEl": "Der Katalog konnte nicht geladen werden.",
@@ -10033,7 +10215,8 @@
       "buscarCursos": "Kurse suchen",
       "noSeEncontraronCursos": "Keine Kurse gefunden",
       "creaTuPrimerCursoDe": "Erstellen Sie Ihren ersten Schulungskurs für Ihre Wachkräfte.",
-      "nuevoCurso": "Neuer Kurs"
+      "nuevoCurso": "Neuer Kurs",
+      "cursosDeEntrenamiento": "Schulungskurse"
     },
     "PatrullaBoardPage": {
       "rutasQueElSupervisorDebe": "Routen, die der Supervisor abfahren muss, und deren Status für heute.",
@@ -10043,7 +10226,170 @@
       "errorSubiendoImagenDelVehiculo": "Das Fahrzeugbild konnte nicht hochgeladen werden",
       "vehiculoActualizado": "Fahrzeug aktualisiert",
       "registraLosDatosDelVehiculo": "Erfassen Sie die Daten des Patrouillenfahrzeugs",
-      "delCliente": "Des Auftraggebers"
+      "delCliente": "Des Auftraggebers",
+      "quitarFotografia": "Foto entfernen",
+      "tocaLaImagenParaElegir": "Tippen Sie auf das Bild, um ein Foto des Fahrzeugs auszuwählen."
+    },
+    "ActivityStream": {
+      "parteDeNovedades": "Lagebericht"
+    },
+    "AdminUserCardsGrid": {
+      "sinRol": "Keine Rolle"
+    },
+    "AlarmActionPlan": {
+      "planDeAccion": "Maßnahmenplan"
+    },
+    "AlarmReports": {
+      "reportesDeFalsasAlarmas": "Fehlalarmberichte",
+      "sinCasosCerradosConDisposicionEnElPeriodo": "Keine im Zeitraum mit Abschlussgrund geschlossenen Fälle."
+    },
+    "ApiKeysPage": {
+      "aunNoHayLlaves": "Noch keine Schlüssel",
+      "comoSeUsa": "Verwendung",
+      "copiaTuClaveAhora": "Schlüssel jetzt kopieren",
+      "crearLlaveDeApi": "API-Schlüssel erstellen",
+      "elSistemaExternoLlamaA": "Das externe System richtet Anfragen an",
+      "llavesDeApi": "API-Schlüssel",
+      "yaLaGuarde": "Ist gespeichert"
+    },
+    "AppErrorBoundary": {
+      "estaSeccionNoSePudoMostrar": "Dieser Bereich konnte nicht angezeigt werden"
+    },
+    "BottomSheet": {
+      "ajustarLaAlturaDelPanel": "Höhe des Panels anpassen"
+    },
+    "CheckInOut": {
+      "informeDeEntradaSalida": "Bericht Ein- und Ausstempeln"
+    },
+    "CheckpointLocationPicker": {
+      "radioDeCobertura": "Erfassungsradius",
+      "tocaElMapaParaColocarlo": "Tippen Sie auf die Karte, um ihn zu platzieren."
+    },
+    "ClientCardsGrid": {
+      "sinClientes": "Keine Auftraggeber"
+    },
+    "CompanyDocumentsSection": {
+      "documentosLegalesDeLaEmpresa": "Rechtsdokumente des Unternehmens"
+    },
+    "CompanyPoliciesTable": {
+      "nuevaPolitica": "Neue Richtlinie"
+    },
+    "DocumentUpload": {
+      "arrastraOHazClicParaAdjuntar": "Ziehen oder klicken zum Anhängen"
+    },
+    "ExtremoRutaField": {
+      "usarEstaUbicacion": "Diesen Standort verwenden"
+    },
+    "GeoFenceLog": {
+      "registrosDeGeoVallas": "Geofence-Protokolle"
+    },
+    "GuardIdleLog": {
+      "registrosDeVigilanteInactivo": "Protokolle inaktiver Sicherheitskräfte"
+    },
+    "GuardKpi": {
+      "indicadoresDeDesempenoPorVigilante": "Leistungskennzahlen je Sicherheitskraft: Pünktlichkeit, Rundgänge und Erfüllung.",
+      "informeDeKpiDelVigilante": "KPI-Bericht der Sicherheitskraft"
+    },
+    "GuardTypeahead": {
+      "sinResultados": "Keine Ergebnisse."
+    },
+    "Incident": {
+      "informeDeIncidente": "Vorfallbericht"
+    },
+    "License": {
+      "credencialesYLicenciasDelPersonal": "Dienstausweise und Lizenzen des Personals mit ihren Ablaufdaten.",
+      "registroDeLicencias": "Lizenzregister"
+    },
+    "NoWorkspaceAccess": {
+      "sesionIniciadaComo": "Angemeldet als",
+      "sinAccesoAUnEspacioDeTrabajo": "Kein Zugang zu einem Arbeitsbereich"
+    },
+    "NominaHoursSummary": {
+      "eligeOtroRangoDeFechas": "Wählen Sie einen anderen Zeitraum und erstellen Sie die Zusammenfassung erneut.",
+      "resumenDeHoras": "Stundenübersicht",
+      "sinDatosEnElRango": "Keine Daten im Zeitraum"
+    },
+    "NotificationsPanel": {
+      "resolverConVigia": "Mit VigIA lösen",
+      "sinNotificaciones": "Keine Benachrichtigungen"
+    },
+    "Passdown": {
+      "registrosDeEntrega": "Protokolle der Schichtübergabe"
+    },
+    "PostKpi": {
+      "indicadoresDeDesempenoPorPuesto": "Leistungskennzahlen je Objekt: Besetzung, Rundgänge und Vorfälle.",
+      "informeDeKpiDelPuesto": "KPI-Bericht des Objekts"
+    },
+    "PostSiteImportDialog": {
+      "estructuraDeColumnasRequerida": "Erforderlicher Spaltenaufbau"
+    },
+    "ProfileUserPage": {
+      "perfilDelUsuario": "Benutzerprofil"
+    },
+    "ProjectBadge": {
+      "sinTipo": "Kein Typ"
+    },
+    "QuizManager": {
+      "enunciadoDeLaPregunta": "Fragetext",
+      "opcion": "Option",
+      "puntajeParaAprobar": "Bestehensgrenze:",
+      "sinCuestionario": "Kein Test"
+    },
+    "ScheduleCard": {
+      "sinHorario": "Kein Dienstplan",
+      "tocaUnVigilanteParaCambiarlo": "Tippen Sie auf eine Sicherheitskraft, um sie zu wechseln."
+    },
+    "SiteTour": {
+      "informeDeRecorridosDelSitio": "Bericht der Rundgänge"
+    },
+    "StaticMapImage": {
+      "abrirElMapaInteractivo": "Interaktive Karte öffnen",
+      "explorarElMapa": "Karte erkunden"
+    },
+    "SupervisionSection": {
+      "configurarPuestosDeSupervision": "Aufsichtsobjekte einrichten",
+      "puestosDeSupervisionSinCubrir": "Unbesetzte Aufsichtsobjekte",
+      "sinSupervisoresAsignados": "Keine Einsatzleiter zugewiesen",
+      "supervision": "Aufsicht"
+    },
+    "SupervisorKpisPage": {
+      "indicadoresDelSupervisor": "Kennzahlen des Einsatzleiters"
+    },
+    "SupervisorRegistration": {
+      "tuCuentaCon": "Ihr Konto bei"
+    },
+    "SupervisorSchedulePage": {
+      "configurarRotacion": "Rotation einrichten",
+      "sinHorarioGenerado": "Kein Dienstplan erstellt"
+    },
+    "Task": {
+      "informeDeTareas": "Aufgabenbericht"
+    },
+    "TourCheckPoint": {
+      "registrosDePuntosDeControl": "Kontrollpunkt-Protokolle"
+    },
+    "UserPermissionOverrides": {
+      "pruebaConOtroTextoDe": "Versuchen Sie einen anderen Suchbegriff."
+    },
+    "VehiclePatrol": {
+      "informeDePatrullaVehicular": "Bericht Fahrzeugstreife",
+      "recorridosDePatrullajeVehicular": "Fahrten der Fahrzeugstreife: Routen, Halte und Zeiten."
+    },
+    "VerifyEmailGate": {
+      "verificaTuCorreoElectronico": "Bestätigen Sie Ihre E-Mail-Adresse"
+    },
+    "VideoEvents": {
+      "eventosDeVideo": "Videoereignisse",
+      "noHayEventos": "Keine Ereignisse"
+    },
+    "VideoSharedClip": {
+      "enlaceNoDisponible": "Link nicht verfügbar",
+      "esteEnlaceEsPrivadoYPuedeCaducarNoLoCompartas": "Dieser Link ist privat und kann ablaufen. Geben Sie ihn nicht weiter.",
+      "procesandoElVideo": "Video wird verarbeitet",
+      "videoCompartidoDeFormaSegura": "Video sicher geteilt"
+    },
+    "WatchMode": {
+      "registrosDeModoVigilancia": "Protokolle Überwachungsmodus"
     }
   },
   "visitantes": {
@@ -10173,5 +10519,18 @@
     "loading": "Wird geladen…",
     "refresh": "Aktualisieren"
   },
-  "loading": "Wird geladen..."
+  "loading": "Wird geladen...",
+  "controlCenter": {
+    "errorBoundary": {
+      "title": "Die Leitstelle konnte nicht geladen werden"
+    }
+  },
+  "routes": {
+    "optimizacion": {
+      "ahorroDeEstaOptimizacion": "Ersparnis dieser Optimierung",
+      "distanciaDelRecorrido": "Streckenlänge",
+      "sinOptimizar": "Nicht optimiert",
+      "yaEnMejorOrden": "Die Reihenfolge war bereits die bestmögliche"
+    }
+  }
 }

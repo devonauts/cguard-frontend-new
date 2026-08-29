@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { KeyRound, Plus, Copy, Check, Trash2, ShieldCheck, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import AppLayout from "@/layouts/app-layout";
@@ -36,6 +37,7 @@ function fecha(v: string | null): string {
 }
 
 export default function ApiKeysPage() {
+  const { t } = useTranslation();
   const [keys, setKeys] = useState<ApiKey[]>([]);
   const [loading, setLoading] = useState(true);
   const [openCreate, setOpenCreate] = useState(false);
@@ -110,10 +112,10 @@ export default function ApiKeysPage() {
 
   return (
     <AppLayout>
-      <SettingsLayout navKey="configuracion" title="Llaves de API">
+      <SettingsLayout navKey="configuracion" title={t('ui.ApiKeysPage.llavesDeApi', 'Llaves de API')}>
         <PageContainer>
           <PageHeader
-            title="Llaves de API"
+            title={t('ui.ApiKeysPage.llavesDeApi', 'Llaves de API')}
             subtitle="Da a un sistema externo acceso de solo lectura a tus trabajadores y horas — por ejemplo, para pagar la nómina."
             icon={<KeyRound size={20} />}
             actions={
@@ -124,8 +126,8 @@ export default function ApiKeysPage() {
             }
           />
 
-          <InfoNote tone="info" icon={<ShieldCheck size={16} />} title="Cómo se usa">
-            El sistema externo llama a <code>https://api.cguardpro.com/api/v1</code> con la llave en la
+          <InfoNote tone="info" icon={<ShieldCheck size={16} />} title={t('ui.ApiKeysPage.comoSeUsa', 'Cómo se usa')}>
+            {t('ui.ApiKeysPage.elSistemaExternoLlamaA', 'El sistema externo llama a')} <code>https://api.cguardpro.com/api/v1</code> con la llave en la
             cabecera <code>Authorization: Bearer …</code>. Solo puede <strong>leer</strong> lo que marques;
             nunca escribe ni ve incidentes, mensajería ni configuración. La clave secreta se muestra
             <strong> una sola vez</strong> al crearla.
@@ -135,7 +137,7 @@ export default function ApiKeysPage() {
             {loading ? (
               <p className="text-sm text-[color:var(--ink-soft)]">Cargando…</p>
             ) : keys.length === 0 ? (
-              <EmptyState icon={<KeyRound size={22} />} title="Aún no hay llaves"
+              <EmptyState icon={<KeyRound size={22} />} title={t('ui.ApiKeysPage.aunNoHayLlaves', 'Aún no hay llaves')}
                 description="Crea una llave para conectar tu sistema de nómina u otro servicio externo." />
             ) : (
               <div className="flex flex-col gap-3">
@@ -179,7 +181,7 @@ export default function ApiKeysPage() {
         </PageContainer>
 
         {/* ── Modal de creación ──────────────────────────────── */}
-        <Modal open={openCreate} onOpenChange={setOpenCreate} title="Crear llave de API"
+        <Modal open={openCreate} onOpenChange={setOpenCreate} title={t('ui.ApiKeysPage.crearLlaveDeApi', 'Crear llave de API')}
           icon={<KeyRound size={18} />}
           description="Dale un nombre y marca solo los permisos que el sistema externo necesita."
           footer={
@@ -226,12 +228,12 @@ export default function ApiKeysPage() {
         </Modal>
 
         {/* ── Modal: la clave, una sola vez ──────────────────── */}
-        <Modal open={!!secret} onOpenChange={(o) => { if (!o) setSecret(null); }} title="Copia tu clave ahora"
+        <Modal open={!!secret} onOpenChange={(o) => { if (!o) setSecret(null); }} title={t('ui.ApiKeysPage.copiaTuClaveAhora', 'Copia tu clave ahora')}
           icon={<AlertTriangle size={18} />}
           description="Esta es la única vez que se muestra la clave completa. Guárdala en un lugar seguro."
           footer={
             <div className="flex justify-end">
-              <button type="button" onClick={() => setSecret(null)} className="cg-btn-brand cg-focus rounded-full px-4 py-2 text-sm font-semibold">Ya la guardé</button>
+              <button type="button" onClick={() => setSecret(null)} className="cg-btn-brand cg-focus rounded-full px-4 py-2 text-sm font-semibold">{t('ui.ApiKeysPage.yaLaGuarde', 'Ya la guardé')}</button>
             </div>
           }
         >

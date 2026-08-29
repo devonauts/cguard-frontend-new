@@ -143,6 +143,7 @@ function RondaDetailModal({ open, onOpenChange, tenantId, assignmentId, fallback
   assignmentId: string | null;
   fallbackName?: string;
 }) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [detail, setDetail] = useState<RondaDetail | null>(null);
@@ -240,7 +241,7 @@ function RondaDetailModal({ open, onOpenChange, tenantId, assignmentId, fallback
                             <span className="font-medium">{c.name}</span>
                             {c.scanned
                               ? <span className="text-xs" style={{ color: 'var(--ink-soft)' }}>{fmt(c.scan?.scannedAt)}</span>
-                              : <StatusBadge tone="bad" dot={false}>No escaneado</StatusBadge>}
+                              : <StatusBadge tone="bad" dot={false}>{t('ui.StationRondaHistory.noEscaneado', 'No escaneado')}</StatusBadge>}
                           </div>
                           {c.instructions && (
                             <p className="mt-0.5 text-xs" style={{ color: 'var(--ink-soft)' }}>{c.instructions}</p>

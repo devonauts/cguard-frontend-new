@@ -23,7 +23,7 @@ type Props = {
   onSubmit: (values: LicenseTypeDialogValues) => Promise<void> | void;
 };
 
-export default function LicenseTypeDialog({ open, onOpenChange, title = "Nuevo Tipo de Licencia", defaultValues, onSubmit }: Props) {
+export default function LicenseTypeDialog({ open, onOpenChange, title, defaultValues, onSubmit }: Props) {
   const { t } = useTranslation();
   const form = useForm<LicenseTypeDialogValues>({
     resolver: zodResolver(schema),
@@ -44,7 +44,7 @@ export default function LicenseTypeDialog({ open, onOpenChange, title = "Nuevo T
       open={open}
       onOpenChange={onOpenChange}
       icon={<IdCard />}
-      title={title}
+      title={title ?? t('licenseTypes.dialog.title.create', 'Nuevo Tipo de Licencia')}
       description={t('licenseTypes.dialog.description', { defaultValue: 'Formulario para crear o editar un tipo de licencia.' })}
     >
       <Form {...form}>

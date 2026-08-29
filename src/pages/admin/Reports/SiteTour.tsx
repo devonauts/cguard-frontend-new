@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Route } from "lucide-react";
 import DataReport, { type ReportColumn } from "./DataReport";
 import { formatDateTime, rangeBounds, REPORT_ROW_LIMIT, warnIfCapped } from "./reportFormat";
@@ -34,6 +35,7 @@ const columns: ReportColumn<TagScan>[] = [
 ];
 
 export default function SiteTour() {
+  const { t } = useTranslation();
   const [abierto, setAbierto] = useState(false);
   const [escaneoId, setEscaneoId] = useState<string | null>(null);
   // Cambiar un veredicto no debe obligar a recargar el informe entero: se
@@ -57,7 +59,7 @@ export default function SiteTour() {
   return (
     <>
       <DataReport<TagScan>
-        title="Informe de Recorridos del Sitio"
+        title={t('ui.SiteTour.informeDeRecorridosDelSitio', 'Informe de Recorridos del Sitio')}
         description="Escaneos de rondas: pulsa una fila para ver la foto, la observación, la ubicación y aceptar o rechazar el punto."
         icon={Route}
         columns={columns}

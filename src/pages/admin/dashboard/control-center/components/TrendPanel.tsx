@@ -89,7 +89,7 @@ export function TrendPanel({ incidents, response, acquisition, className }: {
         />
       ) : (
         <div className="grid place-items-center text-xs" style={{ height: 190, color: "var(--ink-faint)" }}>
-          Sin datos para el periodo
+          {t('ui.TrendPanel.sinDatosParaElPeriodo', 'Sin datos para el periodo')}
         </div>
       )}
 

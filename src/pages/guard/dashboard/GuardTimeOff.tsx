@@ -144,7 +144,7 @@ export default function GuardTimeOff() {
         <EmptyState
           icon={<CalendarOff />}
           title={t('ui.GuardTimeOff.sinSolicitudes')}
-          description="No tienes solicitudes de permiso."
+          description={t('ui.GuardTimeOff.noTienesSolicitudesDePermiso', 'No tienes solicitudes de permiso.')}
         />
       ) : (
         <div className="space-y-2.5">

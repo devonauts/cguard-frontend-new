@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useLocation } from 'react-router-dom';
 import AppLayout from '@/layouts/app-layout';
 import ClientsLayout from '@/layouts/ClientsLayout';
@@ -22,6 +23,7 @@ import { SkeletonCards, EmptyState, FadeIn } from '@/components/kit';
 import { Building2 } from 'lucide-react';
 
 export default function ClientsDetails() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const location = useLocation();
   const [client, setClient] = useState<Client | null>(null);
@@ -161,8 +163,8 @@ export default function ClientsDetails() {
             <FadeIn>
               <EmptyState
                 icon={<Building2 />}
-                title="No se pudo cargar el cliente"
-                description="Vuelve a intentarlo o revisa que el cliente exista."
+                title={t('clients.loadClientError', 'No se pudo cargar el cliente')}
+                description={t('clients.loadClientErrorHint', 'Vuelve a intentarlo o revisa que el cliente exista.')}
               />
             </FadeIn>
           )}

@@ -137,7 +137,7 @@ export default function AdminUserDetailPage() {
               <div className="flex shrink-0 flex-wrap items-center gap-2">
                 {isSupervisor && (
                   <Button variant="outline" size="sm" onClick={() => navigate(`/supervisors/${id}`)}>
-                    <UserCog className="mr-1 h-4 w-4" /> Perfil de supervisor
+                    <UserCog className="mr-1 h-4 w-4" /> {t('adminOfficeUsers.rowActions.supervisorProfile', 'Perfil de supervisor')}
                   </Button>
                 )}
                 <Button variant="brand" size="sm" onClick={() => navigate(`/back-office/edit/${id}`)}>
@@ -187,7 +187,7 @@ export default function AdminUserDetailPage() {
                   <Field label={t('comun.nombreCompleto')} value={name} />
                   <Field label={t("ui.AdminUserDetail.correoElectronico", "Correo electrónico")} value={user.email} />
                   <Field label={t("ui.AdminUserDetail.telefono", "Teléfono")} value={user.phoneNumber || user.phone} />
-                  <Field label="Rol de acceso" value={roleName} />
+                  <Field label={t('ui.AdminUserDetail.rolDeAcceso', 'Rol de acceso')} value={roleName} />
                   <Field label={t('ui.AdminUserDetailPage.miembroDesde')} value={fmtDate(user.createdAt)} />
                   <Field label={t('comun.estado')} value={status.label} />
                 </div>

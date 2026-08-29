@@ -102,7 +102,7 @@ export default function OperationSetupAlert({
             className="cg-focus inline-flex items-center gap-1.5 text-sm font-semibold hover:underline"
             style={{ color: 'var(--brand-text)' }}
           >
-            Configurar la operación
+            {t('ui.OperationSetupAlert.configurarLaOperacion', 'Configurar la operación')}
             <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         ) : null}

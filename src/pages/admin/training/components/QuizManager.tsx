@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -28,6 +29,7 @@ interface QForm {
 const blankQ = (): QForm => ({ prompt: '', options: ['', ''], correctIndex: 0 });
 
 export default function QuizManager({ courseId, quiz, passingScore, readOnly, onChange }: Props) {
+  const { t } = useTranslation();
   const [editing, setEditing] = useState(false);
   const [passPct, setPassPct] = useState<number>(quiz?.passPct ?? passingScore ?? 70);
   // Se hidrata del cuestionario guardado. Antes arrancaba SIEMPRE en 5 y el
@@ -112,7 +114,7 @@ export default function QuizManager({ courseId, quiz, passingScore, readOnly, on
                   <CheckCircle2 className="h-5 w-5" style={{ color: 'var(--ok-text)' }} /> Cuestionario configurado
                 </div>
                 <p className="mt-1 flex items-center gap-2 text-sm" style={{ color: 'var(--ink-soft)' }}>
-                  Puntaje para aprobar: <StatusBadge tone="green" dot={false}>{quiz.passPct}%</StatusBadge>
+                  {t('ui.QuizManager.puntajeParaAprobar', 'Puntaje para aprobar:')} <StatusBadge tone="green" dot={false}>{quiz.passPct}%</StatusBadge>
                 </p>
               </div>
               {!readOnly && (
@@ -124,7 +126,7 @@ export default function QuizManager({ courseId, quiz, passingScore, readOnly, on
           ) : (
             <EmptyState
               icon={<HelpCircle />}
-              title="Sin cuestionario"
+              title={t('ui.QuizManager.sinCuestionario', 'Sin cuestionario')}
               description="Un cuestionario es opcional. Si lo agregas, el vigilante debe aprobarlo para completar el curso."
               action={
                 !readOnly ? (
@@ -145,7 +147,7 @@ export default function QuizManager({ courseId, quiz, passingScore, readOnly, on
       <Section title="Editar cuestionario" icon={<ClipboardList />} contentClassName="space-y-4">
         <div className="grid max-w-md grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label>Puntaje para aprobar (%)</Label>
+            <Label>{t('comun.puntajeParaAprobar', 'Puntaje para aprobar (%)')}</Label>
             <Input type="number" min={0} max={100} value={passPct} onChange={(e) => setPassPct(Number(e.target.value))} />
           </div>
           <div className="space-y-2">
@@ -169,7 +171,7 @@ export default function QuizManager({ courseId, quiz, passingScore, readOnly, on
                   <button aria-label="Eliminar" className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md" style={{ color: 'var(--bad-text)' }} onClick={() => removeQuestion(qi)}><Trash2 className="h-4 w-4" /></button>
                 )}
               </div>
-              <Input placeholder="Enunciado de la pregunta" value={q.prompt} onChange={(e) => setQ(qi, { prompt: e.target.value })} />
+              <Input placeholder={t('ui.QuizManager.enunciadoDeLaPregunta', 'Enunciado de la pregunta')} value={q.prompt} onChange={(e) => setQ(qi, { prompt: e.target.value })} />
               <div className="space-y-2">
                 {q.options.map((o, oi) => (
                   <div key={oi} className="flex items-center gap-2">
@@ -188,7 +190,7 @@ export default function QuizManager({ courseId, quiz, passingScore, readOnly, on
                   </div>
                 ))}
                 <Button type="button" size="sm" variant="outline" onClick={() => addOption(qi)}>
-                  <Plus className="h-3 w-3 mr-1" /> Opción
+                  <Plus className="h-3 w-3 mr-1" /> {t('ui.QuizManager.opcion', 'Opción')}
                 </Button>
               </div>
             </div>

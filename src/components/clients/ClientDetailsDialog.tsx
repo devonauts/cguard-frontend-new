@@ -72,10 +72,10 @@ export function ClientDetailsDialog({
             <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle className="text-center">
-                        Detalles del Cliente
+                        {t('ui.ClientDetailsDialog.detallesDelCliente', 'Detalles del Cliente')}
                     </DialogTitle>
                     <DialogDescription>
-                        Información detallada del cliente seleccionado.
+                        {t('ui.ClientDetailsDialog.informacionDetalladaDelCliente', 'Información detallada del cliente seleccionado.')}
                     </DialogDescription>
                 </DialogHeader>
 

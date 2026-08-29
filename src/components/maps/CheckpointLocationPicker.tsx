@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MapContainer, TileLayer, Marker, Circle, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -105,6 +106,7 @@ export default function CheckpointLocationPicker({
    *  postal no distingue el vestíbulo de la azotea, y una distancia sí. */
   reference?: { lat: number; lng: number; label?: string } | null;
 }) {
+  const { t } = useTranslation();
   const hasPin = lat != null && lng != null;
   const center: [number, number] = hasPin ? [lat as number, lng as number] : FALLBACK;
 
@@ -228,7 +230,7 @@ export default function CheckpointLocationPicker({
               </div>
             ) : (
               <div className="mt-0.5 text-[11px]" style={{ color: 'var(--ink-soft)' }}>
-                Toca el mapa para colocarlo.
+                {t('ui.CheckpointLocationPicker.tocaElMapaParaColocarlo', 'Toca el mapa para colocarlo.')}
               </div>
             )}
           </div>
@@ -248,7 +250,7 @@ export default function CheckpointLocationPicker({
       {/* Coverage radius */}
       <div className="glass-sunken p-3">
         <div className="mb-1 flex items-center justify-between text-sm">
-          <span className="font-medium" style={{ color: 'var(--ink)' }}>Radio de cobertura</span>
+          <span className="font-medium" style={{ color: 'var(--ink)' }}>{t('ui.CheckpointLocationPicker.radioDeCobertura', 'Radio de cobertura')}</span>
           <span className="font-mono tabular-nums" style={{ color: 'var(--brand-text)' }}>{radius} m</span>
         </div>
         <input

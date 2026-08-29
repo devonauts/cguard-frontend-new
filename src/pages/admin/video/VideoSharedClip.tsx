@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Loader2, ShieldAlert, Film, Clock } from "lucide-react";
 import { EmptyState, IconTile } from "@/components/kit";
 import { ApiService } from "@/services/api/apiService";
@@ -19,6 +20,7 @@ interface SharedClip {
  */
 export default function VideoSharedClip() {
   const { token } = useParams();
+  const { t } = useTranslation();
   const [clip, setClip] = useState<SharedClip | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -53,7 +55,7 @@ export default function VideoSharedClip() {
             <p className="text-sm font-bold tracking-tight">
               CGUARD<span style={{ color: 'var(--brand-text)' }}>PRO</span>
             </p>
-            <p className="text-[11px]" style={{ color: 'var(--ink-faint)' }}>Video compartido de forma segura</p>
+            <p className="text-[11px]" style={{ color: 'var(--ink-faint)' }}>{t("ui.VideoSharedClip.videoCompartidoDeFormaSegura", "Video compartido de forma segura")}</p>
           </div>
         </div>
 
@@ -70,7 +72,7 @@ export default function VideoSharedClip() {
               <EmptyState
                 className="h-72 justify-center border-0"
                 icon={<ShieldAlert />}
-                title="Enlace no disponible"
+                title={t("ui.VideoSharedClip.enlaceNoDisponible", "Enlace no disponible")}
                 description={error}
               />
             ) : clip?.url ? (
@@ -79,7 +81,7 @@ export default function VideoSharedClip() {
               <EmptyState
                 className="h-72 justify-center border-0"
                 icon={<Clock />}
-                title="Procesando el video"
+                title={t("ui.VideoSharedClip.procesandoElVideo", "Procesando el video")}
                 description="El video aún se está procesando. Vuelve a intentarlo en unos minutos."
               />
             )}
@@ -97,7 +99,7 @@ export default function VideoSharedClip() {
           </div>
         )}
         <p className="mt-6 text-center text-[11px]" style={{ color: 'var(--ink-faint)' }}>
-          Este enlace es privado y puede caducar. No lo compartas.
+          {t("ui.VideoSharedClip.esteEnlaceEsPrivadoYPuedeCaducarNoLoCompartas", "Este enlace es privado y puede caducar. No lo compartas.")}
         </p>
       </div>
     </div>

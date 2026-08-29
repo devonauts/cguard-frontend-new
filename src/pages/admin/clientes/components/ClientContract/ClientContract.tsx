@@ -253,7 +253,7 @@ export default function ClientContract({ client }: { client: Client }) {
             <Field label={t("ui.ClientContract.numeroDeContrato", "Número de contrato")} value={orDash(c.contractNumber)} />
             <Field label={t('ui.ClientContract.tipoDeContrato')} value={orDash(c.contractType)} />
             <Field label="Moneda" value={orDash(c.currency)} />
-            <Field label="Forma de pago" value={orDash(c.paymentTerms)} />
+            <Field label={t("ui.ClientContract.formaDePago", "Forma de pago")} value={orDash(c.paymentTerms)} />
           </div>
         </Section>
 
@@ -388,16 +388,16 @@ export default function ClientContract({ client }: { client: Client }) {
           icon={<Gauge className="h-4 w-4" />}
           hint={diff == null ? 'Define horas contratadas' : diff < 0 ? 'Por debajo de lo contratado' : 'Dentro / sobre lo contratado'}
         />
-        <StatCard label="Cumplimiento de rondas" value={derived.roundsCompliance != null ? `${derived.roundsCompliance}%` : '—'} icon={<ClipboardCheck className="h-4 w-4" />} hint={t('ui.ClientContract.rondasDelMesVsContratado')} />
+        <StatCard label={t("ui.ClientContract.cumplimientoDeRondas", "Cumplimiento de rondas")} value={derived.roundsCompliance != null ? `${derived.roundsCompliance}%` : '—'} icon={<ClipboardCheck className="h-4 w-4" />} hint={t('ui.ClientContract.rondasDelMesVsContratado')} />
       </div>
 
       {/* Row 3 — SLA, notas, historial */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <Section title="Acuerdo de nivel de servicio (SLA)" icon={<Gauge className="h-4 w-4" />}>
+        <Section title={t("ui.ClientContract.acuerdoDeNivelDeServicioSla", "Acuerdo de nivel de servicio (SLA)")} icon={<Gauge className="h-4 w-4" />}>
           <div className="grid grid-cols-2 gap-4">
             <SlaCell icon={<Wifi className="h-4 w-4" />} label={t('ui.ClientContract.uptimeDelServicio')} value={c.slaUptimeTarget} suffix="%" />
-            <SlaCell icon={<Timer className="h-4 w-4" />} label="Tiempo de respuesta" value={c.slaResponseMinutes} suffix=" min" />
-            <SlaCell icon={<ClipboardCheck className="h-4 w-4" />} label="Cumplimiento de rondas" value={c.slaRoundsTarget} suffix="%" actual={derived.roundsCompliance} />
+            <SlaCell icon={<Timer className="h-4 w-4" />} label={t("ui.ClientContract.tiempoDeRespuesta", "Tiempo de respuesta")} value={c.slaResponseMinutes} suffix=" min" />
+            <SlaCell icon={<ClipboardCheck className="h-4 w-4" />} label={t("ui.ClientContract.cumplimientoDeRondas", "Cumplimiento de rondas")} value={c.slaRoundsTarget} suffix="%" actual={derived.roundsCompliance} />
             <SlaCell icon={<FileText className="h-4 w-4" />} label="Reportes entregados" value={c.slaReportsTarget} suffix="%" />
           </div>
           <p className="mt-3 text-xs text-muted-foreground">{t('ui.ClientContract.objetivosAcordadosEnElContrato')}</p>
@@ -410,7 +410,7 @@ export default function ClientContract({ client }: { client: Client }) {
         </Section>
 
         <Section
-          title="Historial de renovaciones"
+          title={t("ui.ClientContract.historialDeRenovaciones", "Historial de renovaciones")}
           icon={<History className="h-4 w-4" />}
           action={<Button size="sm" variant="outline" onClick={() => openRen()}><Plus className="mr-1.5 h-4 w-4" />{" "}{t('actions.add')}</Button>}
         >
@@ -455,7 +455,7 @@ export default function ClientContract({ client }: { client: Client }) {
           <LabeledField label={t("ui.ClientContract.numeroDeContrato2", "Número de contrato")}><input className={FIELD_CLS} value={form.contractNumber} onChange={(e) => setForm({ ...form, contractNumber: e.target.value })} /></LabeledField>
           <LabeledField label={t('ui.ClientContract.tipoDeContrato')}><input className={FIELD_CLS} placeholder="Servicio integral" value={form.contractType} onChange={(e) => setForm({ ...form, contractType: e.target.value })} /></LabeledField>
           <LabeledField label="Moneda"><input className={FIELD_CLS} placeholder="USD" value={form.currency} onChange={(e) => setForm({ ...form, currency: e.target.value })} /></LabeledField>
-          <LabeledField label="Forma de pago"><input className={FIELD_CLS} placeholder="Mensual" value={form.paymentTerms} onChange={(e) => setForm({ ...form, paymentTerms: e.target.value })} /></LabeledField>
+          <LabeledField label={t("ui.ClientContract.formaDePago", "Forma de pago")}><input className={FIELD_CLS} placeholder="Mensual" value={form.paymentTerms} onChange={(e) => setForm({ ...form, paymentTerms: e.target.value })} /></LabeledField>
           <LabeledField label={t('comun.fechaDeInicio')}><input type="date" className={FIELD_CLS} value={form.contractDate || ''} onChange={(e) => setForm({ ...form, contractDate: e.target.value })} /></LabeledField>
           <LabeledField label={t('comun.fechaDeVencimiento')}><input type="date" className={FIELD_CLS} value={form.contractEndDate || ''} onChange={(e) => setForm({ ...form, contractEndDate: e.target.value })} /></LabeledField>
           <LabeledField label={t("ui.ClientContract.renovacionAutomatica2", "Renovación automática")}>

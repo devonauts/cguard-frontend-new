@@ -196,7 +196,7 @@ export default function SupervisorRegistration() {
             <IconTile tone="ok" size="lg"><CheckCircle2 /></IconTile>
           </div>
           <p className="text-sm leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
-            Tu cuenta con <strong style={{ color: 'var(--ink)' }}>{empresa || 'tu empresa de seguridad'}</strong> est\u00e1 lista.
+            {t('ui.SupervisorRegistration.tuCuentaCon', 'Tu cuenta con')} <strong style={{ color: 'var(--ink)' }}>{empresa || 'tu empresa de seguridad'}</strong> est\u00e1 lista.
             Descarga la <strong style={{ color: 'var(--ink)' }}>{t('ui.registration.appDeSupervisor')}</strong> para gestionar tus recorridos, tu equipo y las novedades desde tu tel\u00e9fono.
           </p>
 

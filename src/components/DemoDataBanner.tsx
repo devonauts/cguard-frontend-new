@@ -108,7 +108,7 @@ export default function DemoDataBanner() {
       <span className="flex min-w-0 items-center gap-2">
         <Sparkles size={15} style={{ color: "var(--brand-text)" }} />
         <span className="truncate">
-          Estás explorando con una <strong>{t("ui.DemoDataBanner.operacionDeEjemplo", "operación de ejemplo")}</strong> — puestos,
+          {t("ui.DemoDataBanner.estasExplorandoConUna", "Estás explorando con una")} <strong>{t("ui.DemoDataBanner.operacionDeEjemplo", "operación de ejemplo")}</strong> — puestos,
           vigilantes y novedades de muestra para que veas el sistema vivo.
         </span>
       </span>

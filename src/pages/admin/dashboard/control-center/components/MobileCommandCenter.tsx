@@ -270,7 +270,7 @@ export function MobileCommandCenter({
 
             <Panel
               icon={<ShieldCheck />}
-              title="Cobertura de puestos"
+              title={t('dashboard.coverage.title', 'Cobertura de puestos')}
               subtitle={t('comun.ahoraMismoSobreElTerreno')}
               action={<PanelLink to="/live-tracking">Ver en vivo</PanelLink>}
               bodyClassName="pt-1"

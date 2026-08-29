@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { CalendarClock, Sun, Moon, MapPin, Settings2 } from 'lucide-react';
@@ -34,6 +35,7 @@ function fmtDateHeading(v: string): string {
 }
 
 export default function SupervisorSchedulePage() {
+  const { t } = useTranslation();
   const { id = '' } = useParams();
   const navigate = useNavigate();
   const [rows, setRows] = useState<ScheduleRow[] | null>(null);
@@ -51,7 +53,7 @@ export default function SupervisorSchedulePage() {
 
   const manageBtn = (
     <Button variant="outline" size="sm" onClick={() => navigate('/supervisor-positions')}>
-      <Settings2 className="mr-2 h-4 w-4" /> Configurar rotación
+      <Settings2 className="mr-2 h-4 w-4" /> {t('ui.SupervisorSchedulePage.configurarRotacion', 'Configurar rotación')}
     </Button>
   );
 
@@ -76,7 +78,7 @@ export default function SupervisorSchedulePage() {
           ) : !rows || rows.length === 0 ? (
             <EmptyState
               icon={<CalendarClock />}
-              title="Sin horario generado"
+              title={t('ui.SupervisorSchedulePage.sinHorarioGenerado', 'Sin horario generado')}
               description="Depende del puesto asignado y su rotación. La rotación (día/noche) se configura en el puesto."
               action={manageBtn}
             />

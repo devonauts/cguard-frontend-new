@@ -1,4 +1,5 @@
 import { Package } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import DataReport, { type ReportColumn } from "./DataReport";
 import { formatDateTime, rangeBounds, REPORT_ROW_LIMIT, warnIfCapped } from "./reportFormat";
 import passdownService, { type Passdown } from "@/lib/api/passdownService";
@@ -22,9 +23,10 @@ const columns: ReportColumn<Passdown>[] = [
 ];
 
 export default function Passdown() {
+  const { t } = useTranslation();
   return (
     <DataReport<Passdown>
-      title="Registros de Entrega"
+      title={t('ui.Passdown.registrosDeEntrega', 'Registros de Entrega')}
       description="Pases de turno (relevos): novedades, instrucciones y recepción por el vigilante entrante."
       icon={Package}
       columns={columns}

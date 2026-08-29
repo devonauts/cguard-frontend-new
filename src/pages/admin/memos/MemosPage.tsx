@@ -428,7 +428,7 @@ export default function MemosPage() {
             hint={t('ui.MemosPage.elVigilanteConfirmoHaberloLeido')}
           />
           <StatCard
-            label="Pendientes de acuse"
+            label={t('ui.MemosPage.pendientesDeAcuse', 'Pendientes de acuse')}
             value={pendientes}
             icon={<Clock />}
             accent="warn"
@@ -458,7 +458,7 @@ export default function MemosPage() {
                 </SheetTrigger>
                 <SheetContent side="right" className="w-full sm:w-[400px] md:w-[460px] h-full sm:h-auto">
                   <SheetHeader>
-                    <SheetTitle>Filtros de memo</SheetTitle>
+                    <SheetTitle>{t('ui.MemosPage.filtrosDeMemo', 'Filtros de memo')}</SheetTitle>
                   </SheetHeader>
 
                   <div className="mt-6 space-y-4">
@@ -569,7 +569,7 @@ export default function MemosPage() {
             <DialogHeader>
               <DialogTitle>{t('ui.MemosPage.nuevoMemo')}</DialogTitle>
               <DialogDescription>
-                Crea un memo rápido para el equipo de seguridad.
+                {t('ui.MemosPage.creaUnMemoRapidoParaElEquipo', 'Crea un memo rápido para el equipo de seguridad.')}
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">

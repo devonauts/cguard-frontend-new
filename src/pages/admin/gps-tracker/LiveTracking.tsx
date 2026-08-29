@@ -340,7 +340,7 @@ export default function LiveTrackingPage() {
                     <label className="flex items-center gap-2 cursor-pointer">
                       <Checkbox checked={showAll} onCheckedChange={(v) => setShowAll(Boolean(v))} />
                       <span className="text-sm text-foreground">
-                        Mostrar todas las rutas (no solo las del día)
+                        {t('ui.LiveTracking.mostrarTodasLasRutasNo', 'Mostrar todas las rutas (no solo las del día)')}
                       </span>
                     </label>
 
@@ -378,10 +378,10 @@ export default function LiveTrackingPage() {
               <p className="text-xs text-muted-foreground mb-1">{t('ui.LiveTracking.tipoDeMapa')}</p>
               <Select value={mapType} onValueChange={(v) => setMapType(v as typeof mapType)}>
                 <SelectTrigger className="w-40">
-                  <SelectValue placeholder="Hoja de Ruta" />
+                  <SelectValue placeholder={t('ui.LiveTracking.hojaDeRuta', 'Hoja de Ruta')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="roadmap">Hoja de Ruta</SelectItem>
+                  <SelectItem value="roadmap">{t('ui.LiveTracking.hojaDeRuta', 'Hoja de Ruta')}</SelectItem>
                   <SelectItem value="satellite">{t("ui.LiveTracking.satelite", "Satélite")}</SelectItem>
                   <SelectItem value="hybrid">{t("ui.LiveTracking.hibrido", "Híbrido")}</SelectItem>
                   <SelectItem value="terrain">Terreno</SelectItem>

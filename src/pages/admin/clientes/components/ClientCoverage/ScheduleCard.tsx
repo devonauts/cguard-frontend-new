@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { CalendarDays, ChevronLeft, ChevronRight, RefreshCw, UserPlus, UserMinus, Loader2 } from 'lucide-react';
 
 import { localeActual } from '@/lib/localeActual'
+import { useTranslation } from 'react-i18next';
 /** Tinte de celda desde los tokens: el día usa el informativo, la noche el
  *  acento configurable, el hueco el semántico de peligro. Ningún color a mano. */
 const tint = (token: string, pct = 16): React.CSSProperties => ({
@@ -63,6 +64,7 @@ interface ScheduleData {
 }
 
 export default function ScheduleCard({ clientId, sedeId }: { clientId: string; sedeId: string }) {
+  const { t } = useTranslation();
   const { hasPermission } = usePermissions();
   const canEdit = hasPermission('stationEdit');
   const [data, setData] = useState<ScheduleData | null>(null);
@@ -153,7 +155,7 @@ export default function ScheduleCard({ clientId, sedeId }: { clientId: string; s
       {loading && !data ? (
         <div className="space-y-2 py-2"><SkeletonBlock className="h-6" /><SkeletonBlock className="h-6" /><SkeletonBlock className="h-6" /></div>
       ) : rows.length === 0 ? (
-        <EmptyState icon={<CalendarDays />} title="Sin horario" description="Esta sede no tiene puestos con rotación configurada. Configúralos en el Programador." />
+        <EmptyState icon={<CalendarDays />} title={t('ui.ScheduleCard.sinHorario', 'Sin horario')} description="Esta sede no tiene puestos con rotación configurada. Configúralos en el Programador." />
       ) : (
         <>
           <div className="overflow-x-auto">
@@ -190,10 +192,10 @@ export default function ScheduleCard({ clientId, sedeId }: { clientId: string; s
                           <span className="text-xs" style={{ color: 'var(--ink-faint)' }}>{r.positionName}{r.positionType === 'sacafranco' ? ' · SF' : ''}</span>
                           {canEdit ? (
                             <button onClick={() => openEdit(r)} className="cg-focus block truncate rounded-md text-left text-sm font-medium hover:underline" title="Cambiar vigilante">
-                              {r.guardName || <span style={{ color: 'var(--warn-text)' }}>Sin asignar</span>}
+                              {r.guardName || <span style={{ color: 'var(--warn-text)' }}>{t('comun.sinAsignar', 'Sin asignar')}</span>}
                             </button>
                           ) : (
-                            <div className="truncate text-sm font-medium">{r.guardName || <span style={{ color: 'var(--warn-text)' }}>Sin asignar</span>}</div>
+                            <div className="truncate text-sm font-medium">{r.guardName || <span style={{ color: 'var(--warn-text)' }}>{t('comun.sinAsignar', 'Sin asignar')}</span>}</div>
                           )}
                         </div>
                         {canEdit && <button onClick={() => openEdit(r)} className="cg-focus shrink-0 rounded-md p-1 transition-opacity hover:opacity-70" style={{ color: 'var(--ink-faint)' }} title="Cambiar vigilante"><UserPlus className="h-3.5 w-3.5" /></button>}
@@ -228,7 +230,7 @@ export default function ScheduleCard({ clientId, sedeId }: { clientId: string; s
               </span>
             ))}
             <span className="inline-flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full" style={{ background: 'var(--warn)' }} /> Cubre otro vigilante</span>
-            {canEdit && <span className="ml-auto">Toca un vigilante para cambiarlo.</span>}
+            {canEdit && <span className="ml-auto">{t('ui.ScheduleCard.tocaUnVigilanteParaCambiarlo', 'Toca un vigilante para cambiarlo.')}</span>}
           </div>
         </>
       )}

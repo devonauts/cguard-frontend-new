@@ -1,4 +1,5 @@
 import { AlertTriangle } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 import DataReport, { type ReportColumn } from "./DataReport";
 import { formatDateTime, rangeBounds, REPORT_ROW_LIMIT, warnIfCapped } from "./reportFormat";
 import { ApiService } from "@/services/api/apiService";
@@ -32,9 +33,10 @@ const columns: ReportColumn<Incident>[] = [
 ];
 
 export default function Incident() {
+  const { t } = useTranslation();
   return (
     <DataReport<Incident>
-      title="Informe de Incidente"
+      title={t("ui.Incident.informeDeIncidente", "Informe de Incidente")}
       description="Incidentes reportados: prioridad, estado, ubicación y descripción por puesto."
       icon={AlertTriangle}
       tone="bad"

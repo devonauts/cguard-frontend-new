@@ -355,7 +355,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
               <div className="py-8 text-center text-sm" style={{ color: 'var(--ink-soft)' }}>{t('common.loading')}</div>
             ) : rows.length === 0 ? (
               <div className="py-8 text-center text-sm" style={{ color: 'var(--ink-soft)' }}>
-                Aún no hay marcaciones en este puesto.
+                {t('ui.StationOverview.aunNoHayMarcacionesEnEstePuesto', 'Aún no hay marcaciones en este puesto.')}
               </div>
             ) : (
               <ul className="divide-y divide-border/40">
@@ -409,9 +409,9 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
                 className="flex min-h-[200px] flex-col items-center justify-center gap-2 rounded-2xl border border-dashed text-sm"
                 style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)', color: 'var(--ink-soft)' }}
               >
-                Sin ubicación configurada
+                {t('ui.StationOverview.sinUbicacionConfigurada', 'Sin ubicación configurada')}
                 <button onClick={() => setEditing(true)} className="cg-btn-link cg-focus rounded underline underline-offset-2">
-                  Definir ubicación
+                  {t('ui.StationOverview.definirUbicacion', 'Definir ubicación')}
                 </button>
               </div>
             )}
@@ -531,7 +531,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
                 </select>
               </div>
               <div className="col-span-2">
-                <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Cobertura de descansos</label>
+                <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">{t('postSites.stations.form.restCoverage', 'Cobertura de descansos')}</label>
                 <select value={restCoverage} onChange={(e) => setRestCoverage(e.target.value as any)} className="cg-input cg-focus w-full px-3 py-2 text-sm">
                   <option value="sacafranco">{t('comun.sacafrancoCubreLosDescansos')}</option>
                   <option value="alternate">{t('comun.alternanciaEntreFijosSinSacafranco')}</option>
@@ -609,7 +609,7 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Tolerancia de entrada anticipada (min)</label>
+              <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">{t('postSites.stations.form.clockInEarlyBuffer', 'Tolerancia de entrada anticipada (min)')}</label>
               <input
                 type="number"
                 min="0"

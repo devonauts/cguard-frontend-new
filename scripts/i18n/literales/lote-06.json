@@ -1,0 +1,61 @@
+{
+ "src/components/clients/ImportDialog.tsx": [
+  "Antes de cargar, asegúrese de:",
+  "Click para seleccionar",
+  "Descargar plantilla de ejemplo",
+  "El archivo debe ser formato .xlsx, .xls o .csv",
+  "Sube un archivo .xlsx/.xls/.csv para importar clientes."
+ ],
+ "src/pages/admin/clientes/components/ClientPostSites/ClientPostSites.tsx": [
+  "Dashboard de la sede",
+  "Las sedes no tienen ubicación registrada",
+  "Mapa de sedes",
+  "Ver el panel de la sede",
+  "Vigilantes asignados vs estaciones (no es cobertura en vivo)"
+ ],
+ "src/pages/admin/dispatcher/DispatchIncidentMap.tsx": [
+  "Puesto con vigilante",
+  "Puesto vacío",
+  "Quién está cerca"
+ ],
+ "src/components/clients/ClientDetailsDialog.tsx": [
+  "Detalles del Cliente",
+  "Información detallada del cliente seleccionado."
+ ],
+ "src/pages/admin/gps-tracker/TrackingHistory.tsx": [
+  "Historial de seguimiento",
+  "Hoja de ruta"
+ ],
+ "src/pages/admin/messenger/MessengerPage.tsx": [
+  "Sincronizar con asignaciones",
+  "Solo anuncios (los miembros no pueden responder)"
+ ],
+ "src/pages/admin/administrative-office-users/EditAdminUserPage.tsx": [
+  "Para quien lleva unas cuentas concretas.",
+  "Todos los clientes y todas las sedes."
+ ],
+ "src/components/video/VideoGatewayModal.tsx": [
+  "Gateway de video"
+ ],
+ "src/pages/auth/AppAccessPending.tsx": [
+  "Tu acceso es desde la aplicación"
+ ],
+ "src/pages/admin/video/VideoRelaySites.tsx": [
+  "Clave del sitio:"
+ ],
+ "src/pages/admin/post-sites/components/PostsiteStations/StationCardsGrid.tsx": [
+  "Sin estaciones"
+ ],
+ "src/pages/admin/dashboard/control-center/components/MobileCommandCenter.tsx": [
+  "Cobertura de puestos"
+ ],
+ "src/pages/admin/routes/ExtremoRutaField.tsx": [
+  "Usar esta ubicación"
+ ],
+ "src/pages/admin/Reports/Task.tsx": [
+  "Informe de Tareas"
+ ],
+ "src/pages/client/registration.tsx": [
+  "Tu cuenta con"
+ ]
+}

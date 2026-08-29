@@ -157,6 +157,7 @@ export function TrimShareModal({
   onClose,
   onShared,
 }: TrimShareModalProps) {
+  const { t } = useTranslation();
   const [label, setLabel] = React.useState("");
   const [startAt, setStartAt] = React.useState(localNow(-2));
   const [endAt, setEndAt] = React.useState(localNow());
@@ -300,7 +301,7 @@ export function TrimShareModal({
             <LinkIcon className="mt-0.5 size-4 shrink-0" style={{ color: "var(--brand-text)" }} />
             <div className="min-w-0 flex-1">
               <p className="text-xs font-medium text-muted-foreground">
-                Enlace para el cliente
+                {t('ui.VideoActionModals.enlaceParaElCliente', 'Enlace para el cliente')}
               </p>
               <p className="mt-0.5 break-all text-sm font-medium">{shareUrl}</p>
             </div>

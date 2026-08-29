@@ -1,0 +1,58 @@
+{
+ "src/pages/admin/training/components/QuizManager.tsx": [
+  "Enunciado de la pregunta",
+  "Opción",
+  "Puntaje para aprobar (%)",
+  "Puntaje para aprobar:",
+  "Sin cuestionario"
+ ],
+ "src/pages/admin/clientes/components/ClientCoverage/ClientCoverage.tsx": [
+  "Abrir estación",
+  "Eliminar estación",
+  "Fijar ubicación en el mapa",
+  "Puestos y cobertura en vivo de la sede seleccionada",
+  "Ver estación"
+ ],
+ "src/pages/admin/nomina/NominaHoursSummary.tsx": [
+  "Elige otro rango de fechas y vuelve a generar el resumen.",
+  "Resumen de horas",
+  "Sin datos en el rango"
+ ],
+ "src/components/notifications/NotificationsPanel.tsx": [
+  "Resolver con VigIA",
+  "Sin notificaciones"
+ ],
+ "src/pages/admin/training/components/LessonsManager.tsx": [
+  "Agregar lección",
+  "URL de video (YouTube, Vimeo, etc.)"
+ ],
+ "src/pages/admin/security-guards/SecurityGuardsPage.tsx": [
+  "Copiar enlace de registro",
+  "Vigilantes de Seguridad"
+ ],
+ "src/pages/admin/alarm/AlarmAnalytics.tsx": [
+  "Tasa de escalado",
+  "Tasa de falsas"
+ ],
+ "src/components/video/VideoActionModals.tsx": [
+  "Enlace para el cliente"
+ ],
+ "src/pages/admin/Configuration/ProfileCompanyPage.tsx": [
+  "Perfil de la empresa"
+ ],
+ "src/pages/admin/video/VideoMonitoring.tsx": [
+  "Monitoreo de video"
+ ],
+ "src/pages/admin/post-sites/components/OperationSetup/OperationSetupAlert.tsx": [
+  "Configurar la operación"
+ ],
+ "src/pages/admin/dashboard/control-center/components/TrendPanel.tsx": [
+  "Sin datos para el periodo"
+ ],
+ "src/pages/admin/routes/RoutesPage.tsx": [
+  "Listado de rutas"
+ ],
+ "src/pages/admin/Reports/SiteTour.tsx": [
+  "Informe de Recorridos del Sitio"
+ ]
+}

@@ -230,12 +230,12 @@ export default function AlarmCaseDetail() {
         <PageContainer width="narrow">
           <EmptyState
             icon={<Siren />}
-            title="Caso no encontrado"
+            title={t('ui.AlarmCaseDetail.casoNoEncontrado', 'Caso no encontrado')}
             description={t('ui.AlarmCaseDetail.elCasoSolicitadoNoExiste')}
             action={
               <Button variant="outline" onClick={() => navigate("/alarm/queue")}>
                 <ArrowLeft className="size-4" />
-                Volver a la cola
+                {t('ui.AlarmCaseDetail.volverALaCola', 'Volver a la cola')}
               </Button>
             }
           />
@@ -313,7 +313,7 @@ export default function AlarmCaseDetail() {
               <>
                 <Button variant="ghost" onClick={() => navigate("/alarm/queue")}>
                   <ArrowLeft className="size-4" />
-                  Centro de Emergencias
+                  {t('emergency.title', 'Centro de Emergencias')}
                 </Button>
                 <Button variant="outline" onClick={() => load()} disabled={busy}>
                   {busy ? <Loader2 className="size-4 animate-spin" /> : <RefreshCw className="size-4" />}
@@ -456,7 +456,7 @@ export default function AlarmCaseDetail() {
             icon={<FileText />}
             title={
               <span className="flex items-center gap-2">
-                Cronología de eventos
+                {t('ui.AlarmCaseDetail.cronologiaDeEventos', 'Cronología de eventos')}
                 <span
                   className="rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums"
                   style={{ background: 'var(--glass-sunken)', color: 'var(--ink-soft)' }}
@@ -522,7 +522,7 @@ export default function AlarmCaseDetail() {
             icon={<History />}
             title={
               <span className="flex items-center gap-2">
-                Registro de auditoría
+                {t('ui.AlarmCaseDetail.registroDeAuditoria', 'Registro de auditoría')}
                 <span
                   className="rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums"
                   style={{ background: 'var(--glass-sunken)', color: 'var(--ink-soft)' }}
@@ -646,7 +646,7 @@ export default function AlarmCaseDetail() {
             ))}
           </select>
           <p className="text-xs text-muted-foreground">
-            Clasifique el desenlace del caso antes de cerrarlo.
+            {t('ui.AlarmCaseDetail.clasifiqueElDesenlaceDelCaso', 'Clasifique el desenlace del caso antes de cerrarlo.')}
           </p>
         </div>
       </Modal>

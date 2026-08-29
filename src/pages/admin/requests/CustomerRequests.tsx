@@ -132,13 +132,13 @@ export default function CustomerRequests() {
       <Breadcrumb
         items={[
           { label: "Panel de control", path: "/dashboard" },
-          { label: "Solicitudes de clientes" },
+          { label: t('sidebar.solicitudes-clientes', 'Solicitudes de clientes') },
         ]}
       />
       <PageContainer width="wide" className="p-4 sm:p-6">
         <PageHeader
           icon={<Inbox />}
-          title="Solicitudes de clientes"
+          title={t('sidebar.solicitudes-clientes', 'Solicitudes de clientes')}
           subtitle={t('ui.CustomerRequests.mensajesYSolicitudesEnviadasDesde')}
         />
 

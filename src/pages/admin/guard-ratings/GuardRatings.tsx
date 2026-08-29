@@ -149,13 +149,13 @@ export default function GuardRatings() {
       <Breadcrumb
         items={[
           { label: "Panel de control", path: "/dashboard" },
-          { label: "Control de Calidad" },
+          { label: t('sidebar.control-de-calidad', 'Control de Calidad') },
         ]}
       />
       <PageContainer width="wide" className="p-6">
         <PageHeader
           icon={<Star />}
-          title="Control de Calidad"
+          title={t('sidebar.control-de-calidad', 'Control de Calidad')}
           subtitle={t('ui.GuardRatings.calificacionesDeLosClientesHacia')}
         />
 

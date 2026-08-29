@@ -169,7 +169,7 @@ export default function GuardDashboard() {
                 </div>
               )}
               {stations.length === 0 && (
-                <p className="text-xs text-muted-foreground mt-2">No tienes puestos asignados.</p>
+                <p className="text-xs text-muted-foreground mt-2">{t('ui.GuardDashboard.noTienesPuestosAsignados', 'No tienes puestos asignados.')}</p>
               )}
             </>
           )}

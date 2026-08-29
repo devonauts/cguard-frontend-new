@@ -2980,7 +2980,8 @@
       "svPreviewStationsSub": "Todos os locais do cliente",
       "svPreviewStationsTitle": "Postos",
       "svPreviewTasks": "Tarefas",
-      "svPreviewYou": "Você"
+      "svPreviewYou": "Você",
+      "previewGuardName": "Juan Ramírez"
     },
     "appearance": {
       "layoutTitle": "Aparência",
@@ -3698,7 +3699,8 @@
         "selectClient": "Selecionar Cliente",
         "assignPostSite": "Atribuir Local",
         "create_and_send": "Criar e Enviar",
-        "send": "Enviar"
+        "send": "Enviar",
+        "birthPlace": "Local de nascimento"
       },
       "toasts": {
         "clients_sites_load_error": "Não foi possível carregar clientes ou locais",
@@ -4265,7 +4267,8 @@
       "error": {
         "loading": "Erro ao carregar vigilantes: {{msg}}"
       },
-      "title": "Vigilantes"
+      "title": "Vigilantes",
+      "headerTitle": "Vigilantes de segurança"
     },
     "notes": {
       "actions": {
@@ -5046,7 +5049,11 @@
       "low": "Baixo",
       "medium": "Médio"
     },
-    "timezone": "Fuso horário"
+    "timezone": "Fuso horário",
+    "importDialog": {
+      "description": "Envie um arquivo .xlsx/.xls/.csv para importar clientes."
+    },
+    "loadClientErrorHint": "Tente novamente ou verifique se o cliente existe."
   },
   "header": {
     "openMenu": "Abrir menu",
@@ -5243,7 +5250,12 @@
     "select_station": "Selecione uma estação",
     "station": "Estação",
     "subtitle": "Receba, despache e acompanhe os chamados dos seus postos",
-    "you": "Você"
+    "you": "Você",
+    "map": {
+      "legendEmpty": "Posto vazio",
+      "legendStaffed": "Posto com vigilante",
+      "whoIsNear": "Quem está por perto"
+    }
   },
   "components": {
     "addRemove": {
@@ -6441,7 +6453,10 @@
     "enter_password": "Digite sua senha",
     "invalid_email": "Endereço de e-mail inválido",
     "reset_error": "Não foi possível enviar o link. Tente novamente",
-    "sending": "Enviando link…"
+    "sending": "Enviando link…",
+    "appAccessPending": {
+      "title": "Seu acesso é pelo aplicativo"
+    }
   },
   "billing": {
     "activate": "Ativar assinatura",
@@ -7617,7 +7632,10 @@
     "invite_not_found": "Convite não encontrado ou inválido.",
     "registration_title": "Cadastro de cliente",
     "register": "Ativar minha conta",
-    "registering": "Cadastrando…"
+    "registering": "Cadastrando…",
+    "done": {
+      "accountWith": "Sua conta com"
+    }
   },
   "customer": {
     "registration_title": "Cadastro de cliente"
@@ -7717,11 +7735,16 @@
       "todaLaOperacion": "toda a operação",
       "todaLaOperacion2": "Toda a operação",
       "ubicacionDeOficinaAsistencia": "Localização do escritório (presença)",
-      "usarMiUbicacionActual": "Usar minha localização atual"
+      "usarMiUbicacionActual": "Usar minha localização atual",
+      "esteRolVe": "Esta função vê",
+      "paraQuienLlevaUnasCuentas": "Para quem cuida de contas específicas.",
+      "sinSedeMarcadaVeTodo": "Sem nenhuma sede marcada, continuará vendo TUDO.",
+      "todosLosClientesYTodas": "Todos os clientes e todas as sedes."
     },
     "GuardDashboard": {
       "proximoTurno": "Próximo turno",
-      "sinEntradaActiva": "Sem entrada ativa"
+      "sinEntradaActiva": "Sem entrada ativa",
+      "noTienesPuestosAsignados": "Você não tem postos atribuídos."
     },
     "GuardSchedule": {
       "noTienesDiasLibresAprobados": "Você não tem folgas aprovadas próximas."
@@ -7739,7 +7762,8 @@
       "calamidadDomestica": "Calamidade doméstica",
       "nuevaSolicitud": "Nova solicitação",
       "describeElMotivo": "Descreva o motivo...",
-      "sinSolicitudes": "Sem solicitações"
+      "sinSolicitudes": "Sem solicitações",
+      "noTienesSolicitudesDePermiso": "Você não tem solicitações de folga."
     },
     "Incidents": {
       "masAcciones": "Mais ações",
@@ -7768,14 +7792,18 @@
       "seleccionaUnArticulo": "Selecione um item",
       "responsableVigilante": "Responsável (vigilante)",
       "articuloDevueltoCorrectamente": "Item devolvido com sucesso",
-      "buscarPorNombreTipoVigilante": "Buscar por nome, tipo, vigilante..."
+      "buscarPorNombreTipoVigilante": "Buscar por nome, tipo, vigilante...",
+      "asignarArticulo": "Atribuir item",
+      "asignarPrimerArticulo": "Atribuir primeiro item"
     },
     "NewAdminUser": {
       "1QuienEs": "1 · Quem é",
       "2QuePuedeHacer": "2 · O que pode fazer",
       "3QuePuedeVer": "3 · O que pode ver",
       "todaLaOperacion": "toda a operação",
-      "todaLaOperacion2": "Toda a operação"
+      "todaLaOperacion2": "Toda a operação",
+      "aquiLeLlegaLaInvitacionParaCrearSuContrasena": "É aqui que chega o convite para criar a senha.",
+      "esteRolVe": "Esta função vê"
     },
     "NewSecurityGuard": {
       "buscarDireccionDelVigilante": "Buscar endereço do vigilante...",
@@ -7811,7 +7839,8 @@
       "editarTarifa": "Editar tarifa",
       "condicionesDelServicio": "Condições do serviço",
       "consignasDelPuesto": "Instruções do posto",
-      "noHayEstacionesRegistradasPara": "Não há estações registradas para esta sede."
+      "noHayEstacionesRegistradasPara": "Não há estações registradas para esta sede.",
+      "estacionesDeServicio": "Estações de serviço"
     },
     "ProfileUserForm": {
       "espanol": "🇪🇸 Espanhol",
@@ -7861,7 +7890,10 @@
       "enTurno": "em turno",
       "configurarPuesto": "Configurar posto",
       "horarioDelTurno": "Horário do turno",
-      "todaLaJornada1Fijo": "A jornada inteira (1 fixo)"
+      "todaLaJornada1Fijo": "A jornada inteira (1 fixo)",
+      "aunNoHayMarcacionesEnEstePuesto": "Ainda não há marcações neste posto.",
+      "definirUbicacion": "Definir localização",
+      "sinUbicacionConfigurada": "Sem localização configurada"
     },
     "StationShifts": {
       "dia": "Dia",
@@ -7872,7 +7904,8 @@
       "vigilanteRemovidoDelPuesto": "Vigilante removido do posto",
       "periodoAnterior": "Período anterior",
       "periodoSiguiente": "Próximo período",
-      "sinHorarioProgramadoParaEsta": "Sem horário programado para esta data."
+      "sinHorarioProgramadoParaEsta": "Sem horário programado para esta data.",
+      "completaLosFijosDelPuesto": "Complete os fixos do posto e atribua um"
     },
     "Stations": {
       "masAcciones": "Mais ações",
@@ -7962,7 +7995,8 @@
       "sinUbicacionDeOficinaConfigurada": "Sem localização de escritório configurada.",
       "ubicacionDeOficina": "Localização do escritório",
       "correoElectronico": "E-mail",
-      "telefono": "Telefone"
+      "telefono": "Telefone",
+      "rolDeAcceso": "Função de acesso"
     },
     "AlarmAnalytics": {
       "analisisDeMonitoreo": "Análise de monitoramento",
@@ -7977,7 +8011,9 @@
       "porPrioridad": "Por prioridade",
       "sinDespachos": "Sem despachos",
       "sinOperadores": "Sem operadores",
-      "sinCasosAsignadosAOperadores": "Nenhum caso atribuído a operadores no período."
+      "sinCasosAsignadosAOperadores": "Nenhum caso atribuído a operadores no período.",
+      "tasaDeEscalado": "Taxa de escalonamento",
+      "tasaDeFalsas": "Taxa de falsos alarmes"
     },
     "AlarmCaseDetail": {
       "descripcion": "Descrição",
@@ -7997,7 +8033,12 @@
       "cerrarCaso": "Fechar caso",
       "detalleDelIncidente": "Detalhe do incidente…",
       "agregarNota": "Adicionar nota",
-      "observacionesDelOperador": "Observações do operador…"
+      "observacionesDelOperador": "Observações do operador…",
+      "casoNoEncontrado": "Caso não encontrado",
+      "clasifiqueElDesenlaceDelCaso": "Classifique o desfecho do caso antes de encerrá-lo.",
+      "cronologiaDeEventos": "Cronologia de eventos",
+      "registroDeAuditoria": "Registro de auditoria",
+      "volverALaCola": "Voltar à fila"
     },
     "AlarmPanels": {
       "agenciaPsapPolicia": "Agência / PSAP (polícia)",
@@ -8037,7 +8078,16 @@
       "administraLosPanelesMonitoreadosSus": "Gerencie os painéis monitorados, suas zonas e contatos de aviso.",
       "noHayPaneles": "Não há painéis",
       "agregaTuPrimerPanelDe": "Adicione seu primeiro painel de alarme para começar a receber sinais.",
-      "eliminarPanel": "Excluir painel"
+      "eliminarPanel": "Excluir painel",
+      "camaraVinculadaVerificacionPorVideo": "Câmera vinculada (verificação por vídeo)",
+      "codigoDeVerificacion": "Código de verificação",
+      "colaDeCasos": "Fila de casos",
+      "identificadorDeAgenciaAsap": "Identificador de agência ASAP",
+      "intervaloDePruebaH": "Intervalo de teste (h)",
+      "numeroDeZona": "Número da zona",
+      "ordenDeLlamada": "Ordem de chamada",
+      "panelesDeAlarma": "Painéis de alarme",
+      "puntoDeServicioOpcional": "Ponto de serviço (opcional)"
     },
     "AlarmSignals": {
       "buscarPorCuentaCodigoZona": "Buscar por conta, código, zona…",
@@ -8068,10 +8118,13 @@
       "direccion": "Endereço",
       "noSePudoDescargarEl": "Não foi possível baixar o registro.",
       "iniciosYCierresDeSesion": "Entradas e saídas, tentativas falhas e eventos de dispositivos.",
-      "noSePudoCargarEl": "Não foi possível carregar o registro de segurança"
+      "noSePudoCargarEl": "Não foi possível carregar o registro de segurança",
+      "registroDeSeguridad": "Registro de segurança"
     },
     "AvatarUploader": {
-      "anadirFoto": "Adicionar foto"
+      "anadirFoto": "Adicionar foto",
+      "cambiarFotoDePerfil": "Alterar foto de perfil",
+      "hazClicOArrastraUnaImagen": "Clique ou arraste uma imagem"
     },
     "CatalogTable": {
       "elementosPorPagina": "Itens por página"
@@ -8135,7 +8188,12 @@
       "editarPeriodo": "Editar período",
       "eliminarPeriodo": "Excluir período",
       "tipoDeServicio": "Tipo de serviço",
-      "actualAnterior": "Atual / Anterior"
+      "actualAnterior": "Atual / Anterior",
+      "acuerdoDeNivelDeServicioSla": "Acordo de nível de serviço (SLA)",
+      "cumplimientoDeRondas": "Cumprimento de rondas",
+      "formaDePago": "Forma de pagamento",
+      "historialDeRenovaciones": "Histórico de renovações",
+      "tiempoDeRespuesta": "Tempo de resposta"
     },
     "ClientCoverage": {
       "abrirElDetalleDeLa": "Abrir o detalhe da estação",
@@ -8165,7 +8223,12 @@
       "sinUbicaciones": "Sem localizações",
       "ningunaEstacionDeEstaSede": "Nenhuma estação desta sede tem coordenadas. Selecione uma estação e use \"Fixar localização exata\".",
       "resumenDeCoberturaPorTurno": "Resumo de cobertura por turno",
-      "coberturaGeneralDelSitio": "Cobertura geral do site"
+      "coberturaGeneralDelSitio": "Cobertura geral do site",
+      "abrirEstacion": "Abrir estação",
+      "eliminarEstacion": "Excluir estação",
+      "fijarUbicacionEnElMapa": "Fixar localização no mapa",
+      "puestosYCoberturaEnVivo": "Postos e cobertura ao vivo da sede selecionada",
+      "verEstacion": "Ver estação"
     },
     "ClientDetailsDialog": {
       "codigoPostal": "CEP",
@@ -8174,7 +8237,9 @@
       "direccionComplementaria": "Complemento",
       "pais": "País",
       "telefono": "Telefone",
-      "telefonoFijo": "Telefone fixo"
+      "telefonoFijo": "Telefone fixo",
+      "detallesDelCliente": "Detalhes do Cliente",
+      "informacionDetalladaDelCliente": "Informações detalhadas do cliente selecionado."
     },
     "ClientDocuments": {
       "arrastraArchivosAquiOHaz": "Arraste arquivos aqui ou clique para selecionar",
@@ -8190,7 +8255,8 @@
       "subeElPrimerDocumentoDe": "Envie o primeiro documento deste cliente (contratos, manuais, plantas…).",
       "nombreDelDocumento": "Nome do documento",
       "actualizadoPor": "Atualizado por",
-      "sinActividadReciente": "Sem atividade recente."
+      "sinActividadReciente": "Sem atividade recente.",
+      "bibliotecaDeDocumentos": "Biblioteca de documentos"
     },
     "ClientIncidents": {
       "buscarPorIdTituloO": "Buscar por ID, título ou localização",
@@ -8242,7 +8308,12 @@
       "abrirElDetalleDeLa": "Abrir o detalhe da sede",
       "detallesDeLaSedeSeleccionada": "Detalhes da sede selecionada",
       "seleccionaUnaSede": "Selecione uma sede",
-      "tocaUnaFilaParaVer": "Toque em uma linha para ver seu detalhe."
+      "tocaUnaFilaParaVer": "Toque em uma linha para ver seu detalhe.",
+      "dashboardDeLaSede": "Painel da sede",
+      "lasSedesNoTienenUbicacion": "As sedes não têm localização registrada",
+      "mapaDeSedes": "Mapa de sedes",
+      "verElPanelDeLaSede": "Ver o painel da sede",
+      "vigilantesAsignadosVsEstaciones": "Vigilantes atribuídos vs estações (não é cobertura ao vivo)"
     },
     "ClientProjects": {
       "eliminarEsteProyecto": "Excluir este projeto?",
@@ -8286,7 +8357,8 @@
       "reporteDeVisitas": "Relatório de visitas",
       "reporteDeAsistencia": "Relatório de presença",
       "actividadPorGuardia": "Atividade por vigilante",
-      "semanalLunes0800": "Semanal (segunda 08:00)"
+      "semanalLunes0800": "Semanal (segunda 08:00)",
+      "cumplimientoDeEstaciones": "Cumprimento das estações"
     },
     "ClientStaff": {
       "buscarPorNombreIdO": "Buscar por nome, ID ou estação",
@@ -8302,7 +8374,8 @@
       "noHayPersonalQueCoincida": "Nenhum funcionário corresponde aos filtros para este cliente.",
       "coberturaPorTurno": "Cobertura por turno",
       "sinTurnosConfigurados": "Sem turnos configurados.",
-      "sinAusenciasHoy": "Sem faltas hoje."
+      "sinAusenciasHoy": "Sem faltas hoje.",
+      "quitarDeLaEstacion": "Remover da estação"
     },
     "ClientUserAccess": {
       "losAccesosOtorganAlCliente": "Os acessos dão ao cliente visibilidade apenas da própria operação.",
@@ -8350,7 +8423,8 @@
       "vigilanteQueSale": "Vigilante que sai",
       "detalleOpcional": "Detalhe (opcional)",
       "ejRefuerzoPorEventoEn": "Ex.: reforço por evento no cliente",
-      "sinCubrir": "sem cobertura"
+      "sinCubrir": "sem cobertura",
+      "despuesVuelveAutomaticamenteA": "Depois volta automaticamente para"
     },
     "CustomerRequests": {
       "elementosPorPagina": "Itens por página",
@@ -8378,12 +8452,18 @@
       "notificacionAutomaticaDeEmergencia": "Notificação automática de emergência",
       "estiloDelMapa": "Estilo do mapa",
       "coloresDeEstadoSeveridad": "Cores de status / severidade",
-      "exigirEscaneoQrEnRonda": "Exigir leitura de QR na ronda"
+      "exigirEscaneoQrEnRonda": "Exigir leitura de QR na ronda",
+      "exigirFotoEnPuntoDeControl": "Exigir foto no ponto de controle",
+      "exigirGpsEnPuntoDeControl": "Exigir GPS no ponto de controle",
+      "operacionesDeSeguridad": "Operações de segurança",
+      "radioDeGeocercaM": "Raio da geocerca (m)",
+      "volverAlColorDeLaMarca": "Voltar à cor da marca"
     },
     "DemoDataBanner": {
       "operacionDeEjemplo": "operação de exemplo",
       "datosDeEjemploRetiradosEsta": "Dados de exemplo removidos. Esta já é a sua operação real.",
-      "noPudimosQuitarLosDatos": "Não conseguimos remover os dados de exemplo. Tente de novo."
+      "noPudimosQuitarLosDatos": "Não conseguimos remover os dados de exemplo. Tente de novo.",
+      "estasExplorandoConUna": "Você está explorando com uma"
     },
     "DepartmentDialog": {
       "descripcion": "Descrição",
@@ -8396,7 +8476,8 @@
       "ubicacionDelIncidente": "Local do incidente",
       "vigilanteAsignado": "Vigilante designado",
       "esteEnlaceNoExisteO": "Este link não existe ou expirou.",
-      "datosDelDespacho": "Dados do despacho"
+      "datosDelDespacho": "Dados do despacho",
+      "noDisponible": "Indisponível"
     },
     "DocPolicyAck": {
       "reconocimientoDeDocumentosYPoliticas": "Reconhecimento de documentos e políticas",
@@ -8465,7 +8546,8 @@
       "laRotacionSeConfiguraEn": "A rotação é configurada na estação."
     },
     "GuardRatingLevel": {
-      "verResenasDelVigilante": "Ver avaliações do vigilante"
+      "verResenasDelVigilante": "Ver avaliações do vigilante",
+      "sinResenas": "Sem avaliações"
     },
     "GuardRatings": {
       "calificacion": "Avaliação",
@@ -8494,7 +8576,9 @@
     "IntegrationsList": {
       "operacion": "Operação",
       "todaviaNoHayIntegracionesDisponibles": "Ainda não há integrações disponíveis",
-      "conectarCGuardProCon": "Conectar o C-Guard Pro com outros sistemas da sua empresa."
+      "conectarCGuardProCon": "Conectar o C-Guard Pro com outros sistemas da sua empresa.",
+      "buscasConectarOtroSistema": "Quer conectar outro sistema?",
+      "llavesDeApi": "Chaves de API"
     },
     "LessonsManager": {
       "descripcion": "Descrição",
@@ -8514,7 +8598,9 @@
       "noSePudoEliminarLa": "Não foi possível excluir a aula.",
       "noSePudoReordenar": "Não foi possível reordenar.",
       "agregaLeccionesConVideoTexto": "Adicione aulas com vídeo, texto e recursos para montar o curso.",
-      "eliminarRecurso": "Excluir recurso"
+      "eliminarRecurso": "Excluir recurso",
+      "agregarLeccion": "Adicionar lição",
+      "urlDeVideoYoutubeVimeo": "URL do vídeo (YouTube, Vimeo, etc.)"
     },
     "LiveTracking": {
       "direccion": "Endereço",
@@ -8523,7 +8609,9 @@
       "todasLasRutas": "Todas as rotas",
       "vigilantesYSupervisoresEnServicio": "Vigilantes e supervisores em serviço, sobre as paradas das rotas de patrulha do dia.",
       "personalEnElMapa": "Equipe no mapa",
-      "tipoDeMapa": "Tipo de mapa"
+      "tipoDeMapa": "Tipo de mapa",
+      "hojaDeRuta": "Folha de Rota",
+      "mostrarTodasLasRutasNo": "Mostrar todas as rotas (não apenas as do dia)"
     },
     "LoginHistory": {
       "buscarPorUsuarioDireccionO": "Buscar por usuário, endereço ou dispositivo…",
@@ -8589,7 +8677,8 @@
       "notaDeResolucionQuedaEn": "Nota de resolução (fica no histórico)",
       "desviacionesDeAsistenciaRegistroE": "Desvios de presença — registro e histórico da operação",
       "noHayDesviacionesDeAsistencia": "Não há desvios de presença para os filtros selecionados.",
-      "por": "Por"
+      "por": "Por",
+      "cerrarElAtraso": "Encerrar o atraso"
     },
     "NominaRecords": {
       "salidaSinUbicacion": "Saída sem localização",
@@ -8634,14 +8723,19 @@
       "tarifaPorHoraPorDefecto": "Tarifa por hora (padrão)",
       "multiplicadorDeHoraExtra": "Multiplicador de hora extra",
       "laNocheEmpiezaALas": "A noite começa às (hora local)",
-      "laNocheTerminaALas": "A noite termina às (hora local)"
+      "laNocheTerminaALas": "A noite termina às (hora local)",
+      "toleranciaDeRetrasoGracia": "Tolerância de atraso (carência)",
+      "umbralDeSalidaAnticipada": "Limite de saída antecipada",
+      "umbralInasistenciaNoShow": "Limite de falta (no-show)",
+      "ventanasDeTiempoMinutos": "Janelas de tempo (minutos)"
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Onde você vai trabalhar?",
       "relojDeAsistencia": "Relógio de ponto",
       "seleccionaUnPuesto": "Selecione um posto",
       "miraALaCamara": "Olhe para a câmera…",
-      "sinPuestosAsignados": "Sem postos atribuídos"
+      "sinPuestosAsignados": "Sem postos atribuídos",
+      "enLaOficina": "No escritório"
     },
     "Notification": {
       "configuracionDeAvisos": "Configuração de avisos"
@@ -8651,7 +8745,8 @@
       "enviarAhora": "Enviar agora"
     },
     "OnboardingBanner": {
-      "completaLaConfiguracionDeTu": "Conclua a configuração da sua empresa"
+      "completaLaConfiguracionDeTu": "Conclua a configuração da sua empresa",
+      "continuarConfiguracion": "Continuar configuração"
     },
     "OnboardingWizard": {
       "buscarDireccion": "Buscar endereço...",
@@ -8681,7 +8776,10 @@
       "completaTodosLosCamposRequeridos": "Preencha todos os campos obrigatórios.",
       "configuracionCompletadaBienvenidoACguardpro": "Configuração concluída! Bem-vindo ao CGuardPro.",
       "miEmpresaDeSeguridad": "Minha Empresa de Segurança",
-      "noSePudoDetectarSeleccionala": "Não foi possível detectar; selecione manualmente."
+      "noSePudoDetectarSeleccionala": "Não foi possível detectar; selecione manualmente.",
+      "completarMasTarde": "Concluir mais tarde",
+      "configuraTuEmpresa": "Configure sua empresa",
+      "detectarPorDireccion": "Detectar pelo endereço"
     },
     "OpenShifts": {
       "accion": "Ação",
@@ -8699,7 +8797,8 @@
       "todosLosTurnosTienenVigilante": "Todos os turnos têm vigilante designado, ou não há turnos no período selecionado."
     },
     "OperationSetupAlert": {
-      "faltaLaConfiguracionOperativa": "Falta a configuração operacional"
+      "faltaLaConfiguracionOperativa": "Falta a configuração operacional",
+      "configurarLaOperacion": "Configurar a operação"
     },
     "OperationsMap": {
       "puestosSinNingunaPosicionDe": "Postos sem nenhuma posição de GPS para confirmar cobertura"
@@ -8708,7 +8807,10 @@
       "aQuienLlamar": "Quem chamar",
       "describeLaAccionTomadaPara": "Descreva a ação tomada para atender ao SOS…",
       "ubicacion": "Localização",
-      "telefonoDelSitio": "Telefone do site"
+      "telefonoDelSitio": "Telefone do site",
+      "accionTomada": "Ação tomada",
+      "registraLaAccionTomadaParaPoderSilenciarLaAlarma": "Registre a ação tomada para poder silenciar o alarme.",
+      "sinCoordenadas": "Sem coordenadas"
     },
     "PanicButtonLog": {
       "registrosDelBotonDePanico": "Registros do botão de pânico",
@@ -8750,7 +8852,8 @@
       "telefono2": "Telefone",
       "telefonoFijo": "Telefone fixo",
       "detallesDelSitio": "Detalhes do site",
-      "clienteAsociado": "Cliente vinculado"
+      "clienteAsociado": "Cliente vinculado",
+      "informacionDetalladaDelPuestoDeSeguridadSeleccionada": "Informações detalhadas do posto de segurança selecionado."
     },
     "PostSiteWizard": {
       "agregarOtraCapacitacion": "Adicionar outro treinamento…",
@@ -8788,7 +8891,11 @@
       "puedesAnadirlasAhoraODesde": "Você pode adicioná-las agora ou pelo perfil do site.",
       "estadoDelSitio": "Status do site",
       "revisarYCrear": "Revisar e criar",
-      "sinJornadasDefinidas": "Sem jornadas definidas"
+      "sinJornadasDefinidas": "Sem jornadas definidas",
+      "anadirEstacion": "Adicionar estação",
+      "continuarSinSeleccionarTipo": "Continuar sem selecionar o tipo",
+      "estacionesDeVigilancia": "Estações de vigilância",
+      "instruccionesDelPuestoSop": "Instruções do posto (SOP)"
     },
     "ProfilePhotoCapture": {
       "buenaIluminacionEviteSombrasY": "Boa iluminação — evite sombras e contraluz",
@@ -8798,7 +8905,11 @@
       "useUnFondo": "Use um fundo",
       "laFotoDebeMostrar": "A foto deve mostrar",
       "rostroYParteSuperiorDel": "rosto e parte superior do corpo",
-      "noUseLentesOscurosNi": "Não use óculos escuros nem coberturas na cabeça"
+      "noUseLentesOscurosNi": "Não use óculos escuros nem coberturas na cabeça",
+      "capturarFotoDelVigilante": "Capturar Foto do Vigilante",
+      "fotoDelVigilanteConUniforme": "Foto do vigilante com uniforme completo em fundo neutro",
+      "galeria": "Galeria",
+      "usarEstaFoto": "Usar esta foto"
     },
     "ProjectForm": {
       "descripcion": "Descrição",
@@ -8812,7 +8923,8 @@
       "noSePudoCargarEl": "Não foi possível carregar o projeto",
       "tipoDeProyecto": "Tipo de projeto",
       "estadoYNotas": "Status e notas",
-      "notasPrivadasInstruccionesEspeciales": "Notas privadas, instruções especiais…"
+      "notasPrivadasInstruccionesEspeciales": "Notas privadas, instruções especiais…",
+      "centroDeConvencionesQuito": "Centro de convenções, Quito"
     },
     "RadioDevices": {
       "aunNoHayRadiosIp": "Ainda não há rádios IP",
@@ -8827,7 +8939,8 @@
       "usuarioSip": "Usuário SIP",
       "dejaEnBlancoParaConservar": "Deixe em branco para manter a atual.",
       "porDefectoElHost": "Por padrão: o host",
-      "eliminarRadioIp": "Excluir rádio IP"
+      "eliminarRadioIp": "Excluir rádio IP",
+      "activoSeIntentaraMantenerConectado": "Ativo (tentará permanecer conectado)"
     },
     "RadioDispatch": {
       "configuracion": "Configurações",
@@ -8865,14 +8978,16 @@
       "sinActividadRegistradaEnEl": "Sem atividade registrada no período.",
       "indicadoresClaveDelServicioDe": "Indicadores-chave do serviço de vigilância para sua operação.",
       "incidentesPorPrioridad": "Incidentes por prioridade",
-      "resumenPorSitioDeServicio": "Resumo por site de serviço"
+      "resumenPorSitioDeServicio": "Resumo por site de serviço",
+      "coberturaDeTurnos": "Cobertura de turnos"
     },
     "Reports": {
       "configuracion": "Configurações",
       "configuracionDeLaSeccion": "Configuração da seção",
       "limpiarBusqueda": "Limpar busca",
       "proximamente": "Em breve",
-      "buscarUnInforme": "Buscar um relatório…"
+      "buscarUnInforme": "Buscar um relatório…",
+      "centroDeReportes": "Central de Relatórios"
     },
     "RotationStyleSelect": {
       "patronDeRotacion": "Padrão de rotação",
@@ -8904,7 +9019,11 @@
       "seleccionarPuestosDeVigilancia": "Selecionar postos de vigilância*",
       "noHayPuestosDisponibles": "Não há postos disponíveis",
       "inicioYFinDelRecorrido": "Início e fim do percurso",
-      "eligePuestosDeVigilanciaCon": "Escolha postos de vigilância com localização e o mapa mostrará a ordem e o sentido da rota."
+      "eligePuestosDeVigilanciaCon": "Escolha postos de vigilância com localização e o mapa mostrará a ordem e o sentido da rota.",
+      "enviarNotificacionAntesDeLasPasadasProgramadas": "Enviar notificação antes das passagens programadas",
+      "forzarRegistroDeEntradaAntesDeComenzarLaRuta": "Exigir registro de entrada antes de iniciar a rota",
+      "noHayPuntosDefinidos": "Nenhum ponto definido",
+      "sinUbicacion": "Sem localização"
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "Em velocidade de trânsito urbano, sem contar a permanência em cada parada",
@@ -8962,7 +9081,16 @@
       "sacafrancoPuedeCubrirVariosPuestos": "Folguista: pode cobrir vários postos",
       "fijoExclusivoDeEstePuesto": "Fixo: exclusivo deste posto",
       "tipoDeCobertura": "Tipo de cobertura",
-      "noHayCambiosQueAplicar": "Não há alterações a aplicar."
+      "noHayCambiosQueAplicar": "Não há alterações a aplicar.",
+      "arrastraSobreLaFilaDeUnPuestoPara": "Arraste sobre a linha de um posto para",
+      "coberturaDeDescansos": "Cobertura de folgas",
+      "coberturaDeFijos": "Cobertura de fixos",
+      "noHuboVigilantesAfectados": "Nenhum vigilante foi afetado.",
+      "patronDeRotacion": "Padrão de rotação:",
+      "revisaAntesDePublicar": "Revise antes de publicar:",
+      "rotacionSf": "Rotação SF:",
+      "seMoveraDesde": "Será movido de",
+      "sugeridoSegunLoQueFaltaEseDia": "Sugerido conforme o que falta nesse dia:"
     },
     "ScheduleTimeline": {
       "duracion": "Duração:",
@@ -8987,10 +9115,13 @@
       "turnosSinCubrir": "Turnos sem cobertura",
       "sinTurnosProgramados": "Sem turnos programados",
       "coberturaPorSitio": "Cobertura por site",
-      "sinTurnos": "Sem turnos"
+      "sinTurnos": "Sem turnos",
+      "coberturaDeTurnos": "Cobertura de turnos"
     },
     "ServiceTypeBadge": {
-      "ejGestionDeAccesoSeguridad": "ex.: Controle de acesso, Segurança industrial, Vigilância VIP..."
+      "ejGestionDeAccesoSeguridad": "ex.: Controle de acesso, Segurança industrial, Vigilância VIP...",
+      "especifiqueUnTipoDeServicioPersonalizado": "Especifique um tipo de serviço personalizado.",
+      "sinTipo": "Sem tipo"
     },
     "ShiftAssignModal": {
       "cambialaParaMoverElDia": "— altere-a para mover o dia de folga.",
@@ -9023,7 +9154,9 @@
       "vigilanteReceptorOpcional": "Vigilante receptor (opcional)",
       "cualquierVigilante": "Qualquer vigilante",
       "describeLosDetallesDelIntercambio": "Descreva os detalhes da troca…",
-      "enviadaPor": "Enviada por"
+      "enviadaPor": "Enviada por",
+      "intercambioDeTurnos": "Troca de turnos",
+      "solicitudesDeIntercambio": "Solicitações de troca"
     },
     "ShiftStatus": {
       "elementosPorPagina": "Itens por página",
@@ -9059,12 +9192,14 @@
     "StationGeofencePolygon": {
       "area": "Área",
       "buscarDireccionDelPuesto": "Buscar endereço do posto…",
-      "perimetro": "Perímetro"
+      "perimetro": "Perímetro",
+      "igualQueElSitio": "Igual à sede"
     },
     "StationHero": {
       "puestoMovil": "Posto móvel",
       "puestoRenombrado": "Posto renomeado",
-      "renombrarPuesto": "Renomear posto"
+      "renombrarPuesto": "Renomear posto",
+      "nadieDeTurnoEnEsteMomento": "Ninguém de plantão neste momento"
     },
     "StationRoster": {
       "dia": "Dia",
@@ -9100,7 +9235,10 @@
       "informacionDeSuscripcion": "Informações da assinatura",
       "suscripcion": "Assinatura",
       "noSePudoCargarLa": "Não foi possível carregar a assinatura",
-      "gestionaTuPlanPeriodoDe": "Gerencie seu plano, período de faturamento e módulos contratados."
+      "gestionaTuPlanPeriodoDe": "Gerencie seu plano, período de faturamento e módulos contratados.",
+      "gestionarSuscripcion": "Gerenciar Assinatura",
+      "periodoDePrueba": "Período de teste",
+      "suscripcionFacturacion": "Assinatura / Faturamento"
     },
     "SupervisorCoverage": {
       "ningunPuestoAsignado": "Nenhum posto atribuído.",
@@ -9128,7 +9266,8 @@
       "sedesAsignadas": "Sites atribuídos",
       "sedesError": "Não foi possível salvar os sites",
       "sedesGuardadas": "Sites salvos",
-      "sedesSinRoles": "Os dados do supervisor ainda não foram carregados"
+      "sedesSinRoles": "Os dados do supervisor ainda não foram carregados",
+      "sinNingunaSedeMarcadaSeguiraViendoTodo": "Sem nenhuma sede marcada, continuará vendo TUDO."
     },
     "SupervisorPositions": {
       "aunNoHayPuestosDe": "Ainda não há postos de supervisor",
@@ -9174,7 +9313,8 @@
       "desde": "De*",
       "hasta": "Até*",
       "motivo": "Motivo*",
-      "describeElMotivo": "Descreva o motivo…"
+      "describeElMotivo": "Descreva o motivo…",
+      "solicitudesDeTiempoLibre": "Solicitações de folga"
     },
     "TrackingHistory": {
       "hibrido": "Híbrido",
@@ -9185,7 +9325,8 @@
       "noSePudoCargarEl": "Não foi possível carregar o trajeto",
       "reproduceElRecorridoGpsReal": "Reproduza o trajeto GPS real dos seus vigilantes por período.",
       "seleccionaUnVigilanteYUn": "Selecione um vigilante e um período",
-      "eligeUnVigilanteYLas": "Escolha um vigilante e as datas, depois clique em \"Ver trajeto\" para desenhar sua rota GPS."
+      "eligeUnVigilanteYLas": "Escolha um vigilante e as datas, depois clique em \"Ver trajeto\" para desenhar sua rota GPS.",
+      "hojaDeRuta": "Folha de rota"
     },
     "TrailMap": {
       "bateria": "Bateria",
@@ -9193,7 +9334,8 @@
       "velocidadDeReproduccion": "Velocidade de reprodução",
       "velMedia": "Vel. média",
       "volverAlInicioDelRecorrido": "Voltar ao início do trajeto",
-      "instanteDelRecorrido": "Instante do trajeto"
+      "instanteDelRecorrido": "Instante do trajeto",
+      "sinRecorridoParaEsteRango": "Sem percurso neste intervalo"
     },
     "TrainingCatalog": {
       "sinAccesoAlCatalogo": "Sem acesso ao catálogo"
@@ -9218,7 +9360,8 @@
     "TransferShiftModal": {
       "duracion": "Duração",
       "trasladarAOtroPuesto": "Transferir para outro posto",
-      "ejCubreFaltaEnEl": "Ex.: cobre falta no outro posto"
+      "ejCubreFaltaEnEl": "Ex.: cobre falta no outro posto",
+      "despuesVuelveAutomaticamenteA": "Depois volta automaticamente para"
     },
     "UserRoleDialog": {
       "descripcion": "Descrição",
@@ -9259,7 +9402,9 @@
       "errorEliminandoVehiculos": "Não foi possível excluir os veículos",
       "registroDeVehiculosDeVisitantes": "Registro de veículos de visitantes e da empresa",
       "propiedadDeLaEmpresa": "Propriedade da empresa",
-      "propiedadDelVigilante": "Propriedade do vigilante"
+      "propiedadDelVigilante": "Propriedade do vigilante",
+      "anadirVehiculo": "Adicionar veículo",
+      "informacionCompletaDelVehiculo": "Informações completas do veículo."
     },
     "VideoActionModals": {
       "critica": "Crítica",
@@ -9276,7 +9421,8 @@
       "noHayOrigenParaCrear": "Não há origem para criar o incidente",
       "supervisorNotificado": "Supervisor avisado",
       "notaParaElSupervisor": "Nota para o supervisor",
-      "detallesDelIncidente": "Detalhes do incidente…"
+      "detallesDelIncidente": "Detalhes do incidente…",
+      "enlaceParaElCliente": "Link para o cliente"
     },
     "VideoDevices": {
       "conexion": "Conexão",
@@ -9291,14 +9437,18 @@
       "conectaYAdministraTusDvr": "Conecte e gerencie seus DVRs, NVRs e câmeras de videovigilância.",
       "noHayDispositivos": "Não há dispositivos",
       "agregaTuPrimerDvrNvr": "Adicione seu primeiro DVR, NVR ou câmera para começar a videovigilância.",
-      "eliminarDispositivo": "Excluir dispositivo"
+      "eliminarDispositivo": "Excluir dispositivo",
+      "configuraLosDatosDeConexion": "Configure os dados de conexão do DVR/NVR ou câmera.",
+      "dispositivosDeVideo": "Dispositivos de vídeo",
+      "puntoDeServicioOpcional": "Ponto de serviço (opcional)"
     },
     "VideoGatewayModal": {
       "configuracionGo2rtcPegalaEnGo2rtc": "Configuração go2rtc (cole em go2rtc.yaml)",
       "configuracionGo2rtcCopiada": "Configuração go2rtc copiada",
       "urlBaseDelGatewayGo2rtc": "URL base do gateway (go2rtc)",
       "dondeCorreGo2rtcEnLa": "Onde o go2rtc roda — na nuvem (se o DVR for acessível por DDNS) ou uma ponte no local.",
-      "despliegaGo2rtcConEsteConfig": "Implante o go2rtc com esta configuração; ele pega o RTSP do DVR e o entrega ao CRM."
+      "despliegaGo2rtcConEsteConfig": "Implante o go2rtc com esta configuração; ele pega o RTSP do DVR e o entrega ao CRM.",
+      "gatewayDeVideo": "Gateway de vídeo"
     },
     "VideoMonitoring": {
       "ningunaCamaraTransmitiendo": "Nenhuma câmera transmitindo",
@@ -9309,7 +9459,8 @@
       "filtrarPorEquipoGrabador": "Filtrar por gravador",
       "todosLosEquipos": "Todos os equipamentos",
       "filtrarPorPuesto": "Filtrar por posto",
-      "todosLosPuestos": "Todos os postos"
+      "todosLosPuestos": "Todos os postos",
+      "monitoreoDeVideo": "Monitoramento de vídeo"
     },
     "VideoPlayer": {
       "camaraFueraDeLinea": "Câmera offline",
@@ -9324,7 +9475,8 @@
       "noSePudieronCargarLos": "Não foi possível carregar os sites",
       "creaUnSitioDescargaSu": "Crie um site, baixe seu relay (docker-compose) e execute-o em uma máquina do local onde está o DVR.",
       "nuevoSitioRelay": "Novo site de relay",
-      "eliminarSitioRelay": "Excluir site de relay"
+      "eliminarSitioRelay": "Excluir site de relay",
+      "claveDelSitio": "Chave do site:"
     },
     "VigiaUsage": {
       "actividadUltimos30Dias": "Atividade · últimos 30 dias",
@@ -9342,7 +9494,8 @@
       "noSePudoAbrirVentana": "Não foi possível abrir a janela de impressão",
       "buscarRegistroDeVisitas": "Buscar registro de visitas",
       "registradoPor": "Registrado por",
-      "salidoPor": "Saída registrada por"
+      "salidoPor": "Saída registrada por",
+      "registroDeVisitas": "Registro de visitas"
     },
     "configuracion": {
       "espanol": "Espanhol",
@@ -9378,11 +9531,13 @@
       "lasTareasDeLosPuestos": "As tarefas dos postos aparecerão aqui assim que forem criadas.",
       "nuevaTarea": "Nova tarefa",
       "describeLaTarea": "Descreva a tarefa…",
-      "detalleDeLaTarea": "Detalhe da tarefa"
+      "detalleDeLaTarea": "Detalhe da tarefa",
+      "imagenDeReferencia": "Imagem de referência"
     },
     "TrendPanel": {
       "maximo": "Máximo",
-      "vsMesAnterior": "vs. mês anterior"
+      "vsMesAnterior": "vs. mês anterior",
+      "sinDatosParaElPeriodo": "Sem dados para o período"
     },
     "RouteDetailModal": {
       "vehiculo": "Veículo",
@@ -9408,7 +9563,10 @@
       "seleccionaUnaVigilante": "Selecione um vigilante",
       "seleccionaElEstado": "Selecione o status",
       "detallesDelMemo": "Detalhes do memorando",
-      "detalleDelMemo": "Detalhe do memorando"
+      "detalleDelMemo": "Detalhe do memorando",
+      "creaUnMemoRapidoParaElEquipo": "Crie um memorando rápido para a equipe de segurança.",
+      "filtrosDeMemo": "Filtros de memorando",
+      "pendientesDeAcuse": "Aguardando confirmação"
     },
     "EditRoutePage": {
       "editarRuta": "Editar rota",
@@ -9426,7 +9584,9 @@
       "losVigilantesAsignadosAEste": "Os vigilantes designados a este posto são adicionados automaticamente e o grupo se mantém atualizado com as atribuições.",
       "miembrosActualizadosDesdeLasAsignaciones": "Membros atualizados a partir das atribuições",
       "elGrupoNoTieneMiembros": "O grupo não tem membros",
-      "anadeVigilantesConElBuscador": "Adicione vigilantes pela busca ou sincronize com as atribuições do posto."
+      "anadeVigilantesConElBuscador": "Adicione vigilantes pela busca ou sincronize com as atribuições do posto.",
+      "sincronizarConAsignaciones": "Sincronizar com atribuições",
+      "soloAnunciosLosMiembrosNo": "Somente avisos (os membros não podem responder)"
     },
     "PassdownsPage": {
       "pasesDeTurno": "Passagens de turno",
@@ -9458,7 +9618,9 @@
       "nuevoPuestoDeSupervisor": "Novo posto de supervisor",
       "configuraElTurnoYLa": "Configure o turno e a rotação (dia/noite). Os supervisores designados seguem esta rotação.",
       "nombrePEjAguila2": "Nome (ex.: Aguila2) *",
-      "tipoDeTurno": "Tipo de turno"
+      "tipoDeTurno": "Tipo de turno",
+      "entradaDia": "Entrada (dia)",
+      "salidaDia": "Saída (dia)"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Novo supervisor",
@@ -9498,7 +9660,9 @@
       "errorAlCrearIncidente": "Não foi possível criar o incidente",
       "nuevoIncidente": "Novo incidente",
       "registraUnNuevoIncidenteY": "Registre um novo incidente e avise o vigilante correspondente.",
-      "vigilanteAInformar": "Vigilante a informar"
+      "vigilanteAInformar": "Vigilante a informar",
+      "noHayVigilantesAsignadosAEstaEstacion": "Não há vigilantes atribuídos a esta estação",
+      "seleccioneUnaEstacionPrimero": "Selecione uma estação primeiro"
     },
     "NewSecurityGuardPage": {
       "segundoNombre": "Nome do meio",
@@ -9515,7 +9679,9 @@
       "certificadoMedicoVigente": "Certificado médico válido",
       "evaluacionPsicologicaActualizada": "Avaliação psicológica atualizada",
       "certificacionDeVigilanteNivel1": "Certificação de vigilante nível 1",
-      "certificacionDeVigilanteNivel2": "Certificação de vigilante nível 2"
+      "certificacionDeVigilanteNivel2": "Certificação de vigilante nível 2",
+      "certificadoDeNoAntecedentesDeViolenciaFamiliar": "Certidão negativa de antecedentes de violência doméstica",
+      "documentoDeCredencialProfesional": "Documento de credencial profissional"
     },
     "SecurityGuardsPage": {
       "telefono": "Telefone",
@@ -9539,7 +9705,10 @@
       "noSePudoActualizarEl": "Não foi possível atualizar o curso.",
       "elCursoQueBuscasNo": "O curso que você procura não existe ou não está disponível.",
       "detallesDelCurso": "Detalhes do curso",
-      "losCursosPublicadosPuedenAsignarse": "Os cursos publicados podem ser atribuídos aos vigilantes."
+      "losCursosPublicadosPuedenAsignarse": "Os cursos publicados podem ser atribuídos aos vigilantes.",
+      "cursoNoEncontrado": "Curso não encontrado",
+      "plantillaDeCertificadoHtmlOpcional": "Modelo de certificado (HTML opcional)",
+      "urlDePortada": "URL da capa"
     },
     "TrainingEnrollmentsPage": {
       "sinAcceso": "Sem acesso",
@@ -9549,7 +9718,8 @@
       "noHayInscripciones": "Não há inscrições",
       "cuandoAsignesEsteCursoA": "Quando você atribuir este curso a um vigilante, o progresso dele aparecerá aqui.",
       "detalleDeProgreso": "Detalhe do progresso",
-      "noAprobado": "Não aprovado"
+      "noAprobado": "Não aprovado",
+      "progresoDeVigilantes": "Progresso dos vigilantes"
     },
     "VehiclesPage": {
       "vehiculo": "veículo",
@@ -9576,7 +9746,8 @@
       "sinDatosDeLaRonda": "Sem dados da ronda",
       "estaRondaNoTienePuntos": "Esta ronda não tem pontos de controle.",
       "fotoDelEscaneo": "Foto do escaneamento",
-      "fotoDeLaRonda": "Foto da ronda"
+      "fotoDeLaRonda": "Foto da ronda",
+      "noEscaneado": "Não escaneado"
     },
     "EditSecurityGuardPage": {
       "noTienesPermisoParaEditar": "Você não tem permissão para editar vigilantes",
@@ -9598,7 +9769,8 @@
     "GuardReviewsPage": {
       "promedioDelVigilante": "Média do vigilante",
       "cuandoUnClienteCalifiqueA": "Quando um cliente avaliar este vigilante pelo aplicativo, a resenha aparecerá aqui.",
-      "detalleParaConversarConEl": "Detalhes para conversar com o vigilante…"
+      "detalleParaConversarConEl": "Detalhes para conversar com o vigilante…",
+      "observacion": "Observação"
     },
     "GuardSummarypage": {
       "esteVigilanteTodaviaNoTiene": "Este vigilante ainda não tem estação ou posto atribuído. Atribua pela aba \"Posto e estações\".",
@@ -9623,7 +9795,8 @@
     "MisAvisosPage": {
       "noSePudieronCargarTus": "Não foi possível carregar suas preferências.",
       "guardadoAplicaDesdeElProximo": "Salvo. Vale a partir do próximo aviso.",
-      "queQuieresRecibirTuY": "O que você quer receber, e por onde. Não afeta mais ninguém da sua empresa."
+      "queQuieresRecibirTuY": "O que você quer receber, e por onde. Não afeta mais ninguém da sua empresa.",
+      "aquiSoloPuedes": "Aqui você só pode"
     },
     "LicensesTypePage": {
       "losPermisosYLicenciasQue": "As licenças e permissões que sua equipe pode solicitar ou comprovar.",
@@ -9657,7 +9830,9 @@
       "articuloEliminado": "Item excluído",
       "catalogoDeEquiposYRecursos": "Catálogo de equipamentos e recursos da empresa",
       "enMalEstado": "Em mau estado",
-      "buscarPorNombre": "Buscar por nome…"
+      "buscarPorNombre": "Buscar por nome…",
+      "agregarPrimerArticulo": "Adicionar primeiro item",
+      "nuevoArticulo": "Novo item"
     },
     "RoutesPage": {
       "seleccionaAlMenosUnaRuta": "Selecione ao menos uma rota.",
@@ -9665,7 +9840,8 @@
       "buscarRuta": "Buscar rota",
       "turnoNoche": "Turno noturno",
       "noPudimosEncontrarNingunaRuta": "Não encontramos nenhuma rota que corresponda à sua busca.",
-      "seleccionarRuta": "Selecionar rota"
+      "seleccionarRuta": "Selecionar rota",
+      "listadoDeRutas": "Lista de rotas"
     },
     "TrainingCatalogPage": {
       "noSePudoCargarEl": "Não foi possível carregar o catálogo.",
@@ -9685,7 +9861,8 @@
       "buscarCursos": "Buscar cursos",
       "noSeEncontraronCursos": "Nenhum curso encontrado",
       "creaTuPrimerCursoDe": "Crie seu primeiro curso de treinamento para seus vigilantes.",
-      "nuevoCurso": "Novo curso"
+      "nuevoCurso": "Novo curso",
+      "cursosDeEntrenamiento": "Cursos de Treinamento"
     },
     "PatrullaBoardPage": {
       "rutasQueElSupervisorDebe": "Rotas que o supervisor deve percorrer e seu status do dia.",
@@ -9695,7 +9872,170 @@
       "errorSubiendoImagenDelVehiculo": "Não foi possível enviar a imagem do veículo",
       "vehiculoActualizado": "Veículo atualizado",
       "registraLosDatosDelVehiculo": "Registre os dados do veículo de patrulha",
-      "delCliente": "Do cliente"
+      "delCliente": "Do cliente",
+      "quitarFotografia": "Remover fotografia",
+      "tocaLaImagenParaElegir": "Toque na imagem para escolher uma fotografia do veículo."
+    },
+    "ActivityStream": {
+      "parteDeNovedades": "Relatório de novidades"
+    },
+    "AdminUserCardsGrid": {
+      "sinRol": "Sem função"
+    },
+    "AlarmActionPlan": {
+      "planDeAccion": "Plano de ação"
+    },
+    "AlarmReports": {
+      "reportesDeFalsasAlarmas": "Relatórios de falsos alarmes",
+      "sinCasosCerradosConDisposicionEnElPeriodo": "Sem casos encerrados com desfecho no período."
+    },
+    "ApiKeysPage": {
+      "aunNoHayLlaves": "Ainda não há chaves",
+      "comoSeUsa": "Como se usa",
+      "copiaTuClaveAhora": "Copie sua chave agora",
+      "crearLlaveDeApi": "Criar chave de API",
+      "elSistemaExternoLlamaA": "O sistema externo chama",
+      "llavesDeApi": "Chaves de API",
+      "yaLaGuarde": "Já salvei"
+    },
+    "AppErrorBoundary": {
+      "estaSeccionNoSePudoMostrar": "Não foi possível exibir esta seção"
+    },
+    "BottomSheet": {
+      "ajustarLaAlturaDelPanel": "Ajustar a altura do painel"
+    },
+    "CheckInOut": {
+      "informeDeEntradaSalida": "Relatório de Entrada/Saída"
+    },
+    "CheckpointLocationPicker": {
+      "radioDeCobertura": "Raio de cobertura",
+      "tocaElMapaParaColocarlo": "Toque no mapa para posicioná-lo."
+    },
+    "ClientCardsGrid": {
+      "sinClientes": "Sem clientes"
+    },
+    "CompanyDocumentsSection": {
+      "documentosLegalesDeLaEmpresa": "Documentos legais da empresa"
+    },
+    "CompanyPoliciesTable": {
+      "nuevaPolitica": "Nova política"
+    },
+    "DocumentUpload": {
+      "arrastraOHazClicParaAdjuntar": "Arraste ou clique para anexar"
+    },
+    "ExtremoRutaField": {
+      "usarEstaUbicacion": "Usar esta localização"
+    },
+    "GeoFenceLog": {
+      "registrosDeGeoVallas": "Registros de Geocercas"
+    },
+    "GuardIdleLog": {
+      "registrosDeVigilanteInactivo": "Registros de Vigilante Inativo"
+    },
+    "GuardKpi": {
+      "indicadoresDeDesempenoPorVigilante": "Indicadores de desempenho por vigilante: pontualidade, rondas e cumprimento.",
+      "informeDeKpiDelVigilante": "Relatório de KPI do Vigilante"
+    },
+    "GuardTypeahead": {
+      "sinResultados": "Sem resultados."
+    },
+    "Incident": {
+      "informeDeIncidente": "Relatório de Incidente"
+    },
+    "License": {
+      "credencialesYLicenciasDelPersonal": "Credenciais e licenças da equipe, com suas datas de vencimento.",
+      "registroDeLicencias": "Registro de Licenças"
+    },
+    "NoWorkspaceAccess": {
+      "sesionIniciadaComo": "Sessão iniciada como",
+      "sinAccesoAUnEspacioDeTrabajo": "Sem acesso a um espaço de trabalho"
+    },
+    "NominaHoursSummary": {
+      "eligeOtroRangoDeFechas": "Escolha outro intervalo de datas e gere o resumo novamente.",
+      "resumenDeHoras": "Resumo de horas",
+      "sinDatosEnElRango": "Sem dados no intervalo"
+    },
+    "NotificationsPanel": {
+      "resolverConVigia": "Resolver com VigIA",
+      "sinNotificaciones": "Sem notificações"
+    },
+    "Passdown": {
+      "registrosDeEntrega": "Registros de Passagem de Turno"
+    },
+    "PostKpi": {
+      "indicadoresDeDesempenoPorPuesto": "Indicadores de desempenho por posto: cobertura, rondas e incidentes.",
+      "informeDeKpiDelPuesto": "Relatório de KPI do Posto"
+    },
+    "PostSiteImportDialog": {
+      "estructuraDeColumnasRequerida": "Estrutura de colunas necessária"
+    },
+    "ProfileUserPage": {
+      "perfilDelUsuario": "Perfil do usuário"
+    },
+    "ProjectBadge": {
+      "sinTipo": "Sem tipo"
+    },
+    "QuizManager": {
+      "enunciadoDeLaPregunta": "Enunciado da pergunta",
+      "opcion": "Opção",
+      "puntajeParaAprobar": "Nota para aprovação:",
+      "sinCuestionario": "Sem questionário"
+    },
+    "ScheduleCard": {
+      "sinHorario": "Sem horário",
+      "tocaUnVigilanteParaCambiarlo": "Toque em um vigilante para trocá-lo."
+    },
+    "SiteTour": {
+      "informeDeRecorridosDelSitio": "Relatório de Rondas do Local"
+    },
+    "StaticMapImage": {
+      "abrirElMapaInteractivo": "Abrir o mapa interativo",
+      "explorarElMapa": "Explorar o mapa"
+    },
+    "SupervisionSection": {
+      "configurarPuestosDeSupervision": "Configurar postos de supervisão",
+      "puestosDeSupervisionSinCubrir": "Postos de supervisão sem cobertura",
+      "sinSupervisoresAsignados": "Sem supervisores atribuídos",
+      "supervision": "Supervisão"
+    },
+    "SupervisorKpisPage": {
+      "indicadoresDelSupervisor": "Indicadores do supervisor"
+    },
+    "SupervisorRegistration": {
+      "tuCuentaCon": "Sua conta com"
+    },
+    "SupervisorSchedulePage": {
+      "configurarRotacion": "Configurar rotação",
+      "sinHorarioGenerado": "Sem horário gerado"
+    },
+    "Task": {
+      "informeDeTareas": "Relatório de Tarefas"
+    },
+    "TourCheckPoint": {
+      "registrosDePuntosDeControl": "Registros de Pontos de Controle"
+    },
+    "UserPermissionOverrides": {
+      "pruebaConOtroTextoDe": "Tente outro texto de busca."
+    },
+    "VehiclePatrol": {
+      "informeDePatrullaVehicular": "Relatório de Patrulha Veicular",
+      "recorridosDePatrullajeVehicular": "Percursos de patrulhamento veicular: rotas, paradas e tempos."
+    },
+    "VerifyEmailGate": {
+      "verificaTuCorreoElectronico": "Verifique seu e-mail"
+    },
+    "VideoEvents": {
+      "eventosDeVideo": "Eventos de vídeo",
+      "noHayEventos": "Não há eventos"
+    },
+    "VideoSharedClip": {
+      "enlaceNoDisponible": "Link indisponível",
+      "esteEnlaceEsPrivadoYPuedeCaducarNoLoCompartas": "Este link é privado e pode expirar. Não o compartilhe.",
+      "procesandoElVideo": "Processando o vídeo",
+      "videoCompartidoDeFormaSegura": "Vídeo compartilhado com segurança"
+    },
+    "WatchMode": {
+      "registrosDeModoVigilancia": "Registros de Modo Vigilância"
     }
   },
   "map": {
@@ -9748,6 +10088,12 @@
       "manualShort": "Manual",
       "panel": "Sistema de alarme",
       "panelShort": "Painel"
+    },
+    "ecv": {
+      "callLog": "Registro de chamadas",
+      "immediateDispatch": "Despacho imediato (isento de ECV)",
+      "noContacts": "Sem contatos configurados para este painel.",
+      "title": "Verificação (ECV)"
     }
   },
   "nomina": {
@@ -10173,5 +10519,18 @@
     "loading": "Carregando…",
     "refresh": "Atualizar"
   },
-  "loading": "Carregando..."
+  "loading": "Carregando...",
+  "controlCenter": {
+    "errorBoundary": {
+      "title": "Não foi possível carregar o centro de comando"
+    }
+  },
+  "routes": {
+    "optimizacion": {
+      "ahorroDeEstaOptimizacion": "Economia desta otimização",
+      "distanciaDelRecorrido": "Distância do percurso",
+      "sinOptimizar": "Sem otimizar",
+      "yaEnMejorOrden": "Já estava na melhor ordem possível"
+    }
+  }
 }

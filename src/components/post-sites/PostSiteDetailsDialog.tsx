@@ -70,7 +70,7 @@ export default function PostSiteDetailsDialog({ open, onOpenChange, siteId }: Pr
           <DialogHeader>
             <DialogTitle className="text-center">{t('ui.PostSiteDetailsDialog.detallesDelSitio')}</DialogTitle>
             <DialogDescription>
-              Información detallada del Puesto de seguridad seleccionada.
+              {t("ui.PostSiteDetailsDialog.informacionDetalladaDelPuestoDeSeguridadSeleccionada", "Información detallada del Puesto de seguridad seleccionada.")}
             </DialogDescription>
           </DialogHeader>
         </div>

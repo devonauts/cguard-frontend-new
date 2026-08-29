@@ -231,7 +231,7 @@ export default function Vehicles() {
                             </Select>
                             <Button variant="brand" onClick={() => setIsAddOpen(true)}>
                                 <Plus className="mr-2 h-4 w-4" />
-                                Añadir vehículo
+                                {t('ui.Vehicles.anadirVehiculo', 'Añadir vehículo')}
                             </Button>
                         </>
                     }
@@ -254,7 +254,7 @@ export default function Vehicles() {
                         <Sheet open={isAddOpen} onOpenChange={setIsAddOpen}>
                             <SheetTrigger asChild>
                                 <Button className="hidden">
-                                    Añadir vehículo
+                                    {t('ui.Vehicles.anadirVehiculo', 'Añadir vehículo')}
                                 </Button>
                             </SheetTrigger>
 
@@ -417,7 +417,7 @@ export default function Vehicles() {
                                     <span>{t("ui.Vehicles.correoElectronico", "Correo Electrónico")}</span>
                                 </DropdownMenuItem>
                                 <div className="px-2 py-1.5 text-xs text-muted-foreground">
-                                    Próximamente
+                                    {t('ui.Reports.proximamente', 'Próximamente')}
                                 </div>
                             </DropdownMenuContent>
                         </DropdownMenu>

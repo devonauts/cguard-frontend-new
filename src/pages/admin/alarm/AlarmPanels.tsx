@@ -488,12 +488,12 @@ function PanelModal({
                 id="ap-asapOri"
                 value={form.asapOri}
                 onChange={(e) => set("asapOri", e.target.value)}
-                placeholder="Identificador de agencia ASAP"
+                placeholder={t("ui.AlarmPanels.identificadorDeAgenciaAsap", "Identificador de agencia ASAP")}
               />
             </div>
 
             <div>
-              <Label htmlFor="ap-testInterval">Intervalo de prueba (h)</Label>
+              <Label htmlFor="ap-testInterval">{t("ui.AlarmPanels.intervaloDePruebaH", "Intervalo de prueba (h)")}</Label>
               <Input
                 id="ap-testInterval"
                 type="number"
@@ -546,7 +546,7 @@ function PanelModal({
             )}
 
             <div>
-              <Label htmlFor="ap-postSite">Punto de servicio (opcional)</Label>
+              <Label htmlFor="ap-postSite">{t('ui.AlarmPanels.puntoDeServicioOpcional', 'Punto de servicio (opcional)')}</Label>
               <Input
                 id="ap-postSite"
                 value={form.postSiteId}
@@ -840,7 +840,7 @@ function ZonesManager({ panelId }: { panelId: string }) {
       >
         <div>
           <Label htmlFor="z-number" className="text-xs">
-            Número de zona
+            {t("ui.AlarmPanels.numeroDeZona", "Número de zona")}
           </Label>
           <Input
             id="z-number"
@@ -874,7 +874,7 @@ function ZonesManager({ panelId }: { panelId: string }) {
         </div>
         <div>
           <Label htmlFor="z-partition" className="text-xs">
-            Partición
+            {t("ui.AlarmPanels.particion", "Partición")}
           </Label>
           <Input
             id="z-partition"
@@ -885,7 +885,7 @@ function ZonesManager({ panelId }: { panelId: string }) {
         </div>
         <div>
           <Label htmlFor="z-camera" className="text-xs">
-            Cámara vinculada (verificación por video)
+            {t("ui.AlarmPanels.camaraVinculadaVerificacionPorVideo", "Cámara vinculada (verificación por video)")}
           </Label>
           <select
             id="z-camera"
@@ -1143,7 +1143,7 @@ function ContactsManager({ panelId }: { panelId: string }) {
         </div>
         <div>
           <Label htmlFor="c-phone" className="text-xs">
-            Teléfono
+            {t("ui.AlarmPanels.telefono", "Teléfono")}
           </Label>
           <Input
             id="c-phone"
@@ -1166,7 +1166,7 @@ function ContactsManager({ panelId }: { panelId: string }) {
         </div>
         <div>
           <Label htmlFor="c-order" className="text-xs">
-            Orden de llamada
+            {t("ui.AlarmPanels.ordenDeLlamada", "Orden de llamada")}
           </Label>
           <Input
             id="c-order"
@@ -1197,7 +1197,7 @@ function ContactsManager({ panelId }: { panelId: string }) {
         </div>
         <div>
           <Label htmlFor="c-passcode" className="text-xs">
-            Código de verificación
+            {t("ui.AlarmPanels.codigoDeVerificacion", "Código de verificación")}
           </Label>
           <Input
             id="c-passcode"
@@ -1337,12 +1337,12 @@ export default function AlarmPanels() {
         {/* Header */}
         <PageHeader
           icon={<ShieldAlert />}
-          title="Paneles de alarma"
+          title={t("ui.AlarmPanels.panelesDeAlarma", "Paneles de alarma")}
           subtitle={t('ui.AlarmPanels.administraLosPanelesMonitoreadosSus')}
           actions={
             <>
               <Button asChild variant="outline">
-                <Link to="/alarm/queue">Cola de casos</Link>
+                <Link to="/alarm/queue">{t("ui.AlarmPanels.colaDeCasos", "Cola de casos")}</Link>
               </Button>
               <Button asChild variant="outline">
                 <Link to="/alarm/signals">{t("ui.AlarmPanels.senales", "Señales")}</Link>

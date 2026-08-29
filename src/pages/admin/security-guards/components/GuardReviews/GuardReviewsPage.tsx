@@ -183,7 +183,7 @@ export default function GuardReviewsPage() {
                           <FileText className="mr-1.5 h-3.5 w-3.5" /> Generar memo
                         </Button>
                         <Button variant="ghost" size="sm" onClick={() => openAction(r, 'observacion')}>
-                          <MessageSquareWarning className="mr-1.5 h-3.5 w-3.5" /> Observación
+                          <MessageSquareWarning className="mr-1.5 h-3.5 w-3.5" /> {t('ui.GuardReviewsPage.observacion', 'Observación')}
                         </Button>
                       </div>
                     </div>

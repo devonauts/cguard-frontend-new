@@ -141,7 +141,7 @@ export default function DispatchPublicView() {
     <div className="min-h-screen flex items-center justify-center bg-muted/30 p-6">
       <EmptyState
         icon={<ShieldAlert />}
-        title="No disponible"
+        title={t('ui.DispatchPublicView.noDisponible', 'No disponible')}
         description={t('ui.DispatchPublicView.esteEnlaceNoExisteO')}
         className="bg-card max-w-sm"
       />

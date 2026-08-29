@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Navigation, Radio, Users, MapPin } from 'lucide-react';
 
 import GoogleMapEmbed, { type MapEmbedMarker } from '@/components/GoogleMap/GoogleMapEmbed';
@@ -103,6 +104,7 @@ export default function DispatchIncidentMap({
   height?: number;
 }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const incidente = useMemo(() => ({ lat, lng }), [lat, lng]);
 
   const [cobertura, setCobertura] = useState<LiveCoverage | null>(null);
@@ -277,10 +279,10 @@ export default function DispatchIncidentMap({
                   <i style={{ color: 'var(--bad)' }} /> Incidente
                 </span>
                 <span className="cc-map-key">
-                  <i style={{ color: 'var(--ok)' }} /> Puesto con vigilante
+                  <i style={{ color: 'var(--ok)' }} /> {t('dispatcher.map.legendStaffed', 'Puesto con vigilante')}
                 </span>
                 <span className="cc-map-key">
-                  <i style={{ color: 'var(--ink-faint)' }} /> Puesto vacío
+                  <i style={{ color: 'var(--ink-faint)' }} /> {t('dispatcher.map.legendEmpty', 'Puesto vacío')}
                 </span>
               </div>
             </div>
@@ -296,7 +298,7 @@ export default function DispatchIncidentMap({
           style={{ borderColor: 'var(--hairline)', color: 'var(--ink)' }}
         >
           <Users className="h-3.5 w-3.5" style={{ color: 'var(--brand-text)' }} />
-          Quién está cerca
+          {t('dispatcher.map.whoIsNear', 'Quién está cerca')}
         </div>
 
         {cercanos.length === 0 ? (

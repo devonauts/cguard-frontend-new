@@ -173,10 +173,10 @@ export default function SupervisorsPage() {
             quien la busca la busca como «reenviar la invitación», que es como
             se llama en la página de vigilantes y en el correo que recibe. */}
         <DropdownMenuItem onClick={() => resendInvite(s)}>
-          <Send className="mr-2 h-4 w-4" /> Reenviar invitación
+          <Send className="mr-2 h-4 w-4" /> {t('guards.list.actions.resendInvite', 'Reenviar invitación')}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => sendPasswordReset(s)}>
-          <KeyRound className="mr-2 h-4 w-4" /> Restablecer contraseña
+          <KeyRound className="mr-2 h-4 w-4" /> {t('guards.list.actions.resetPassword', 'Restablecer contraseña')}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => removeSupervisor(s)}

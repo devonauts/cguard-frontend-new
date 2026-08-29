@@ -26,6 +26,7 @@
  * ════════════════════════════════════════════════════════════════════════════
  */
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 
 export type PasoHoja = 0 | 1 | 2;
 
@@ -63,6 +64,7 @@ export function BottomSheet({
   onMover?: (px: number, arrastrando: boolean) => void;
   children: ReactNode;
 }) {
+  const { t } = useTranslation();
   const hojaRef = useRef<HTMLElement | null>(null);
   const cabeceraRef = useRef<HTMLDivElement | null>(null);
   const cuerpoRef = useRef<HTMLDivElement | null>(null);
@@ -196,7 +198,7 @@ export function BottomSheet({
         <div
           role="button"
           tabIndex={0}
-          aria-label="Ajustar la altura del panel"
+          aria-label={t('ui.BottomSheet.ajustarLaAlturaDelPanel', 'Ajustar la altura del panel')}
           aria-expanded={paso > 0}
           onKeyDown={alTeclado}
           className="cg-hoja-tirador cg-focus"

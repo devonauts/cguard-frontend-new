@@ -247,7 +247,7 @@ export default function EditSecurityGuardPage() {
                   <Input name="birthDate" value={form.birthDate} onChange={handleChange} type="date" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Lugar de nacimiento</label>
+                  <label className="block text-sm font-medium mb-1">{t('guards.profile.fields.birthPlace', 'Lugar de nacimiento')}</label>
                   <Input name="birthPlace" value={form.birthPlace} onChange={handleChange} />
                 </div>
                 <div>

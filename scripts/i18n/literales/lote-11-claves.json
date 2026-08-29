@@ -1,0 +1,17 @@
+{
+ "header.logout": "Cerrar sesión",
+ "guards.list.importDialog.clickToSelect": "Click para seleccionar",
+ "ui.ServiceTypeBadge.sinTipo": "Sin tipo",
+ "ui.IntegrationsList.llavesDeApi": "Llaves de API",
+ "ui.Reports.proximamente": "Próximamente",
+ "ui.EditAdminUser.esteRolVe": "Este rol ve",
+ "ui.EditAdminUser.sinSedeMarcadaVeTodo": "Sin ninguna sede marcada seguirá viendo TODO.",
+ "ui.AlarmPanels.puntoDeServicioOpcional": "Punto de servicio (opcional)",
+ "ui.Scheduling.coberturaDeTurnos": "Cobertura de turnos",
+ "clients.form.riskLevel": "Nivel de riesgo",
+ "ui.Coverage.despuesVuelveAutomaticamenteA": "Después vuelve automáticamente a",
+ "ui.Schedule.coberturaDeDescansos": "Cobertura de descansos",
+ "dashboard.coverage.title": "Cobertura de puestos",
+ "guards.profile.fields.birthPlace": "Lugar de nacimiento",
+ "ui.SupervisorRegistration.tuCuentaCon": "Tu cuenta con"
+}

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MapPin, Maximize2 } from 'lucide-react';
 import { staticMapUrl, staticMapUrlMulti, type StaticMapOptions, type StaticMapPoint } from '@/utils/staticMapUrl';
 
@@ -56,6 +57,7 @@ export default function StaticMapImage({
   interactive = true,
   ...mapOptions
 }: StaticMapImageProps) {
+  const { t } = useTranslation();
   const hostRef = useRef<HTMLDivElement | null>(null);
   const [visible, setVisible] = useState(false);
   const [expandido, setExpandido] = useState(false);
@@ -122,7 +124,7 @@ export default function StaticMapImage({
             <button
               type="button"
               onClick={() => setExpandido(true)}
-              aria-label="Abrir el mapa interactivo"
+              aria-label={t('ui.StaticMapImage.abrirElMapaInteractivo', 'Abrir el mapa interactivo')}
               className="absolute inset-0 flex items-end justify-end p-2 opacity-0 transition-opacity hover:opacity-100 focus-visible:opacity-100"
               style={{ background: 'linear-gradient(to top, rgba(0,0,0,.35), transparent 45%)' }}
             >
@@ -131,7 +133,7 @@ export default function StaticMapImage({
                 style={{ background: 'var(--glass, rgba(255,255,255,.92))', color: 'var(--ink, #111)' }}
               >
                 <Maximize2 className="h-3 w-3" />
-                Explorar el mapa
+                {t('ui.StaticMapImage.explorarElMapa', 'Explorar el mapa')}
               </span>
             </button>
           )}

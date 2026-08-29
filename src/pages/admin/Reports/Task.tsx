@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { CheckSquare } from "lucide-react";
 import DataReport, { type ReportColumn } from "./DataReport";
 import { formatDate, rangeBounds, REPORT_ROW_LIMIT, warnIfCapped } from "./reportFormat";
@@ -25,9 +26,10 @@ const columns: ReportColumn<TaskRow>[] = [
 ];
 
 export default function Task() {
+  const { t } = useTranslation();
   return (
     <DataReport<TaskRow>
-      title="Informe de Tareas"
+      title={t('ui.Task.informeDeTareas', 'Informe de Tareas')}
       description="Tareas de cliente/personal aprobadas y ejecutadas por los vigilantes en turno."
       icon={CheckSquare}
       columns={columns}

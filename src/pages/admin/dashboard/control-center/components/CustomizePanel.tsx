@@ -48,7 +48,7 @@ export function CustomizePanel({
       <div className="glass-raised relative h-full w-full max-w-md overflow-y-auto rounded-none p-5 animate-in slide-in-from-right">
         <div className="mb-5 flex items-center justify-between">
           <div>
-            <div className="cg-eyebrow">Centro de mando</div>
+            <div className="cg-eyebrow">{t('dashboard.commandCenter', 'Centro de mando')}</div>
             <h2 className="font-display text-base font-semibold">Personalizar</h2>
           </div>
           <button
@@ -94,7 +94,7 @@ export function CustomizePanel({
             />
           </label>
           <button type="button" onClick={resetAccent} className="cg-btn-link cg-focus text-xs font-semibold">
-            Volver al color de la marca
+            {t('ui.CustomizePanel.volverAlColorDeLaMarca', 'Volver al color de la marca')}
           </button>
         </Group>
 
@@ -160,15 +160,15 @@ export function CustomizePanel({
           ))}
         </Group>
 
-        <Group icon={<ShieldCheck className="size-4" />} title="Operaciones de seguridad">
+        <Group icon={<ShieldCheck className="size-4" />} title={t('ui.CustomizePanel.operacionesDeSeguridad', 'Operaciones de seguridad')}>
           <Toggle label={t("ui.CustomizePanel.rastreoDeUbicacionEnVivo", "Rastreo de ubicación en vivo")} checked={p.liveTracking} onChange={(v) => set({ liveTracking: v })} />
           <Row label={t("ui.CustomizePanel.intervaloDeUbicacionS", "Intervalo de ubicación (s)")}>
             <NumInput value={p.locationIntervalSec} min={5} max={120} onChange={(v) => set({ locationIntervalSec: v })} />
           </Row>
-          <Toggle label="Exigir foto en punto de control" checked={p.requirePhotoCheckpoint} onChange={(v) => set({ requirePhotoCheckpoint: v })} />
-          <Toggle label="Exigir GPS en punto de control" checked={p.requireGpsCheckpoint} onChange={(v) => set({ requireGpsCheckpoint: v })} />
+          <Toggle label={t('ui.CustomizePanel.exigirFotoEnPuntoDeControl', 'Exigir foto en punto de control')} checked={p.requirePhotoCheckpoint} onChange={(v) => set({ requirePhotoCheckpoint: v })} />
+          <Toggle label={t('ui.CustomizePanel.exigirGpsEnPuntoDeControl', 'Exigir GPS en punto de control')} checked={p.requireGpsCheckpoint} onChange={(v) => set({ requireGpsCheckpoint: v })} />
           <Toggle label={t('ui.CustomizePanel.exigirEscaneoQrEnRonda')} checked={p.requireQrRonda} onChange={(v) => set({ requireQrRonda: v })} />
-          <Row label="Radio de geocerca (m)"><NumInput value={p.geofenceRadius} min={20} max={2000} onChange={(v) => set({ geofenceRadius: v })} /></Row>
+          <Row label={t('ui.CustomizePanel.radioDeGeocercaM', 'Radio de geocerca (m)')}><NumInput value={p.geofenceRadius} min={20} max={2000} onChange={(v) => set({ geofenceRadius: v })} /></Row>
           <Row label={t("ui.CustomizePanel.umbralPuntoDeControlTardio", "Umbral punto de control tardío (min)")}><NumInput value={p.lateCheckpointThresholdMin} min={1} max={120} onChange={(v) => set({ lateCheckpointThresholdMin: v })} /></Row>
           <Row label={t("ui.CustomizePanel.avisoDispositivoSinConexionMin", "Aviso dispositivo sin conexión (min)")}><NumInput value={p.offlineDeviceWarningMin} min={1} max={120} onChange={(v) => set({ offlineDeviceWarningMin: v })} /></Row>
           <Row label={t("ui.CustomizePanel.nivelesDeEscalacionDeAlerta", "Niveles de escalación de alerta")}><NumInput value={p.alertEscalationLevels} min={1} max={5} onChange={(v) => set({ alertEscalationLevels: v })} /></Row>

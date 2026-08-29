@@ -2557,7 +2557,7 @@ export default function Schedule() {
                         )}
                         {staffing.sfRotation && (
                           <div className="pt-1 text-[10px]" style={{ color: 'var(--ink-soft)', borderTop: '1px solid var(--hairline)' }}>
-                            Rotación SF: <span className="font-semibold" style={{ color: 'var(--ink)' }}>{staffing.sfRotation.name}</span> ({staffing.sfRotation.dayShifts}D-{staffing.sfRotation.nightShifts}N-{staffing.sfRotation.restDays}L)
+                            {t('ui.Schedule.rotacionSf', 'Rotación SF:')} <span className="font-semibold" style={{ color: 'var(--ink)' }}>{staffing.sfRotation.name}</span> ({staffing.sfRotation.dayShifts}D-{staffing.sfRotation.nightShifts}N-{staffing.sfRotation.restDays}L)
                           </div>
                         )}
                         <div className="text-[10px]" style={{ color: 'var(--ink-soft)' }}>
@@ -2606,10 +2606,10 @@ export default function Schedule() {
                       return (
                         <div className="pt-2" style={{ borderTop: '1px solid var(--hairline)' }}>
                           <div className="mb-1 flex items-center justify-between">
-                            <span className="text-[10px]" style={{ color: 'var(--ink-soft)' }}>Cobertura de fijos</span>
+                            <span className="text-[10px]" style={{ color: 'var(--ink-soft)' }}>{t('ui.Schedule.coberturaDeFijos', 'Cobertura de fijos')}</span>
                             <span className="text-[10px] font-semibold tabular-nums">{pct}%</span>
                           </div>
-                          <MeterBar pct={pct} height={6} ariaLabel="Cobertura de fijos" />
+                          <MeterBar pct={pct} height={6} ariaLabel={t('ui.Schedule.coberturaDeFijos', 'Cobertura de fijos')} />
                           <div className="mt-1 text-[9px] tabular-nums" style={{ color: 'var(--ink-soft)' }}>{covered}/{fijoPositions.length} posiciones cubiertas</div>
                         </div>
                       );
@@ -2659,7 +2659,7 @@ export default function Schedule() {
                 </>
               ) : (
                 <span className="font-medium" style={{ color: 'var(--ink-soft)' }}>
-                  Arrastra sobre la fila de un puesto para <b>{t('ui.Schedule.dibujarUnBloqueDeTrabajo')}</b> (p. ej. 07:00 → 07:00 del día siguiente) · Clic en un bloque: detalle / eliminar · Suelta un vigilante del panel sobre la línea · <b>{t("ui.Schedule.reAvPag2", "Re/Av Pág")}</b> cambia {view === 'week' ? 'de semana' : 'de día'}
+                  {t('ui.Schedule.arrastraSobreLaFilaDeUnPuestoPara', 'Arrastra sobre la fila de un puesto para')} <b>{t('ui.Schedule.dibujarUnBloqueDeTrabajo')}</b> (p. ej. 07:00 → 07:00 del día siguiente) · Clic en un bloque: detalle / eliminar · Suelta un vigilante del panel sobre la línea · <b>{t("ui.Schedule.reAvPag2", "Re/Av Pág")}</b> cambia {view === 'week' ? 'de semana' : 'de día'}
                 </span>
               )}
               <span className="flex-1" />
@@ -2714,7 +2714,7 @@ export default function Schedule() {
               <div className="p-5 space-y-4">
                 <div className="rounded-xl px-3 py-2" style={toneCard('ok', 8, 26)}>
                   <p className="text-[11px]">
-                    Sugerido según lo que falta ese día: <b>{sfCover.suggested}</b>
+                    {t('ui.Schedule.sugeridoSegunLoQueFaltaEseDia', 'Sugerido según lo que falta ese día:')} <b>{sfCover.suggested}</b>
                   </p>
                 </div>
                 {/* Quick shapes */}
@@ -2889,7 +2889,7 @@ export default function Schedule() {
               {moveFrom && (
                 <div className="rounded-xl px-3 py-2" style={toneCard('warn')}>
                   <p className="text-[11px]">
-                    Se moverá desde <span className="font-semibold">{stationsById.get(moveFrom.stationId)?.stationName || 'su puesto actual'}</span> — sus turnos futuros allí se eliminan.
+                    {t('ui.Schedule.seMoveraDesde', 'Se moverá desde')} <span className="font-semibold">{stationsById.get(moveFrom.stationId)?.stationName || 'su puesto actual'}</span> — sus turnos futuros allí se eliminan.
                   </p>
                 </div>
               )}
@@ -3012,7 +3012,7 @@ export default function Schedule() {
                 return (
                   <div className="glass-sunken px-3 py-2">
                     <p className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>
-                      Patrón de rotación: <span className="font-semibold" style={{ color: 'var(--ink)' }}>{rot?.name || 'el del puesto'}</span> · se hereda del puesto.
+                      {t('ui.Schedule.patronDeRotacion', 'Patrón de rotación:')} <span className="font-semibold" style={{ color: 'var(--ink)' }}>{rot?.name || 'el del puesto'}</span> · se hereda del puesto.
                     </p>
                   </div>
                 );
@@ -3093,7 +3093,7 @@ export default function Schedule() {
                     </select>
                   </div>
                   <div>
-                    <label className="cg-eyebrow mb-1.5 block">Cobertura de descansos</label>
+                    <label className="cg-eyebrow mb-1.5 block">{t('ui.Schedule.coberturaDeDescansos', 'Cobertura de descansos')}</label>
                     <select value={cfgRestCoverage} onChange={e => setCfgRestCoverage(e.target.value as 'sacafranco' | 'alternate')} className="cg-input cg-focus w-full px-3 py-2 text-sm">
                       <option value="sacafranco">{t('comun.sacafrancoCubreLosDescansos')}</option>
                       <option value="alternate">{t('comun.alternanciaEntreFijosSinSacafranco')}</option>
@@ -3217,7 +3217,7 @@ export default function Schedule() {
                     })}
                   </div>
                 ) : (
-                  <p className="py-8 text-center text-sm" style={{ color: 'var(--ink-soft)' }}>No hubo vigilantes afectados.</p>
+                  <p className="py-8 text-center text-sm" style={{ color: 'var(--ink-soft)' }}>{t('ui.Schedule.noHuboVigilantesAfectados', 'No hubo vigilantes afectados.')}</p>
                 )}
               </div>
             ) : (
@@ -3258,7 +3258,7 @@ export default function Schedule() {
                 <div className="flex items-center justify-between px-5 py-2.5" style={{ borderBottom: '1px solid var(--hairline)' }}>
                   <div className="flex items-center gap-2">
                     {ok ? <CheckCircle2 size={15} style={{ color: 'var(--ok-text)' }} /> : <AlertTriangle size={15} style={{ color: 'var(--bad-text)' }} />}
-                    <span className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>Cobertura de puestos <span style={{ color: 'var(--ink-faint)' }}>{t("ui.Schedule.14Dias", "(14 días)")}</span></span>
+                    <span className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>{t('dashboard.coverage.title', 'Cobertura de puestos')} <span style={{ color: 'var(--ink-faint)' }}>{t("ui.Schedule.14Dias", "(14 días)")}</span></span>
                   </div>
                   <div className="flex items-center gap-3 text-xs">
                     <span className="font-bold tabular-nums" style={{ color: ok ? 'var(--ok-text)' : 'var(--bad-text)' }}>{cov.coveredPct}%</span>
@@ -3299,7 +3299,7 @@ export default function Schedule() {
                   <div className="flex items-start gap-2 rounded-xl px-3 py-2" style={tonePill('warn', 12)}>
                     <AlertTriangle size={15} className="mt-0.5 shrink-0" />
                     <div className="text-[11px] leading-relaxed">
-                      <p className="font-semibold">Revisa antes de publicar:</p>
+                      <p className="font-semibold">{t('ui.Schedule.revisaAntesDePublicar', 'Revisa antes de publicar:')}</p>
                       <ul className="list-disc pl-4">
                         {lines.map((l, i) => <li key={i}>{l}</li>)}
                       </ul>

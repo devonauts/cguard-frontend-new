@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
 import { ApiService } from "@/services/api/apiService";
 import { toast } from "sonner";
@@ -16,6 +17,7 @@ import { toast } from "sonner";
  * tenantless users are handled before this gate.
  */
 export default function VerifyEmailGate() {
+  const { t } = useTranslation();
   const { user, signOut, refreshProfile } = useAuth();
   const email = user?.email || "";
 
@@ -116,7 +118,7 @@ export default function VerifyEmailGate() {
           className="font-display text-center text-lg font-semibold"
           style={{ color: "var(--ink)" }}
         >
-          Verifica tu correo electrónico
+          {t('ui.VerifyEmailGate.verificaTuCorreoElectronico', 'Verifica tu correo electrónico')}
         </h2>
 
         <p className="mt-3 text-center text-sm leading-relaxed" style={{ color: "var(--ink-soft)" }}>
@@ -162,7 +164,7 @@ export default function VerifyEmailGate() {
           className="cg-focus mt-4 w-full rounded-full text-center text-xs transition-colors"
           style={{ color: "var(--ink-faint)" }}
         >
-          Cerrar sesión
+          {t('header.logout', 'Cerrar sesión')}
         </button>
       </div>
     </div>

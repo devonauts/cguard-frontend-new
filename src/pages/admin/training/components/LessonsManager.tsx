@@ -151,7 +151,7 @@ export default function LessonsManager({ courseId, lessons, readOnly, onChange }
         <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t("ui.LessonsManager.leccionesOrdenadasQueVeranLos", "Lecciones ordenadas que verán los vigilantes.")}</p>
         {!readOnly && (
           <Button variant="brand" onClick={openNew}>
-            <Plus className="h-4 w-4 mr-1" /> Agregar lección
+            <Plus className="h-4 w-4 mr-1" /> {t("ui.LessonsManager.agregarLeccion", "Agregar lección")}
           </Button>
         )}
       </div>
@@ -164,7 +164,7 @@ export default function LessonsManager({ courseId, lessons, readOnly, onChange }
           action={
             !readOnly ? (
               <Button variant="brand" onClick={openNew}>
-                <Plus className="h-4 w-4 mr-1" /> Agregar lección
+                <Plus className="h-4 w-4 mr-1" /> {t("ui.LessonsManager.agregarLeccion", "Agregar lección")}
               </Button>
             ) : undefined
           }
@@ -232,7 +232,7 @@ export default function LessonsManager({ courseId, lessons, readOnly, onChange }
               <Textarea rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
             </div>
             <div className="space-y-2">
-              <Label>URL de video (YouTube, Vimeo, etc.)</Label>
+              <Label>{t("ui.LessonsManager.urlDeVideoYoutubeVimeo", "URL de video (YouTube, Vimeo, etc.)")}</Label>
               <Input value={form.videoUrl} onChange={(e) => setForm({ ...form, videoUrl: e.target.value })} placeholder="https://..." />
             </div>
             <div className="space-y-2">

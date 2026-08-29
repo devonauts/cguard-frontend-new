@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useAuth } from "@/contexts/AuthContext"
 
 /**
@@ -13,6 +14,7 @@ import { useAuth } from "@/contexts/AuthContext"
  * this screen is for end users whose account was not attached to any workspace.
  */
 export default function NoWorkspaceAccess() {
+  const { t } = useTranslation()
   const { user, signOut } = useAuth()
   const email = user?.email || ""
 
@@ -58,7 +60,7 @@ export default function NoWorkspaceAccess() {
           className="font-display text-center text-lg font-semibold"
           style={{ color: "var(--ink)" }}
         >
-          Sin acceso a un espacio de trabajo
+          {t('ui.NoWorkspaceAccess.sinAccesoAUnEspacioDeTrabajo', 'Sin acceso a un espacio de trabajo')}
         </h2>
 
         <p className="mt-3 text-center text-sm leading-relaxed" style={{ color: "var(--ink-soft)" }}>
@@ -68,7 +70,7 @@ export default function NoWorkspaceAccess() {
 
         {email && (
           <p className="mt-2 text-center text-xs" style={{ color: "var(--ink-faint)" }}>
-            Sesión iniciada como <span className="font-medium">{email}</span>
+            {t('ui.NoWorkspaceAccess.sesionIniciadaComo', 'Sesión iniciada como')} <span className="font-medium">{email}</span>
           </p>
         )}
 
@@ -78,7 +80,7 @@ export default function NoWorkspaceAccess() {
             onClick={() => signOut()}
             className="cg-btn-brand cg-focus w-full rounded-full px-4 py-2.5 text-sm font-semibold transition-[filter] hover:brightness-110"
           >
-            Cerrar sesión
+            {t('header.logout', 'Cerrar sesión')}
           </button>
           <button
             type="button"

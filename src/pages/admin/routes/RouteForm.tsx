@@ -1242,7 +1242,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
                   {points.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="px-4 py-10 text-center text-sm" style={{ color: 'var(--ink-soft)' }}>
-                        No hay puntos definidos
+                        {t('ui.RouteForm.noHayPuntosDefinidos', 'No hay puntos definidos')}
                       </td>
                     </tr>
                   ) : (
@@ -1306,7 +1306,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
                                     background: 'color-mix(in oklab, var(--warn) 12%, transparent)',
                                   }}
                                 >
-                                  Sin ubicación
+                                  {t('ui.RouteForm.sinUbicacion', 'Sin ubicación')}
                                 </span>
                               )}
                             </div>
@@ -1465,7 +1465,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
                 }
               />
               <Label htmlFor="notify" className="cursor-pointer">
-                Enviar notificación antes de las pasadas programadas
+                {t('ui.RouteForm.enviarNotificacionAntesDeLasPasadasProgramadas', 'Enviar notificación antes de las pasadas programadas')}
               <span
                 className="rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
                 style={{ background: "var(--glass-sunken)", color: "var(--ink-faint)" }}
@@ -1525,7 +1525,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
                 onCheckedChange={field.onChange}
               />
               <Label htmlFor="forcecheck" className="cursor-pointer">
-                Forzar registro de entrada antes de comenzar la ruta
+                {t('ui.RouteForm.forzarRegistroDeEntradaAntesDeComenzarLaRuta', 'Forzar registro de entrada antes de comenzar la ruta')}
               <span
                 className="rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
                 style={{ background: "var(--glass-sunken)", color: "var(--ink-faint)" }}

@@ -742,7 +742,7 @@ export default function NewSecurityGuardPage() {
                       )} />
                       <FormField control={createCtrl} name="birthPlace" render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Lugar de Nacimiento</FormLabel>
+                          <FormLabel>{t('guards.new.form.birthPlace', 'Lugar de Nacimiento')}</FormLabel>
                           <FormControl><Input placeholder="Ej. Quito, Ecuador" {...field} /></FormControl>
                           <FormMessage />
                         </FormItem>
@@ -881,7 +881,7 @@ export default function NewSecurityGuardPage() {
                       />
                       <DocumentUpload
                         label="Credencial"
-                        description="Documento de credencial profesional"
+                        description={t('ui.NewSecurityGuardPage.documentoDeCredencialProfesional', 'Documento de credencial profesional')}
                         value={guardDocs.credentialDocument ?? null}
                         onChange={setDoc("credentialDocument") as (f: any) => void}
                       />
@@ -899,7 +899,7 @@ export default function NewSecurityGuardPage() {
                       />
                       <DocumentUpload
                         label="Certificado Violencia Intrafamiliar"
-                        description="Certificado de no antecedentes de violencia familiar"
+                        description={t('ui.NewSecurityGuardPage.certificadoDeNoAntecedentesDeViolenciaFamiliar', 'Certificado de no antecedentes de violencia familiar')}
                         value={guardDocs.familyViolenceCertificate ?? null}
                         onChange={setDoc("familyViolenceCertificate") as (f: any) => void}
                       />

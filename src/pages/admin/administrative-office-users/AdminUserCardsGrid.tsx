@@ -4,6 +4,7 @@
  * nombre → detalle, estado, correo y sus roles. El menú de acciones se inyecta
  * desde la página (mismos handlers que la tabla) según el estado del usuario.
  */
+import { useTranslation } from "react-i18next";
 import { EllipsisVertical, Mail, ShieldCheck, UserCog } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -90,9 +91,10 @@ export default function AdminUserCardsGrid({
     onOpen: (u: AdminUserRow) => void;
     actions: (u: AdminUserRow) => AdminUserCardAction[];
 }) {
+    const { t } = useTranslation();
     if (loading) return <SkeletonCards count={8} className="sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" />;
     if (!users.length) {
-        return <EmptyState icon={<UserCog />} title="Sin usuarios" description="Da de alta al primer usuario de oficina con «Nuevo usuario»." />;
+        return <EmptyState icon={<UserCog />} title={t("billing.noUsers", "Sin usuarios")} description="Da de alta al primer usuario de oficina con «Nuevo usuario»." />;
     }
 
     return (
@@ -166,7 +168,7 @@ export default function AdminUserCardsGrid({
                             style={{ borderColor: "var(--hairline)", color: "var(--ink-soft)" }}
                         >
                             <ShieldCheck className="h-4 w-4 shrink-0" style={{ color: "var(--brand-text)" }} />
-                            {roles ? <span className="truncate capitalize text-foreground">{roles}</span> : <span>Sin rol</span>}
+                            {roles ? <span className="truncate capitalize text-foreground">{roles}</span> : <span>{t("ui.AdminUserCardsGrid.sinRol", "Sin rol")}</span>}
                         </div>
                     </GlassPanel>
                 );

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,7 @@ interface ImportDialogProps {
 }
 
 export function ImportDialog({ open, onOpenChange, onSuccess }: ImportDialogProps) {
+    const { t } = useTranslation();
     const [file, setFile] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
 
@@ -84,16 +86,16 @@ export function ImportDialog({ open, onOpenChange, onSuccess }: ImportDialogProp
             <DialogContent className="max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Importar Clientes desde Excel</DialogTitle>
-                    <DialogDescription>Sube un archivo .xlsx/.xls/.csv para importar clientes.</DialogDescription>
+                    <DialogDescription>{t('clients.importDialog.description', 'Sube un archivo .xlsx/.xls/.csv para importar clientes.')}</DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-4">
                     <div>
                         <p className="text-sm text-muted-foreground mb-2">
-                            Antes de cargar, asegúrese de:
+                            {t('guards.list.importDialog.howTo', 'Antes de cargar, asegúrese de:')}
                         </p>
                         <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1">
-                            <li>El archivo debe ser formato .xlsx, .xls o .csv</li>
+                            <li>{t('guards.list.importDialog.fileFormat', 'El archivo debe ser formato .xlsx, .xls o .csv')}</li>
                             <li><strong>Columnas obligatorias:</strong> name, lastName, email, phoneNumber, address, zipCode, city, country</li>
                             <li><strong>Columnas opcionales:</strong> addressLine2, faxNumber, website, categoryId</li>
                         </ul>
@@ -102,7 +104,7 @@ export function ImportDialog({ open, onOpenChange, onSuccess }: ImportDialogProp
                             className="px-0 text-primary"
                             onClick={downloadTemplate}
                         >
-                            Descargar plantilla de ejemplo
+                            {t('guards.list.importDialog.downloadTemplate', 'Descargar plantilla de ejemplo')}
                         </Button>
                     </div>
 
@@ -120,7 +122,7 @@ export function ImportDialog({ open, onOpenChange, onSuccess }: ImportDialogProp
                                 {file ? file.name : "Explorar tu archivo Excel aquí...."}
                             </p>
                             <p className="text-xs text-muted-foreground mt-1">
-                                Click para seleccionar
+                                {t('guards.list.importDialog.clickToSelect', 'Click para seleccionar')}
                             </p>
                         </label>
                     </div>

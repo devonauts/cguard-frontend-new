@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Search, X, Check } from "lucide-react";
 import securityGuardService from "@/lib/api/securityGuardService";
 
@@ -16,6 +17,7 @@ export default function GuardTypeahead({
   placeholder?: string;
   excludeGuardId?: string | null;
 }) {
+  const { t } = useTranslation();
   const [q, setQ] = useState("");
   const [rows, setRows] = useState<any[]>([]);
   const [open, setOpen] = useState(false);
@@ -76,7 +78,7 @@ export default function GuardTypeahead({
       {open && (q.trim().length >= 2) && (
         <div className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-xl border border-[var(--hairline)] bg-[var(--float)] shadow-lg">
           {loading && <div className="px-3 py-2.5 text-sm text-[var(--ink-soft)]">Buscando…</div>}
-          {!loading && !rows.length && <div className="px-3 py-2.5 text-sm text-[var(--ink-soft)]">Sin resultados.</div>}
+          {!loading && !rows.length && <div className="px-3 py-2.5 text-sm text-[var(--ink-soft)]">{t('ui.GuardTypeahead.sinResultados', 'Sin resultados.')}</div>}
           {rows.map((r) => (
             <button
               key={r.guardId}

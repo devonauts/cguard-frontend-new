@@ -130,7 +130,7 @@ function SedesAsignadas({ userId }: { userId: string }) {
           />
           {elegidas.length === 0 && (
             <p className="mt-2 text-xs" style={{ color: "var(--ink-soft)" }}>
-              Sin ninguna sede marcada seguirá viendo TODO.
+              {t('ui.SupervisorDetail.sinNingunaSedeMarcadaSeguiraViendoTodo', 'Sin ninguna sede marcada seguirá viendo TODO.')}
             </p>
           )}
           <Button className="mt-3" size="sm" onClick={guardar} disabled={guardando || roles === null}>
@@ -289,14 +289,14 @@ export default function SupervisorDetailPage() {
                         <>
                           <EditText label={t("ui.SupervisorDetail.cedulaId", "Cédula / ID")} value={form.governmentId} onChange={(v) => setField("governmentId", v)} />
                           <EditText label={t('comun.fechaDeNacimiento')} value={form.birthDate} onChange={(v) => setField("birthDate", v)} type="date" />
-                          <EditText label="Lugar de nacimiento" value={form.birthPlace} onChange={(v) => setField("birthPlace", v)} />
+                          <EditText label={t('guards.profile.fields.birthPlace', 'Lugar de nacimiento')} value={form.birthPlace} onChange={(v) => setField("birthPlace", v)} />
                           <EditText label={t("ui.SupervisorDetail.direccion", "Dirección")} value={form.address} onChange={(v) => setField("address", v)} />
                         </>
                       ) : (
                         <>
                           <ReadField label={t("ui.SupervisorDetail.cedulaId2", "Cédula / ID")} value={sup.governmentId} />
                           <ReadField label={t('comun.fechaDeNacimiento')} value={fmtDate(sup.birthDate)} />
-                          <ReadField label="Lugar de nacimiento" value={sup.birthPlace} />
+                          <ReadField label={t('guards.profile.fields.birthPlace', 'Lugar de nacimiento')} value={sup.birthPlace} />
                           <ReadField label={t("ui.SupervisorDetail.direccion2", "Dirección")} value={sup.address} />
                         </>
                       )}

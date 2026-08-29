@@ -315,7 +315,7 @@ export default function OnboardingWizard({
             </div>
             <div className="min-w-0">
               <DialogTitle className="text-base font-semibold">
-                Configura tu empresa
+                {t('ui.OnboardingWizard.configuraTuEmpresa', 'Configura tu empresa')}
               </DialogTitle>
               <DialogDescription className="text-xs">
                 Paso {step + 1} de {STEPS.length} · {STEPS[step].label}
@@ -530,7 +530,7 @@ export default function OnboardingWizard({
                     }}
                     className="text-xs font-medium text-primary hover:underline"
                   >
-                    Detectar por dirección
+                    {t('ui.OnboardingWizard.detectarPorDireccion', 'Detectar por dirección')}
                   </button>
                 </div>
                 <div className="space-y-1.5">
@@ -565,13 +565,13 @@ export default function OnboardingWizard({
             disabled={submitting}
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50"
           >
-            Completar más tarde
+            {t('ui.OnboardingWizard.completarMasTarde', 'Completar más tarde')}
           </button>
 
           <div className="ml-auto flex items-center gap-2">
             {step > 0 && (
               <Button type="button" variant="outline" onClick={back} disabled={submitting}>
-                <ArrowLeft className="mr-1.5 h-4 w-4" /> Atrás
+                <ArrowLeft className="mr-1.5 h-4 w-4" /> {t('actions.back', 'Atrás')}
               </Button>
             )}
             {step === 0 && (

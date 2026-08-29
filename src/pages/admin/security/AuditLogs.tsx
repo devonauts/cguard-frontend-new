@@ -91,7 +91,7 @@ export default function AuditLogs() {
       <PageContainer width="wide" className="px-4 pt-4 sm:px-6 sm:pt-6">
         <PageHeader
           icon={<ShieldCheck />}
-          title="Registro de seguridad"
+          title={t('ui.AuditLogs.registroDeSeguridad', 'Registro de seguridad')}
           subtitle={t('ui.AuditLogs.iniciosYCierresDeSesion')}
           badges={
             !loading && !error ? (

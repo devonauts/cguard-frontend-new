@@ -269,7 +269,7 @@ export default function NominaTimeClock() {
                         fontWeight: mode === "staff" ? 700 : 500,
                       }}
                     >
-                      En la oficina
+                      {t('ui.NominaTimeClock.enLaOficina', 'En la oficina')}
                     </button>
                   </div>
                 </div>

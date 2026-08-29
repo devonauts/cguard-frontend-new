@@ -146,7 +146,7 @@ function normalizeGuard(item: any): SecurityGuard {
 
 export default function SecurityGuardsPage() {
   const { t } = useTranslation();
-  usePageTitle('Vigilantes de Seguridad');
+  usePageTitle(t('guards.list.headerTitle', 'Vigilantes de Seguridad'));
   const { hasPermission } = usePermissions();
   const [openFilter, setOpenFilter] = useState(false);
   // Vista Tarjetas ⇄ Lista (persistida). Tarjetas por defecto, como en Clientes.
@@ -666,7 +666,7 @@ export default function SecurityGuardsPage() {
         <PageHeader
           className="mt-2"
           icon={<ShieldCheck />}
-          title="Vigilantes de Seguridad"
+          title={t('guards.list.headerTitle', 'Vigilantes de Seguridad')}
           subtitle={t('guards.list.subtitle', 'Gestiona el personal de seguridad de tu organización')}
           actions={hasPermission('securityGuardCreate') ? (
             <Button variant="brand" asChild>
@@ -1085,7 +1085,7 @@ export default function SecurityGuardsPage() {
                                     }
                                   }}
                                 >
-                                  <Copy className="mr-2 h-4 w-4" /> Copiar enlace de registro
+                                  <Copy className="mr-2 h-4 w-4" /> {t('guards.list.actions.copyInviteLink', 'Copiar enlace de registro')}
                                 </DropdownMenuItem>
 
                                 {hasPermission('securityGuardDestroy') && (

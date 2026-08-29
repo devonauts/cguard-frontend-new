@@ -97,7 +97,7 @@ export default function OnboardingBanner({
         </div>
       </div>
       <Button size="sm" onClick={onOpenWizard} className="shrink-0 self-start sm:self-auto">
-        Continuar configuración <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+        {t('ui.OnboardingBanner.continuarConfiguracion', 'Continuar configuración')} <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
       </Button>
     </div>
   );

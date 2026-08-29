@@ -456,7 +456,7 @@ export default function StationGeofencePolygon({
               onClick={useSite}
               className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-input px-3 py-2 text-xs font-medium text-muted-foreground hover:text-foreground"
             >
-              <Building2 size={13} /> Igual que el sitio
+              <Building2 size={13} /> {t('ui.StationGeofencePolygon.igualQueElSitio', 'Igual que el sitio')}
             </button>
           )}
         </div>

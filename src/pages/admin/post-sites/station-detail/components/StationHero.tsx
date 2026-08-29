@@ -218,7 +218,7 @@ export default function StationHero({
                             ) : (
                                 <span className="flex items-center gap-1.5" style={{ color: 'var(--ink-soft)' }}>
                                     <span className="inline-flex h-2.5 w-2.5 rounded-full" style={{ background: 'var(--ink-faint)' }} />
-                                    Nadie de turno en este momento
+                                    {t("ui.StationHero.nadieDeTurnoEnEsteMomento", "Nadie de turno en este momento")}
                                 </span>
                             )}
 

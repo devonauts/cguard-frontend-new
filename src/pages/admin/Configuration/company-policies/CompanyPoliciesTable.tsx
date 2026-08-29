@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Plus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/kit";
@@ -45,6 +46,7 @@ const columns: CatalogColumn<Policy>[] = [
 ];
 
 export default function CompanyPoliciesTable() {
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [openNew, setOpenNew] = useState(false);
   const [pageSize, setPageSize] = useState(25);
@@ -124,7 +126,7 @@ export default function CompanyPoliciesTable() {
             className="whitespace-nowrap"
           >
             <Plus className="mr-2 h-4 w-4" />
-            Nueva política
+            {t("ui.CompanyPoliciesTable.nuevaPolitica", "Nueva política")}
           </Button>
         }
         empty={{

@@ -198,7 +198,7 @@ export default function ClientPostSites({ client }: { client: Client }) {
                     <Th>Guardias</Th>
                     <Th>Estaciones</Th>
                     <Th>{t('comun.estado')}</Th>
-                    <Th title="Vigilantes asignados vs estaciones (no es cobertura en vivo)">{t("ui.ClientPostSites.asignacion", "Asignación")}</Th>
+                    <Th title={t('ui.ClientPostSites.vigilantesAsignadosVsEstaciones', 'Vigilantes asignados vs estaciones (no es cobertura en vivo)')}>{t("ui.ClientPostSites.asignacion", "Asignación")}</Th>
                     <Th aria-label="Acciones" />
                   </THead>
                 <tbody>
@@ -268,7 +268,7 @@ export default function ClientPostSites({ client }: { client: Client }) {
                               <ExternalLink className="mr-2 h-3.5 w-3.5" /> Abrir sede
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => navigate(`/post-sites/${s.id}/overview`)}>
-                              <BarChart3 className="mr-2 h-3.5 w-3.5" /> Dashboard de la sede
+                              <BarChart3 className="mr-2 h-3.5 w-3.5" /> {t('ui.ClientPostSites.dashboardDeLaSede', 'Dashboard de la sede')}
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => setSelectedId(s.id)}>
                               <LocateFixed className="mr-2 h-3.5 w-3.5" />{" "}{t('comun.verEnElMapa')}{" "}</DropdownMenuItem>
@@ -301,7 +301,7 @@ export default function ClientPostSites({ client }: { client: Client }) {
 
       {/* Right: map + selected details */}
       <div className="space-y-4">
-        <Section title="Mapa de sedes" icon={<MapPin />}>
+        <Section title={t('ui.ClientPostSites.mapaDeSedes', 'Mapa de sedes')} icon={<MapPin />}>
           {mapMarkers.length > 0 ? (
             <div className="h-[260px] overflow-hidden rounded-xl border" style={{ borderColor: 'var(--hairline)' }}>
               <GoogleMapEmbed
@@ -318,7 +318,7 @@ export default function ClientPostSites({ client }: { client: Client }) {
               className="flex h-[260px] flex-col items-center justify-center gap-1 rounded-xl border border-dashed text-sm"
               style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)', color: 'var(--ink-soft)' }}
             >
-              <MapPin className="h-5 w-5 opacity-50" /> Las sedes no tienen ubicación registrada
+              <MapPin className="h-5 w-5 opacity-50" /> {t('ui.ClientPostSites.lasSedesNoTienenUbicacion', 'Las sedes no tienen ubicación registrada')}
             </div>
           )}
         </Section>
@@ -363,7 +363,7 @@ export default function ClientPostSites({ client }: { client: Client }) {
                 className="cg-focus flex w-full items-center justify-center gap-1.5 rounded-xl border py-2.5 text-sm font-semibold transition-colors"
                 style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }}
               >
-                <BarChart3 className="h-4 w-4" /> Ver el panel de la sede
+                <BarChart3 className="h-4 w-4" /> {t('ui.ClientPostSites.verElPanelDeLaSede', 'Ver el panel de la sede')}
               </button>
             </div>
           )}

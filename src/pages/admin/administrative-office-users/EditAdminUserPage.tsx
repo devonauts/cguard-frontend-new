@@ -535,7 +535,7 @@ export default function EditAdminUserPage() {
               {veTodoPorRol ? (
                 <div className="rounded-xl border px-4 py-3 text-sm"
                      style={{ borderColor: 'var(--hairline)', background: 'var(--float)' }}>
-                  Este rol ve <strong>{t("ui.EditAdminUser.todaLaOperacion", "toda la operación")}</strong> por definición: no se puede acotar.
+                  {t('ui.EditAdminUser.esteRolVe', 'Este rol ve')} <strong>{t("ui.EditAdminUser.todaLaOperacion", "toda la operación")}</strong> por definición: no se puede acotar.
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -551,7 +551,7 @@ export default function EditAdminUserPage() {
                     >
                       <span className="block text-sm font-semibold">{t("ui.EditAdminUser.todaLaOperacion2", "Toda la operación")}</span>
                       <span className="block text-xs" style={{ color: 'var(--ink-soft)' }}>
-                        Todos los clientes y todas las sedes.
+                        {t('ui.EditAdminUser.todosLosClientesYTodas', 'Todos los clientes y todas las sedes.')}
                       </span>
                     </button>
                     <button
@@ -565,7 +565,7 @@ export default function EditAdminUserPage() {
                     >
                       <span className="block text-sm font-semibold">{t('comun.soloLoQueYoElija')}</span>
                       <span className="block text-xs" style={{ color: 'var(--ink-soft)' }}>
-                        Para quien lleva unas cuentas concretas.
+                        {t('ui.EditAdminUser.paraQuienLlevaUnasCuentas', 'Para quien lleva unas cuentas concretas.')}
                       </span>
                     </button>
                   </div>
@@ -591,7 +591,7 @@ export default function EditAdminUserPage() {
                             </FormControl>
                             {(!field.value || (field.value as string[]).length === 0) && (
                               <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>
-                                Sin ninguna sede marcada seguirá viendo TODO.
+                                {t('ui.EditAdminUser.sinSedeMarcadaVeTodo', 'Sin ninguna sede marcada seguirá viendo TODO.')}
                               </p>
                             )}
                             <FormMessage />

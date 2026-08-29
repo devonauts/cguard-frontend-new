@@ -201,7 +201,7 @@ export default function TrainingCoursesPage() {
       <PageContainer width="wide" className="p-4 sm:p-6">
         <PageHeader
           icon={<GraduationCap />}
-          title="Cursos de Entrenamiento"
+          title={t('ui.TrainingCoursesPage.cursosDeEntrenamiento', 'Cursos de Entrenamiento')}
           subtitle={t('ui.TrainingCoursesPage.creaCursosProfesionalesAgregaLecciones')}
           actions={canCreate ? (
             <Button

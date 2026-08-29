@@ -1,0 +1,61 @@
+{
+ "src/pages/admin/alarm/AlarmCaseDetail.tsx": [
+  "Caso no encontrado",
+  "Centro de Emergencias",
+  "Clasifique el desenlace del caso antes de cerrarlo.",
+  "Cronología de eventos",
+  "Registro de auditoría",
+  "Volver a la cola"
+ ],
+ "src/pages/admin/security-guards/components/ProfilePhotoCapture.tsx": [
+  "Capturar Foto del Vigilante",
+  "Foto del vigilante con uniforme completo en fondo neutro",
+  "Galería",
+  "Usar esta foto"
+ ],
+ "src/pages/admin/training/TrainingCourseDetailPage.tsx": [
+  "Curso no encontrado",
+  "Plantilla de certificado (HTML opcional)",
+  "URL de portada"
+ ],
+ "src/components/maps/CheckpointLocationPicker.tsx": [
+  "Radio de cobertura",
+  "Toca el mapa para colocarlo."
+ ],
+ "src/pages/admin/gps-tracker/LiveTracking.tsx": [
+  "Hoja de Ruta",
+  "Mostrar todas las rutas (no solo las del día)"
+ ],
+ "src/pages/admin/dashboard/control-center/components/ActivityStream.tsx": [
+  "Parte de novedades",
+  "Sin novedades"
+ ],
+ "src/pages/admin/administrative-office-users/UserPermissionOverrides.tsx": [
+  "No se encontraron permisos",
+  "Prueba con otro texto de búsqueda."
+ ],
+ "src/components/VerifyEmailGate.tsx": [
+  "Verifica tu correo electrónico"
+ ],
+ "src/components/onboarding/OnboardingBanner.tsx": [
+  "Continuar configuración"
+ ],
+ "src/pages/admin/visitor-management/Visits.tsx": [
+  "Registro de visitas"
+ ],
+ "src/pages/admin/nomina/NominaTimeClock.tsx": [
+  "En la oficina"
+ ],
+ "src/pages/admin/dashboard/control-center/components/BottomSheet.tsx": [
+  "Ajustar la altura del panel"
+ ],
+ "src/pages/admin/guard-ratings/GuardRatings.tsx": [
+  "Control de Calidad"
+ ],
+ "src/pages/admin/Reports/GuardIdleLog.tsx": [
+  "Registros de Vigilante Inactivo"
+ ],
+ "src/pages/guard/dashboard/GuardDashboard.tsx": [
+  "No tienes puestos asignados."
+ ]
+}

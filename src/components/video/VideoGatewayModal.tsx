@@ -67,7 +67,7 @@ export default function VideoGatewayModal({
               style={{ background: "var(--brand-wash)", borderColor: "var(--brand-line)", color: "var(--brand-text)" }}
             ><Server size={18} /></div>
             <div>
-              <h4 className="font-display text-base font-semibold" style={{ color: "var(--ink)" }}>Gateway de video</h4>
+              <h4 className="font-display text-base font-semibold" style={{ color: "var(--ink)" }}>{t('ui.VideoGatewayModal.gatewayDeVideo', 'Gateway de video')}</h4>
               <p className="text-xs" style={{ color: "var(--ink-soft)" }}>{device.name} · convierte RTSP → WebRTC/HLS para el navegador</p>
             </div>
           </div>

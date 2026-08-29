@@ -96,7 +96,7 @@ const Reports: React.FC<ReportsProps> = ({ onNavigate }) => {
         {/* ── Hero ── */}
         <PageHeader
           icon={<BarChart3 />}
-          title="Centro de Reportes"
+          title={t("ui.Reports.centroDeReportes", "Centro de Reportes")}
           subtitle={`${totalReports} informes operativos, de incidentes, tiempo y nómina — todo en un solo lugar.`}
           actions={searchField}
         />
@@ -109,7 +109,7 @@ const Reports: React.FC<ReportsProps> = ({ onNavigate }) => {
             description={`Ningún informe coincide con “${query}”.`}
             action={
               <Button variant="outline" onClick={() => setQuery("")}>
-                Limpiar búsqueda
+                {t("ui.Reports.limpiarBusqueda", "Limpiar búsqueda")}
               </Button>
             }
           />

@@ -347,7 +347,7 @@ export default function Inventory({ site }: { site?: PostSite }) {
           <p className="text-sm text-muted-foreground">{countMsg}</p>
         </div>
         <Button variant="brand" onClick={() => setShowAssignModal(true)} disabled={!postSiteId} size="sm">
-          <Plus className="w-4 h-4 mr-1" /> Asignar artículo
+          <Plus className="w-4 h-4 mr-1" /> {t("ui.Inventory.asignarArticulo", "Asignar artículo")}
         </Button>
       </div>
 
@@ -367,7 +367,7 @@ export default function Inventory({ site }: { site?: PostSite }) {
             title={query ? 'Sin resultados' : 'Sin artículos asignados a este puesto'}
             action={!query ? (
               <Button size="sm" variant="outline" onClick={() => setShowAssignModal(true)}>
-                <Plus className="w-3.5 h-3.5 mr-1" /> Asignar primer artículo
+                <Plus className="w-3.5 h-3.5 mr-1" /> {t("ui.Inventory.asignarPrimerArticulo", "Asignar primer artículo")}
               </Button>
             ) : undefined}
             className="border-0"

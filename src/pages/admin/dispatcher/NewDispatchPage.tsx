@@ -1359,7 +1359,7 @@ export default function NewDispatchPage() {
                             ? (
                               <>
                                 <SelectItem key="__no_station_selected" value="__no_station_selected" disabled>
-                                  Seleccione una estación primero
+                                  {t('ui.NewDispatchPage.seleccioneUnaEstacionPrimero', 'Seleccione una estación primero')}
                                 </SelectItem>
                               </>
                             ) : (
@@ -1373,7 +1373,7 @@ export default function NewDispatchPage() {
                                     ))
                                 : (
                                     <SelectItem key="__no_assigned_guards" value="__no_assigned_guards" disabled>
-                                      No hay vigilantes asignados a esta estación
+                                      {t('ui.NewDispatchPage.noHayVigilantesAsignadosAEstaEstacion', 'No hay vigilantes asignados a esta estación')}
                                     </SelectItem>
                                   )
                             )}

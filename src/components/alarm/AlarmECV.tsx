@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { PhoneCall, ShieldCheck, ShieldAlert, Siren, Check, X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
@@ -25,6 +26,7 @@ export default function AlarmECV({
   caseId: string; panelId?: string | null; category?: string;
   ecvSatisfied?: boolean; calls?: any[]; status?: string; onChanged?: () => void;
 }) {
+  const { t } = useTranslation();
   const [contacts, setContacts] = useState<any[]>([]);
   const [busyKey, setBusyKey] = useState<string | null>(null);
   const [dispatching, setDispatching] = useState(false);
@@ -69,14 +71,14 @@ export default function AlarmECV({
     <Card className="p-4">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-          <PhoneCall className="size-4 text-primary" /> Verificación (ECV)
+          <PhoneCall className="size-4 text-primary" /> {t('alarm.ecv.title', 'Verificación (ECV)')}
         </div>
         {/* Los tres estados son SEMÁNTICOS (grave / correcto / pendiente) y salen
             de `--bad`/`--ok`/`--warn`, fijos en tokens.css. Un despacho policial
             inmediato tiene que leerse rojo con cualquier acento configurado. */}
         {exempt ? (
           <StatusBadge tone="bad" dot={false}>
-            <Siren className="size-3" /> Despacho inmediato (exento de ECV)
+            <Siren className="size-3" /> {t('alarm.ecv.immediateDispatch', 'Despacho inmediato (exento de ECV)')}
           </StatusBadge>
         ) : ecvSatisfied ? (
           <StatusBadge tone="ok" dot={false}>
@@ -97,7 +99,7 @@ export default function AlarmECV({
 
       {!closed && (
         <div className="space-y-1.5">
-          {contacts.length === 0 && <p className="text-xs text-muted-foreground">Sin contactos configurados para este panel.</p>}
+          {contacts.length === 0 && <p className="text-xs text-muted-foreground">{t('alarm.ecv.noContacts', 'Sin contactos configurados para este panel.')}</p>}
           {contacts.map((ct) => (
             <div key={ct.id} className="glass-flat px-3 py-2">
               <div className="mb-1 flex items-center justify-between gap-2">
@@ -125,7 +127,7 @@ export default function AlarmECV({
 
       {calls.length > 0 && (
         <div className="mt-3 space-y-1">
-          <div className="text-[11px] font-semibold uppercase text-muted-foreground">Registro de llamadas</div>
+          <div className="text-[11px] font-semibold uppercase text-muted-foreground">{t('alarm.ecv.callLog', 'Registro de llamadas')}</div>
           {calls.map((c) => (
             <div key={c.id} className="flex items-center gap-2 text-xs" style={{ color: "var(--ink-soft)" }}>
               {c.outcome === "verified_real" ? <Siren className="size-3" style={{ color: "var(--bad-text)" }} /> :

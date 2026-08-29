@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FileText, Upload, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Section, EmptyState, IconTile } from '@/components/kit';
@@ -21,6 +22,7 @@ interface Props {
 const safeDocHref = (url?: string) => (url && /^https?:\/\//i.test(url) ? url : '#');
 
 export default function CompanyDocumentsSection({ documents, onUpload, onDelete, canEdit }: Props) {
+  const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,7 +33,7 @@ export default function CompanyDocumentsSection({ documents, onUpload, onDelete,
 
   return (
     <Section
-      title="Documentos legales de la empresa"
+      title={t('ui.CompanyDocumentsSection.documentosLegalesDeLaEmpresa', 'Documentos legales de la empresa')}
       icon={<FileText />}
       contentClassName="space-y-2"
       action={
@@ -55,7 +57,7 @@ export default function CompanyDocumentsSection({ documents, onUpload, onDelete,
       {documents.length === 0 ? (
         <EmptyState
           icon={<FileText />}
-          title="Sin documentos"
+          title={t('comun.sinDocumentos', 'Sin documentos')}
           description="Aquí aparecerán el permiso de operación, el nombramiento y cualquier otro documento legal que subas."
         />
       ) : (

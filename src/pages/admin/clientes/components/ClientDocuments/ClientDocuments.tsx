@@ -158,7 +158,7 @@ export default function ClientDocuments({ client }: { client: Client }) {
     <div ref={containerRef} className="space-y-4">
       {/* Top bar */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="text-lg font-semibold">Biblioteca de documentos</div>
+        <div className="text-lg font-semibold">{t('ui.ClientDocuments.bibliotecaDeDocumentos', 'Biblioteca de documentos')}</div>
         <Button size="sm" variant="brand" onClick={() => setUploadOpen(true)}><Upload className="mr-1.5 h-4 w-4" /> Subir documento</Button>
       </div>
 
