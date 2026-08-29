@@ -27,8 +27,10 @@ export default function LanguagePage() {
   const { t } = useTranslation();
   const { language, choice, setChoice, detected } = useLanguage();
 
-  const nombre = (l: "es" | "en" | "pt") => LANGUAGES[l].name;
-  const bandera = (l: "es" | "en" | "pt") => LANGUAGES[l].flag;
+  const nombre = (l: keyof typeof LANGUAGES) => LANGUAGES[l].name;
+  // El tipo sale de LANGUAGES, no de una lista repetida a mano: cada idioma
+  // nuevo obligaba a tocar este archivo y el fallo era un error de tipos.
+  const bandera = (l: keyof typeof LANGUAGES) => LANGUAGES[l].flag;
 
   const opciones: { id: LanguageChoice; titulo: string; pie: string; icono: React.ReactNode }[] = [
     {
@@ -40,7 +42,8 @@ export default function LanguagePage() {
       }),
       icono: <Wand2 />,
     },
-    ...(["es", "en", "pt"] as const).map((l) => ({
+    // La lista sale de LANGUAGES: un idioma nuevo aparece solo, sin tocar aquí.
+    ...(Object.keys(LANGUAGES) as (keyof typeof LANGUAGES)[]).map((l) => ({
       id: l as LanguageChoice,
       titulo: `${bandera(l)} ${nombre(l)}`,
       pie: t('settings.language.fixedDesc', { defaultValue: 'Siempre en este idioma, use lo que use tu navegador.' }),

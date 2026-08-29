@@ -1,41 +1,39 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
+!.env.example
 !.vscode/extensions.json
-.idea
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# Environment files
 .env
 .env.*
-!.env.example
-
-
-pnpm-lock.yaml
-yarn.lock
-# package-lock.json SE VERSIONA. Estaba ignorado, y eso significaba que cada
-# instalación resolvía versiones frescas: el lockfile de esta máquina y el del
-# servidor divergieron en 5 versiones —entre ellas rrweb 2.0.0-alpha.4 frente a
+.idea
+*.local
+*.log
+*.njsproj
+*.ntvs*
+*.sln
+*.suo
+*.sw?
 # 2.1.1, la librería del co-browse— más 155 paquetes presentes en uno y no en el
-# otro. Producción compilaba con un árbol distinto al de desarrollo, y el CI ni
-# siquiera arrancaba: `setup-node` con `cache: npm` y `npm ci` EXIGEN lockfile.
+# Editor directories and files
 # El versionado es el del servidor, que es el que produce lo que hoy está vivo.
+# Environment files
+# instalación resolvía versiones frescas: el lockfile de esta máquina y el del
+# Logs
+# otro. Producción compilaba con un árbol distinto al de desarrollo, y el CI ni
+# package-lock.json SE VERSIONA. Estaba ignorado, y eso significaba que cada
+# servidor divergieron en 5 versiones —entre ellas rrweb 2.0.0-alpha.4 frente a
+# siquiera arrancaba: `setup-node` con `cache: npm` y `npm ci` EXIGEN lockfile.
 bun.lockb
+dist
+dist-ssr
+lerna-debug.log*
+logs
 newlogo.txt
+node_modules
+npm-debug.log*
+pnpm-debug.log*
+pnpm-lock.yaml
+scripts/i18n/__pycache__/
+scripts/i18n/bloques/
+yarn-debug.log*
+yarn-error.log*
+yarn.lock

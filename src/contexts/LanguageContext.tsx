@@ -2,7 +2,7 @@ import { createContext, useContext, useState, ReactNode, useEffect } from 'react
 import { setAppLanguage } from '@/i18n';
 import api from '@/lib/api';
 
-type Language = 'es' | 'en' | 'pt';
+type Language = 'es' | 'en' | 'pt' | 'de' | 'fr' | 'it' | 'pl' | 'nl';
 /** Lo que la persona ELIGE. 'auto' = que lo decida el navegador. */
 type LanguageChoice = 'auto' | Language;
 
@@ -25,6 +25,13 @@ const LANGUAGES = {
     es: { code: 'es', name: 'Español', flag: '🇪🇸' },
     en: { code: 'en', name: 'English', flag: '🇺🇸' },
     pt: { code: 'pt', name: 'Português', flag: '🇧🇷' },
+    // Mercados europeos. Cada idioma se nombra EN SU PROPIO IDIOMA: quien busca
+    // el suyo en la lista busca «Deutsch», no «Alemán».
+    de: { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
+    fr: { code: 'fr', name: 'Français', flag: '🇫🇷' },
+    it: { code: 'it', name: 'Italiano', flag: '🇮🇹' },
+    pl: { code: 'pl', name: 'Polski', flag: '🇵🇱' },
+    nl: { code: 'nl', name: 'Nederlands', flag: '🇳🇱' },
 };
 
 /**
@@ -85,7 +92,11 @@ const limpiarGoogleTranslate = () => {
 /** Normaliza cualquier código (es-419, en-US, pt-BR…) a es|en|pt, o null. */
 const norm = (x: any): Language | null => {
     const s = String(x || '').slice(0, 2).toLowerCase();
-    return s === 'es' || s === 'en' || s === 'pt' ? (s as Language) : null;
+    // Una lista, no una cadena de comparaciones: añadir un idioma y olvidarse de
+    // tocar aquí dejaba la detección muda y la interfaz caía al español.
+    return (['es', 'en', 'pt', 'de', 'fr', 'it', 'pl', 'nl'] as const).includes(s as any)
+        ? (s as Language)
+        : null;
 };
 
 /** El idioma del navegador/SO (config del sistema), mapeado a es|en|pt. */

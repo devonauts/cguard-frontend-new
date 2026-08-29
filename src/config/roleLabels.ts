@@ -6,25 +6,27 @@ import i18n from "@/i18n";
  * descriptions; the UI must render them in the user's chosen language.
  * Custom (tenant-created) roles are user-authored text and render as stored.
  */
-type Localized = { es: string; en: string; pt: string };
+type Localized = { es: string; en: string; pt: string } & Partial<
+  Record<'de' | 'fr' | 'it' | 'pl' | 'nl', string>
+>;
 
 const ROLE_NAMES: Record<string, Localized> = {
-  admin: { es: "Administrador", en: "Administrator", pt: "Administrador" },
-  superadmin: { es: "Superadministrador", en: "Super Administrator", pt: "Superadministrador" },
-  customer: { es: "Cliente", en: "Customer", pt: "Cliente" },
-  securityguard: { es: "Vigilante", en: "Security Guard", pt: "Vigilante" },
-  securitysupervisor: { es: "Supervisor de Seguridad", en: "Security Supervisor", pt: "Supervisor de Segurança" },
-  operationsmanager: { es: "Gerente de Operaciones", en: "Operations Manager", pt: "Gerente de Operações" },
-  hrmanager: { es: "Gerente de RR.HH.", en: "HR Manager", pt: "Gerente de RH" },
-  dispatcher: { es: "Despachador", en: "Dispatcher", pt: "Despachante" },
+  admin: { es: "Administrador", en: "Administrator", pt: "Administrador", de: "Administrator", fr: "Administrateur", it: "Amministratore", pl: "Administrator", nl: "Beheerder" },
+  superadmin: { es: "Superadministrador", en: "Super Administrator", pt: "Superadministrador", de: "Superadministrator", fr: "Super-administrateur", it: "Super amministratore", pl: "Superadministrator", nl: "Superbeheerder" },
+  customer: { es: "Cliente", en: "Customer", pt: "Cliente", de: "Auftraggeber", fr: "Client", it: "Committente", pl: "Zleceniodawca", nl: "Opdrachtgever" },
+  securityguard: { es: "Vigilante", en: "Security Guard", pt: "Vigilante", de: "Sicherheitskraft", fr: "Agent de sécurité", it: "Guardia giurata", pl: "Pracownik ochrony", nl: "Beveiliger" },
+  securitysupervisor: { es: "Supervisor de Seguridad", en: "Security Supervisor", pt: "Supervisor de Segurança", de: "Einsatzleiter", fr: "Superviseur sécurité", it: "Supervisore", pl: "Nadzorca ochrony", nl: "Beveiligingssupervisor" },
+  operationsmanager: { es: "Gerente de Operaciones", en: "Operations Manager", pt: "Gerente de Operações", de: "Betriebsleiter", fr: "Responsable d'exploitation", it: "Responsabile operativo", pl: "Kierownik operacyjny", nl: "Operationeel manager" },
+  hrmanager: { es: "Gerente de RR.HH.", en: "HR Manager", pt: "Gerente de RH", de: "Personalleiter", fr: "Responsable RH", it: "Responsabile risorse umane", pl: "Kierownik HR", nl: "HR-manager" },
+  dispatcher: { es: "Despachador", en: "Dispatcher", pt: "Despachante", de: "Disponent", fr: "Répartiteur", it: "Operatore di centrale", pl: "Dyspozytor", nl: "Meldkamermedewerker" },
   // El vigilante que cubre la consola. Rol propio y editable: hasta ahora
   // heredaba el juego del despachador y no aparecía en ninguna lista, así que
   // no había dónde ajustarle los permisos.
-  centraloperator: { es: "Operador de Central", en: "Central Operator", pt: "Operador de Central" },
-  clientaccountmanager: { es: "Gestor de Cuentas", en: "Client Account Manager", pt: "Gestor de Contas" },
-  administrativesupervisor: { es: "Supervisor Administrativo", en: "Administrative Supervisor", pt: "Supervisor Administrativo" },
-  administrativeassistant: { es: "Asistente Administrativo", en: "Administrative Assistant", pt: "Assistente Administrativo" },
-  secretary: { es: "Secretaría / Recepción", en: "Secretary / Reception", pt: "Secretária / Recepção" },
+  centraloperator: { es: "Operador de Central", en: "Central Operator", pt: "Operador de Central", de: "Leitstellenoperator", fr: "Opérateur de PC sécurité", it: "Operatore centrale operativa", pl: "Operator centrali", nl: "Meldkameroperator" },
+  clientaccountmanager: { es: "Gestor de Cuentas", en: "Client Account Manager", pt: "Gestor de Contas", de: "Kundenbetreuer", fr: "Chargé de clientèle", it: "Account manager", pl: "Opiekun klienta", nl: "Accountmanager" },
+  administrativesupervisor: { es: "Supervisor Administrativo", en: "Administrative Supervisor", pt: "Supervisor Administrativo", de: "Verwaltungsleiter", fr: "Superviseur administratif", it: "Supervisore amministrativo", pl: "Kierownik administracji", nl: "Administratief supervisor" },
+  administrativeassistant: { es: "Asistente Administrativo", en: "Administrative Assistant", pt: "Assistente Administrativo", de: "Verwaltungsassistenz", fr: "Assistant administratif", it: "Assistente amministrativo", pl: "Asystent administracyjny", nl: "Administratief medewerker" },
+  secretary: { es: "Secretaría / Recepción", en: "Secretary / Reception", pt: "Secretária / Recepção", de: "Sekretariat / Empfang", fr: "Secrétariat / Accueil", it: "Segreteria / Reception", pl: "Sekretariat / Recepcja", nl: "Secretariaat / Receptie" },
 };
 
 const ROLE_DESCRIPTIONS: Record<string, Localized> = {
@@ -98,10 +100,21 @@ const ROLE_DESCRIPTIONS: Record<string, Localized> = {
   },
 };
 
-/** Current UI language collapsed to the locales we ship (es/en/pt → else es). */
-export function uiLang(): "es" | "en" | "pt" {
+/**
+ * Idioma actual de la interfaz. Antes aplastaba a español cualquier cosa que no
+ * fuera en/pt, así que un usuario alemán veía los roles en español. Ahora
+ * devuelve el idioma real y la búsqueda cae, si falta, primero al inglés.
+ */
+export function uiLang(): keyof Localized {
   const l = String(i18n.language || "es").slice(0, 2).toLowerCase();
-  return l === "en" || l === "pt" ? l : "es";
+  return (["es", "en", "pt", "de", "fr", "it", "pl", "nl"] as const).includes(l as any)
+    ? (l as keyof Localized)
+    : "es";
+}
+
+/** Toma el idioma pedido; si ese rol no lo tiene, inglés y por último español. */
+function enIdioma(entry: Localized): string {
+  return entry[uiLang()] || entry.en || entry.es;
 }
 
 const keyOf = (slugOrName?: string) => String(slugOrName || "").toLowerCase().trim();
@@ -109,13 +122,13 @@ const keyOf = (slugOrName?: string) => String(slugOrName || "").toLowerCase().tr
 /** Display name for a role; built-ins localize, custom roles render as stored. */
 export function roleDisplayName(slugOrName?: string): string {
   const entry = ROLE_NAMES[keyOf(slugOrName)];
-  return entry ? entry[uiLang()] : String(slugOrName || "");
+  return entry ? enIdioma(entry) : String(slugOrName || "");
 }
 
 /** Display description; built-ins localize, custom roles keep their own text. */
 export function roleDisplayDescription(slugOrName?: string, fallback?: string): string {
   const entry = ROLE_DESCRIPTIONS[keyOf(slugOrName)];
-  return entry ? entry[uiLang()] : (fallback || "");
+  return entry ? enIdioma(entry) : (fallback || "");
 }
 
 export default { roleDisplayName, roleDisplayDescription, uiLang };

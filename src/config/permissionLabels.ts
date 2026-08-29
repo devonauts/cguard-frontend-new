@@ -299,14 +299,27 @@ const SPECIAL_PERMISSION_LABELS: Record<string, Localized3> = {
 
 type Localized3 = { es: string; en: string; pt: string };
 
+// La matriz de permisos sólo existe en es/en/pt. Para los idiomas europeos el
+// respaldo es el INGLÉS, no el español: a un alemán o a un polaco le sirve
+// bastante más. Traducir la matriz entera queda pendiente.
+const esRespaldoIngles = (l: string) => !['es', 'en', 'pt'].includes(l);
+
 function resourceMap(): Record<string, string> {
   const l = uiLang();
-  return l === 'en' ? RESOURCE_LABELS_EN : l === 'pt' ? RESOURCE_LABELS_PT : RESOURCE_LABELS;
+  if (l === 'pt') return RESOURCE_LABELS_PT;
+  return l === 'en' || esRespaldoIngles(l) ? RESOURCE_LABELS_EN : RESOURCE_LABELS;
 }
 
 function actionMap(): Record<string, string> {
   const l = uiLang();
-  return l === 'en' ? ACTION_LABELS_EN : l === 'pt' ? ACTION_LABELS_PT : ACTION_LABELS;
+  if (l === 'pt') return ACTION_LABELS_PT;
+  return l === 'en' || esRespaldoIngles(l) ? ACTION_LABELS_EN : ACTION_LABELS;
+}
+
+/** Etiqueta especial en el idioma actual, con el inglés como respaldo. */
+function especialEnIdioma(e: Localized3): string {
+  const l = uiLang();
+  return (l === 'es' || l === 'en' || l === 'pt') ? e[l] : e.en;
 }
 
 /** Locale-aware group/resource label (falls back to the raw key). */
@@ -316,7 +329,7 @@ export function getResourceLabel(resourceKey: string): string {
 
 export function formatPermissionLabel(permission: string) {
   const special = SPECIAL_PERMISSION_LABELS[permission];
-  if (special) return special[uiLang()];
+  if (special) return especialEnIdioma(special);
   // split suffix from resource
   const actions = actionMap();
   const suffixes = Object.keys(ACTION_LABELS).sort((a, b) => b.length - a.length);

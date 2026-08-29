@@ -25,7 +25,15 @@ i18n.use(initReactI18next).init({
 /** Los idiomas que se descargan cuando se piden. `es` no está: ya viene dentro. */
 const CARGADORES: Record<string, () => Promise<any>> = {
   en: () => import('./locales/en.json'),
-  pt: () => import('./locales/pt_fixed.json'),
+  // `pt` apuntaba a `pt_fixed.json`, que estaba INCOMPLETO: 6.270 de 7.828
+  // claves. Lo que faltaba salía en español a un usuario brasileño. Ahora
+  // `pt.json` está completo y el nombre ya no arrastra el arreglo de entonces.
+  pt: () => import('./locales/pt.json'),
+  de: () => import('./locales/de.json'),
+  fr: () => import('./locales/fr.json'),
+  it: () => import('./locales/it.json'),
+  pl: () => import('./locales/pl.json'),
+  nl: () => import('./locales/nl.json'),
 }
 
 /**
