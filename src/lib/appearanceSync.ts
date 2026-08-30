@@ -27,6 +27,10 @@ export interface UiAppearance {
   dashboards?: Record<string, any>;
   /** Capas visibles del mapa, por empresa. */
   mapLayers?: Record<string, any>;
+  /** Cómo quiere ver el Horario esta persona. NO va por empresa: «prefiero la
+   *  agenda» es un hábito suyo y de su pantalla, no de la empresa en la que
+   *  esté. */
+  scheduler?: { view?: string; panel?: boolean; sf?: boolean };
 }
 
 /** La empresa activa. Las preferencias del tablero se guardan por empresa: la
@@ -114,6 +118,10 @@ export function guardarApariencia(parcial: UiAppearance) {
     // del servidor la personalización que la persona tenga en las otras.
     ...(parcial.dashboards ? { dashboards: { ...acumulado.dashboards, ...parcial.dashboards } } : {}),
     ...(parcial.mapLayers ? { mapLayers: { ...acumulado.mapLayers, ...parcial.mapLayers } } : {}),
+    // Igual que los mapas por empresa: el Horario manda `{view}` sola al cambiar
+    // de estilo, y pisar el bloque entero borraría `panel` y `sf` antes incluso
+    // de llegar al servidor.
+    ...(parcial.scheduler ? { scheduler: { ...acumulado.scheduler, ...parcial.scheduler } } : {}),
   };
   if (!haySesion()) return;
 

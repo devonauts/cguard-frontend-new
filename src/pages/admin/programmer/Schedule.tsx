@@ -50,6 +50,7 @@ import AgendaView from './AgendaView';
 import { COL_W, COL_STICKY_W } from './gridBand';
 
 import { localeActual } from '@/lib/localeActual'
+import { leerAparienciaDeLaCuenta, guardarApariencia, cambioLocalReciente } from '@/lib/appearanceSync'
 import {
   type Tone, tonePill, toneCard, toneInk,
   OVERRIDE_TONE, CODE_LABEL, CODE_ORDER, codeFill, codePill, codeCard, columnRules,
@@ -319,17 +320,24 @@ export default function Schedule() {
     const [y, mo, d] = tzToday().split('-').map(Number);
     return new Date(y, mo - 1, d);
   });
-  /* ── LA VISTA ES UNA PREFERENCIA, NO UN ESTADO DE PASO ────────────────────
-     Vivía en `sessionStorage`: al cerrar la pestaña se perdía y el Horario
-     volvía a abrirse en la hoja de cálculo. Para quien trabaja desde el móvil
-     —donde la hoja de 365 columnas no se puede usar— eso significaba volver a
-     elegir Agenda CADA VEZ. La preferencia se guarda ahora en `localStorage` y
-     se respeta; lo que sigue en `sessionStorage` es la POSICIÓN (scroll), que
-     sí es de paso. */
+  /* ── LA PREFERENCIA VIVE EN LA CUENTA ─────────────────────────────────────
+     Empezó en `sessionStorage` (se perdía al cerrar la pestaña) y pasó por
+     `localStorage` (se perdía al cambiar de aparato). Ninguna de las dos sirve
+     para lo que de verdad pasa: la misma persona abre el Horario en el portátil
+     de la oficina, en el de casa y en el teléfono. Elegir «Agenda» en el móvil y
+     encontrarse la hoja de cálculo en el siguiente aparato es volver a elegir
+     cada vez.
+
+     Ahora va en `users.appearance.scheduler`, que es donde ya viven el tema y el
+     acento por exactamente el mismo motivo. `localStorage` se queda SÓLO como
+     caché de arranque: pinta al instante mientras llega `/auth/me`, para no
+     enseñar la vista equivocada durante medio segundo. La cuenta manda.
+
+     En `sessionStorage` queda la POSICIÓN (scroll), que sí es de paso. */
   const [view, setView] = useState<ViewMode>(() => {
     try {
-      const guardada = localStorage.getItem(VIEW_STYLE_KEY);
-      if (guardada && ['month', 'calendar', 'week', 'day', 'agenda'].includes(guardada)) return guardada as ViewMode;
+      const cache = localStorage.getItem(VIEW_STYLE_KEY);
+      if (cache && ['month', 'calendar', 'week', 'day', 'agenda'].includes(cache)) return cache as ViewMode;
     } catch { /* almacenamiento bloqueado */ }
     if (['week', 'day', 'calendar', 'agenda'].includes(savedView.v)) return savedView.v;
     // Sin preferencia: en una pantalla estrecha la hoja de cálculo no sirve.
@@ -337,11 +345,51 @@ export default function Schedule() {
     return 'month';
   });
 
+  /* Lo que diga la CUENTA gana a la caché local — salvo que la persona acabe de
+     tocar el selector en esta pestaña (`cambioLocalReciente`), porque entonces
+     el servidor todavía va por detrás y devolverle el valor viejo se vería como
+     que la elección «no se guardó». Es la misma cautela que usan el tema y el
+     acento. */
+  const vistaDeCuentaAplicada = useRef(false);
+  useEffect(() => {
+    let vivo = true;
+    leerAparienciaDeLaCuenta().then((ap) => {
+      if (!vivo || vistaDeCuentaAplicada.current) return;
+      vistaDeCuentaAplicada.current = true;
+      if (cambioLocalReciente()) return;
+      const v = ap?.scheduler?.view;
+      if (v && ['month', 'calendar', 'week', 'day', 'agenda'].includes(v)) {
+        setView(v as ViewMode);
+        try { localStorage.setItem(VIEW_STYLE_KEY, v); } catch { /* bloqueado */ }
+      }
+      if (typeof ap?.scheduler?.panel === 'boolean') setPanelOpen(ap.scheduler.panel);
+      if (typeof ap?.scheduler?.sf === 'boolean') setSfSectionOpen(ap.scheduler.sf);
+    });
+    return () => { vivo = false; };
+  }, []);
+
+  /* Al cambiar, se guarda en la cuenta (con retardo, ver appearanceSync) y en la
+     caché local para el próximo arranque. No se guarda en la PRIMERA pasada: eso
+     escribiría el valor por defecto encima de la preferencia real antes de que
+     `/auth/me` llegue a contestar. */
+  const primeraVista = useRef(true);
   useEffect(() => {
     try { localStorage.setItem(VIEW_STYLE_KEY, view); } catch { /* bloqueado */ }
+    if (primeraVista.current) { primeraVista.current = false; return; }
+    guardarApariencia({ scheduler: { view } });
   }, [view]);
   const [panelOpen, setPanelOpen] = useState<boolean>(savedView.panel ?? true);
   const [sfSectionOpen, setSfSectionOpen] = useState<boolean>(savedView.sf ?? false);
+
+  /* El panel lateral y la sección de sacafrancos también siguen a la cuenta:
+     quien trabaja con el panel cerrado lo quiere cerrado en todos sus aparatos.
+     Se omite la primera pasada por el mismo motivo que la vista — no pisar la
+     preferencia real con el valor por defecto antes de que la cuenta conteste. */
+  const primerPanel = useRef(true);
+  useEffect(() => {
+    if (primerPanel.current) { primerPanel.current = false; return; }
+    guardarApariencia({ scheduler: { panel: panelOpen, sf: sfSectionOpen } });
+  }, [panelOpen, sfSectionOpen]);
   // Month label in the toolbar follows the SCROLL position of the year canvas.
   const [visibleMonth, setVisibleMonth] = useState(() => {
     const [y, mo] = tzToday().split('-').map(Number);
