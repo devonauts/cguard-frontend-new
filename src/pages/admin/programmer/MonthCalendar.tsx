@@ -20,8 +20,27 @@ import type { ShiftRecord, Station } from '@/types';
  * ────────────────────────────────────────────────────────────────────────────
  */
 
-/** Cuántas fichas caben en un día antes de resumir. */
+/** Cuántas fichas caben en un día antes de resumir (escritorio / teléfono).
+ *  En 390 px de ancho una celda mide ~50 px: cuatro fichas ahí no se leen, se
+ *  amontonan. Se enseñan dos y el resto se cuenta. */
 const MAX_CHIPS = 4;
+const MAX_CHIPS_MOVIL = 2;
+
+/** ¿Pantalla estrecha? Se consulta una vez y se reacciona al giro del móvil. */
+function usePantallaEstrecha(): boolean {
+  const [estrecha, setEstrecha] = React.useState(() => {
+    try { return window.matchMedia('(max-width: 767px)').matches; } catch { return false; }
+  });
+  React.useEffect(() => {
+    try {
+      const mq = window.matchMedia('(max-width: 767px)');
+      const on = () => setEstrecha(mq.matches);
+      mq.addEventListener('change', on);
+      return () => mq.removeEventListener('change', on);
+    } catch { return undefined; }
+  }, []);
+  return estrecha;
+}
 
 export type MonthCalendarProps = {
   /** Primer día del mes que se muestra. */
@@ -44,6 +63,8 @@ function MonthCalendarInner({
   dateStrOf, timeOf, onPickDay, onPickShift,
 }: MonthCalendarProps) {
   const locale = localeActual();
+  const estrecha = usePantallaEstrecha();
+  const tope = estrecha ? MAX_CHIPS_MOVIL : MAX_CHIPS;
 
   /** Las 6×7 celdas: lunes primero, con la cola del mes anterior y del siguiente. */
   const celdas = useMemo(() => {
@@ -87,9 +108,10 @@ function MonthCalendarInner({
     return Array.from({ length: 7 }, (_, i) => {
       const d = new Date(base);
       d.setDate(d.getDate() + i);
-      return d.toLocaleDateString(locale, { weekday: 'short' }).replace(/^./, (c) => c.toUpperCase());
+      const corto = d.toLocaleDateString(locale, { weekday: estrecha ? 'narrow' : 'short' });
+      return corto.replace(/^./, (c) => c.toUpperCase());
     });
-  }, [locale]);
+  }, [locale, estrecha]);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl" style={{ border: '1px solid var(--hairline)' }}>
@@ -104,11 +126,20 @@ function MonthCalendarInner({
       </div>
 
       {/* Seis semanas */}
-      <div className="grid min-h-0 flex-1" style={{ gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gridTemplateRows: 'repeat(6, minmax(0, 1fr))' }}>
+      <div
+        className="grid min-h-0 flex-1 overflow-y-auto"
+        style={{
+          gridTemplateColumns: 'repeat(7, minmax(0, 1fr))',
+          // En el móvil las filas NO se reparten la altura: se les da un mínimo
+          // legible y el mes se desplaza en vertical. Repartir 6 filas en una
+          // pantalla de teléfono deja celdas de 60 px donde no cabe ni una ficha.
+          gridTemplateRows: estrecha ? 'repeat(6, minmax(92px, auto))' : 'repeat(6, minmax(0, 1fr))',
+        }}
+      >
         {celdas.map((c) => {
           const delDia = porDia.get(c.dateStr) || [];
           const hoy = c.dateStr === todayStr;
-          const visibles = delDia.slice(0, MAX_CHIPS);
+          const visibles = delDia.slice(0, tope);
           const resto = delDia.length - visibles.length;
           return (
             <div
@@ -159,7 +190,7 @@ function MonthCalendarInner({
                     >
                       <span className="tabular-nums" style={{ color: 'var(--ink-faint)' }}>{timeOf(s.startTime)}</span>
                       <span className="truncate font-medium">{quien.split(' ')[0]}</span>
-                      {est && <span className="truncate" style={{ color: 'var(--ink-faint)' }}>{stationShort(est)}</span>}
+                      {est && !estrecha && <span className="truncate" style={{ color: 'var(--ink-faint)' }}>{stationShort(est)}</span>}
                     </button>
                   );
                 })}

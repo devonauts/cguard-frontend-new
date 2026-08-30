@@ -46,6 +46,7 @@ import SupervisionSection from './SupervisionSection';
 import StaffScheduleSection from './StaffScheduleSection';
 import MonthStationBlock, { type BlockSel, type MonthGridHandlers } from './MonthStationBlock';
 import MonthCalendar from './MonthCalendar';
+import AgendaView from './AgendaView';
 import { COL_W, COL_STICKY_W } from './gridBand';
 
 import { localeActual } from '@/lib/localeActual'
@@ -232,9 +233,11 @@ const addDays = (d: Date, n: number): Date => {
 const dseOf = (d: Date): number =>
   Math.round((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - Date.UTC(2024, 0, 1)) / 86400000);
 
-type ViewMode = 'month' | 'week' | 'day' | 'calendar';
+type ViewMode = 'month' | 'week' | 'day' | 'calendar' | 'agenda';
 
 const VIEW_KEY = 'programador.horario.view';
+/** La preferencia de ESTILO sobrevive a la pestaña; la posición no. */
+const VIEW_STYLE_KEY = 'programador.horario.estilo';
 
 /* La ventana se recalcula en CADA evento de desplazamiento, así que el margen
    (`COL_OVERSCAN`) sólo tiene que cubrir lo que el dedo alcanza a correr entre
@@ -316,7 +319,27 @@ export default function Schedule() {
     const [y, mo, d] = tzToday().split('-').map(Number);
     return new Date(y, mo - 1, d);
   });
-  const [view, setView] = useState<ViewMode>(['week', 'day', 'calendar'].includes(savedView.v) ? savedView.v : 'month');
+  /* ── LA VISTA ES UNA PREFERENCIA, NO UN ESTADO DE PASO ────────────────────
+     Vivía en `sessionStorage`: al cerrar la pestaña se perdía y el Horario
+     volvía a abrirse en la hoja de cálculo. Para quien trabaja desde el móvil
+     —donde la hoja de 365 columnas no se puede usar— eso significaba volver a
+     elegir Agenda CADA VEZ. La preferencia se guarda ahora en `localStorage` y
+     se respeta; lo que sigue en `sessionStorage` es la POSICIÓN (scroll), que
+     sí es de paso. */
+  const [view, setView] = useState<ViewMode>(() => {
+    try {
+      const guardada = localStorage.getItem(VIEW_STYLE_KEY);
+      if (guardada && ['month', 'calendar', 'week', 'day', 'agenda'].includes(guardada)) return guardada as ViewMode;
+    } catch { /* almacenamiento bloqueado */ }
+    if (['week', 'day', 'calendar', 'agenda'].includes(savedView.v)) return savedView.v;
+    // Sin preferencia: en una pantalla estrecha la hoja de cálculo no sirve.
+    try { if (window.matchMedia('(max-width: 767px)').matches) return 'agenda'; } catch { /* SSR */ }
+    return 'month';
+  });
+
+  useEffect(() => {
+    try { localStorage.setItem(VIEW_STYLE_KEY, view); } catch { /* bloqueado */ }
+  }, [view]);
   const [panelOpen, setPanelOpen] = useState<boolean>(savedView.panel ?? true);
   const [sfSectionOpen, setSfSectionOpen] = useState<boolean>(savedView.sf ?? false);
   // Month label in the toolbar follows the SCROLL position of the year canvas.
@@ -419,10 +442,13 @@ export default function Schedule() {
     return { desde: fmtDate(desde), hasta: fmtDate(addDays(desde, 43)) };
   }, [visibleMonth]);
 
-  const startDateStr = view === 'calendar'
+  /* La AGENDA lee el mismo mes que el calendario: en el móvil se consulta «esta
+     semana y la que viene», y pedir el año para una lista sería traerse 20.000
+     filas por una pantalla de teléfono. */
+  const startDateStr = view === 'calendar' || view === 'agenda'
     ? calRange.desde
     : view === 'month' ? `${todayYear}-01-01` : fmtDate(addDays(timelineDays[0], -1));
-  const endDateStr = view === 'calendar'
+  const endDateStr = view === 'calendar' || view === 'agenda'
     ? calRange.hasta
     : view === 'month' ? `${todayYear}-12-31` : fmtDate(addDays(timelineDays[timelineDays.length - 1], 1));
 
@@ -1997,7 +2023,7 @@ export default function Schedule() {
     if (view === 'month') { scrollMonthTo(visibleMonth.getMonth() + dir); return; }
     // El calendario navega por MESES, y su mes vivo es `visibleMonth` — el mismo
     // que la hoja del año, para que cambiar de vista no te mueva de sitio.
-    if (view === 'calendar') {
+    if (view === 'calendar' || view === 'agenda') {
       setVisibleMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + dir, 1));
       return;
     }
@@ -2012,7 +2038,7 @@ export default function Schedule() {
     setSel(null);
     const [y, mo, d] = tzToday().split('-').map(Number);
     setCurrentDate(clampToYear(new Date(y, mo - 1, d)));
-    if (view === 'calendar') { setVisibleMonth(new Date(y, mo - 1, 1)); return; }
+    if (view === 'calendar' || view === 'agenda') { setVisibleMonth(new Date(y, mo - 1, 1)); return; }
     if (view === 'month') {
       gridScrollRef.current?.scrollTo({ left: Math.max(0, (dayIndexOf(y, mo, d) - 3) * 44), behavior: 'smooth' });
       setVisibleMonth(new Date(y, mo - 1, 1));
@@ -2170,7 +2196,7 @@ export default function Schedule() {
   }, [visibleMonth]);
 
   const rangeLabel = useMemo(() => {
-    if (view === 'month' || view === 'calendar') return monthLabel;
+    if (view === 'month' || view === 'calendar' || view === 'agenda') return monthLabel;
     const fmt = (d: Date) => d.toLocaleDateString(localeActual(), { day: 'numeric', month: 'short' });
     if (view === 'week') {
       const a = timelineDays[0], b = timelineDays[timelineDays.length - 1];
@@ -2265,10 +2291,11 @@ export default function Schedule() {
             value={view}
             onChange={v => { setView(v); setSel(null); }}
             options={[
-              { value: 'month', label: 'Mes' },
+              { value: 'month', label: 'Hoja' },
               { value: 'calendar', label: 'Calendario' },
               { value: 'week', label: 'Semana' },
               { value: 'day', label: 'Día' },
+              { value: 'agenda', label: 'Agenda' },
             ]}
           />
 
@@ -2333,7 +2360,24 @@ export default function Schedule() {
             {/* ─── Sheet + side panel fill the rest of the viewport ─── */}
             <div ref={shellRef} className="flex gap-2 min-h-0" style={{ height: `calc(100vh - ${shellTop + 8}px)`, minHeight: 320 }}>
               {/* ─── Mes = spreadsheet sheet · Semana/Día = draw-a-block timeline ─── */}
-              {view === 'calendar' ? (
+              {view === 'agenda' ? (
+                <AgendaView
+                  days={monthDays.filter(d => {
+                    const ds = fmtDate(d);
+                    return ds >= calRange.desde && ds <= calRange.hasta;
+                  })}
+                  shifts={shifts}
+                  stationsById={stationsById}
+                  guardColorMap={guardColorMap}
+                  todayStr={todayStr}
+                  dateStrOf={(iso) => dateToWall(new Date(iso), tzName).dateStr}
+                  timeOf={(iso) => {
+                    const w = dateToWall(new Date(iso), tzName);
+                    return `${String(Math.floor(w.minutes / 60)).padStart(2, '0')}:${String(w.minutes % 60).padStart(2, '0')}`;
+                  }}
+                  onPickShift={(sh) => jumpToDay(dateToWall(new Date(sh.startTime), tzName).dateStr)}
+                />
+              ) : view === 'calendar' ? (
                 <MonthCalendar
                   monthAnchor={visibleMonth}
                   shifts={shifts}
@@ -2937,7 +2981,11 @@ export default function Schedule() {
 
             {/* ─── Sheet hint bar ─── */}
             <div className="flex flex-wrap items-center gap-3 pt-1.5 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
-              {view === 'calendar' ? (
+              {view === 'agenda' ? (
+                <span className="font-medium" style={{ color: 'var(--ink-soft)' }}>
+                  Lista por día · toca un turno para abrir ese día · <b>Re/Av Pág</b> cambia de mes
+                </span>
+              ) : view === 'calendar' ? (
                 <span className="font-medium" style={{ color: 'var(--ink-soft)' }}>
                   El mes de un vistazo · Clic en un turno o en «+N más» para abrir ese día · <b>Re/Av Pág</b> cambia de mes
                 </span>
