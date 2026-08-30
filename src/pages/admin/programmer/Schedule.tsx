@@ -1323,7 +1323,7 @@ export default function Schedule() {
   };
 
   const removeAssignment = async (assignmentId: string) => {
-    if (!(await confirmDialog({ title: t('ui.Schedule.removerAsignacion', 'Remover asignación'), message: '¿Remover esta asignación? Se eliminarán los turnos futuros generados.', confirmText: 'Remover', tone: 'danger' }))) return;
+    if (!(await confirmDialog({ title: t('ui.Schedule.removerAsignacion', 'Remover asignación'), message: '¿Remover esta asignación? Los turnos futuros se anulan; los ya trabajados se conservan en el historial.', confirmText: 'Remover', tone: 'danger' }))) return;
     try {
       await ApiService.delete(`/tenant/${tenantId}/guard-assignment/${assignmentId}`);
       toast.success(t('ui.Schedule.asignacionRemovida'));

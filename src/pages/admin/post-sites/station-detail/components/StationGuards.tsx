@@ -242,26 +242,27 @@ export default function StationGuards({ station, stationId, postSiteId }: Props)
     });
   };
 
-  // Delete shifts in batches (keeps the request URL within limits).
-  const deleteShifts = async (ids: string[]) => {
-    for (let i = 0; i < ids.length; i += 40) {
-      const grp = ids.slice(i, i + 40);
-      if (grp.length) await ApiService.delete(`/tenant/${tenantId}/shift?ids=${grp.map(encodeURIComponent).join(',')}`);
-    }
-  };
-
   const submitAssign = async () => {
     if (!pickGuard) { toast.error(t('station.guards.pickGuard', 'Selecciona un vigilante')); return; }
     setSaving(true);
     try {
       if (changeTarget && changeTarget.assignmentId) {
-        // End the old assignment (+ its shifts), then create a fresh assignment
-        // for the new guard on the SAME position. Single source = guardAssignment,
-        // so this stays in sync with Programador › Horario.
-        await ApiService.delete(`/tenant/${tenantId}/guard-assignment/${encodeURIComponent(changeTarget.assignmentId)}`);
-        await deleteShifts(changeTarget.shiftIds);
-        await doAssign(pickGuard, changeTarget.type, changeTarget.positionId, assignStart);
-        toast.success(t('station.guards.changed', 'Vigilante actualizado'));
+        // ── RELEVO, NO BORRADO Y ALTA ───────────────────────────────────────
+        // Esto era: borrar la asignación + borrar SUS TURNOS (una lista sin
+        // filtro de fecha, o sea también los ya trabajados) + crear otra. Dos
+        // daños: se perdía el historial del saliente, y el entrante re-faseaba
+        // el puesto —su fecha de inicio pasaba a ser el día 0 del ciclo—, así
+        // que los descansos del puesto se movían y el fijo pareja de un 24 h se
+        // desincronizaba. Es el «cambié un vigilante y se me movió el horario».
+        //
+        // El backend ahora lo hace como una SUCESIÓN: cierra al saliente
+        // (conservando lo trabajado y anulando sólo lo futuro) y crea al
+        // entrante HEREDANDO la fase del puesto.
+        await ApiService.post(
+          `/tenant/${tenantId}/guard-assignment/${encodeURIComponent(changeTarget.assignmentId)}/replace`,
+          { data: { replacementGuardId: pickGuard, effectiveDate: assignStart || today() } },
+        );
+        toast.success(t('station.guards.changed', 'Vigilante relevado — el puesto conserva su rotación'));
       } else if (assignType) {
         await doAssign(pickGuard, assignType, undefined, assignStart);
         toast.success(assignType === 'sacafranco'
@@ -280,16 +281,27 @@ export default function StationGuards({ station, stationId, postSiteId }: Props)
   };
 
   const removeGuard = async (a: Assignment) => {
-    if (!(await confirmDialog({ title: 'Quitar vigilante', message: `¿Quitar a ${a.guardName} de este puesto? Se eliminarán sus turnos en este sitio.`, confirmText: 'Quitar', tone: 'danger' }))) return;
+    // La promesa cambió, y el texto tenía que cambiar con ella: ya NO «se
+    // eliminarán sus turnos». Los trabajados se conservan —son historial— y los
+    // futuros se anulan. Prometer un borrado que ya no ocurre es peor que no
+    // avisar: el operador cree haber destruido algo y desconfía de lo que ve.
+    if (!(await confirmDialog({
+      title: 'Quitar vigilante',
+      message: `¿Quitar a ${a.guardName} de este puesto? Sus turnos futuros se anulan; los ya trabajados se conservan en el historial.`,
+      confirmText: 'Quitar',
+      tone: 'danger',
+    }))) return;
     try {
       if (a.assignmentId) {
+        // El backend cierra la asignación y anula SÓLO lo futuro. Aquí se
+        // borraban además los turnos uno a uno, con una lista que venía SIN
+        // filtro de fecha (`limit=999`): eso se llevaba por delante el
+        // historial ya trabajado. Se quitó.
         await ApiService.delete(`/tenant/${tenantId}/guard-assignment/${encodeURIComponent(a.assignmentId)}`);
       }
-      // Remove their shifts so they disappear from the Turnos tab too.
-      await deleteShifts(a.shiftIds);
       setRows((rs) => rs.filter((x) => x.id !== a.id));
       try { window.dispatchEvent(new CustomEvent('assignments:changed')); } catch { /* noop */ }
-      toast.success(t('station.guards.removed', 'Vigilante removido del puesto y de los turnos'));
+      toast.success(t('station.guards.removed', 'Vigilante quitado del puesto — su historial se conserva'));
     } catch (e: any) {
       toast.error(e?.message || t('station.guards.removeFailed', 'No se pudo quitar'));
     }
