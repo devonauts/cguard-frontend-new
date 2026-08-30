@@ -396,131 +396,6 @@ export default function ScheduleTimeline({
 
   const draftStationIdx = draft ? (stationIndexById.get(draft.stationId) ?? 0) : 0;
 
-  /* ════════════════════════════════════════════════════════════════════════
-     MOVER Y ESTIRAR UN BLOQUE CON EL DEDO (o el ratón)
-     ────────────────────────────────────────────────────────────────────────
-     Se podía DIBUJAR un turno nuevo, pero para cambiar uno que ya existía
-     había que ir a clic derecho → Editar → dos campos `datetime-local`. El
-     gesto que define un calendario —agarrar el bloque y llevarlo a otra hora,
-     o tirar de su borde para alargarlo— no estaba.
-
-     Va con Pointer Events y no con Mouse Events a propósito: los mismos
-     manejadores sirven para ratón y para dedo, que es lo que hace que esto
-     funcione en un teléfono sin escribir el gesto dos veces.
-
-     `setPointerCapture` es lo que evita el fallo clásico: si el dedo sale del
-     bloque a mitad del arrastre —y sale siempre— sin captura el navegador deja
-     de mandar eventos y el turno se queda a medio mover.
-     ════════════════════════════════════════════════════════════════════════ */
-  type Arrastre = {
-    shift: ShiftRecord;
-    modo: 'mover' | 'inicio' | 'fin';
-    /** Rango original, en minutos absolutos del lienzo. */
-    a0: number;
-    b0: number;
-    /** Dónde se agarró, para mover en relativo. */
-    grab: number;
-    /** Desplazamiento vivo. */
-    delta: number;
-    /** ¿Se movió de verdad? Si no, es un clic y abre el detalle. */
-    movido: boolean;
-  };
-  const [arrastre, setArrastre] = useState<Arrastre | null>(null);
-  const arrastreRef = useRef<Arrastre | null>(null);
-  useEffect(() => { arrastreRef.current = arrastre; }, [arrastre]);
-  const [guardandoArrastre, setGuardandoArrastre] = useState(false);
-
-  /** Minutos que hay que mover para considerarlo arrastre y no clic. */
-  const UMBRAL = 10;
-
-  const empezarArrastre = (
-    e: React.PointerEvent, s: ShiftRecord, modo: Arrastre['modo'],
-  ) => {
-    if (e.button !== undefined && e.button !== 0) return;
-    e.stopPropagation();
-    const cont = scrollRef.current?.querySelector('[data-lienzo]') as HTMLElement | null;
-    const rect = (cont || (e.currentTarget as HTMLElement).offsetParent as HTMLElement)?.getBoundingClientRect();
-    if (!rect) return;
-    draftRectRef.current = rect;
-    const a0 = absOfWall(dateToWall(new Date(s.startTime), tz));
-    const b0 = absOfWall(dateToWall(new Date(s.endTime), tz));
-    const grab = pointTo(e.clientX, e.clientY, rect).abs;
-    try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId); } catch { /* no crítico */ }
-    setArrastre({ shift: s, modo, a0, b0, grab, delta: 0, movido: false });
-  };
-
-  useEffect(() => {
-    if (!arrastre) return;
-    const onMove = (e: PointerEvent) => {
-      const rect = draftRectRef.current;
-      if (!rect) return;
-      const abs = pointTo(e.clientX, e.clientY, rect).abs;
-      setArrastre((prev) => {
-        if (!prev) return prev;
-        const delta = abs - prev.grab;
-        return { ...prev, delta, movido: prev.movido || Math.abs(delta) >= UMBRAL };
-      });
-    };
-    const onUp = async () => {
-      const prev = arrastreRef.current;
-      setArrastre(null);
-      if (!prev) return;
-      if (!prev.movido) { setDetail(prev.shift); return; }
-
-      let a = prev.a0, b = prev.b0;
-      if (prev.modo === 'mover') { a += prev.delta; b += prev.delta; }
-      else if (prev.modo === 'inicio') a += prev.delta;
-      else b += prev.delta;
-
-      if (b - a < 30) { toast.error('Un turno no puede durar menos de 30 minutos'); return; }
-      if (b - a > 1440) { toast.error('Un turno no puede durar más de 24 horas'); return; }
-
-      const inicio = wallStrToDate(absToWallStr(a), tz);
-      const fin = wallStrToDate(absToWallStr(b), tz);
-      if (!inicio || !fin) return;
-
-      setGuardandoArrastre(true);
-      try {
-        const est = stationById.get(prev.shift.stationId);
-        await ApiService.put(`/tenant/${tenantId}/shift/${prev.shift.id}`, {
-          data: {
-            startTime: inicio.toISOString(),
-            endTime: fin.toISOString(),
-            station: prev.shift.stationId,
-            guard: prev.shift.guardId,
-            postSiteId: est?.postSiteId,
-          },
-        });
-        toast.success(prev.modo === 'mover' ? 'Turno movido' : 'Turno ajustado');
-        onChanged?.();
-      } catch (err: any) {
-        toast.error(err?.data?.message || err?.message || 'No se pudo mover el turno');
-      } finally {
-        setGuardandoArrastre(false);
-      }
-    };
-    window.addEventListener('pointermove', onMove);
-    window.addEventListener('pointerup', onUp);
-    window.addEventListener('pointercancel', onUp);
-    return () => {
-      window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('pointerup', onUp);
-      window.removeEventListener('pointercancel', onUp);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [arrastre !== null, pointTo, tz, tenantId]);
-
-  /** Vista previa del bloque mientras se arrastra. */
-  const arrastreSegs = useMemo(() => {
-    if (!arrastre || !arrastre.movido) return [];
-    let a = arrastre.a0, b = arrastre.b0;
-    if (arrastre.modo === 'mover') { a += arrastre.delta; b += arrastre.delta; }
-    else if (arrastre.modo === 'inicio') a += arrastre.delta;
-    else b += arrastre.delta;
-    return b > a ? segmentize(a, b, dayCount) : [];
-  }, [arrastre, dayCount]);
-
-  const arrastreStationIdx = arrastre ? (stationIndexById.get(arrastre.shift.stationId) ?? 0) : 0;
 
   const inputCls = 'cg-input cg-focus w-full px-3 py-2.5 text-sm';
 
@@ -693,12 +568,24 @@ export default function ScheduleTimeline({
                       /* Cristal PLANO: se pinta uno por turno y por día. Un
                          `backdrop-filter` aquí multiplica el coste por cada
                          bloque de la rejilla. */
-                      className={`absolute cursor-grab overflow-hidden px-1.5 py-0.5 transition-[filter] hover:brightness-110 active:cursor-grabbing ${isEngine ? 'border border-dashed' : 'border'} ${seg.first ? 'rounded-t-md' : ''} ${seg.last ? 'rounded-b-md' : ''}`}
-                      title={`${name} · ${timeLbl}${isEngine ? ' · generado por rotación' : ' · turno manual'} — arrastra para mover · tira de los bordes para ajustar · clic derecho: opciones`}
-                      /* El pointerdown del bloque NO puede llegar al lienzo: si
-                         llegara, empezaría a DIBUJAR un turno nuevo encima del
-                         que se está moviendo. */
-                      onPointerDown={e => empezarArrastre(e, s, 'mover')}
+                      className={`absolute cursor-pointer overflow-hidden px-1.5 py-0.5 transition-all hover:brightness-110 ${isEngine ? 'border border-dashed' : 'border'} ${seg.first ? 'rounded-t-md' : ''} ${seg.last ? 'rounded-b-md' : ''}`}
+                      title={`${name} · ${timeLbl}${isEngine ? ' · generado por rotación' : ' · turno manual'} — clic: detalle · clic derecho: opciones`}
+                      /* ── ARRASTRE RETIRADO (2026-08-30) ────────────────────
+                         Se probó en producción y hacía DOS cosas mal a la vez:
+                           · el `stopPropagation` iba sobre el evento de PUNTERO
+                             y el lienzo dibuja con `onMouseDown` —secuencias
+                             distintas—, así que un arrastre movía el turno Y
+                             abría además el diálogo de «nuevo bloque»;
+                           · el desplazamiento salía con el signo y la magnitud
+                             equivocados: arrastrar hacia ABAJO adelantaba el
+                             turno 3,5 h en vez de retrasarlo.
+                         Dos turnos de la empresa de demostración acabaron
+                         movidos. Se vuelve al gesto de antes —clic abre el
+                         detalle, clic derecho edita— hasta que esté bien hecho
+                         y con pruebas. Mejor sin gesto que con uno que mueve
+                         turnos a horas que nadie pidió. */
+                      onMouseDown={e => { if (e.button === 0) e.stopPropagation(); }}
+                      onClick={() => setDetail(s)}
                       onContextMenu={e => openBlockCtx(e, s)}
                       style={{
                         top: seg.top * pxPerMin,
@@ -710,29 +597,9 @@ export default function ScheduleTimeline({
                         ...(seg.first ? { borderTop: `3px solid ${color}` } : {}),
                         // El bloque que se está moviendo se apaga: lo que manda
                         // es la vista previa que sigue al dedo.
-                        ...(arrastre && arrastre.movido && arrastre.shift.id === s.id ? { opacity: 0.25 } : null),
-                        touchAction: 'none',
                       }}
                     >
-                      {/* Tiradores: 8 px arriba y abajo. Sólo en el primer y el
-                          último trozo de un turno que cruza medianoche — tirar
-                          del borde interior de un trozo no significaría nada. */}
-                      {seg.first && (
-                        <div
-                          onPointerDown={e => empezarArrastre(e, s, 'inicio')}
-                          className="absolute inset-x-0 top-0 h-2 cursor-ns-resize"
-                          style={{ touchAction: 'none' }}
-                          title="Ajustar la hora de entrada"
-                        />
-                      )}
-                      {seg.last && (
-                        <div
-                          onPointerDown={e => empezarArrastre(e, s, 'fin')}
-                          className="absolute inset-x-0 bottom-0 h-2 cursor-ns-resize"
-                          style={{ touchAction: 'none' }}
-                          title="Ajustar la hora de salida"
-                        />
-                      )}
+
                       {seg.first && h > 20 && (
                         <span className="block truncate text-[9px] font-semibold" style={{ color: 'var(--ink)' }}>
                           {name.split(' ')[0]}
@@ -745,28 +612,6 @@ export default function ScheduleTimeline({
                   );
                 });
               })}
-
-              {/* Vista previa del bloque que se está moviendo o estirando */}
-              {arrastreSegs.map(seg => (
-                <div
-                  key={`arr-${seg.dayIdx}`}
-                  className={`pointer-events-none absolute border-2 ${seg.first ? 'rounded-t-md' : ''} ${seg.last ? 'rounded-b-md' : ''}`}
-                  style={{
-                    top: seg.top * pxPerMin,
-                    height: (seg.bottom - seg.top) * pxPerMin,
-                    left: seg.dayIdx * dayW + arrastreStationIdx * SUBCOL_W + 3,
-                    width: SUBCOL_W - 6,
-                    background: 'var(--brand-wash)',
-                    borderColor: 'var(--brand)',
-                  }}
-                >
-                  {seg.first && (
-                    <span className="block px-1 pt-0.5 text-[9px] font-bold tabular-nums" style={{ color: 'var(--brand-text)' }}>
-                      {minLabel(((seg.top % 1440) + 1440) % 1440)}
-                    </span>
-                  )}
-                </div>
-              ))}
 
               {/* Draw preview (in the anchor's estación sub-column) */}
               {draftSegs.map(seg => (
