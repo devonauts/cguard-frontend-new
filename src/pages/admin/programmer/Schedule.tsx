@@ -44,6 +44,7 @@ import TransferShiftModal, { TransferTarget } from "./TransferShiftModal";
 import { stationLabel } from "@/lib/stationName";
 import SupervisionSection from './SupervisionSection';
 import MonthStationBlock, { type BlockSel, type MonthGridHandlers } from './MonthStationBlock';
+import MonthCalendar from './MonthCalendar';
 import { COL_W, COL_STICKY_W } from './gridBand';
 
 import { localeActual } from '@/lib/localeActual'
@@ -230,7 +231,7 @@ const addDays = (d: Date, n: number): Date => {
 const dseOf = (d: Date): number =>
   Math.round((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - Date.UTC(2024, 0, 1)) / 86400000);
 
-type ViewMode = 'month' | 'week' | 'day';
+type ViewMode = 'month' | 'week' | 'day' | 'calendar';
 
 const VIEW_KEY = 'programador.horario.view';
 
@@ -314,7 +315,7 @@ export default function Schedule() {
     const [y, mo, d] = tzToday().split('-').map(Number);
     return new Date(y, mo - 1, d);
   });
-  const [view, setView] = useState<ViewMode>(savedView.v === 'week' || savedView.v === 'day' ? savedView.v : 'month');
+  const [view, setView] = useState<ViewMode>(['week', 'day', 'calendar'].includes(savedView.v) ? savedView.v : 'month');
   const [panelOpen, setPanelOpen] = useState<boolean>(savedView.panel ?? true);
   const [sfSectionOpen, setSfSectionOpen] = useState<boolean>(savedView.sf ?? false);
   // Month label in the toolbar follows the SCROLL position of the year canvas.
@@ -407,8 +408,22 @@ export default function Schedule() {
 
   // Fetch range follows the view: the year canvas loads the whole current
   // year; the timeline pads ±1 day so overnight shift tails are included.
-  const startDateStr = view === 'month' ? `${todayYear}-01-01` : fmtDate(addDays(timelineDays[0], -1));
-  const endDateStr = view === 'month' ? `${todayYear}-12-31` : fmtDate(addDays(timelineDays[timelineDays.length - 1], 1));
+  /* La rejilla del año carga el año; la línea de tiempo, sus días ±1. El
+     CALENDARIO carga UN MES —con la cola de la semana que se ve a los lados—:
+     pedir el año para pintar 42 celdas sería traerse 20.000 filas para enseñar
+     unas pocas. */
+  const calRange = useMemo(() => {
+    const primero = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), 1);
+    const desde = addDays(primero, -((primero.getDay() + 6) % 7) - 1);
+    return { desde: fmtDate(desde), hasta: fmtDate(addDays(desde, 43)) };
+  }, [visibleMonth]);
+
+  const startDateStr = view === 'calendar'
+    ? calRange.desde
+    : view === 'month' ? `${todayYear}-01-01` : fmtDate(addDays(timelineDays[0], -1));
+  const endDateStr = view === 'calendar'
+    ? calRange.hasta
+    : view === 'month' ? `${todayYear}-12-31` : fmtDate(addDays(timelineDays[timelineDays.length - 1], 1));
 
   const fetchAll = useCallback(async (opts?: { silent?: boolean }) => {
     // After the first load every refetch is SILENT: the grid stays mounted so
@@ -1979,6 +1994,12 @@ export default function Schedule() {
   const nav = useCallback((dir: number) => {
     setSel(null);
     if (view === 'month') { scrollMonthTo(visibleMonth.getMonth() + dir); return; }
+    // El calendario navega por MESES, y su mes vivo es `visibleMonth` — el mismo
+    // que la hoja del año, para que cambiar de vista no te mueva de sitio.
+    if (view === 'calendar') {
+      setVisibleMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + dir, 1));
+      return;
+    }
     setCurrentDate(prev => {
       const d = new Date(prev);
       d.setDate(d.getDate() + (view === 'week' ? dir * 7 : dir));
@@ -1990,6 +2011,7 @@ export default function Schedule() {
     setSel(null);
     const [y, mo, d] = tzToday().split('-').map(Number);
     setCurrentDate(clampToYear(new Date(y, mo - 1, d)));
+    if (view === 'calendar') { setVisibleMonth(new Date(y, mo - 1, 1)); return; }
     if (view === 'month') {
       gridScrollRef.current?.scrollTo({ left: Math.max(0, (dayIndexOf(y, mo, d) - 3) * 44), behavior: 'smooth' });
       setVisibleMonth(new Date(y, mo - 1, 1));
@@ -2147,7 +2169,7 @@ export default function Schedule() {
   }, [visibleMonth]);
 
   const rangeLabel = useMemo(() => {
-    if (view === 'month') return monthLabel;
+    if (view === 'month' || view === 'calendar') return monthLabel;
     const fmt = (d: Date) => d.toLocaleDateString(localeActual(), { day: 'numeric', month: 'short' });
     if (view === 'week') {
       const a = timelineDays[0], b = timelineDays[timelineDays.length - 1];
@@ -2243,6 +2265,7 @@ export default function Schedule() {
             onChange={v => { setView(v); setSel(null); }}
             options={[
               { value: 'month', label: 'Mes' },
+              { value: 'calendar', label: 'Calendario' },
               { value: 'week', label: 'Semana' },
               { value: 'day', label: 'Día' },
             ]}
@@ -2309,7 +2332,22 @@ export default function Schedule() {
             {/* ─── Sheet + side panel fill the rest of the viewport ─── */}
             <div ref={shellRef} className="flex gap-2 min-h-0" style={{ height: `calc(100vh - ${shellTop + 8}px)`, minHeight: 320 }}>
               {/* ─── Mes = spreadsheet sheet · Semana/Día = draw-a-block timeline ─── */}
-              {view !== 'month' ? (
+              {view === 'calendar' ? (
+                <MonthCalendar
+                  monthAnchor={visibleMonth}
+                  shifts={shifts}
+                  stationsById={stationsById}
+                  guardColorMap={guardColorMap}
+                  todayStr={todayStr}
+                  dateStrOf={(iso) => dateToWall(new Date(iso), tzName).dateStr}
+                  timeOf={(iso) => {
+                    const w = dateToWall(new Date(iso), tzName);
+                    return `${String(Math.floor(w.minutes / 60)).padStart(2, '0')}:${String(w.minutes % 60).padStart(2, '0')}`;
+                  }}
+                  onPickDay={(dateStr) => jumpToDay(dateStr)}
+                  onPickShift={(sh) => jumpToDay(dateToWall(new Date(sh.startTime), tzName).dateStr)}
+                />
+              ) : view !== 'month' ? (
                 <ScheduleTimeline
                   tenantId={tenantId}
                   view={view}
@@ -2863,7 +2901,11 @@ export default function Schedule() {
 
             {/* ─── Sheet hint bar ─── */}
             <div className="flex flex-wrap items-center gap-3 pt-1.5 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
-              {view === 'month' ? (
+              {view === 'calendar' ? (
+                <span className="font-medium" style={{ color: 'var(--ink-soft)' }}>
+                  El mes de un vistazo · Clic en un turno o en «+N más» para abrir ese día · <b>Re/Av Pág</b> cambia de mes
+                </span>
+              ) : view === 'month' ? (
                 <>
                   <span className="font-medium" style={{ color: 'var(--ink-soft)' }}>{selInfo || t('ui.Schedule.clicEnUnaCeldaParaSeleccionar', 'Clic en una celda para seleccionar')}</span>
                   {/* El botón que faltaba. Supr ya borraba, pero sólo estaba

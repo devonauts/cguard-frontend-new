@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { nombreDeVigilante } from "@/lib/guardName";
 import { Clock, Loader2, MapPin, Pencil, Trash2, User, X } from 'lucide-react';
@@ -469,6 +469,20 @@ export default function ScheduleTimeline({
   const inputCls = 'cg-input cg-focus w-full px-3 py-2.5 text-sm';
 
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  /* AL ABRIR, LA HORA DE AHORA. El lienzo mide 24 h (864 px) y nadie tocaba el
+     scroll, así que la vista caía en las 00:00: en una pantalla corta eso es
+     abrir el horario en mitad de la madrugada y tener que bajar a mano hasta el
+     turno que está corriendo. Se centra la hora actual una sola vez. */
+  const yaCentrado = useRef(false);
+  useLayoutEffect(() => {
+    const el = scrollRef.current;
+    if (!el || yaCentrado.current) return;
+    const w = dateToWall(new Date(), tz);
+    const y = (w.minutes / 60) * hourH - el.clientHeight / 3;
+    el.scrollTop = Math.max(0, y);
+    yaCentrado.current = true;
+  }, [tz, hourH]);
 
   return (
     <>
