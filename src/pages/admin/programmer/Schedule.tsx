@@ -650,7 +650,7 @@ export default function Schedule() {
   // que NO venga de la rotación de ese puesto — que es la definición de una
   // cobertura, sea quien sea quien la haga.
   const sfStationCoverage = useMemo(() => {
-    const map = new Map<string, { name: string; fullName: string }[]>();
+    const map = new Map<string, { name: string; fullName: string; code: 'D' | 'N' }[]>();
     // Los turnos que la rotación del puesto genera llevan `positionId`; los
     // sueltos (cobertura, bloque dibujado, turno único) no. Un SF sigue contando
     // aunque su turno traiga posición, por compatibilidad con lo de antes.
@@ -666,8 +666,13 @@ export default function Schedule() {
       const respaldo = guardsPool.find(x => x.id === s.guardId)?.label || 'Cobertura';
       const fullName = nombreDeVigilante(g, respaldo);
       const initials = inicialesDeVigilante(g, respaldo.slice(0, 2).toUpperCase());
+      // D o N por la hora de inicio — el mismo umbral 18/6 del backend. Sólo lo
+      // usa la cobertura HUÉRFANA (la que no cae sobre una «L»): ahí la celda
+      // está vacía y la letra es lo único que dice si se cubrió el día o la noche.
+      const startMin = dateToWall(new Date(s.startTime), tzName).minutes;
+      const code: 'D' | 'N' = startMin >= 18 * 60 || startMin < 6 * 60 ? 'N' : 'D';
       if (!map.has(key)) map.set(key, []);
-      map.get(key)!.push({ name: initials || 'SF', fullName });
+      map.get(key)!.push({ name: initials || 'SF', fullName, code });
     }
     return map;
   }, [shifts, reliefGuardIds, tzName, guardsPool]);

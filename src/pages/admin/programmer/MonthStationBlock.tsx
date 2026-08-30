@@ -95,7 +95,7 @@ export type MonthStationBlockProps = {
   stationAlert: StationAlert | undefined;
   assignmentsByPosition: Map<string, GuardAssignment[]>;
   overrideByGuardDate: Map<string, ScheduleOverride>;
-  sfStationCoverage: Map<string, { name: string; fullName: string }[]>;
+  sfStationCoverage: Map<string, { name: string; fullName: string; code: 'D' | 'N' }[]>;
   guardColorMap: Record<string, string>;
   monthDays: Date[];
   monthDayStrs: string[];
@@ -140,6 +140,50 @@ function MonthStationBlockInner({
       : ' ring-1 ring-inset ring-primary/40 bg-primary/5';
   };
 
+  /* ── COBERTURA HUÉRFANA ────────────────────────────────────────────────
+     Una cobertura se pinta SOBRE la «L» del fijo al que releva. Eso deja dos
+     agujeros por los que un turno real desaparece de la hoja:
+
+       · el puesto no tiene vigilante ACTIVO (la asignación quedó `ended`, o
+         nunca se hizo) — la fila entera sale en «·» y no hay ninguna «L» sobre
+         la que pintar;
+       · el fijo TRABAJA ese día — la celda ya muestra su D/N/24 y tapa al que
+         viene a cubrir además de él.
+
+     En los dos casos el turno se creaba en la base y la rejilla no se movía:
+     «cubrí la noche y no pasó nada». Esto devuelve la lista de coberturas del
+     día CUANDO ninguna fila del puesto va a enseñarlas, para pintarlas en la
+     primera fila. Devuelve `null` —y no cuesta nada— en cuanto alguna «L» ya
+     se encarga, que es el caso normal del sacafranco. */
+  const coberturaSinPintar = (dateStr: string, day: Date) => {
+    const lista = sfStationCoverage.get(`${station.id}-${dateStr}`);
+    if (!lista || !lista.length) return null;
+    for (const p of stationPositions) {
+      for (const a of assignmentsByPosition.get(p.id) || EMPTY_ASG) {
+        // Una novedad ocupa la celda entera: esa fila no pinta la cobertura.
+        if (overrideByGuardDate.has(`${a.guardId}|${dateStr}`)) continue;
+        if (h.isWorkDay(a, day) === 'rest') return null;
+      }
+    }
+    return lista;
+  };
+
+  /** Sólo la primera fila pinta la cobertura huérfana, o saldría repetida en
+   *  cada posición del puesto. */
+  const primeraFilaId = stationPositions[0]?.id;
+
+  /** La píldora de una cobertura que ninguna «L» va a enseñar. */
+  const pildoraCobertura = (lista: { name: string; fullName: string; code: 'D' | 'N' }[]) => (
+    <div
+      className="flex min-h-[18px] flex-1 cursor-default flex-col items-center justify-center rounded"
+      style={toneCard('ok', 12, 22)}
+      title={`Cubre: ${lista.map(x => x.fullName).join(', ')}`}
+    >
+      <span className="text-[10px] font-bold leading-none">{lista[0].code}</span>
+      <span className="text-[8px] leading-none opacity-80">{lista[0].name}</span>
+    </div>
+  );
+
   const renderFijoCell = (pos: StationPosition, posAssignments: GuardAssignment[], day: Date, dayIdx: number) => {
     const dateStr = monthDayStrs[dayIdx];
     const isToday = dateStr === todayStr;
@@ -176,14 +220,24 @@ function MonthStationBlockInner({
           // offset guardado en el puesto: una rotación inventada para un puesto
           // que nadie trabaja, que es de dónde salían las "L" que no cuadraban
           // con nadie. La fase es del vigilante; sin vigilante no hay fase.
-          <div
-            className="flex flex-1 cursor-pointer items-center justify-center rounded border border-dashed"
-            style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}
-            title={t('ui.Schedule.puestoSinVigilanteDobleClic')}
-            onDoubleClick={() => h.openAssignForm(station.id, pos.id, dateStr)}
-          >
-            <span className="text-[10px] font-bold" style={{ color: 'var(--ink-faint)' }}>·</span>
-          </div>
+          //
+          // Lo que SÍ hay que enseñar es un turno REAL: un puesto sin rotación
+          // se tapa día a día, y ése es justo el caso en el que la cobertura no
+          // tiene ninguna «L» donde pintarse (ver `coberturaSinPintar`).
+          (() => {
+            const huerfana = pos.id === primeraFilaId ? coberturaSinPintar(dateStr, day) : null;
+            if (huerfana) return pildoraCobertura(huerfana);
+            return (
+              <div
+                className="flex flex-1 cursor-pointer items-center justify-center rounded border border-dashed"
+                style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}
+                title={t('ui.Schedule.puestoSinVigilanteDobleClic')}
+                onDoubleClick={() => h.openAssignForm(station.id, pos.id, dateStr)}
+              >
+                <span className="text-[10px] font-bold" style={{ color: 'var(--ink-faint)' }}>·</span>
+              </div>
+            );
+          })()
         ) : (
           <div className="flex-1 flex flex-col gap-0.5">
             {posAssignments.map(assignment => {
@@ -249,6 +303,12 @@ function MonthStationBlockInner({
                 </div>
               );
             })}
+            {/* El fijo TRABAJA y además vino alguien a cubrir: su píldora se
+                apila debajo en vez de quedar invisible detrás de la D/N. */}
+            {pos.id === primeraFilaId && (() => {
+              const huerfana = coberturaSinPintar(dateStr, day);
+              return huerfana ? pildoraCobertura(huerfana) : null;
+            })()}
           </div>
         )}
       </div>
