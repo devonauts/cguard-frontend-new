@@ -24,5 +24,11 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": ["src"],
+  // La compilación de PRODUCCIÓN (`tsc && vite build`) no debe depender del
+  // corredor de pruebas: `tsc` typechequeaba los `*.test.ts`, que importan
+  // `vitest`, y el despliegue reventaba con «Cannot find module 'vitest'» en
+  // cuanto el servidor no instalaba las dependencias de desarrollo. Las
+  // pruebas las typechequea vitest, que sí las conoce.
+  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
