@@ -9180,7 +9180,8 @@
       "mapaDeSedes": "Kaart met locaties",
       "verElPanelDeLaSede": "Het dashboard van de locatie bekijken",
       "vigilantesAsignadosVsEstaciones": "Toegewezen beveiligers versus posten (niet de live bezetting)",
-      "noSePudoEliminarLaSede": "De locatie kon niet worden verwijderd"
+      "noSePudoEliminarLaSede": "De locatie kon niet worden verwijderd",
+      "mostrandoDe": "{{visibles}} van {{total}} locaties"
     },
     "ClientProjects": {
       "eliminarEsteProyecto": "Dit project verwijderen?",
@@ -11283,6 +11284,9 @@
     },
     "sheet": {
       "label": "Details van de operatie"
+    },
+    "map": {
+      "sedes": "{{count}} locaties"
     }
   },
   "routes": {

@@ -8676,7 +8676,8 @@
       "mapaDeSedes": "Site map",
       "verElPanelDeLaSede": "View the site dashboard",
       "vigilantesAsignadosVsEstaciones": "Assigned guards vs stations (not live coverage)",
-      "noSePudoEliminarLaSede": "The site could not be deleted"
+      "noSePudoEliminarLaSede": "The site could not be deleted",
+      "mostrandoDe": "Showing {{visibles}} of {{total}} sites"
     },
     "ClientProjects": {
       "eliminarEsteProyecto": "Delete this project?",
@@ -11283,6 +11284,9 @@
     },
     "sheet": {
       "label": "Operation detail"
+    },
+    "map": {
+      "sedes": "{{count}} sites"
     }
   },
   "routes": {

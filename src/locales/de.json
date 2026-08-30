@@ -9180,7 +9180,8 @@
       "mapaDeSedes": "Karte der Einsatzobjekte",
       "verElPanelDeLaSede": "Zur Objektübersicht",
       "vigilantesAsignadosVsEstaciones": "Zugewiesene Sicherheitskräfte vs. Objekte (keine Live-Besetzung)",
-      "noSePudoEliminarLaSede": "Das Einsatzobjekt konnte nicht gelöscht werden"
+      "noSePudoEliminarLaSede": "Das Einsatzobjekt konnte nicht gelöscht werden",
+      "mostrandoDe": "{{visibles}} von {{total}} Einsatzobjekten"
     },
     "ClientProjects": {
       "eliminarEsteProyecto": "Dieses Projekt löschen?",
@@ -11283,6 +11284,9 @@
     },
     "sheet": {
       "label": "Detailansicht der Operation"
+    },
+    "map": {
+      "sedes": "{{count}} Einsatzobjekte"
     }
   },
   "routes": {

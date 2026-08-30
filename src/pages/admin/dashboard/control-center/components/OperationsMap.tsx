@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import i18n from '@/i18n';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from "react-router-dom";
 import { AlertTriangle, Building2, Crosshair, Home, Shield, User, UserCog, X } from "lucide-react";
@@ -532,13 +533,13 @@ export function OperationsMap({
       seen.add(r.id);
       const color = pal.inkSoft;
       const asset = chipPin({
-        etiqueta: `${r.miembros.length} sedes`,
+        etiqueta: i18n.t('controlCenter.map.sedes', { count: r.miembros.length, defaultValue: '{{count}} sedes' }),
         cifra: r.miembros.length,
         color, glifo: iconInnerSvg(prefs.pinIcons.client), piel, version,
       });
       let m = markersRef.current[r.id];
       if (!m) {
-        m = new g.maps.Marker({ map: mapRef.current, position: { lat: r.lat, lng: r.lng }, icon: iconoDe(g, asset), title: `${r.miembros.length} sedes`, zIndex: 180 });
+        m = new g.maps.Marker({ map: mapRef.current, position: { lat: r.lat, lng: r.lng }, icon: iconoDe(g, asset), title: i18n.t('controlCenter.map.sedes', { count: r.miembros.length, defaultValue: '{{count}} sedes' }), zIndex: 180 });
         markersRef.current[r.id] = m;
       } else {
         m.setPosition({ lat: r.lat, lng: r.lng });

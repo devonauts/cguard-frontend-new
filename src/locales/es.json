@@ -8676,7 +8676,8 @@
       "mapaDeSedes": "Mapa de sedes",
       "verElPanelDeLaSede": "Ver el panel de la sede",
       "vigilantesAsignadosVsEstaciones": "Vigilantes asignados vs estaciones (no es cobertura en vivo)",
-      "noSePudoEliminarLaSede": "No se pudo eliminar la sede"
+      "noSePudoEliminarLaSede": "No se pudo eliminar la sede",
+      "mostrandoDe": "Mostrando {{visibles}} de {{total}} sedes"
     },
     "ClientProjects": {
       "eliminarEsteProyecto": "¿Eliminar este proyecto?",
@@ -11283,6 +11284,9 @@
     },
     "sheet": {
       "label": "Detalle de la operación"
+    },
+    "map": {
+      "sedes": "{{count}} sedes"
     }
   },
   "routes": {

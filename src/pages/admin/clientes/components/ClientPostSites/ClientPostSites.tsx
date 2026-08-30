@@ -293,7 +293,7 @@ export default function ClientPostSites({ client }: { client: Client }) {
 
           {!loading && filtered.length > 0 && (
             <div className="mt-4 flex items-center justify-between border-t pt-3 text-xs" style={{ borderColor: 'var(--hairline)', color: 'var(--ink-soft)' }}>
-              <span>Mostrando {filtered.length} de {sedes.length} sedes</span>
+              <span>{t('ui.ClientPostSites.mostrandoDe', { visibles: filtered.length, total: sedes.length, defaultValue: 'Mostrando {{visibles}} de {{total}} sedes' })}</span>
             </div>
           )}
         </Section>

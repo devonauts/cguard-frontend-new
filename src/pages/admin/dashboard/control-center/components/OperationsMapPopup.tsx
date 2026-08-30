@@ -334,7 +334,7 @@ export function globoDeRacimo(r: Racimo, mando: MandoGlobo): MapPopupData {
   return {
     id: r.id,
     kind: "client",
-    title: `${r.miembros.length} sedes`,
+    title: i18n.t('controlCenter.map.sedes', { count: r.miembros.length, defaultValue: '{{count}} sedes' }),
     subtitle: "Agrupadas por cercanía",
     tone: "neutral",
     fields: [{

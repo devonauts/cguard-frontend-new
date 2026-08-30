@@ -232,7 +232,14 @@
 .cg-skeleton::after { content: ""; position: absolute; inset: 0; transform: translateX(-100%); background: linear-gradient(90deg, transparent, color-mix(in oklch, var(--card) 60%, transparent), transparent); animation: cg-shimmer 1.6s infinite; }
 
 /* Tiny section eyebrow label. */
-.cg-eyebrow { font-size: 11px; line-height: 1; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted-foreground); font-weight: 600; }
+/* `line-height: 1` no dejaba ni un píxel por encima de la altura de mayúsculas.
+   En español apenas se notaba; con el CRM en alemán, polaco o portugués, los
+   rótulos en MAYÚSCULAS perdían el acento: «KRÄFTE» se pintaba «KRAFTE» y
+   «RUNDGÄNGE», «RUNDGANGE». La Ä mayúscula es más alta que la A, y estas
+   etiquetas llevan además `truncate`, que trae `overflow: hidden` y recorta lo
+   que se sale. 1.35 da el hueco justo; no cambia la maquetación porque el
+   contenedor ya reserva más alto del que ocupa la línea. */
+.cg-eyebrow { font-size: 11px; line-height: 1.35; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted-foreground); font-weight: 600; }
 
 /* Focus ring helper for custom interactive elements. */
 .cg-focus { outline: none; }

@@ -9180,7 +9180,8 @@
       "mapaDeSedes": "Carte des sites",
       "verElPanelDeLaSede": "Voir le tableau de bord",
       "vigilantesAsignadosVsEstaciones": "Agents affectés vs postes (ce n'est pas la couverture en direct)",
-      "noSePudoEliminarLaSede": "Impossible de supprimer le site"
+      "noSePudoEliminarLaSede": "Impossible de supprimer le site",
+      "mostrandoDe": "Affichage de {{visibles}} sites sur {{total}}"
     },
     "ClientProjects": {
       "eliminarEsteProyecto": "Supprimer ce projet ?",
@@ -11283,6 +11284,9 @@
     },
     "sheet": {
       "label": "Détail de l'opération"
+    },
+    "map": {
+      "sedes": "{{count}} sites"
     }
   },
   "routes": {

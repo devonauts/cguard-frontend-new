@@ -9180,7 +9180,8 @@
       "mapaDeSedes": "Mappa delle sedi",
       "verElPanelDeLaSede": "Vedi il cruscotto della sede",
       "vigilantesAsignadosVsEstaciones": "Guardie assegnate vs postazioni (non è copertura in tempo reale)",
-      "noSePudoEliminarLaSede": "Impossibile eliminare la sede"
+      "noSePudoEliminarLaSede": "Impossibile eliminare la sede",
+      "mostrandoDe": "Mostrati {{visibles}} di {{total}} sedi"
     },
     "ClientProjects": {
       "eliminarEsteProyecto": "Eliminare questo progetto?",
@@ -11283,6 +11284,9 @@
     },
     "sheet": {
       "label": "Dettaglio dell'operazione"
+    },
+    "map": {
+      "sedes": "{{count}} sedi"
     }
   },
   "routes": {

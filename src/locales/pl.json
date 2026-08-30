@@ -9180,7 +9180,8 @@
       "mapaDeSedes": "Mapa obiektów",
       "verElPanelDeLaSede": "Zobacz panel obiektu",
       "vigilantesAsignadosVsEstaciones": "Przypisani pracownicy ochrony a posterunki (to nie obsada na żywo)",
-      "noSePudoEliminarLaSede": "Nie udało się usunąć obiektu"
+      "noSePudoEliminarLaSede": "Nie udało się usunąć obiektu",
+      "mostrandoDe": "Wyświetlono {{visibles}} z {{total}} obiektów"
     },
     "ClientProjects": {
       "eliminarEsteProyecto": "Usunąć ten projekt?",
@@ -11283,6 +11284,9 @@
     },
     "sheet": {
       "label": "Szczegóły operacji"
+    },
+    "map": {
+      "sedes": "obiekty: {{count}}"
     }
   },
   "routes": {
