@@ -677,6 +677,21 @@ export default function Schedule() {
     return map;
   }, [shifts, reliefGuardIds, tzName, guardsPool]);
 
+  /* Los MISMOS turnos que `sfStationCoverage` resume por nombre, pero en crudo:
+     hacen falta para poder BORRARLOS desde la selección. La píldora de cobertura
+     se pinta en la primera fila del puesto, así que ahí es donde Supr la busca. */
+  const coverageShiftsByStationDate = useMemo(() => {
+    const map = new Map<string, ShiftRecord[]>();
+    for (const s of shifts) {
+      if (!s.startTime) continue;
+      if (s.positionId && !reliefGuardIds.has(s.guardId)) continue;
+      const key = `${s.stationId}-${dateToWall(new Date(s.startTime), tzName).dateStr}`;
+      const list = map.get(key);
+      if (list) list.push(s); else map.set(key, [s]);
+    }
+    return map;
+  }, [shifts, reliefGuardIds, tzName]);
+
   // El servidor ya calcula estas alertas (`staffing.stationAlerts`). Cuando las
   // manda, este memo se saltaba… pero se calculaba igual y se tiraba: 30 puestos
   // x 365 dias x `isWorkDay` por nada. Ahora sale en la primera linea.
@@ -1673,9 +1688,48 @@ export default function Schedule() {
     fetchAll({ silent: true });
   }, [cellsInSelection, performOverrideSave, tenantId, fetchAll]);
 
+  /**
+   * Los TURNOS REALES que hay dentro de la selección.
+   *
+   * Supr sólo borraba novedades. Un turno —lo que la celda enseña como D, N o
+   * 24— se quedaba donde estaba, y como la función salía en silencio cuando no
+   * había ninguna novedad, seleccionar turnos y pulsar Supr no hacía nada NI
+   * decía por qué. Es la queja: «selecciono, borro, y sigue ahí».
+   *
+   * Se recoge lo mismo que la celda pinta:
+   *   · el turno del vigilante asignado a esa fila (su D/N/24), y
+   *   · la cobertura suelta del puesto —el turno de quien NO está asignado—,
+   *     que la rejilla pinta en la PRIMERA fila del puesto.
+   */
+  const shiftsInSelection = useCallback((): ShiftRecord[] => {
+    if (!selBounds) return [];
+    const vistos = new Set<string>();
+    const out: ShiftRecord[] = [];
+    const guardar = (s?: ShiftRecord) => {
+      if (s && !vistos.has(s.id)) { vistos.add(s.id); out.push(s); }
+    };
+    for (let r = selBounds.r1; r <= selBounds.r2; r++) {
+      const row = selectableRows[r];
+      if (!row) continue;
+      const esPrimeraFila = getPositionsForStation(row.pos.stationId)[0]?.id === row.pos.id;
+      for (let c = selBounds.c1; c <= selBounds.c2 && c < monthDays.length; c++) {
+        const dateStr = fmtDate(monthDays[c]);
+        for (const a of row.assignments) {
+          const s = shiftByGuardDate.get(`${a.guardId}|${dateStr}`);
+          if (s && s.stationId === row.pos.stationId) guardar(s);
+        }
+        // La cobertura vive donde se ve: en la primera fila del puesto. En una
+        // fila de sacafranco su propio turno ya entró por `row.assignments`.
+        if (esPrimeraFila && !row.isSf) {
+          for (const s of coverageShiftsByStationDate.get(`${row.pos.stationId}-${dateStr}`) || []) guardar(s);
+        }
+      }
+    }
+    return out;
+  }, [selBounds, selectableRows, monthDays, shiftByGuardDate, coverageShiftsByStationDate, getPositionsForStation]);
+
   const clearSelectedCells = useCallback(async () => {
     const cells = cellsInSelection();
-    if (!cells.length) return;
     const victims: ScheduleOverride[] = [];
     for (const { row, dateStr } of cells) {
       for (const a of row.assignments) {
@@ -1683,17 +1737,60 @@ export default function Schedule() {
         if (o) victims.push(o);
       }
     }
-    if (!victims.length) return;
+    const turnos = shiftsInSelection();
+
+    // Nunca en silencio: si no hay nada que borrar, decirlo.
+    if (!victims.length && !turnos.length) {
+      toast.info(sel
+        ? t('ui.Schedule.laSeleccionNoTieneTurnos', 'La selección no tiene turnos ni novedades que borrar')
+        : t('ui.Schedule.seleccionaCeldasDeUnPuesto'));
+      return;
+    }
+
+    // Un turno es trabajo real de alguien: se confirma. Una novedad se deshace
+    // volviéndola a escribir, así que ésa sigue sin preguntar.
+    if (turnos.length) {
+      const generados = turnos.some(s => s.positionId);
+      const partes = [
+        `${turnos.length} turno(s)`,
+        victims.length ? `${victims.length} novedad(es)` : '',
+      ].filter(Boolean).join(' y ');
+      const msg = `Se eliminarán ${partes}.` + (generados
+        ? ' Los turnos generados por la rotación pueden volver a aparecer al reoptimizar o reasignar.'
+        : '');
+      if (!(await confirmDialog({ title: 'Eliminar la selección', message: msg, confirmText: 'Eliminar', tone: 'danger' }))) return;
+    }
+
     const victimIds = new Set(victims.map(v => v.id));
-    setOverrides(prev => prev.filter(o => !victimIds.has(o.id)));
-    await Promise.allSettled(
-      victims
-        .filter(v => !String(v.id).startsWith('tmp-'))
-        .map(v => ApiService.delete(`/tenant/${tenantId}/schedule-overrides/${v.id}`)),
-    );
-    toast.success(`${victims.length} novedad(es) eliminadas`);
+    const shiftIds = turnos.map(s => s.id);
+    const shiftIdSet = new Set(shiftIds);
+    // Optimista: la rejilla no se desmonta, así que el borrado se ve al instante
+    // y el re-sync silencioso confirma.
+    if (victimIds.size) setOverrides(prev => prev.filter(o => !victimIds.has(o.id)));
+    if (shiftIdSet.size) setShifts(prev => prev.filter(s => !shiftIdSet.has(s.id)));
+
+    const jobs: Promise<any>[] = victims
+      .filter(v => !String(v.id).startsWith('tmp-'))
+      .map(v => ApiService.delete(`/tenant/${tenantId}/schedule-overrides/${v.id}`));
+    // En trozos: una selección de un año son cientos de ids y `?ids=` acabaría
+    // pasándose del largo de URL que acepta nginx.
+    for (let i = 0; i < shiftIds.length; i += 100) {
+      const lote = shiftIds.slice(i, i + 100);
+      jobs.push(ApiService.delete(`/tenant/${tenantId}/shift?ids=${lote.join(',')}`));
+    }
+
+    const results = await Promise.allSettled(jobs);
+    const failed = results.filter(r => r.status === 'rejected').length;
+    if (failed) toast.error(`${failed} eliminación(es) no se pudieron completar`);
+    else {
+      const partes = [
+        turnos.length ? `${turnos.length} turno(s)` : '',
+        victims.length ? `${victims.length} novedad(es)` : '',
+      ].filter(Boolean).join(' y ');
+      toast.success(`${partes} eliminado(s)`);
+    }
     fetchAll({ silent: true });
-  }, [cellsInSelection, getOverride, tenantId, fetchAll]);
+  }, [cellsInSelection, shiftsInSelection, getOverride, tenantId, fetchAll, sel, t]);
 
   const openNovedadForFocus = useCallback(() => {
     if (!sel) return;
@@ -2660,6 +2757,20 @@ export default function Schedule() {
               {view === 'month' ? (
                 <>
                   <span className="font-medium" style={{ color: 'var(--ink-soft)' }}>{selInfo || t('ui.Schedule.clicEnUnaCeldaParaSeleccionar', 'Clic en una celda para seleccionar')}</span>
+                  {/* El botón que faltaba. Supr ya borraba, pero sólo estaba
+                      escrito en la ayuda: quien seleccionaba con el ratón no
+                      tenía dónde pulsar. */}
+                  {sel && (
+                    <button
+                      type="button"
+                      onClick={() => void clearSelectedCells()}
+                      className="cg-focus inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold transition-all hover:opacity-80"
+                      style={toneCard('bad', 12, 22)}
+                      title={t('ui.Schedule.eliminarTurnosYNovedades', 'Eliminar los turnos y novedades de la selección (Supr)')}
+                    >
+                      <Trash2 size={11} /> {t('comun.eliminar', 'Eliminar')}
+                    </button>
+                  )}
                   <span className="hidden md:inline"><b>Clic derecho</b>{t('ui.Schedule.editarDuplicarEliminarTurnoY')}{" "}<b>D N L V F P 2</b>{" "}{t('ui.Schedule.paraNovedad')}{" "}<b>Supr</b>{" "}{t("ui.Schedule.borraArrastraUnDia", "borra · Arrastra un día")}{" "}<b>{t('ui.Schedule.lDelSacafranco')}</b>{" "}{t('ui.Schedule.sobreUnLDelPuesto')}{" "}<b>{t("ui.Schedule.reAvPag", "Re/Av Pág")}</b> cambia mes</span>
                 </>
               ) : (

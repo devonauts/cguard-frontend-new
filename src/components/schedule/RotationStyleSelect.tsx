@@ -79,14 +79,24 @@ export default function RotationStyleSelect({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, styles]);
 
-  const describe = (s: RotationStyle) =>
-    is24h
-      ? `${s.dayShifts} día · ${s.nightShifts} noche · ${s.restDays} descanso`
-      : `${s.dayShifts} trabaja · ${s.restDays} descansa`;
+  const describe = (s: RotationStyle) => {
+    // `restDays: 0` es un patrón legítimo —el vigilante trabaja todos los días—
+    // y "0 descanso" se lee como un dato a medio escribir. Se nombra.
+    const descanso = s.restDays === 0 ? 'sin descanso' : `${s.restDays} descans${is24h ? 'o' : 'a'}`;
+    return is24h
+      ? `${s.dayShifts} día · ${s.nightShifts} noche · ${descanso}`
+      : `${s.dayShifts} trabaja · ${descanso}`;
+  };
 
   const createCustom = async () => {
     const work = Math.max(1, parseInt(cWork) || 0);
-    const rest = Math.max(1, parseInt(cRest) || 0);
+    // CERO DESCANSOS ES VÁLIDO: hay puestos que se cubren todos los días con la
+    // misma persona. El backend ya lo guardaba tal cual («an explicit 0 must
+    // persist as 0 — e.g. a no-rest pattern»); era este `Math.max(1, …)` —y el
+    // `min={1}` del campo— lo único que lo impedía. Los días de TRABAJO sí
+    // siguen con mínimo 1: un ciclo de 0 días no es un patrón, es una división
+    // por cero en `getRotationStatus`.
+    const rest = Math.max(0, parseInt(cRest) || 0);
     const night = is24h ? Math.max(1, parseInt(cNight) || 0) : 0;
     const name = is24h ? `${work}-${night}-${rest}` : `${work}-${rest}`;
     setCreating(true);
@@ -148,8 +158,13 @@ export default function RotationStyleSelect({
           )}
           <div>
             <label className="block text-[10px] font-medium text-muted-foreground mb-1 uppercase">Descansa</label>
-            <input type="number" min={1} max={30} value={cRest} onChange={(e) => setCRest(e.target.value)} className="w-20 rounded-lg border border-border/40 bg-background px-2 py-1.5 text-sm font-mono outline-none focus:border-primary" />
+            <input type="number" min={0} max={30} value={cRest} onChange={(e) => setCRest(e.target.value)} className="w-20 rounded-lg border border-border/40 bg-background px-2 py-1.5 text-sm font-mono outline-none focus:border-primary" />
           </div>
+          {(parseInt(cRest) || 0) === 0 && (
+            <div className="basis-full text-[10px]" style={{ color: 'var(--ink-soft)' }}>
+              Sin descanso: el vigilante trabaja todos los días, sin sacafranco que lo releve.
+            </div>
+          )}
           {/* La tinta sobre el relleno de marca es `--brand-ink`, no blanco:
               `.cg-btn-brand` ya trae las dos y sigue al acento configurado. */}
           <button type="button" onClick={createCustom} disabled={creating} className="cg-btn-brand cg-focus inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-semibold transition-[filter] hover:brightness-105 disabled:opacity-50">
