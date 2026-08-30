@@ -2349,18 +2349,41 @@ export default function Schedule() {
                   onPickShift={(sh) => jumpToDay(dateToWall(new Date(sh.startTime), tzName).dateStr)}
                 />
               ) : view !== 'month' ? (
-                <ScheduleTimeline
-                  tenantId={tenantId}
-                  view={view}
-                  days={timelineDays}
-                  stations={stations}
-                  shifts={shifts}
-                  guardsPool={guardsPool}
-                  guardColorMap={guardColorMap}
-                  tz={getTenantTimezone()}
-                  todayStr={todayStr}
-                  onChanged={() => fetchAll({ silent: true })}
-                />
+                <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden">
+                  {/* ── SUPERVISIÓN EN SEMANA/DÍA ─────────────────────────────
+                      Esta sección sólo existía en la hoja del año, así que al
+                      cambiar a Semana o Día los supervisores DESAPARECÍAN — como
+                      si esa semana no la supervisara nadie.
+                      Va ENCIMA de la línea de tiempo y no DENTRO a propósito: el
+                      lienzo de la línea es dibujable y deriva la estación de la
+                      posición horizontal del ratón, así que una columna que no
+                      fuera una estación de verdad dejaría dibujar un turno contra
+                      un `stationId` inventado. Aquí se lee; se dibuja abajo. */}
+                  <div className="shrink-0 overflow-x-auto rounded-xl" style={{ border: '1px solid var(--hairline)' }}>
+                    <SupervisionSection
+                      monthDays={timelineDays}
+                      colA={0}
+                      colB={timelineDays.length}
+                      gridCols={`${COL_STICKY_W}px repeat(${timelineDays.length}, minmax(64px, 1fr))`}
+                      colWidth={64}
+                      tintFor={(d) => (fmtDate(d) === todayStr ? TINT_TODAY : d.getDay() === 0 ? TINT_SUNDAY : undefined)}
+                    />
+                  </div>
+                  <div className="flex min-h-0 flex-1">
+                    <ScheduleTimeline
+                      tenantId={tenantId}
+                      view={view}
+                      days={timelineDays}
+                      stations={stations}
+                      shifts={shifts}
+                      guardsPool={guardsPool}
+                      guardColorMap={guardColorMap}
+                      tz={getTenantTimezone()}
+                      todayStr={todayStr}
+                      onChanged={() => fetchAll({ silent: true })}
+                    />
+                  </div>
+                </div>
               ) : (
               <div
                 ref={gridScrollRef}

@@ -1,8 +1,10 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown, ChevronRight, ShieldCheck, AlertTriangle, Settings2 } from 'lucide-react';
+import { ChevronDown, ChevronRight, ShieldCheck, AlertTriangle, Settings2, Loader2, UserPlus, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ApiService } from '@/services/api/apiService';
+import { toast } from 'sonner';
+import { confirmDialog } from '@/components/ui/confirmDialog';
 import { codePill, CODE_LABEL, columnRules } from './codeTones';
 
 /**
@@ -52,6 +54,7 @@ export default function SupervisionSection({
   colB,
   gridCols,
   tintFor,
+  colWidth,
 }: {
   /** Los MISMOS días que pinta la hoja — así las columnas cuadran solas. */
   monthDays: Date[];
@@ -63,28 +66,45 @@ export default function SupervisionSection({
   gridCols: string;
   /** Tinte de columna (hoy / domingo) que ya calcula la hoja. */
   tintFor?: (day: Date, index: number) => string | undefined;
+  /** Ancho de columna, para que las rayitas verticales cuadren. La hoja del año
+   *  usa 44 px; la línea de tiempo reparte el ancho entre 7 días. */
+  colWidth?: number;
 }) {
   const { t } = useTranslation();
   const visibleDays = monthDays.slice(colA, colB);
   const [abierta, setAbierta] = useState(true);
   const [datos, setDatos] = useState<Rejilla | null>(null);
   const [cargando, setCargando] = useState(true);
+  /* ── ESTA SECCIÓN YA NO ES DE SOLO LECTURA ──────────────────────────────
+     Nació mirando y su propio encabezado registró el resultado: «un puesto
+     creado y cuatro supervisores sin asignar. La máquina funcionaba; nadie
+     entraba a usarla». Los endpoints de asignar y quitar EXISTÍAN desde el
+     principio (`/supervisor-positions/:id/assignments`); lo que faltaba era un
+     sitio donde pulsarlos que no obligara a irse a otra pantalla. */
+  const [asignar, setAsignar] = useState<{ positionId: string; posName: string; userId: string } | null>(null);
+  const [guardando, setGuardando] = useState(false);
 
   const desde = monthDays.length ? ymd(monthDays[0]) : '';
   const hasta = monthDays.length ? ymd(monthDays[monthDays.length - 1]) : '';
 
-  useEffect(() => {
+  /* Se saca del efecto para que asignar y quitar puedan volver a pedirla sin
+     duplicar la llamada. */
+  const cargar = useCallback(async () => {
     if (!desde || !hasta) return;
-    let vivo = true;
     setCargando(true);
-    ApiService.get(`/tenant/${tenantId()}/supervision/grid?from=${desde}&to=${hasta}`)
-      .then((r: any) => { if (vivo) setDatos((r && (r.positions ? r : r.data)) || null); })
+    try {
+      const r: any = await ApiService.get(`/tenant/${tenantId()}/supervision/grid?from=${desde}&to=${hasta}`);
+      setDatos((r && (r.positions ? r : r.data)) || null);
+    } catch {
       // Un fallo aquí no puede tumbar el Horario de vigilantes: la sección
       // simplemente no se pinta.
-      .catch(() => vivo && setDatos(null))
-      .finally(() => vivo && setCargando(false));
-    return () => { vivo = false; };
+      setDatos(null);
+    } finally {
+      setCargando(false);
+    }
   }, [desde, hasta]);
+
+  useEffect(() => { cargar(); }, [cargar]);
 
   /** Índice por fecha, para no recorrer el array en cada celda (365 columnas). */
   const porFecha = useMemo(() => {
@@ -101,6 +121,36 @@ export default function SupervisionSection({
 
   if (cargando && !datos) return null;
   if (!datos) return null;
+
+  const asignarSupervisor = async () => {
+    if (!asignar || !asignar.userId) { toast.error('Elige un supervisor'); return; }
+    setGuardando(true);
+    try {
+      await ApiService.post(`/tenant/${tenantId()}/supervisor-positions/${asignar.positionId}/assignments`, {
+        data: { supervisorUserId: asignar.userId, startDate: new Date().toISOString().slice(0, 10) },
+      });
+      toast.success('Supervisor asignado al puesto');
+      setAsignar(null);
+      cargar();
+    } catch (e: any) {
+      toast.error(e?.data?.message || e?.message || 'No se pudo asignar');
+    } finally { setGuardando(false); }
+  };
+
+  const quitarSupervisor = async (positionId: string, assignmentId: string, nombre: string) => {
+    if (!(await confirmDialog({
+      title: 'Quitar del puesto',
+      message: `¿Quitar a ${nombre} de este puesto de supervisión? Se eliminan sus turnos planificados.`,
+      confirmText: 'Quitar', tone: 'danger',
+    }))) return;
+    try {
+      await ApiService.delete(`/tenant/${tenantId()}/supervisor-positions/${positionId}/assignments/${assignmentId}`);
+      toast.success('Supervisor quitado del puesto');
+      cargar();
+    } catch (e: any) {
+      toast.error(e?.data?.message || e?.message || 'No se pudo quitar');
+    }
+  };
 
   const sinPuesto = datos.unassigned || [];
   // Una empresa con supervisores y SIN puestos tiene que ver la sección igual:
@@ -143,7 +193,7 @@ export default function SupervisionSection({
             <Settings2 size={14} />
           </Link>
         </div>
-        <div style={{ gridColumn: '2 / -1', ...columnRules() }} />
+        <div style={{ gridColumn: '2 / -1', ...columnRules(colWidth) }} />
       </div>
 
       {/* Supervisores con rol y sin puesto: el caso real de 3 de las 4 empresas
@@ -173,7 +223,45 @@ export default function SupervisionSection({
               Crear puesto
             </Link>
           </div>
-          <div style={{ gridColumn: '2 / -1', ...columnRules() }} />
+          <div style={{ gridColumn: '2 / -1', ...columnRules(colWidth) }} />
+        </div>
+      )}
+
+      {/* Asignar un supervisor a un puesto, sin salir del Horario */}
+      {asignar && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'oklch(0 0 0 / 0.55)' }} onClick={() => setAsignar(null)}>
+          <div className="glass-raised mx-4 w-full max-w-sm overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--hairline)' }}>
+              <div>
+                <h4 className="text-sm font-semibold">Asignar supervisor</h4>
+                <p className="mt-0.5 text-[11px]" style={{ color: 'var(--ink-soft)' }}>{asignar.posName}</p>
+              </div>
+              <button onClick={() => setAsignar(null)} className="cg-btn-ghost cg-focus rounded-lg p-1.5"><X size={15} /></button>
+            </div>
+            <div className="space-y-3 p-5">
+              <label className="block text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>Supervisor</label>
+              <select
+                value={asignar.userId}
+                onChange={(e) => setAsignar((m) => (m ? { ...m, userId: e.target.value } : m))}
+                className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:border-primary"
+                style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}
+              >
+                <option value="">Selecciona…</option>
+                {sinPuesto.map((u) => <option key={u.userId} value={u.userId}>{u.name}</option>)}
+              </select>
+              {!sinPuesto.length && (
+                <p className="text-[11px]" style={{ color: 'var(--ink-faint)' }}>
+                  Todos los supervisores con rol ya tienen puesto. Para añadir a alguien más, dale el rol de supervisor primero.
+                </p>
+              )}
+            </div>
+            <div className="flex items-center justify-end gap-2 px-5 py-3" style={{ borderTop: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>
+              <button onClick={() => setAsignar(null)} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold">Cancelar</button>
+              <button onClick={asignarSupervisor} disabled={guardando || !asignar.userId} className="cg-btn-brand cg-focus rounded-full px-5 py-2 text-sm font-semibold disabled:opacity-40">
+                {guardando ? <Loader2 size={14} className="animate-spin" /> : 'Asignar'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -201,6 +289,16 @@ export default function SupervisionSection({
               >
                 {p.coverage.assigned}/{p.coverage.needed}
               </span>
+              {/* La acción donde está el problema: si al puesto le falta gente,
+                  se asigna aquí mismo en vez de mandar al usuario a otra
+                  pantalla — que es lo que hacía que esta sección no se usara. */}
+              <button
+                onClick={() => setAsignar({ positionId: p.id, posName: p.name, userId: '' })}
+                className="cg-btn-ghost cg-focus shrink-0 rounded p-1"
+                title="Asignar un supervisor a este puesto"
+              >
+                <UserPlus size={13} />
+              </button>
             </div>
             <div />
             {visibleDays.map((d, k) => (
@@ -219,6 +317,14 @@ export default function SupervisionSection({
                   {s.isRelief && (
                     <span className="shrink-0 text-[10px]" style={{ color: 'var(--ink-faint)' }}>relevo</span>
                   )}
+                  <span className="flex-1" />
+                  <button
+                    onClick={() => void quitarSupervisor(p.id, s.assignmentId, s.name)}
+                    className="cg-btn-ghost cg-focus shrink-0 rounded p-0.5 opacity-60 hover:opacity-100"
+                    title={`Quitar a ${s.name} de este puesto`}
+                  >
+                    <X size={12} />
+                  </button>
                 </div>
                 <div />
                 {visibleDays.map((d, k) => {
@@ -254,7 +360,7 @@ export default function SupervisionSection({
               <div className="sticky left-0 z-20 px-4 py-1.5 pl-10 text-[11px]" style={{ background: 'var(--card)', color: 'var(--warn-text)' }}>
                 {t('ui.SupervisionSection.sinSupervisoresAsignados', 'Sin supervisores asignados')}
               </div>
-              <div style={{ gridColumn: '2 / -1', ...columnRules() }} />
+              <div style={{ gridColumn: '2 / -1', ...columnRules(colWidth) }} />
             </div>
           )}
         </div>
