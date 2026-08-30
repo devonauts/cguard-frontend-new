@@ -57,7 +57,17 @@ function AgendaViewInner({
     return { date: d, dateStr: `${y}-${mm}-${dd}` };
   }), [days]);
 
-  const conTurnos = fechas.filter((f) => (porDia.get(f.dateStr) || []).length > 0);
+  /* DESDE HOY, no desde el borde del rango.
+     La agenda cargaba el mismo mes que el calendario, cuya rejilla empieza el
+     lunes de la semana del día 1 — así que abriéndola un 30 de agosto se caía en
+     el 26 de JULIO y había que bajar cinco semanas para llegar a hoy. En la
+     vista cuya razón de ser es «¿quién entra hoy?», y sobre todo en un teléfono,
+     eso es abrirla en el sitio equivocado.
+     Si hoy no cae en el rango (se navegó a otro mes) se enseña desde el
+     principio, que ahí sí es lo que se pidió ver. */
+  const hayHoy = fechas.some((f) => f.dateStr === todayStr);
+  const desdeHoy = hayHoy ? fechas.filter((f) => f.dateStr >= todayStr) : fechas;
+  const conTurnos = desdeHoy.filter((f) => (porDia.get(f.dateStr) || []).length > 0);
 
   if (!conTurnos.length) {
     return (

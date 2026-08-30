@@ -128,6 +128,26 @@ export function segmentize(aAbs: number, bAbs: number, dayCount: number): Segmen
   return segs;
 }
 
+/**
+ * Cuántos MINUTOS se ha movido el puntero en vertical, redondeado al paso de la
+ * rejilla.
+ *
+ * Va aquí, pura y probada, porque la primera versión de esto vivía dentro del
+ * componente y derivaba el desplazamiento de `pointTo`, que acota los minutos a
+ * [0, 1440] y saca el DÍA de la coordenada X. Con eso, arrastrar un bloque hacia
+ * abajo lo adelantaba tres horas y media: el valor no era un desplazamiento, era
+ * una posición recortada. Restando dos coordenadas de pantalla no hay nada que
+ * recortar ni ejes que mezclar.
+ */
+export function minutosArrastrados(
+  yInicial: number, yActual: number, pxPorMinuto: number, paso: number,
+): number {
+  if (!(pxPorMinuto > 0) || !(paso > 0)) return 0;
+  const crudo = (yActual - yInicial) / pxPorMinuto;
+  return Math.round(crudo / paso) * paso;
+}
+
 export default {
   pad2, fmtDate, addDays, tzFormatter, tzOffsetMs, dateToWall, wallToDate, minLabel, segmentize,
+  minutosArrastrados,
 };

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   pad2, fmtDate, addDays, tzOffsetMs, dateToWall, wallToDate, minLabel, segmentize,
+  minutosArrastrados,
   type Segment,
 } from './scheduleTime';
 import { useTranslation } from 'react-i18next';
@@ -396,6 +397,107 @@ export default function ScheduleTimeline({
 
   const draftStationIdx = draft ? (stationIndexById.get(draft.stationId) ?? 0) : 0;
 
+  /* ════════════════════════════════════════════════════════════════════════
+     MOVER Y ESTIRAR UN BLOQUE — segunda versión, después de romperlo en vivo
+     ────────────────────────────────────────────────────────────────────────
+     La primera fallaba por dos cosas que ahora están explícitas:
+
+     1. DOS GESTOS A LA VEZ. El `stopPropagation` iba sobre el evento de PUNTERO
+        y el lienzo dibuja con `onMouseDown`: son secuencias distintas, así que
+        parar una no para la otra. Arrastrar movía el turno Y abría el diálogo de
+        «nuevo bloque», y las dos máquinas de estado se pisaban el mismo
+        `draftRectRef`. De ahí salía el desplazamiento absurdo.
+        → El bloque conserva su `onMouseDown` que corta la propagación, y el
+          arrastre usa su PROPIO ref.
+
+     2. EL DESPLAZAMIENTO SALÍA DE `pointTo`, que acota los minutos a [0,1440] y
+        saca el día de la coordenada X. Eso no es un desplazamiento, es una
+        posición recortada: arrastrar hacia abajo adelantaba el turno 3,5 h.
+        → Ahora se restan dos coordenadas de pantalla (`minutosArrastrados`, en
+          `scheduleTime`, con pruebas que fijan el SIGNO).
+     ════════════════════════════════════════════════════════════════════════ */
+  type Arrastre = {
+    shift: ShiftRecord; modo: 'mover' | 'inicio' | 'fin';
+    a0: number; b0: number; yInicial: number; delta: number; movido: boolean;
+  };
+  const [arrastre, setArrastre] = useState<Arrastre | null>(null);
+  const arrastreRef = useRef<Arrastre | null>(null);
+  useEffect(() => { arrastreRef.current = arrastre; }, [arrastre]);
+  /** Un arrastre no debe abrir además el detalle al soltar. */
+  const suprimirClick = useRef(false);
+
+  const empezarArrastre = (e: React.PointerEvent, s: ShiftRecord, modo: Arrastre['modo']) => {
+    if (e.button !== undefined && e.button !== 0) return;
+    e.stopPropagation();
+    const a0 = absOfWall(dateToWall(new Date(s.startTime), tz));
+    const b0 = absOfWall(dateToWall(new Date(s.endTime), tz));
+    try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId); } catch { /* no crítico */ }
+    setArrastre({ shift: s, modo, a0, b0, yInicial: e.clientY, delta: 0, movido: false });
+  };
+
+  useEffect(() => {
+    if (!arrastre) return;
+    const onMove = (e: PointerEvent) => {
+      setArrastre((prev) => {
+        if (!prev) return prev;
+        const delta = minutosArrastrados(prev.yInicial, e.clientY, pxPerMin, snapStep);
+        return { ...prev, delta, movido: prev.movido || delta !== 0 };
+      });
+    };
+    const onUp = async () => {
+      const prev = arrastreRef.current;
+      setArrastre(null);
+      if (!prev) return;
+      if (!prev.movido) return;           // fue un clic: lo abre `onClick`
+      suprimirClick.current = true;
+
+      let a = prev.a0, b = prev.b0;
+      if (prev.modo === 'mover') { a += prev.delta; b += prev.delta; }
+      else if (prev.modo === 'inicio') a += prev.delta;
+      else b += prev.delta;
+
+      if (b - a < 30) { toast.error('Un turno no puede durar menos de 30 minutos'); return; }
+      if (b - a > 1440) { toast.error('Un turno no puede durar más de 24 horas'); return; }
+
+      const inicio = wallStrToDate(absToWallStr(a), tz);
+      const fin = wallStrToDate(absToWallStr(b), tz);
+      if (!inicio || !fin) return;
+      try {
+        const est = stationById.get(prev.shift.stationId);
+        await ApiService.put(`/tenant/${tenantId}/shift/${prev.shift.id}`, {
+          data: {
+            startTime: inicio.toISOString(), endTime: fin.toISOString(),
+            station: prev.shift.stationId, guard: prev.shift.guardId, postSiteId: est?.postSiteId,
+          },
+        });
+        toast.success(prev.modo === 'mover' ? 'Turno movido' : 'Turno ajustado');
+        onChanged?.();
+      } catch (err: any) {
+        toast.error(err?.data?.message || err?.message || 'No se pudo mover el turno');
+      }
+    };
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onUp);
+    return () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('pointercancel', onUp);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [arrastre !== null, pxPerMin, snapStep, tz, tenantId]);
+
+  const arrastreSegs = useMemo(() => {
+    if (!arrastre || !arrastre.movido) return [];
+    let a = arrastre.a0, b = arrastre.b0;
+    if (arrastre.modo === 'mover') { a += arrastre.delta; b += arrastre.delta; }
+    else if (arrastre.modo === 'inicio') a += arrastre.delta;
+    else b += arrastre.delta;
+    return b > a ? segmentize(a, b, dayCount) : [];
+  }, [arrastre, dayCount]);
+
+  const arrastreStationIdx = arrastre ? (stationIndexById.get(arrastre.shift.stationId) ?? 0) : 0;
+
 
   const inputCls = 'cg-input cg-focus w-full px-3 py-2.5 text-sm';
 
@@ -569,7 +671,7 @@ export default function ScheduleTimeline({
                          `backdrop-filter` aquí multiplica el coste por cada
                          bloque de la rejilla. */
                       className={`absolute cursor-pointer overflow-hidden px-1.5 py-0.5 transition-all hover:brightness-110 ${isEngine ? 'border border-dashed' : 'border'} ${seg.first ? 'rounded-t-md' : ''} ${seg.last ? 'rounded-b-md' : ''}`}
-                      title={`${name} · ${timeLbl}${isEngine ? ' · generado por rotación' : ' · turno manual'} — clic: detalle · clic derecho: opciones`}
+                      title={`${name} · ${timeLbl}${isEngine ? ' · generado por rotación' : ' · turno manual'} — arrastra para mover · tira de los bordes para ajustar · clic derecho: opciones`}
                       /* ── ARRASTRE RETIRADO (2026-08-30) ────────────────────
                          Se probó en producción y hacía DOS cosas mal a la vez:
                            · el `stopPropagation` iba sobre el evento de PUNTERO
@@ -584,8 +686,17 @@ export default function ScheduleTimeline({
                          detalle, clic derecho edita— hasta que esté bien hecho
                          y con pruebas. Mejor sin gesto que con uno que mueve
                          turnos a horas que nadie pidió. */
+                      /* LOS DOS. `onMouseDown` impide que el lienzo empiece a
+                         DIBUJAR debajo (secuencia de ratón); `onPointerDown`
+                         arranca el arrastre (secuencia de puntero, la que
+                         también sirve para el dedo). Quitar el primero fue el
+                         fallo de la versión anterior. */
                       onMouseDown={e => { if (e.button === 0) e.stopPropagation(); }}
-                      onClick={() => setDetail(s)}
+                      onPointerDown={e => empezarArrastre(e, s, 'mover')}
+                      onClick={() => {
+                        if (suprimirClick.current) { suprimirClick.current = false; return; }
+                        setDetail(s);
+                      }}
                       onContextMenu={e => openBlockCtx(e, s)}
                       style={{
                         top: seg.top * pxPerMin,
@@ -595,11 +706,29 @@ export default function ScheduleTimeline({
                         backgroundColor: `color-mix(in oklab, ${color} ${isEngine ? 10 : 18}%, transparent)`,
                         borderColor: `color-mix(in oklab, ${color} 42%, transparent)`,
                         ...(seg.first ? { borderTop: `3px solid ${color}` } : {}),
-                        // El bloque que se está moviendo se apaga: lo que manda
-                        // es la vista previa que sigue al dedo.
+                        ...(arrastre?.movido && arrastre.shift.id === s.id ? { opacity: 0.25 } : null),
+                        touchAction: 'none',
                       }}
                     >
 
+                      {seg.first && (
+                        <div
+                          onPointerDown={e => empezarArrastre(e, s, 'inicio')}
+                          onMouseDown={e => { if (e.button === 0) e.stopPropagation(); }}
+                          className="absolute inset-x-0 top-0 h-2 cursor-ns-resize"
+                          style={{ touchAction: 'none' }}
+                          title="Ajustar la hora de entrada"
+                        />
+                      )}
+                      {seg.last && (
+                        <div
+                          onPointerDown={e => empezarArrastre(e, s, 'fin')}
+                          onMouseDown={e => { if (e.button === 0) e.stopPropagation(); }}
+                          className="absolute inset-x-0 bottom-0 h-2 cursor-ns-resize"
+                          style={{ touchAction: 'none' }}
+                          title="Ajustar la hora de salida"
+                        />
+                      )}
                       {seg.first && h > 20 && (
                         <span className="block truncate text-[9px] font-semibold" style={{ color: 'var(--ink)' }}>
                           {name.split(' ')[0]}
@@ -612,6 +741,27 @@ export default function ScheduleTimeline({
                   );
                 });
               })}
+
+              {/* Vista previa del bloque que se mueve o se estira */}
+              {arrastreSegs.map(seg => (
+                <div
+                  key={`arr-${seg.dayIdx}`}
+                  className={`pointer-events-none absolute border-2 ${seg.first ? 'rounded-t-md' : ''} ${seg.last ? 'rounded-b-md' : ''}`}
+                  style={{
+                    top: seg.top * pxPerMin,
+                    height: (seg.bottom - seg.top) * pxPerMin,
+                    left: seg.dayIdx * dayW + arrastreStationIdx * SUBCOL_W + 3,
+                    width: SUBCOL_W - 6,
+                    background: 'var(--brand-wash)', borderColor: 'var(--brand)',
+                  }}
+                >
+                  {seg.first && (
+                    <span className="block px-1 pt-0.5 text-[9px] font-bold tabular-nums" style={{ color: 'var(--brand-text)' }}>
+                      {minLabel(seg.top)}
+                    </span>
+                  )}
+                </div>
+              ))}
 
               {/* Draw preview (in the anchor's estación sub-column) */}
               {draftSegs.map(seg => (

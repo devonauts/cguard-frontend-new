@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   fmtDate, addDays, tzOffsetMs, dateToWall, wallToDate, minLabel, segmentize,
+  minutosArrastrados,
 } from './scheduleTime';
 
 /**
@@ -130,5 +131,45 @@ describe('segmentize · el turno que cruza la medianoche', () => {
     const s = segmentize(19 * 60, 2 * 1440 + 60, 7);
     expect(s.map((x) => x.first)).toEqual([true, false, false]);
     expect(s.map((x) => x.last)).toEqual([false, false, true]);
+  });
+});
+
+describe('minutosArrastrados · el desplazamiento de un arrastre', () => {
+  // 36 px por hora = 0,6 px por minuto, que es lo que usa la línea de tiempo.
+  const PX = 36 / 60;
+  const PASO = 30;
+
+  it('ARRASTRAR HACIA ABAJO RETRASA el turno (el signo que salió al revés)', () => {
+    // Ésta es la prueba que faltaba: en producción, arrastrar 72 px hacia abajo
+    // ADELANTÓ el turno 3,5 h. Hacia abajo es más tarde. Siempre.
+    expect(minutosArrastrados(400, 472, PX, PASO)).toBe(120);
+    expect(minutosArrastrados(400, 472, PX, PASO)).toBeGreaterThan(0);
+  });
+
+  it('arrastrar hacia arriba adelanta', () => {
+    expect(minutosArrastrados(472, 400, PX, PASO)).toBe(-120);
+  });
+
+  it('redondea al paso de la rejilla, sin quedarse a medias', () => {
+    expect(minutosArrastrados(400, 400 + 5 * PX, PX, PASO)).toBe(0);    // 5 min → nada
+    expect(minutosArrastrados(400, 400 + 20 * PX, PX, PASO)).toBe(30);  // 20 min → 30
+    expect(minutosArrastrados(400, 400 + 44 * PX, PX, PASO)).toBe(30);  // 44 min → 30
+    expect(minutosArrastrados(400, 400 + 46 * PX, PX, PASO)).toBe(60);  // 46 min → 60
+  });
+
+  it('sin movimiento no hay desplazamiento', () => {
+    expect(minutosArrastrados(400, 400, PX, PASO)).toBe(0);
+  });
+
+  it('NO se acota a un día: un turno puede moverse más allá de la medianoche', () => {
+    // `pointTo` acotaba a [0,1440] y por eso no servía para un desplazamiento.
+    // Redondea al MÁS CERCANO, no trunca: 2000 → 2010, no 1980.
+    expect(minutosArrastrados(0, 2000 * PX, PX, PASO)).toBe(2010);
+    expect(minutosArrastrados(2000 * PX, 0, PX, PASO)).toBeLessThan(-1400);
+  });
+
+  it('no revienta con valores imposibles', () => {
+    expect(minutosArrastrados(400, 500, 0, PASO)).toBe(0);
+    expect(minutosArrastrados(400, 500, PX, 0)).toBe(0);
   });
 });
