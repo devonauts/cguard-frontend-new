@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AlertTriangle, Clock, Plus, Shield, Sun, X } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -50,6 +50,7 @@ export type BlockSel = {
 export type MonthGridHandlers = {
   configureStation: (station: Station) => void;
   addPosition: (stationId: string) => void;
+  editPosition: (station: Station, pos: StationPosition) => void;
   deletePosition: (stationId: string, positionId: string) => void;
   openAssignForm: (stationId: string, positionId: string, dateStr?: string) => void;
   removeAssignment: (assignmentId: string) => void;
@@ -81,7 +82,23 @@ function dnCode(
   scheduleType: string | null | undefined,
   posStartTime: string | null | undefined,
   status: 'day' | 'night',
+  /**
+   * ¿Los fijos de este puesto tienen HORAS DISTINTAS entre sí? Entonces cada uno
+   * es dueño de su mitad y la letra sale de SU horario, no de la fase.
+   *
+   * Es la misma regla que el detector de huecos del backend (`hoursDecideHalf`
+   * en shiftGenerationService): un puesto de 24 h con Fijo 1 07:00–19:00 y
+   * Fijo 2 19:00–07:00 son un diurno fijo y un nocturno fijo, no dos que se
+   * turnan. Sin esto la rejilla pintaba «D» al de la noche —la rotación sin
+   * noches sólo sabe decir 'day'— y el horario dejaba de coincidir con lo que
+   * el motor genera de verdad.
+   */
+  hoursDecideHalf?: boolean,
 ): 'D' | 'N' {
+  if (hoursDecideHalf) {
+    const hp = parseInt(String(posStartTime || '').split(':')[0], 10);
+    if (!Number.isNaN(hp)) return hp >= 18 || hp < 6 ? 'N' : 'D';
+  }
   if (scheduleType === '24h') return status === 'night' ? 'N' : 'D';
   if (scheduleType === '12h-night') return 'N';
   if (scheduleType === '12h-day') return 'D';
@@ -128,6 +145,13 @@ function MonthStationBlockInner({
 }: MonthStationBlockProps) {
   const { t } = useTranslation();
   const hasPositions = stationPositions.length > 0;
+
+  /* Horas distintas entre los fijos ⇒ cada fila es dueña de su mitad (diurno
+     fijo / nocturno fijo). Iguales ⇒ se turnan por fase, como siempre. */
+  const horasDecidenMitad = useMemo(
+    () => new Set(stationPositions.filter(p => p.type === 'fijo').map(p => String(p.startTime || '07:00'))).size > 1,
+    [stationPositions],
+  );
 
   /* El anillo de la selección va por CLASE y no por `style` porque la celda ya
      usa `style` para su propio tinte, y un `background` en línea le ganaría
@@ -285,10 +309,12 @@ function MonthStationBlockInner({
                 );
               }
 
-              const code = dnCode(station.scheduleType, pos.startTime, workStatus as 'day' | 'night');
+              const code = dnCode(station.scheduleType, pos.startTime, workStatus as 'day' | 'night', horasDecidenMitad);
               // El color sale del MISMO mapa que la leyenda; el 24 h se pinta con
-              // su propio código, que ya es el más denso de la rejilla.
-              const is24h = station.scheduleType === '24h';
+              // su propio código, que ya es el más denso de la rejilla. Un puesto
+              // partido en dos mitades NO es un 24 h para quien lo trabaja: son
+              // 12 h: la píldora '24' ahí mentiría sobre la jornada.
+              const is24h = station.scheduleType === '24h' && !horasDecidenMitad;
               const pillCode = is24h && code !== 'N' ? '24' : code;
 
               return (
@@ -376,7 +402,7 @@ function MonthStationBlockInner({
               <button
                 onClick={() => h.addPosition(station.id)}
                 className="cg-btn-ghost cg-focus rounded p-1 transition-colors"
-                title={t("ui.Schedule.agregarPosicionSacafranco", "Agregar posición sacafranco")}
+                title="Agregar un puesto a esta estación (fijo o sacafranco)"
               >
                 <Plus size={14} />
               </button>
@@ -407,14 +433,21 @@ function MonthStationBlockInner({
                 <Icon size={12} />
               </div>
               <div className="min-w-0 flex-1">
-                <div className="truncate text-xs font-semibold">{pos.name}</div>
+                <button
+                  type="button"
+                  onClick={() => h.editPosition(station, pos)}
+                  className="cg-focus block max-w-full truncate text-left text-xs font-semibold hover:underline"
+                  title="Editar el puesto (nombre, horas, plazas) sin rehacer la estación"
+                >
+                  {pos.name}
+                </button>
                 <div className="text-[10px] tabular-nums" style={{ color: 'var(--ink-soft)' }}>
                   {(() => {
                     // Real hours come from the POSITION (custom blocks carry
                     // their own window; start==end wraps the full day).
                     // A 24h STATION is covered by two fijos doing 12h each,
                     // swapping day/night — label the fijo, not the station.
-                    if (station.scheduleType === '24h') return 'Turnos de 12h · D/N rotativo';
+                    if (station.scheduleType === '24h' && !horasDecidenMitad) return 'Turnos de 12h · D/N rotativo';
                     const st5 = (pos.startTime || '').slice(0, 5);
                     const en5 = (pos.endTime || '').slice(0, 5);
                     if (st5 && en5) return st5 === en5 ? `${st5} → ${en5} · 24h` : `${st5} – ${en5}`;

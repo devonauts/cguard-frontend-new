@@ -55,19 +55,36 @@ export default function RotationStyleSelect({
     return () => { alive = false; };
   }, [tenantId]);
 
-  // Patterns valid for this horario.
+  /**
+   * TODOS los patrones, con los propios del horario PRIMERO.
+   *
+   * Antes esto era un `.filter()`: en un puesto de 24 h sólo se veían los
+   * patrones con noches. Eso cerraba una operación que el motor SÍ sabe hacer
+   * —un diurno fijo y un nocturno fijo en el mismo puesto, cada uno con sus
+   * horas, con un patrón SIN noches— porque el detector de huecos del backend
+   * decide la mitad por las horas del puesto cuando los fijos las tienen
+   * distintas (`hoursDecideHalf`). El filtro escondía la mitad del motor.
+   *
+   * Se ordena en vez de esconder: lo habitual arriba, lo demás disponible.
+   */
+  const encaja = (s: RotationStyle) => (is24h ? (s.nightShifts || 0) > 0 : (s.nightShifts || 0) === 0);
   const options = useMemo(
-    () => styles.filter((s) => (is24h ? (s.nightShifts || 0) > 0 : (s.nightShifts || 0) === 0)),
+    () => [...styles].sort((a, b) => Number(encaja(b)) - Number(encaja(a))),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [styles, is24h],
   );
+  const recomendados = useMemo(() => options.filter(encaja), [options]);
 
   // Auto-pick a sensible default when nothing valid is selected for this horario.
   useEffect(() => {
     if (!options.length) return;
     if (value && options.some((o) => o.id === value)) return;
+    // El defecto sigue siendo el de siempre: quien no toque nada no nota el
+    // cambio. Lo que se abrió es el catálogo, no el valor por defecto.
+    const base = recomendados.length ? recomendados : options;
     const preferred = is24h
-      ? (options.find((o) => o.name === '4-4-2') || options[0])
-      : (options.find((o) => o.name === '8-2') || options.find((o) => o.name === '5-2') || options[0]);
+      ? (base.find((o) => o.name === '4-4-2') || base[0])
+      : (base.find((o) => o.name === '8-2') || base.find((o) => o.name === '5-2') || base[0]);
     if (preferred) onChange(preferred.id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [options, is24h]);
@@ -89,7 +106,10 @@ export default function RotationStyleSelect({
   };
 
   const createCustom = async () => {
-    const work = Math.max(1, parseInt(cWork) || 0);
+    // En un 24 h los dos campos pueden bajar a 0 —un patrón sólo-noches o
+    // sólo-días es legítimo y el backend lo guarda tal cual—, siempre que entre
+    // los dos sumen al menos un día de trabajo.
+    const work = is24h ? Math.max(0, parseInt(cWork) || 0) : Math.max(1, parseInt(cWork) || 0);
     // CERO DESCANSOS ES VÁLIDO: hay puestos que se cubren todos los días con la
     // misma persona. El backend ya lo guardaba tal cual («an explicit 0 must
     // persist as 0 — e.g. a no-rest pattern»); era este `Math.max(1, …)` —y el
@@ -97,7 +117,11 @@ export default function RotationStyleSelect({
     // siguen con mínimo 1: un ciclo de 0 días no es un patrón, es una división
     // por cero en `getRotationStatus`.
     const rest = Math.max(0, parseInt(cRest) || 0);
-    const night = is24h ? Math.max(1, parseInt(cNight) || 0) : 0;
+    const night = is24h ? Math.max(0, parseInt(cNight) || 0) : 0;
+    if (work + night < 1) {
+      toast.error('El patrón necesita al menos un día de trabajo.');
+      return;
+    }
     const name = is24h ? `${work}-${night}-${rest}` : `${work}-${rest}`;
     setCreating(true);
     try {
@@ -136,7 +160,19 @@ export default function RotationStyleSelect({
               onClick={() => onChange(s.id)}
               className={`rounded-xl border px-3 py-2 text-left transition-all ${value === s.id ? 'border-primary bg-primary/10' : 'border-border/40 hover:border-primary/40'}`}
             >
-              <div className="text-xs font-semibold text-foreground">{s.name}</div>
+              <div className="flex items-center gap-1">
+                <span className="text-xs font-semibold text-foreground">{s.name}</span>
+                {!encaja(s) && (
+                  <span
+                    className="rounded px-1 text-[8px] font-bold uppercase text-muted-foreground"
+                    title={is24h
+                      ? 'Sin noches: cada fijo se queda en SU horario. Úsalo con un Fijo diurno y un Fijo nocturno con horas distintas.'
+                      : 'Con noches: pensado para puestos de 24 h que rotan día/noche.'}
+                  >
+                    {is24h ? 'sin noches' : 'con noches'}
+                  </span>
+                )}
+              </div>
               <div className="text-[10px] text-muted-foreground">{describe(s)}</div>
             </button>
           ))}
@@ -148,12 +184,12 @@ export default function RotationStyleSelect({
         <div className="mt-1 flex flex-wrap items-end gap-2 rounded-xl border border-border/40 bg-muted/10 p-3">
           <div>
             <label className="block text-[10px] font-medium text-muted-foreground mb-1 uppercase">{is24h ? t('ui.RotationStyleSelect.dias', 'Días') : t('ui.RotationStyleSelect.trabaja', 'Trabaja')}</label>
-            <input type="number" min={1} max={30} value={cWork} onChange={(e) => setCWork(e.target.value)} className="w-20 rounded-lg border border-border/40 bg-background px-2 py-1.5 text-sm font-mono outline-none focus:border-primary" />
+            <input type="number" min={is24h ? 0 : 1} max={30} value={cWork} onChange={(e) => setCWork(e.target.value)} className="w-20 rounded-lg border border-border/40 bg-background px-2 py-1.5 text-sm font-mono outline-none focus:border-primary" />
           </div>
           {is24h && (
             <div>
               <label className="block text-[10px] font-medium text-muted-foreground mb-1 uppercase">Noches</label>
-              <input type="number" min={1} max={30} value={cNight} onChange={(e) => setCNight(e.target.value)} className="w-20 rounded-lg border border-border/40 bg-background px-2 py-1.5 text-sm font-mono outline-none focus:border-primary" />
+              <input type="number" min={0} max={30} value={cNight} onChange={(e) => setCNight(e.target.value)} className="w-20 rounded-lg border border-border/40 bg-background px-2 py-1.5 text-sm font-mono outline-none focus:border-primary" />
             </div>
           )}
           <div>

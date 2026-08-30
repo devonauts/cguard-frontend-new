@@ -1388,15 +1388,73 @@ export default function Schedule() {
     }
   };
 
-  const addPosition = async (stationId: string) => {
+  /**
+   * ── EDITAR UN PUESTO SIN DESTRUIRLO ──────────────────────────────────────
+   * Hasta ahora la única forma de cambiarle las horas a un puesto era volver a
+   * pasar por «Reconfigurar», que llama a `auto-positions` — y eso BORRA las
+   * posiciones, las asignaciones y los turnos de la estación para rehacerlos.
+   * Cambiar un 07:00 costaba el horario entero.
+   *
+   * El backend ya tenía la puerta buena abierta y nadie la usaba:
+   * `PUT /station/:id/positions/:positionId` cambia nombre/tipo/horas/plazas y
+   * llama a `regenerateStationShiftsSafe`, que rehace los turnos futuros desde
+   * las horas nuevas SIN tocar a quién está asignado. El mismo formulario crea
+   * (POST) cuando no hay `positionId`.
+   */
+  const [posEditor, setPosEditor] = useState<{
+    stationId: string; positionId?: string; stationName: string;
+    name: string; type: string; startTime: string; endTime: string; guardsNeeded: string;
+  } | null>(null);
+  const [posSaving, setPosSaving] = useState(false);
+
+  const addPosition = (stationId: string) => {
+    const st = stationsById.get(stationId);
+    setPosEditor({
+      stationId,
+      stationName: st ? stationLabel(st) : '',
+      name: 'Sacafranco', type: 'sacafranco',
+      startTime: '07:00', endTime: '19:00', guardsNeeded: '1',
+    });
+  };
+
+  const editPosition = (station: Station, pos: StationPosition) => {
+    setPosEditor({
+      stationId: station.id,
+      positionId: pos.id,
+      stationName: stationLabel(station),
+      name: pos.name || '',
+      type: pos.type || 'fijo',
+      startTime: (pos.startTime || '07:00').slice(0, 5),
+      endTime: (pos.endTime || '19:00').slice(0, 5),
+      guardsNeeded: String((pos as any).guardsNeeded ?? 1),
+    });
+  };
+
+  const savePosition = async () => {
+    if (!posEditor) return;
+    if (!posEditor.name.trim()) { toast.error('Ponle un nombre al puesto'); return; }
+    setPosSaving(true);
     try {
-      await ApiService.post(`/tenant/${tenantId}/station/${stationId}/positions`, {
-        data: { name: 'Sacafranco', type: 'sacafranco', startTime: '07:00', endTime: '19:00', guardsNeeded: 1, sortOrder: 99 },
-      });
-      toast.success(t('ui.Schedule.posicionSacafrancoAgregada'));
-      fetchAll();
+      const data = {
+        name: posEditor.name.trim(),
+        type: posEditor.type,
+        startTime: posEditor.startTime,
+        endTime: posEditor.endTime,
+        guardsNeeded: Number(posEditor.guardsNeeded) || 1,
+      };
+      if (posEditor.positionId) {
+        await ApiService.put(`/tenant/${tenantId}/station/${posEditor.stationId}/positions/${posEditor.positionId}`, { data });
+        toast.success('Puesto actualizado — los turnos futuros se rehicieron con las horas nuevas');
+      } else {
+        await ApiService.post(`/tenant/${tenantId}/station/${posEditor.stationId}/positions`, { data: { ...data, sortOrder: 99 } });
+        toast.success('Puesto agregado');
+      }
+      setPosEditor(null);
+      fetchAll({ silent: true });
     } catch (e: any) {
-      toast.error(e?.message || 'Error');
+      toast.error(e?.data?.message || e?.message || 'No se pudo guardar el puesto');
+    } finally {
+      setPosSaving(false);
     }
   };
 
@@ -1896,7 +1954,7 @@ export default function Schedule() {
 
   // ─── Keyboard (spreadsheet mode) ─────────────────────────────────────────
 
-  const modalOpen = showAssignForm || !!configStation || !!overrideTarget || !!proposalData || !!sfCover;
+  const modalOpen = showAssignForm || !!configStation || !!overrideTarget || !!proposalData || !!sfCover || !!posEditor;
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -2071,7 +2129,7 @@ export default function Schedule() {
      desestructura, que congelaría la versión vieja y con ella el estado viejo). */
   const handlersRef = useRef<MonthGridHandlers>({} as MonthGridHandlers);
   Object.assign(handlersRef.current, {
-    configureStation, addPosition, deletePosition, openAssignForm,
+    configureStation, addPosition, editPosition, deletePosition, openAssignForm,
     removeAssignment, onGuardDragStart, handleDrop, openCellCtx,
     setOverrideTarget, startCellSelect, hoverCellSelect, isWorkDay,
   });
@@ -2805,6 +2863,101 @@ export default function Schedule() {
         onClose={() => setTransferTarget(null)}
         onDone={() => fetchAll({ silent: true })}
       />
+
+      {/* ─── Editor de un puesto (nombre · tipo · horas · plazas) ───────────── */}
+      {posEditor && (() => {
+        const toMin = (x: string) => { const [h, mm] = x.split(':').map(n => parseInt(n, 10) || 0); return (h % 24) * 60 + (mm % 60); };
+        const sMin = toMin(posEditor.startTime);
+        const eMin = toMin(posEditor.endTime);
+        const durH = ((eMin <= sMin ? eMin + 1440 : eMin) - sMin) / 60;
+        const set = (patch: Partial<NonNullable<typeof posEditor>>) => setPosEditor(m => m ? { ...m, ...patch } : m);
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'oklch(0 0 0 / 0.55)' }} onClick={() => setPosEditor(null)}>
+            <div className="glass-raised mx-4 w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+              <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--hairline)' }}>
+                <div>
+                  <h4 className="text-sm font-semibold">{posEditor.positionId ? 'Editar puesto' : 'Agregar puesto'}</h4>
+                  <p className="mt-0.5 text-[11px]" style={{ color: 'var(--ink-soft)' }}>{posEditor.stationName}</p>
+                </div>
+                <button onClick={() => setPosEditor(null)} className="cg-btn-ghost cg-focus rounded-lg p-1.5"><X size={15} /></button>
+              </div>
+              <div className="space-y-4 p-5">
+                <div>
+                  <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>Nombre</label>
+                  <input
+                    value={posEditor.name}
+                    onChange={e => set({ name: e.target.value })}
+                    className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:border-primary"
+                    style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>Tipo</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { v: 'fijo', label: 'Fijo', sub: 'trabaja su rotación' },
+                      { v: 'sacafranco', label: 'Sacafranco', sub: 'cubre descansos' },
+                    ].map(o => (
+                      <button
+                        key={o.v}
+                        onClick={() => set({ type: o.v })}
+                        className={`cg-focus rounded-xl border px-2 py-2 text-center transition-all ${posEditor.type === o.v ? 'glass-brand' : 'glass-flat'}`}
+                      >
+                        <div className="text-xs font-semibold">{o.label}</div>
+                        <div className="text-[10px]" style={{ color: 'var(--ink-soft)' }}>{o.sub}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                {/* Atajos: las tres formas que cubren casi todo. Las horas
+                    siguen siendo libres debajo. */}
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { label: 'Diurno', sub: '07–19', s: '07:00', e: '19:00' },
+                    { label: 'Nocturno', sub: '19–07', s: '19:00', e: '07:00' },
+                    { label: '24 horas', sub: '07→07', s: '07:00', e: '07:00' },
+                  ].map(q => {
+                    const active = posEditor.startTime === q.s && posEditor.endTime === q.e;
+                    return (
+                      <button key={q.label} onClick={() => set({ startTime: q.s, endTime: q.e })} className={`cg-focus rounded-xl border px-2 py-2 text-center transition-all ${active ? 'glass-brand' : 'glass-flat'}`}>
+                        <div className="text-xs font-semibold">{q.label}</div>
+                        <div className="text-[10px] tabular-nums" style={{ color: 'var(--ink-soft)' }}>{q.sub}</div>
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>Entra</label>
+                    <input type="time" value={posEditor.startTime} onChange={e => set({ startTime: e.target.value })} className="w-full rounded-lg border px-2 py-2 text-sm tabular-nums outline-none focus:border-primary" style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }} />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>Sale</label>
+                    <input type="time" value={posEditor.endTime} onChange={e => set({ endTime: e.target.value })} className="w-full rounded-lg border px-2 py-2 text-sm tabular-nums outline-none focus:border-primary" style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }} />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>Plazas</label>
+                    <input type="number" min={1} max={20} value={posEditor.guardsNeeded} onChange={e => set({ guardsNeeded: e.target.value })} className="w-full rounded-lg border px-2 py-2 text-sm tabular-nums outline-none focus:border-primary" style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }} />
+                  </div>
+                </div>
+                <div className="rounded-xl px-3 py-2" style={toneCard('ok', 8, 26)}>
+                  <p className="text-[11px]">
+                    Jornada de <b>{durH % 1 === 0 ? durH : durH.toFixed(1)} h</b>
+                    {eMin <= sMin ? ' (termina al día siguiente)' : ''}.
+                    {posEditor.positionId ? ' Los turnos futuros se rehacen con estas horas; las asignaciones no se tocan.' : ''}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center justify-end gap-2 px-5 py-3" style={{ borderTop: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>
+                <button onClick={() => setPosEditor(null)} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold">Cancelar</button>
+                <button onClick={savePosition} disabled={posSaving} className="cg-btn-brand cg-focus rounded-full px-5 py-2 text-sm font-semibold transition-all disabled:opacity-40">
+                  {posSaving ? <Loader2 size={14} className="animate-spin" /> : (posEditor.positionId ? 'Guardar' : 'Agregar')}
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ─── SF coverage modal (drop an SF día on a puesto → shape the turno) ── */}
       {sfCover && (() => {
