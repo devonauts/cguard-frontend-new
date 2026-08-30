@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { localeActual } from '@/lib/localeActual';
 import { nombreDeVigilante } from '@/lib/guardName';
 import { stationLabel } from '@/lib/stationName';
@@ -34,6 +35,7 @@ export type AgendaViewProps = {
 function AgendaViewInner({
   days, shifts, stationsById, guardColorMap, todayStr, dateStrOf, timeOf, onPickShift,
 }: AgendaViewProps) {
+  const { t } = useTranslation();
   const locale = localeActual();
 
   const porDia = useMemo(() => {
@@ -62,7 +64,7 @@ function AgendaViewInner({
       <div className="flex flex-1 items-center justify-center rounded-2xl p-8 text-center"
         style={{ border: '1px solid var(--hairline)' }}>
         <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
-          No hay turnos en este rango.
+          {t('ui.AgendaView.sinTurnos')}
         </p>
       </div>
     );
@@ -88,7 +90,7 @@ function AgendaViewInner({
                   .replace(/^./, (c) => c.toUpperCase())}
               </span>
               <span className="text-[11px] tabular-nums" style={{ color: 'var(--ink-faint)' }}>
-                {lista.length} turno{lista.length === 1 ? '' : 's'}
+                {lista.length} {lista.length === 1 ? t('ui.AgendaView.turno') : t('ui.AgendaView.turnos')}
               </span>
             </div>
 
@@ -114,7 +116,7 @@ function AgendaViewInner({
                       {nombreDeVigilante(s.guard, 'Vigilante')}
                       {aprendiz && (
                         <span className="ml-1.5 text-[10px] font-semibold" style={{ color: 'var(--ink-faint)' }}>
-                          · aprendiz
+                          · {t('ui.AgendaView.aprendiz')}
                         </span>
                       )}
                     </span>

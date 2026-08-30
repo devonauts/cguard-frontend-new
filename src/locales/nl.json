@@ -11147,6 +11147,32 @@
     },
     "ImportarHojaDeVida": {
       "revisalosAntesDeGuardar": "Controleer ze voordat u opslaat."
+    },
+    "AgendaView": {
+      "sinTurnos": "Geen diensten in dit bereik.",
+      "turno": "dienst",
+      "turnos": "diensten",
+      "aprendiz": "leerling"
+    },
+    "MonthCalendar": {
+      "masDias": "+{{n}} meer",
+      "aprendiz": "leerling"
+    },
+    "StaffSchedule": {
+      "oficina": "Kantoor",
+      "cargando": "Laden…",
+      "personas": "{{n}} perso(o)n(en) · weekrooster",
+      "sinJornada": "Geen rooster",
+      "definirJornada": "Rooster instellen",
+      "tituloModal": "Kantoorrooster",
+      "diasQueTrabaja": "Werkdagen",
+      "entra": "Begin",
+      "sale": "Einde",
+      "notaNovedades": "Vakantie en verlof worden als melding vastgelegd, net als bij een beveiliger, en gaan vóór het rooster.",
+      "cancelar": "Annuleren",
+      "guardar": "Rooster opslaan",
+      "guardada": "Rooster opgeslagen",
+      "errorGuardar": "Rooster kon niet worden opgeslagen"
     }
   },
   "visitantes": {

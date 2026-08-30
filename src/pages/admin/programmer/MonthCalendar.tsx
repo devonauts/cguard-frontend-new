@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { localeActual } from '@/lib/localeActual';
 import { nombreDeVigilante } from '@/lib/guardName';
 import { stationShort } from '@/lib/stationName';
@@ -62,6 +63,7 @@ function MonthCalendarInner({
   monthAnchor, shifts, stationsById, guardColorMap, todayStr,
   dateStrOf, timeOf, onPickDay, onPickShift,
 }: MonthCalendarProps) {
+  const { t } = useTranslation();
   const locale = localeActual();
   const estrecha = usePantallaEstrecha();
   const tope = estrecha ? MAX_CHIPS_MOVIL : MAX_CHIPS;
@@ -186,7 +188,7 @@ function MonthCalendarInner({
                         // cubre la plaza (ver `lib/shiftStatus`).
                         ...(aprendiz ? { opacity: 0.6, borderStyle: 'dashed' } : null),
                       }}
-                      title={`${quien}${est ? ` · ${est.stationName}` : ''} · ${timeOf(s.startTime)}–${timeOf(s.endTime)}${aprendiz ? ' · aprendiz' : ''}`}
+                      title={`${quien}${est ? ` · ${est.stationName}` : ''} · ${timeOf(s.startTime)}–${timeOf(s.endTime)}${aprendiz ? ` · ${t('ui.MonthCalendar.aprendiz')}` : ''}`}
                     >
                       <span className="tabular-nums" style={{ color: 'var(--ink-faint)' }}>{timeOf(s.startTime)}</span>
                       <span className="truncate font-medium">{quien.split(' ')[0]}</span>
@@ -201,7 +203,7 @@ function MonthCalendarInner({
                     className="cg-focus shrink-0 rounded px-1 text-left text-[10px] font-semibold hover:underline"
                     style={{ color: 'var(--ink-soft)' }}
                   >
-                    +{resto} más
+                    {t('ui.MonthCalendar.masDias', { n: resto })}
                   </button>
                 )}
               </div>

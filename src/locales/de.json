@@ -11147,6 +11147,32 @@
     },
     "ImportarHojaDeVida": {
       "revisalosAntesDeGuardar": "Prüfen Sie sie, bevor Sie speichern."
+    },
+    "AgendaView": {
+      "sinTurnos": "Keine Schichten in diesem Zeitraum.",
+      "turno": "Schicht",
+      "turnos": "Schichten",
+      "aprendiz": "Auszubildender"
+    },
+    "MonthCalendar": {
+      "masDias": "+{{n}} weitere",
+      "aprendiz": "Auszubildender"
+    },
+    "StaffSchedule": {
+      "oficina": "Büro",
+      "cargando": "Wird geladen…",
+      "personas": "{{n}} Person(en) · Wochenplan",
+      "sinJornada": "Kein Dienstplan",
+      "definirJornada": "Dienstplan festlegen",
+      "tituloModal": "Bürodienstplan",
+      "diasQueTrabaja": "Arbeitstage",
+      "entra": "Beginn",
+      "sale": "Ende",
+      "notaNovedades": "Urlaub und Freistellungen werden wie bei einer Wachkraft als Ereignis erfasst und haben Vorrang vor dem Dienstplan.",
+      "cancelar": "Abbrechen",
+      "guardar": "Dienstplan speichern",
+      "guardada": "Dienstplan gespeichert",
+      "errorGuardar": "Dienstplan konnte nicht gespeichert werden"
     }
   },
   "visitantes": {

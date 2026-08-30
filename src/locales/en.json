@@ -10643,6 +10643,32 @@
     },
     "ImportarHojaDeVida": {
       "revisalosAntesDeGuardar": "Check them before saving."
+    },
+    "AgendaView": {
+      "sinTurnos": "No shifts in this range.",
+      "turno": "shift",
+      "turnos": "shifts",
+      "aprendiz": "trainee"
+    },
+    "MonthCalendar": {
+      "masDias": "+{{n}} more",
+      "aprendiz": "trainee"
+    },
+    "StaffSchedule": {
+      "oficina": "Office",
+      "cargando": "Loading…",
+      "personas": "{{n}} person(s) · weekly schedule",
+      "sinJornada": "No schedule",
+      "definirJornada": "Set their schedule",
+      "tituloModal": "Office schedule",
+      "diasQueTrabaja": "Working days",
+      "entra": "Start",
+      "sale": "End",
+      "notaNovedades": "Holidays and leave are recorded as an exception, just like for a guard, and take precedence over the schedule.",
+      "cancelar": "Cancel",
+      "guardar": "Save schedule",
+      "guardada": "Schedule saved",
+      "errorGuardar": "Could not save the schedule"
     }
   },
   "map": {

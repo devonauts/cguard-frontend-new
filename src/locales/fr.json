@@ -11147,6 +11147,32 @@
     },
     "ImportarHojaDeVida": {
       "revisalosAntesDeGuardar": "Vérifiez-les avant d'enregistrer."
+    },
+    "AgendaView": {
+      "sinTurnos": "Aucun poste sur cette période.",
+      "turno": "poste",
+      "turnos": "postes",
+      "aprendiz": "stagiaire"
+    },
+    "MonthCalendar": {
+      "masDias": "+{{n}} de plus",
+      "aprendiz": "stagiaire"
+    },
+    "StaffSchedule": {
+      "oficina": "Bureau",
+      "cargando": "Chargement…",
+      "personas": "{{n}} personne(s) · horaire hebdomadaire",
+      "sinJornada": "Sans horaire",
+      "definirJornada": "Définir son horaire",
+      "tituloModal": "Horaire de bureau",
+      "diasQueTrabaja": "Jours travaillés",
+      "entra": "Début",
+      "sale": "Fin",
+      "notaNovedades": "Les congés et permissions sont enregistrés comme un événement, comme pour un agent, et priment sur l’horaire.",
+      "cancelar": "Annuler",
+      "guardar": "Enregistrer l’horaire",
+      "guardada": "Horaire enregistré",
+      "errorGuardar": "Impossible d’enregistrer l’horaire"
     }
   },
   "visitantes": {

@@ -11147,6 +11147,32 @@
     },
     "ImportarHojaDeVida": {
       "revisalosAntesDeGuardar": "Controllali prima di salvare."
+    },
+    "AgendaView": {
+      "sinTurnos": "Nessun turno in questo intervallo.",
+      "turno": "turno",
+      "turnos": "turni",
+      "aprendiz": "apprendista"
+    },
+    "MonthCalendar": {
+      "masDias": "+{{n}} altri",
+      "aprendiz": "apprendista"
+    },
+    "StaffSchedule": {
+      "oficina": "Ufficio",
+      "cargando": "Caricamento…",
+      "personas": "{{n}} persona/e · orario settimanale",
+      "sinJornada": "Senza orario",
+      "definirJornada": "Definire il suo orario",
+      "tituloModal": "Orario di ufficio",
+      "diasQueTrabaja": "Giorni lavorativi",
+      "entra": "Inizio",
+      "sale": "Fine",
+      "notaNovedades": "Ferie e permessi si registrano come segnalazione, come per una guardia, e prevalgono sull’orario.",
+      "cancelar": "Annulla",
+      "guardar": "Salva orario",
+      "guardada": "Orario salvato",
+      "errorGuardar": "Impossibile salvare l’orario"
     }
   },
   "visitantes": {

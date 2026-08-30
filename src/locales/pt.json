@@ -10643,6 +10643,32 @@
     },
     "ImportarHojaDeVida": {
       "revisalosAntesDeGuardar": "Revise antes de salvar."
+    },
+    "AgendaView": {
+      "sinTurnos": "Não há turnos neste intervalo.",
+      "turno": "turno",
+      "turnos": "turnos",
+      "aprendiz": "aprendiz"
+    },
+    "MonthCalendar": {
+      "masDias": "+{{n}} mais",
+      "aprendiz": "aprendiz"
+    },
+    "StaffSchedule": {
+      "oficina": "Escritório",
+      "cargando": "Carregando…",
+      "personas": "{{n}} pessoa(s) · jornada semanal",
+      "sinJornada": "Sem jornada",
+      "definirJornada": "Definir a jornada",
+      "tituloModal": "Jornada de escritório",
+      "diasQueTrabaja": "Dias que trabalha",
+      "entra": "Entra",
+      "sale": "Sai",
+      "notaNovedades": "Férias e licenças são registradas como novidade, igual a um vigilante, e prevalecem sobre a jornada.",
+      "cancelar": "Cancelar",
+      "guardar": "Guardar jornada",
+      "guardada": "Jornada guardada",
+      "errorGuardar": "Não foi possível guardar a jornada"
     }
   },
   "map": {

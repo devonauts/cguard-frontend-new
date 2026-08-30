@@ -1,4 +1,8 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import {
+  pad2, fmtDate, addDays, tzOffsetMs, dateToWall, wallToDate, minLabel, segmentize,
+  type Segment,
+} from './scheduleTime';
 import { useTranslation } from 'react-i18next';
 import { nombreDeVigilante } from "@/lib/guardName";
 import { Clock, Loader2, MapPin, Pencil, Trash2, User, X } from 'lucide-react';
@@ -40,65 +44,13 @@ interface Props {
 
 const DAY_MS = 86400000;
 const DAYS_ES = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-const pad2 = (n: number) => String(n).padStart(2, '0');
+/* La aritmética de tiempo vive en `scheduleTime.ts` — una sola copia y con
+   pruebas. Estaba duplicada aquí y en `Schedule.tsx`: dos versiones de la misma
+   matemática, ninguna probada, justo donde un error de una hora no se ve hasta
+   que un vigilante ficha. `dateToWall` y `wallToDate` se RE-EXPORTAN porque
+   media docena de archivos las importan de aquí desde siempre. */
 
-const fmtDate = (d: Date): string =>
-  `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
-
-const addDays = (d: Date, n: number): Date => {
-  const r = new Date(d);
-  r.setDate(r.getDate() + n);
-  return r;
-};
-
-/* Construir un `Intl.DateTimeFormat` cuesta caro (decenas de microsegundos) y
-   esto se llama UNA VEZ POR TURNO en dos memos de la rejilla del Mes: con 2.400
-   turnos eran ~5.000 construcciones (50-250 ms) en cada guardado. El formateador
-   sólo depende de la zona horaria, así que se cachea por zona. */
-const DTF_CACHE = new Map<string, Intl.DateTimeFormat>();
-const tzFormatter = (tz: string): Intl.DateTimeFormat => {
-  let f = DTF_CACHE.get(tz);
-  if (!f) {
-    f = new Intl.DateTimeFormat('en-US', {
-      timeZone: tz, hour12: false,
-      year: 'numeric', month: '2-digit', day: '2-digit',
-      hour: '2-digit', minute: '2-digit', second: '2-digit',
-    });
-    DTF_CACHE.set(tz, f);
-  }
-  return f;
-};
-
-/** Milliseconds to ADD to a UTC instant to get the tz's wall-clock. */
-function tzOffsetMs(date: Date, tz?: string): number {
-  if (!tz) return -date.getTimezoneOffset() * 60000;
-  try {
-    const dtf = tzFormatter(tz);
-    const p: Record<string, string> = {};
-    for (const { type, value } of dtf.formatToParts(date)) p[type] = value;
-    const asUTC = Date.UTC(+p.year, +p.month - 1, +p.day, p.hour === '24' ? 0 : +p.hour, +p.minute, +p.second);
-    return asUTC - date.getTime();
-  } catch {
-    return -date.getTimezoneOffset() * 60000;
-  }
-}
-
-/** Interpret a wall-clock (calendar day + minutes) IN the tenant tz → real instant. */
-export function wallToDate(y: number, mo: number, d: number, minutes: number, tz?: string): Date {
-  if (!tz) return new Date(y, mo - 1, d, 0, minutes);
-  const utcGuess = Date.UTC(y, mo - 1, d, 0, minutes);
-  // Two-pass offset correction (handles DST edges; trivial for fixed-offset zones).
-  let off = tzOffsetMs(new Date(utcGuess), tz);
-  off = tzOffsetMs(new Date(utcGuess - off), tz);
-  return new Date(utcGuess - off);
-}
-
-/** A real instant → tenant wall-clock {calendar day, minutes into the day}. */
-export function dateToWall(date: Date, tz?: string): { dateStr: string; minutes: number } {
-  if (!tz) return { dateStr: fmtDate(date), minutes: date.getHours() * 60 + date.getMinutes() };
-  const shifted = new Date(date.getTime() + tzOffsetMs(date, tz));
-  return { dateStr: shifted.toISOString().slice(0, 10), minutes: shifted.getUTCHours() * 60 + shifted.getUTCMinutes() };
-}
+export { wallToDate, dateToWall } from './scheduleTime';
 
 const wallStrToDate = (s: string, tz?: string): Date | null => {
   const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(s);
@@ -118,7 +70,7 @@ const addDaysToWallStr = (s: string, n: number): string => {
   return `${fmtDate(d)}T${m[4]}`;
 };
 
-const minLabel = (abs: number) => `${pad2(Math.floor((((abs % 1440) + 1440) % 1440) / 60))}:${pad2(abs % 60)}`;
+
 
 /** Middle-button (rueda) drag-to-pan for a scroll container. */
 export const startPan = (e: React.MouseEvent, el: HTMLElement | null) => {
@@ -139,29 +91,7 @@ export const startPan = (e: React.MouseEvent, el: HTMLElement | null) => {
   document.body.style.cursor = 'grabbing';
 };
 
-// A shift (or the draw preview) split into per-day segments.
-interface Segment {
-  dayIdx: number;
-  top: number;    // minutes into that day
-  bottom: number; // minutes into that day
-  first: boolean;
-  last: boolean;
-}
 
-const segmentize = (aAbs: number, bAbs: number, dayCount: number): Segment[] => {
-  const segs: Segment[] = [];
-  const a = Math.max(0, aAbs);
-  const b = Math.min(dayCount * 1440, bAbs);
-  if (b <= a) return segs;
-  for (let di = Math.floor(a / 1440); di * 1440 < b && di < dayCount; di++) {
-    const top = Math.max(a - di * 1440, 0);
-    const bottom = Math.min(b - di * 1440, 1440);
-    if (bottom <= top) continue;
-    segs.push({ dayIdx: di, top, bottom, first: segs.length === 0, last: false });
-  }
-  if (segs.length) segs[segs.length - 1].last = true;
-  return segs;
-};
 
 // ─── Component ──────────────────────────────────────────────────────────────
 

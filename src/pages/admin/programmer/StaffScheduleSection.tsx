@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Briefcase, ChevronDown, ChevronRight, Loader2, Pencil, X } from 'lucide-react';
 import { ApiService } from '@/services/api/apiService';
 import { toast } from 'sonner';
@@ -53,6 +54,7 @@ export default function StaffScheduleSection({
   gridCols: string;
   tintFor?: (day: Date, index: number) => string | undefined;
 }) {
+  const { t } = useTranslation();
   const visibleDays = monthDays.slice(colA, colB);
   const [abierta, setAbierta] = useState(true);
   const [filas, setFilas] = useState<Fila[] | null>(null);
@@ -96,11 +98,11 @@ export default function StaffScheduleSection({
       await ApiService.put(`/tenant/${tenantId()}/staff-schedule/${editar.userId}/pattern`, {
         data: { weekdays: editar.weekdays, startTime: editar.startTime, endTime: editar.endTime },
       });
-      toast.success('Jornada guardada');
+      toast.success(t('ui.StaffSchedule.guardada'));
       setEditar(null);
       cargar();
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || 'No se pudo guardar la jornada');
+      toast.error(e?.data?.message || e?.message || t('ui.StaffSchedule.errorGuardar'));
     } finally {
       setGuardando(false);
     }
@@ -108,7 +110,7 @@ export default function StaffScheduleSection({
 
   const resumen = (f: Fila): string => {
     const wd = f.pattern?.weekdays;
-    if (!Array.isArray(wd) || !wd.length) return 'Sin jornada';
+    if (!Array.isArray(wd) || !wd.length) return t('ui.StaffSchedule.sinJornada');
     const etiquetas = DIAS.filter(d => wd.includes(d.n)).map(d => d.label).join('');
     return `${etiquetas} · ${(f.pattern?.startTime || '').slice(0, 5)}–${(f.pattern?.endTime || '').slice(0, 5)}`;
   };
@@ -127,9 +129,9 @@ export default function StaffScheduleSection({
             <Briefcase size={12} />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="truncate text-sm font-semibold">Oficina</div>
+            <div className="truncate text-sm font-semibold">{t('ui.StaffSchedule.oficina')}</div>
             <div className="text-[10px]" style={{ color: 'var(--ink-soft)' }}>
-              {cargando ? 'Cargando…' : `${filas?.length || 0} persona(s) · jornada semanal`}
+              {cargando ? t('ui.StaffSchedule.cargando') : t('ui.StaffSchedule.personas', { n: filas?.length || 0 })}
             </div>
           </div>
         </div>
@@ -154,7 +156,7 @@ export default function StaffScheduleSection({
                 endTime: (f.pattern?.endTime || '17:00').slice(0, 5),
               })}
               className="cg-btn-ghost cg-focus shrink-0 rounded p-1"
-              title="Definir su jornada"
+              title={t('ui.StaffSchedule.definirJornada')}
             >
               <Pencil size={13} />
             </button>
@@ -191,14 +193,14 @@ export default function StaffScheduleSection({
           <div className="glass-raised mx-4 w-full max-w-sm overflow-hidden" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--hairline)' }}>
               <div>
-                <h4 className="text-sm font-semibold">Jornada de oficina</h4>
+                <h4 className="text-sm font-semibold">{t('ui.StaffSchedule.tituloModal')}</h4>
                 <p className="mt-0.5 text-[11px]" style={{ color: 'var(--ink-soft)' }}>{editar.nombre}</p>
               </div>
               <button onClick={() => setEditar(null)} className="cg-btn-ghost cg-focus rounded-lg p-1.5"><X size={15} /></button>
             </div>
             <div className="space-y-4 p-5">
               <div>
-                <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>Días que trabaja</label>
+                <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>{t('ui.StaffSchedule.diasQueTrabaja')}</label>
                 <div className="flex gap-1">
                   {DIAS.map(d => {
                     const activo = editar.weekdays.includes(d.n);
@@ -219,22 +221,22 @@ export default function StaffScheduleSection({
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>Entra</label>
+                  <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>{t('ui.StaffSchedule.entra')}</label>
                   <input type="time" value={editar.startTime} onChange={e => setEditar(m => m ? { ...m, startTime: e.target.value } : m)} className="w-full rounded-lg border px-2 py-2 text-sm tabular-nums outline-none focus:border-primary" style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }} />
                 </div>
                 <div>
-                  <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>Sale</label>
+                  <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>{t('ui.StaffSchedule.sale')}</label>
                   <input type="time" value={editar.endTime} onChange={e => setEditar(m => m ? { ...m, endTime: e.target.value } : m)} className="w-full rounded-lg border px-2 py-2 text-sm tabular-nums outline-none focus:border-primary" style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }} />
                 </div>
               </div>
               <p className="text-[10px]" style={{ color: 'var(--ink-faint)' }}>
-                Las vacaciones y permisos se registran como novedad, igual que a un vigilante, y mandan sobre la jornada.
+                {t('ui.StaffSchedule.notaNovedades')}
               </p>
             </div>
             <div className="flex items-center justify-end gap-2 px-5 py-3" style={{ borderTop: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>
-              <button onClick={() => setEditar(null)} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold">Cancelar</button>
+              <button onClick={() => setEditar(null)} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold">{t('ui.StaffSchedule.cancelar')}</button>
               <button onClick={guardar} disabled={guardando} className="cg-btn-brand cg-focus rounded-full px-5 py-2 text-sm font-semibold disabled:opacity-40">
-                {guardando ? <Loader2 size={14} className="animate-spin" /> : 'Guardar jornada'}
+                {guardando ? <Loader2 size={14} className="animate-spin" /> : t('ui.StaffSchedule.guardar')}
               </button>
             </div>
           </div>

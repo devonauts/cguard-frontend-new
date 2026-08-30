@@ -11147,6 +11147,32 @@
     },
     "ImportarHojaDeVida": {
       "revisalosAntesDeGuardar": "Prosimy je sprawdzić przed zapisaniem."
+    },
+    "AgendaView": {
+      "sinTurnos": "Brak zmian w tym zakresie.",
+      "turno": "zmiana",
+      "turnos": "zmiany",
+      "aprendiz": "praktykant"
+    },
+    "MonthCalendar": {
+      "masDias": "+{{n}} więcej",
+      "aprendiz": "praktykant"
+    },
+    "StaffSchedule": {
+      "oficina": "Biuro",
+      "cargando": "Ładowanie…",
+      "personas": "{{n}} osoba/osób · tygodniowy grafik",
+      "sinJornada": "Brak grafiku",
+      "definirJornada": "Ustaw grafik",
+      "tituloModal": "Grafik biurowy",
+      "diasQueTrabaja": "Dni pracy",
+      "entra": "Wejście",
+      "sale": "Wyjście",
+      "notaNovedades": "Urlopy i zwolnienia zapisuje się jako zdarzenie, tak jak u pracownika ochrony, i mają pierwszeństwo przed grafikiem.",
+      "cancelar": "Anuluj",
+      "guardar": "Zapisz grafik",
+      "guardada": "Grafik zapisany",
+      "errorGuardar": "Nie udało się zapisać grafiku"
     }
   },
   "visitantes": {
