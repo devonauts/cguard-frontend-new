@@ -78,8 +78,14 @@ export function dateToWall(date: Date, tz?: string): { dateStr: string; minutes:
  * puede caer una hora fuera, y la segunda la endereza.
  */
 export function wallToDate(y: number, m: number, d: number, minutes: number, tz?: string): Date {
+  // SIN ZONA, HORA LOCAL — porque `dateToWall` sin zona TAMBIÉN lee local
+  // (`getHours`). Las dos tienen que ser inversas. Al extraer esta función puse
+  // aquí `Date.UTC` y rompí esa simetría: un turno leído a las 08:00 locales se
+  // volvía a escribir como 08:00 UTC, y en una pantalla a UTC-5 reaparecía a las
+  // 03:00. En producción no se veía porque la zona del tenant siempre llega;
+  // saltó al probar en local, donde no hay ninguna configurada.
+  if (!tz) return new Date(y, m - 1, d, Math.floor(minutes / 60), minutes % 60, 0);
   const utcGuess = Date.UTC(y, m - 1, d, Math.floor(minutes / 60), minutes % 60, 0);
-  if (!tz) return new Date(utcGuess);
   let off = tzOffsetMs(new Date(utcGuess), tz);
   off = tzOffsetMs(new Date(utcGuess - off), tz);
   return new Date(utcGuess - off);

@@ -62,6 +62,25 @@ describe('la zona del TENANT manda, no la del navegador', () => {
     expect(w.minutes).toBe(19 * 60);
   });
 
+  it('IDA Y VUELTA SIN ZONA: `dateToWall` y `wallToDate` son inversas', () => {
+    // La regresión que introduje al extraer: sin zona, `dateToWall` leía LOCAL y
+    // `wallToDate` escribía UTC. Un turno de las 08:00 se reescribía como 08:00Z
+    // y reaparecía tres horas antes. En producción no se ve —la zona del tenant
+    // siempre llega— y por eso hace falta fijarlo aquí.
+    const original = new Date(2026, 7, 30, 8, 0);
+    const w = dateToWall(original);                      // sin tz
+    const vuelta = wallToDate(2026, 8, 30, w.minutes);   // sin tz
+    expect(vuelta.getTime()).toBe(original.getTime());
+    expect(w.minutes).toBe(8 * 60);
+  });
+
+  it('mover +2 h sin zona da exactamente +2 h', () => {
+    const original = new Date(2026, 7, 30, 8, 0);
+    const w = dateToWall(original);
+    const movido = wallToDate(2026, 8, 30, w.minutes + 120);
+    expect((movido.getTime() - original.getTime()) / 60000).toBe(120);
+  });
+
   it('sobrevive al cambio de horario de verano (la corrección de dos pasadas)', () => {
     // En Madrid, el 29-mar-2026 los relojes saltan de 02:00 a 03:00.
     const antes = wallToDate(2026, 3, 28, 12 * 60, MAD);

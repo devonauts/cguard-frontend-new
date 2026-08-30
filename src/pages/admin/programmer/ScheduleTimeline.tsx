@@ -426,29 +426,45 @@ export default function ScheduleTimeline({
   /** Un arrastre no debe abrir además el detalle al soltar. */
   const suprimirClick = useRef(false);
 
+  /**
+   * LAS ESCUCHAS SE ENGANCHAN AQUÍ MISMO, no en un `useEffect`.
+   *
+   * La versión anterior las ponía en un efecto que dependía de que `arrastre`
+   * dejara de ser null. Un efecto corre DESPUÉS del commit y del pintado, así
+   * que un arrastre rápido —el de una automatización, o el de un dedo decidido—
+   * despacha todos sus `pointermove` ANTES de que la escucha exista: el gesto se
+   * quedaba en cero, `movido` nunca se ponía a true y el turno no se movía.
+   * Enganchando en el propio manejador no hay ventana en la que perder eventos.
+   *
+   * El estado vive en un REF (la verdad del gesto) y se copia a estado de React
+   * sólo para pintar la vista previa. Así `onUp` nunca lee un valor viejo.
+   */
   const empezarArrastre = (e: React.PointerEvent, s: ShiftRecord, modo: Arrastre['modo']) => {
     if (e.button !== undefined && e.button !== 0) return;
     e.stopPropagation();
     const a0 = absOfWall(dateToWall(new Date(s.startTime), tz));
     const b0 = absOfWall(dateToWall(new Date(s.endTime), tz));
-    try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId); } catch { /* no crítico */ }
-    setArrastre({ shift: s, modo, a0, b0, yInicial: e.clientY, delta: 0, movido: false });
-  };
+    const inicial: Arrastre = { shift: s, modo, a0, b0, yInicial: e.clientY, delta: 0, movido: false };
+    arrastreRef.current = inicial;
+    setArrastre(inicial);
 
-  useEffect(() => {
-    if (!arrastre) return;
-    const onMove = (e: PointerEvent) => {
-      setArrastre((prev) => {
-        if (!prev) return prev;
-        const delta = minutosArrastrados(prev.yInicial, e.clientY, pxPerMin, snapStep);
-        return { ...prev, delta, movido: prev.movido || delta !== 0 };
-      });
+    const onMove = (ev: PointerEvent) => {
+      const cur = arrastreRef.current;
+      if (!cur) return;
+      const delta = minutosArrastrados(cur.yInicial, ev.clientY, pxPerMin, snapStep);
+      const next = { ...cur, delta, movido: cur.movido || delta !== 0 };
+      arrastreRef.current = next;
+      setArrastre(next);
     };
+
     const onUp = async () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('pointercancel', onUp);
       const prev = arrastreRef.current;
+      arrastreRef.current = null;
       setArrastre(null);
-      if (!prev) return;
-      if (!prev.movido) return;           // fue un clic: lo abre `onClick`
+      if (!prev || !prev.movido) return;   // fue un clic: lo abre `onClick`
       suprimirClick.current = true;
 
       let a = prev.a0, b = prev.b0;
@@ -476,16 +492,11 @@ export default function ScheduleTimeline({
         toast.error(err?.data?.message || err?.message || 'No se pudo mover el turno');
       }
     };
+
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', onUp);
     window.addEventListener('pointercancel', onUp);
-    return () => {
-      window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('pointerup', onUp);
-      window.removeEventListener('pointercancel', onUp);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [arrastre !== null, pxPerMin, snapStep, tz, tenantId]);
+  };
 
   const arrastreSegs = useMemo(() => {
     if (!arrastre || !arrastre.movido) return [];
