@@ -43,6 +43,7 @@ import ContextMenu, { CtxItem, CtxMenuState } from "./ContextMenu";
 import TransferShiftModal, { TransferTarget } from "./TransferShiftModal";
 import { stationLabel } from "@/lib/stationName";
 import SupervisionSection from './SupervisionSection';
+import StaffScheduleSection from './StaffScheduleSection';
 import MonthStationBlock, { type BlockSel, type MonthGridHandlers } from './MonthStationBlock';
 import MonthCalendar from './MonthCalendar';
 import { COL_W, COL_STICKY_W } from './gridBand';
@@ -2434,6 +2435,18 @@ export default function Schedule() {
                       ya pasa de 2.700 líneas y la supervisión corre sobre OTRO
                       motor (nunca toca `shift`/`guardShift`). */}
                   <SupervisionSection
+                    monthDays={monthDays}
+                    colA={colA}
+                    colB={colB}
+                    gridCols={gridCols}
+                    tintFor={(_d, i) => (monthDayStrs[i] === todayStr ? TINT_TODAY : monthDaySunday[i] ? TINT_SUNDAY : undefined)}
+                  />
+
+                  {/* OFICINA — misma rejilla, otro modelo: aquí no se gira, se
+                      trabaja una semana. Va debajo de Supervisión y encima de
+                      los puestos, que es el orden en que se lee la operación:
+                      quien supervisa, quien administra, quien está en el puesto. */}
+                  <StaffScheduleSection
                     monthDays={monthDays}
                     colA={colA}
                     colB={colB}
