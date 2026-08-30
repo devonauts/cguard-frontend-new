@@ -173,8 +173,11 @@ export default function ScheduleTimeline({
 
   const [draft, setDraft] = useState<{ stationId: string; anchor: number; head: number } | null>(null);
   const draftRectRef = useRef<DOMRect | null>(null);
-  const draftStateRef = useRef(draft);
-  draftStateRef.current = draft;
+  /* El ref es la VERDAD del trazo mientras dura el gesto, y lo escribe
+     `beginDraw` a mano. Aquí se sincronizaba desde el estado en cada render
+     (`draftStateRef.current = draft`), lo que pisaría con un valor viejo lo que
+     el `mousemove` acaba de escribir. Se deja que lo gobierne el gesto. */
+  const draftStateRef = useRef<{ stationId: string; anchor: number; head: number } | null>(null);
 
   const pointTo = useCallback((clientX: number, clientY: number, rect: DOMRect): { abs: number; stationIdx: number } => {
     const xIn = Math.max(0, Math.min(canvasW - 1, clientX - rect.left));
@@ -185,6 +188,16 @@ export default function ScheduleTimeline({
     return { abs: di * 1440 + min, stationIdx: si };
   }, [canvasW, dayCount, dayW, stationCount, SUBCOL_W, pxPerMin, snapStep]);
 
+  /**
+   * DIBUJAR UN BLOQUE. Las escuchas se enganchan AQUÍ, no en un `useEffect`.
+   *
+   * Tenía el mismo fallo que tenía el arrastre: el efecto que ponía
+   * `mousemove`/`mouseup` dependía de que `draft` dejara de ser null, y un
+   * efecto corre después del commit y del pintado. Un trazo rápido despachaba
+   * todos sus `mousemove` antes de que existiera la escucha, `head` no se movía
+   * del ancla, el bloque medía cero minutos y el diálogo no llegaba a abrirse.
+   * Con el ratón lento no se notaba; con un gesto decidido, sí.
+   */
   const beginDraw = (e: React.MouseEvent) => {
     if (e.button !== 0) return;
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
@@ -192,43 +205,56 @@ export default function ScheduleTimeline({
     const { abs, stationIdx } = pointTo(e.clientX, e.clientY, rect);
     const st = stations[stationIdx];
     if (!st) return;
-    setDraft({ stationId: st.id, anchor: abs, head: abs });
-  };
+    const inicial = { stationId: st.id, anchor: abs, head: abs };
+    draftStateRef.current = inicial;
+    setDraft(inicial);
 
-  useEffect(() => {
-    if (!draft) return;
-    const onMove = (e: MouseEvent) => {
-      const rect = draftRectRef.current;
-      if (!rect) return;
-      setDraft(prev => {
-        if (!prev) return prev;
-        let head = pointTo(e.clientX, e.clientY, rect).abs;
-        // A shift can't exceed 24h (backend rule) — clamp the draw live.
-        head = Math.max(prev.anchor - 1440, Math.min(prev.anchor + 1440, head));
-        return { ...prev, head };
-      });
+    const onMove = (ev: MouseEvent) => {
+      const r = draftRectRef.current;
+      const cur = draftStateRef.current;
+      if (!r || !cur) return;
+      let head = pointTo(ev.clientX, ev.clientY, r).abs;
+      // Un turno no puede pasar de 24 h: se acota en vivo (regla del backend).
+      head = Math.max(cur.anchor - 1440, Math.min(cur.anchor + 1440, head));
+      const next = { ...cur, head };
+      draftStateRef.current = next;
+      setDraft(next);
     };
-    const onUp = () => {
-      const prev = draftStateRef.current;
-      setDraft(null);
-      if (prev) {
-        const a = Math.min(prev.anchor, prev.head);
-        const b = Math.max(prev.anchor, prev.head);
-        if (b - a >= 30) openBlockModal(a, b, '', prev.stationId);
-      }
-    };
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('mouseup', onUp);
-    return () => {
+
+    const soltar = () => {
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseup', onUp);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [draft !== null, pointTo]);
+
+    const onUp = () => {
+      soltar();
+      const prev = draftStateRef.current;
+      draftStateRef.current = null;
+      setDraft(null);
+      if (!prev) return;
+      const a = Math.min(prev.anchor, prev.head);
+      const b = Math.max(prev.anchor, prev.head);
+      // Menos de media hora es un clic, no un trazo.
+      if (b - a >= 30) openBlockModal(a, b, '', prev.stationId);
+    };
+
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  };
 
   // ─── Create / edit block modal ───────────────────────────────────────────
 
   const [blockModal, setBlockModal] = useState<{ stationId: string; startStr: string; endStr: string; guardId: string; editingId?: string } | null>(null);
+
+  /* ── REPETICIÓN ────────────────────────────────────────────────────────
+     Dibujar un bloque creaba UN turno para UN día: cubrir una semana eran
+     siete gestos y un mes, treinta. Eso no es programar, es teclear. Aquí se
+     elige de una vez si el trazo es un turno suelto o una temporada.
+     `patron` (N trabaja / M descansa) está porque un vigilante de campo no
+     hace «lunes a viernes»: hace 4-2 o 6-1, y sin esa opción habría que
+     borrar los descansos a mano. */
+  type Repeticion = { tipo: 'unica' | 'diaria' | 'dias' | 'intervalo' | 'patron' | 'rotacion'; weekdays: number[]; cadaN: number; trabaja: number; descansa: number; hasta: string };
+  const [rep, setRep] = useState<Repeticion>({ tipo: 'unica', weekdays: [1, 2, 3, 4, 5], cadaN: 2, trabaja: 4, descansa: 2, hasta: '' });
   const [blockSaving, setBlockSaving] = useState(false);
 
   const absToWallStr = useCallback((abs: number): string => {
@@ -299,16 +325,28 @@ export default function ScheduleTimeline({
         if (overlapping.length) {
           await ApiService.delete(`/tenant/${tenantId}/shift?ids=${overlapping.map(s => s.id).join(',')}`).catch(() => {});
         }
-        await ApiService.post(`/tenant/${tenantId}/shift`, {
-          data: {
-            startTime: start.toISOString(),
-            endTime: end.toISOString(),
-            station: blockModal.stationId,
-            guard: blockModal.guardId,
-            postSiteId: station?.postSiteId,
-          },
-        });
-        toast.success(overlapping.length ? 'Turno creado (reemplazó turnos solapados)' : 'Turno creado');
+        const cuerpo = {
+          startTime: start.toISOString(),
+          endTime: end.toISOString(),
+          station: blockModal.stationId,
+          guard: blockModal.guardId,
+          postSiteId: station?.postSiteId,
+        };
+        if (rep.tipo === 'unica') {
+          await ApiService.post(`/tenant/${tenantId}/shift`, { data: cuerpo });
+          toast.success(overlapping.length ? 'Turno creado (reemplazó turnos solapados)' : 'Turno creado');
+        } else {
+          // La serie la expande el servidor: un día que choque se omite y se
+          // informa, en vez de tumbar la temporada entera.
+          const r: any = await ApiService.post(`/tenant/${tenantId}/shift/series`, {
+            data: { ...cuerpo, repeticion: { ...rep, hasta: rep.hasta || null } },
+          });
+          const d = r?.data ?? r;
+          const om = d?.omitidos?.length || 0;
+          toast.success(om
+            ? `${d.creados} turno(s) creados · ${om} día(s) omitido(s) por choque`
+            : `${d.creados} turno(s) creados`);
+        }
       }
       setBlockModal(null);
       onChanged();
@@ -457,10 +495,26 @@ export default function ScheduleTimeline({
       setArrastre(next);
     };
 
-    const onUp = async () => {
+    const soltar = () => {
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup', onUp);
-      window.removeEventListener('pointercancel', onUp);
+      window.removeEventListener('pointercancel', onCancelar);
+    };
+
+    /* CANCELAR NO ES SOLTAR. Un `pointercancel` lo lanza el navegador cuando el
+       gesto se lo queda otra cosa —el sistema, un scroll táctil, una ventana que
+       roba el foco—. Eso es «no lo hice», no «ya está». Estaba enganchado al
+       mismo manejador que `pointerup`, así que un gesto interrumpido GUARDABA el
+       turno en la hora a la que hubiera llegado el dedo. Salió probando: mandé un
+       cancel a propósito y el turno se movió igual. */
+    const onCancelar = () => {
+      soltar();
+      arrastreRef.current = null;
+      setArrastre(null);
+    };
+
+    const onUp = async () => {
+      soltar();
       const prev = arrastreRef.current;
       arrastreRef.current = null;
       setArrastre(null);
@@ -495,7 +549,7 @@ export default function ScheduleTimeline({
 
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', onUp);
-    window.addEventListener('pointercancel', onUp);
+    window.addEventListener('pointercancel', onCancelar);
   };
 
   const arrastreSegs = useMemo(() => {
@@ -675,28 +729,16 @@ export default function ScheduleTimeline({
                   const startW = dateToWall(new Date(s.startTime), tz);
                   const endW = dateToWall(new Date(s.endTime), tz);
                   const timeLbl = `${minLabel(startW.minutes)}–${minLabel(endW.minutes)}`;
+                  /** ¿Es ESTE el bloque que se está moviendo ahora mismo? */
+                  const arrastrando = !!arrastre?.movido && arrastre.shift.id === s.id;
                   return (
                     <div
                       key={`${s.id}-${seg.dayIdx}`}
                       /* Cristal PLANO: se pinta uno por turno y por día. Un
                          `backdrop-filter` aquí multiplica el coste por cada
                          bloque de la rejilla. */
-                      className={`absolute cursor-pointer overflow-hidden px-1.5 py-0.5 transition-all hover:brightness-110 ${isEngine ? 'border border-dashed' : 'border'} ${seg.first ? 'rounded-t-md' : ''} ${seg.last ? 'rounded-b-md' : ''}`}
+                      className={`absolute overflow-hidden px-1.5 py-0.5 transition-[filter] hover:brightness-110 ${arrastrando ? 'cursor-grabbing border-2 border-dashed' : `cursor-grab ${isEngine ? 'border border-dashed' : 'border'}`} ${seg.first ? 'rounded-t-md' : ''} ${seg.last ? 'rounded-b-md' : ''}`}
                       title={`${name} · ${timeLbl}${isEngine ? ' · generado por rotación' : ' · turno manual'} — arrastra para mover · tira de los bordes para ajustar · clic derecho: opciones`}
-                      /* ── ARRASTRE RETIRADO (2026-08-30) ────────────────────
-                         Se probó en producción y hacía DOS cosas mal a la vez:
-                           · el `stopPropagation` iba sobre el evento de PUNTERO
-                             y el lienzo dibuja con `onMouseDown` —secuencias
-                             distintas—, así que un arrastre movía el turno Y
-                             abría además el diálogo de «nuevo bloque»;
-                           · el desplazamiento salía con el signo y la magnitud
-                             equivocados: arrastrar hacia ABAJO adelantaba el
-                             turno 3,5 h en vez de retrasarlo.
-                         Dos turnos de la empresa de demostración acabaron
-                         movidos. Se vuelve al gesto de antes —clic abre el
-                         detalle, clic derecho edita— hasta que esté bien hecho
-                         y con pruebas. Mejor sin gesto que con uno que mueve
-                         turnos a horas que nadie pidió. */
                       /* LOS DOS. `onMouseDown` impide que el lienzo empiece a
                          DIBUJAR debajo (secuencia de ratón); `onPointerDown`
                          arranca el arrastre (secuencia de puntero, la que
@@ -717,7 +759,24 @@ export default function ScheduleTimeline({
                         backgroundColor: `color-mix(in oklab, ${color} ${isEngine ? 10 : 18}%, transparent)`,
                         borderColor: `color-mix(in oklab, ${color} 42%, transparent)`,
                         ...(seg.first ? { borderTop: `3px solid ${color}` } : {}),
-                        ...(arrastre?.movido && arrastre.shift.id === s.id ? { opacity: 0.25 } : null),
+                        /* ── DE DÓNDE VENÍA ────────────────────────────────
+                           Mientras se arrastra, el sitio original no se
+                           «apaga» y ya: se dibuja como lo que es, el hueco que
+                           se está dejando. Borde PUNTEADO, sin relleno y con su
+                           hora vieja tachada encima. Bajar la opacidad y nada
+                           más se leía como «el turno sigue ahí», que es justo
+                           lo que no está pasando. */
+                        ...(arrastrando ? {
+                          backgroundColor: 'transparent',
+                          borderColor: 'var(--ink-faint)',
+                          borderTopColor: 'var(--ink-faint)',
+                          borderTopWidth: 2,
+                          // El `borderTop: 3px solid` del primer trozo se pone
+                          // ANTES; sin esto el hueco salía con tres lados
+                          // punteados y la tapa entera, que se lee como si el
+                          // bloque siguiera vivo.
+                          borderTopStyle: 'dashed',
+                        } : null),
                         touchAction: 'none',
                       }}
                     >
@@ -741,12 +800,23 @@ export default function ScheduleTimeline({
                         />
                       )}
                       {seg.first && h > 20 && (
-                        <span className="block truncate text-[9px] font-semibold" style={{ color: 'var(--ink)' }}>
-                          {name.split(' ')[0]}
+                        <span
+                          className="block truncate text-[9px] font-semibold"
+                          style={{ color: arrastrando ? 'var(--ink-faint)' : 'var(--ink)' }}
+                        >
+                          {arrastrando ? 'Estaba aquí' : name.split(' ')[0]}
                         </span>
                       )}
                       {seg.first && h > 38 && (
-                        <span className="block truncate text-[8px] tabular-nums" style={{ color: 'var(--ink-soft)' }}>{timeLbl}</span>
+                        <span
+                          className="block truncate text-[8px] tabular-nums"
+                          style={{
+                            color: arrastrando ? 'var(--ink-faint)' : 'var(--ink-soft)',
+                            textDecoration: arrastrando ? 'line-through' : undefined,
+                          }}
+                        >
+                          {timeLbl}
+                        </span>
                       )}
                     </div>
                   );
@@ -766,9 +836,15 @@ export default function ScheduleTimeline({
                     background: 'var(--brand-wash)', borderColor: 'var(--brand)',
                   }}
                 >
-                  {seg.first && (
+                  {seg.first && arrastre && (
                     <span className="block px-1 pt-0.5 text-[9px] font-bold tabular-nums" style={{ color: 'var(--brand-text)' }}>
-                      {minLabel(seg.top)}
+                      {(() => {
+                        let a = arrastre.a0, b = arrastre.b0;
+                        if (arrastre.modo === 'mover') { a += arrastre.delta; b += arrastre.delta; }
+                        else if (arrastre.modo === 'inicio') a += arrastre.delta;
+                        else b += arrastre.delta;
+                        return `${minLabel(a)}–${minLabel(b)}`;
+                      })()}
                     </span>
                   )}
                 </div>
@@ -877,6 +953,103 @@ export default function ScheduleTimeline({
                     </p>
                   )}
                 </div>
+
+                {/* ── REPETIR ──────────────────────────────────────────── */}
+                {!editing && (
+                  <div className="rounded-xl p-3" style={{ border: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>
+                    <label className="cg-eyebrow mb-1.5 block">Repetir</label>
+                    <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
+                      {([
+                        { v: 'unica', l: 'Solo este día' },
+                        { v: 'diaria', l: 'Todos los días' },
+                        { v: 'dias', l: 'Días de la semana' },
+                        { v: 'intervalo', l: 'Cada N días' },
+                        { v: 'patron', l: 'Trabaja / descansa' },
+                        // Sólo si el puesto TIENE rotación: ofrecerla en un puesto
+                        // sin ciclo configurado lleva a un error que el usuario no
+                        // puede resolver desde este diálogo.
+                        ...(stationById.get(blockModal.stationId)?.rotationStyleId
+                          ? [{ v: 'rotacion' as const, l: 'Seguir la rotación del puesto' }]
+                          : []),
+                      ] as const).map(o => (
+                        <button
+                          key={o.v}
+                          type="button"
+                          onClick={() => setRep(r => ({ ...r, tipo: o.v }))}
+                          className={`cg-focus rounded-lg px-2 py-1.5 text-[11px] font-semibold transition-all ${rep.tipo === o.v ? 'glass-brand' : 'glass-flat'}`}
+                        >
+                          {o.l}
+                        </button>
+                      ))}
+                    </div>
+
+                    {rep.tipo === 'rotacion' && (
+                      <p className="mt-2.5 text-[11px] leading-snug" style={{ color: 'var(--ink-soft)' }}>
+                        El vigilante seguirá el ciclo del puesto: pasará de día a noche y
+                        librará cuando toque. <strong>Las horas las pone el puesto</strong>, no
+                        el bloque que dibujaste, y entra en el mismo compás que sus compañeros.
+                      </p>
+                    )}
+
+                    {rep.tipo === 'dias' && (
+                      <div className="mt-2.5 flex gap-1">
+                        {[{ n: 1, l: 'L' }, { n: 2, l: 'M' }, { n: 3, l: 'X' }, { n: 4, l: 'J' }, { n: 5, l: 'V' }, { n: 6, l: 'S' }, { n: 0, l: 'D' }].map(d => {
+                          const on = rep.weekdays.includes(d.n);
+                          return (
+                            <button
+                              key={d.n}
+                              type="button"
+                              onClick={() => setRep(r => ({ ...r, weekdays: on ? r.weekdays.filter(x => x !== d.n) : [...r.weekdays, d.n] }))}
+                              className={`cg-focus h-7 w-7 rounded-full text-[11px] font-bold transition-all ${on ? 'glass-brand' : 'glass-flat'}`}
+                            >
+                              {d.l}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {rep.tipo === 'intervalo' && (
+                      <div className="mt-2.5 flex items-center gap-2 text-[11px]">
+                        <span style={{ color: 'var(--ink-soft)' }}>Uno de cada</span>
+                        <input type="number" min={1} max={30} value={rep.cadaN}
+                          onChange={e => setRep(r => ({ ...r, cadaN: Number(e.target.value) || 1 }))}
+                          className="w-16 rounded-lg border px-2 py-1 text-sm tabular-nums outline-none focus:border-primary"
+                          style={{ borderColor: 'var(--hairline)', background: 'var(--float)' }} />
+                        <span style={{ color: 'var(--ink-soft)' }}>días</span>
+                      </div>
+                    )}
+
+                    {rep.tipo === 'patron' && (
+                      <div className="mt-2.5 flex items-center gap-2 text-[11px]">
+                        <input type="number" min={1} max={30} value={rep.trabaja}
+                          onChange={e => setRep(r => ({ ...r, trabaja: Number(e.target.value) || 1 }))}
+                          className="w-16 rounded-lg border px-2 py-1 text-sm tabular-nums outline-none focus:border-primary"
+                          style={{ borderColor: 'var(--hairline)', background: 'var(--float)' }} />
+                        <span style={{ color: 'var(--ink-soft)' }}>trabaja ·</span>
+                        <input type="number" min={0} max={30} value={rep.descansa}
+                          onChange={e => setRep(r => ({ ...r, descansa: Number(e.target.value) || 0 }))}
+                          className="w-16 rounded-lg border px-2 py-1 text-sm tabular-nums outline-none focus:border-primary"
+                          style={{ borderColor: 'var(--hairline)', background: 'var(--float)' }} />
+                        <span style={{ color: 'var(--ink-soft)' }}>descansa</span>
+                      </div>
+                    )}
+
+                    {rep.tipo !== 'unica' && (
+                      <div className="mt-2.5">
+                        <label className="cg-eyebrow mb-1 block">Hasta</label>
+                        <input type="date" value={rep.hasta}
+                          onChange={e => setRep(r => ({ ...r, hasta: e.target.value }))}
+                          className={inputCls} />
+                        <p className="mt-1.5 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
+                          {rep.hasta
+                            ? 'El ciclo empieza el día dibujado. Un día que choque con otro turno del vigilante se omite y se te dice cuál.'
+                            : 'Pon una fecha de fin: sin ella sólo se crea el turno de este día.'}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
               <div className="flex items-center justify-end gap-2 px-5 py-3" style={{ borderTop: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>
                 <button onClick={() => setBlockModal(null)} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all">{t('actions.cancel')}</button>
@@ -885,7 +1058,7 @@ export default function ScheduleTimeline({
                   disabled={blockSaving || !blockModal.guardId || !blockModal.stationId || hours <= 0 || hours > 24}
                   className="cg-btn-brand cg-focus rounded-full px-5 py-2 text-sm font-semibold transition-all disabled:opacity-40"
                 >
-                  {blockSaving ? <Loader2 size={14} className="animate-spin" /> : (editing ? 'Guardar cambios' : 'Crear turno')}
+                  {blockSaving ? <Loader2 size={14} className="animate-spin" /> : (editing ? 'Guardar cambios' : (rep.tipo === 'unica' || !rep.hasta ? 'Crear turno' : 'Crear la serie'))}
                 </button>
               </div>
             </div>
