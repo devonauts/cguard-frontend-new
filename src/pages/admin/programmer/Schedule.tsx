@@ -234,7 +234,16 @@ const addDays = (d: Date, n: number): Date => {
 const dseOf = (d: Date): number =>
   Math.round((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - Date.UTC(2024, 0, 1)) / 86400000);
 
-type ViewMode = 'month' | 'week' | 'day' | 'calendar' | 'agenda';
+/** Los estilos del Horario. UNA lista: el tipo, la validación del arranque y la
+ *  de la restauración salen todos de aquí. Estaba escrita a mano en tres sitios,
+ *  y una copia que se quedara atrás rechazaría EN SILENCIO un estilo válido —
+ *  el usuario elegiría Agenda y el CRM abriría en la hoja sin decir por qué.
+ *  (El backend tiene su propia lista en `lib/uiAppearance`: es una frontera de
+ *  confianza distinta, y ahí sanear es obligatorio aunque el cliente ya filtre.) */
+const VISTAS = ['month', 'calendar', 'week', 'day', 'agenda'] as const;
+type ViewMode = (typeof VISTAS)[number];
+const esVista = (v: any): v is ViewMode =>
+  typeof v === 'string' && (VISTAS as readonly string[]).includes(v);
 
 const VIEW_KEY = 'programador.horario.view';
 /** La preferencia de ESTILO sobrevive a la pestaña; la posición no. */
@@ -337,9 +346,9 @@ export default function Schedule() {
   const [view, setView] = useState<ViewMode>(() => {
     try {
       const cache = localStorage.getItem(VIEW_STYLE_KEY);
-      if (cache && ['month', 'calendar', 'week', 'day', 'agenda'].includes(cache)) return cache as ViewMode;
+      if (esVista(cache)) return cache;
     } catch { /* almacenamiento bloqueado */ }
-    if (['week', 'day', 'calendar', 'agenda'].includes(savedView.v)) return savedView.v;
+    if (esVista(savedView.v) && savedView.v !== 'month') return savedView.v;
     // Sin preferencia: en una pantalla estrecha la hoja de cálculo no sirve.
     try { if (window.matchMedia('(max-width: 767px)').matches) return 'agenda'; } catch { /* SSR */ }
     return 'month';
@@ -358,8 +367,8 @@ export default function Schedule() {
       vistaDeCuentaAplicada.current = true;
       if (cambioLocalReciente()) return;
       const v = ap?.scheduler?.view;
-      if (v && ['month', 'calendar', 'week', 'day', 'agenda'].includes(v)) {
-        setView(v as ViewMode);
+      if (esVista(v)) {
+        setView(v);
         try { localStorage.setItem(VIEW_STYLE_KEY, v); } catch { /* bloqueado */ }
       }
       if (typeof ap?.scheduler?.panel === 'boolean') setPanelOpen(ap.scheduler.panel);
@@ -368,28 +377,43 @@ export default function Schedule() {
     return () => { vivo = false; };
   }, []);
 
-  /* Al cambiar, se guarda en la cuenta (con retardo, ver appearanceSync) y en la
-     caché local para el próximo arranque. No se guarda en la PRIMERA pasada: eso
-     escribiría el valor por defecto encima de la preferencia real antes de que
-     `/auth/me` llegue a contestar. */
-  const primeraVista = useRef(true);
-  useEffect(() => {
-    try { localStorage.setItem(VIEW_STYLE_KEY, view); } catch { /* bloqueado */ }
-    if (primeraVista.current) { primeraVista.current = false; return; }
-    guardarApariencia({ scheduler: { view } });
-  }, [view]);
+  /* ── UNA PREFERENCIA SE GUARDA CUANDO LA PERSONA LA ELIGE ────────────────
+     Esto colgaba de un `useEffect` que miraba `view`, y por eso necesitaba una
+     bandera de «primera pasada»: el componente monta con un valor por defecto
+     ANTES de que conteste `/auth/me`, así que el efecto guardaba ese defecto
+     encima de la preferencia real en cada carga de página. La bandera tapaba el
+     síntoma; el problema era guardar en la derivación del estado en vez de en el
+     acto del usuario.
+
+     `elegirVista` es ahora el único sitio que escribe la preferencia, y se llama
+     desde el selector. Un `setView` interno —restaurar de la cuenta, caer a
+     Agenda en un móvil— NO la guarda, que es justo lo que se quiere: sólo se
+     persiste lo que alguien eligió a propósito. */
+  const elegirVista = useCallback((v: ViewMode) => {
+    setView(v);
+    setSel(null);
+    try { localStorage.setItem(VIEW_STYLE_KEY, v); } catch { /* bloqueado */ }
+    guardarApariencia({ scheduler: { view: v } });
+  }, []);
+
+  const alternarPanel = useCallback(() => {
+    setPanelOpen((abierto) => {
+      const v = !abierto;
+      guardarApariencia({ scheduler: { panel: v } });
+      return v;
+    });
+  }, []);
+
+  const alternarSacafrancos = useCallback(() => {
+    setSfSectionOpen((abierta) => {
+      const v = !abierta;
+      guardarApariencia({ scheduler: { sf: v } });
+      return v;
+    });
+  }, []);
   const [panelOpen, setPanelOpen] = useState<boolean>(savedView.panel ?? true);
   const [sfSectionOpen, setSfSectionOpen] = useState<boolean>(savedView.sf ?? false);
 
-  /* El panel lateral y la sección de sacafrancos también siguen a la cuenta:
-     quien trabaja con el panel cerrado lo quiere cerrado en todos sus aparatos.
-     Se omite la primera pasada por el mismo motivo que la vista — no pisar la
-     preferencia real con el valor por defecto antes de que la cuenta conteste. */
-  const primerPanel = useRef(true);
-  useEffect(() => {
-    if (primerPanel.current) { primerPanel.current = false; return; }
-    guardarApariencia({ scheduler: { panel: panelOpen, sf: sfSectionOpen } });
-  }, [panelOpen, sfSectionOpen]);
   // Month label in the toolbar follows the SCROLL position of the year canvas.
   const [visibleMonth, setVisibleMonth] = useState(() => {
     const [y, mo] = tzToday().split('-').map(Number);
@@ -2337,7 +2361,7 @@ export default function Schedule() {
           {/* Rango: Mes = hoja de cálculo · Semana/Día = línea de tiempo dibujable */}
           <Segmented<ViewMode>
             value={view}
-            onChange={v => { setView(v); setSel(null); }}
+            onChange={elegirVista}
             options={[
               { value: 'month', label: 'Hoja' },
               { value: 'calendar', label: 'Calendario' },
@@ -2365,7 +2389,7 @@ export default function Schedule() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setPanelOpen(v => !v)}
+            onClick={alternarPanel}
             className="hidden gap-1.5 md:inline-flex"
             title={panelOpen ? 'Ocultar panel lateral' : 'Mostrar panel (vigilantes, IA, personal)'}
           >
@@ -2613,7 +2637,7 @@ export default function Schedule() {
                         <div
                           className="grid cursor-pointer"
                           style={{ gridTemplateColumns: gridCols, background: 'var(--glass-solid)' }}
-                          onClick={() => setSfSectionOpen(!sfSectionOpen)}
+                          onClick={alternarSacafrancos}
                         >
                           <div
                             className="sticky left-0 z-20 flex items-center gap-2 px-4 py-2.5"
