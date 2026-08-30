@@ -527,6 +527,14 @@ export default function Schedule() {
       const list = m.get(a.positionId);
       if (list) list.push(a); else m.set(a.positionId, [a]);
     }
+    // EL TITULAR PRIMERO. Media pantalla lee `posAssignments[0]` como «quien
+    // tiene este puesto» —la cabecera de la fila, el aspa de quitar, el arrastre
+    // de mover—. Con un aprendiz en la misma plaza, el orden lo decidía la
+    // consulta: el acompañante podía salir de dueño y el titular desaparecer de
+    // su propia fila.
+    for (const list of m.values()) {
+      if (list.length > 1) list.sort((a, b) => Number(a.role === 'shadow') - Number(b.role === 'shadow'));
+    }
     return m;
   }, [assignments]);
 
@@ -1159,6 +1167,22 @@ export default function Schedule() {
           dateStr,
         }),
       });
+      // ── APRENDIZ EN ACOMPAÑAMIENTO ────────────────────────────────────
+      // El vigilante nuevo hace unas semanas junto al titular antes de tomar su
+      // propio puesto. Sigue SUS días —no una rotación propia, que caería en
+      // los libres del titular— y no cuenta como cobertura: si el titular falta
+      // y sólo ficha el aprendiz, el puesto sale descubierto, que es la verdad.
+      items.push({
+        label: `Poner un aprendiz con ${primerNombre(a.guard, 'este vigilante')}…`,
+        onClick: () => setShadowFor({
+          assignmentId: a.id,
+          titularName: guardName,
+          stationName: stationLabel(station),
+          guardId: '',
+          startDate: dateStr,
+          endDate: '',
+        }),
+      });
       items.push({ label: 'Registrar novedad…', onClick: () => setOverrideTarget({ guardId: a.guardId, guardName, date: dateStr, assignmentId: a.id }) });
       const ov = getOverride(a.guardId, dateStr);
       if (ov) items.push({ label: `Quitar novedad (${ov.type})`, danger: true, onClick: () => void removeOverride(ov.id) });
@@ -1401,6 +1425,33 @@ export default function Schedule() {
    * las horas nuevas SIN tocar a quién está asignado. El mismo formulario crea
    * (POST) cuando no hay `positionId`.
    */
+  /** Alta de un aprendiz que acompaña a un titular. */
+  const [shadowFor, setShadowFor] = useState<{
+    assignmentId: string; titularName: string; stationName: string;
+    guardId: string; startDate: string; endDate: string;
+  } | null>(null);
+  const [shadowSaving, setShadowSaving] = useState(false);
+
+  const saveShadow = async () => {
+    if (!shadowFor) return;
+    if (!shadowFor.guardId) { toast.error('Elige al aprendiz'); return; }
+    if (!shadowFor.endDate) { toast.error('Un acompañamiento necesita fecha de fin'); return; }
+    setShadowSaving(true);
+    try {
+      await ApiService.post(
+        `/tenant/${tenantId}/guard-assignment/${shadowFor.assignmentId}/shadow`,
+        { data: { guardId: shadowFor.guardId, startDate: shadowFor.startDate, endDate: shadowFor.endDate } },
+      );
+      toast.success('Aprendiz en acompañamiento — sigue los días del titular y no cuenta como cobertura');
+      setShadowFor(null);
+      fetchAll({ silent: true });
+    } catch (e: any) {
+      toast.error(e?.data?.message || e?.message || 'No se pudo registrar el acompañamiento');
+    } finally {
+      setShadowSaving(false);
+    }
+  };
+
   const [posEditor, setPosEditor] = useState<{
     stationId: string; positionId?: string; stationName: string;
     name: string; type: string; startTime: string; endTime: string; guardsNeeded: string;
@@ -1954,7 +2005,7 @@ export default function Schedule() {
 
   // ─── Keyboard (spreadsheet mode) ─────────────────────────────────────────
 
-  const modalOpen = showAssignForm || !!configStation || !!overrideTarget || !!proposalData || !!sfCover || !!posEditor;
+  const modalOpen = showAssignForm || !!configStation || !!overrideTarget || !!proposalData || !!sfCover || !!posEditor || !!shadowFor;
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -2863,6 +2914,70 @@ export default function Schedule() {
         onClose={() => setTransferTarget(null)}
         onDone={() => fetchAll({ silent: true })}
       />
+
+      {/* ─── Aprendiz en acompañamiento ──────────────────────────────────────── */}
+      {shadowFor && (() => {
+        const set = (patch: Partial<NonNullable<typeof shadowFor>>) => setShadowFor(m => m ? { ...m, ...patch } : m);
+        // Todos los vigilantes de la empresa: el backend rechaza al propio
+        // titular y a quien ya acompaña este puesto, con un mensaje que explica
+        // por qué. Filtrar aquí duplicaría esa regla en dos sitios.
+        const disponibles = guardsPool;
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'oklch(0 0 0 / 0.55)' }} onClick={() => setShadowFor(null)}>
+            <div className="glass-raised mx-4 w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+              <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--hairline)' }}>
+                <div>
+                  <h4 className="text-sm font-semibold">Aprendiz en acompañamiento</h4>
+                  <p className="mt-0.5 text-[11px]" style={{ color: 'var(--ink-soft)' }}>
+                    Junto a {shadowFor.titularName} · {shadowFor.stationName}
+                  </p>
+                </div>
+                <button onClick={() => setShadowFor(null)} className="cg-btn-ghost cg-focus rounded-lg p-1.5"><X size={15} /></button>
+              </div>
+              <div className="space-y-4 p-5">
+                <div className="rounded-xl px-3 py-2" style={toneCard('ok', 8, 26)}>
+                  <p className="text-[11px]">
+                    Trabaja <b>los mismos días que {shadowFor.titularName}</b> y ficha con normalidad,
+                    pero <b>no cuenta como cobertura</b>: si el titular falta, el puesto sigue apareciendo descubierto.
+                  </p>
+                </div>
+                <div>
+                  <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>Aprendiz</label>
+                  <select
+                    value={shadowFor.guardId}
+                    onChange={e => set({ guardId: e.target.value })}
+                    className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:border-primary"
+                    style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}
+                  >
+                    <option value="">Selecciona…</option>
+                    {disponibles.map(g => <option key={g.id} value={g.id}>{g.label}</option>)}
+                  </select>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>Desde</label>
+                    <input type="date" value={shadowFor.startDate} onChange={e => set({ startDate: e.target.value })} className="w-full rounded-lg border px-2 py-2 text-sm tabular-nums outline-none focus:border-primary" style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }} />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>Hasta</label>
+                    <input type="date" value={shadowFor.endDate} min={shadowFor.startDate} onChange={e => set({ endDate: e.target.value })} className="w-full rounded-lg border px-2 py-2 text-sm tabular-nums outline-none focus:border-primary" style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }} />
+                  </div>
+                </div>
+                <p className="text-[10px]" style={{ color: 'var(--ink-faint)' }}>
+                  El acompañamiento tiene final: cuando termine, el aprendiz deja de seguir este puesto.
+                  Para que se quede, asígnalo a su propia plaza.
+                </p>
+              </div>
+              <div className="flex items-center justify-end gap-2 px-5 py-3" style={{ borderTop: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>
+                <button onClick={() => setShadowFor(null)} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold">Cancelar</button>
+                <button onClick={saveShadow} disabled={shadowSaving || !shadowFor.guardId || !shadowFor.endDate} className="cg-btn-brand cg-focus rounded-full px-5 py-2 text-sm font-semibold transition-all disabled:opacity-40">
+                  {shadowSaving ? <Loader2 size={14} className="animate-spin" /> : 'Poner en acompañamiento'}
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ─── Editor de un puesto (nombre · tipo · horas · plazas) ───────────── */}
       {posEditor && (() => {

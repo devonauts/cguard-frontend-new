@@ -309,6 +309,7 @@ function MonthStationBlockInner({
                 );
               }
 
+              const esAprendiz = (assignment as any).role === 'shadow';
               const code = dnCode(station.scheduleType, pos.startTime, workStatus as 'day' | 'night', horasDecidenMitad);
               // El color sale del MISMO mapa que la leyenda; el 24 h se pinta con
               // su propio código, que ya es el más denso de la rejilla. Un puesto
@@ -321,11 +322,20 @@ function MonthStationBlockInner({
                 <div
                   key={assignment.id}
                   className="flex min-h-[18px] flex-1 cursor-pointer items-center justify-center rounded hover:opacity-80"
-                  style={{ ...codePill(pillCode), borderLeft: `2px solid ${color}` }}
-                  title={`${guardName} — ${CODE_LABEL[code] ?? code}${is24h ? ' · 24 h' : ''} (doble clic para novedad)`}
+                  style={{
+                    ...codePill(pillCode),
+                    borderLeft: `2px solid ${color}`,
+                    // El aprendiz se distingue del titular de un vistazo: misma
+                    // letra —trabaja el mismo día— pero apagado y punteado,
+                    // porque esa plaza NO está cubierta por él.
+                    ...(esAprendiz ? { opacity: 0.55, borderStyle: 'dashed', borderWidth: '1px' } : null),
+                  }}
+                  title={esAprendiz
+                    ? `${guardName} — aprendiz en acompañamiento (no cuenta como cobertura)`
+                    : `${guardName} — ${CODE_LABEL[code] ?? code}${is24h ? ' · 24 h' : ''} (doble clic para novedad)`}
                   onDoubleClick={() => h.setOverrideTarget({ guardId: assignment.guardId, guardName, date: dateStr, assignmentId: assignment.id })}
                 >
-                  <span className="text-[10px] font-bold">{code}</span>
+                  <span className="text-[10px] font-bold">{esAprendiz ? `${code}·a` : code}</span>
                 </div>
               );
             })}
