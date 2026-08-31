@@ -334,9 +334,10 @@ function AppLayoutShell({ children }: AppLayoutProps) {
           navigation; the socket/audio live in a module singleton). The pase de
           novedades is started from inside it. RadioRealtimeProvider stays for the
           /radio console + radio event context. */}
-      <RadioRealtimeProvider tenantId={tenantIdNow}>
-        <RadioVoiceWidget />
-      </RadioRealtimeProvider>
+      {/* El proveedor ya NO va aquí: vive en `App.tsx`, por encima de las rutas,
+          porque una página que renderiza `AppLayout` como hijo quedaba fuera de
+          su alcance y leía el contexto por defecto. Aquí sólo el widget. */}
+      <RadioVoiceWidget />
 
       {/* VigIA — el asistente, abajo a la derecha. Solo para el equipo (el
           armazón del CRM ya es de staff); las acciones corren con los permisos

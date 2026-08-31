@@ -13,6 +13,7 @@ const OperationsMapFull = lazy(() => import("./pages/admin/dashboard/control-cen
 import { AuthProvider, useAuth } from "./contexts/AuthContext"
 import { ThemeProvider } from "./contexts/ThemeContext"
 import { AccentProvider } from "./contexts/AccentContext"
+import { RadioRealtimeProvider } from "./components/radio/RadioRealtimeProvider"
 import { LanguageProvider } from "./contexts/LanguageContext"
 import { QueryClientProvider } from "@tanstack/react-query"
 import { queryClient } from "./lib/queryClient"
@@ -292,6 +293,20 @@ export default function App() {
         <ClientSelectionProvider>
           <CoBrowseAgent />
           <BrowserRouter>
+            {/* ── EL CONTEXTO DE RADIO, POR ENCIMA DE LAS RUTAS ──────────────
+                Estaba dentro de `AppLayout`, envolviendo SÓLO al widget
+                flotante. Pero `RadioDispatch` renderiza `AppLayout` como HIJO
+                suyo y llama a `useRadioRealtime()` en su propio cuerpo, o sea
+                por ENCIMA del proveedor: leía el valor por defecto del contexto
+                —`connected: false`, `version: 0`— pasara lo que pasara.
+                Se veía como un «Reconectando…» eterno en la consola de radio,
+                pero lo que de verdad rompía es que `version` NUNCA subía: la
+                pantalla no se refrescaba con los eventos de radio en vivo,
+                aunque el socket estuviera perfectamente conectado (la campana,
+                que usa el mismo hook por su cuenta, sí decía «En vivo»).
+                Aquí arriba lo ven las rutas Y el widget, que es lo que el propio
+                componente documenta: UNA sola suscripción compartida. */}
+            <RadioRealtimeProvider tenantId={typeof window !== 'undefined' ? localStorage.getItem('tenantId') : null}>
             <PersistentChrome>
             <Suspense fallback={<><ProgresoDeRuta /><div style={{minHeight:"60vh",display:"flex",alignItems:"center",justifyContent:"center"}}><div className="animate-spin" aria-label={i18n.t('ui.App.cargando')} style={{width:28,height:28,border:"3px solid var(--border,#e5e7eb)",borderTopColor:"var(--primary,#C8860A)",borderRadius:"50%"}}/></div></>}>
             <AppErrorBoundary scope="routes">
@@ -1768,6 +1783,7 @@ export default function App() {
             </AppErrorBoundary>
             </Suspense>
             </PersistentChrome>
+            </RadioRealtimeProvider>
           </BrowserRouter>
         </ClientSelectionProvider>
       </AuthProvider>
