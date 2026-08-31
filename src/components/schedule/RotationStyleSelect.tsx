@@ -67,11 +67,30 @@ export default function RotationStyleSelect({
    *
    * Se ordena en vez de esconder: lo habitual arriba, lo demás disponible.
    */
-  const encaja = (s: RotationStyle) => (is24h ? (s.nightShifts || 0) > 0 : (s.nightShifts || 0) === 0);
+  /* ─── CÓMO TRABAJAN LOS DOS FIJOS DE UN PUESTO DE 24 h ───────────────────
+     Son dos operaciones distintas y el catálogo no las distinguía:
+
+       · ROTATIVO — un patrón CON noches (4-4-2): el mismo vigilante hace unos
+         días de día y otros de noche.
+       · TURNOS FIJOS — un patrón SIN noches: uno se queda SIEMPRE de día y otro
+         SIEMPRE de noche, cada uno con sus horas (las plazas salen con ventanas
+         espejo, 07:00–19:00 y 19:00–07:00).
+
+     El motor sabía hacer las dos desde siempre, pero la única pista era una
+     etiquetita «sin noches» con un tooltip: quien quería un diurno fijo y un
+     nocturno fijo no encontraba por dónde, porque todo lo que se ofrecía se
+     llamaba «rotación». Se pregunta directamente. */
+  const estiloActual = styles.find((s) => s.id === value) || null;
+  const [modoFijos, setModoFijos] = useState<boolean | null>(null);
+  const fijos24 = is24h && (modoFijos ?? ((estiloActual?.nightShifts ?? 1) === 0));
+
+  const encaja = (s: RotationStyle) => (is24h
+    ? (fijos24 ? (s.nightShifts || 0) === 0 : (s.nightShifts || 0) > 0)
+    : (s.nightShifts || 0) === 0);
   const options = useMemo(
     () => [...styles].sort((a, b) => Number(encaja(b)) - Number(encaja(a))),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [styles, is24h],
+    [styles, is24h, fijos24],
   );
   const recomendados = useMemo(() => options.filter(encaja), [options]);
 
@@ -87,7 +106,28 @@ export default function RotationStyleSelect({
       : (base.find((o) => o.name === '8-2') || base.find((o) => o.name === '5-2') || base[0]);
     if (preferred) onChange(preferred.id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [options, is24h]);
+  }, [options, is24h, fijos24]);
+
+  /** Cambiar de modo re-elige patrón: dejar seleccionado uno del otro modo
+   *  guardaría justo lo contrario de lo que se acaba de pedir. */
+  const elegirModo = (fijos: boolean) => {
+    setModoFijos(fijos);
+    const candidatos = styles.filter((s) => (fijos ? (s.nightShifts || 0) === 0 : (s.nightShifts || 0) > 0));
+    if (!candidatos.length) {
+      // No hay ninguno: se abre el creador ya preparado para ese modo.
+      setCWork(fijos ? '1' : '4');
+      setCNight(fijos ? '0' : '4');
+      setCRest(fijos ? '0' : '2');
+      setCustom(true);
+      return;
+    }
+    if (!candidatos.some((c) => c.id === value)) {
+      const pref = fijos
+        ? (candidatos.find((c) => c.restDays === 0) || candidatos[0])
+        : (candidatos.find((c) => c.name === '4-4-2') || candidatos[0]);
+      onChange(pref.id);
+    }
+  };
 
   // Surface the selected style object to the parent (for derived counts).
   useEffect(() => {
@@ -148,6 +188,39 @@ export default function RotationStyleSelect({
           <Plus size={12} /> Personalizado
         </button>
       </div>
+
+      {is24h && (
+        <div className="rounded-xl p-2.5" style={{ border: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>
+          <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>
+            ¿Cómo trabajan los dos vigilantes?
+          </div>
+          <div className="grid grid-cols-2 gap-1.5">
+            <button
+              type="button"
+              onClick={() => elegirModo(false)}
+              className={`cg-focus rounded-lg px-2 py-2 text-left text-[11px] font-semibold transition-all ${!fijos24 ? 'glass-brand' : 'glass-flat'}`}
+            >
+              Rotativo
+              <span className="mt-0.5 block text-[10px] font-normal opacity-75">Cada uno hace días y noches por turnos</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => elegirModo(true)}
+              className={`cg-focus rounded-lg px-2 py-2 text-left text-[11px] font-semibold transition-all ${fijos24 ? 'glass-brand' : 'glass-flat'}`}
+            >
+              Turnos fijos
+              <span className="mt-0.5 block text-[10px] font-normal opacity-75">Uno siempre de día y otro siempre de noche</span>
+            </button>
+          </div>
+          {fijos24 && (
+            <p className="mt-2 text-[11px] leading-snug" style={{ color: 'var(--ink-soft)' }}>
+              Se crean dos plazas con horarios espejo: <strong>Fijo 1 de 07:00 a 19:00</strong> y{' '}
+              <strong>Fijo 2 de 19:00 a 07:00</strong>. Cada vigilante se queda en la suya — al asignarlos,
+              el turno lo decide la plaza que elijas. Para que no libren nunca, usa un patrón «sin descanso».
+            </p>
+          )}
+        </div>
+      )}
 
       {loading ? (
         <div className="flex items-center gap-2 text-xs text-muted-foreground"><Loader2 size={13} className="animate-spin" />{" "}{t('ui.RotationStyleSelect.cargandoPatrones')}</div>

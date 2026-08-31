@@ -45,6 +45,7 @@ import { stationLabel } from "@/lib/stationName";
 import SupervisionSection from './SupervisionSection';
 import StaffScheduleSection from './StaffScheduleSection';
 import MonthStationBlock, { type BlockSel, type MonthGridHandlers } from './MonthStationBlock';
+import BloqueVisible from './BloqueVisible';
 import MonthCalendar from './MonthCalendar';
 import AgendaView from './AgendaView';
 import { COL_W, COL_STICKY_W } from './gridBand';
@@ -259,6 +260,9 @@ const VIEW_STYLE_KEY = 'programador.horario.estilo';
    COL_STICKY_W) vive en `gridBand`. */
 const COL_CHUNK = 60;
 const COL_OVERSCAN = 7;
+/* Margen vertical: se construyen bastante ANTES de asomar, porque encontrarse
+   un hueco en blanco al desplazar es peor que construir de más. */
+const ROW_OVERSCAN_PX = 900;
 
 /* ─── Papeles de color ───────────────────────────────────────────────────────
    Ni un color escrito a mano. Cada cosa que se pinta declara su PAPEL
@@ -478,14 +482,77 @@ export default function Schedule() {
   // date header on top + frozen station column on the left, free horizontal
   // scroll through every day — "sin límite", capped at the current year.
   const todayYear = useMemo(() => Number(tzToday().slice(0, 4)), []);
+
+  /* ─── LA HOJA CARGA TRES MESES, NO UN AÑO ────────────────────────────────
+     Antes el lienzo era el año entero: 365 columnas. Eso no sólo pinta de más,
+     es que TODO cuelga de ahí — la consulta pide doce meses de turnos, el
+     recuento de alertas recorre estaciones x 365 días, y la rejilla mide 16.300
+     px. Medido: 41.136 nodos y ~9 s hasta ver la hoja.
+
+     Virtualizar las filas bajó los nodos un 73 % y el reloj sólo un 10 %, o sea
+     que el problema no era construir el DOM sino la CANTIDAD DE DÍAS que se
+     arrastra por todas partes. Con tres meses se cae de 365 a ~92 en la consulta,
+     en el bucle de alertas y en el lienzo a la vez.
+
+     El tramo empieza un mes ANTES del actual —para que se vea lo recién pasado—
+     y se amplía de tres en tres al llegar a cualquiera de los dos bordes, sin
+     salirse del año (el tope del producto). */
+  const MESES_POR_TRAMO = 3;
+  const primerDiaDeMes = (d: Date) => new Date(d.getFullYear(), d.getMonth(), 1);
+  const ultimoDiaDeMes = (d: Date) => new Date(d.getFullYear(), d.getMonth() + 1, 0);
+
+  const [rango, setRango] = useState(() => {
+    const [y, m] = tzToday().split('-').map(Number);
+    const minAnio = new Date(todayYear, 0, 1);
+    let desde = primerDiaDeMes(new Date(y, m - 2, 1));
+    if (desde < minAnio) desde = minAnio;
+    let hasta = ultimoDiaDeMes(new Date(desde.getFullYear(), desde.getMonth() + MESES_POR_TRAMO - 1, 1));
+    const maxAnio = new Date(todayYear, 11, 31);
+    if (hasta > maxAnio) hasta = maxAnio;
+    return { desde, hasta };
+  });
+
   const monthDays = useMemo(() => {
     const days: Date[] = [];
-    const d = new Date(todayYear, 0, 1);
-    while (d.getFullYear() === todayYear) {
+    const d = new Date(rango.desde);
+    while (d <= rango.hasta) {
       days.push(new Date(d));
       d.setDate(d.getDate() + 1);
     }
     return days;
+  }, [rango]);
+
+  /* Al ampliar HACIA ATRÁS se añaden columnas a la izquierda, así que todo lo
+     que había se corre: sin compensar el desplazamiento, la hoja pega un salto
+     bajo el dedo. Se apunta aquí y se aplica cuando el lienzo ya creció. */
+  const compensarPxRef = useRef(0);
+  useLayoutEffect(() => {
+    if (!compensarPxRef.current) return;
+    const el = gridScrollRef.current;
+    if (el) el.scrollLeft += compensarPxRef.current;
+    compensarPxRef.current = 0;
+  }, [monthDays.length]);
+
+  /* Un mes al que se salta puede caer FUERA del tramo cargado. Se amplía primero
+     y el salto queda pendiente hasta que el lienzo lo contiene. */
+  const saltoPendienteRef = useRef<Date | null>(null);
+
+  const ampliarRango = useCallback((hacia: 'antes' | 'despues') => {
+    setRango(prev => {
+      const minAnio = new Date(todayYear, 0, 1);
+      const maxAnio = new Date(todayYear, 11, 31);
+      if (hacia === 'antes') {
+        if (prev.desde <= minAnio) return prev;
+        let nuevo = primerDiaDeMes(new Date(prev.desde.getFullYear(), prev.desde.getMonth() - MESES_POR_TRAMO, 1));
+        if (nuevo < minAnio) nuevo = minAnio;
+        compensarPxRef.current += Math.round((prev.desde.getTime() - nuevo.getTime()) / 86400000) * COL_W;
+        return { ...prev, desde: nuevo };
+      }
+      if (prev.hasta >= maxAnio) return prev;
+      let nuevo = ultimoDiaDeMes(new Date(prev.hasta.getFullYear(), prev.hasta.getMonth() + MESES_POR_TRAMO, 1));
+      if (nuevo > maxAnio) nuevo = maxAnio;
+      return { ...prev, hasta: nuevo };
+    });
   }, [todayYear]);
 
   // `YYYY-MM-DD` y «¿es domingo?» de cada columna, precalculados UNA vez. Antes
@@ -519,10 +586,10 @@ export default function Schedule() {
      filas por una pantalla de teléfono. */
   const startDateStr = view === 'calendar' || view === 'agenda'
     ? calRange.desde
-    : view === 'month' ? `${todayYear}-01-01` : fmtDate(addDays(timelineDays[0], -1));
+    : view === 'month' ? fmtDate(rango.desde) : fmtDate(addDays(timelineDays[0], -1));
   const endDateStr = view === 'calendar' || view === 'agenda'
     ? calRange.hasta
-    : view === 'month' ? `${todayYear}-12-31` : fmtDate(addDays(timelineDays[timelineDays.length - 1], 1));
+    : view === 'month' ? fmtDate(rango.hasta) : fmtDate(addDays(timelineDays[timelineDays.length - 1], 1));
 
   const fetchAll = useCallback(async (opts?: { silent?: boolean }) => {
     // After the first load every refetch is SILENT: the grid stays mounted so
@@ -591,6 +658,11 @@ export default function Schedule() {
     for (const p of positions) m.set(p.id, p);
     return m;
   }, [positions]);
+  /* El mismo mapa en un ref, para que `scrollCellIntoView` siga siendo estable
+     (deps vacías) y aun así pueda saber de qué estación es una fila cuando su
+     bloque todavía no está construido. */
+  const posicionesRef = useRef(positionsById);
+  posicionesRef.current = positionsById;
 
   // MANUAL SACAFRANCO: nothing is auto-scheduled for an SF. Their month starts
   // all-libre; coverage exists ONLY where a REAL shift exists — placed by
@@ -1045,7 +1117,14 @@ export default function Schedule() {
         el.scrollLeft = COL_STICKY_W + (c + 1) * COL_W - el.clientWidth;
       }
     }
-    document.getElementById(`hr-${rowKey}`)?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    /* La fila puede NO estar construida: con la hoja virtualizada por bloques,
+       el puesto de destino quizá esté fuera de la ventana. Se cae entonces al
+       bloque de su ESTACIÓN, que siempre existe (es el espaciador), y al
+       acercarse se monta solo y el teclado vuelve a encontrar la fila. */
+    const fila = document.getElementById(`hr-${rowKey}`);
+    if (fila) { fila.scrollIntoView({ block: 'nearest', inline: 'nearest' }); return; }
+    const estacionId = posicionesRef.current.get(rowKey)?.stationId;
+    if (estacionId) document.getElementById(`hs-${estacionId}`)?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
   }, []);
 
   // ─── Actions ──────────────────────────────────────────────────────────────
@@ -1058,6 +1137,15 @@ export default function Schedule() {
     const fin = hhmm(pos?.endTime) || '19:00';
     return [ini, fin];
   };
+
+  /** ¿La plaza elegida en el formulario ROTA día/noche? Sin noches en el patrón
+   *  del puesto, no rota: el vigilante se queda en el horario de su plaza. */
+  const puestoRota = useMemo(() => {
+    if (!assignTarget) return true;
+    const st = stationsById.get(assignTarget.stationId);
+    const estilo = rotationStyles.find(r => r.id === st?.rotationStyleId);
+    return (estilo?.nightShifts || 0) > 0;
+  }, [assignTarget, stationsById, rotationStyles]);
 
   const openAssignForm = (stationId: string, positionId: string, dateStr?: string) => {
     const [ini, fin] = horasDelPuesto(positionId);
@@ -2055,6 +2143,51 @@ export default function Schedule() {
      dispare un render por fotograma, sino uno cada ~14 columnas.              */
   const [colWin, setColWin] = useState<{ a: number; b: number }>({ a: 0, b: 0 });
 
+  /* ─── LA VENTANA DE FILAS ────────────────────────────────────────────────
+     Las columnas ya se virtualizaban; las filas no, así que con 50 estaciones se
+     construían los 50 bloques aunque en pantalla quepan cinco: 41.136 nodos y
+     9,3 s hasta ver la rejilla. Se calcula igual que la de columnas —con la
+     aritmética del desplazamiento— y por el mismo motivo: es determinista y su
+     peor caso es pintar de más.
+
+     Antes se probó `content-visibility: auto` (9.295 ms contra 9.288 ms: nada,
+     porque el coste es que React CONSTRUYE los elementos, no que el navegador
+     los maquete) y un `IntersectionObserver` (deja la hoja VACÍA si no dispara).
+     Las dos están documentadas en `BloqueVisible`; no reintentarlas sin medir.
+
+     `b` arranca en el total: mientras no se haya medido nada se pinta TODO, que
+     es lo lento de siempre pero nunca una hoja en blanco. */
+  const alturasRef = useRef<Map<string, number>>(new Map());
+  const basePxRef = useRef<HTMLDivElement>(null);
+  const [rowWin, setRowWin] = useState<{ a: number; b: number }>({ a: 0, b: Number.MAX_SAFE_INTEGER });
+
+  /** Alto de un bloque: el medido si ya se pintó una vez, si no la estimación. */
+  const altoDeEstacion = useCallback((st: Station) => {
+    const medido = alturasRef.current.get(st.id);
+    if (medido && medido > 0) return medido;
+    return 86 + 48 * Math.max(1, getPositionsForStation(st.id).length);
+  }, [getPositionsForStation]);
+
+  const syncRowWindow = useCallback((el: HTMLDivElement | null) => {
+    if (!el || !stations.length) return;
+    // Dónde empieza la tira de estaciones dentro del lienzo (debajo de la
+    // cabecera de días, supervisión y oficina). Un div de alto cero lo marca.
+    const base = basePxRef.current?.offsetTop ?? 0;
+    const arriba = el.scrollTop - ROW_OVERSCAN_PX;
+    const abajo = el.scrollTop + el.clientHeight + ROW_OVERSCAN_PX;
+    let y = base;
+    let a = 0;
+    let b = stations.length;
+    for (let i = 0; i < stations.length; i++) {
+      const h = altoDeEstacion(stations[i]);
+      if (y + h < arriba) a = i + 1;
+      if (y > abajo) { b = i; break; }
+      y += h;
+    }
+    if (a >= b) { a = 0; b = stations.length; }   // nunca una hoja vacía
+    setRowWin(prev => (prev.a === a && prev.b === b ? prev : { a, b }));
+  }, [stations, altoDeEstacion]);
+
   const syncColWindow = useCallback((el: HTMLDivElement | null) => {
     if (!el) return;
     const total = monthDays.length;
@@ -2075,20 +2208,45 @@ export default function Schedule() {
   useLayoutEffect(() => {
     if (view !== 'month' || loading) return;
     syncColWindow(gridScrollRef.current);
-    const onResize = () => syncColWindow(gridScrollRef.current);
+    syncRowWindow(gridScrollRef.current);
+    const onResize = () => { syncColWindow(gridScrollRef.current); syncRowWindow(gridScrollRef.current); };
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, [view, loading, syncColWindow]);
 
+  /* La columna 0 es el primer día del TRAMO cargado, no el 1 de enero. */
   const dayIndexOf = useCallback((y: number, mo1: number, d: number) =>
-    Math.round((new Date(y, mo1 - 1, d).getTime() - new Date(todayYear, 0, 1).getTime()) / 86400000), [todayYear]);
+    Math.round((new Date(y, mo1 - 1, d).getTime() - rango.desde.getTime()) / 86400000), [rango]);
 
   const scrollMonthTo = useCallback((monthIdx0: number) => {
     const m = Math.max(0, Math.min(11, monthIdx0));
+    const objetivo = new Date(todayYear, m, 1);
+    setVisibleMonth(objetivo);
+
+    // Fuera del tramo cargado: se estira hasta abarcarlo y el salto espera a que
+    // el lienzo exista, o se estaría desplazando a una columna que no está.
+    if (objetivo < rango.desde || objetivo > rango.hasta) {
+      saltoPendienteRef.current = objetivo;
+      setRango(prev => {
+        const desde = objetivo < prev.desde ? primerDiaDeMes(objetivo) : prev.desde;
+        const finMes = ultimoDiaDeMes(objetivo);
+        const hasta = finMes > prev.hasta ? finMes : prev.hasta;
+        return (desde === prev.desde && hasta === prev.hasta) ? prev : { desde, hasta };
+      });
+      return;
+    }
     const idx = dayIndexOf(todayYear, m + 1, 1);
-    gridScrollRef.current?.scrollTo({ left: Math.max(0, idx * 44), behavior: 'smooth' });
-    setVisibleMonth(new Date(todayYear, m, 1));
-  }, [dayIndexOf, todayYear]);
+    gridScrollRef.current?.scrollTo({ left: Math.max(0, idx * COL_W), behavior: 'smooth' });
+  }, [dayIndexOf, todayYear, rango]);
+
+  useLayoutEffect(() => {
+    const objetivo = saltoPendienteRef.current;
+    if (!objetivo) return;
+    if (objetivo < rango.desde || objetivo > rango.hasta) return;   // aún creciendo
+    saltoPendienteRef.current = null;
+    const idx = dayIndexOf(objetivo.getFullYear(), objetivo.getMonth() + 1, 1);
+    gridScrollRef.current?.scrollTo({ left: Math.max(0, idx * COL_W), behavior: 'smooth' });
+  }, [rango, dayIndexOf]);
 
   const nav = useCallback((dir: number) => {
     setSel(null);
@@ -2187,6 +2345,9 @@ export default function Schedule() {
       try { prev = JSON.parse(sessionStorage.getItem(VIEW_KEY) || 'null') || {}; } catch { /* ignore */ }
       sessionStorage.setItem(VIEW_KEY, JSON.stringify({
         yr: todayYear,
+        // El tramo cargado forma parte de la identidad de la posición: un
+        // `scrollLeft` guardado contra otro inicio apunta a otro día.
+        tramo: fmtDate(rango.desde),
         a: fmtDate(currentDate),
         v: view,
         sl: el ? el.scrollLeft : (prev.sl || 0),
@@ -2214,6 +2375,21 @@ export default function Schedule() {
       const el = gridScrollRef.current;
       if (!el || view !== 'month') return;
       syncColWindow(el);
+      syncRowWindow(el);
+      /* ── «Y ASÍ»: se amplía al llegar a cualquiera de los dos bordes ────────
+         Un margen holgado para que el tramo nuevo esté antes de que el borde se
+         vea. Las dos funciones no hacen nada al topar con el año, que es el
+         límite del producto, así que esto no se dispara en bucle. */
+      const BORDE_PX = 600;
+      /* SÓLO DESPUÉS DE ATERRIZAR. Al montar, `scrollLeft` es 0 hasta que el
+         efecto de restauración salta al día de hoy — y un 0 se lee como «está
+         pegado al borde izquierdo», así que esto ampliaba hacia atrás en cada
+         evento de la carga y se tragaba el año entero antes de que nadie tocara
+         nada (medido: 365 columnas en vez de 92). Se espera a que la posición
+         inicial esté puesta. */
+      if (!restoredRef.current) return;
+      if (el.scrollLeft < BORDE_PX) ampliarRango('antes');
+      else if (el.scrollLeft + el.clientWidth > el.scrollWidth - BORDE_PX) ampliarRango('despues');
       // Toolbar month label follows the leftmost visible day of the canvas.
       const idx = Math.max(0, Math.min(monthDays.length - 1, Math.round((el.scrollLeft + 60) / 44)));
       const d = monthDays[idx];
@@ -2236,7 +2412,7 @@ export default function Schedule() {
       const saved = JSON.parse(sessionStorage.getItem(VIEW_KEY) || 'null');
       const el = gridScrollRef.current;
       if (!el) return;
-      if (saved && saved.yr === todayYear && (saved.sl || saved.st)) {
+      if (saved && saved.yr === todayYear && saved.tramo === fmtDate(rango.desde) && (saved.sl || saved.st)) {
         el.scrollLeft = saved.sl || 0;
         el.scrollTop = saved.st || 0;
       } else {
@@ -2250,6 +2426,7 @@ export default function Schedule() {
       // el evento `scroll` que la recalcula. Se recalcula aquí mismo, que es
       // donde se sabe que el lienzo acaba de moverse.
       syncColWindow(el);
+      syncRowWindow(el);
     } catch { /* ignore */ }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
@@ -2603,27 +2780,51 @@ export default function Schedule() {
                   {/* Station rows — cada puesto es un componente MEMOIZADO
                       (`MonthStationBlock`). Arrastrar una selección sólo repinta
                       el puesto tocado; antes repintaba la hoja entera. */}
-                  {stations.map(station => (
-                    <MonthStationBlock
-                      key={station.id}
-                      station={station}
-                      stationPositions={getPositionsForStation(station.id)}
-                      stationAlert={stationAlertByStationId.get(station.id)}
-                      assignmentsByPosition={assignmentsByPosition}
-                      overrideByGuardDate={overrideByGuardDate}
-                      sfStationCoverage={sfStationCoverage}
-                      guardColorMap={guardColorMap}
-                      monthDays={monthDays}
-                      monthDayStrs={monthDayStrs}
-                      monthDaySunday={monthDaySunday}
-                      colA={colA}
-                      colB={colB}
-                      gridCols={gridCols}
-                      todayStr={todayStr}
-                      sel={selForRows(getPositionsForStation(station.id))}
-                      h={handlers}
-                    />
-                  ))}
+                  {/* Marca dónde empieza la tira de estaciones dentro del
+                      lienzo; `syncRowWindow` mide desde aquí. Alto cero. */}
+                  <div ref={basePxRef} />
+                  {(() => {
+                    const a = Math.max(0, Math.min(rowWin.a, stations.length));
+                    const b = Math.max(a, Math.min(rowWin.b, stations.length));
+                    // Los bloques fuera de la ventana no se CONSTRUYEN: ocupan su
+                    // sitio con un espaciador, así la barra de desplazamiento y
+                    // las posiciones siguen siendo las de siempre.
+                    let antes = 0;
+                    for (let i = 0; i < a; i++) antes += altoDeEstacion(stations[i]);
+                    let despues = 0;
+                    for (let i = b; i < stations.length; i++) despues += altoDeEstacion(stations[i]);
+                    return (
+                      <>
+                        {antes > 0 && <div style={{ height: antes }} aria-hidden />}
+                        {stations.slice(a, b).map(station => {
+                          const plazas = getPositionsForStation(station.id);
+                          return (
+                            <BloqueVisible key={station.id} id={station.id} alturas={alturasRef}>
+                              <MonthStationBlock
+                                station={station}
+                                stationPositions={plazas}
+                                stationAlert={stationAlertByStationId.get(station.id)}
+                                assignmentsByPosition={assignmentsByPosition}
+                                overrideByGuardDate={overrideByGuardDate}
+                                sfStationCoverage={sfStationCoverage}
+                                guardColorMap={guardColorMap}
+                                monthDays={monthDays}
+                                monthDayStrs={monthDayStrs}
+                                monthDaySunday={monthDaySunday}
+                                colA={colA}
+                                colB={colB}
+                                gridCols={gridCols}
+                                todayStr={todayStr}
+                                sel={selForRows(plazas)}
+                                h={handlers}
+                              />
+                            </BloqueVisible>
+                          );
+                        })}
+                        {despues > 0 && <div style={{ height: despues }} aria-hidden />}
+                      </>
+                    );
+                  })()}
 
                   {/* ─── Sacafrancos Section ─── */}
                   {(() => {
@@ -3456,20 +3657,44 @@ export default function Schedule() {
         <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'oklch(0 0 0 / 0.55)' }} onClick={() => { setShowAssignForm(false); setMoveFrom(null); }}>
           <div className="glass-raised mx-4 max-h-[90vh] w-full max-w-md overflow-hidden overflow-y-auto animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--hairline)' }}>
-              <h4 className="text-sm font-semibold">{moveFrom ? t('ui.Schedule.moverVigilanteDePuesto', 'Mover vigilante de puesto') : (assignMode === 'single' ? t('ui.Schedule.cubrirEsteDia', 'Cubrir este día') : t('ui.Schedule.asignarVigilanteALaRotacion', 'Asignar vigilante a la rotación'))}</h4>
+              <h4 className="text-sm font-semibold">{moveFrom ? t('ui.Schedule.moverVigilanteDePuesto', 'Mover vigilante de puesto') : (assignMode === 'single' ? t('ui.Schedule.cubrirEsteDia', 'Cubrir este día') : (puestoRota ? t('ui.Schedule.asignarVigilanteALaRotacion', 'Asignar vigilante a la rotación') : 'Asignar vigilante al turno fijo'))}</h4>
               <button onClick={() => { setShowAssignForm(false); setMoveFrom(null); }} className="cg-btn-ghost cg-focus rounded-lg p-1.5"><X size={15} /></button>
             </div>
             <div className="p-5 space-y-4">
+              {/* ¿El puesto elegido ROTA? Lo dice su patrón: sin noches, no rota. */}
+              {(() => { return null; })()}
               {/* Position info */}
               {assignTarget && (() => {
                 const pos = positions.find(p => p.id === assignTarget.positionId);
                 const st = stations.find(s => s.id === assignTarget.stationId);
                 if (!pos || !st) return null;
                 const meta = POSITION_TONE[pos.type] || POSITION_TONE.fijo;
+                /* ── QUÉ VA A HACER ESTA PERSONA, DICHO EN CLARO ─────────────
+                   El diálogo enseñaba las horas de la plaza en letra pequeña y
+                   llamaba «rotación» a todo. En un puesto de 24 h con patrón SIN
+                   noches los dos fijos NO rotan: uno se queda de día y otro de
+                   noche, y eso lo decide la plaza que se elija — pero no había
+                   forma de saberlo desde aquí.
+
+                   La mitad se deduce de la HORA DE ENTRADA, la misma regla que
+                   usa el generador (`shiftHalfByStart`: entrar por la tarde o de
+                   madrugada es noche). No se guarda nada nuevo: se nombra lo que
+                   ya dice el puesto. */
+                const estiloPuesto = rotationStyles.find(r => r.id === st.rotationStyleId);
+                const rota = (estiloPuesto?.nightShifts || 0) > 0;
+                const horaEntrada = parseInt(String(pos.startTime || '07:00').slice(0, 2), 10) || 0;
+                const esNoche = horaEntrada >= 18 || horaEntrada < 6;
                 return (
                   <div className="rounded-xl px-3 py-2" style={toneCard(meta.tone)}>
                     <div className="text-xs font-semibold">{stationLabel(st)} <ArrowRight className="inline h-3 w-3" /> {pos.name}</div>
                     <div className="text-[10px] tabular-nums opacity-80">{pos.startTime} – {pos.endTime}</div>
+                    {pos.type === 'fijo' && (
+                      <div className="mt-1 text-[11px] font-semibold">
+                        {rota
+                          ? 'Rota día y noche según el patrón del puesto'
+                          : `Turno fijo de ${esNoche ? 'NOCHE' : 'DÍA'} — siempre en este horario`}
+                      </div>
+                    )}
                   </div>
                 );
               })()}
@@ -3493,13 +3718,15 @@ export default function Schedule() {
                     onChange={setAssignMode}
                     options={[
                       { value: 'single', label: t('ui.Schedule.soloEsteDia', 'Sólo este día') },
-                      { value: 'rotation', label: t('ui.ShiftAssignModal.rotacion', 'Rotación') },
+                      { value: 'rotation', label: puestoRota ? t('ui.ShiftAssignModal.rotacion', 'Rotación') : 'Turno fijo' },
                     ]}
                   />
                   <p className="mt-1.5 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
                     {assignMode === 'single'
-                      ? 'Un turno suelto para la fecha elegida. No entra en la rotación del puesto.'
-                      : 'Entra en la rotación del puesto: se generan sus turnos de todo el año. Tarda unos segundos.'}
+                      ? 'Un turno suelto para la fecha elegida. No entra en el horario del puesto.'
+                      : puestoRota
+                        ? 'Entra en la rotación del puesto: se generan sus turnos y irá alternando día y noche. Tarda unos segundos.'
+                        : 'Se queda en este horario todos sus días de trabajo, sin alternar. Tarda unos segundos.'}
                   </p>
                 </div>
               )}
