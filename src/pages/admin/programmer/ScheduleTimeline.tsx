@@ -387,6 +387,40 @@ export default function ScheduleTimeline({
     }
   };
 
+  /**
+   * «Éste y todos los siguientes». Borrar de uno en uno está bien para un cambio
+   * suelto; deshacer una temporada entera eran decenas de clics, y a mitad de
+   * camino es fácil dejarse días sueltos. El corte lo hace el SERVIDOR desde la
+   * hora del turno elegido: la pantalla sólo tiene cargada la ventana visible, así
+   * que «todos los siguientes» no se puede resolver aquí sin dejarse los que aún
+   * no se han pedido.
+   */
+  const deleteShiftAndFuture = async (target: ShiftRecord) => {
+    const isEngine = !!target.positionId;
+    const ok = await confirmDialog({
+      title: 'Eliminar éste y los siguientes',
+      message: isEngine
+        ? 'Se eliminarán este turno y todos los del mismo vigilante en este puesto de aquí en adelante. Lo ya ocurrido no se toca. Ojo: esto NO da de baja su asignación, así que la rotación puede volver a generarlos.'
+        : 'Se eliminarán este turno y todos los del mismo vigilante en este puesto de aquí en adelante. Lo ya ocurrido no se toca.',
+      confirmText: 'Eliminar los siguientes',
+      tone: 'danger',
+    });
+    if (!ok) return;
+    setDeleting(true);
+    try {
+      const r: any = await ApiService.delete(`/tenant/${tenantId}/shift/${target.id}/futuros`);
+      const d = r?.data ?? r;
+      const n = d?.eliminados ?? 0;
+      toast.success(`${n} turno${n === 1 ? '' : 's'} eliminado${n === 1 ? '' : 's'}`);
+      setDetail(null);
+      onChanged();
+    } catch (e: any) {
+      toast.error(e?.data?.message || e?.message || 'Error al eliminar');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const openBlockCtx = (e: React.MouseEvent, s: ShiftRecord) => {
     e.preventDefault();
     e.stopPropagation();
@@ -399,6 +433,7 @@ export default function ScheduleTimeline({
         { label: 'Ver detalle', onClick: () => setDetail(s) },
         { label: '—' },
         { label: 'Eliminar turno', danger: true, onClick: () => void deleteShift(s) },
+        { label: 'Eliminar éste y los siguientes…', danger: true, onClick: () => void deleteShiftAndFuture(s) },
       ],
     });
   };
@@ -1120,6 +1155,16 @@ export default function ScheduleTimeline({
                   style={{ color: 'var(--bad-text)' }}
                 >
                   {deleting ? <Loader2 size={13} className="animate-spin" /> : <Trash2 size={13} />} Eliminar
+                </button>
+                {/* Desde aquí se llega tras pinchar un turno en la Agenda, y es
+                    donde se notaba que sólo se podía borrar de uno en uno. */}
+                <button
+                  onClick={() => void deleteShiftAndFuture(detail)}
+                  disabled={deleting}
+                  className="cg-focus flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-semibold transition-all disabled:opacity-50"
+                  style={{ color: 'var(--bad-text)' }}
+                >
+                  {deleting ? <Loader2 size={13} className="animate-spin" /> : <Trash2 size={13} />} Éste y los siguientes
                 </button>
                 <div className="flex items-center gap-2">
                   <button
