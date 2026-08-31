@@ -2243,6 +2243,13 @@ export default function Schedule() {
         const [y, mo, d] = tzToday().split('-').map(Number);
         el.scrollLeft = Math.max(0, (dayIndexOf(y, mo, d) - 3) * 44);
       }
+      // SALTAR NO ES DESPLAZARSE. Mover `scrollLeft` a mano deja la ventana de
+      // columnas donde estaba —el tramo inicial, que es ENERO— mientras el
+      // lienzo ya está en agosto: la hoja aparecía VACÍA, sin un puesto cubierto
+      // a la vista, y sólo se poblaba cuando alguien tocaba la barra y disparaba
+      // el evento `scroll` que la recalcula. Se recalcula aquí mismo, que es
+      // donde se sabe que el lienzo acaba de moverse.
+      syncColWindow(el);
     } catch { /* ignore */ }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);

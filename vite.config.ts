@@ -65,6 +65,26 @@ export default defineConfig({
         // red. Los chunks van con hash, así que cada deploy invalida solo lo
         // que cambió.
         globPatterns: ["**/*.{js,css,html,woff2,png,svg,webp}"],
+        // ── LO QUE NO SE PRECARGA ───────────────────────────────────────────
+        // Precargar «todo» costaba 12,6 MB que el service worker se descarga de
+        // fondo en la PRIMERA carga tras cada deploy, compitiendo con las
+        // peticiones que la propia pantalla necesita. Medido en producción: el
+        // armazón tardaba 8,8 s y la rejilla del Horario 23 s con la caché
+        // fría, contra 0,7 s y 9 s con la caché caliente.
+        //
+        // Se quedan fuera las piezas que un usuario CONCRETO casi nunca usa:
+        //  · los seis diccionarios que no son el suyo (~2,8 MB) — el español va
+        //    dentro del bundle de entrada, y los demás ya se cargan bajo demanda;
+        //  · la radio (livekit) y la exportación a Excel (xlsx), que sólo bajan
+        //    si alguien abre esas pantallas.
+        // Siguen funcionando: al pedirlos se buscan en red. Lo que se pierde es
+        // poder CAMBIAR de idioma o abrir la radio estando ya sin conexión; el
+        // CRM en su idioma sigue abriendo offline, que es para lo que está.
+        globIgnores: [
+          "assets/{de,en,fr,it,nl,pl,pt}-*.js",
+          "assets/vendor-livekit-*.js",
+          "assets/vendor-xlsx-*.js",
+        ],
         // El chunk principal supera los 2 MB por defecto de Workbox.
         maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
         // SPA: cualquier navegación sin archivo propio cae al index…
@@ -130,6 +150,14 @@ export default defineConfig({
           "vendor-phone": ["libphonenumber-js"],
           // Notifications
           "vendor-toast": ["sonner"],
+          // ── LOS ICONOS, EN UN SOLO FICHERO ──────────────────────────────
+          // Sin esto Rollup le hacía un trozo a CADA icono: 136 ficheros de
+          // menos de 1 KB de los 395 del build. El Horario pide una veintena, y
+          // cada uno es un viaje de ida y vuelta que se encola detrás de los
+          // demás — medido en producción: 900 ms por icono con la caché
+          // caliente y 8,5 s con la caché fría, para 300 bytes de contenido.
+          // Agrupados van en una sola petición.
+          "vendor-icons": ["lucide-react"],
           // Heavy, feature-specific libs — split out so they never sit in the
           // initial entry. Combined with route-level React.lazy, these only
           // download when a user actually opens radio / maps.
