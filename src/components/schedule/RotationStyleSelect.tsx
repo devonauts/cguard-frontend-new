@@ -87,8 +87,14 @@ export default function RotationStyleSelect({
   const encaja = (s: RotationStyle) => (is24h
     ? (fijos24 ? (s.nightShifts || 0) === 0 : (s.nightShifts || 0) > 0)
     : (s.nightShifts || 0) === 0);
+  /* En TURNOS FIJOS se filtra de verdad, no se ordena. Un 4-4-2 ahí no quiere
+     decir nada —el vigilante no rota, se queda en su plaza— y ofrecerlo sólo
+     confunde: lo único que se decide es cada cuántos días libra. En rotativo se
+     sigue ordenando sin esconder, que es como estaba. */
   const options = useMemo(
-    () => [...styles].sort((a, b) => Number(encaja(b)) - Number(encaja(a))),
+    () => (fijos24
+      ? styles.filter((s) => (s.nightShifts || 0) === 0)
+      : [...styles].sort((a, b) => Number(encaja(b)) - Number(encaja(a)))),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [styles, is24h, fijos24],
   );
@@ -129,6 +135,31 @@ export default function RotationStyleSelect({
     }
   };
 
+  /** «Sin descansos»: trabaja todos los días. Es lo primero que pide un puesto
+   *  fijo recién montado y no había forma de llegar a ello sin abrir el creador
+   *  personalizado y adivinar que «0 descansos» era legal. Si el patrón no
+   *  existe en la empresa, se crea al vuelo. */
+  const sinDescansos = useMemo(
+    () => styles.find((x) => (x.nightShifts || 0) === 0 && x.restDays === 0 && (x.dayShifts || 0) > 0) || null,
+    [styles],
+  );
+  const elegirSinDescansos = async () => {
+    if (sinDescansos) { onChange(sinDescansos.id); return; }
+    setCreating(true);
+    try {
+      const res: any = await ApiService.post(`/tenant/${tenantId}/rotation-style`, {
+        data: { name: 'Fijo sin descanso', description: 'Trabaja todos los días', dayShifts: 1, nightShifts: 0, restDays: 0 },
+      });
+      const creado = res?.data ?? res;
+      if (creado?.id) {
+        setStyles((prev) => (prev.some((p) => p.id === creado.id) ? prev : [...prev, creado]));
+        onChange(creado.id);
+      }
+    } catch (e: any) {
+      toast.error(e?.message || 'No se pudo crear el patrón');
+    } finally { setCreating(false); }
+  };
+
   // Surface the selected style object to the parent (for derived counts).
   useEffect(() => {
     if (!onStyleChange) return;
@@ -157,7 +188,10 @@ export default function RotationStyleSelect({
     // siguen con mínimo 1: un ciclo de 0 días no es un patrón, es una división
     // por cero en `getRotationStatus`.
     const rest = Math.max(0, parseInt(cRest) || 0);
-    const night = is24h ? Math.max(0, parseInt(cNight) || 0) : 0;
+    // En TURNOS FIJOS no hay noches en el patrón —la noche la pone la ventana de
+    // la plaza—, y el campo ni se enseña: se fuerza a 0 para que lo oculto no
+    // pueda colarse en lo guardado.
+    const night = (is24h && !fijos24) ? Math.max(0, parseInt(cNight) || 0) : 0;
     if (work + night < 1) {
       toast.error('El patrón necesita al menos un día de trabajo.');
       return;
@@ -216,9 +250,15 @@ export default function RotationStyleSelect({
             <p className="mt-2 text-[11px] leading-snug" style={{ color: 'var(--ink-soft)' }}>
               Se crean dos plazas con horarios espejo: <strong>Fijo 1 de 07:00 a 19:00</strong> y{' '}
               <strong>Fijo 2 de 19:00 a 07:00</strong>. Cada vigilante se queda en la suya — al asignarlos,
-              el turno lo decide la plaza que elijas. Para que no libren nunca, usa un patrón «sin descanso».
+              el turno lo decide la plaza que elijas. Abajo sólo queda decidir cada cuántos días libran.
             </p>
           )}
+        </div>
+      )}
+
+      {fijos24 && (
+        <div className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>
+          ¿Cada cuántos días libran?
         </div>
       )}
 
@@ -226,7 +266,18 @@ export default function RotationStyleSelect({
         <div className="flex items-center gap-2 text-xs text-muted-foreground"><Loader2 size={13} className="animate-spin" />{" "}{t('ui.RotationStyleSelect.cargandoPatrones')}</div>
       ) : (
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-          {options.map((s) => (
+          {fijos24 && (
+            <button
+              type="button"
+              onClick={() => void elegirSinDescansos()}
+              disabled={creating}
+              className={`rounded-xl border px-3 py-2 text-left transition-all disabled:opacity-50 ${sinDescansos && value === sinDescansos.id ? 'border-primary bg-primary/10' : 'border-border/40 hover:border-primary/40'}`}
+            >
+              <span className="text-xs font-semibold text-foreground">Sin descansos</span>
+              <div className="text-[10px] text-muted-foreground">Trabaja todos los días</div>
+            </button>
+          )}
+          {options.filter((s) => !(fijos24 && sinDescansos && s.id === sinDescansos.id)).map((s) => (
             <button
               key={s.id}
               type="button"
@@ -235,7 +286,7 @@ export default function RotationStyleSelect({
             >
               <div className="flex items-center gap-1">
                 <span className="text-xs font-semibold text-foreground">{s.name}</span>
-                {!encaja(s) && (
+                {!encaja(s) && !fijos24 && (
                   <span
                     className="rounded px-1 text-[8px] font-bold uppercase text-muted-foreground"
                     title={is24h
@@ -259,7 +310,7 @@ export default function RotationStyleSelect({
             <label className="block text-[10px] font-medium text-muted-foreground mb-1 uppercase">{is24h ? t('ui.RotationStyleSelect.dias', 'Días') : t('ui.RotationStyleSelect.trabaja', 'Trabaja')}</label>
             <input type="number" min={is24h ? 0 : 1} max={30} value={cWork} onChange={(e) => setCWork(e.target.value)} className="w-20 rounded-lg border border-border/40 bg-background px-2 py-1.5 text-sm font-mono outline-none focus:border-primary" />
           </div>
-          {is24h && (
+          {is24h && !fijos24 && (
             <div>
               <label className="block text-[10px] font-medium text-muted-foreground mb-1 uppercase">Noches</label>
               <input type="number" min={0} max={30} value={cNight} onChange={(e) => setCNight(e.target.value)} className="w-20 rounded-lg border border-border/40 bg-background px-2 py-1.5 text-sm font-mono outline-none focus:border-primary" />
