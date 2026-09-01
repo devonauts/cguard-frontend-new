@@ -1,28 +1,41 @@
+# app.cguardpro.com es la APLICACIÓN (la pantalla de acceso al panel), no la web
+# que vende. Quien busca la marca tiene que aterrizar en cguardpro.com, así que
+# el index.html de aquí se sirve con `noindex, follow` y con el canónico
+# apuntando allí. Este archivo NO intenta hacer ese trabajo: sólo dice qué se
+# puede rastrear.
+#
+# Por qué ya no hay una lista larga de Disallow con las rutas del panel:
+#
+#   1. El noindex es lo que de verdad las saca del índice — pero para leerlo, el
+#      rastreador tiene que poder PEDIR la página. Un Disallow se lo impide, la
+#      etiqueta no se ve nunca, y la URL puede quedarse listada «sin descripción
+#      disponible». Bloquear y desindexar a la vez son señales contradictorias:
+#      aquí manda el noindex, y por eso el rastreo queda abierto.
+#   2. Enumerar rutas internas no protege nada — este archivo lo lee cualquiera —
+#      y a cambio publica el mapa del panel.
+#   3. La lista se quedaba corta sola. Toda ruta del panel devuelve el MISMO
+#      index.html (nginx cae a él para cualquier dirección), así que el noindex
+#      cubre las decenas que faltaban y también las que se añadan mañana; una
+#      lista escrita a mano habría que reescribirla en cada función nueva.
+
 User-agent: *
 Allow: /
-Allow: /login
-Allow: /register
-Allow: /forgot-password
-Allow: /reset-password
-Allow: /verify-email
 
-# Block authenticated app routes
-Disallow: /dashboard
-Disallow: /post-sites
-Disallow: /clients
-Disallow: /security-guards
-Disallow: /dispatcher
-Disallow: /routes
-Disallow: /reports
-Disallow: /billing
-Disallow: /payroll
-Disallow: /analytics
-Disallow: /gps-tracker
-Disallow: /configuration
-Disallow: /superadmin
-Disallow: /messenger
-Disallow: /memos
-Disallow: /actividades
-Disallow: /admin
+# Enlaces de un solo uso que SÍ enseñan contenido sin haber entrado (un clip de
+# video o un parte de despacho compartido con un cliente): llevan una ficha
+# secreta en la dirección. El noindex ya los cubre; esto evita además que se
+# descarguen si alguien pega uno de esos enlaces en un sitio público.
+Disallow: /video/shared/
+Disallow: /public/dispatch/
 
-Sitemap: https://app.cguardpro.com/sitemap.xml
+# La guía de la interfaz de programación se sirve bajo este mismo dominio desde
+# otra aplicación, que no comparte el index.html de arriba y por tanto no lleva
+# la etiqueta noindex. Mientras siga así, cerrar el rastreo es lo único que la
+# mantiene fuera de los buscadores.
+Disallow: /documentation/
+Disallow: /documentation-config
+
+# No se lista un mapa del sitio: no queda ni una página de este dominio que deba
+# aparecer en los buscadores, y anunciar direcciones marcadas como no indexables
+# es justo la contradicción que se vino a quitar. El mapa del sitio de verdad es
+# el de cguardpro.com.

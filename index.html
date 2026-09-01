@@ -22,34 +22,58 @@
       content="viewport-fit=cover, width=device-width, initial-scale=1.0"
     />
 
-    <title>C-Guard Pro | Plataforma de Gestión de Seguridad Física</title>
+    <!-- ── Buscadores ──────────────────────────────────────────────────────
+         Este dominio es la APLICACIÓN, no la web que vende. Antes pedía ser
+         indexado con el título y la descripción del producto entero, así que
+         quien buscaba la marca podía aterrizar en un formulario de acceso en
+         lugar de en cguardpro.com — y encima compitiendo contra ella por las
+         mismas palabras, con una página que sin JavaScript no sirve ni una
+         palabra de contenido.
+
+         Ahora:
+         · `noindex, follow` — fuera del índice, pero los enlaces se siguen.
+         · `canonical` a cguardpro.com — la señal de marca se consolida allí.
+
+         Este archivo es el ÚNICO que se sirve para CUALQUIER ruta (nginx:
+         `try_files $uri $uri/ /index.html`; no hay render en servidor ni
+         prerenderizado). Por eso el noindex cubre todo el panel de una vez,
+         incluidas las rutas que se añadan mañana... y por eso NO se puede
+         dejar `/login` indexable desde aquí: la etiqueta es la misma para las
+         dos. Y no vale ponerla con JavaScript al revés (noindex en el HTML y
+         quitarlo en `/login`): cuando el noindex viene en el HTML de origen,
+         el rastreador descarta la página ANTES de ejecutar el JavaScript, así
+         que ese permiso nunca lo vería. Si algún día hay que posicionar
+         «cguardpro acceso», sale de la web comercial o de una cabecera
+         `X-Robots-Tag` por ruta en nginx, no de este archivo. -->
+    <title>Acceso — CGuardPro</title>
 
     <!-- Poppins is self-hosted (bundled via src/main.tsx) — no render-blocking
          Google Fonts CDN request, and no dependency on a CDN that email/geo
          filters sometimes block. (Removed the duplicate CDN <link>.) -->
 
-    <!-- SEO Core -->
     <meta
       name="description"
-      content="C-Guard Pro es la plataforma líder en gestión de seguridad física: control de guardias, puestos de vigilancia, rutas de patrullaje, reportes en tiempo real y seguimiento GPS desde la nube."
+      content="Pantalla de acceso para las empresas que ya trabajan con CGuardPro. Si buscas qué es y qué incluye el sistema, está todo en cguardpro.com."
     />
-    <meta
-      name="keywords"
-      content="C-Guard Pro, gestión de seguridad, guardias de seguridad, puestos de vigilancia, patrullaje, seguimiento GPS, seguridad física, Ecuador, plataforma seguridad, control guardias"
-    />
-    <meta name="author" content="C-Guard Pro" />
-    <meta name="robots" content="index, follow" />
+    <!-- Aquí vivía una lista de palabras clave declaradas a mano. Google la
+         ignora desde 2009 y hoy sólo delata SEO viejo: se retiró entera en
+         lugar de mantenerla. -->
+    <meta name="author" content="CGuardPro" />
+    <meta name="robots" content="noindex, follow" />
     <meta name="theme-color" content="#f97316" />
-    <link rel="canonical" href="https://app.cguardpro.com/" />
+    <link rel="canonical" href="https://cguardpro.com/" />
 
-    <!-- Open Graph / Facebook -->
+    <!-- Open Graph / Facebook — esto NO es para buscadores, es la vista previa
+         de cuando alguien pega el enlace del acceso en un chat o un correo. Por
+         eso `og:url` sigue siendo el de la aplicación (es a donde lleva el
+         enlace) aunque el canónico apunte a la web comercial. -->
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="C-Guard Pro" />
+    <meta property="og:site_name" content="CGuardPro" />
     <meta property="og:locale" content="es_EC" />
-    <meta property="og:title" content="C-Guard Pro | Plataforma de Gestión de Seguridad Física" />
+    <meta property="og:title" content="Acceso — CGuardPro" />
     <meta
       property="og:description"
-      content="Gestiona tus operaciones de seguridad con C-Guard Pro: puestos de vigilancia, guardias, rutas de patrullaje, reportes y seguimiento GPS en tiempo real."
+      content="Entra al panel de CGuardPro con tu cuenta de empresa."
     />
     <meta property="og:url" content="https://app.cguardpro.com/" />
     <meta property="og:image" content="https://app.cguardpro.com/assets/logo/c-guard-logo.png" />
@@ -58,10 +82,10 @@
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="C-Guard Pro | Plataforma de Gestión de Seguridad Física" />
+    <meta name="twitter:title" content="Acceso — CGuardPro" />
     <meta
       name="twitter:description"
-      content="Gestiona guardias, puestos de vigilancia y rutas de patrullaje con C-Guard Pro. Seguimiento GPS en tiempo real."
+      content="Entra al panel de CGuardPro con tu cuenta de empresa."
     />
     <meta name="twitter:image" content="https://app.cguardpro.com/assets/logo/c-guard-logo.png" />
 
@@ -74,28 +98,11 @@
          versionado junto al service worker en vite.config.ts. El manifest.json
          suelto de public/ quedó retirado para no servir dos manifests. -->
 
-    <!-- JSON-LD Structured Data -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": "C-Guard Pro",
-      "applicationCategory": "BusinessApplication",
-      "operatingSystem": "Web",
-      "url": "https://app.cguardpro.com",
-      "description": "Plataforma cloud de gestión de seguridad física: control de guardias, puestos de vigilancia, patrullaje GPS y reportes en tiempo real.",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "provider": {
-        "@type": "Organization",
-        "name": "C-Guard Pro",
-        "url": "https://app.cguardpro.com"
-      }
-    }
-    </script>
+    <!-- Aquí había un JSON-LD de tipo SoftwareApplication que declaraba el
+         producto —con precio 0— en app.cguardpro.com. Se retiró por lo mismo
+         que el resto: la ficha del producto tiene que colgar de la web que lo
+         vende, no de la pantalla de acceso, y en una página con noindex los
+         buscadores no la usan de todas formas. -->
 
     <!-- Styles -->
     <script>
