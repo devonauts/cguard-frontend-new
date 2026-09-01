@@ -37,6 +37,7 @@ import { MeterBar } from "@/components/charts";
 import { ApiService } from "@/services/api/apiService";
 import { toast } from "sonner";
 import { confirmDialog } from "@/components/ui/confirmDialog";
+import ExtendShiftDialog, { type ExtendTarget } from "./ExtendShiftDialog";
 import ScheduleTimeline, { dateToWall, wallToDate, startPan } from "./ScheduleTimeline";
 import RotationStyleSelect from "@/components/schedule/RotationStyleSelect";
 import ContextMenu, { CtxItem, CtxMenuState } from "./ContextMenu";
@@ -1386,6 +1387,10 @@ export default function Schedule() {
         }),
       });
       items.push({ label: 'Registrar novedad…', onClick: () => setOverrideTarget({ guardId: a.guardId, guardName, date: dateStr, assignmentId: a.id }) });
+      // Doblar turno: el que está en el puesto se queda porque su relevo no
+      // llegó. Va junto a «novedad» porque es la misma familia — lo que pasó de
+      // verdad, no lo que estaba planificado.
+      items.push({ label: 'Extender turno…', onClick: () => setExtendTarget({ guardId: a.guardId, guardName, stationName: stationLabel(station) }) });
       const ov = getOverride(a.guardId, dateStr);
       if (ov) items.push({ label: `Quitar novedad (${ov.type})`, danger: true, onClick: () => void removeOverride(ov.id) });
       // ── TAPAR EL HUECO CON QUIEN SEA ──────────────────────────────────
@@ -1431,6 +1436,14 @@ export default function Schedule() {
         }),
       });
       items.push({ label: 'Registrar novedad…', onClick: () => setOverrideTarget({ guardId: sfGuard.guardId, guardName: gName, date: dateStr, assignmentId: sfGuard.id }) });
+      items.push({
+        label: 'Extender turno…',
+        onClick: () => setExtendTarget({
+          guardId: sfGuard.guardId,
+          guardName: gName,
+          stationName: stations.find(st => st.id === (covShift?.stationId ?? pos.stationId))?.stationName || null,
+        }),
+      });
       const ov = getOverride(sfGuard.guardId, dateStr);
       if (ov) items.push({ label: `Quitar novedad (${ov.type})`, danger: true, onClick: () => void removeOverride(ov.id) });
     } else {
@@ -1843,6 +1856,8 @@ export default function Schedule() {
 
   // Schedule overrides (novedades)
   const [overrideTarget, setOverrideTarget] = useState<{ guardId: string; guardName: string; date: string; assignmentId?: string } | null>(null);
+  /** «Extender turno…»: el vigilante que ya está en el puesto se queda más. */
+  const [extendTarget, setExtendTarget] = useState<ExtendTarget | null>(null);
 
   const performOverrideSave = useCallback(async (
     target: { guardId: string; guardName: string; date: string; assignmentId?: string },
@@ -3950,6 +3965,15 @@ export default function Schedule() {
       )}
 
       {/* ─── Override Modal ───────────────────────────────────────────────── */}
+      {extendTarget && tenantId && (
+        <ExtendShiftDialog
+          tenantId={tenantId}
+          target={extendTarget}
+          onClose={() => setExtendTarget(null)}
+          onDone={() => void fetchAll({ silent: true })}
+        />
+      )}
+
       {overrideTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'oklch(0 0 0 / 0.55)' }} onClick={() => setOverrideTarget(null)}>
           <div className="glass-raised mx-4 w-full max-w-xs overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
