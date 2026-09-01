@@ -1151,8 +1151,24 @@ export default function Schedule() {
     return (estilo?.nightShifts || 0) > 0;
   }, [assignTarget, stationsById, rotationStyles]);
 
-  const openAssignForm = (stationId: string, positionId: string, dateStr?: string) => {
-    const [ini, fin] = horasDelPuesto(positionId);
+  /**
+   * `copiarHorasDe` — el turno cuyo horario hay que replicar. Al tapar una
+   * falta, las horas que importan son las del turno que quedó vacío, no las
+   * nominales del puesto: en una estación que alterna día/noche, las del puesto
+   * mandaban al reemplazo al horario equivocado.
+   */
+  const openAssignForm = (
+    stationId: string,
+    positionId: string,
+    dateStr?: string,
+    copiarHorasDe?: ShiftRecord | null,
+  ) => {
+    let [ini, fin] = horasDelPuesto(positionId);
+    if (copiarHorasDe) {
+      const hm = (m: number) => `${String(Math.floor((((m % 1440) + 1440) % 1440) / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
+      ini = hm(dateToWall(new Date(copiarHorasDe.startTime), tzName).minutes);
+      fin = hm(dateToWall(new Date(copiarHorasDe.endTime), tzName).minutes);
+    }
     setAssignTarget({ stationId, positionId });
     setAssignGuard('');
     setAssignStartDate(dateStr || tzToday());
@@ -1393,8 +1409,34 @@ export default function Schedule() {
       // Doblar turno: el que está en el puesto se queda porque su relevo no
       // llegó. Va junto a «novedad» porque es la misma familia — lo que pasó de
       // verdad, no lo que estaba planificado.
-      items.push({ label: 'Extender turno…', onClick: () => setExtendTarget({ guardId: a.guardId, guardName, stationName: stationLabel(station) }) });
+      //
+      // Se le pasa el PUESTO y el fin de su turno: son los dos datos que el
+      // servidor tendría que adivinar de «su último turno», y adivinarlos
+      // fallaba en cuanto el vigilante tenía turno al día siguiente.
+      const suShift = shiftByGuardDate.get(`${a.guardId}|${dateStr}`);
+      items.push({
+        label: 'Extender turno…',
+        onClick: () => setExtendTarget({
+          guardId: a.guardId,
+          guardName,
+          stationId: station.id,
+          stationName: stationLabel(station),
+          scheduledEnd: suShift?.endTime ?? null,
+        }),
+      });
       const ov = getOverride(a.guardId, dateStr);
+      // ── LA FALTA TIENE QUE TENER SALIDA ───────────────────────────────
+      // Registrar la novedad es la mitad del trabajo: el puesto sigue vacío.
+      // Desde la misma casilla se ofrece taparlo con otro vigilante (turno
+      // suelto de ese día), que es el caso del relevo temporal. Doblar al que
+      // ya está sigue estando arriba, en «Extender turno…».
+      const faltaAbierta = ov && ['F', 'V', 'PM'].includes(String(ov.type));
+      if (faltaAbierta) {
+        items.push({
+          label: `Cubrir la falta de ${primerNombre(a.guard, 'este vigilante')} con otro vigilante…`,
+          onClick: () => openAssignForm(station.id, pos.id, dateStr, suShift),
+        });
+      }
       if (ov) items.push({ label: `Quitar novedad (${ov.type})`, danger: true, onClick: () => void removeOverride(ov.id) });
       // ── TAPAR EL HUECO CON QUIEN SEA ──────────────────────────────────
       // Antes, un puesto CON fijo sólo ofrecía «Asignar sacafranco…», y sólo
@@ -1444,7 +1486,9 @@ export default function Schedule() {
         onClick: () => setExtendTarget({
           guardId: sfGuard.guardId,
           guardName: gName,
+          stationId: covShift?.stationId ?? pos.stationId,
           stationName: stations.find(st => st.id === (covShift?.stationId ?? pos.stationId))?.stationName || null,
+          scheduledEnd: covShift?.endTime ?? null,
         }),
       });
       const ov = getOverride(sfGuard.guardId, dateStr);

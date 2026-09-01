@@ -28,8 +28,17 @@ export interface ExtendTarget {
   guardId: string;
   guardName: string;
   stationName?: string | null;
+  /**
+   * El puesto de la casilla desde la que se abrió. Se envía SIEMPRE que se
+   * conozca: quien pulsa sabe en qué puesto está, y hacérselo deducir al
+   * servidor de «su último turno» fallaba justo en los casos que importan —
+   * turno del día anulado, o un vigilante traído de otro puesto.
+   */
+  stationId?: string | null;
   /** Fin previsto de su turno, para proponer un «hasta» razonable. */
   scheduledEnd?: string | null;
+  /** Inicio del tramo nuevo. Por defecto, donde termina el suyo. */
+  scheduledStart?: string | null;
 }
 
 const MOTIVOS: { v: string; label: string }[] = [
@@ -82,7 +91,7 @@ export default function ExtendShiftDialog({
   useEffect(() => {
     if (!target) return;
     let vivo = true;
-    ApiService.get('/security-guard/autocomplete?limit=200')
+    ApiService.get(`/tenant/${localStorage.getItem('tenantId') || ''}/security-guard/autocomplete?limit=200`)
       .then((r: any) => {
         if (!vivo) return;
         const filas = Array.isArray(r) ? r : r?.rows || r?.data || [];
@@ -96,19 +105,31 @@ export default function ExtendShiftDialog({
     return () => { vivo = false; };
   }, [target]);
 
+  // Desde dónde empalma el tramo nuevo: el fin de su turno cuando se conoce.
+  // Se manda al servidor en vez de dejar que lo deduzca — quien abre el diálogo
+  // está mirando la casilla exacta.
+  const desde = useMemo(() => {
+    const raw = target?.scheduledStart || target?.scheduledEnd;
+    if (!raw) return null;
+    const d = new Date(raw);
+    return Number.isNaN(d.getTime()) ? null : d;
+  }, [target?.scheduledStart, target?.scheduledEnd]);
+
   // Las consecuencias, en vivo mientras se mueve la hora. No impiden nada.
   const horas = useMemo(() => {
     const fin = new Date(hasta);
-    const ini = target?.scheduledEnd ? new Date(target.scheduledEnd) : null;
-    if (Number.isNaN(fin.getTime()) || !ini || Number.isNaN(ini.getTime())) return null;
-    return (fin.getTime() - ini.getTime()) / 3600000;
-  }, [hasta, target?.scheduledEnd]);
+    if (Number.isNaN(fin.getTime()) || !desde) return null;
+    return (fin.getTime() - desde.getTime()) / 3600000;
+  }, [hasta, desde]);
 
+  // Con código además del texto: el código es lo que queda guardado en el
+  // registro de la extensión, y es con lo que después se puede contar «cuántas
+  // veces se autorizó una jornada de 24 h».
   const avisos = useMemo(() => {
-    const out: string[] = [];
-    if (horas != null && horas > 0) out.push(`Son ${Math.round(horas)} h más de las previstas.`);
-    if (horas != null && horas >= 12) out.push('Contando su turno, quedarían cerca de 24 h seguidas.');
-    if (horas != null && horas <= 0) out.push('La hora de fin es anterior al inicio del tramo.');
+    const out: { code: string; text: string }[] = [];
+    if (horas != null && horas > 0) out.push({ code: 'horas_extra', text: `Son ${Math.round(horas)} h más de las previstas.` });
+    if (horas != null && horas >= 12) out.push({ code: 'jornada_24h', text: 'Contando su turno, quedarían cerca de 24 h seguidas.' });
+    if (horas != null && horas <= 0) out.push({ code: 'fin_antes_del_inicio', text: 'La hora de fin es anterior al inicio del tramo.' });
     return out;
   }, [horas]);
 
@@ -121,13 +142,15 @@ export default function ExtendShiftDialog({
       await coverageService.extension({
         guardId: target.guardId,
         until: fin.toISOString(),
+        from: desde ? desde.toISOString() : undefined,
+        stationId: target.stationId || undefined,
         reason: motivo as any,
         reasonNote: nota.trim() || undefined,
         absentGuardId: ausenteId === SIN_AUSENTE ? undefined : ausenteId,
         notifyClient: avisarCliente,
         // Se guarda QUÉ se advirtió y aun así se confirmó. En una disputa
         // laboral eso pesa más que un bloqueo que alguien esquivó por fuera.
-        acknowledgedWarnings: avisos,
+        acknowledgedWarnings: avisos.map((a) => a.code),
       });
       toast.success(
         `${target.guardName} queda cubriendo hasta las ` +
@@ -156,7 +179,9 @@ export default function ExtendShiftDialog({
       description={
         `${target?.guardName || ''}` +
         `${target?.stationName ? ` · ${target.stationName}` : ''}` +
-        ' · se crea el tramo en el horario desde donde terminó el suyo'
+        (desde
+          ? ` · el tramo nuevo empieza a las ${desde.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+          : ' · se crea el tramo en el horario desde donde terminó el suyo')
       }
       icon={<Clock3 />}
       footer={
@@ -240,8 +265,8 @@ export default function ExtendShiftDialog({
           <div className="rounded-lg p-3" style={{ background: 'color-mix(in oklab, var(--warn) 12%, transparent)' }}>
             <p className="cg-eyebrow" style={{ color: 'var(--warn-text)' }}>Antes de confirmar</p>
             <ul className="mt-1 space-y-0.5">
-              {avisos.map((a, i) => (
-                <li key={i} className="text-xs" style={{ color: 'var(--warn-text)' }}>· {a}</li>
+              {avisos.map((a) => (
+                <li key={a.code} className="text-xs" style={{ color: 'var(--warn-text)' }}>· {a.text}</li>
               ))}
             </ul>
           </div>

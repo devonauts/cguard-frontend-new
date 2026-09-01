@@ -184,6 +184,8 @@ export const coverageService = {
     absentGuardId?: string;
     notifyClient?: boolean;
     acknowledgedWarnings?: string[];
+    /** El fichaje abierto que se alarga, si se conoce. */
+    guardShiftId?: string;
   }) => api.post(`/tenant/${getTenantId()}/coverage/extension`, body).then((r) => r.data?.data ?? r.data),
 
   /** Reemplazo por vacaciones/permiso: X sale por un rango, Y cubre todo el
