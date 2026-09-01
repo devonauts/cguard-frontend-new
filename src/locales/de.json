@@ -11173,6 +11173,30 @@
       "guardar": "Dienstplan speichern",
       "guardada": "Dienstplan gespeichert",
       "errorGuardar": "Dienstplan konnte nicht gespeichert werden"
+    },
+    "RadioCoverage": {
+      "title": "Kanalabdeckung",
+      "inChannel": "Im Kanal",
+      "ofOnDuty": "von {{n}} im Dienst",
+      "offChannel": "Im Dienst, kein Funk",
+      "offChannelHint": "Sie hören den Kanal nicht",
+      "offChannelNone": "Niemand außerhalb des Kanals",
+      "wakeable": "Können benachrichtigt werden",
+      "wakeableHint": "Ihr Telefon empfängt noch Hinweise",
+      "listTitle": "Im Dienst, aber ohne Funk",
+      "allCovered": "Alle im Kanal",
+      "allCoveredDesc": "Jede Wachperson im Dienst ist gerade mit dem Funk verbunden.",
+      "lastSignal": "Letztes Signal um {{hora}}",
+      "neverReported": "Ihr Telefon hat den Funk nie gemeldet",
+      "noAviso": "Kann nicht benachrichtigt werden",
+      "state": {
+        "active": "App offen",
+        "background": "Im Hintergrund",
+        "reconnecting": "Verbindet neu",
+        "offline": "Keine Verbindung",
+        "stale": "Kein aktuelles Signal",
+        "unknown": "Keine Daten"
+      }
     }
   },
   "visitantes": {

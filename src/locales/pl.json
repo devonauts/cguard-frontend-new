@@ -11173,6 +11173,30 @@
       "guardar": "Zapisz grafik",
       "guardada": "Grafik zapisany",
       "errorGuardar": "Nie udało się zapisać grafiku"
+    },
+    "RadioCoverage": {
+      "title": "Zasięg kanału",
+      "inChannel": "Na kanale",
+      "ofOnDuty": "z {{n}} na zmianie",
+      "offChannel": "Na zmianie bez radia",
+      "offChannelHint": "Nie słuchają kanału",
+      "offChannelNone": "Nikt poza kanałem",
+      "wakeable": "Można ich powiadomić",
+      "wakeableHint": "Ich telefon nadal odbiera powiadomienia",
+      "listTitle": "Na zmianie, ale poza radiem",
+      "allCovered": "Wszyscy na kanale",
+      "allCoveredDesc": "Każdy pracownik ochrony na zmianie jest teraz połączony z radiem.",
+      "lastSignal": "Ostatni sygnał o {{hora}}",
+      "neverReported": "Ich telefon nigdy nie zgłosił radia",
+      "noAviso": "Nie można powiadomić",
+      "state": {
+        "active": "Aplikacja otwarta",
+        "background": "W tle",
+        "reconnecting": "Ponowne łączenie",
+        "offline": "Brak połączenia",
+        "stale": "Brak świeżego sygnału",
+        "unknown": "Brak danych"
+      }
     }
   },
   "visitantes": {

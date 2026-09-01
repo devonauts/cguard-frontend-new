@@ -10669,6 +10669,30 @@
       "guardar": "Save schedule",
       "guardada": "Schedule saved",
       "errorGuardar": "Could not save the schedule"
+    },
+    "RadioCoverage": {
+      "title": "Channel coverage",
+      "inChannel": "On the channel",
+      "ofOnDuty": "of {{n}} on shift",
+      "offChannel": "On shift, no radio",
+      "offChannelHint": "They are not hearing the channel",
+      "offChannelNone": "Nobody off the channel",
+      "wakeable": "Can be alerted",
+      "wakeableHint": "Their phone still receives alerts",
+      "listTitle": "On shift but off the radio",
+      "allCovered": "Everyone on the channel",
+      "allCoveredDesc": "Every guard on shift is connected to the radio right now.",
+      "lastSignal": "Last signal at {{hora}}",
+      "neverReported": "Their phone has never reported the radio",
+      "noAviso": "Cannot be alerted",
+      "state": {
+        "active": "App open",
+        "background": "In the background",
+        "reconnecting": "Reconnecting",
+        "offline": "No connection",
+        "stale": "No recent signal",
+        "unknown": "No data"
+      }
     }
   },
   "map": {

@@ -11173,6 +11173,30 @@
       "guardar": "Enregistrer l’horaire",
       "guardada": "Horaire enregistré",
       "errorGuardar": "Impossible d’enregistrer l’horaire"
+    },
+    "RadioCoverage": {
+      "title": "Couverture du canal",
+      "inChannel": "Sur le canal",
+      "ofOnDuty": "sur {{n}} en service",
+      "offChannel": "En service, sans radio",
+      "offChannelHint": "Ils n'entendent pas le canal",
+      "offChannelNone": "Personne hors du canal",
+      "wakeable": "Peuvent être alertés",
+      "wakeableHint": "Leur téléphone reçoit encore les alertes",
+      "listTitle": "En service mais hors radio",
+      "allCovered": "Tous sur le canal",
+      "allCoveredDesc": "Chaque agent en service est connecté à la radio en ce moment.",
+      "lastSignal": "Dernier signal à {{hora}}",
+      "neverReported": "Leur téléphone n'a jamais signalé la radio",
+      "noAviso": "Impossible de l'alerter",
+      "state": {
+        "active": "App ouverte",
+        "background": "En arrière-plan",
+        "reconnecting": "Reconnexion",
+        "offline": "Pas de connexion",
+        "stale": "Aucun signal récent",
+        "unknown": "Aucune donnée"
+      }
     }
   },
   "visitantes": {

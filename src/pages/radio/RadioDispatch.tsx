@@ -9,6 +9,7 @@ import { radioCheckService } from "@/lib/api/radioCheckService";
 import { useFileUrl } from "@/lib/fileUrl";
 import { useRadioRealtime } from "@/components/radio/RadioRealtimeProvider";
 import RadioLiveChannelPanel from "@/components/radio/RadioLiveChannelPanel";
+import RadioCoveragePanel from "@/components/radio/RadioCoveragePanel";
 
 const statusBadge: Record<string, { label: string; labelKey: string; cls: string }> = {
   responded: { label: "Respondió", labelKey: "ui.RadioDispatch.status.responded", cls: "bg-emerald-500/15 text-emerald-600" },
@@ -175,6 +176,9 @@ export default function RadioDispatch() {
       )}
 
       <div className="mb-5"><RadioLiveChannelPanel /></div>
+      {/* Debajo del canal en vivo a propósito: primero se ve el canal, y
+          justo después a quién le toca estar en él y no está. */}
+      <div className="mb-5"><RadioCoveragePanel /></div>
 
       {loading ? (
         <div className="flex justify-center py-16"><Loader2 className="animate-spin text-muted-foreground" /></div>

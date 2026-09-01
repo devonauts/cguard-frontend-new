@@ -11173,6 +11173,30 @@
       "guardar": "Salva orario",
       "guardada": "Orario salvato",
       "errorGuardar": "Impossibile salvare l’orario"
+    },
+    "RadioCoverage": {
+      "title": "Copertura del canale",
+      "inChannel": "Sul canale",
+      "ofOnDuty": "su {{n}} in turno",
+      "offChannel": "In turno senza radio",
+      "offChannelHint": "Non stanno ascoltando il canale",
+      "offChannelNone": "Nessuno fuori dal canale",
+      "wakeable": "Possono essere avvisati",
+      "wakeableHint": "Il telefono riceve ancora gli avvisi",
+      "listTitle": "In turno ma fuori dalla radio",
+      "allCovered": "Tutti sul canale",
+      "allCoveredDesc": "Ogni guardia in turno è collegata alla radio in questo momento.",
+      "lastSignal": "Ultimo segnale alle {{hora}}",
+      "neverReported": "Il telefono non ha mai segnalato la radio",
+      "noAviso": "Non è possibile avvisarlo",
+      "state": {
+        "active": "App aperta",
+        "background": "In secondo piano",
+        "reconnecting": "Riconnessione",
+        "offline": "Nessuna connessione",
+        "stale": "Nessun segnale recente",
+        "unknown": "Nessun dato"
+      }
     }
   },
   "visitantes": {

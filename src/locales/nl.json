@@ -11173,6 +11173,30 @@
       "guardar": "Rooster opslaan",
       "guardada": "Rooster opgeslagen",
       "errorGuardar": "Rooster kon niet worden opgeslagen"
+    },
+    "RadioCoverage": {
+      "title": "Kanaaldekking",
+      "inChannel": "Op het kanaal",
+      "ofOnDuty": "van {{n}} in dienst",
+      "offChannel": "In dienst zonder radio",
+      "offChannelHint": "Zij horen het kanaal niet",
+      "offChannelNone": "Niemand buiten het kanaal",
+      "wakeable": "Kunnen gewaarschuwd worden",
+      "wakeableHint": "Hun telefoon ontvangt nog meldingen",
+      "listTitle": "In dienst maar zonder radio",
+      "allCovered": "Iedereen op het kanaal",
+      "allCoveredDesc": "Elke bewaker in dienst is nu verbonden met de radio.",
+      "lastSignal": "Laatste signaal om {{hora}}",
+      "neverReported": "Hun telefoon heeft de radio nooit gemeld",
+      "noAviso": "Kan niet gewaarschuwd worden",
+      "state": {
+        "active": "App open",
+        "background": "Op de achtergrond",
+        "reconnecting": "Opnieuw verbinden",
+        "offline": "Geen verbinding",
+        "stale": "Geen recent signaal",
+        "unknown": "Geen gegevens"
+      }
     }
   },
   "visitantes": {

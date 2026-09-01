@@ -10669,6 +10669,30 @@
       "guardar": "Guardar jornada",
       "guardada": "Jornada guardada",
       "errorGuardar": "No se pudo guardar la jornada"
+    },
+    "RadioCoverage": {
+      "title": "Cobertura del canal",
+      "inChannel": "En el canal",
+      "ofOnDuty": "de {{n}} en turno",
+      "offChannel": "En turno sin radio",
+      "offChannelHint": "No están oyendo el canal",
+      "offChannelNone": "Nadie fuera del canal",
+      "wakeable": "Se les puede avisar",
+      "wakeableHint": "Su teléfono aún recibe avisos",
+      "listTitle": "En turno pero fuera de la radio",
+      "allCovered": "Todos en el canal",
+      "allCoveredDesc": "Cada vigilante en turno está conectado a la radio ahora mismo.",
+      "lastSignal": "Última señal a las {{hora}}",
+      "neverReported": "Su teléfono no ha dado señal de la radio",
+      "noAviso": "No se le puede avisar",
+      "state": {
+        "active": "App abierta",
+        "background": "En segundo plano",
+        "reconnecting": "Reconectando",
+        "offline": "Sin conexión",
+        "stale": "Sin señal reciente",
+        "unknown": "Sin datos"
+      }
     }
   },
   "map": {
