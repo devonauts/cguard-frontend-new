@@ -845,7 +845,7 @@ export default function Schedule() {
   // que NO venga de la rotación de ese puesto — que es la definición de una
   // cobertura, sea quien sea quien la haga.
   const sfStationCoverage = useMemo(() => {
-    const map = new Map<string, { name: string; fullName: string; code: 'D' | 'N' }[]>();
+    const map = new Map<string, { name: string; fullName: string; code: 'D' | 'N'; ext?: boolean }[]>();
     // Los turnos que la rotación del puesto genera llevan `positionId`; los
     // sueltos (cobertura, bloque dibujado, turno único) no. Un SF sigue contando
     // aunque su turno traiga posición, por compatibilidad con lo de antes.
@@ -867,7 +867,10 @@ export default function Schedule() {
       const startMin = dateToWall(new Date(s.startTime), tzName).minutes;
       const code: 'D' | 'N' = startMin >= 18 * 60 || startMin < 6 * 60 ? 'N' : 'D';
       if (!map.has(key)) map.set(key, []);
-      map.get(key)!.push({ name: initials || 'SF', fullName, code });
+      // `extension` = alguien DOBLÓ (su relevo no llegó). Se pinta distinto del
+      // resto de coberturas: no es un sacafranco haciendo su trabajo, es una
+      // persona encadenando dos turnos, y eso hay que verlo de un vistazo.
+      map.get(key)!.push({ name: initials || 'SF', fullName, code, ext: s.status === 'extension' });
     }
     return map;
   }, [shifts, reliefGuardIds, tzName, guardsPool]);
@@ -3965,14 +3968,11 @@ export default function Schedule() {
       )}
 
       {/* ─── Override Modal ───────────────────────────────────────────────── */}
-      {extendTarget && tenantId && (
-        <ExtendShiftDialog
-          tenantId={tenantId}
-          target={extendTarget}
-          onClose={() => setExtendTarget(null)}
-          onDone={() => void fetchAll({ silent: true })}
-        />
-      )}
+      <ExtendShiftDialog
+        target={extendTarget}
+        onClose={() => setExtendTarget(null)}
+        onDone={() => void fetchAll({ silent: true })}
+      />
 
       {overrideTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'oklch(0 0 0 / 0.55)' }} onClick={() => setOverrideTarget(null)}>

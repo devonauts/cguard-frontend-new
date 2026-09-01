@@ -165,6 +165,27 @@ export const coverageService = {
     allowRestDay?: boolean;
   }) => api.post(`/tenant/${getTenantId()}/coverage/transfer`, body).then((r) => r.data?.data ?? r.data),
 
+  /**
+   * EXTENDER TURNO: el vigilante que ya cubrió el día se queda además con la
+   * noche porque su relevo no llegó. El servidor crea el turno en el horario
+   * (marcado como extensión) y registra el motivo, quién faltó y quién lo
+   * autorizó. Devuelve además los `warnings` que se mostraron.
+   */
+  extension: (body: {
+    guardId: string;
+    /** Hasta qué hora se queda (ISO). */
+    until: string;
+    /** Desde cuándo; por defecto, donde terminó su último turno. */
+    from?: string;
+    stationId?: string;
+    reason?: CoverageReason;
+    reasonNote?: string;
+    /** Quién faltó, si faltó alguien. Opcional. */
+    absentGuardId?: string;
+    notifyClient?: boolean;
+    acknowledgedWarnings?: string[];
+  }) => api.post(`/tenant/${getTenantId()}/coverage/extension`, body).then((r) => r.data?.data ?? r.data),
+
   /** Reemplazo por vacaciones/permiso: X sale por un rango, Y cubre todo el
    *  periodo en una acción. El servidor marca la ausencia, deja a Y con los
    *  turnos del puesto y lo hace figurar en la estación. */

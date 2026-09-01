@@ -2,7 +2,22 @@ export interface RotationStyle { id: string; name: string; description?: string;
 export interface StationPosition { id: string; name: string; type: 'fijo' | 'sacafranco'; startTime: string; endTime: string; guardsNeeded: number; sortOrder: number; stationId: string; }
 export interface GuardRef { id: string; firstName: string; lastName: string; email?: string; }
 export interface GuardAssignment { id: string; guardId: string; stationId: string; positionId: string; rotationStyleId: string; startDate: string; endDate?: string; platoonOffset: number; isRelief: boolean; status: string; /** 'holder' | 'shadow' — un aprendiz acompaña y NO cuenta como cobertura. */ role?: string; shadowOfAssignmentId?: string | null; guard?: GuardRef; position?: StationPosition; rotationStyle?: RotationStyle; }
-export interface ShiftRecord { id: string; guardId: string; stationId: string; positionId?: string; startTime: string; endTime: string; guard?: Pick<GuardRef, 'id' | 'firstName' | 'lastName'>; }
+export interface ShiftRecord {
+  id: string;
+  guardId: string;
+  stationId: string;
+  positionId?: string;
+  startTime: string;
+  endTime: string;
+  /**
+   * planned | covered | reinforcement | extension | absent | transferred_out |
+   * cancelled. El tablero lo usa para distinguir una cobertura normal de una
+   * EXTENSIÓN (alguien doblando porque su relevo no llegó), que se pinta en
+   * ámbar y no en verde.
+   */
+  status?: string;
+  guard?: Pick<GuardRef, 'id' | 'firstName' | 'lastName'>;
+}
 export interface ScheduleOverride { id: string; guardId: string; assignmentId?: string; date: string; type: string; note?: string; }
 export interface GuardOption { id: string; label: string; }
 

@@ -112,7 +112,7 @@ export type MonthStationBlockProps = {
   stationAlert: StationAlert | undefined;
   assignmentsByPosition: Map<string, GuardAssignment[]>;
   overrideByGuardDate: Map<string, ScheduleOverride>;
-  sfStationCoverage: Map<string, { name: string; fullName: string; code: 'D' | 'N' }[]>;
+  sfStationCoverage: Map<string, { name: string; fullName: string; code: 'D' | 'N'; ext?: boolean }[]>;
   guardColorMap: Record<string, string>;
   monthDays: Date[];
   monthDayStrs: string[];
@@ -197,16 +197,28 @@ function MonthStationBlockInner({
   const primeraFilaId = stationPositions[0]?.id;
 
   /** La píldora de una cobertura que ninguna «L» va a enseñar. */
-  const pildoraCobertura = (lista: { name: string; fullName: string; code: 'D' | 'N' }[]) => (
-    <div
-      className="flex min-h-[18px] flex-1 cursor-default flex-col items-center justify-center rounded"
-      style={toneCard('ok', 12, 22)}
-      title={`Cubre: ${lista.map(x => x.fullName).join(', ')}`}
-    >
-      <span className="text-[10px] font-bold leading-none">{lista[0].code}</span>
-      <span className="text-[8px] leading-none opacity-80">{lista[0].name}</span>
-    </div>
-  );
+  const pildoraCobertura = (lista: { name: string; fullName: string; code: 'D' | 'N'; ext?: boolean }[]) => {
+    // Una EXTENSIÓN (alguien doblando porque su relevo no llegó) va en ámbar,
+    // no en verde: el verde dice «cubierto y en orden», y esto está cubierto
+    // pero NO está en orden — hay una persona encadenando dos turnos.
+    const esExt = lista.some(x => x.ext);
+    return (
+      <div
+        className="flex min-h-[18px] flex-1 cursor-default flex-col items-center justify-center rounded"
+        style={toneCard(esExt ? 'warn' : 'ok', esExt ? 18 : 12, esExt ? 34 : 22)}
+        title={
+          esExt
+            ? `DOBLA turno: ${lista.map(x => x.fullName).join(', ')}`
+            : `Cubre: ${lista.map(x => x.fullName).join(', ')}`
+        }
+      >
+        <span className="text-[10px] font-bold leading-none">
+          {esExt ? '2×' : lista[0].code}
+        </span>
+        <span className="text-[8px] leading-none opacity-80">{lista[0].name}</span>
+      </div>
+    );
+  };
 
   const renderFijoCell = (pos: StationPosition, posAssignments: GuardAssignment[], day: Date, dayIdx: number) => {
     const dateStr = monthDayStrs[dayIdx];
