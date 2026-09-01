@@ -17,7 +17,33 @@ import {
 } from "@/components/ui/command";
 import { ChevronsUpDown, Check } from "lucide-react";
 import { COUNTRIES, Country } from "@/lib/data/countries";
+import { getTenantCountry } from "@/utils/tenantLocation";
 import { cn } from "@/lib/utils";
+
+/**
+ * País con el que arranca el campo cuando aún no hay número.
+ *
+ * Era `COUNTRIES[0]` — Estados Unidos — para todo el mundo, ignorando el país
+ * de la empresa que ya se guarda justo para esto. Quien daba de alta un
+ * teléfono en Quito o en Madrid tenía que cambiar el prefijo a mano cada vez.
+ * Orden: lo que pida quien usa el componente, el país de la empresa, la región
+ * del idioma del navegador y, sólo entonces, el primero de la lista.
+ */
+function resolverPaisInicial(preferido?: string): Country {
+  const candidatos = [preferido, getTenantCountry()];
+  try {
+    candidatos.push((navigator?.language || '').match(/[-_]([A-Za-z]{2})\b/)?.[1]);
+  } catch {
+    /* navegador sin `navigator.language` */
+  }
+  for (const c of candidatos) {
+    const code = (c || '').trim().toUpperCase();
+    if (!code) continue;
+    const encontrado = COUNTRIES.find((p) => p.code === code);
+    if (encontrado) return encontrado;
+  }
+  return COUNTRIES[0];
+}
 
 type PhoneInputProps = {
     value: string;
@@ -35,14 +61,16 @@ type PhoneInputProps = {
      * will be rendered to expand the full list.
      */
     maxCountries?: number;
+    /** Código ISO-2 con el que arrancar (p. ej. "ES"). Sin él se usa el país de
+     *  la empresa o la región del navegador. */
+    defaultCountry?: string;
 };
 
-export function PhoneInput({ value, onChange, placeholder, onCountryChange, maxLocalDigits, maxCountries }: PhoneInputProps) {
+export function PhoneInput({ value, onChange, placeholder, onCountryChange, maxLocalDigits, maxCountries, defaultCountry }: PhoneInputProps) {
   const { t } = useTranslation();
     // notify parent of selected country via onCountryChange when provided
-    const defaultCountry = COUNTRIES[0];
     const [open, setOpen] = useState(false);
-    const [country, setCountry] = useState<Country>(defaultCountry);
+    const [country, setCountry] = useState<Country>(() => resolverPaisInicial(defaultCountry));
     const [showAllCountries, setShowAllCountries] = useState(false);
 
     // notify initial country to parent once

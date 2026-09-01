@@ -14,7 +14,17 @@ import { AuthService } from "@/services/auth/authService";
 import { setTenantId as setClientTenantId } from "@/lib/api/clientService";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslation } from 'react-i18next';
-import { validateTaxNumberForCountry, validatePhoneForCountry, digitsOnly } from '@/lib/validators/id';
+import { validateTaxNumberForCountry, validatePhoneForCountry, resolveCountryCode, taxIdLabelFor, digitsOnly } from '@/lib/validators/id';
+
+/** La zona horaria del navegador de quien se registra. Es la mejor señal que
+ *  tenemos en el alta, y mucho mejor que el defecto del servidor. */
+function navegadorTimezone(): string | undefined {
+    try {
+        return Intl.DateTimeFormat().resolvedOptions().timeZone || undefined;
+    } catch {
+        return undefined;
+    }
+}
 
 export default function TenantJoinModal({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
     const [mode, setMode] = useState<'join' | 'create'>('join');
@@ -208,7 +218,11 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
     const [taxError, setTaxError] = useState<string | null>(null);
     const [emailError, setEmailError] = useState<string | null>(null);
     const [websiteError, setWebsiteError] = useState<string | null>(null);
-    const [landlineCountry, setLandlineCountry] = useState<string>('EC');
+    // Arrancaba en 'EC', así que hasta que el usuario tocaba el selector del propio
+    // campo el fijo se medía con la regla ecuatoriana (7 dígitos, empieza en 2-7):
+    // un fijo de Madrid rebotaba y cortaba el envío del formulario. Vacío = todavía
+    // no se sabe, y entonces manda el país de la dirección de la empresa.
+    const [landlineCountry, setLandlineCountry] = useState<string>('');
     const [landlineError, setLandlineError] = useState<string | null>(null);
     const [logoFile, setLogoFile] = useState<File | null>(null);
     const [logoError, setLogoError] = useState<string | null>(null);
@@ -219,10 +233,9 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
         // PhoneInput entrega el número en formato internacional: +593 2 3456789
         // Queremos validar que la parte local (sin código país) tenga 7 dígitos
         let d = digitsOnly(p);
-        const c = (country || '').toString().toLowerCase();
 
-        // Detectar y quitar código de país
-        if (c === 'ec' || c === 'ecuador' || d.startsWith('593')) {
+        // Ecuador sólo si el país lo dice, o si el número trae su prefijo escrito.
+        if (resolveCountryCode(country) === 'EC' || p.replace(/\s/g, '').startsWith('+593')) {
             if (d.startsWith('593')) d = d.slice(3);
             // Si empieza con 0, quitarlo (caso nacional)
             if (d.startsWith('0')) d = d.slice(1);
@@ -255,19 +268,21 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
             setLandlineError(null);
             return;
         }
-        const msg = getLandlineErrorMessage(form.landline, landlineCountry);
+        const msg = getLandlineErrorMessage(form.landline, landlineCountry || form.country || undefined);
         setLandlineError(msg);
-    }, [form.landline, landlineCountry]);
+    }, [form.landline, landlineCountry, form.country]);
 
     // Return a localized, specific error message for phone validation or null if valid
     const getPhoneErrorMessage = (phone: string | undefined, country?: string) => {
         const p = (phone || '').toString().trim();
         if (!p) return null;
         const d = digitsOnly(p);
-        const c = (country || '').toString().toLowerCase();
 
-        const isEcuador = c.includes('ec') || c.includes('ecuador') || d.startsWith('593');
-        if (isEcuador) {
+        // `c.includes('ec')` no era una comprobación, era una lotería: «Greece»,
+        // «Czech Republic» y «Liechtenstein» contienen «ec», y el geocodificador
+        // guarda el nombre largo del país. Un griego con un móvil correcto leía
+        // «El celular debe tener 9 dígitos y comenzar con 9» y no podía registrarse.
+        if (resolveCountryCode(country) === 'EC' || p.replace(/\s/g, '').startsWith('+593')) {
             // Normalize local part
             let local = d;
             if (local.startsWith('593')) local = local.slice(3);
@@ -289,59 +304,28 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
         if (d.length < 7 || d.length > 15) return 'Número de teléfono inválido.';
         return null;
     };
-    // Return a localized, specific error message for tax/ID numbers
+    // El identificador fiscal se mide con la vara del país que declara la empresa.
+    // Antes se aplicaba SIEMPRE la ecuatoriana, y encima se activaba sola cuando
+    // el número empezaba por 593 — así que un identificador legítimo de medio
+    // mundo se convertía en un RUC mal formado. Una empresa en Austin con su
+    // número de nueve dígitos no podía terminar el registro. Ver validators/id.ts.
     const getTaxErrorMessage = (tax: string | undefined, country?: string) => {
         const v = (tax || '').toString().trim();
         if (!v) return null;
-        const d = digitsOnly(v);
-        const c = (country || '').toString().toLowerCase();
+        if (validateTaxNumberForCountry(v, country)) return null;
 
-        // Ecuador: handle cédula vs RUC cases
-        if (c.includes('ec') || c.includes('ecuador') || d.startsWith('593')) {
-            // If the number corresponds to a RUC-like length (>10), require it to end in 001
-            if (d.length > 10) {
-                if (!d.endsWith('001')) {
-                    return 'Si tiene más de 10 dígitos, el RUC ecuatoriano debe terminar en 001.';
-                }
-                if (d.length !== 13) {
-                    return t('ui.TenantJoinModal.rucTreceDigitos', 'El RUC ecuatoriano debe tener 13 dígitos.');
-                }
-                // full RUC shape present, validate with validator helper
-                if (!validateTaxNumberForCountry(v, 'EC')) {
-                    return 'RUC inválido: verifique la cédula base y los dígitos (debe terminar en 001).';
-                }
-                return null;
-            }
-
-            // Otherwise treat as cédula (10 dígitos). Validate cedula base.
-            if (d.length !== 10) return 'Cédula ecuatoriana inválida: debe tener 10 dígitos.';
-            if (!validateTaxNumberForCountry(v, 'EC')) return t('ui.TenantJoinModal.cedulaInvalida', 'Cédula ecuatoriana inválida.');
-            return null;
+        switch (resolveCountryCode(country)) {
+            case 'EC':
+                return t('ui.TenantJoinModal.rucTreceDigitos', 'El RUC debe tener 13 dígitos.');
+            case 'MX':
+                return t('ui.TenantJoinModal.rfcInvalido', 'El RFC son tres o cuatro letras, seis dígitos de fecha y tres de homoclave. Ejemplo: ABC123456T1A.');
+            case 'CO':
+                return t('ui.TenantJoinModal.nitInvalido', 'El NIT son entre 8 y 10 dígitos, con dígito de verificación opcional.');
+            case 'PE':
+                return t('ui.TenantJoinModal.rucPeruInvalido', 'El RUC son 11 dígitos y empieza por 10, 15, 17 o 20.');
+            default:
+                return t('ui.TenantJoinModal.identificacionInvalida', 'Escribe entre 5 y 20 letras o números, como aparece en el registro de tu empresa.');
         }
-
-        // Ecuador: basic checks for RUC (13 dígitos termina en 001) y cédula (10 dígitos)
-        if (c.includes('ec') || c.includes('ecuador')) {
-            const digits = digitsOnly(v);
-            // RUC-like: more than 10 digits -> expect 13 and end with 001
-            if (digits.length > 10) {
-                if (!digits.endsWith('001')) return 'Si tiene más de 10 dígitos, el RUC ecuatoriano debe terminar en 001.';
-                if (digits.length !== 13) return t('ui.TenantJoinModal.rucTreceDigitos', 'El RUC ecuatoriano debe tener 13 dígitos.');
-                if (!validateTaxNumberForCountry(v, 'EC')) return 'RUC inválido: verifique la cédula base y los dígitos (debe terminar en 001).';
-                return null;
-            }
-
-            // Cédula: expect 10 digits
-            if (digits.length === 10) {
-                if (!validateTaxNumberForCountry(v, 'EC')) return t('ui.TenantJoinModal.cedulaInvalida', 'Cédula ecuatoriana inválida.');
-                return null;
-            }
-
-            return 'Número de identificación inválido para Ecuador.';
-        }
-
-        // Fallback generic message
-        if (!validateTaxNumberForCountry(v, country)) return 'Número de identificación inválido, debe tener 13 dígitos (001).';
-        return null;
     };
 
     const getEmailErrorMessage = (email: string | undefined) => {
@@ -379,9 +363,7 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
 
     // Live-validate phone as user types or country changes
     useEffect(() => {
-        const pd = digitsOnly(form.phone || '');
-        let pc = form.country || form.phoneCountry || undefined;
-        if (pd.startsWith('593')) pc = 'EC';
+        const pc = form.country || form.phoneCountry || undefined;
         if (!form.phone) {
             setPhoneError(null);
             return;
@@ -425,16 +407,19 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
 
     // Live-validate tax number
     useEffect(() => {
-        const td = digitsOnly(form.taxNumber || '');
-        let tc = form.country || undefined;
-        if (td.length === 13 && td.endsWith('001')) tc = 'EC';
         if (!form.taxNumber) {
             setTaxError(null);
             return;
         }
-        const taxMsg = getTaxErrorMessage(form.taxNumber, tc);
+        const taxMsg = getTaxErrorMessage(form.taxNumber, form.country || undefined);
         setTaxError(taxMsg);
     }, [form.taxNumber, form.country, t]);
+
+    // El nombre del documento donde está la empresa. Sin país declarado, un
+    // genérico: es preferible a nombrarle el documento de otro país.
+    const etiquetaFiscal =
+        taxIdLabelFor(form.country) ||
+        t('ui.TenantJoinModal.identificacionFiscal', 'Identificación fiscal');
 
     // Live-validate email
     useEffect(() => {
@@ -510,14 +495,10 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
             setWebsiteError(null);
         }
 
-        // celular: validar en base al país (usa país de dirección; si no, usa selector de teléfono)
-        // If phone starts with Ecuador dial code, prefer Ecuador validation.
-        const phoneDigits = digitsOnly(form.phone || '');
-        let phoneCountry = form.country || form.phoneCountry || undefined;
-        if (phoneDigits.startsWith('593')) {
-            phoneCountry = 'EC';
-        }
-        const phoneMsg = getPhoneErrorMessage(form.phone, phoneCountry);
+        // Celular: el país lo pone la dirección de la empresa; si aún no está, el
+        // selector del propio campo. `getPhoneErrorMessage` ya reconoce el +593
+        // escrito, así que no hace falta deducir el país de la forma del número.
+        const phoneMsg = getPhoneErrorMessage(form.phone, form.country || form.phoneCountry || undefined);
         if (phoneMsg) {
             setPhoneError(phoneMsg);
             return;
@@ -531,14 +512,10 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
             return;
         }
 
-        // tax/RUC: validar en base al país. If the tax number matches Ecuador pattern
-        // (13 digits and ends with 001) validate as Ecuador regardless of address country.
-        const taxDigits = digitsOnly(form.taxNumber || '');
-        let taxCountry = form.country || undefined;
-        if (taxDigits.length === 13 && taxDigits.endsWith('001')) {
-            taxCountry = 'EC';
-        }
-        const taxMsg = getTaxErrorMessage(form.taxNumber, taxCountry);
+        // Identificador fiscal: la regla la pone el país de la empresa, y sólo el
+        // país. Deducirlo de la forma del número era lo que colaba a extranjeros
+        // por el camino ecuatoriano.
+        const taxMsg = getTaxErrorMessage(form.taxNumber, form.country || undefined);
         if (taxMsg) {
             setTaxError(taxMsg);
             return;
@@ -547,7 +524,7 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
         }
 
         // landline optional: validar según país
-        const landlineMsg = getLandlineErrorMessage(form.landline, landlineCountry);
+        const landlineMsg = getLandlineErrorMessage(form.landline, landlineCountry || form.country || undefined);
         if (landlineMsg) {
             setLandlineError(landlineMsg);
             toast.error(landlineMsg);
@@ -575,6 +552,10 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
                 // Provide defaults for required tenant fields to avoid DB validation errors
                 // Use a temporary placeholder for taxNumber if user didn't provide one
                 taxNumber: (form.taxNumber && String(form.taxNumber).trim()) || 'PENDING',
+                // Sin esto el backend caía a su zona por defecto y TODA empresa
+                // creada por aquí nacía en hora de Ecuador — turnos, rondas e
+                // informes desplazados desde el primer día y sin aviso.
+                timezone: navegadorTimezone(),
                 businessTitle: (form.businessTitle && String(form.businessTitle).trim()) || form.name || 'Empresa',
             };
 
@@ -809,8 +790,8 @@ export default function TenantJoinModal({ open, onOpenChange }: { open: boolean;
                                     <Input value={form.businessTitle} onChange={(e) => setForm((s: any) => ({ ...s, businessTitle: e.target.value }))} />
                                 </div>
                                 <div>
-                                    <label className="text-sm">{t('tenantJoinModal.taxNumber')}<span className="ml-1" style={{ color: "var(--bad-text)" }}>*</span></label>
-                                    <Input value={form.taxNumber} onChange={(e) => setForm((s: any) => ({ ...s, taxNumber: e.target.value }))} />
+                                    <label className="text-sm">{etiquetaFiscal}<span className="ml-1" style={{ color: "var(--bad-text)" }}>*</span></label>
+                                    <Input value={form.taxNumber} maxLength={24} onChange={(e) => setForm((s: any) => ({ ...s, taxNumber: e.target.value }))} />
                                     {taxError && <p className="text-sm mt-1" style={{ color: "var(--bad-text)" }}>{taxError}</p>}
                                 </div>
                             </div>

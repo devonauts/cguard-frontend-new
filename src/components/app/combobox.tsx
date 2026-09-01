@@ -14,10 +14,14 @@ type Props = {
   placeholder?: string;
   options: Option[];
   empty?: string;
+  /** Sólo lectura: el disparador no abre. Necesario donde el formulario entero
+   *  se bloquea por permisos y antes había que envolver el combo en un
+   *  <fieldset disabled>, que rompe la maquetación. */
+  disabled?: boolean;
   "aria-label"?: string;
 };
 
-export function Combobox({ value, onChange, placeholder = i18n.t("kit.select.placeholder"), options, empty = i18n.t("kit.select.empty"), ...aria }: Props) {
+export function Combobox({ value, onChange, placeholder = i18n.t("kit.select.placeholder"), options, empty = i18n.t("kit.select.empty"), disabled = false, ...aria }: Props) {
   const [open, setOpen] = React.useState(false);
   const selected = options.find((o) => o.value === value)?.label ?? "";
 
@@ -29,9 +33,9 @@ export function Combobox({ value, onChange, placeholder = i18n.t("kit.select.pla
   }, [value]);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open && !disabled} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" role="combobox" aria-expanded={open} className="w-full justify-between" {...aria}>
+        <Button variant="outline" role="combobox" aria-expanded={open} disabled={disabled} className="w-full justify-between" {...aria}>
           {selected || placeholder}
           <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
         </Button>

@@ -123,7 +123,9 @@ export default function ProfileUserForm() {
 
   const [email, setEmail] = useState("");
   const [emailVerified, setEmailVerified] = useState(false);
-  const [phoneCode, setPhoneCode] = useState("+593");
+  // Sin prefijo de partida: el de Ecuador se le colaba en el teléfono a
+  // cualquier administrador que no llegara a tocar el selector de país.
+  const [phoneCode, setPhoneCode] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [avatar, setAvatar] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);

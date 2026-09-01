@@ -5,6 +5,30 @@ import 'react-phone-number-input/style.css';
 import './PhoneField.css';
 import { parsePhoneNumberFromString, getCountries, getCountryCallingCode } from 'libphonenumber-js';
 import { useTranslation } from 'react-i18next';
+import { getTenantCountry } from '@/utils/tenantLocation';
+
+/**
+ * País con el que arranca el selector cuando el número está vacío.
+ *
+ * Estaba fijo en "EC": un administrador de cualquier otro país veía la bandera
+ * de Ecuador y, al borrar su teléfono, le reaparecía el prefijo +593 escrito.
+ * Se toma el país de la empresa (que ya se guarda para esto mismo) y, si no lo
+ * hay, la región del idioma del navegador.
+ */
+function paisPorDefecto(): ReturnType<typeof getCountries>[number] | undefined {
+  const paises = getCountries();
+  const guardado = (getTenantCountry() || '').trim().toUpperCase();
+  const delGuardado = paises.find((c) => c === guardado);
+  if (delGuardado) return delGuardado;
+
+  try {
+    const region = (navigator?.language || '').match(/[-_]([A-Za-z]{2})\b/)?.[1]?.toUpperCase();
+    if (region) return paises.find((c) => c === region);
+  } catch {
+    /* navegador sin `navigator.language` */
+  }
+  return undefined;
+}
 
 type Props = {
   code: string;
@@ -55,7 +79,9 @@ export default function PhoneField({
 
   const handleChange = (value: string | undefined) => {
     if (!value) {
-      onCodeChange('+593');
+      // Vaciar el campo tiene que VACIARLO. Antes se reponía '+593' y el
+      // administrador extranjero veía reaparecer el prefijo de Ecuador.
+      onCodeChange('');
       onNumberChange('');
       return;
     }
@@ -74,7 +100,7 @@ export default function PhoneField({
         international
         // prefer derived country so the UI shows the correct flag
         country={derivedCountry}
-        defaultCountry="EC"
+        defaultCountry={paisPorDefecto()}
         value={fullNumber}
         onChange={handleChange}
         placeholder={t('settings.phoneField.enterPhonePlaceholder', { defaultValue: 'Ingresa número de teléfono' })}

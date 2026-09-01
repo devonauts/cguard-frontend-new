@@ -11,13 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { PhoneInput } from "@/components/phone/PhoneInput";
 import AddressAutocomplete, { AddressComponents } from "@/components/maps/AddressAutocomplete";
 import {
@@ -39,7 +32,9 @@ import { cn } from "@/lib/utils";
 import tenantService from "@/services/tenant.service";
 import onboardingService from "@/lib/api/onboardingService";
 import { invalidateTenantBranding } from "@/lib/tenantBranding";
-import { validateCedulaOrRuc, validatePhoneForCountry, digitsOnly } from "@/lib/validators/id";
+import { validateTaxNumberForCountry, validatePhoneForCountry, resolveCountryCode, digitsOnly } from "@/lib/validators/id";
+import { Combobox } from "@/components/app/combobox";
+import { timezoneOptions } from "@/lib/timezones";
 import StepIndicator from "./StepIndicator";
 import {
   OnboardingTenant,
@@ -106,6 +101,49 @@ const emptyForm: WizardForm = {
   website: "",
 };
 
+/**
+ * Cómo se llama el documento fiscal donde está la empresa, y qué se le pide.
+ *
+ * Decirle «RUC / Cédula» a una empresa alemana no es sólo raro: le hace buscar
+ * un campo que no tiene. Y el formulario exigía además 13 dígitos numéricos a
+ * todo el mundo, así que el paso 2 del asistente no se podía terminar fuera de
+ * Ecuador. Para el país que no modelamos, el texto no nombra ningún documento.
+ */
+function taxFieldTexts(country: string | undefined, t: (k: string, d?: any) => string) {
+  switch (resolveCountryCode(country)) {
+    case "EC":
+      return {
+        taxLabel: "RUC",
+        taxPlaceholder: t("ui.OnboardingWizard.ruc13Digitos", "13 dígitos"),
+        taxHint: t("ui.OnboardingWizard.rucTreceDigitos", "El RUC tiene 13 dígitos y la cédula 10."),
+      };
+    case "MX":
+      return {
+        taxLabel: "RFC",
+        taxPlaceholder: "ABC123456T1A",
+        taxHint: t("ui.OnboardingWizard.rfcInvalido", "El RFC son tres o cuatro letras, seis dígitos de fecha y tres de homoclave."),
+      };
+    case "CO":
+      return {
+        taxLabel: "NIT",
+        taxPlaceholder: t("ui.OnboardingWizard.nit810", "8 a 10 dígitos"),
+        taxHint: t("ui.OnboardingWizard.nitInvalido", "El NIT son entre 8 y 10 dígitos, con dígito de verificación opcional."),
+      };
+    case "PE":
+      return {
+        taxLabel: "RUC",
+        taxPlaceholder: "20123456789",
+        taxHint: t("ui.OnboardingWizard.rucPeruInvalido", "El RUC son 11 dígitos y empieza por 10, 15, 17 o 20."),
+      };
+    default:
+      return {
+        taxLabel: t("ui.OnboardingWizard.identificacionFiscal", "Identificación fiscal"),
+        taxPlaceholder: t("ui.OnboardingWizard.identificacionFiscalEjemplo", "Como aparece en el registro de tu empresa"),
+        taxHint: t("ui.OnboardingWizard.identificacionInvalida", "Escribe entre 5 y 20 letras o números, como aparece en el registro de tu empresa."),
+      };
+  }
+}
+
 export default function OnboardingWizard({
   open,
   onOpenChange,
@@ -165,14 +203,29 @@ export default function OnboardingWizard({
   const trialEnd = formatTrialEndDate(tenant?.trialEndsAt);
 
   // ── Per-step validation ──────────────────────────────────────────────────
+  // El identificador fiscal se valida contra el país de la empresa. Antes exigía
+  // cédula (10) o RUC (13) ecuatorianos a todo el mundo, así que el onboarding se
+  // atascaba aquí para cualquier cliente de fuera. Si el país aún no está escrito
+  // —vive en un paso posterior— se aplica la regla permisiva, que es la correcta:
+  // ante la duda, se acepta; quien decide de verdad es el backend.
   const taxValid = useMemo(
-    () => Boolean(form.taxNumber) && validateCedulaOrRuc(form.taxNumber),
-    [form.taxNumber],
+    () => Boolean(form.taxNumber) && validateTaxNumberForCountry(form.taxNumber, form.country),
+    [form.taxNumber, form.country],
   );
+  const opcionesZona = useMemo(() => timezoneOptions(form.timezone), [form.timezone]);
+
+  const { taxLabel, taxPlaceholder, taxHint } = useMemo(
+    () => taxFieldTexts(form.country, t),
+    [form.country, t],
+  );
+
   const phoneCountryForValidation = useMemo(() => {
     const d = digitsOnly(form.phone);
     if (d.startsWith("593")) return "EC";
-    return form.country || form.phoneCountry || "EC";
+    // Sin país declarado NO se asume Ecuador: eso medía el móvil de cualquier
+    // cliente extranjero con la regla ecuatoriana (9 dígitos empezando por 9) y
+    // el paso no dejaba avanzar. Sin país, regla permisiva.
+    return form.country || form.phoneCountry || undefined;
   }, [form.phone, form.country, form.phoneCountry]);
   const phoneValid = useMemo(
     () => Boolean(form.phone) && validatePhoneForCountry(form.phone, phoneCountryForValidation),
@@ -239,7 +292,7 @@ export default function OnboardingWizard({
       const payload: any = {
         name: form.name.trim(),
         businessTitle: form.businessTitle.trim(),
-        taxNumber: digitsOnly(form.taxNumber),
+        taxNumber: form.taxNumber.trim(),
         phone: form.phone || undefined,
         email: form.email.trim(),
         address: form.address.trim(),
@@ -366,17 +419,16 @@ export default function OnboardingWizard({
                 />
               </div>
               <div className="space-y-1.5">
-                <Label>{t("ui.OnboardingWizard.rucCedula", "RUC / Cédula")}{" "}<span style={{ color: "var(--bad-text)" }}>*</span></Label>
+                <Label>{taxLabel}{" "}<span style={{ color: "var(--bad-text)" }}>*</span></Label>
                 <Input
                   value={form.taxNumber}
-                  onChange={(e) => set({ taxNumber: digitsOnly(e.target.value).slice(0, 13) })}
-                  placeholder={t("ui.OnboardingWizard.ruc13DigitosOCedula", "RUC (13 dígitos) o cédula (10 dígitos)")}
-                  inputMode="numeric"
-                  maxLength={13}
+                  onChange={(e) => set({ taxNumber: e.target.value.slice(0, 24) })}
+                  placeholder={taxPlaceholder}
+                  maxLength={24}
                 />
                 {form.taxNumber && !taxValid && (
                   <p className="text-xs" style={{ color: "var(--bad-text)" }}>
-                    Ingresa un RUC válido (13 dígitos, termina en 001) o una cédula válida (10 dígitos).
+                    {taxHint}
                   </p>
                 )}
               </div>
@@ -513,16 +565,13 @@ export default function OnboardingWizard({
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
                   <Label>Zona horaria <span style={{ color: "var(--bad-text)" }}>*</span></Label>
-                  <Select value={form.timezone} onValueChange={(v) => set({ timezone: v })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder={t('ui.OnboardingWizard.seleccionarZonaHoraria')} />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-64">
-                      {TIMEZONE_OPTIONS.map((tz) => (
-                        <SelectItem key={tz.value} value={tz.value}>{tz.label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Combobox
+                    value={form.timezone}
+                    onChange={(v) => set({ timezone: v })}
+                    placeholder={t('ui.OnboardingWizard.seleccionarZonaHoraria')}
+                    options={opcionesZona}
+                    aria-label="Zona horaria"
+                  />
                   <button
                     type="button"
                     onClick={() => {
@@ -696,7 +745,8 @@ function ReviewStep({
   onEdit: (step: number) => void;
 }) {
   const { t } = useTranslation();
-  const tzLabel = TIMEZONE_OPTIONS.find((t) => t.value === form.timezone)?.label || form.timezone;
+  const tzLabel = TIMEZONE_OPTIONS.find((o) => o.value === form.timezone)?.label || form.timezone;
+  const { taxLabel } = taxFieldTexts(form.country, t);
   return (
     <div className="space-y-4 animate-in fade-in-50 duration-300">
       <div className="flex items-center gap-3 rounded-xl border border-primary/30 bg-primary/8 p-3">
@@ -718,7 +768,7 @@ function ReviewStep({
           <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t('ui.OnboardingWizard.empresa')}</span>
           <button type="button" onClick={() => onEdit(1)} className="text-xs font-medium text-primary hover:underline">{t('actions.edit')}</button>
         </div>
-        <ReviewRow label={t("ui.OnboardingWizard.rucCedula", "RUC / Cédula")} value={form.taxNumber} />
+        <ReviewRow label={taxLabel} value={form.taxNumber} />
         <div className="flex items-center justify-between py-2">
           <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("ui.OnboardingWizard.contactoYUbicacion", "Contacto y ubicación")}</span>
           <button type="button" onClick={() => onEdit(2)} className="text-xs font-medium text-primary hover:underline">{t('actions.edit')}</button>

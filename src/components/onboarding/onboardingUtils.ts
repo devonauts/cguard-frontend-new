@@ -1,6 +1,7 @@
 import i18n from '@/i18n';
 
 import { localeActual } from '@/lib/localeActual'
+import { taxIdLabelFor } from '@/lib/validators/id'
 // Shared helpers for the first-login business onboarding feature.
 // Keeps tenant extraction, completeness, trial math and timezone options
 // consistent across the wizard, banner, header badge and provider.
@@ -37,7 +38,9 @@ export interface OnboardingTenant {
 export const REQUIRED_FIELDS: Array<{ key: keyof OnboardingTenant; label: string; labelKey: string }> = [
   { key: "name", label: "Nombre de la empresa", labelKey: "onboarding.requiredFields.name" },
   { key: "businessTitle", label: "Razón social", labelKey: "onboarding.requiredFields.businessTitle" },
-  { key: "taxNumber", label: "RUC / Cédula", labelKey: "onboarding.requiredFields.taxNumber" },
+  // OJO: la etiqueta de taxNumber NO se traduce por esta clave, se resuelve por
+  // país en `etiquetaDeCampo` — ver el comentario de esa función.
+  { key: "taxNumber", label: "Identificación fiscal", labelKey: "onboarding.requiredFields.taxNumberGeneric" },
   { key: "phone", label: "Teléfono", labelKey: "onboarding.requiredFields.phone" },
   { key: "email", label: "Correo electrónico", labelKey: "onboarding.requiredFields.email" },
   { key: "address", label: "Dirección", labelKey: "onboarding.requiredFields.address" },
@@ -139,9 +142,28 @@ export function extractOnboardingTenant(user: any): OnboardingTenant | null {
   };
 }
 
+/**
+ * Cómo se llama cada campo que falta en el aviso «Faltan: …».
+ *
+ * El identificador fiscal se nombra SEGÚN EL PAÍS del tenant. Antes decía
+ * «RUC / Cédula» a todo el mundo: a una empresa mexicana se le pedía un
+ * documento ecuatoriano que no existe en su país, y no había forma de saber que
+ * lo que faltaba era su RFC.
+ */
+function etiquetaDeCampo(
+  f: { key: keyof OnboardingTenant; label: string; labelKey: string },
+  t: OnboardingTenant | null,
+): string {
+  if (f.key === "taxNumber") {
+    const propio = taxIdLabelFor(t?.country);
+    if (propio) return propio;
+  }
+  return i18n.t(f.labelKey, f.label);
+}
+
 // List of required fields/items still missing for "business is set up".
 export function getMissingFields(t: OnboardingTenant | null): string[] {
-  const rot = (f: { label: string; labelKey: string }) => i18n.t(f.labelKey, f.label);
+  const rot = (f: { key: keyof OnboardingTenant; label: string; labelKey: string }) => etiquetaDeCampo(f, t);
   const logo = i18n.t("onboarding.requiredFields.logo", "Logo");
   if (!t) return REQUIRED_FIELDS.map(rot).concat(logo);
   const missing: string[] = [];
@@ -189,41 +211,21 @@ export function formatTrialEndDate(trialEndsAt?: string | null): string | null {
 export const isTrialing = (billingStatus?: string | null) =>
   (billingStatus || "").toLowerCase() === "trialing";
 
-// Timezone helper + options, mirrored from ProfileCompanyForm.
-const COUNTRY_TZ: Record<string, string> = {
-  ecuador: "America/Guayaquil", ec: "America/Guayaquil",
-  colombia: "America/Bogota", co: "America/Bogota",
-  peru: "America/Lima", "perú": "America/Lima", pe: "America/Lima",
-  mexico: "America/Mexico_City", "méxico": "America/Mexico_City", mx: "America/Mexico_City",
-  panama: "America/Panama", "panamá": "America/Panama", pa: "America/Panama",
-  chile: "America/Santiago", cl: "America/Santiago",
-  argentina: "America/Buenos_Aires", ar: "America/Buenos_Aires",
-  venezuela: "America/Caracas", ve: "America/Caracas",
-  bolivia: "America/La_Paz", bo: "America/La_Paz",
-  spain: "Europe/Madrid", "españa": "Europe/Madrid", es: "Europe/Madrid",
-};
-
-export function tzFromText(...vals: (string | undefined)[]): string | null {
-  const hay = vals.filter(Boolean).join(" ").toLowerCase();
-  if (!hay) return null;
-  for (const key of Object.keys(COUNTRY_TZ)) {
-    if (hay.includes(key)) return COUNTRY_TZ[key];
-  }
-  return null;
-}
-
-export const TIMEZONE_OPTIONS: Array<{ value: string; label: string }> = [
-  { value: "America/Guayaquil", label: "UTC-5 Quito (America/Guayaquil)" },
-  { value: "America/Bogota", label: "UTC-5 Bogotá (America/Bogota)" },
-  { value: "America/Lima", label: "UTC-5 Lima (America/Lima)" },
-  { value: "America/Mexico_City", label: "UTC-6 Ciudad de México" },
-  { value: "America/Santiago", label: "UTC-3 Santiago" },
-  { value: "America/Buenos_Aires", label: "UTC-3 Buenos Aires" },
-  { value: "Europe/Madrid", label: "UTC+1 Madrid" },
-  { value: "UTC", label: "UTC" },
-];
-
-export const DEFAULT_TIMEZONE = "America/Guayaquil";
+/**
+ * Zonas horarias: se reexportan desde `@/lib/timezones`.
+ *
+ * Aquí vivía una copia literal de OCHO zonas latinoamericanas —la otra copia
+ * estaba en ProfileCompanyForm— y un `tzFromText` que buscaba subcadenas de dos
+ * letras en la dirección entera. Los nombres se conservan porque el asistente
+ * de alta importa de este módulo; la implementación es una sola y está allí,
+ * con el porqué de cada decisión.
+ */
+export {
+  TIMEZONE_OPTIONS,
+  DEFAULT_TIMEZONE,
+  tzFromText,
+  COUNTRY_TZ,
+} from '@/lib/timezones';
 
 // localStorage key used to snooze auto-opening the wizard after "Completar más tarde".
 export const snoozeKey = (tenantId: string) => `cg_onboarding_snoozed_${tenantId}`;

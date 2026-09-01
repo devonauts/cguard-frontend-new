@@ -1,32 +1,9 @@
 "use client";
 
-// Best-effort IANA timezone from a country name/code or free-text address.
-const COUNTRY_TZ: Record<string, string> = {
-  ecuador: "America/Guayaquil", ec: "America/Guayaquil",
-  colombia: "America/Bogota", co: "America/Bogota",
-  peru: "America/Lima", "perú": "America/Lima", pe: "America/Lima",
-  mexico: "America/Mexico_City", "méxico": "America/Mexico_City", mx: "America/Mexico_City",
-  panama: "America/Panama", "panamá": "America/Panama", pa: "America/Panama",
-  chile: "America/Santiago", cl: "America/Santiago",
-  argentina: "America/Buenos_Aires", ar: "America/Buenos_Aires",
-  venezuela: "America/Caracas", ve: "America/Caracas",
-  bolivia: "America/La_Paz", bo: "America/La_Paz",
-  spain: "Europe/Madrid", "españa": "Europe/Madrid", es: "Europe/Madrid",
-};
-function tzFromText(...vals: (string | undefined)[]): string | null {
-  const hay = vals.filter(Boolean).join(" ").toLowerCase();
-  if (!hay) return null;
-  for (const key of Object.keys(COUNTRY_TZ)) {
-    if (hay.includes(key)) return COUNTRY_TZ[key];
-  }
-  return null;
-}
-
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import CompanyPhoneField from "./profile/CompanyPhoneField";
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import { toast } from "sonner";
@@ -50,7 +27,10 @@ import AddressAutocomplete, { AddressComponents } from "@/components/maps/Addres
 import GoogleMapEmbed from "@/components/GoogleMap/GoogleMapEmbed";
 import CompanyDocumentsSection, { CompanyDocument } from "./profile/documents/CompanyDocumentsSection";
 import TenantJoinModal from "@/components/TenantJoinModal";
-import { validateCedulaOrRuc } from '@/lib/validators/id';
+import { validateTaxNumberForCountry, taxIdLabelFor, resolveCountryCode } from '@/lib/validators/id';
+import { COUNTRIES } from '@/lib/data/countries';
+import { Combobox } from '@/components/app/combobox';
+import { DEFAULT_TIMEZONE, timezoneOptions, tzForCountry, browserTimezone } from '@/lib/timezones';
 import { cacheTenantLocation } from '@/utils/tenantLocation';
 import { geocodeRaw, parseGeocodeResult } from '@/utils/geocodeAddress';
 
@@ -121,6 +101,21 @@ const readSettingsLogo = (settings: TenantSettingsLike | TenantSettingsLike[] | 
 
 // Minimal shapes for the Google Maps geocoder results consumed below.
 type GeocodeComponent = { types: string[]; long_name: string };
+/**
+ * ISO-2 en minúsculas con el que sesgar el geocodificador, o `undefined` si no
+ * se reconoce el país. Sin sesgo se busca en todo el mundo, que es peor que
+ * acertar el país pero infinitamente mejor que forzar el país equivocado.
+ */
+function regionDelPais(country?: string): string | undefined {
+  const p = (country || '').trim();
+  if (!p) return undefined;
+  if (/^[A-Za-z]{2}$/.test(p)) return p.toLowerCase();
+  const propio = resolveCountryCode(p);
+  if (propio) return propio.toLowerCase();
+  const encontrado = COUNTRIES.find((c) => c.name.toLowerCase() === p.toLowerCase());
+  return encontrado ? encontrado.code.toLowerCase() : undefined;
+}
+
 type GeocodeResult = {
   geometry?: { location: { lat: () => number; lng: () => number } };
   formatted_address?: string;
@@ -190,7 +185,10 @@ export default function ProfileCompanyForm() {
     email: "",
     license: "",
     ruc: "",
-    timezone: "America/Guayaquil",
+    // El valor inicial es la zona del equipo de quien rellena el perfil. Estaba
+    // fijo en "America/Guayaquil": una empresa de Madrid que no tocara el
+    // selector quedaba siete horas corrida en turnos, rondas e informes.
+    timezone: DEFAULT_TIMEZONE,
   });
 
   const [phoneE164, setPhoneE164] = useState("");
@@ -390,7 +388,14 @@ export default function ProfileCompanyForm() {
     const timer = setTimeout(async () => {
       try {
         ultimaConsultaRef.current = direccion;
-        const best = (await geocodeRaw(`${direccion} Ecuador`, { region: 'ec' }))[0] as GeocodeResult | undefined;
+        // Antes se buscaba `${direccion} Ecuador` con region:'ec'. Eso devolvía
+        // coordenadas ecuatorianas para una dirección de Madrid, y como el
+        // resultado sobrescribe latitud, longitud, ciudad, código postal y país,
+        // la empresa acababa con el centro de todos sus mapas y geocercos en
+        // otro continente. Se busca la dirección tal cual, sesgada al país que
+        // el propio formulario ya conoce (y sin sesgo si no se sabe).
+        const region = regionDelPais(form.country);
+        const best = (await geocodeRaw(direccion, region ? { region } : {}))[0] as GeocodeResult | undefined;
         if (cancelled || !best) return;
 
         const datos = parseGeocodeResult(best);
@@ -412,7 +417,7 @@ export default function ProfileCompanyForm() {
     }, 1500);
 
     return () => { cancelled = true; clearTimeout(timer); };
-  }, [form.address, form.latitude, form.longitude]);
+  }, [form.address, form.latitude, form.longitude, form.country]);
   // Handler to upload a new legal document
   const handleUploadDocument = useCallback(async (file: File) => {
     if (!resolvedTenantId) return;
@@ -467,6 +472,28 @@ export default function ProfileCompanyForm() {
       );
     }
   }
+
+  // ── Identificador fiscal, según el país de la empresa ──────────────────────
+  // Esto medía a todo el mundo con la vara ecuatoriana: exigía exactamente 13
+  // dígitos y el campo tenía maxLength=13, así que un CNPJ brasileño (14) o un
+  // GSTIN indio (15) NO CABÍAN en el campo. La regla la pone ahora
+  // `validateTaxNumberForCountry`, que es el mismo espejo del backend.
+  // Nombre corto del documento (RUC, RFC, NIT…), para el aviso y el marcador.
+  const docFiscal = taxIdLabelFor(form.country)
+    || t('settings.companyProfile.taxIdGenericLabel', { defaultValue: 'Identificación fiscal' });
+  // Ecuador conserva en la etiqueta el nombre largo, ya traducido a los 9 idiomas.
+  const etiquetaFiscal = resolveCountryCode(form.country) === 'EC'
+    ? t('settings.companyProfile.rucLabel', { defaultValue: 'RUC (Registro Único de Contribuyentes)' })
+    : docFiscal;
+  const ayudaFiscal = (() => {
+    switch (resolveCountryCode(form.country)) {
+      case 'EC': return t('settings.companyProfile.thirteenDigits', { defaultValue: '13 dígitos.' });
+      case 'MX': return t('settings.companyProfile.taxIdHintMX', { defaultValue: '12 caracteres (empresa) o 13 (persona): letras, fecha y homoclave.' });
+      case 'CO': return t('settings.companyProfile.taxIdHintCO', { defaultValue: 'De 8 a 10 dígitos, con dígito de verificación opcional.' });
+      case 'PE': return t('settings.companyProfile.taxIdHintPE', { defaultValue: '11 dígitos que empiezan por 10, 15, 17 o 20.' });
+      default: return t('settings.companyProfile.taxIdHintGeneric', { defaultValue: 'Entre 5 y 20 letras o números.' });
+    }
+  })();
 
   return (
     <form onSubmit={onSubmit}>
@@ -536,24 +563,28 @@ export default function ProfileCompanyForm() {
             </div>
 
             <div className="space-y-2">
-              <Label>{t('settings.companyProfile.rucLabel', { defaultValue: 'RUC (Registro Único de Contribuyentes)' })}</Label>
+              <Label>{etiquetaFiscal}</Label>
               <Input
                 value={form.ruc}
                 onChange={(e) => setForm((s) => ({ ...s, ruc: e.target.value }))}
                 onBlur={(e) => {
-                  const v = (e.target as HTMLInputElement).value || '';
-                  const digits = v.replace(/\D/g, '');
-                  if (digits && digits.length > 0) {
-                    if (digits.length !== 13 || !validateCedulaOrRuc(digits)) {
-                      toast.error(t('clients.validation.ruc_invalid'));
-                    }
+                  const v = ((e.target as HTMLInputElement).value || '').trim();
+                  if (v && !validateTaxNumberForCountry(v, form.country)) {
+                    toast.error(t('settings.companyProfile.taxIdInvalid', {
+                      defaultValue: 'El {{doc}} no tiene un formato válido. {{ayuda}}',
+                      doc: docFiscal,
+                      ayuda: ayudaFiscal,
+                    }));
                   }
                 }}
-                placeholder={t('settings.companyProfile.rucPlaceholder', { defaultValue: 'RUC de la empresa' })}
-                maxLength={13}
+                placeholder={t('settings.companyProfile.taxIdPlaceholder', {
+                  defaultValue: '{{doc}} de la empresa',
+                  doc: docFiscal,
+                })}
+                maxLength={24}
                 disabled={!canEdit}
               />
-              <p className="text-xs" style={{ color: 'var(--ink-faint)' }}>{t('settings.companyProfile.thirteenDigits', { defaultValue: '13 dígitos.' })}</p>
+              <p className="text-xs" style={{ color: 'var(--ink-faint)' }}>{ayudaFiscal}</p>
             </div>
 
             <div className="space-y-2">
@@ -797,35 +828,26 @@ export default function ProfileCompanyForm() {
           <div className="grid gap-5 md:grid-cols-2">
             <div className="space-y-2">
               <Label>{t('settings.companyProfile.timezoneLabel', { defaultValue: 'Zona horaria' })}</Label>
-              <Select
+              <Combobox
                 value={form.timezone}
-                onValueChange={(v) => setForm((s) => ({ ...s, timezone: v }))}
+                onChange={(v) => setForm((s) => ({ ...s, timezone: v }))}
+                options={timezoneOptions(form.timezone)}
                 disabled={!canEdit}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder={t('settings.companyProfile.timezonePlaceholder', { defaultValue: 'Seleccionar zona horaria' })} />
-                </SelectTrigger>
-                <SelectContent className="max-h-72">
-                  <SelectItem value="America/Guayaquil">{t('settings.companyProfile.tzGuayaquil', { defaultValue: 'UTC-5 Quito (America/Guayaquil)' })}</SelectItem>
-                  <SelectItem value="America/Bogota">{t('settings.companyProfile.tzBogota', { defaultValue: 'UTC-5 Bogotá (America/Bogota)' })}</SelectItem>
-                  <SelectItem value="America/Lima">{t('settings.companyProfile.tzLima', { defaultValue: 'UTC-5 Lima (America/Lima)' })}</SelectItem>
-                  <SelectItem value="America/Mexico_City">{t('settings.companyProfile.tzMexicoCity', { defaultValue: 'UTC-6 Ciudad de México' })}</SelectItem>
-                  <SelectItem value="America/Santiago">{t('settings.companyProfile.tzSantiago', { defaultValue: 'UTC-3 Santiago' })}</SelectItem>
-                  <SelectItem value="America/Buenos_Aires">{t('settings.companyProfile.tzBuenosAires', { defaultValue: 'UTC-3 Buenos Aires' })}</SelectItem>
-                  <SelectItem value="Europe/Madrid">{t('settings.companyProfile.tzMadrid', { defaultValue: 'UTC+1 Madrid' })}</SelectItem>
-                  <SelectItem value="UTC">UTC</SelectItem>
-                </SelectContent>
-              </Select>
+                placeholder={t('settings.companyProfile.timezonePlaceholder', { defaultValue: 'Seleccionar zona horaria' })}
+                empty={t('settings.companyProfile.timezoneEmpty', { defaultValue: 'Ninguna zona coincide con esa búsqueda.' })}
+                aria-label={t('settings.companyProfile.timezoneLabel', { defaultValue: 'Zona horaria' })}
+              />
               {canEdit && (
                 <button
                   type="button"
                   onClick={() => {
-                    const tz = tzFromText(form.country, form.address);
-                    if (tz) {
-                      setForm((s) => ({ ...s, timezone: tz }));
+                    const porPais = tzForCountry(form.country);
+                    const tz = porPais || browserTimezone();
+                    setForm((s) => ({ ...s, timezone: tz }));
+                    if (porPais) {
                       toast.success(t('settings.companyProfile.tzDetected', { defaultValue: 'Zona horaria detectada por la dirección: {{tz}}', tz }));
                     } else {
-                      toast.info(t('settings.companyProfile.tzNotDetected', { defaultValue: 'No se pudo detectar la zona horaria; selecciónala manualmente.' }));
+                      toast.info(t('settings.companyProfile.tzFromDevice', { defaultValue: 'Se aplicó la zona horaria de este equipo: {{tz}}. Si tu empresa opera en otra, elígela en la lista.', tz }));
                     }
                   }}
                   className="cg-focus inline-flex items-center gap-1.5 rounded-lg text-xs font-semibold hover:underline"

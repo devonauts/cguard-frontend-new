@@ -71,103 +71,161 @@ export function validateCedulaOrRuc(value: string) {
 
 export default validateCedulaOrRuc;
 
-// Validate tax number (RUC / equivalent) for a given country code or name.
-// Currently supports Ecuador explicitly and provides a sensible fallback.
+/**
+ * ════════════════════════════════════════════════════════════════════════════
+ * IDENTIFICADOR FISCAL — POR PAÍS, Y PERMISIVO CUANDO NO SE SABE
+ *
+ * Espejo de `backend/src/lib/validators/taxId.ts`. Si cambias la regla aquí,
+ * cámbiala allí: el frontend sólo adelanta el mensaje, quien decide es el
+ * backend, y que discrepen produce el peor error de todos — un formulario que
+ * te deja enviar y un servidor que te rechaza sin decirte por qué.
+ *
+ * EL FALLO QUE CIERRA (2026-09-01): esto medía a media humanidad con la vara
+ * ecuatoriana. Y había dos capas de error:
+ *
+ *  1. El país se detectaba con `country.includes('ec')`, `includes('co')`,
+ *     `includes('es')`… sobre el NOMBRE del país. Eso no es una comprobación,
+ *     es una lotería: «Greece» contiene «ec», así que un griego se validaba
+ *     como ecuatoriano; «Mexico» y «Costa Rica» contienen «co», así que se
+ *     validaban como colombianos; «United States» contiene «es», así que un
+ *     EIN estadounidense se medía contra el NIF español y se rechazaba.
+ *  2. Aun acertando el país, el desconocido caía en un genérico que exigía
+ *     dígitos, cuando media docena de países usan letras (RFC, GSTIN, CIF).
+ *
+ * LA REGLA DE DISEÑO: **ante la duda, se acepta.** Un identificador fiscal no
+ * es una credencial; validarlo atrapa erratas, no cierra puertas. Rechazar un
+ * formato que no conocemos convierte cada país nuevo en un bloqueo total.
+ * ════════════════════════════════════════════════════════════════════════════
+ */
+
+/** Del país (nombre o código ISO) al código que usamos internamente. Lo usan
+ *  tanto el identificador fiscal como el teléfono — ambos sufrían el `includes`.
+ *  Comparación EXACTA o por prefijo — nunca `includes`, ver el comentario. */
+export function resolveCountryCode(country?: string): string | null {
+  const p = (country || '').toString().trim().toLowerCase();
+  if (!p) return null;
+  if (p === 'ec' || p.startsWith('ecuador')) return 'EC';
+  if (p === 'mx' || p.startsWith('mexico') || p.startsWith('méxico')) return 'MX';
+  if (p === 'co' || p.startsWith('colombia')) return 'CO';
+  if (p === 'pe' || p.startsWith('peru') || p.startsWith('perú')) return 'PE';
+  return null;
+}
+
+/** RFC mexicano: 3 letras (persona moral) o 4 (física), 6 de fecha, 3 de homoclave.
+ *  Sin dígito verificador a propósito: el SAT ha cambiado su tabla y un RFC
+ *  legítimo antiguo puede no cuadrar. Se valida la FORMA. */
+function looksLikeMexicanRfc(value: string) {
+  return /^[A-ZÑ&]{3,4}\d{6}[A-Z0-9]{3}$/.test(value.toUpperCase().replace(/[\s-]/g, ''));
+}
+
+/** NIT colombiano: 8 a 10 dígitos, con dígito de verificación opcional. */
+function looksLikeColombianNit(value: string) {
+  return /^[0-9]{8,10}(-?[0-9])?$/.test(value.replace(/[\s.]/g, ''));
+}
+
+/** RUC peruano: 11 dígitos que empiezan por 10, 15, 17 o 20. */
+function looksLikePeruvianRuc(value: string) {
+  return /^(10|15|17|20)[0-9]{9}$/.test(value.replace(/[\s-]/g, ''));
+}
+
+/**
+ * País que no modelamos. Se quitan los separadores que la gente teclea y se
+ * exige que queden entre 5 y 20 caracteres ALFANUMÉRICOS — letras incluidas.
+ *
+ * El rango no es decorativo, el mundo real vive dentro: NIF portugués 9, EIN
+ * estadounidense 9, VAT británico 9, CUIT argentino 11, CNPJ brasileño 14,
+ * GSTIN indio 15, y hasta 20 donde numeran largo. Se cuentan alfanuméricos y no
+ * caracteres para que un identificador de 20 dígitos escrito con separadores no
+ * se caiga por longitud.
+ */
+export function looksLikeReasonableTaxId(value: string) {
+  const clean = (value || '').replace(/[\s.\-/]/g, '');
+  return /^[A-Za-z0-9ÑñÁÉÍÓÚáéíóú&]{5,20}$/.test(clean);
+}
+
+/** ¿Es aceptable este identificador fiscal para una empresa de este país? */
 export function validateTaxNumberForCountry(taxNumber: string | undefined, country?: string) {
   const v = (taxNumber || '').toString().trim();
   if (!v) return false;
-  const d = digitsOnly(v);
 
-  if (!country) {
-    // without country, accept common lengths (6-20 digits)
-    return d.length >= 6 && d.length <= 20;
+  switch (resolveCountryCode(country)) {
+    case 'EC':
+      return validateEcuadorRuc(digitsOnly(v));
+    case 'MX':
+      return looksLikeMexicanRfc(v);
+    case 'CO':
+      return looksLikeColombianNit(v);
+    case 'PE':
+      return looksLikePeruvianRuc(v);
+    default:
+      return looksLikeReasonableTaxId(v);
   }
-
-  const c = country.toLowerCase();
-  // Ecuador: RUC 13 digits ending with 001
-  if (c.includes('ec') || c.includes('ecuador')) {
-    return validateEcuadorRuc(d);
-  }
-
-  // Spain: NIF/NIE/CIF basic checks
-  if (c.includes('es') || c.includes('spain') || c.includes('espana') || c.includes('españa')) {
-    // Normalize uppercase and remove spaces/hyphens
-    const s = (taxNumber || '').toString().toUpperCase().replace(/[^A-Z0-9]/g, '');
-    // NIF (DNI): 8 digits + letter
-    if (/^[0-9]{8}[A-Z]$/.test(s)) return true;
-    // NIE: starts with X/Y/Z + 7 digits + letter
-    if (/^[XYZ][0-9]{7}[A-Z]$/.test(s)) return true;
-    // CIF (company): letter + 7 digits + control (digit or letter)
-    if (/^[A-HJNP-SUVW][0-9]{7}[0-9A-J]$/.test(s)) return true;
-    return false;
-  }
-
-  // Peru: RUC 11 digits (basic check)
-  if (c.includes('pe') || c.includes('peru')) {
-    return /^[0-9]{11}$/.test(d);
-  }
-
-  // Colombia: NIT typically 9-10 digits (allow 6-15 general)
-  if (c.includes('co') || c.includes('colombia')) {
-    return d.length >= 6 && d.length <= 15;
-  }
-
-  // Fallback: accept 6-20 digits (generic tax id)
-  return d.length >= 6 && d.length <= 20;
 }
 
-// Validate phone number roughly based on country. This is a lightweight
-// validator (no external lib). It accepts E.164-like numbers or applies
-// simple country-specific rules (Ecuador mobile starts with 9 and 10 digits local).
+/** Cómo se llama el documento en ese país, para no decirle «RUC» a un alemán. */
+export function taxIdLabelFor(country?: string) {
+  switch (resolveCountryCode(country)) {
+    case 'EC': return 'RUC';
+    case 'MX': return 'RFC';
+    case 'CO': return 'NIT';
+    case 'PE': return 'RUC';
+    default: return null;
+  }
+}
+
+/**
+ * Teléfono, con la regla del país cuando la conocemos.
+ *
+ * Arrastraba el MISMO fallo que el identificador fiscal: el país se detectaba
+ * con `includes` sobre su nombre, así que «Mexico» contiene «co» y a un móvil
+ * mexicano se le exigía el formato colombiano (10 dígitos empezando por 3), y
+ * «Greece» contiene «ec», así que a un griego se le exigía el ecuatoriano. El
+ * teléfono es obligatorio en el alta: eso no era un mensaje feo, era no poder
+ * registrarse. Ahora el país se resuelve con `resolveCountryCode`.
+ */
 export function validatePhoneForCountry(phone: string | undefined, country?: string) {
   const p = (phone || '').toString().trim();
   if (!p) return false;
   const d = digitsOnly(p);
 
-  // If it looks like an international E.164 number (starts with + and 7-15 digits)
-  // and no country was provided, accept broadly. If a country is provided,
-  // fall through to country-specific logic so we can validate properly.
+  // E.164 internacional sin país declarado: se acepta con manga ancha.
   if (p.startsWith('+') && !country) {
     return d.length >= 7 && d.length <= 15;
   }
 
-  if (!country) {
-    // no country: accept 7-15 digits
-    return d.length >= 7 && d.length <= 15;
+  switch (resolveCountryCode(country)) {
+    case 'EC': {
+      // Móvil: 9 dígitos empezando por 9, o 10 empezando por 09.
+      let local = d;
+      if (local.startsWith('593')) local = local.slice(3);
+      if (local.length === 9 && local.startsWith('9')) return true;
+      if (local.length === 10 && local.startsWith('09')) return true;
+      return false;
+    }
+    case 'PE': {
+      // Móvil: 9 dígitos empezando por 9.
+      let local = d;
+      if (local.startsWith('51')) local = local.slice(2);
+      if (local.startsWith('0')) local = local.slice(1);
+      return local.length === 9 && local.startsWith('9');
+    }
+    case 'CO': {
+      // Móvil: 10 dígitos empezando por 3.
+      let local = d;
+      if (local.startsWith('57')) local = local.slice(2);
+      if (local.startsWith('0')) local = local.slice(1);
+      return local.length === 10 && local.startsWith('3');
+    }
+    case 'MX': {
+      // 10 dígitos nacionales; se tolera el 52 (y el viejo 1 de móvil) delante.
+      let local = d;
+      if (local.startsWith('52')) local = local.slice(2);
+      if (local.startsWith('1') && local.length === 11) local = local.slice(1);
+      return local.length === 10;
+    }
+    default:
+      // País que no modelamos: sólo sensatez. La ITU tope el número nacional en
+      // 15 dígitos, y los planes más cortos del mundo bajan a 7.
+      return d.length >= 7 && d.length <= 15;
   }
-
-  const c = country.toLowerCase();
-  // Ecuador: local mobile last 10 digits and starts with 9 (09 or 9)
-  if (c.includes('ec') || c.includes('ecuador')) {
-    // If provided with country code (593), strip it
-    let local = d;
-    if (local.startsWith('593')) local = local.slice(3);
-    // Two acceptable local formats:
-    // - 9 digits starting with 9 (e.g. 9XXXXXXXX)
-    // - 10 digits starting with 09 (e.g. 09XXXXXXXX)
-    if (local.length === 9 && local.startsWith('9')) return true;
-    if (local.length === 10 && local.startsWith('09')) return true;
-    // also allow if user included a leading zero and we accidentally stripped it elsewhere
-    if (local.startsWith('0') && local.slice(1).length === 9 && local.slice(1).startsWith('9')) return true;
-    return false;
-  }
-
-  // Peru: mobile usually 9 digits starting with 9
-  if (c.includes('pe') || c.includes('peru')) {
-    let local = d;
-    if (local.startsWith('51')) local = local.slice(2);
-    if (local.startsWith('0')) local = local.slice(1);
-    return local.length === 9 && local.startsWith('9');
-  }
-
-  // Colombia: mobile 10 digits typically starting with 3
-  if (c.includes('co') || c.includes('colombia')) {
-    let local = d;
-    if (local.startsWith('57')) local = local.slice(2);
-    if (local.startsWith('0')) local = local.slice(1);
-    return local.length === 10 && local.startsWith('3');
-  }
-
-  // Fallback: accept 7-15 digits
-  return d.length >= 7 && d.length <= 15;
 }
