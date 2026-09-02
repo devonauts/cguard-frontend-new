@@ -1236,6 +1236,9 @@ export default function Schedule() {
     cubriendoA?: string,
     /** Sacafranco YA asignado que se viene a editar (patrón / estaciones). */
     editar?: GuardAssignment | null,
+    /** Estaciones que cubrirá, cuando el sacafranco se acaba de crear para
+     *  varias a la vez (multi-selección del editor de puestos). */
+    cubrePrecargado?: string[],
   ) => {
     // ── DE DÓNDE SALEN LAS HORAS, EN ORDEN ────────────────────────────────
     // 1) El turno que se está cubriendo, si quien abre el menú lo sabe.
@@ -1261,7 +1264,11 @@ export default function Schedule() {
     // Editando: se abre con lo que ya tiene puesto, no en blanco — era la queja.
     setAssignEditing(editar || null);
     setAssignRotation(editar?.rotationStyleId ? String(editar.rotationStyleId) : '');
-    setAssignCovered(Array.isArray(editar?.coveredStationIds) ? (editar!.coveredStationIds as string[]).map(String) : []);
+    setAssignCovered(
+      cubrePrecargado?.length
+        ? cubrePrecargado.map(String)
+        : Array.isArray(editar?.coveredStationIds) ? (editar!.coveredStationIds as string[]).map(String) : [],
+    );
 
     // ── SI SE ABRE SOBRE UNA NOVEDAD, SE PRECARGA SU RANGO COMPLETO ────────
     // Cubrir unas vacaciones es cubrir QUINCE días, no el día en que se hizo
@@ -2023,7 +2030,13 @@ export default function Schedule() {
   };
 
   const [posEditor, setPosEditor] = useState<{
-    stationId: string; positionId?: string; stationName: string;
+    /** Estación BASE: de la que cuelga la posición. Al editar es la única. */
+    stationId: string;
+    /** Al CREAR: todas las estaciones marcadas. Un sacafranco suele cubrir
+     *  varios puestos, así que la selección es múltiple; la primera marcada
+     *  es la base y el resto son las que cubrirá. */
+    stationIds: string[];
+    positionId?: string; stationName: string;
     name: string; type: string; startTime: string; endTime: string; guardsNeeded: string;
   } | null>(null);
   const [posSaving, setPosSaving] = useState(false);
@@ -2032,6 +2045,7 @@ export default function Schedule() {
     const st = stationsById.get(stationId);
     setPosEditor({
       stationId,
+      stationIds: stationId ? [stationId] : [],
       stationName: st ? stationLabel(st) : '',
       name: 'Sacafranco', type: 'sacafranco',
       startTime: '07:00', endTime: '19:00', guardsNeeded: '1',
@@ -2046,6 +2060,7 @@ export default function Schedule() {
   const addSacafranco = () => {
     setPosEditor({
       stationId: '',
+      stationIds: [],
       stationName: '',
       name: 'Sacafranco', type: 'sacafranco',
       startTime: '07:00', endTime: '19:00', guardsNeeded: '1',
@@ -2055,6 +2070,7 @@ export default function Schedule() {
   const editPosition = (station: Station, pos: StationPosition) => {
     setPosEditor({
       stationId: station.id,
+      stationIds: [station.id],
       positionId: pos.id,
       stationName: stationLabel(station),
       name: pos.name || '',
@@ -2065,9 +2081,29 @@ export default function Schedule() {
     });
   };
 
+  /**
+   * ── UN SACAFRANCO PARA VARIOS PUESTOS ────────────────────────────────────
+   * Un sacafranco casi nunca cubre una sola estación: cubre los descansos de
+   * varias. El modelo ya lo contempla, pero en dos sitios distintos:
+   *
+   *   · la POSICIÓN cuelga de UNA estación (su base, la fila que se ve en la
+   *     hoja);
+   *   · la ASIGNACIÓN lleva `coveredStationIds`, que es lo que de verdad mira
+   *     el generador para decidir qué descansos puede tapar.
+   *
+   * Por eso al marcar varias estaciones NO se crean varias filas de sacafranco
+   * —eso era justo la queja de las «4 filas iguales»—: se crea UNA en la
+   * primera marcada y se abre la asignación con TODAS ya marcadas como las que
+   * cubre. Un FIJO sí es de su estación y nada más, así que ahí sí sale una
+   * posición por cada estación marcada.
+   */
   const savePosition = async () => {
     if (!posEditor) return;
-    if (!posEditor.stationId) { toast.error('Elige en qué estación va'); return; }
+    const esSf = posEditor.type === 'sacafranco';
+    const ids = posEditor.positionId
+      ? [posEditor.stationId]
+      : (posEditor.stationIds.length ? posEditor.stationIds : (posEditor.stationId ? [posEditor.stationId] : []));
+    if (!ids.length) { toast.error('Elige al menos una estación'); return; }
     if (!posEditor.name.trim()) { toast.error('Ponle un nombre al puesto'); return; }
     setPosSaving(true);
     try {
@@ -2081,10 +2117,37 @@ export default function Schedule() {
       if (posEditor.positionId) {
         await ApiService.put(`/tenant/${tenantId}/station/${posEditor.stationId}/positions/${posEditor.positionId}`, { data });
         toast.success('Puesto actualizado — los turnos futuros se rehicieron con las horas nuevas');
-      } else {
-        await ApiService.post(`/tenant/${tenantId}/station/${posEditor.stationId}/positions`, { data: { ...data, sortOrder: 99 } });
-        toast.success('Puesto agregado');
+        setPosEditor(null);
+        fetchAll({ silent: true });
+        return;
       }
+
+      if (esSf) {
+        const base = ids[0];
+        const creado: any = await ApiService.post(`/tenant/${tenantId}/station/${base}/positions`, { data: { ...data, sortOrder: 99 } });
+        const nuevoId = creado?.id || creado?.data?.id || '';
+        setPosEditor(null);
+        // Se espera al refresco: la asignación que se abre a continuación lee
+        // el tipo de la posición recién creada para saber que es un relevo.
+        await fetchAll({ silent: true });
+        toast.success(ids.length > 1
+          ? `Sacafranco creado — cubrirá ${ids.length} estaciones`
+          : 'Sacafranco creado');
+        if (nuevoId) {
+          openAssignForm(base, nuevoId, undefined, null, undefined, null, ids);
+          // `openAssignForm` calcula las horas del mapa de posiciones, que en
+          // este render todavía no tiene la nueva: se imponen las del editor.
+          setAssignStartTime(posEditor.startTime);
+          setAssignEndTime(posEditor.endTime);
+        }
+        return;
+      }
+
+      // Fijo: una posición por estación marcada.
+      for (const stId of ids) {
+        await ApiService.post(`/tenant/${tenantId}/station/${stId}/positions`, { data: { ...data, sortOrder: 99 } });
+      }
+      toast.success(ids.length > 1 ? `${ids.length} puestos agregados` : 'Puesto agregado');
       setPosEditor(null);
       fetchAll({ silent: true });
     } catch (e: any) {
@@ -3814,36 +3877,79 @@ export default function Schedule() {
         const eMin = toMin(posEditor.endTime);
         const durH = ((eMin <= sMin ? eMin + 1440 : eMin) - sMin) / 60;
         const set = (patch: Partial<NonNullable<typeof posEditor>>) => setPosEditor(m => m ? { ...m, ...patch } : m);
+        const esSfEditor = posEditor.type === 'sacafranco';
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'oklch(0 0 0 / 0.55)' }} onClick={() => setPosEditor(null)}>
             <div className="glass-raised mx-4 w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--hairline)' }}>
                 <div>
                   <h4 className="text-sm font-semibold">{posEditor.positionId ? 'Editar puesto' : 'Agregar puesto'}</h4>
-                  <p className="mt-0.5 text-[11px]" style={{ color: 'var(--ink-soft)' }}>{posEditor.stationName || 'Elige la estación abajo'}</p>
+                  <p className="mt-0.5 text-[11px]" style={{ color: 'var(--ink-soft)' }}>
+                    {posEditor.positionId
+                      ? posEditor.stationName
+                      : posEditor.stationIds.length > 1
+                        ? `${posEditor.stationIds.length} estaciones marcadas`
+                        : posEditor.stationName || 'Marca abajo dónde va'}
+                  </p>
                 </div>
                 <button onClick={() => setPosEditor(null)} className="cg-btn-ghost cg-focus rounded-lg p-1.5"><X size={15} /></button>
               </div>
               <div className="space-y-4 p-5">
-                {!posEditor.positionId && (
-                  <div>
-                    <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>Estación</label>
-                    <select
-                      value={posEditor.stationId}
-                      onChange={e => {
-                        const st = stationsById.get(e.target.value);
-                        set({ stationId: e.target.value, stationName: st ? stationLabel(st) : '' });
-                      }}
-                      className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:border-primary"
-                      style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}
-                    >
-                      <option value="">Elige la estación…</option>
-                      {stations.map(st => (
-                        <option key={st.id} value={st.id}>{stationLabel(st)}</option>
-                      ))}
-                    </select>
-                  </div>
-                )}
+                {!posEditor.positionId && (() => {
+                  const marcadas = posEditor.stationIds;
+                  const alternar = (id: string) => {
+                    const siguiente = marcadas.includes(id) ? marcadas.filter(x => x !== id) : [...marcadas, id];
+                    const base = stationsById.get(siguiente[0] || '');
+                    set({ stationIds: siguiente, stationId: siguiente[0] || '', stationName: base ? stationLabel(base) : '' });
+                  };
+                  return (
+                    <div>
+                      <div className="mb-1 flex items-center justify-between gap-2">
+                        <label className="block text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>
+                          {esSfEditor ? 'Estaciones que cubre' : 'Estaciones'}
+                        </label>
+                        {marcadas.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => set({ stationIds: [], stationId: '', stationName: '' })}
+                            className="cg-btn-ghost cg-focus rounded-full px-2 py-0.5 text-[10px] font-semibold"
+                          >
+                            Limpiar
+                          </button>
+                        )}
+                      </div>
+                      <div className="max-h-40 overflow-y-auto rounded-xl px-1 py-1" style={{ border: '1px solid var(--hairline)' }}>
+                        {stations.length === 0 && (
+                          <p className="px-2 py-1.5 text-[11px]" style={{ color: 'var(--ink-faint)' }}>No hay estaciones.</p>
+                        )}
+                        {stations.map(st => {
+                          const on = marcadas.includes(st.id);
+                          const esBase = marcadas[0] === st.id;
+                          return (
+                            <label key={st.id} className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-xs transition-colors hover:bg-[var(--glass-sunken)]">
+                              <input type="checkbox" checked={on} onChange={() => alternar(st.id)} className="cg-focus" />
+                              <span className={on ? 'font-semibold' : ''}>{stationLabel(st)}</span>
+                              {esSfEditor && esBase && (
+                                <span className="ml-auto shrink-0 text-[9px] font-semibold" style={{ color: 'var(--ink-faint)' }}>base</span>
+                              )}
+                            </label>
+                          );
+                        })}
+                      </div>
+                      <p className="mt-1 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
+                        {marcadas.length === 0
+                          ? 'Marca al menos una.'
+                          : esSfEditor
+                            ? marcadas.length > 1
+                              ? `Una sola fila de sacafranco (en ${stationLabel(stationsById.get(marcadas[0])!) }) que cubrirá las ${marcadas.length} estaciones marcadas.`
+                              : 'Cubrirá los descansos de esta estación.'
+                            : marcadas.length > 1
+                              ? `Se crea este puesto en las ${marcadas.length} estaciones marcadas.`
+                              : 'Se crea en esta estación.'}
+                      </p>
+                    </div>
+                  );
+                })()}
                 <div>
                   <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>Nombre</label>
                   <input
