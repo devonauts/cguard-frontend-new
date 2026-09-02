@@ -1486,16 +1486,39 @@ export default function Schedule() {
   const openCellCtx = (e: React.MouseEvent, station: Station, pos: StationPosition, posAssignments: GuardAssignment[], dateStr: string) => {
     e.preventDefault();
     const items: CtxItem[] = [];
+    /* Cada casillero es una hoja de asistencia: lo que se puede hacer con él es
+       cambiar QUÉ pasó (novedad), cambiar las horas o borrarlo. Antes esas tres
+       cosas sólo llegaban a la PRIMERA persona de la plaza y nunca a quien vino
+       a cubrir, así que un turno de cobertura no se podía ni editar ni borrar
+       desde la hoja. Ahora sale una entrada por cada persona del casillero. */
+    const varios = posAssignments.length > 1;
     for (const a of posAssignments) {
       const s = shiftByGuardDate.get(`${a.guardId}|${dateStr}`);
+      const nm = primerNombre(a.guard, 'vigilante');
+      const full = nombreDeVigilante(a.guard, nm);
+      const suf = varios ? ` de ${nm}` : '';
+      items.push({
+        label: `Cambiar a V / PM / F / L${suf}…`,
+        onClick: () => setOverrideTarget({ guardId: a.guardId, guardName: full, date: dateStr, assignmentId: a.id }),
+      });
       if (s && s.stationId === station.id) {
-        const nm = primerNombre(a.guard, 'vigilante');
-        const full = nombreDeVigilante(a.guard, nm);
-        items.push({ label: `Editar turno de ${nm} (vista Día)…`, onClick: () => jumpToDay(dateStr) });
-        items.push({ label: t('ui.Schedule.duplicarTurnoAlDiaSiguiente', 'Duplicar turno al día siguiente'), onClick: () => void duplicateShiftNextDay(s) });
-        items.push({ label: t('ui.Schedule.eliminarTurnoDeEsteDia', 'Eliminar turno de este día'), danger: true, onClick: () => void deleteDayShift(s) });
-        items.push({ label: '—' });
+        items.push({ label: `Editar las horas${suf} (vista Día)…`, onClick: () => jumpToDay(dateStr) });
+        items.push({ label: `Duplicar el turno${suf} al día siguiente`, onClick: () => void duplicateShiftNextDay(s) });
+        items.push({ label: `Eliminar el turno${suf} de este día`, danger: true, onClick: () => void deleteDayShift(s) });
       }
+      items.push({ label: '—' });
+    }
+    /* Quien viene a CUBRIR también tiene su turno en este casillero. */
+    for (const cs of coverageShiftsByStationDate.get(`${station.id}-${dateStr}`) || []) {
+      if (posAssignments.some(a => a.guardId === cs.guardId)) continue;
+      const nm = primerNombre(cs.guard, guardsPool.find(x => x.id === cs.guardId)?.label || 'la cobertura');
+      const full = nombreDeVigilante(cs.guard, nm);
+      items.push({
+        label: `Cambiar a V / PM / F / L a ${nm} (cobertura)…`,
+        onClick: () => setOverrideTarget({ guardId: cs.guardId, guardName: full, date: dateStr }),
+      });
+      items.push({ label: `Eliminar la cobertura de ${nm}`, danger: true, onClick: () => void deleteDayShift(cs) });
+      items.push({ label: '—' });
     }
     if (posAssignments.length) {
       const a = posAssignments[0];
@@ -1547,7 +1570,7 @@ export default function Schedule() {
           endDate: '',
         }),
       });
-      items.push({ label: 'Registrar novedad…', onClick: () => setOverrideTarget({ guardId: a.guardId, guardName, date: dateStr, assignmentId: a.id }) });
+
       // Doblar turno: el que está en el puesto se queda porque su relevo no
       // llegó. Va junto a «novedad» porque es la misma familia — lo que pasó de
       // verdad, no lo que estaba planificado.
@@ -2071,6 +2094,8 @@ export default function Schedule() {
     guardId?: string;
     rotMode?: 'rotativo' | 'manual';
     rotationStyleId?: string;
+    /** Cuántos días de su ciclo va a cada estación cubierta. */
+    stationDays?: Record<string, number>;
     startDate?: string;
   } | null>(null);
   const [posSaving, setPosSaving] = useState(false);
@@ -2102,6 +2127,7 @@ export default function Schedule() {
       guardId: '',
       rotMode: 'manual',
       rotationStyleId: '',
+      stationDays: {},
       startDate: tzToday(),
     });
   };
@@ -2182,6 +2208,13 @@ export default function Schedule() {
               isRelief: true,
               rotationStyleId: posEditor.rotMode === 'rotativo' ? (posEditor.rotationStyleId || null) : null,
               coveredStationIds: ids.length ? ids : null,
+              // Reparto por estación: sólo lo marcado y sólo si suma algo.
+              coveredStationDays: (() => {
+                const d = posEditor.stationDays || {};
+                const limpio: Record<string, number> = {};
+                for (const sid of ids) if (Number(d[sid]) > 0) limpio[sid] = Number(d[sid]);
+                return Object.keys(limpio).length ? limpio : null;
+              })(),
             },
           });
           setPosEditor(null);
@@ -3964,28 +3997,6 @@ export default function Schedule() {
             set({ stationIds: siguiente, stationId: base, stationName: stBase ? stationLabel(stBase) : '' });
           };
           const baseActual = posEditor.stationId && marcadas.includes(posEditor.stationId) ? posEditor.stationId : (marcadas[0] || '');
-          const etiquetaTurno = (ini: string, fin: string) => {
-            const h1 = parseInt(ini.split(':')[0], 10) || 0;
-            const h2 = parseInt(fin.split(':')[0], 10) || 0;
-            let span = (h2 - h1 + 24) % 24; if (span === 0) span = 24;
-            if (span >= 23) return '24 horas';
-            return h1 >= 18 || h1 < 6 ? 'Nocturno' : 'Diurno';
-          };
-          /* Las horas que puede cubrir son las que de verdad existen en las
-             estaciones marcadas; los tres de siempre sólo si no hay ninguna. */
-          const bloques = new Map<string, { ini: string; fin: string }>();
-          for (const pp of positions) {
-            if (marcadas.length && !marcadas.includes(pp.stationId)) continue;
-            if ((pp.type || 'fijo') === 'sacafranco') continue;
-            const ini = String(pp.startTime || '07:00').slice(0, 5);
-            const fin = String(pp.endTime || '19:00').slice(0, 5);
-            bloques.set(`${ini}|${fin}`, { ini, fin });
-          }
-          if (bloques.size === 0) {
-            bloques.set('07:00|19:00', { ini: '07:00', fin: '19:00' });
-            bloques.set('19:00|07:00', { ini: '19:00', fin: '07:00' });
-          }
-          const turnos = Array.from(bloques.values()).sort((x, y) => x.ini.localeCompare(y.ini));
           const ciclo = (r: RotationStyle) => [
             r.dayShifts ? `${r.dayShifts}D` : '',
             r.nightShifts ? `${r.nightShifts}N` : '',
@@ -4040,46 +4051,18 @@ export default function Schedule() {
                     />
                   </div>
 
-                  {/* Horas que cubre */}
+                  {/* Fijo o rotativo — igual que al dar de alta a un vigilante.
+                      Las HORAS no se preguntan: un sacafranco no tiene horario
+                      propio, cubre el hueco que deja el fijo y toma las horas de
+                      ESE hueco (así lo calcula el generador). */}
                   <div>
-                    <label className="cg-eyebrow mb-1.5 block">Horas que cubre</label>
-                    <div className="mb-2 grid gap-2" style={{ gridTemplateColumns: `repeat(${Math.min(3, turnos.length)}, minmax(0, 1fr))` }}>
-                      {turnos.map(b => {
-                        const activo = posEditor.startTime === b.ini && posEditor.endTime === b.fin;
-                        return (
-                          <button
-                            key={`${b.ini}|${b.fin}`}
-                            type="button"
-                            onClick={() => set({ startTime: b.ini, endTime: b.fin })}
-                            className={`cg-focus rounded-xl border px-2 py-2 text-center transition-all ${activo ? 'glass-brand' : 'glass-flat'}`}
-                          >
-                            <div className="text-xs font-semibold">{etiquetaTurno(b.ini, b.fin)}</div>
-                            <div className="text-[10px] tabular-nums" style={{ color: 'var(--ink-soft)' }}>{b.ini}–{b.fin}</div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="cg-eyebrow mb-1 block">Entra</label>
-                        <input type="time" value={posEditor.startTime} onChange={e => set({ startTime: e.target.value })} className="cg-input cg-focus w-full px-2 py-2 font-mono text-sm tabular-nums" />
-                      </div>
-                      <div>
-                        <label className="cg-eyebrow mb-1 block">Sale</label>
-                        <input type="time" value={posEditor.endTime} onChange={e => set({ endTime: e.target.value })} className="cg-input cg-focus w-full px-2 py-2 font-mono text-sm tabular-nums" />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Cómo trabaja su mes */}
-                  <div>
-                    <label className="cg-eyebrow mb-1.5 block">Cómo trabaja su mes</label>
+                    <label className="cg-eyebrow mb-1.5 block">Tipo de turno</label>
                     <Segmented<'rotativo' | 'manual'>
                       value={posEditor.rotMode || 'manual'}
                       onChange={v => set({ rotMode: v })}
                       options={[
-                        { value: 'rotativo', label: 'Rotativo' },
-                        { value: 'manual', label: 'Personalizado' },
+                        { value: 'rotativo', label: 'Turno rotativo' },
+                        { value: 'manual', label: 'Turno fijo' },
                       ]}
                     />
                     {(posEditor.rotMode || 'manual') === 'rotativo' ? (
@@ -4101,7 +4084,7 @@ export default function Schedule() {
                       </div>
                     ) : (
                       <p className="mt-1.5 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
-                        Su mes empieza en blanco: sus días se colocan arrastrándolos sobre los descansos, o con «Optimizar sacafrancos».
+                        Sin patrón propio: su mes empieza en blanco y sus días se colocan sobre los descansos —arrastrándolos o con «Optimizar sacafrancos».
                       </p>
                     )}
                   </div>
@@ -4119,15 +4102,45 @@ export default function Schedule() {
                       {stations.map(st => {
                         const on = marcadas.includes(st.id);
                         return (
-                          <label key={st.id} className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-xs transition-colors hover:bg-[var(--glass-sunken)]">
-                            <input type="checkbox" checked={on} onChange={() => alternar(st.id)} className="cg-focus" />
-                            <span className={on ? 'font-semibold' : ''}>{stationLabel(st)}</span>
-                          </label>
+                          <div key={st.id} className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs transition-colors hover:bg-[var(--glass-sunken)]">
+                            <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-2">
+                              <input type="checkbox" checked={on} onChange={() => alternar(st.id)} className="cg-focus" />
+                              <span className={`truncate ${on ? 'font-semibold' : ''}`}>{stationLabel(st)}</span>
+                            </label>
+                            {/* Cuántos días de su ciclo van aquí. Sólo tiene
+                                sentido cuando cubre más de una: con una sola,
+                                todos sus días son de esa. */}
+                            {on && marcadas.length > 1 && (
+                              <div className="flex shrink-0 items-center gap-1">
+                                <input
+                                  type="number"
+                                  min={0}
+                                  max={31}
+                                  value={posEditor.stationDays?.[st.id] ?? ''}
+                                  placeholder="—"
+                                  onChange={e => {
+                                    const n = parseInt(e.target.value, 10);
+                                    const prev = { ...(posEditor.stationDays || {}) };
+                                    if (Number.isFinite(n) && n > 0) prev[st.id] = n; else delete prev[st.id];
+                                    set({ stationDays: prev });
+                                  }}
+                                  className="cg-input cg-focus w-12 px-1.5 py-1 text-center text-[11px] tabular-nums"
+                                />
+                                <span className="text-[10px]" style={{ color: 'var(--ink-faint)' }}>días</span>
+                              </div>
+                            )}
+                          </div>
                         );
                       })}
                     </div>
                     <p className="mt-1 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
-                      {marcadas.length ? 'Sólo buscará descansos que cubrir en las marcadas.' : 'Marca al menos una.'}
+                      {!marcadas.length
+                        ? 'Marca al menos una.'
+                        : marcadas.length === 1
+                          ? 'Todos sus días de trabajo van a esta estación.'
+                          : Object.keys(posEditor.stationDays || {}).length
+                            ? 'Se reparten sus días en esa proporción. Si una estación no tiene descanso que cubrir ese día, va a otra antes que quedarse parado.'
+                            : 'Sin días asignados se reparte por igual. Escribe cuántos días de su ciclo van a cada una.'}
                     </p>
                   </div>
 
@@ -5052,14 +5065,52 @@ export default function Schedule() {
         onDone={() => void fetchAll({ silent: true })}
       />
 
-      {overrideTarget && (
+      {overrideTarget && (() => {
+        /* ── LA HOJA DE ESE DÍA ───────────────────────────────────────────────
+           Cada casillero de la rejilla ES el registro de asistencia de una
+           persona en un día: lo que se decide aquí es qué pasó de verdad. El
+           diálogo se llamaba «Registrar novedad» y sólo pintaba códigos, así
+           que un turno ya generado (una N) no se veía por ningún lado y no
+           había forma de cambiarlo ni de borrarlo desde aquí — había que
+           adivinar el clic derecho.
+
+           Ahora enseña el turno que hay (horas y puesto), deja cambiarlo a V,
+           PM, F o L —que marca el turno como ausencia y abre la novedad de
+           cobertura, no lo borra: la evidencia de que estaba programado y no
+           trabajó es justo lo que necesita la nómina— y deja además EDITAR sus
+           horas o ELIMINARLO cuando lo que hay que corregir es el turno. */
+        const turnoDelDia = shiftByGuardDate.get(`${overrideTarget.guardId}|${overrideTarget.date}`);
+        const stTurno = turnoDelDia ? stationsById.get(turnoDelDia.stationId) : null;
+        const hm = (v: string) => {
+          const w = dateToWall(new Date(v), tzName).minutes;
+          return `${String(Math.floor(w / 60)).padStart(2, '0')}:${String(w % 60).padStart(2, '0')}`;
+        };
+        return (
         <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'oklch(0 0 0 / 0.55)' }} onClick={() => setOverrideTarget(null)}>
-          <div className="glass-raised mx-4 w-full max-w-xs overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+          <div className="glass-raised mx-4 max-h-[90vh] w-full max-w-xs overflow-y-auto animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
             <div className="px-5 py-4" style={{ borderBottom: '1px solid var(--hairline)' }}>
-              <h4 className="text-sm font-semibold">Registrar novedad</h4>
+              <h4 className="text-sm font-semibold">Qué pasó ese día</h4>
               <p className="mt-0.5 text-[11px]" style={{ color: 'var(--ink-soft)' }}>{overrideTarget.guardName} — {overrideTarget.date}</p>
             </div>
+
+            {turnoDelDia && (
+              <div className="mx-4 mt-4 rounded-xl px-3 py-2" style={toneCard('brand', 10, 26)}>
+                <div className="text-[11px] font-semibold">
+                  Turno registrado{stTurno ? ` en ${stationLabel(stTurno)}` : ''}
+                </div>
+                <div className="text-[10px] tabular-nums opacity-80">
+                  {hm(turnoDelDia.startTime)} – {hm(turnoDelDia.endTime)}
+                  {turnoDelDia.status ? ` · ${turnoDelDia.status}` : ''}
+                </div>
+              </div>
+            )}
+
             <div className="p-4 grid grid-cols-2 gap-2">
+              <p className="col-span-2 -mb-1 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
+                {turnoDelDia
+                  ? 'Cambiarlo marca el turno como ausencia y abre el hueco de cobertura; el registro no se borra.'
+                  : 'Marca lo que pasó ese día.'}
+              </p>
               {CODE_ORDER.map(c => (
                 <button
                   key={c}
@@ -5086,13 +5137,35 @@ export default function Schedule() {
                   </button>
                 );
               })()}
+
+              {/* El turno en sí: cambiar sus horas o quitarlo. */}
+              {turnoDelDia && (
+                <>
+                  <div className="col-span-2 mt-1" style={{ borderTop: '1px solid var(--hairline)' }} />
+                  <button
+                    onClick={() => { setOverrideTarget(null); jumpToDay(overrideTarget.date); }}
+                    className="cg-focus col-span-2 rounded-xl px-3 py-2 text-xs font-semibold transition-all"
+                    style={toneCard('neutral')}
+                  >
+                    Editar las horas de este turno…
+                  </button>
+                  <button
+                    onClick={() => { setOverrideTarget(null); void deleteDayShift(turnoDelDia); }}
+                    className="cg-focus col-span-2 rounded-xl px-3 py-2 text-xs font-semibold transition-all"
+                    style={toneCard('bad')}
+                  >
+                    <X className="inline h-3.5 w-3.5 mr-1" />Eliminar este turno
+                  </button>
+                </>
+              )}
             </div>
             <div className="flex justify-end px-5 py-3" style={{ borderTop: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>
               <button onClick={() => setOverrideTarget(null)} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all">{t('actions.close')}</button>
             </div>
           </div>
         </div>
-      )}
+        );
+      })()}
 
       {/* ─── Draft horario review/diff Modal ──────────────────────────────── */}
       {proposalData && (

@@ -206,7 +206,10 @@ function MonthStationBlockInner({
   const primeraFilaId = stationPositions[0]?.id;
 
   /** La píldora de una cobertura que ninguna «L» va a enseñar. */
-  const pildoraCobertura = (lista: { id: string; guardId: string; name: string; fullName: string; code: 'D' | 'N'; ext?: boolean }[]) => {
+  const pildoraCobertura = (
+    lista: { id: string; guardId: string; name: string; fullName: string; code: 'D' | 'N'; ext?: boolean }[],
+    dateStr: string,
+  ) => {
     // Una EXTENSIÓN (alguien doblando porque su relevo no llegó) va en ámbar,
     // no en verde: el verde dice «cubierto y en orden», y esto está cubierto
     // pero NO está en orden — hay una persona encadenando dos turnos.
@@ -218,10 +221,13 @@ function MonthStationBlockInner({
         title={
           esExt
             ? `DOBLA turno: ${lista.map(x => x.fullName).join(', ')}`
-            : `Cubre: ${lista.map(x => x.fullName).join(', ')} · arrastra para moverlo`
+            : `Cubre: ${lista.map(x => x.fullName).join(', ')} · arrastra para moverlo · doble clic para editar el día`
         }
         draggable
         onDragStart={e => h.onCoverageDragStart(e, lista[0].id)}
+        /* La cobertura también es la hoja de asistencia de alguien: se abre
+           igual que cualquier otro casillero. Antes sólo se podía arrastrar. */
+        onDoubleClick={() => h.setOverrideTarget({ guardId: lista[0].guardId, guardName: lista[0].fullName, date: dateStr })}
       >
         <span className="text-[10px] font-bold leading-none">
           {esExt ? '2×' : lista[0].code}
@@ -273,7 +279,7 @@ function MonthStationBlockInner({
           // tiene ninguna «L» donde pintarse (ver `coberturaSinPintar`).
           (() => {
             const huerfana = pos.id === primeraFilaId ? coberturaSinPintar(dateStr, day) : null;
-            if (huerfana) return pildoraCobertura(huerfana);
+            if (huerfana) return pildoraCobertura(huerfana, dateStr);
             return (
               <div
                 className="flex flex-1 cursor-pointer items-center justify-center rounded border border-dashed"
@@ -386,7 +392,7 @@ function MonthStationBlockInner({
                 apila debajo en vez de quedar invisible detrás de la D/N. */}
             {pos.id === primeraFilaId && (() => {
               const huerfana = coberturaSinPintar(dateStr, day);
-              return huerfana ? pildoraCobertura(huerfana) : null;
+              return huerfana ? pildoraCobertura(huerfana, dateStr) : null;
             })()}
           </div>
         )}
