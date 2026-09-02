@@ -2038,6 +2038,20 @@ export default function Schedule() {
     });
   };
 
+  /* «Agregar sacafranco» desde la franja de sacafrancos: no viene de ninguna
+     estación, así que abre el editor SIN estación y el modal pregunta a cuál
+     va. Antes la única puerta era el «+» de un puesto concreto, y por eso el
+     sacafranco recién creado aparecía colgado de una estación que el usuario
+     no había elegido. */
+  const addSacafranco = () => {
+    setPosEditor({
+      stationId: '',
+      stationName: '',
+      name: 'Sacafranco', type: 'sacafranco',
+      startTime: '07:00', endTime: '19:00', guardsNeeded: '1',
+    });
+  };
+
   const editPosition = (station: Station, pos: StationPosition) => {
     setPosEditor({
       stationId: station.id,
@@ -2053,6 +2067,7 @@ export default function Schedule() {
 
   const savePosition = async () => {
     if (!posEditor) return;
+    if (!posEditor.stationId) { toast.error('Elige en qué estación va'); return; }
     if (!posEditor.name.trim()) { toast.error('Ponle un nombre al puesto'); return; }
     setPosSaving(true);
     try {
@@ -3198,7 +3213,6 @@ export default function Schedule() {
 
                   {/* ─── Sacafrancos Section ─── */}
                   {(() => {
-                    if (sfPositions.length === 0) return null;
                     return (
                       // When EXPANDED, pin the sacafranco section to the bottom of
                       // the scroll viewport (sticky bottom-0) so the fijo stations
@@ -3222,10 +3236,24 @@ export default function Schedule() {
                             style={{ background: 'var(--glass-solid)', borderRight: '1px solid var(--hairline)' }}
                           >
                             <Shield size={14} style={{ color: 'var(--ok-text)' }} />
-                            <div className="flex-1">
+                            <div className="min-w-0 flex-1">
                               <div className="text-sm font-semibold" style={{ color: 'var(--ok-text)' }}>Sacafrancos</div>
-                              <div className="text-[10px]" style={{ color: 'var(--ink-soft)' }}>{sfPositions.length} posiciones {sfSectionOpen ? '▾' : '▸ (clic para expandir)'}</div>
+                              <div className="text-[10px]" style={{ color: 'var(--ink-soft)' }}>
+                                {sfPositions.length === 0
+                                  ? 'ninguno todavía'
+                                  : `${sfPositions.length} ${sfPositions.length === 1 ? 'posición' : 'posiciones'}`} {sfSectionOpen ? '▾' : '▸ (clic para expandir)'}
+                              </div>
                             </div>
+                            {/* Crear un sacafranco desde aquí: el modal pregunta
+                                a QUÉ estación va, en vez de heredar una. */}
+                            <button
+                              onClick={e => { e.stopPropagation(); addSacafranco(); }}
+                              className="cg-focus flex shrink-0 items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold"
+                              style={tonePill('ok', 14)}
+                              title="Crear un sacafranco y elegir en qué estación va"
+                            >
+                              <Plus size={11} /> Agregar
+                            </button>
                           </div>
                           <div
                             style={{
@@ -3235,6 +3263,12 @@ export default function Schedule() {
                             }}
                           />
                         </div>
+
+                        {sfSectionOpen && sfPositions.length === 0 && (
+                          <div className="px-4 py-3 text-[11px]" style={{ color: 'var(--ink-soft)', borderTop: '1px solid var(--hairline)' }}>
+                            No hay sacafrancos. Con «Agregar» creas uno y eliges en qué estación va.
+                          </div>
+                        )}
 
                         {/* SF Position rows — only if expanded */}
                         {sfSectionOpen && sfPositions.map(pos => {
@@ -3255,7 +3289,14 @@ export default function Schedule() {
                                 </div>
                                 <div className="min-w-0 flex-1">
                                   <div className="truncate text-xs font-semibold">{pos.name}</div>
-                                  <div className="text-[10px] tabular-nums" style={{ color: 'var(--ink-soft)' }}>{pos.startTime} – {pos.endTime}</div>
+                                  {/* La estación es lo primero que hay que saber de
+                                      un sacafranco: sin ella todas las filas se
+                                      llaman igual y no se sabe cuál se está
+                                      asignando. */}
+                                  <div className="truncate text-[10px]" style={{ color: 'var(--ink-soft)' }}>
+                                    {(() => { const st = stationsById.get(pos.stationId); return st ? stationLabel(st) : '—'; })()}
+                                    <span className="tabular-nums"> · {pos.startTime} – {pos.endTime}</span>
+                                  </div>
                                 </div>
                                 {assigned && posAssignments[0]?.guard && (
                                   <button
@@ -3270,14 +3311,25 @@ export default function Schedule() {
                                   </button>
                                 )}
                                 {!assigned && (
-                                  <button
-                                    onClick={() => openAssignForm(pos.stationId, pos.id)}
-                                    className="cg-focus rounded-md p-1 transition-colors"
-                                    style={tonePill('ok', 14)}
-                                    title={t('ui.Schedule.asignarVigilanteSacafranco')}
-                                  >
-                                    <Plus size={12} />
-                                  </button>
+                                  <>
+                                    <button
+                                      onClick={() => openAssignForm(pos.stationId, pos.id)}
+                                      className="cg-focus rounded-md p-1 transition-colors"
+                                      style={tonePill('ok', 14)}
+                                      title={t('ui.Schedule.asignarVigilanteSacafranco')}
+                                    >
+                                      <Plus size={12} />
+                                    </button>
+                                    {/* Una posición de sacafranco vacía es una fila
+                                        muerta en la hoja: se puede quitar aquí. */}
+                                    <button
+                                      onClick={() => deletePosition(pos.stationId, pos.id)}
+                                      className="cg-btn-ghost cg-focus rounded-md p-1"
+                                      title="Eliminar esta posición de sacafranco"
+                                    >
+                                      <X size={12} />
+                                    </button>
+                                  </>
                                 )}
                               </div>
 
@@ -3768,11 +3820,30 @@ export default function Schedule() {
               <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--hairline)' }}>
                 <div>
                   <h4 className="text-sm font-semibold">{posEditor.positionId ? 'Editar puesto' : 'Agregar puesto'}</h4>
-                  <p className="mt-0.5 text-[11px]" style={{ color: 'var(--ink-soft)' }}>{posEditor.stationName}</p>
+                  <p className="mt-0.5 text-[11px]" style={{ color: 'var(--ink-soft)' }}>{posEditor.stationName || 'Elige la estación abajo'}</p>
                 </div>
                 <button onClick={() => setPosEditor(null)} className="cg-btn-ghost cg-focus rounded-lg p-1.5"><X size={15} /></button>
               </div>
               <div className="space-y-4 p-5">
+                {!posEditor.positionId && (
+                  <div>
+                    <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>Estación</label>
+                    <select
+                      value={posEditor.stationId}
+                      onChange={e => {
+                        const st = stationsById.get(e.target.value);
+                        set({ stationId: e.target.value, stationName: st ? stationLabel(st) : '' });
+                      }}
+                      className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:border-primary"
+                      style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}
+                    >
+                      <option value="">Elige la estación…</option>
+                      {stations.map(st => (
+                        <option key={st.id} value={st.id}>{stationLabel(st)}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
                 <div>
                   <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>Nombre</label>
                   <input
