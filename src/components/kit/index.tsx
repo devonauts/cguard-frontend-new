@@ -406,9 +406,12 @@ export function SkeletonCards({ count = 4, className }: { count?: number; classN
 // ── Modal ───────────────────────────────────────────────────────────────────
 export function Modal({ open, onOpenChange, title, description, icon, children, footer, size = 'md' }: {
   open: boolean; onOpenChange: (o: boolean) => void; title?: React.ReactNode; description?: React.ReactNode;
-  icon?: React.ReactNode; children: React.ReactNode; footer?: React.ReactNode; size?: 'sm' | 'md' | 'lg';
+  icon?: React.ReactNode; children: React.ReactNode; footer?: React.ReactNode; size?: 'sm' | 'md' | 'lg' | 'xl';
 }) {
-  const w = size === 'lg' ? 'sm:max-w-2xl' : size === 'sm' ? 'sm:max-w-sm' : 'sm:max-w-lg';
+  /* `xl` es para una ficha que se REVISA, no que se confirma: la tarjeta de
+     tiempo de un día entera —fichajes, sesiones, mapas y bitácora— no cabe en
+     `lg` sin convertirse en un tubo de scroll. */
+  const w = size === 'xl' ? 'sm:max-w-4xl' : size === 'lg' ? 'sm:max-w-2xl' : size === 'sm' ? 'sm:max-w-sm' : 'sm:max-w-lg';
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={cn(w, 'gap-0 overflow-hidden p-0')}>

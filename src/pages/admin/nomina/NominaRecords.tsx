@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { useSearchParams } from "react-router-dom";
 import AppLayout from "@/layouts/app-layout";
 import { DataTable, type Column } from "@/components/table/DataTable";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import attendanceService, { type AttendanceRecord } from "@/lib/api/attendanceService";
@@ -11,10 +10,13 @@ import departmentService, { type Department } from "@/lib/api/departmentService"
 import GoogleMapEmbed from "@/components/GoogleMap/GoogleMapEmbed";
 import StaticMapImage from "@/components/maps/StaticMapImage";
 import { useFileUrl } from "@/lib/fileUrl";
-import { StatusBadge, ApprovalBadge, STATUS_META, approvalLabel, fmtDateTime, fmtTime, fmtHours } from "./shared";
-import { PageContainer, PageHeader, Section, EmptyState, SkeletonCards, Segmented, Toolbar, StatusBadge as ToneBadge, Field } from "@/components/kit";
-import { MapPin, ImageOff, ClipboardCheck, ClipboardList, Filter, Download, ChevronLeft, ChevronRight, LogIn, LogOut } from "lucide-react";
-import { promptDialog } from "@/components/ui/promptDialog";
+import { StatusBadge, PayrollBadge, PAYROLL_FLOW_META, PAYROLL_FLOW_NEXT, STATUS_META, approvalLabel, fmtTime, fmtHours } from "./shared";
+import { PageContainer, PageHeader, Section, SkeletonCards, Segmented, Toolbar, StatusBadge as ToneBadge, EmptyState } from "@/components/kit";
+import { ClipboardCheck, ClipboardList, Filter, Download, ChevronLeft, ChevronRight, MapPin, Users } from "lucide-react";
+import { BulkActionsSelect } from "@/components/table/BulkActionsSelect";
+import TimesheetModal from "./TimesheetModal";
+import { usePermissions } from "@/hooks/usePermissions";
+import { confirmDialog } from "@/components/ui/confirmDialog";
 
 import { localeActual } from '@/lib/localeActual'
 const STATUS_OPTIONS = [
@@ -91,6 +93,17 @@ export default function NominaRecords() {
   });
   const [selected, setSelected] = useState<AttendanceRecord | null>(null);
   const [busy, setBusy] = useState(false);
+  /** Filtro por trabajador. La lista de opciones sale de lo cargado SIN filtro:
+   *  si saliera de las filas ya filtradas, elegir a alguien dejaría el
+   *  desplegable con una sola opción y no habría vuelta atrás. */
+  const [guardId, setGuardId] = useState("");
+  const [guardOptions, setGuardOptions] = useState<{ id: string; label: string }[]>([]);
+  const [payrollStatus, setPayrollStatus] = useState("");
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [bulkKey, setBulkKey] = useState(0);
+  const { hasPermission } = usePermissions();
+  const puedeAprobar = hasPermission("attendanceApprove");
+  const puedeEditar = hasPermission("attendanceEdit");
 
   const [rangeStart, rangeEnd] = useMemo(() => rangeFor(period, anchor), [period, anchor]);
   // Token-based selfie URL for the open record. punchInPhoto is a raw
@@ -104,17 +117,35 @@ export default function NominaRecords() {
       .list({
         "filter[status]": status || undefined,
         "filter[departmentId]": departmentId || undefined,
+        "filter[guardName]": guardId || undefined,
         // Day/week/month window — sent as the backend's punchInTimeRange [start, end].
         "filter[punchInTimeRange][0]": rangeStart.toISOString(),
         "filter[punchInTimeRange][1]": rangeEnd.toISOString(),
         limit: 1000,
         orderBy: "punchInTime_DESC",
       })
-      .then((r) => setRows(r.rows || []))
+      .then((r) => {
+        const filas = r.rows || [];
+        setRows(filas);
+        // Se refresca el catálogo de trabajadores sólo cuando NO hay filtro:
+        // ver la nota en `guardOptions`.
+        if (!guardId) {
+          const m = new Map<string, string>();
+          for (const f of filas) {
+            const id = f.guardName?.id;
+            if (id) m.set(String(id), f.guardName?.fullName || "Trabajador");
+          }
+          setGuardOptions([...m.entries()].map(([id, label]) => ({ id, label })).sort((a, b) => a.label.localeCompare(b.label)));
+        }
+      })
       .catch((e) => toast.error(e?.message || "Error al cargar registros"))
       .finally(() => setLoading(false));
-  }, [status, departmentId, rangeStart, rangeEnd]);
+  }, [status, departmentId, guardId, rangeStart, rangeEnd]);
   useEffect(load, [load]);
+  // Una selección que sobrevive a un cambio de filtro actúa sobre filas que ya
+  // no están en pantalla — exactamente lo que nadie espera de un botón «aplicar
+  // a lo seleccionado».
+  useEffect(() => { setSelectedIds([]); }, [status, departmentId, guardId, rangeStart, rangeEnd]);
 
   useEffect(() => {
     departmentService
@@ -122,6 +153,13 @@ export default function NominaRecords() {
       .then((r) => setDepartments(r.rows.filter((d) => d.active)))
       .catch(() => {});
   }, []);
+
+  /** Filtro por estado de nómina. Va en el cliente porque la lista ya viene
+   *  entera del periodo y así no se paga otra ida al servidor por un desplegable. */
+  const visibles = useMemo(
+    () => (payrollStatus ? rows.filter((r) => String(r.payrollStatus || "") === payrollStatus) : rows),
+    [rows, payrollStatus],
+  );
 
   // Export the current period's records to CSV (UTF-8 BOM so Excel reads accents).
   const exportCsv = () => {
@@ -272,17 +310,85 @@ export default function NominaRecords() {
       render: (_v, r) => <StatusBadge status={r.status} approval={r.approvalStatus} />,
     },
     {
-      // LA APROBACIÓN, EN LA TABLA.
-      //
-      // Vivía SÓLO en el panel de detalle: había que abrir registro por registro
-      // para saber si estaba aprobado. Como el estado (Tarde / En revisión) se
-      // conserva a propósito después de aprobar —la nómina lo necesita—, la
-      // lista daba a entender que aprobar no había hecho nada.
-      key: "approvalStatus",
-      header: "Aprobación",
-      render: (_v, r) => <ApprovalBadge status={r.approvalStatus} />,
+      /* EL CICLO HASTA EL PAGO, EN LA TABLA — Y EDITABLE DESDE AQUÍ.
+         Vivía sólo en el detalle: había que abrir registro por registro para
+         saber dónde estaba cada uno, y mover diez tarjetas eran diez fichas.
+         El desplegable ofrece SÓLO las transiciones válidas, las mismas que el
+         servidor acepta, así que no se puede llegar a «pagada» sin pasar por la
+         revisión. */
+      key: "payrollStatus",
+      header: "Estado de nómina",
+      render: (_v, r) => {
+        const actual = String(r.payrollStatus || "");
+        const siguientes = PAYROLL_FLOW_NEXT[actual] || [];
+        if (!actual || !puedeAprobar || !siguientes.length) return <PayrollBadge status={r.payrollStatus} />;
+        return (
+          <select
+            className="cg-input cg-focus max-w-[13rem] px-2 py-1 text-xs"
+            value={actual}
+            onClick={(e) => e.stopPropagation()}
+            onChange={(e) => {
+              e.stopPropagation();
+              const destino = e.target.value;
+              if (destino === actual) return;
+              void act(() => attendanceService.setStatus(r.id, destino), `Ahora: ${PAYROLL_FLOW_META[destino]?.label || destino}`);
+            }}
+          >
+            <option value={actual}>{PAYROLL_FLOW_META[actual]?.label || actual}</option>
+            {siguientes.map((sx) => (
+              <option key={sx} value={sx}>→ {PAYROLL_FLOW_META[sx]?.label || sx}</option>
+            ))}
+          </select>
+        );
+      },
     },
   ];
+
+  /** Mover en bloque lo seleccionado. */
+  const bulk = async (destino: string) => {
+    setBulkKey((k) => k + 1);
+    if (!selectedIds.length) { toast.error("No hay tarjetas seleccionadas"); return; }
+    const etiqueta = PAYROLL_FLOW_META[destino]?.label || destino;
+    const ok = await confirmDialog({
+      title: "Cambiar el estado",
+      message: `Se pondrán ${selectedIds.length} tarjeta(s) en «${etiqueta}». Las que no admitan ese paso se quedan como están y te digo cuáles.`,
+      confirmText: "Cambiar",
+    });
+    if (!ok) return;
+    setBusy(true);
+    try {
+      const r = await attendanceService.bulkSetStatus(selectedIds, destino);
+      if (r.fallidas?.length) toast.warning(`${r.actualizadas} actualizada(s); ${r.fallidas.length} no admitían ese paso`);
+      else toast.success(`${r.actualizadas} tarjeta(s) en «${etiqueta}»`);
+      setSelectedIds([]);
+      load();
+    } catch (e: any) {
+      toast.error(e?.message || "No se pudo cambiar el estado");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  /** Descarga del servidor: el navegador sólo tiene lo que cargó. */
+  const exportar = async (formato: "pdf" | "excel" | "csv") => {
+    setBusy(true);
+    try {
+      await attendanceService.exportRecords({
+        format: formato,
+        "filter[status]": status || undefined,
+        "filter[departmentId]": departmentId || undefined,
+        "filter[guardName]": guardId || undefined,
+        "filter[punchInTimeRange][0]": rangeStart.toISOString(),
+        "filter[punchInTimeRange][1]": rangeEnd.toISOString(),
+        ids: selectedIds.length ? selectedIds.join(",") : undefined,
+      });
+      toast.success(selectedIds.length ? `${selectedIds.length} registro(s) exportado(s)` : "Registro exportado");
+    } catch (e: any) {
+      toast.error(e?.message || "No se pudo generar el archivo");
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <AppLayout>
@@ -292,13 +398,58 @@ export default function NominaRecords() {
           title={t('ui.NominaRecords.registrosDeAsistencia')}
           subtitle="Marcaciones de entrada / salida"
           actions={
-            <Button variant="outline" onClick={exportCsv} className="gap-2">
-              <Download className="size-4" /> Exportar
-            </Button>
+            /* Tres formatos y UNA fuente: el archivo lo arma el servidor con el
+               mismo filtro que la pantalla, así que incluye también los días de
+               vacaciones y falta —que no son fichajes— y no se queda en las mil
+               filas que el navegador alcanzó a cargar. Con filas marcadas,
+               exporta sólo esas. */
+            <div className="flex items-center gap-2">
+              <select
+                className="cg-input cg-focus px-3 py-2 text-sm"
+                value=""
+                disabled={busy}
+                onChange={(e) => { const v = e.target.value; e.currentTarget.value = ""; if (v) void exportar(v as "pdf" | "excel" | "csv"); }}
+              >
+                <option value="">{selectedIds.length ? `Exportar ${selectedIds.length} seleccionada(s)…` : "Exportar…"}</option>
+                <option value="pdf">PDF</option>
+                <option value="excel">Excel</option>
+                <option value="csv">CSV</option>
+              </select>
+              <Button variant="outline" onClick={exportCsv} className="gap-2" title="CSV rápido de lo que hay en pantalla">
+                <Download className="size-4" /> CSV
+              </Button>
+            </div>
           }
         />
 
         <Toolbar>
+          {/* Trabajador — la pregunta más frecuente de esta pantalla es «¿qué
+              hizo esta persona este mes?», y hasta hoy había que buscarla a ojo
+              entre mil filas. */}
+          <label className="inline-flex items-center gap-2">
+            <Users className="size-4" style={{ color: "var(--ink-soft)" }} />
+            <select
+              className="cg-input cg-focus max-w-[16rem] px-3 py-2 text-sm"
+              value={guardId}
+              onChange={(e) => setGuardId(e.target.value)}
+            >
+              <option value="">Todos los trabajadores</option>
+              {guardOptions.map((g) => <option key={g.id} value={g.id}>{g.label}</option>)}
+            </select>
+          </label>
+
+          {/* Estado de nómina */}
+          <select
+            className="cg-input cg-focus px-3 py-2 text-sm"
+            value={payrollStatus}
+            onChange={(e) => setPayrollStatus(e.target.value)}
+          >
+            <option value="">Cualquier estado de nómina</option>
+            {Object.entries(PAYROLL_FLOW_META).map(([k, m]) => (
+              <option key={k} value={k}>{m.label}</option>
+            ))}
+          </select>
+
           {/* Período: Día / Semana / Mes */}
           <Segmented<Period>
             value={period}
@@ -382,7 +533,27 @@ export default function NominaRecords() {
           ) : (
             <DataTable
               columns={columns}
-              data={rows}
+              data={visibles}
+              selectedIds={selectedIds}
+              onSelectOne={(id, checked) =>
+                setSelectedIds((p) => (checked ? [...p, id] : p.filter((x) => x !== id)))}
+              onSelectAll={(checked) => setSelectedIds(checked ? visibles.map((r) => r.id) : [])}
+              toolbar={puedeAprobar && selectedIds.length > 0 ? (
+                  <div className="flex items-center gap-2">
+                    <ToneBadge tone="brand">{selectedIds.length} seleccionada(s)</ToneBadge>
+                    <BulkActionsSelect
+                      key={bulkKey}
+                      actions={[
+                        { value: "reviewed", label: "Marcar revisadas" },
+                        { value: "approved", label: "Aprobar y enviar a pago" },
+                        { value: "paid", label: "Marcar pagadas" },
+                        { value: "rejected", label: "Rechazar" },
+                        { value: "pending_review", label: "Devolver a revisión" },
+                      ]}
+                      onChange={(v) => void bulk(v)}
+                    />
+                  </div>
+              ) : undefined}
               onRowClick={(r) => {
                 // Open immediately with the lean list row, then hydrate the full
                 // record (selfie/photos/device) — the list no longer ships those blobs.
@@ -401,283 +572,20 @@ export default function NominaRecords() {
         </Section>
       </PageContainer>
 
-      <Sheet open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
-        <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto">
-          {selected && (
-            <>
-              <SheetHeader>
-                <SheetTitle>{selected.guardName?.fullName || "Vigilante"}</SheetTitle>
-              </SheetHeader>
-              <div className="mt-4 space-y-4 text-sm">
-                {/* Clock-in selfie (geo-stamped by the worker app) + timestamp */}
-                {(() => {
-                  if (!selfieUrl) {
-                    return (
-                      <EmptyState icon={<ImageOff />} title={t('ui.NominaRecords.sinSelfieDeEntrada')} className="py-8" />
-                    );
-                  }
-                  return (
-                    <a
-                      href={selfieUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block"
-                    >
-                      <img
-                        src={selfieUrl}
-                        alt="Selfie de entrada"
-                        className="glass-flat w-full object-contain"
-                      />
-                      <p className="mt-1.5 text-center text-xs" style={{ color: "var(--ink-soft)" }}>
-                        Entrada · {fmtDateTime(selected.punchInTime)}
-                        {selected.punchInAddress ? ` · ${selected.punchInAddress}` : ""}
-                      </p>
-                    </a>
-                  );
-                })()}
+      {/* La ficha del día, CENTRADA. Antes era un cajón de 28 rem y media
+          tarjeta quedaba fuera de pantalla: es la pieza sobre la que se decide
+          lo que se paga, así que se mira entera. */}
+      <TimesheetModal
+        record={selected}
+        onClose={() => setSelected(null)}
+        onChanged={() => {
+          load();
+          if (selected) attendanceService.find(selected.id).then(setSelected).catch(() => {});
+        }}
+        puedeEditar={puedeEditar}
+        puedeAprobar={puedeAprobar}
+      />
 
-                <div className="flex items-center justify-between">
-                  <StatusBadge status={selected.status} approval={selected.approvalStatus} />
-                  <span className="flex items-center gap-1.5 text-xs" style={{ color: "var(--ink-soft)" }}>
-                    Aprobación: <ApprovalBadge status={selected.approvalStatus} />
-                  </span>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <Field label={t('comun.puesto')} value={selected.stationName?.stationName || "—"} />
-                  <Field label="Horas" value={<span className="tabular-nums">{fmtHours(selected.hoursWorked)}</span>} />
-                  <Field label="Programado" value={<span className="tabular-nums">{fmtDateTime(selected.scheduledStart)}</span>} />
-                  <Field label="Fin programado" value={<span className="tabular-nums">{fmtDateTime(selected.scheduledEnd)}</span>} />
-                  <Field label="Entrada" value={<span className="tabular-nums">{fmtDateTime(selected.punchInTime)}</span>} />
-                  <Field label="Salida" value={<span className="tabular-nums">{fmtDateTime(selected.punchOutTime)}</span>} />
-                  <Field label="Tarde (min)" value={<span className="tabular-nums">{selected.lateMinutes || 0}</span>} />
-                  <Field label="Extra (min)" value={<span className="tabular-nums">{selected.overtimeMinutes || 0}</span>} />
-                  {selected.shiftSchedule && (
-                    <Field label={t('comun.turno')} value={selected.shiftSchedule} />
-                  )}
-                  <Field label="Rondas" value={<span className="tabular-nums">{selected.numberOfPatrolsDuringShift ?? 0}</span>} />
-                  <Field label="Incidentes" value={<span className="tabular-nums">{selected.numberOfIncidentsDurindShift ?? 0}</span>} />
-                </div>
-
-                {selected.observations && (
-                  <div>
-                    <p className="cg-eyebrow">Observaciones</p>
-                    <p className="glass-sunken mt-1 whitespace-pre-wrap p-3" style={{ color: "var(--ink)" }}>
-                      {selected.observations}
-                    </p>
-                  </div>
-                )}
-
-                {/* Sessions — every clock in/out pair accumulated in this record */}
-                {Array.isArray(selected.sessions) && selected.sessions.length > 0 && (
-                  <div className="space-y-1.5">
-                    <p className="text-xs font-semibold">
-                      Sesiones ({selected.sessions.length})
-                    </p>
-                    <div className="glass-flat divide-y overflow-hidden" style={{ borderColor: "var(--hairline)" }}>
-                      {selected.sessions.map((s, i) => (
-                        <div
-                          key={i}
-                          className="flex items-center justify-between px-3 py-2 text-xs"
-                          style={{ borderColor: "var(--hairline)" }}
-                        >
-                          <span className="tabular-nums" style={{ color: "var(--ink-faint)" }}>#{i + 1}</span>
-                          <span className="font-medium tabular-nums">
-                            {fmtTime(s.in)} → {s.out ? fmtTime(s.out) : "—"}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Location on the map for BOTH punches, captured at clock-in and
-                    clock-out. Each map is centered on the stored GPS of that punch. */}
-                {((selected.punchInLatitude != null && selected.punchInLongitude != null) ||
-                  (selected.punchOutLatitude != null && selected.punchOutLongitude != null)) && (
-                  <div className="space-y-2">
-                    <p className="cg-eyebrow">{t("ui.NominaRecords.ubicacion", "Ubicación")}</p>
-
-                    {/* Clock-in location */}
-                    {selected.punchInLatitude != null && selected.punchInLongitude != null && (
-                      <div className="glass-flat overflow-hidden">
-                        <div className="flex items-center justify-between px-3 py-1.5 text-xs font-semibold" style={{ background: "var(--glass-sunken)" }}>
-                          <span className="flex items-center gap-1.5">
-                            <LogIn size={13} style={{ color: "var(--ok-text)" }} /> Entrada
-                          </span>
-                          <span className="font-normal tabular-nums" style={{ color: "var(--ink-soft)" }}>{fmtDateTime(selected.punchInTime)}</span>
-                        </div>
-                        {/* AHORRO · Revisar nómina es abrir registros en cadena, y
-                            cada registro montaba DOS mapas dinámicos ($7/1.000 cada
-                            carga): repasar 50 turnos eran 100 cargas facturadas para
-                            comprobar de un vistazo si la marcación cayó dentro de la
-                            geocerca. La imagen estática ($2/1.000) contesta esa misma
-                            pregunta —el pin y el contorno de la geocerca se dibujan
-                            igual— y el mapa de verdad sigue a un clic para el caso
-                            raro en que haga falta mirar el entorno. */}
-                        <StaticMapImage
-                          lat={Number(selected.punchInLatitude)}
-                          lng={Number(selected.punchInLongitude)}
-                          zoom={16}
-                          height="200px"
-                          alt={t('ui.NominaRecords.ubicacionDeLaMarcacionDe')}
-                          polygon={selected.stationName?.geofencePolygon || undefined}
-                          radiusMeters={
-                            !selected.stationName?.geofencePolygon && selected.stationName?.geofenceRadius
-                              ? Number(selected.stationName.geofenceRadius)
-                              : null
-                          }
-                        >
-                          <GoogleMapEmbed
-                            lat={Number(selected.punchInLatitude)}
-                            lng={Number(selected.punchInLongitude)}
-                            zoom={16}
-                            height="200px"
-                            showGeofence={!selected.stationName?.geofencePolygon && !!selected.stationName?.geofenceRadius}
-                            geofenceRadius={selected.stationName?.geofenceRadius || 100}
-                            polygon={selected.stationName?.geofencePolygon || undefined}
-                            markers={[
-                              { id: "in", lat: Number(selected.punchInLatitude), lng: Number(selected.punchInLongitude), label: "Entrada" },
-                            ]}
-                          />
-                        </StaticMapImage>
-                        {selected.punchInOutsideGeofence && (
-                          <p
-                            className="px-3 py-2 text-xs font-medium"
-                            style={{ background: "color-mix(in oklab, var(--bad) 12%, transparent)", color: "var(--bad-text)" }}
-                          >
-                            Marcación fuera de geocerca · {selected.punchInDistanceM ?? "?"} m del puesto
-                          </p>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Clock-out location */}
-                    {selected.punchOutLatitude != null && selected.punchOutLongitude != null ? (
-                      <div className="glass-flat overflow-hidden">
-                        <div className="flex items-center justify-between px-3 py-1.5 text-xs font-semibold" style={{ background: "var(--glass-sunken)" }}>
-                          <span className="flex items-center gap-1.5">
-                            <LogOut size={13} style={{ color: "var(--warn-text)" }} /> Salida
-                          </span>
-                          <span className="font-normal tabular-nums" style={{ color: "var(--ink-soft)" }}>{fmtDateTime(selected.punchOutTime)}</span>
-                        </div>
-                        <StaticMapImage
-                          lat={Number(selected.punchOutLatitude)}
-                          lng={Number(selected.punchOutLongitude)}
-                          zoom={16}
-                          height="200px"
-                          alt={t('ui.NominaRecords.ubicacionDeLaMarcacionDe')}
-                          polygon={selected.stationName?.geofencePolygon || undefined}
-                          radiusMeters={
-                            !selected.stationName?.geofencePolygon && selected.stationName?.geofenceRadius
-                              ? Number(selected.stationName.geofenceRadius)
-                              : null
-                          }
-                        >
-                          <GoogleMapEmbed
-                            lat={Number(selected.punchOutLatitude)}
-                            lng={Number(selected.punchOutLongitude)}
-                            zoom={16}
-                            height="200px"
-                            showGeofence={!selected.stationName?.geofencePolygon && !!selected.stationName?.geofenceRadius}
-                            geofenceRadius={selected.stationName?.geofenceRadius || 100}
-                            polygon={selected.stationName?.geofencePolygon || undefined}
-                            markers={[
-                              { id: "out", lat: Number(selected.punchOutLatitude), lng: Number(selected.punchOutLongitude), label: "Salida" },
-                            ]}
-                          />
-                        </StaticMapImage>
-                      </div>
-                    ) : selected.punchOutTime ? (
-                      <EmptyState title={t("ui.NominaRecords.salidaSinUbicacion", "Salida sin ubicación")} description={t("ui.NominaRecords.marcacionAutomaticaOGpsNo", "Marcación automática o GPS no disponible.")} className="py-6" />
-                    ) : null}
-                  </div>
-                )}
-
-                <div className="flex flex-wrap items-center gap-2 pt-2">
-                  {selected.role === "supervisor" || selected.role === "administrative" ? (
-                    <p className="w-full text-xs" style={{ color: "var(--ink-soft)" }}>
-                      {selected.role === "administrative"
-                        ? "Registro administrativo — sin flujo de aprobación."
-                        : "Registro de supervisor — sin flujo de aprobación."}
-                    </p>
-                  ) : (
-                    <>
-                      {/* Approval is only meaningful when the punch actually needs
-                          review (outside geofence → pending_review, or a request left
-                          it pending) or was already decided (so it can be reversed). A
-                          normal on-time / in-geofence punch needs no approval — showing
-                          an "Aprobar" button there was the source of confusion. */}
-                      {(() => {
-                        const needsReview =
-                          selected.status === "pending_review" || selected.approvalStatus === "pending";
-                        const wasDecided =
-                          selected.approvalStatus === "approved" || selected.approvalStatus === "rejected";
-                        if (!needsReview && !wasDecided) {
-                          return (
-                            <p className="w-full text-xs" style={{ color: "var(--ink-soft)" }}>
-                              Sin aprobación requerida — marcación válida.
-                            </p>
-                          );
-                        }
-                        return (
-                          <>
-                            {wasDecided ? (
-                              <p className="w-full text-xs" style={{ color: "var(--ink-soft)" }}>
-                                {selected.approvalStatus === "approved" ? "Aprobado" : "Rechazado"}
-                                {(selected as AttendanceRecord & { approvedAt?: string }).approvedAt ? ` · ${fmtDateTime((selected as AttendanceRecord & { approvedAt?: string }).approvedAt)}` : ""}
-                                {" — puedes cambiar la decisión."}
-                              </p>
-                            ) : (
-                              <p className="w-full text-xs font-medium" style={{ color: "var(--warn-text)" }}>
-                                {selected.punchInOutsideGeofence
-                                  ? "Marcación fuera de la geocerca — requiere aprobación."
-                                  : "Marcación pendiente de revisión."}
-                              </p>
-                            )}
-                            {selected.approvalStatus !== "approved" && (
-                              <Button
-                                disabled={busy}
-                                onClick={() => act(() => attendanceService.approve(selected.id), "Aprobado")}
-                              >
-                                Aprobar
-                              </Button>
-                            )}
-                            {selected.approvalStatus !== "rejected" && (
-                              <Button
-                                disabled={busy}
-                                variant="outline"
-                                onClick={() => act(() => attendanceService.reject(selected.id), "Rechazado")}
-                              >
-                                Rechazar
-                              </Button>
-                            )}
-                          </>
-                        );
-                      })()}
-                      <Button
-                        disabled={busy}
-                        variant="outline"
-                        onClick={async () => {
-                          const reason = await promptDialog({ title: t("nomina.records.correctionReasonTitle", "Motivo de la corrección"), placeholder: "Ej.: marcó tarde por el tráfico" });
-                          if (!reason) return;
-                          const value = await promptDialog({ title: t("nomina.records.newPunchInTitle", "Nueva hora de entrada"), message: "Formato ISO, ej. 2026-06-06T13:00:00Z", defaultValue: selected.punchInTime });
-                          if (!value) return;
-                          act(
-                            () => attendanceService.correct(selected.id, { field: "punchInTime", correctedValue: value, reason }),
-                            "Corrección enviada",
-                          );
-                        }}
-                      >
-                        Corregir
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </div>
-            </>
-          )}
-        </SheetContent>
-      </Sheet>
     </AppLayout>
   );
 }

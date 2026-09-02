@@ -35,6 +35,40 @@ export const STATUS_META: Record<string, { label: string; tone: PillTone }> = {
   rejected: conEtiqueta("nomina.estado.rejected", { tone: "bad" as PillTone }),
 };
 
+/**
+ * ── EL CAMINO DE LA TARJETA HASTA EL PAGO ──────────────────────────────────
+ * `STATUS_META` dice lo que PASÓ ese día (atraso, falta, vacaciones). Esto dice
+ * DÓNDE VA la tarjeta. Son dos preguntas distintas y por eso son dos píldoras.
+ *
+ * El tono sube con el compromiso: en revisión es neutro, revisada informativa,
+ * aprobada es de marca (alguien la firmó), pagada verde (se acabó) y rechazada
+ * roja. Nada de esto deriva del acento salvo «aprobada», que es la única que
+ * representa una decisión de la empresa.
+ */
+export const PAYROLL_FLOW_META: Record<string, { label: string; tone: PillTone }> = {
+  pending_review: { label: "Espera de revisión", tone: "neutral" },
+  reviewed: { label: "Revisada", tone: "info" },
+  approved: { label: "Aprobada — a gestionar pago", tone: "brand" },
+  paid: { label: "Pagada", tone: "ok" },
+  rejected: { label: "Rechazada", tone: "bad" },
+};
+
+/** A qué estados se puede pasar desde cada uno (espejo del servidor). */
+export const PAYROLL_FLOW_NEXT: Record<string, string[]> = {
+  pending_review: ["reviewed", "rejected"],
+  reviewed: ["approved", "rejected", "pending_review"],
+  approved: ["paid", "rejected", "reviewed"],
+  paid: ["approved"],
+  rejected: ["pending_review"],
+};
+
+/** Píldora del ciclo de nómina. `null` = no es una tarjeta (ausencia). */
+export function PayrollBadge({ status }: { status: string | null | undefined }) {
+  if (!status) return <span style={{ color: "var(--ink-faint)" }}>—</span>;
+  const m = PAYROLL_FLOW_META[status] || PAYROLL_FLOW_META.pending_review;
+  return <KitStatusBadge tone={m.tone}>{m.label}</KitStatusBadge>;
+}
+
 /** guardShift.approvalStatus → etiqueta + tono. "none" (el valor por defecto en
  *  la base) significa que no hizo falta aprobación — no es un valor crudo que
  *  deba salir en pantalla. */

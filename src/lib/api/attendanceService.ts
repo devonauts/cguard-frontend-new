@@ -57,6 +57,29 @@ export interface AttendanceRecord {
   stationName?: { id: string; stationName?: string; latitud?: string; longitud?: string; geofenceRadius?: number; geofencePolygon?: { lat: number; lng: number }[] | null } | null;
   /** 'supervisor' for a supervisorShift folded into the list; else guard. */
   role?: "guard" | "supervisor" | "administrative";
+  /**
+   * El camino de la tarjeta hasta el pago. `null` = no es una tarjeta de tiempo
+   * (un día de vacaciones o una falta se informa, no se aprueba ni se paga).
+   */
+  payrollStatus?: "pending_review" | "reviewed" | "approved" | "paid" | "rejected" | null;
+  payrollStatusAt?: string | null;
+  payrollStatusNotes?: string | null;
+  /** Descansos y almuerzo: `[{start,end,kind}]`. El último sin `end` = en curso. */
+  breaks?: Array<{ start: string; end?: string | null; kind?: string }> | null;
+  breakMinutes?: number | null;
+  /** Fila sintética de vacaciones/permiso/falta (no vive en guardShifts). */
+  esJornadaSinFichaje?: boolean;
+}
+
+/** Un movimiento de la bitácora de una tarjeta. */
+export interface TimesheetEvent {
+  id: string;
+  kind: string;
+  action?: string;
+  at: string;
+  actor: string | null;
+  detail: string | null;
+  data?: Record<string, unknown> | null;
 }
 
 const attendanceService = {
@@ -96,6 +119,57 @@ const attendanceService = {
     } catch {
       return null;
     }
+  },
+
+  /** Mover UNA tarjeta por el ciclo de nómina. */
+  async setStatus(id: string, status: string, notes?: string) {
+    const t = getTenantId();
+    return unwrap(await api.patch(`/tenant/${t}/attendance/${id}/status`, { data: { status, notes } }));
+  },
+
+  /** Lo mismo para una selección; devuelve cuántas se movieron y cuáles no. */
+  async bulkSetStatus(ids: string[], status: string, notes?: string): Promise<{ actualizadas: number; fallidas: { id: string; motivo: string }[] }> {
+    const t = getTenantId();
+    return unwrap(await api.post(`/tenant/${t}/attendance/bulk-status`, { data: { ids, status, notes } }));
+  },
+
+  /** Corregir a mano entrada, salida, descansos y observaciones. */
+  async editTimes(id: string, data: {
+    punchInTime?: string | null;
+    punchOutTime?: string | null;
+    breaks?: Array<{ start: string; end?: string | null; kind?: string }> | null;
+    observations?: string | null;
+    reason?: string | null;
+  }): Promise<AttendanceRecord> {
+    const t = getTenantId();
+    return unwrap(await api.patch(`/tenant/${t}/attendance/${id}/times`, { data }));
+  },
+
+  /** Quién tocó esta tarjeta, qué hizo y cuándo. */
+  async history(id: string): Promise<{ rows: TimesheetEvent[] }> {
+    const t = getTenantId();
+    return unwrap(await api.get(`/tenant/${t}/attendance/${id}/history`));
+  },
+
+  /**
+   * Descarga el registro en PDF, Excel o CSV. Va por el SERVIDOR: el navegador
+   * sólo tiene las filas que alcanzó a cargar, y el archivo tiene que incluir
+   * también los días de vacaciones y falta, que no son fichajes.
+   */
+  async exportRecords(params: Record<string, unknown>): Promise<void> {
+    const t = getTenantId();
+    const resp = await api.get(`/tenant/${t}/attendance/export${buildQuery(params)}`, {
+      responseType: "blob",
+    } as any);
+    const blob = (resp as any)?.data ?? resp;
+    const fmt = String(params.format || "csv");
+    const ext = fmt === "excel" || fmt === "xlsx" ? "xlsx" : fmt;
+    const url = URL.createObjectURL(blob as Blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `asistencia_${new Date().toISOString().slice(0, 10)}.${ext}`;
+    a.click();
+    URL.revokeObjectURL(url);
   },
 
   async exceptions(params?: Record<string, unknown>) {
