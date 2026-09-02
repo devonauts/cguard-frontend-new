@@ -2165,9 +2165,12 @@ export default function Schedule() {
   const savePosition = async () => {
     if (!posEditor) return;
     const esSf = posEditor.type === 'sacafranco';
-    const ids = posEditor.positionId
-      ? [posEditor.stationId]
-      : (posEditor.stationIds.length ? posEditor.stationIds : (posEditor.stationId ? [posEditor.stationId] : []));
+    /* Sólo el asistente del sacafranco marca VARIAS estaciones. El «+» de un
+       puesto trae la suya y punto — meterle ahí un selector convertía «agregar
+       un vigilante a esta estación» en el diálogo del sacafranco. */
+    const ids = posEditor.sfWizard && !posEditor.positionId
+      ? posEditor.stationIds
+      : (posEditor.stationId ? [posEditor.stationId] : []);
     if (!ids.length) { toast.error('Elige al menos una estación'); return; }
     if (!posEditor.name.trim()) { toast.error('Ponle un nombre al puesto'); return; }
     setPosSaving(true);
@@ -4085,7 +4088,6 @@ export default function Schedule() {
         const eMin = toMin(posEditor.endTime);
         const durH = ((eMin <= sMin ? eMin + 1440 : eMin) - sMin) / 60;
         const set = (patch: Partial<NonNullable<typeof posEditor>>) => setPosEditor(m => m ? { ...m, ...patch } : m);
-        const esSfEditor = posEditor.type === 'sacafranco';
 
         /* ── ASISTENTE DEL SACAFRANCO ────────────────────────────────────────
            El diálogo genérico de puestos preguntaba «Tipo: fijo o sacafranco» y
@@ -4305,72 +4307,11 @@ export default function Schedule() {
               <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--hairline)' }}>
                 <div>
                   <h4 className="text-sm font-semibold">{posEditor.positionId ? 'Editar puesto' : 'Agregar puesto'}</h4>
-                  <p className="mt-0.5 text-[11px]" style={{ color: 'var(--ink-soft)' }}>
-                    {posEditor.positionId
-                      ? posEditor.stationName
-                      : posEditor.stationIds.length > 1
-                        ? `${posEditor.stationIds.length} estaciones marcadas`
-                        : posEditor.stationName || 'Marca abajo dónde va'}
-                  </p>
+                  <p className="mt-0.5 text-[11px]" style={{ color: 'var(--ink-soft)' }}>{posEditor.stationName}</p>
                 </div>
                 <button onClick={() => setPosEditor(null)} className="cg-btn-ghost cg-focus rounded-lg p-1.5"><X size={15} /></button>
               </div>
               <div className="space-y-4 p-5">
-                {!posEditor.positionId && (() => {
-                  const marcadas = posEditor.stationIds;
-                  const alternar = (id: string) => {
-                    const siguiente = marcadas.includes(id) ? marcadas.filter(x => x !== id) : [...marcadas, id];
-                    const base = stationsById.get(siguiente[0] || '');
-                    set({ stationIds: siguiente, stationId: siguiente[0] || '', stationName: base ? stationLabel(base) : '' });
-                  };
-                  return (
-                    <div>
-                      <div className="mb-1 flex items-center justify-between gap-2">
-                        <label className="block text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>
-                          {esSfEditor ? 'Estaciones que cubre' : 'Estaciones'}
-                        </label>
-                        {marcadas.length > 0 && (
-                          <button
-                            type="button"
-                            onClick={() => set({ stationIds: [], stationId: '', stationName: '' })}
-                            className="cg-btn-ghost cg-focus rounded-full px-2 py-0.5 text-[10px] font-semibold"
-                          >
-                            Limpiar
-                          </button>
-                        )}
-                      </div>
-                      <div className="max-h-40 overflow-y-auto rounded-xl px-1 py-1" style={{ border: '1px solid var(--hairline)' }}>
-                        {stations.length === 0 && (
-                          <p className="px-2 py-1.5 text-[11px]" style={{ color: 'var(--ink-faint)' }}>No hay estaciones.</p>
-                        )}
-                        {stations.map(st => {
-                          const on = marcadas.includes(st.id);
-                          const esBase = marcadas[0] === st.id;
-                          return (
-                            <label key={st.id} className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-xs transition-colors hover:bg-[var(--glass-sunken)]">
-                              <input type="checkbox" checked={on} onChange={() => alternar(st.id)} className="cg-focus" />
-                              <span className={on ? 'font-semibold' : ''}>{stationLabel(st)}</span>
-                              {esSfEditor && esBase && (
-                                <span className="ml-auto shrink-0 text-[9px] font-semibold" style={{ color: 'var(--ink-faint)' }}>base</span>
-                              )}
-                            </label>
-                          );
-                        })}
-                      </div>
-                      <p className="mt-1 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
-                        {marcadas.length === 0
-                          ? 'Marca al menos una.'
-                          : esSfEditor
-                            ? marcadas.length > 1
-                              ? `Una sola fila de sacafranco (en ${stationLabel(stationsById.get(marcadas[0])!) }) que cubrirá las ${marcadas.length} estaciones marcadas.`
-                              : 'Cubrirá los descansos de esta estación.'
-                            : marcadas.length > 1
-                              ? `Se crea este puesto en las ${marcadas.length} estaciones marcadas.`
-                              : 'Se crea en esta estación.'}
-                      </p>
-                    </div>
-                  );
-                })()}
                 <div>
                   <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>Nombre</label>
                   <input
