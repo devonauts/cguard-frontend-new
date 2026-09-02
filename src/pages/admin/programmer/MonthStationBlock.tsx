@@ -56,6 +56,8 @@ export type MonthGridHandlers = {
   removeAssignment: (assignmentId: string) => void;
   onGuardDragStart: (e: React.DragEvent, guardId: string, fromAssignment?: GuardAssignment) => void;
   handleDrop: (e: React.DragEvent, stationId: string, positionId: string, dateStr?: string) => void;
+  /** Arrastrar una tarjeta de cobertura para moverla de día o de puesto. */
+  onCoverageDragStart: (e: React.DragEvent, shiftId: string) => void;
   openCellCtx: (e: React.MouseEvent, station: Station, pos: StationPosition, posAssignments: GuardAssignment[], dateStr: string) => void;
   setOverrideTarget: (t: { guardId: string; guardName: string; date: string; assignmentId?: string }) => void;
   startCellSelect: (rowKey: string, c: number, shift: boolean) => void;
@@ -112,7 +114,7 @@ export type MonthStationBlockProps = {
   stationAlert: StationAlert | undefined;
   assignmentsByPosition: Map<string, GuardAssignment[]>;
   overrideByGuardDate: Map<string, ScheduleOverride>;
-  sfStationCoverage: Map<string, { name: string; fullName: string; code: 'D' | 'N'; ext?: boolean }[]>;
+  sfStationCoverage: Map<string, { id: string; guardId: string; name: string; fullName: string; code: 'D' | 'N'; ext?: boolean }[]>;
   guardColorMap: Record<string, string>;
   monthDays: Date[];
   monthDayStrs: string[];
@@ -197,20 +199,22 @@ function MonthStationBlockInner({
   const primeraFilaId = stationPositions[0]?.id;
 
   /** La píldora de una cobertura que ninguna «L» va a enseñar. */
-  const pildoraCobertura = (lista: { name: string; fullName: string; code: 'D' | 'N'; ext?: boolean }[]) => {
+  const pildoraCobertura = (lista: { id: string; guardId: string; name: string; fullName: string; code: 'D' | 'N'; ext?: boolean }[]) => {
     // Una EXTENSIÓN (alguien doblando porque su relevo no llegó) va en ámbar,
     // no en verde: el verde dice «cubierto y en orden», y esto está cubierto
     // pero NO está en orden — hay una persona encadenando dos turnos.
     const esExt = lista.some(x => x.ext);
     return (
       <div
-        className="flex min-h-[18px] flex-1 cursor-default flex-col items-center justify-center rounded"
+        className="flex min-h-[18px] flex-1 cursor-grab flex-col items-center justify-center rounded active:cursor-grabbing"
         style={toneCard(esExt ? 'warn' : 'ok', esExt ? 18 : 12, esExt ? 34 : 22)}
         title={
           esExt
             ? `DOBLA turno: ${lista.map(x => x.fullName).join(', ')}`
-            : `Cubre: ${lista.map(x => x.fullName).join(', ')}`
+            : `Cubre: ${lista.map(x => x.fullName).join(', ')} · arrastra para moverlo`
         }
+        draggable
+        onDragStart={e => h.onCoverageDragStart(e, lista[0].id)}
       >
         <span className="text-[10px] font-bold leading-none">
           {esExt ? '2×' : lista[0].code}
@@ -304,12 +308,21 @@ function MonthStationBlockInner({
                 const coveringSfs = sfStationCoverage.get(coverKey) || [];
                 const sfLabel = coveringSfs.length > 0 ? coveringSfs[0].name : '';
                 const sfTooltip = coveringSfs.length > 0 ? coveringSfs.map(s => s.fullName).join(', ') : '';
+                // La tarjeta de cobertura se ARRASTRA para moverla de día o de
+                // puesto; la «L» pelada no tiene nada que arrastrar.
+                const cobertura = coveringSfs[0];
                 return (
                   <div
                     key={assignment.id}
                     className="relative flex min-h-[18px] flex-1 cursor-pointer items-center justify-center rounded"
                     style={sfLabel ? toneCard('ok', 12, 22) : { background: 'var(--glass-sunken)' }}
-                    title={`${guardName} — Libre${sfTooltip ? ` · Cubre: ${sfTooltip}` : ' (clic derecho: asignar sacafranco)'}`}
+                    title={
+                      sfLabel
+                        ? `${sfTooltip} cubre a ${guardName} · arrastra para moverlo`
+                        : `${guardName} — Libre (clic derecho: asignar sacafranco)`
+                    }
+                    draggable={!!cobertura}
+                    onDragStart={e => { if (cobertura) h.onCoverageDragStart(e, cobertura.id); }}
                     onDoubleClick={() => h.setOverrideTarget({ guardId: assignment.guardId, guardName, date: dateStr, assignmentId: assignment.id })}
                   >
                     {sfLabel ? (

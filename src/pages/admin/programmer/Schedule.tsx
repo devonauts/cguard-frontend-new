@@ -915,7 +915,7 @@ export default function Schedule() {
   // que NO venga de la rotación de ese puesto — que es la definición de una
   // cobertura, sea quien sea quien la haga.
   const sfStationCoverage = useMemo(() => {
-    const map = new Map<string, { name: string; fullName: string; code: 'D' | 'N'; ext?: boolean }[]>();
+    const map = new Map<string, { id: string; guardId: string; name: string; fullName: string; code: 'D' | 'N'; ext?: boolean }[]>();
     // Los turnos que la rotación del puesto genera llevan `positionId`; los
     // sueltos (cobertura, bloque dibujado, turno único) no. Un SF sigue contando
     // aunque su turno traiga posición, por compatibilidad con lo de antes.
@@ -940,7 +940,7 @@ export default function Schedule() {
       // `extension` = alguien DOBLÓ (su relevo no llegó). Se pinta distinto del
       // resto de coberturas: no es un sacafranco haciendo su trabajo, es una
       // persona encadenando dos turnos, y eso hay que verlo de un vistazo.
-      map.get(key)!.push({ name: initials || 'SF', fullName, code, ext: s.status === 'extension' });
+      map.get(key)!.push({ id: s.id, guardId: s.guardId, name: initials || 'SF', fullName, code, ext: s.status === 'extension' });
     }
     return map;
   }, [shifts, reliefGuardIds, tzName, guardsPool]);
@@ -1645,8 +1645,119 @@ export default function Schedule() {
     setCtxMenu({ x: e.clientX, y: e.clientY, items });
   };
 
+  /* ─── MOVER UNA COBERTURA ARRASTRÁNDOLA ──────────────────────────────────
+     Cubrir unas vacaciones crea N turnos sueltos, uno por día. Cuando la fecha
+     se corre —el vigilante adelanta el viaje, el cliente cambia el día— había
+     que borrarlos y rehacerlos uno a uno.
+
+     No hay id de lote en la base: el rango se guarda como turnos independientes.
+     Así que el lote se RECONSTRUYE caminando hacia los dos lados mientras el
+     mismo vigilante siga teniendo cobertura al día siguiente — la misma técnica
+     con la que el diálogo de cubrir reconstruye el rango de una novedad. Por eso
+     el modal pregunta: este día, o el bloque entero. */
+
+  /** ¿Este turno es una cobertura (y no el turno de rotación de una plaza)? */
+  const esUnaCobertura = useCallback(
+    (s: ShiftRecord) => !s.positionId || reliefGuardIds.has(s.guardId),
+    [reliefGuardIds],
+  );
+
+  const diaDelTurno = useCallback(
+    (s: ShiftRecord) => dateToWall(new Date(s.startTime), tzName).dateStr,
+    [tzName],
+  );
+
+  const loteDeCobertura = useCallback((s: ShiftRecord): ShiftRecord[] => {
+    const lote = [s];
+    for (const paso of [-1, 1]) {
+      let cursor = diaDelTurno(s);
+      for (let i = 0; i < 180; i += 1) {
+        cursor = addDaysStr(cursor, paso);
+        const vecino = shiftByGuardDate.get(`${s.guardId}|${cursor}`);
+        if (!vecino || vecino.id === s.id || !esUnaCobertura(vecino)) break;
+        lote.push(vecino);
+      }
+    }
+    return lote.sort((a, b) => a.startTime.localeCompare(b.startTime));
+  }, [shiftByGuardDate, esUnaCobertura, diaDelTurno]);
+
+  const [moveCover, setMoveCover] = useState<{
+    shift: ShiftRecord; lote: ShiftRecord[];
+    stationId: string; dateStr: string; delta: number;
+  } | null>(null);
+  const [moveSaving, setMoveSaving] = useState(false);
+
+  const onCoverageDragStart = (e: React.DragEvent, shiftId: string) => {
+    mouseSelRef.current = false; // un arrastre nativo no dispara el mouseup que cierra la selección
+    e.dataTransfer.setData('coverShiftId', shiftId);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const aplicarMovimiento = async (soloEste: boolean) => {
+    if (!moveCover) return;
+    const { shift, lote, stationId, dateStr, delta } = moveCover;
+    const objetivo = soloEste ? [shift] : lote;
+    const st = stationsById.get(stationId);
+    setMoveSaving(true);
+    let movidos = 0;
+    const fallados: string[] = [];
+    for (const s of objetivo) {
+      const ini = new Date(s.startTime);
+      const fin = new Date(s.endTime);
+      const w = dateToWall(ini, tzName);
+      // El día nuevo con la MISMA hora de pared, y la duración exacta encima:
+      // sumar 24 h en milisegundos se descuadra una hora en el cambio horario,
+      // y lo que se paga son las horas trabajadas, no el reloj.
+      const destino = addDaysStr(w.dateStr, delta);
+      const [dy, dm, dd] = destino.split('-').map(Number);
+      const nuevoIni = wallToDate(dy, dm, dd, w.minutes, tzName);
+      const nuevoFin = new Date(nuevoIni.getTime() + (fin.getTime() - ini.getTime()));
+      try {
+        await ApiService.put(`/tenant/${tenantId}/shift/${s.id}`, {
+          data: {
+            // `station` y `postSite` van SIEMPRE: el servidor los reasigna sin
+            // comprobar si venían, así que omitirlos los pondría a null.
+            station: stationId,
+            postSite: st?.postSiteId,
+            guard: s.guardId,
+            startTime: nuevoIni.toISOString(),
+            endTime: nuevoFin.toISOString(),
+            // Se desliga de la plaza vieja: una cobertura vive del puesto y el
+            // día, y conservar una plaza de la estación de origen la haría
+            // desaparecer de la rejilla al cambiar de puesto.
+            positionId: null,
+          },
+        });
+        movidos += 1;
+      } catch (err: any) {
+        // Un día que falla no aborta el resto, y se dice CUÁL.
+        fallados.push(diaDelTurno(s));
+      }
+    }
+    setMoveSaving(false);
+    if (!movidos) {
+      toast.error(`No se pudo mover${fallados.length ? ` (${fallados.length} día(s) con error)` : ''}.`);
+    } else if (fallados.length) {
+      toast.warning(`${movidos} día(s) movido(s). Falló en: ${fallados.join(', ')}.`);
+    } else {
+      toast.success(movidos === 1 ? 'Cobertura movida' : `${movidos} días movidos`);
+    }
+    if (movidos) { setMoveCover(null); fetchAll({ silent: true }); }
+  };
+
   const handleDrop = (e: React.DragEvent, stationId: string, positionId: string, dateStr?: string) => {
     e.preventDefault();
+    // Una tarjeta de cobertura arrastrada = mover ese turno (y quizá su bloque).
+    const coverShiftId = e.dataTransfer.getData('coverShiftId');
+    if (coverShiftId && dateStr) {
+      const s = shifts.find(x => x.id === coverShiftId);
+      if (!s) return;
+      const origen = diaDelTurno(s);
+      if (origen === dateStr && s.stationId === stationId) return; // no se movió
+      const delta = diasEntre(origen, dateStr) - 1; // `diasEntre` es inclusivo
+      setMoveCover({ shift: s, lote: loteDeCobertura(s), stationId, dateStr, delta });
+      return;
+    }
     // An SF día dropped on a puesto cell = place coverage (not an assignment).
     const sfCoverGuardId = e.dataTransfer.getData('sfCoverGuardId');
     if (sfCoverGuardId) {
@@ -2746,7 +2857,7 @@ export default function Schedule() {
   Object.assign(handlersRef.current, {
     configureStation, addPosition, editPosition, deletePosition, openAssignForm,
     removeAssignment, onGuardDragStart, handleDrop, openCellCtx,
-    setOverrideTarget, startCellSelect, hoverCellSelect, isWorkDay,
+    setOverrideTarget, startCellSelect, hoverCellSelect, isWorkDay, onCoverageDragStart,
   });
   const handlers = handlersRef.current;
 
@@ -3912,6 +4023,73 @@ export default function Schedule() {
       })()}
 
       {/* ─── Assignment Modal ─────────────────────────────────────────────── */}
+      {/* ─── Mover una cobertura (arrastrada) ────────────────────────────────
+          La pregunta que importa: ¿este día o el bloque entero? Cubrir unas
+          vacaciones son N turnos sueltos, y casi siempre se corren todos. */}
+      {moveCover && (() => {
+        const nombre = nombreDeVigilante(moveCover.shift.guard, 'la cobertura');
+        const stDestino = stationsById.get(moveCover.stationId);
+        const origen = diaDelTurno(moveCover.shift);
+        const fmtDia = (v: string) => new Date(v + 'T00:00:00').toLocaleDateString(localeActual(), { weekday: 'short', day: 'numeric', month: 'short' });
+        const cambiaDePuesto = moveCover.shift.stationId !== moveCover.stationId;
+        const nDias = moveCover.lote.length;
+        const primero = diaDelTurno(moveCover.lote[0]);
+        const ultimo = diaDelTurno(moveCover.lote[nDias - 1]);
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'oklch(0 0 0 / 0.55)' }} onClick={() => !moveSaving && setMoveCover(null)}>
+            <div className="glass-raised w-[min(30rem,94vw)] rounded-2xl" onClick={e => e.stopPropagation()}>
+              <div className="flex items-center justify-between px-5 py-3" style={{ borderBottom: '1px solid var(--hairline)' }}>
+                <h4 className="text-sm font-semibold">Mover la cobertura de {nombre}</h4>
+                <button onClick={() => setMoveCover(null)} disabled={moveSaving} className="cg-btn-ghost cg-focus rounded-lg p-1.5"><X size={15} /></button>
+              </div>
+
+              <div className="space-y-3 px-5 py-4">
+                <div className="glass-sunken px-3 py-2 text-[11px]">
+                  <div className="flex items-center gap-1.5 font-semibold">
+                    <span className="tabular-nums">{fmtDia(origen)}</span>
+                    <ArrowRight className="h-3 w-3" />
+                    <span className="tabular-nums">{fmtDia(moveCover.dateStr)}</span>
+                  </div>
+                  {cambiaDePuesto && (
+                    <div className="mt-1" style={{ color: 'var(--ink-soft)' }}>
+                      Cambia al puesto <span className="font-semibold" style={{ color: 'var(--ink)' }}>{stDestino ? stationLabel(stDestino) : 'destino'}</span>.
+                    </div>
+                  )}
+                  <div className="mt-1" style={{ color: 'var(--ink-faint)' }}>
+                    Conserva su horario y las horas que se pagan.
+                  </div>
+                </div>
+
+                <p className="text-[12px]" style={{ color: 'var(--ink-soft)' }}>
+                  {nDias > 1
+                    ? <>Esta cobertura se agregó junto a otras: son <span className="font-semibold" style={{ color: 'var(--ink)' }}>{nDias} días seguidos</span>, del {fmtDia(primero)} al {fmtDia(ultimo)}. ¿Qué mueves?</>
+                    : 'Es un día suelto: no hay más días que mover con él.'}
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-2 px-5 py-3" style={{ borderTop: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>
+                {nDias > 1 && (
+                  <button
+                    onClick={() => void aplicarMovimiento(false)}
+                    disabled={moveSaving}
+                    className="cg-btn-brand cg-focus rounded-full px-5 py-2 text-sm font-semibold transition-all disabled:opacity-40"
+                  >
+                    {moveSaving ? <Loader2 size={14} className="mx-auto animate-spin" /> : `Mover los ${nDias} días`}
+                  </button>
+                )}
+                <button
+                  onClick={() => void aplicarMovimiento(true)}
+                  disabled={moveSaving}
+                  className={`${nDias > 1 ? 'cg-btn-ghost' : 'cg-btn-brand'} cg-focus rounded-full px-5 py-2 text-sm font-semibold transition-all disabled:opacity-40`}
+                >
+                  {moveSaving ? <Loader2 size={14} className="mx-auto animate-spin" /> : 'Mover sólo este día'}
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
       {showAssignForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'oklch(0 0 0 / 0.55)' }} onClick={() => { setShowAssignForm(false); setMoveFrom(null); setAssignEditing(null); }}>
           <div className="glass-raised mx-4 max-h-[90vh] w-full max-w-md overflow-hidden overflow-y-auto animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
