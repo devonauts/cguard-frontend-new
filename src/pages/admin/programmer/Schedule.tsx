@@ -712,6 +712,32 @@ export default function Schedule() {
     return m;
   }, [shifts, tzName]);
 
+  /**
+   * La ventana que de VERDAD se trabaja en una plaza un día dado.
+   *
+   * Existe porque las horas declaradas en la plaza pueden no tener nada que ver
+   * con los turnos reales. Caso medido en Seguridad B.A.S.: la plaza «Fijo 2»
+   * dice 07:00–19:00 y los turnos de su titular alternan 12:00→00:00 y
+   * 00:00→12:00. Al cubrir sus vacaciones, el modal se conformaba con las horas
+   * de la plaza y creaba un turno DIURNO donde tocaba uno de noche.
+   *
+   * Se indexa por plaza y día, no por vigilante: al cubrir a alguien que está de
+   * vacaciones puede que su propio turno ya no esté ahí, y lo que hay que
+   * replicar es la ventana del PUESTO, que es la que el cliente contrató.
+   */
+  const shiftByPosDate = useMemo(() => {
+    const m = new Map<string, ShiftRecord>();
+    for (const sh of shifts) {
+      if (!sh.startTime || !sh.positionId) continue;
+      const k = `${sh.positionId}|${dateToWall(new Date(sh.startTime), tzName).dateStr}`;
+      // Si hay varios, gana el primero: dos turnos en la misma plaza y día son
+      // un relevo, y cualquiera de los dos da la ventana correcta mejor que la
+      // hora declarada de la plaza.
+      if (!m.has(k)) m.set(k, sh);
+    }
+    return m;
+  }, [shifts, tzName]);
+
   /* Índices, no barridos. Estas dos se llaman una vez por puesto y una vez por
      posición en CADA render; como `.filter()` eso era O(puestos x posiciones).
      Y —más importante— devolvían un array NUEVO cada vez, así que ninguna fila
@@ -1187,7 +1213,17 @@ export default function Schedule() {
     /** A quién se cubre, para precargar el rango de SU novedad. */
     cubriendoA?: string,
   ) => {
+    // ── DE DÓNDE SALEN LAS HORAS, EN ORDEN ────────────────────────────────
+    // 1) El turno que se está cubriendo, si quien abre el menú lo sabe.
+    // 2) Cualquier turno REAL de esa plaza ese día — la ventana que se trabaja.
+    // 3) Las horas declaradas de la plaza.
+    // El paso 2 es nuevo y es el que arregla el fallo: la rama «Cubrir este día
+    // con un vigilante…» no pasa turno (la casilla no muestra fijo porque está
+    // de vacaciones), así que se caía al paso 3 y creaba un turno diurno sobre
+    // un puesto nocturno.
     let [ini, fin] = horasDelPuesto(positionId);
+    const deLaPlaza = dateStr ? shiftByPosDate.get(`${positionId}|${dateStr}`) : null;
+    if (!copiarHorasDe && deLaPlaza) copiarHorasDe = deLaPlaza;
     if (copiarHorasDe) {
       const hm = (m: number) => `${String(Math.floor((((m % 1440) + 1440) % 1440) / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
       ini = hm(dateToWall(new Date(copiarHorasDe.startTime), tzName).minutes);
