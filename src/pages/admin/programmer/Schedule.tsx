@@ -2061,6 +2061,17 @@ export default function Schedule() {
     stationIds: string[];
     positionId?: string; stationName: string;
     name: string; type: string; startTime: string; endTime: string; guardsNeeded: string;
+    /* ── EL ASISTENTE DEL SACAFRANCO ──────────────────────────────────────
+       Crear un sacafranco no es «agregar un puesto»: lo que hay que decidir es
+       QUIÉN es, QUÉ horas cubre, si su mes es ROTATIVO o se coloca a mano, y
+       EN QUÉ estaciones cubre — y de cuál cuelga su horario. Eso vive en dos
+       tablas (la posición y la asignación), pero para quien opera es UNA sola
+       decisión, así que se pregunta de una vez y se guarda en dos pasos. */
+    sfWizard?: boolean;
+    guardId?: string;
+    rotMode?: 'rotativo' | 'manual';
+    rotationStyleId?: string;
+    startDate?: string;
   } | null>(null);
   const [posSaving, setPosSaving] = useState(false);
 
@@ -2087,6 +2098,11 @@ export default function Schedule() {
       stationName: '',
       name: 'Sacafranco', type: 'sacafranco',
       startTime: '07:00', endTime: '19:00', guardsNeeded: '1',
+      sfWizard: true,
+      guardId: '',
+      rotMode: 'manual',
+      rotationStyleId: '',
+      startDate: tzToday(),
     });
   };
 
@@ -2146,9 +2162,36 @@ export default function Schedule() {
       }
 
       if (esSf) {
-        const base = ids[0];
+        /* La estación BASE es de la que cuelga su fila y donde empieza su
+           horario; las marcadas son las que cubre. Son dos cosas distintas y
+           por eso se preguntan por separado en el asistente. */
+        const base = posEditor.stationId && ids.includes(posEditor.stationId) ? posEditor.stationId : ids[0];
         const creado: any = await ApiService.post(`/tenant/${tenantId}/station/${base}/positions`, { data: { ...data, sortOrder: 99 } });
         const nuevoId = creado?.id || creado?.data?.id || '';
+
+        // Con vigilante elegido se cierra el círculo aquí mismo: posición +
+        // asignación con SU patrón y SUS estaciones. Sin vigilante se queda la
+        // fila creada y se asigna después.
+        if (posEditor.sfWizard && posEditor.guardId && nuevoId) {
+          await ApiService.post(`/tenant/${tenantId}/guard-assignment`, {
+            data: {
+              guardId: posEditor.guardId,
+              stationId: base,
+              positionId: nuevoId,
+              startDate: posEditor.startDate || tzToday(),
+              isRelief: true,
+              rotationStyleId: posEditor.rotMode === 'rotativo' ? (posEditor.rotationStyleId || null) : null,
+              coveredStationIds: ids.length ? ids : null,
+            },
+          });
+          setPosEditor(null);
+          toast.success(posEditor.rotMode === 'rotativo'
+            ? `Sacafranco creado y asignado — cubre ${ids.length} estación(es). Sus turnos tardan unos segundos.`
+            : `Sacafranco creado y asignado — cubre ${ids.length} estación(es). Su mes empieza en blanco: coloca sus días arrastrándolos o con «Optimizar sacafrancos».`);
+          fetchAll();
+          return;
+        }
+
         setPosEditor(null);
         // Se espera al refresco: la asignación que se abre a continuación lee
         // el tipo de la posición recién creada para saber que es un relevo.
@@ -3905,6 +3948,239 @@ export default function Schedule() {
         const durH = ((eMin <= sMin ? eMin + 1440 : eMin) - sMin) / 60;
         const set = (patch: Partial<NonNullable<typeof posEditor>>) => setPosEditor(m => m ? { ...m, ...patch } : m);
         const esSfEditor = posEditor.type === 'sacafranco';
+
+        /* ── ASISTENTE DEL SACAFRANCO ────────────────────────────────────────
+           El diálogo genérico de puestos preguntaba «Tipo: fijo o sacafranco» y
+           se titulaba «Agregar puesto». Cuando ya se sabe que se está creando un
+           sacafranco eso sobra, y en cambio falta todo lo que un sacafranco SÍ
+           necesita: quién es, qué horas cubre, si su mes es rotativo o se coloca
+           a mano, y en qué estaciones cubre — con cuál de ellas de base. */
+        if (posEditor.sfWizard && !posEditor.positionId) {
+          const marcadas = posEditor.stationIds;
+          const alternar = (id: string) => {
+            const siguiente = marcadas.includes(id) ? marcadas.filter(x => x !== id) : [...marcadas, id];
+            const base = posEditor.stationId && siguiente.includes(posEditor.stationId) ? posEditor.stationId : (siguiente[0] || '');
+            const stBase = stationsById.get(base);
+            set({ stationIds: siguiente, stationId: base, stationName: stBase ? stationLabel(stBase) : '' });
+          };
+          const baseActual = posEditor.stationId && marcadas.includes(posEditor.stationId) ? posEditor.stationId : (marcadas[0] || '');
+          const etiquetaTurno = (ini: string, fin: string) => {
+            const h1 = parseInt(ini.split(':')[0], 10) || 0;
+            const h2 = parseInt(fin.split(':')[0], 10) || 0;
+            let span = (h2 - h1 + 24) % 24; if (span === 0) span = 24;
+            if (span >= 23) return '24 horas';
+            return h1 >= 18 || h1 < 6 ? 'Nocturno' : 'Diurno';
+          };
+          /* Las horas que puede cubrir son las que de verdad existen en las
+             estaciones marcadas; los tres de siempre sólo si no hay ninguna. */
+          const bloques = new Map<string, { ini: string; fin: string }>();
+          for (const pp of positions) {
+            if (marcadas.length && !marcadas.includes(pp.stationId)) continue;
+            if ((pp.type || 'fijo') === 'sacafranco') continue;
+            const ini = String(pp.startTime || '07:00').slice(0, 5);
+            const fin = String(pp.endTime || '19:00').slice(0, 5);
+            bloques.set(`${ini}|${fin}`, { ini, fin });
+          }
+          if (bloques.size === 0) {
+            bloques.set('07:00|19:00', { ini: '07:00', fin: '19:00' });
+            bloques.set('19:00|07:00', { ini: '19:00', fin: '07:00' });
+          }
+          const turnos = Array.from(bloques.values()).sort((x, y) => x.ini.localeCompare(y.ini));
+          const ciclo = (r: RotationStyle) => [
+            r.dayShifts ? `${r.dayShifts}D` : '',
+            r.nightShifts ? `${r.nightShifts}N` : '',
+            r.restDays ? `${r.restDays}L` : '',
+          ].filter(Boolean).join('-');
+          // Un vigilante sostiene UNA rotación activa: ofrecer a los ya
+          // asignados sólo produce un rechazo del servidor.
+          const libres = unassignedGuards;
+
+          return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'oklch(0 0 0 / 0.55)' }} onClick={() => setPosEditor(null)}>
+              <div className="glass-raised mx-4 max-h-[90vh] w-full max-w-md overflow-y-auto animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+                <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--hairline)' }}>
+                  <div>
+                    <h4 className="text-sm font-semibold">Agregar sacafranco</h4>
+                    <p className="mt-0.5 text-[11px]" style={{ color: 'var(--ink-soft)' }}>
+                      {marcadas.length
+                        ? `Cubre ${marcadas.length} estación(es)`
+                        : 'El relevo que cubre los descansos de los fijos'}
+                    </p>
+                  </div>
+                  <button onClick={() => setPosEditor(null)} className="cg-btn-ghost cg-focus rounded-lg p-1.5"><X size={15} /></button>
+                </div>
+
+                <div className="space-y-4 p-5">
+                  {/* Quién */}
+                  <div>
+                    <label className="cg-eyebrow mb-1.5 block">Vigilante</label>
+                    <select
+                      value={posEditor.guardId || ''}
+                      onChange={e => set({ guardId: e.target.value })}
+                      className="cg-input cg-focus w-full px-3 py-2.5 text-sm"
+                    >
+                      <option value="">Sin vigilante por ahora — sólo crear la fila</option>
+                      {libres.map(g => <option key={g.id} value={g.id}>{g.label}</option>)}
+                    </select>
+                    <p className="mt-1 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
+                      {posEditor.guardId
+                        ? 'Se crea la fila y se le asigna en un solo paso.'
+                        : 'Sólo aparecen quienes no tienen ya una rotación activa. Sin elegir a nadie se crea la fila vacía y se asigna después.'}
+                    </p>
+                  </div>
+
+                  {/* Nombre */}
+                  <div>
+                    <label className="cg-eyebrow mb-1.5 block">Nombre de la fila</label>
+                    <input
+                      value={posEditor.name}
+                      onChange={e => set({ name: e.target.value })}
+                      placeholder="Sacafranco"
+                      className="cg-input cg-focus w-full px-3 py-2.5 text-sm"
+                    />
+                  </div>
+
+                  {/* Horas que cubre */}
+                  <div>
+                    <label className="cg-eyebrow mb-1.5 block">Horas que cubre</label>
+                    <div className="mb-2 grid gap-2" style={{ gridTemplateColumns: `repeat(${Math.min(3, turnos.length)}, minmax(0, 1fr))` }}>
+                      {turnos.map(b => {
+                        const activo = posEditor.startTime === b.ini && posEditor.endTime === b.fin;
+                        return (
+                          <button
+                            key={`${b.ini}|${b.fin}`}
+                            type="button"
+                            onClick={() => set({ startTime: b.ini, endTime: b.fin })}
+                            className={`cg-focus rounded-xl border px-2 py-2 text-center transition-all ${activo ? 'glass-brand' : 'glass-flat'}`}
+                          >
+                            <div className="text-xs font-semibold">{etiquetaTurno(b.ini, b.fin)}</div>
+                            <div className="text-[10px] tabular-nums" style={{ color: 'var(--ink-soft)' }}>{b.ini}–{b.fin}</div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="cg-eyebrow mb-1 block">Entra</label>
+                        <input type="time" value={posEditor.startTime} onChange={e => set({ startTime: e.target.value })} className="cg-input cg-focus w-full px-2 py-2 font-mono text-sm tabular-nums" />
+                      </div>
+                      <div>
+                        <label className="cg-eyebrow mb-1 block">Sale</label>
+                        <input type="time" value={posEditor.endTime} onChange={e => set({ endTime: e.target.value })} className="cg-input cg-focus w-full px-2 py-2 font-mono text-sm tabular-nums" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Cómo trabaja su mes */}
+                  <div>
+                    <label className="cg-eyebrow mb-1.5 block">Cómo trabaja su mes</label>
+                    <Segmented<'rotativo' | 'manual'>
+                      value={posEditor.rotMode || 'manual'}
+                      onChange={v => set({ rotMode: v })}
+                      options={[
+                        { value: 'rotativo', label: 'Rotativo' },
+                        { value: 'manual', label: 'Personalizado' },
+                      ]}
+                    />
+                    {(posEditor.rotMode || 'manual') === 'rotativo' ? (
+                      <div className="mt-2">
+                        <label className="cg-eyebrow mb-1.5 block">Estilo de rotación</label>
+                        <select
+                          value={posEditor.rotationStyleId || ''}
+                          onChange={e => set({ rotationStyleId: e.target.value })}
+                          className="cg-input cg-focus w-full px-3 py-2.5 text-sm"
+                        >
+                          <option value="">Elige el patrón…</option>
+                          {rotationStyles.map(r => (
+                            <option key={r.id} value={r.id}>{r.name}{ciclo(r) ? ` · ${ciclo(r)}` : ''}</option>
+                          ))}
+                        </select>
+                        <p className="mt-1 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
+                          Se le generan sus turnos con este ciclo, con su propio compás (no el de la estación). Tarda unos segundos.
+                        </p>
+                      </div>
+                    ) : (
+                      <p className="mt-1.5 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
+                        Su mes empieza en blanco: sus días se colocan arrastrándolos sobre los descansos, o con «Optimizar sacafrancos».
+                      </p>
+                    )}
+                  </div>
+
+                  {/* En qué estaciones cubre */}
+                  <div>
+                    <div className="mb-1.5 flex items-center justify-between gap-2">
+                      <label className="cg-eyebrow block">En qué estaciones cubre</label>
+                      {marcadas.length > 0 && (
+                        <button type="button" onClick={() => set({ stationIds: [], stationId: '', stationName: '' })} className="cg-btn-ghost cg-focus rounded-full px-2 py-0.5 text-[10px] font-semibold">Limpiar</button>
+                      )}
+                    </div>
+                    <div className="max-h-40 overflow-y-auto rounded-xl px-1 py-1" style={{ border: '1px solid var(--hairline)' }}>
+                      {stations.length === 0 && <p className="px-2 py-1.5 text-[11px]" style={{ color: 'var(--ink-faint)' }}>No hay estaciones.</p>}
+                      {stations.map(st => {
+                        const on = marcadas.includes(st.id);
+                        return (
+                          <label key={st.id} className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-xs transition-colors hover:bg-[var(--glass-sunken)]">
+                            <input type="checkbox" checked={on} onChange={() => alternar(st.id)} className="cg-focus" />
+                            <span className={on ? 'font-semibold' : ''}>{stationLabel(st)}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                    <p className="mt-1 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
+                      {marcadas.length ? 'Sólo buscará descansos que cubrir en las marcadas.' : 'Marca al menos una.'}
+                    </p>
+                  </div>
+
+                  {/* De cuál cuelga su horario */}
+                  {marcadas.length > 1 && (
+                    <div>
+                      <label className="cg-eyebrow mb-1.5 block">Empieza su horario en</label>
+                      <select
+                        value={baseActual}
+                        onChange={e => {
+                          const stBase = stationsById.get(e.target.value);
+                          set({ stationId: e.target.value, stationName: stBase ? stationLabel(stBase) : '' });
+                        }}
+                        className="cg-input cg-focus w-full px-3 py-2.5 text-sm"
+                      >
+                        {marcadas.map(id => {
+                          const st = stationsById.get(id);
+                          return <option key={id} value={id}>{st ? stationLabel(st) : id}</option>;
+                        })}
+                      </select>
+                      <p className="mt-1 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
+                        Su fila vive en esta estación y desde aquí arranca su horario. Cubre igual todas las marcadas.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Desde cuándo */}
+                  <div>
+                    <label className="cg-eyebrow mb-1.5 block">Primer día</label>
+                    <input
+                      type="date"
+                      value={posEditor.startDate || tzToday()}
+                      onChange={e => set({ startDate: e.target.value })}
+                      className="cg-input cg-focus w-full px-3 py-2.5 text-sm"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-end gap-2 px-5 py-3" style={{ borderTop: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>
+                  <button onClick={() => setPosEditor(null)} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold">Cancelar</button>
+                  <button
+                    onClick={savePosition}
+                    disabled={posSaving || marcadas.length === 0 || ((posEditor.rotMode || 'manual') === 'rotativo' && !!posEditor.guardId && !posEditor.rotationStyleId)}
+                    className="cg-btn-brand cg-focus rounded-full px-5 py-2 text-sm font-semibold transition-all disabled:opacity-40"
+                  >
+                    {posSaving ? <Loader2 size={14} className="animate-spin" /> : 'Crear sacafranco'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          );
+        }
+
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'oklch(0 0 0 / 0.55)' }} onClick={() => setPosEditor(null)}>
             <div className="glass-raised mx-4 w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
