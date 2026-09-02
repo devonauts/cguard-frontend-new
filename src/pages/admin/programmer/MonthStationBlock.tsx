@@ -71,6 +71,10 @@ export type MonthGridHandlers = {
 
 const EMPTY_ASG: GuardAssignment[] = [];
 
+/** Una persona cubriendo algo en una estación un día, tal y como la resume
+ *  `sfStationCoverage`. `code` es su mitad (D o N) según su hora de entrada. */
+type CoberturaDia = { id: string; guardId: string; name: string; fullName: string; code: 'D' | 'N'; ext?: boolean };
+
 /** Códigos que dejan el puesto SIN esa persona — los que abren un hueco que
  *  alguien viene a cubrir. `D`, `N` y `24` no: esos son trabajo. */
 const ABSENCE_CODES = new Set(['V', 'PM', 'F', 'L']);
@@ -177,37 +181,69 @@ function MonthStationBlockInner({
       : ' ring-1 ring-inset ring-primary/40 bg-primary/5';
   };
 
-  /* ── COBERTURA HUÉRFANA ────────────────────────────────────────────────
-     Una cobertura se pinta SOBRE la «L» del fijo al que releva. Eso deja dos
-     agujeros por los que un turno real desaparece de la hoja:
+  /* ── A QUÉ HUECO PERTENECE CADA COBERTURA ──────────────────────────────
+     `sfStationCoverage` es una lista por ESTACIÓN Y DÍA: quién vino a cubrir
+     algo ahí. No dice a quién releva. Pintarla entera en la celda del que falta
+     hace que el sacafranco del DÍA aparezca también en el turno de NOCHE —
+     duplicado, cubriendo un hueco que no es suyo.
 
-       · el puesto no tiene vigilante ACTIVO (la asignación quedó `ended`, o
-         nunca se hizo) — la fila entera sale en «·» y no hay ninguna «L» sobre
-         la que pintar;
-       · el fijo TRABAJA ese día — la celda ya muestra su D/N/24 y tapa al que
-         viene a cubrir además de él.
+     Cada cobertura trae su mitad (D o N, de su hora de entrada), y cada fila del
+     puesto tiene o no un hueco ese día:
 
-     En los dos casos el turno se creaba en la base y la rejilla no se movía:
-     «cubrí la noche y no pasó nada». Esto devuelve la lista de coberturas del
-     día CUANDO ninguna fila del puesto va a enseñarlas, para pintarlas en la
-     primera fila. Devuelve `null` —y no cuesta nada— en cuanto alguna «L» ya
-     se encarga, que es el caso normal del sacafranco. */
-  const coberturaSinPintar = (dateStr: string, day: Date) => {
-    const lista = sfStationCoverage.get(`${station.id}-${dateStr}`);
-    if (!lista || !lista.length) return null;
+       · falta (V/PM/F/L) EN UN DÍA QUE LE TOCABA TRABAJAR → hueco de SU mitad;
+       · descanso de la rotación → hueco, pero de mitad desconocida: en un 24 h a
+         dos, la mitad que queda al aire depende de dónde esté el otro fijo;
+       · trabaja → sin hueco.
+
+     Se reparte por coincidencia exacta de mitad primero, luego a los descansos,
+     y lo que no encaja se pinta aparte bajo la primera fila (un refuerzo, o una
+     cobertura de un día que nadie tenía asignado). Una cobertura se pinta UNA
+     sola vez.
+
+     El caché es por render: las celdas preguntan por fila y por día, y sin él
+     este reparto se recalcularía una vez por cada casilla. */
+  const cacheReparto = new Map<string, { por: Map<string, CoberturaDia[]>; sobrantes: CoberturaDia[] }>();
+  const repartoDelDia = (dateStr: string, day: Date) => {
+    const guardado = cacheReparto.get(dateStr);
+    if (guardado) return guardado;
+    const lista = sfStationCoverage.get(`${station.id}-${dateStr}`) || [];
+    const por = new Map<string, CoberturaDia[]>();
+    const sobrantes: CoberturaDia[] = [];
+    if (!lista.length) {
+      const vacio = { por, sobrantes };
+      cacheReparto.set(dateStr, vacio);
+      return vacio;
+    }
+
+    const huecos: { key: string; half: 'D' | 'N' | null }[] = [];
     for (const p of stationPositions) {
       for (const a of assignmentsByPosition.get(p.id) || EMPTY_ASG) {
-        /* La celda de quien FALTA (vacaciones, permiso, falta) ya enseña quién
-           lo cubre: es SU puesto el que se está tapando. Antes esa fila se
-           saltaba —«una novedad ocupa la celda entera»— y el relevo acababa
-           pintado en la primera fila del puesto: «cubrí a Abrahán y se fue
-           arriba». */
-        if (ABSENCE_CODES.has(String(overrideByGuardDate.get(`${a.guardId}|${dateStr}`)?.type || ''))) return null;
-        if (overrideByGuardDate.has(`${a.guardId}|${dateStr}`)) continue;
-        if (h.isWorkDay(a, day) === 'rest') return null;
+        const ov = overrideByGuardDate.get(`${a.guardId}|${dateStr}`);
+        const estado = h.isWorkDay(a, day);
+        if (ov && ABSENCE_CODES.has(String(ov.type))) {
+          // Falta, y además le TOCABA trabajar: hay que taparle su mitad. Si ese
+          // día libraba igualmente, no deja ningún hueco que cubrir.
+          if (estado !== 'rest') huecos.push({ key: a.id, half: estado === 'night' ? 'N' : 'D' });
+          continue;
+        }
+        if (ov) continue; // D/N/24 escrito a mano: esa persona trabaja.
+        if (estado === 'rest') huecos.push({ key: a.id, half: null });
       }
     }
-    return lista;
+
+    const usados = new Set<number>();
+    for (const c of lista) {
+      let i = huecos.findIndex((x, idx) => !usados.has(idx) && x.half === c.code);
+      if (i < 0) i = huecos.findIndex((x, idx) => !usados.has(idx) && x.half === null);
+      if (i < 0) { sobrantes.push(c); continue; }
+      usados.add(i);
+      const enEsaFila = por.get(huecos[i].key) || [];
+      enEsaFila.push(c);
+      por.set(huecos[i].key, enEsaFila);
+    }
+    const listo = { por, sobrantes };
+    cacheReparto.set(dateStr, listo);
+    return listo;
   };
 
   /** Sólo la primera fila pinta la cobertura huérfana, o saldría repetida en
@@ -227,10 +263,7 @@ function MonthStationBlockInner({
    *
    * Ahora se apilan todas. Cada una arrastra y abre SU hoja del día.
    */
-  const pildorasCobertura = (
-    lista: { id: string; guardId: string; name: string; fullName: string; code: 'D' | 'N'; ext?: boolean }[],
-    dateStr: string,
-  ) => lista.map(c => (
+  const pildorasCobertura = (lista: CoberturaDia[], dateStr: string) => lista.map(c => (
     // Una EXTENSIÓN (alguien doblando porque su relevo no llegó) va en ámbar,
     // no en verde: el verde dice «cubierto y en orden», y esto está cubierto
     // pero NO está en orden — hay una persona encadenando dos turnos.
@@ -291,10 +324,10 @@ function MonthStationBlockInner({
           //
           // Lo que SÍ hay que enseñar es un turno REAL: un puesto sin rotación
           // se tapa día a día, y ése es justo el caso en el que la cobertura no
-          // tiene ninguna «L» donde pintarse (ver `coberturaSinPintar`).
+          // tiene ninguna «L» donde pintarse (ver `repartoDelDia`).
           (() => {
-            const huerfana = pos.id === primeraFilaId ? coberturaSinPintar(dateStr, day) : null;
-            if (huerfana) return <div className="flex flex-1 flex-col gap-0.5">{pildorasCobertura(huerfana, dateStr)}</div>;
+            const sueltas = pos.id === primeraFilaId ? repartoDelDia(dateStr, day).sobrantes : [];
+            if (sueltas.length) return <div className="flex flex-1 flex-col gap-0.5">{pildorasCobertura(sueltas, dateStr)}</div>;
             return (
               <div
                 className="flex flex-1 cursor-pointer items-center justify-center rounded border border-dashed"
@@ -326,9 +359,7 @@ function MonthStationBlockInner({
                 const oType = override.type;
                 // Quien viene a tapar ESTE hueco se apila en la MISMA celda,
                 // debajo de la V: el puesto que se cubre es éste.
-                const relevos = ABSENCE_CODES.has(String(oType))
-                  ? (sfStationCoverage.get(`${station.id}-${dateStr}`) || [])
-                  : [];
+                const relevos = repartoDelDia(dateStr, day).por.get(assignment.id) || [];
                 const tarjetaNovedad = (
                   <div
                     key={assignment.id}
@@ -353,11 +384,11 @@ function MonthStationBlockInner({
               const workStatus = h.isWorkDay(assignment, day);
 
               if (workStatus === 'rest') {
-                const coverKey = `${station.id}-${dateStr}`;
-                const coveringSfs = sfStationCoverage.get(coverKey) || [];
-                /* Cubierto: se apilan TODOS los que cubren ese día. Antes esta
-                   celda enseñaba sólo `coveringSfs[0]`, así que el segundo
-                   relevo —el de la noche, casi siempre— era invisible. */
+                const coveringSfs = repartoDelDia(dateStr, day).por.get(assignment.id) || [];
+                /* Cubierto: los relevos que tapan ESTE hueco (ver
+                   `repartoDelDia`). Antes esta celda enseñaba `coveringSfs[0]`
+                   —el segundo relevo era invisible— y después, al apilarlos
+                   todos sin repartir, el del día salía además en la noche. */
                 if (coveringSfs.length) {
                   return (
                     <div key={assignment.id} {...cartaProps} className={`flex flex-1 flex-col gap-0.5${anillo}`}>
@@ -415,8 +446,8 @@ function MonthStationBlockInner({
             {/* El fijo TRABAJA y además vino alguien a cubrir: su píldora se
                 apila debajo en vez de quedar invisible detrás de la D/N. */}
             {pos.id === primeraFilaId && (() => {
-              const huerfana = coberturaSinPintar(dateStr, day);
-              return huerfana ? <>{pildorasCobertura(huerfana, dateStr)}</> : null;
+              const sueltas = repartoDelDia(dateStr, day).sobrantes;
+              return sueltas.length ? <>{pildorasCobertura(sueltas, dateStr)}</> : null;
             })()}
           </div>
         )}
