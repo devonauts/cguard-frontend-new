@@ -20,6 +20,7 @@ import { localeActual } from '@/lib/localeActual'
 const STATUS_OPTIONS = [
   "", "on_time", "late", "early_departure", "missed_clockout",
   "no_call_no_show", "overtime", "pending_review", "approved", "rejected",
+  "vacation", "permission", "absent",
 ];
 
 type Period = "day" | "week" | "month";

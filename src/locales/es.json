@@ -10843,7 +10843,10 @@
       "approved": "Aprobado",
       "rejected": "Rechazado",
       "revisado": "Revisado",
-      "revisadoRechazado": "Revisado (rechazado)"
+      "revisadoRechazado": "Revisado (rechazado)",
+      "vacation": "Vacaciones",
+      "permission": "Permiso",
+      "absent": "Falta"
     },
     "aprobacion": {
       "none": "Sin aprobación",

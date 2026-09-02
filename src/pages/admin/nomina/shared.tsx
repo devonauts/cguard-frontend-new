@@ -24,6 +24,13 @@ export const STATUS_META: Record<string, { label: string; tone: PillTone }> = {
   overtime: conEtiqueta("nomina.estado.overtime", { tone: "info" as PillTone }),
   no_schedule: conEtiqueta("nomina.estado.no_schedule", { tone: "neutral" as PillTone }),
   pending_review: conEtiqueta("nomina.estado.pending_review", { tone: "brand" as PillTone }),
+  /* Jornadas SIN fichaje que genera la novedad del Horario (V / PM / F). No son
+     marcajes: son el día declarado en el timesheet — vacaciones y permiso son
+     ausencias aprobadas (papel neutro/info), la falta no. Ver
+     backend `attendanceAbsenceService`. */
+  vacation: conEtiqueta("nomina.estado.vacation", { tone: "info" as PillTone }),
+  permission: conEtiqueta("nomina.estado.permission", { tone: "info" as PillTone }),
+  absent: conEtiqueta("nomina.estado.absent", { tone: "bad" as PillTone }),
   approved: conEtiqueta("nomina.estado.approved", { tone: "ok" as PillTone }),
   rejected: conEtiqueta("nomina.estado.rejected", { tone: "bad" as PillTone }),
 };

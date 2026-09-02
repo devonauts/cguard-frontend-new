@@ -1676,7 +1676,7 @@ export default function Schedule() {
           dateStr,
         }),
       });
-      items.push({ label: 'Registrar novedad…', onClick: () => setOverrideTarget({ guardId: sfGuard.guardId, guardName: gName, date: dateStr, assignmentId: sfGuard.id }) });
+      items.push({ label: 'Marcar el día (V / PM / F / L)…', onClick: () => setOverrideTarget({ guardId: sfGuard.guardId, guardName: gName, date: dateStr, assignmentId: sfGuard.id }) });
       items.push({
         label: 'Extender turno…',
         onClick: () => setExtendTarget({
@@ -1688,7 +1688,7 @@ export default function Schedule() {
         }),
       });
       const ov = getOverride(sfGuard.guardId, dateStr);
-      if (ov) items.push({ label: `Quitar novedad (${ov.type})`, danger: true, onClick: () => void removeOverride(ov.id) });
+      if (ov) items.push({ label: `Deshacer ${(CODE_LABEL[String(ov.type)] || ov.type).toLowerCase()} — volver a su turno`, danger: true, onClick: () => void removeOverride(ov.id) });
     } else {
       // La posición de sacafranco admite las dos cosas: tapar ese día (turno
       // suelto) o dejar a alguien fijo en la posición (rotación). El diálogo
@@ -2475,7 +2475,7 @@ export default function Schedule() {
       await ApiService.post(`/tenant/${tenantId}/schedule-overrides`, {
         data: { guardId: target.guardId, assignmentId: target.assignmentId, date: target.date, type, note },
       });
-      toast.success(`Novedad ${type} registrada`);
+      toast.success(`Ese día queda como ${(CODE_LABEL[type] || type).toLowerCase()}`);
       setOverrideTarget(null);
       fetchAll();
     } catch (e: any) {
@@ -2486,7 +2486,7 @@ export default function Schedule() {
   const removeOverride = async (id: string) => {
     try {
       await ApiService.delete(`/tenant/${tenantId}/schedule-overrides/${id}`);
-      toast.success('Novedad eliminada');
+      toast.success('Ese día vuelve a su turno');
       setOverrideTarget(null);
       fetchAll();
     } catch (e: any) {
@@ -2543,8 +2543,8 @@ export default function Schedule() {
       })));
     const results = await Promise.allSettled(jobs);
     const failed = results.filter(r => r.status === 'rejected').length;
-    if (failed) toast.error(`${failed} novedad(es) no se pudieron guardar`);
-    else toast.success(`Novedad ${type} aplicada (${jobs.length})`);
+    if (failed) toast.error(`${failed} día(s) no se pudieron marcar`);
+    else toast.success(`${jobs.length} día(s) marcados como ${(CODE_LABEL[type] || type).toLowerCase()}`);
     fetchAll({ silent: true });
   }, [cellsInSelection, performOverrideSave, tenantId, fetchAll]);
 
@@ -5213,7 +5213,7 @@ export default function Schedule() {
             <div className="p-4 grid grid-cols-2 gap-2">
               <p className="col-span-2 -mb-1 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
                 {turnoDelDia
-                  ? 'Cambiarlo marca el turno como ausencia y abre el hueco de cobertura; el registro no se borra.'
+                  ? 'V, PM y F dejan el día marcado así en la hoja de asistencia (Nómina) y abren el hueco en Cobertura. El turno se conserva como constancia de que estaba programado — «Deshacer» lo devuelve.'
                   : 'Marca lo que pasó ese día.'}
               </p>
               {CODE_ORDER.map(c => (
@@ -5238,7 +5238,7 @@ export default function Schedule() {
                     className="cg-focus col-span-2 rounded-xl px-3 py-2 text-xs font-semibold transition-all"
                     style={toneCard('bad')}
                   >
-                    <X className="inline h-3.5 w-3.5 mr-1" />Quitar novedad actual ({existing.type})
+                    <X className="inline h-3.5 w-3.5 mr-1" />Deshacer — volver a su turno ({CODE_LABEL[existing.type] || existing.type})
                   </button>
                 );
               })()}
