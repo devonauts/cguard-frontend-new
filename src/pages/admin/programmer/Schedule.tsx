@@ -1140,6 +1140,27 @@ export default function Schedule() {
   const [sel, setSel] = useState<{ ar: number; ac: number; fr: number; fc: number } | null>(null);
   const mouseSelRef = useRef(false);
 
+  /* ── DOS CARTAS EN UN CASILLERO ──────────────────────────────────────────
+     Una plaza con dos personas (24 h a dos, o titular + aprendiz) pinta DOS
+     tarjetas en la MISMA celda, y la selección es de la celda: escribir «V»
+     se lo ponía a los dos. Ahora la tarjeta sobre la que se pulsa se queda
+     ELEGIDA y todo lo que se escriba o se borre va sólo a esa persona.
+
+     El ratón baja primero en la tarjeta (hijo) y luego en la celda (padre),
+     así que la tarjeta deja su id en el ref y la celda —que es quien abre la
+     selección— lo recoge. Pulsar la celda por fuera de las tarjetas no deja
+     nada en el ref y la elección se limpia: vuelve a ser «las dos». */
+  const cartaRef = useRef<string | null>(null);
+  const [cartaElegida, setCartaElegida] = useState<string | null>(null);
+  const pickAssignment = useCallback((assignmentId: string) => { cartaRef.current = assignmentId; }, []);
+
+  /** Las asignaciones de una fila que la selección afecta de verdad. */
+  const asigsDeFila = useCallback((row: SelRow): GuardAssignment[] => {
+    if (!cartaElegida || row.assignments.length < 2) return row.assignments;
+    const una = row.assignments.find(a => a.id === cartaElegida);
+    return una ? [una] : row.assignments;
+  }, [cartaElegida]);
+
   const selBounds = useMemo(() => sel ? {
     r1: Math.min(sel.ar, sel.fr), r2: Math.max(sel.ar, sel.fr),
     c1: Math.min(sel.ac, sel.fc), c2: Math.max(sel.ac, sel.fc),
@@ -1158,6 +1179,8 @@ export default function Schedule() {
   }, [selBounds, sel, rowIndexByKey]);
 
   const startCellSelect = useCallback((rowKey: string, c: number, shift: boolean) => {
+    setCartaElegida(cartaRef.current);
+    cartaRef.current = null;
     const r = rowIndexByKey.get(rowKey);
     if (r == null) return;
     setSel(prev => (shift && prev) ? { ...prev, fr: r, fc: c } : { ar: r, ac: c, fr: r, fc: c });
@@ -2397,18 +2420,20 @@ export default function Schedule() {
 
   // ─── Spreadsheet batch edits (typed codes / delete over a range) ─────────
 
-  const cellsInSelection = useCallback((): { row: SelRow; dateStr: string }[] => {
+  const cellsInSelection = useCallback((): { row: SelRow; dateStr: string; asigs: GuardAssignment[] }[] => {
     if (!selBounds) return [];
-    const cells: { row: SelRow; dateStr: string }[] = [];
+    const cells: { row: SelRow; dateStr: string; asigs: GuardAssignment[] }[] = [];
     for (let r = selBounds.r1; r <= selBounds.r2; r++) {
       const row = selectableRows[r];
       if (!row || !row.assignments.length) continue;
+      const asigs = asigsDeFila(row);
+      if (!asigs.length) continue;
       for (let c = selBounds.c1; c <= selBounds.c2 && c < monthDays.length; c++) {
-        cells.push({ row, dateStr: fmtDate(monthDays[c]) });
+        cells.push({ row, dateStr: fmtDate(monthDays[c]), asigs });
       }
     }
     return cells;
-  }, [selBounds, selectableRows, monthDays]);
+  }, [selBounds, selectableRows, monthDays, asigsDeFila]);
 
   const applyCodeToSelection = useCallback(async (type: string) => {
     const cells = cellsInSelection();
@@ -2418,8 +2443,8 @@ export default function Schedule() {
     }
     // Single cell + L on a fijo → keep the full "rephase from this libre" flow.
     if (cells.length === 1 && type === 'L') {
-      const { row, dateStr } = cells[0];
-      const a = row.assignments[0];
+      const { dateStr, asigs } = cells[0];
+      const a = asigs[0];
       const guardName = nombreDeVigilante(a.guard, 'Vigilante');
       await performOverrideSave({ guardId: a.guardId, guardName, date: dateStr, assignmentId: a.id }, type);
       return;
@@ -2428,15 +2453,15 @@ export default function Schedule() {
     // silently re-sync. The grid never unmounts, so you stay where you are.
     const now = Date.now();
     setOverrides(prev => {
-      const drop = new Set(cells.flatMap(({ row, dateStr }) => row.assignments.map(a => `${a.guardId}|${dateStr}`)));
+      const drop = new Set(cells.flatMap(({ asigs, dateStr }) => asigs.map(a => `${a.guardId}|${dateStr}`)));
       const kept = prev.filter(o => !drop.has(`${o.guardId}|${String(o.date).slice(0, 10)}`));
       const added: ScheduleOverride[] = [];
-      cells.forEach(({ row, dateStr }, i) =>
-        row.assignments.forEach((a, j) =>
+      cells.forEach(({ asigs, dateStr }, i) =>
+        asigs.forEach((a, j) =>
           added.push({ id: `tmp-${now}-${i}-${j}`, guardId: a.guardId, assignmentId: a.id, date: dateStr, type })));
       return [...kept, ...added];
     });
-    const jobs = cells.flatMap(({ row, dateStr }) => row.assignments.map(a =>
+    const jobs = cells.flatMap(({ asigs, dateStr }) => asigs.map(a =>
       ApiService.post(`/tenant/${tenantId}/schedule-overrides`, {
         data: { guardId: a.guardId, assignmentId: a.id, date: dateStr, type },
       })));
@@ -2473,25 +2498,25 @@ export default function Schedule() {
       const esPrimeraFila = getPositionsForStation(row.pos.stationId)[0]?.id === row.pos.id;
       for (let c = selBounds.c1; c <= selBounds.c2 && c < monthDays.length; c++) {
         const dateStr = fmtDate(monthDays[c]);
-        for (const a of row.assignments) {
+        for (const a of asigsDeFila(row)) {
           const s = shiftByGuardDate.get(`${a.guardId}|${dateStr}`);
           if (s && s.stationId === row.pos.stationId) guardar(s);
         }
         // La cobertura vive donde se ve: en la primera fila del puesto. En una
         // fila de sacafranco su propio turno ya entró por `row.assignments`.
-        if (esPrimeraFila && !row.isSf) {
+        if (esPrimeraFila && !row.isSf && !cartaElegida) {
           for (const s of coverageShiftsByStationDate.get(`${row.pos.stationId}-${dateStr}`) || []) guardar(s);
         }
       }
     }
     return out;
-  }, [selBounds, selectableRows, monthDays, shiftByGuardDate, coverageShiftsByStationDate, getPositionsForStation]);
+  }, [selBounds, selectableRows, monthDays, shiftByGuardDate, coverageShiftsByStationDate, getPositionsForStation, asigsDeFila]);
 
   const clearSelectedCells = useCallback(async () => {
     const cells = cellsInSelection();
     const victims: ScheduleOverride[] = [];
-    for (const { row, dateStr } of cells) {
-      for (const a of row.assignments) {
+    for (const { dateStr, asigs } of cells) {
+      for (const a of asigs) {
         const o = getOverride(a.guardId, dateStr);
         if (o) victims.push(o);
       }
@@ -2558,11 +2583,11 @@ export default function Schedule() {
       if (row) openAssignForm(row.pos.stationId, row.pos.id, fmtDate(monthDays[sel.fc]));
       return;
     }
-    const a = row.assignments[0];
+    const a = asigsDeFila(row)[0] || row.assignments[0];
     const guardName = nombreDeVigilante(a.guard, 'Vigilante');
     setOverrideTarget({ guardId: a.guardId, guardName, date: fmtDate(monthDays[sel.fc]), assignmentId: a.id });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sel, selectableRows, monthDays]);
+  }, [sel, selectableRows, monthDays, asigsDeFila]);
 
   // ─── Navigation ───────────────────────────────────────────────────────────
 
@@ -2936,6 +2961,7 @@ export default function Schedule() {
     configureStation, addPosition, editPosition, deletePosition, openAssignForm,
     removeAssignment, onGuardDragStart, handleDrop, openCellCtx,
     setOverrideTarget, startCellSelect, hoverCellSelect, isWorkDay, onCoverageDragStart,
+    pickAssignment,
   });
   const handlers = handlersRef.current;
 
@@ -3264,6 +3290,7 @@ export default function Schedule() {
                                 gridCols={gridCols}
                                 todayStr={todayStr}
                                 sel={selForRows(plazas)}
+                                cartaElegida={cartaElegida}
                                 h={handlers}
                               />
                             </BloqueVisible>
@@ -4435,10 +4462,75 @@ export default function Schedule() {
                 </p>
               </div>
 
-              {/* Horas del turno suelto. Vienen del puesto; si el fin es menor o
-                  igual que el inicio, el turno cruza la medianoche (iguales = 24 h). */}
-              {assignMode === 'single' && (
+              {/* ── QUÉ TURNO CUBRE ─────────────────────────────────────────
+                  Las horas salían del puesto y ya: en una estación de 24 h a dos
+                  personas la plaza dice 07:00, así que TODO reemplazo acababa en
+                  el turno de día aunque viniera a cubrir la noche. Y en «Varios
+                  días» —cubrir unas vacaciones— ni siquiera se enseñaban las
+                  horas, no había dónde corregirlo.
+
+                  Ahora se elige, y las opciones son los turnos REALES de la
+                  estación (los bloques distintos de sus plazas), no tres horarios
+                  inventados. Las horas sueltas siguen debajo para el caso raro. */}
+              {(assignMode === 'single' || assignMode === 'rango') && (
                 <div>
+                  {(() => {
+                    const hhmm = (x?: string | null) => (x ? String(x).slice(0, 5) : '');
+                    const etiqueta = (ini: string, fin: string) => {
+                      const h1 = parseInt(ini.split(':')[0], 10) || 0;
+                      const h2 = parseInt(fin.split(':')[0], 10) || 0;
+                      let span = (h2 - h1 + 24) % 24; if (span === 0) span = 24;
+                      if (span >= 23) return '24 horas';
+                      return h1 >= 18 || h1 < 6 ? 'Nocturno' : 'Diurno';
+                    };
+                    const bloques = new Map<string, { ini: string; fin: string }>();
+                    for (const pp of positions) {
+                      if (pp.stationId !== assignTarget?.stationId) continue;
+                      const ini = hhmm(pp.startTime) || '07:00';
+                      const fin = hhmm(pp.endTime) || '19:00';
+                      bloques.set(`${ini}|${fin}`, { ini, fin });
+                    }
+                    // Sin plazas configuradas no hay turnos que ofrecer: los dos
+                    // de siempre, que es mejor que una fila vacía.
+                    if (bloques.size === 0) {
+                      bloques.set('07:00|19:00', { ini: '07:00', fin: '19:00' });
+                      bloques.set('19:00|07:00', { ini: '19:00', fin: '07:00' });
+                    }
+                    /* Estación de 24 h cubierta por DOS que alternan: sus plazas
+                       declaran las MISMAS horas (07–19) y la mitad la decide la
+                       fase de la rotación, no la plaza. Ahí el único bloque que
+                       sale del catálogo es el diurno — y cubrir la noche era
+                       imposible. Se ofrece también su complementario. */
+                    if (bloques.size === 1) {
+                      const uno = Array.from(bloques.values())[0];
+                      const h1 = parseInt(uno.ini.split(':')[0], 10) || 0;
+                      const h2 = parseInt(uno.fin.split(':')[0], 10) || 0;
+                      let span = (h2 - h1 + 24) % 24; if (span === 0) span = 24;
+                      if (span < 23) bloques.set(`${uno.fin}|${uno.ini}`, { ini: uno.fin, fin: uno.ini });
+                    }
+                    const lista = Array.from(bloques.values()).sort((x, y) => x.ini.localeCompare(y.ini));
+                    return (
+                      <>
+                        <label className="cg-eyebrow mb-1.5 block">Qué turno cubre</label>
+                        <div className="mb-3 grid gap-2" style={{ gridTemplateColumns: `repeat(${Math.min(3, lista.length)}, minmax(0, 1fr))` }}>
+                          {lista.map(b => {
+                            const activo = assignStartTime === b.ini && assignEndTime === b.fin;
+                            return (
+                              <button
+                                key={`${b.ini}|${b.fin}`}
+                                type="button"
+                                onClick={() => { setAssignStartTime(b.ini); setAssignEndTime(b.fin); }}
+                                className={`cg-focus rounded-xl border px-2 py-2 text-center transition-all ${activo ? 'glass-brand' : 'glass-flat'}`}
+                              >
+                                <div className="text-xs font-semibold">{etiqueta(b.ini, b.fin)}</div>
+                                <div className="text-[10px] tabular-nums" style={{ color: 'var(--ink-soft)' }}>{b.ini}–{b.fin}</div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </>
+                    );
+                  })()}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="cg-eyebrow mb-1.5 block">Entra</label>
@@ -4453,6 +4545,7 @@ export default function Schedule() {
                     {assignEndTime <= assignStartTime
                       ? (assignEndTime === assignStartTime ? t('ui.Schedule.turnoDe24Horas', 'Turno de 24 horas.') : t('ui.Schedule.terminaAlDiaSiguientePunto', 'Termina al día siguiente.'))
                       : 'Horas tomadas del puesto; puedes cambiarlas.'}
+                    {assignMode === 'rango' ? ' Las mismas para todos los días del rango.' : ''}
                   </p>
                 </div>
               )}

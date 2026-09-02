@@ -63,6 +63,10 @@ export type MonthGridHandlers = {
   startCellSelect: (rowKey: string, c: number, shift: boolean) => void;
   hoverCellSelect: (rowKey: string, c: number) => void;
   isWorkDay: (assignment: GuardAssignment, date: Date) => 'day' | 'night' | 'rest';
+  /** Elegir UNA de las tarjetas apiladas en un casillero (dos personas en la
+   *  misma plaza). Se llama en el mousedown de la tarjeta, ANTES de que la
+   *  celda abra la selección. */
+  pickAssignment: (assignmentId: string) => void;
 };
 
 const EMPTY_ASG: GuardAssignment[] = [];
@@ -124,6 +128,8 @@ export type MonthStationBlockProps = {
   gridCols: string;
   todayStr: string;
   sel: BlockSel | null;
+  /** Tarjeta elegida dentro de un casillero con dos personas (id de asignación). */
+  cartaElegida: string | null;
   h: MonthGridHandlers;
 };
 
@@ -143,6 +149,7 @@ function MonthStationBlockInner({
   gridCols,
   todayStr,
   sel,
+  cartaElegida,
   h,
 }: MonthStationBlockProps) {
   const { t } = useTranslation();
@@ -284,6 +291,14 @@ function MonthStationBlockInner({
               const guardName = nombreDeVigilante(assignment.guard, '?');
               const color = guardColorMap[assignment.guardId] || 'var(--ink-faint)';
               const override = overrideByGuardDate.get(`${assignment.guardId}|${dateStr}`);
+              /* Sólo hay algo que elegir cuando el casillero apila más de una
+                 persona; con una sola, el anillo sería ruido. */
+              const apiladas = posAssignments.length > 1;
+              const elegida = apiladas && cartaElegida === assignment.id;
+              const cartaProps = apiladas
+                ? { onMouseDown: () => h.pickAssignment(assignment.id) }
+                : {};
+              const anillo = elegida ? ' ring-2 ring-inset ring-primary' : '';
 
               // If there's an override, show it instead of calculated rotation
               if (override) {
@@ -291,7 +306,8 @@ function MonthStationBlockInner({
                 return (
                   <div
                     key={assignment.id}
-                    className="flex min-h-[18px] flex-1 cursor-pointer items-center justify-center rounded"
+                    {...cartaProps}
+                    className={`flex min-h-[18px] flex-1 cursor-pointer items-center justify-center rounded${anillo}`}
                     style={{ ...codePill(oType), borderLeft: `2px solid ${color}` }}
                     title={`${guardName} — ${CODE_LABEL[oType] ?? oType}${override.note ? ': ' + override.note : ''} (doble clic para editar)`}
                     onDoubleClick={() => h.setOverrideTarget({ guardId: assignment.guardId, guardName, date: dateStr, assignmentId: assignment.id })}
@@ -314,7 +330,8 @@ function MonthStationBlockInner({
                 return (
                   <div
                     key={assignment.id}
-                    className="relative flex min-h-[18px] flex-1 cursor-pointer items-center justify-center rounded"
+                    {...cartaProps}
+                    className={`relative flex min-h-[18px] flex-1 cursor-pointer items-center justify-center rounded${anillo}`}
                     style={sfLabel ? toneCard('ok', 12, 22) : { background: 'var(--glass-sunken)' }}
                     title={
                       sfLabel
@@ -346,7 +363,8 @@ function MonthStationBlockInner({
               return (
                 <div
                   key={assignment.id}
-                  className="flex min-h-[18px] flex-1 cursor-pointer items-center justify-center rounded hover:opacity-80"
+                  {...cartaProps}
+                  className={`flex min-h-[18px] flex-1 cursor-pointer items-center justify-center rounded hover:opacity-80${anillo}`}
                   style={{
                     ...codePill(pillCode),
                     borderLeft: `2px solid ${color}`,
