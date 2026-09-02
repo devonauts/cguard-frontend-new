@@ -1502,7 +1502,7 @@ export default function Schedule() {
         onClick: () => setOverrideTarget({ guardId: a.guardId, guardName: full, date: dateStr, assignmentId: a.id }),
       });
       if (s && s.stationId === station.id) {
-        items.push({ label: `Editar las horas${suf} (vista Día)…`, onClick: () => jumpToDay(dateStr) });
+        items.push({ label: `Editar el turno${suf}…`, onClick: () => openShiftEditor(s, full) });
         items.push({ label: `Duplicar el turno${suf} al día siguiente`, onClick: () => void duplicateShiftNextDay(s) });
         items.push({ label: `Eliminar el turno${suf} de este día`, danger: true, onClick: () => void deleteDayShift(s) });
       }
@@ -2825,6 +2825,76 @@ export default function Schedule() {
   }, [view, clampToYear, dayIndexOf]);
 
   // Right-click "Editar" from the year canvas jumps to that day in vista Día.
+  /* ── EDITAR UN TURNO YA GENERADO ──────────────────────────────────────────
+     «Editar el turno» llevaba a la vista Día y ahí te las arreglabas: no editaba
+     nada. Pero el casillero ES el registro de asistencia de ese día, y la
+     operación cambia sobre la marcha —entra más tarde, dobla, se le manda a otra
+     estación—, así que se corrige donde se ve.
+
+     Ojo con el PUT: `ShiftService.update` pasa `station`, `guard` y `postSite`
+     por `filterIdInTenant`, que devuelve NULL cuando la clave no viene. Como el
+     repositorio sólo salta las claves `undefined`, mandar sólo las horas dejaría
+     el turno sin estación, sin vigilante y sin sitio. Por eso se reenvían
+     siempre, con sus valores actuales. */
+  const [shiftEdit, setShiftEdit] = useState<{
+    shift: ShiftRecord; guardName: string; dateStr: string;
+    stationId: string; start: string; end: string;
+  } | null>(null);
+  const [shiftEditSaving, setShiftEditSaving] = useState(false);
+
+  const openShiftEditor = useCallback((s: ShiftRecord, guardName: string) => {
+    const hm = (v: string) => {
+      const w = dateToWall(new Date(v), tzName).minutes;
+      return `${String(Math.floor(w / 60)).padStart(2, '0')}:${String(w % 60).padStart(2, '0')}`;
+    };
+    setShiftEdit({
+      shift: s,
+      guardName,
+      dateStr: dateToWall(new Date(s.startTime), tzName).dateStr,
+      stationId: s.stationId,
+      start: hm(s.startTime),
+      end: hm(s.endTime),
+    });
+  }, [tzName]);
+
+  const saveShiftEdit = async () => {
+    if (!shiftEdit) return;
+    const toMin = (x: string) => { const [h, mm] = x.split(':').map(n => parseInt(n, 10) || 0); return (h % 24) * 60 + (mm % 60); };
+    const sMin = toMin(shiftEdit.start);
+    let eMin = toMin(shiftEdit.end);
+    if (eMin <= sMin) eMin += 1440; // cruza la medianoche (iguales = 24 h)
+    const [y, mo, d] = shiftEdit.dateStr.split('-').map(Number);
+    const inicio = wallToDate(y, mo, d, sMin, tzName);
+    const fin = wallToDate(y, mo, d, eMin, tzName);
+    const stDestino = stationsById.get(shiftEdit.stationId);
+    setShiftEditSaving(true);
+    try {
+      await ApiService.put(`/tenant/${tenantId}/shift/${shiftEdit.shift.id}`, {
+        data: {
+          startTime: inicio.toISOString(),
+          endTime: fin.toISOString(),
+          // Se reenvían para NO perderlos (ver la nota de arriba).
+          station: shiftEdit.stationId,
+          guard: shiftEdit.shift.guardId,
+          postSite: stDestino?.postSiteId || null,
+          // La plaza sólo si el turno la tenía Y no se cambia de estación: una
+          // plaza es de su estación, y arrastrarla a otra dejaría el turno
+          // apuntando a un puesto que no existe allí.
+          ...(shiftEdit.shift.positionId && shiftEdit.stationId === shiftEdit.shift.stationId
+            ? { positionId: shiftEdit.shift.positionId }
+            : shiftEdit.stationId !== shiftEdit.shift.stationId ? { positionId: null } : {}),
+        },
+      });
+      toast.success('Turno actualizado');
+      setShiftEdit(null);
+      fetchAll({ silent: true });
+    } catch (e: any) {
+      toast.error(e?.data?.message || e?.message || 'No se pudo actualizar el turno');
+    } finally {
+      setShiftEditSaving(false);
+    }
+  };
+
   const jumpToDay = useCallback((dateStr: string) => {
     const [y, mo, d] = dateStr.split('-').map(Number);
     setCurrentDate(clampToYear(new Date(y, mo - 1, d)));
@@ -2833,7 +2903,7 @@ export default function Schedule() {
 
   // ─── Keyboard (spreadsheet mode) ─────────────────────────────────────────
 
-  const modalOpen = showAssignForm || !!configStation || !!overrideTarget || !!proposalData || !!sfCover || !!posEditor || !!shadowFor;
+  const modalOpen = showAssignForm || !!configStation || !!overrideTarget || !!proposalData || !!sfCover || !!posEditor || !!shadowFor || !!shiftEdit;
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -5143,11 +5213,11 @@ export default function Schedule() {
                 <>
                   <div className="col-span-2 mt-1" style={{ borderTop: '1px solid var(--hairline)' }} />
                   <button
-                    onClick={() => { setOverrideTarget(null); jumpToDay(overrideTarget.date); }}
+                    onClick={() => { const g = overrideTarget.guardName; setOverrideTarget(null); openShiftEditor(turnoDelDia, g); }}
                     className="cg-focus col-span-2 rounded-xl px-3 py-2 text-xs font-semibold transition-all"
                     style={toneCard('neutral')}
                   >
-                    Editar las horas de este turno…
+                    Editar este turno (horas y estación)…
                   </button>
                   <button
                     onClick={() => { setOverrideTarget(null); void deleteDayShift(turnoDelDia); }}
@@ -5164,6 +5234,127 @@ export default function Schedule() {
             </div>
           </div>
         </div>
+        );
+      })()}
+
+      {/* ─── Editar un turno ya generado ──────────────────────────────────── */}
+      {shiftEdit && (() => {
+        const toMin = (x: string) => { const [h, mm] = x.split(':').map(n => parseInt(n, 10) || 0); return (h % 24) * 60 + (mm % 60); };
+        const sMin = toMin(shiftEdit.start);
+        const eMin = toMin(shiftEdit.end);
+        const durH = ((eMin <= sMin ? eMin + 1440 : eMin) - sMin) / 60;
+        const set = (patch: Partial<NonNullable<typeof shiftEdit>>) => setShiftEdit(m => m ? { ...m, ...patch } : m);
+        const etiqueta = (ini: string, fin: string) => {
+          const h1 = parseInt(ini.split(':')[0], 10) || 0;
+          const h2 = parseInt(fin.split(':')[0], 10) || 0;
+          let span = (h2 - h1 + 24) % 24; if (span === 0) span = 24;
+          if (span >= 23) return '24 horas';
+          return h1 >= 18 || h1 < 6 ? 'Nocturno' : 'Diurno';
+        };
+        // Los turnos que de verdad existen en la estación de destino.
+        const bloques = new Map<string, { ini: string; fin: string }>();
+        for (const pp of positions) {
+          if (pp.stationId !== shiftEdit.stationId) continue;
+          if ((pp.type || 'fijo') === 'sacafranco') continue;
+          bloques.set(`${String(pp.startTime || '07:00').slice(0, 5)}|${String(pp.endTime || '19:00').slice(0, 5)}`, {
+            ini: String(pp.startTime || '07:00').slice(0, 5),
+            fin: String(pp.endTime || '19:00').slice(0, 5),
+          });
+        }
+        if (bloques.size === 0) {
+          bloques.set('07:00|19:00', { ini: '07:00', fin: '19:00' });
+          bloques.set('19:00|07:00', { ini: '19:00', fin: '07:00' });
+        }
+        const turnos = Array.from(bloques.values()).sort((a, b) => a.ini.localeCompare(b.ini));
+        const cambiaEstacion = shiftEdit.stationId !== shiftEdit.shift.stationId;
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'oklch(0 0 0 / 0.55)' }} onClick={() => !shiftEditSaving && setShiftEdit(null)}>
+            <div className="glass-raised mx-4 max-h-[90vh] w-full max-w-sm overflow-y-auto animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+              <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--hairline)' }}>
+                <div>
+                  <h4 className="text-sm font-semibold">Editar el turno</h4>
+                  <p className="mt-0.5 text-[11px]" style={{ color: 'var(--ink-soft)' }}>{shiftEdit.guardName} — {shiftEdit.dateStr}</p>
+                </div>
+                <button onClick={() => setShiftEdit(null)} disabled={shiftEditSaving} className="cg-btn-ghost cg-focus rounded-lg p-1.5"><X size={15} /></button>
+              </div>
+
+              <div className="space-y-4 p-5">
+                <div>
+                  <label className="cg-eyebrow mb-1.5 block">Estación</label>
+                  <select
+                    value={shiftEdit.stationId}
+                    onChange={e => set({ stationId: e.target.value })}
+                    className="cg-input cg-focus w-full px-3 py-2.5 text-sm"
+                  >
+                    {stations.map(st => <option key={st.id} value={st.id}>{stationLabel(st)}</option>)}
+                  </select>
+                  {cambiaEstacion && (
+                    <p className="mt-1 text-[10px]" style={{ color: 'var(--warn-text)' }}>
+                      El turno se mueve de estación. Deja de contar como cobertura de su plaza anterior.
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="cg-eyebrow mb-1.5 block">Turno</label>
+                  <div className="mb-2 grid gap-2" style={{ gridTemplateColumns: `repeat(${Math.min(3, turnos.length)}, minmax(0, 1fr))` }}>
+                    {turnos.map(b => {
+                      const activo = shiftEdit.start === b.ini && shiftEdit.end === b.fin;
+                      return (
+                        <button
+                          key={`${b.ini}|${b.fin}`}
+                          type="button"
+                          onClick={() => set({ start: b.ini, end: b.fin })}
+                          className={`cg-focus rounded-xl border px-2 py-2 text-center transition-all ${activo ? 'glass-brand' : 'glass-flat'}`}
+                        >
+                          <div className="text-xs font-semibold">{etiqueta(b.ini, b.fin)}</div>
+                          <div className="text-[10px] tabular-nums" style={{ color: 'var(--ink-soft)' }}>{b.ini}–{b.fin}</div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="cg-eyebrow mb-1 block">Entra</label>
+                      <input type="time" value={shiftEdit.start} onChange={e => set({ start: e.target.value })} className="cg-input cg-focus w-full px-2 py-2 font-mono text-sm tabular-nums" />
+                    </div>
+                    <div>
+                      <label className="cg-eyebrow mb-1 block">Sale</label>
+                      <input type="time" value={shiftEdit.end} onChange={e => set({ end: e.target.value })} className="cg-input cg-focus w-full px-2 py-2 font-mono text-sm tabular-nums" />
+                    </div>
+                  </div>
+                  <p className="mt-1 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
+                    Jornada de <b>{durH % 1 === 0 ? durH : durH.toFixed(1)} h</b>{eMin <= sMin ? ' (termina al día siguiente)' : ''}.
+                  </p>
+                </div>
+
+                {shiftEdit.shift.positionId && (
+                  <div className="rounded-xl px-3 py-2" style={toneCard('warn', 10, 26)}>
+                    <p className="text-[11px]">
+                      Este turno lo generó la rotación. El cambio se queda hasta que se reoptimice o se reasigne el puesto; para que no vuelva, corrige las horas de la plaza en la cabecera de la estación.
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center justify-between gap-2 px-5 py-3" style={{ borderTop: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>
+                <button
+                  onClick={() => { const sh = shiftEdit.shift; setShiftEdit(null); void deleteDayShift(sh); }}
+                  disabled={shiftEditSaving}
+                  className="cg-focus rounded-full px-3 py-2 text-xs font-semibold transition-all disabled:opacity-40"
+                  style={toneCard('bad')}
+                >
+                  <X className="inline h-3.5 w-3.5 mr-1" />Eliminar
+                </button>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => setShiftEdit(null)} disabled={shiftEditSaving} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold">Cancelar</button>
+                  <button onClick={saveShiftEdit} disabled={shiftEditSaving} className="cg-btn-brand cg-focus rounded-full px-5 py-2 text-sm font-semibold transition-all disabled:opacity-40">
+                    {shiftEditSaving ? <Loader2 size={14} className="animate-spin" /> : 'Guardar'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         );
       })()}
 
