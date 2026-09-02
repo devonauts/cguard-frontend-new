@@ -211,7 +211,10 @@ export default function TimesheetModal({
   }, [record]);
 
   const esAusencia = !!record && ["vacation", "permission", "absent"].includes(String(record.status));
-  const esPlegada = record?.role === "supervisor" || record?.role === "administrative";
+  /* Supervisión y oficina fichan en otro reloj, pero van por el MISMO
+     timesheet: se corrigen y se aprueban igual. Lo único que cambia es la
+     aritmética de las horas, y de eso se encarga el servidor. */
+  const esOtroReloj = record?.role === "supervisor" || record?.role === "administrative";
 
   const minutosDescanso = useMemo(
     () => descansos.reduce((n, d) => {
@@ -279,11 +282,9 @@ export default function TimesheetModal({
           : `${record.stationName?.stationName || "Sin puesto"} · ${fmtDateTime(record.punchInTime || record.scheduledStart)}`
       }
       footer={
-        esAusencia || esPlegada || !record.payrollStatus ? (
+        esAusencia || !record.payrollStatus ? (
           <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
-            {esAusencia
-              ? "Un día sin fichaje se informa; no pasa por el ciclo de pago."
-              : "Registro plegado desde otro reloj — su ciclo se gestiona en su propia pantalla."}
+            Un día sin fichaje se informa; no pasa por el ciclo de pago.
           </p>
         ) : (
           <div className="flex w-full flex-wrap items-center justify-between gap-2">
@@ -323,7 +324,7 @@ export default function TimesheetModal({
             onChange={setTab}
             items={[
               { value: "detalle", label: "Detalle", icon: <FileText /> },
-              ...(puedeEditar && !esPlegada ? [{ value: "corregir" as Pestana, label: "Corregir", icon: <Pencil /> }] : []),
+              ...(puedeEditar ? [{ value: "corregir" as Pestana, label: "Corregir", icon: <Pencil /> }] : []),
               { value: "bitacora", label: "Bitácora", icon: <History /> },
             ]}
           />
@@ -343,15 +344,25 @@ export default function TimesheetModal({
                   <Field label="Puesto" value={record.stationName?.stationName || "—"} />
                   <Field label="Turno" value={record.shiftSchedule || "—"} />
                   <Field label="Programado" value={<span className="tabular-nums">{fmtTime(record.scheduledStart)} – {fmtTime(record.scheduledEnd)}</span>} />
-                  <Field label="Horas" value={<span className="tabular-nums">{fmtHours(horas)}</span>} numeric />
+                  <Field
+                    label={esOtroReloj ? "Horas (netas)" : "Horas en el puesto"}
+                    value={<span className="tabular-nums">{fmtHours(horas)}</span>}
+                    numeric
+                  />
                   <Field label="Entrada" value={<span className="tabular-nums">{fmtDateTime(record.punchInTime)}</span>} />
                   <Field label="Salida" value={<span className="tabular-nums">{fmtDateTime(record.punchOutTime)}</span>} />
                   <Field label="Descanso" value={<span className="tabular-nums">{desc ? `${desc} min` : "—"}</span>} numeric />
-                  <Field
-                    label="Netas"
-                    value={<span className="tabular-nums">{horas == null ? "—" : fmtHours(Math.max(0, horas - desc / 60))}</span>}
-                    numeric
-                  />
+                  {/* En un vigilante `hoursWorked` es tiempo EN EL PUESTO y el
+                      descanso va aparte; en supervisión y oficina el propio
+                      reloj ya lo descontó al cerrar. Restarlo otra vez aquí le
+                      quitaría el almuerzo dos veces. */}
+                  {!esOtroReloj && (
+                    <Field
+                      label="Netas"
+                      value={<span className="tabular-nums">{horas == null ? "—" : fmtHours(Math.max(0, horas - desc / 60))}</span>}
+                      numeric
+                    />
+                  )}
                   <Field label="Tarde" value={<span className="tabular-nums">{record.lateMinutes || 0} min</span>} numeric />
                   <Field label="Extra" value={<span className="tabular-nums">{record.overtimeMinutes || 0} min</span>} numeric />
                   <Field label="Rondas" value={<span className="tabular-nums">{record.numberOfPatrolsDuringShift ?? 0}</span>} numeric />
@@ -475,6 +486,7 @@ export default function TimesheetModal({
               <InfoNote tone="warn">
                 Al guardar, la tarjeta vuelve a <b>espera de revisión</b> y las horas se recalculan
                 solas — no se escriben a mano. Queda registrado quién corrigió y por qué.
+                {esOtroReloj && " En supervisión y oficina las horas se guardan ya netas de descansos, como al cerrar el turno."}
               </InfoNote>
 
               <div className="grid gap-3 sm:grid-cols-2">
@@ -502,7 +514,9 @@ export default function TimesheetModal({
                 </div>
                 {descansos.length === 0 && (
                   <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
-                    Sin descansos registrados. Se descuentan de las horas netas, no de las horas en el puesto.
+                    {esOtroReloj
+                      ? "Sin descansos registrados. Se descuentan de las horas al recalcular."
+                      : "Sin descansos registrados. Se descuentan de las horas netas, no de las horas en el puesto."}
                   </p>
                 )}
                 <div className="space-y-2">
