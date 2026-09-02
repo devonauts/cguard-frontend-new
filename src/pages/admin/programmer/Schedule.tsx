@@ -228,6 +228,26 @@ const addDays = (d: Date, n: number): Date => {
   return r;
 };
 
+/**
+ * Suma días a una fecha «YYYY-MM-DD» y devuelve otra «YYYY-MM-DD».
+ *
+ * Aritmética en UTC a propósito: sumar un día sobre medianoche LOCAL en una
+ * zona con horario de verano puede devolver el mismo día o saltarse uno — el
+ * mismo fallo que ya está documentado más abajo para la época de rotación.
+ */
+const addDaysStr = (ymd: string, n: number): string => {
+  const [y, m, d] = String(ymd).slice(0, 10).split('-').map(Number);
+  const t = new Date(Date.UTC(y, (m || 1) - 1, d || 1));
+  t.setUTCDate(t.getUTCDate() + n);
+  return t.toISOString().slice(0, 10);
+};
+
+/** Días entre dos «YYYY-MM-DD», ambos inclusive. */
+const diasEntre = (desde: string, hasta: string): number => {
+  const p = (v: string) => { const [y, m, d] = v.slice(0, 10).split('-').map(Number); return Date.UTC(y, (m || 1) - 1, d || 1); };
+  return Math.floor((p(hasta) - p(desde)) / 86400000) + 1;
+};
+
 // Days since the 2024-01-01 rotation epoch (matches backend getGlobalEpoch).
 // MUST use UTC arithmetic: subtracting LOCAL midnights and flooring loses a
 // day in DST timezones (929 days − 1h → floor 928), which shifted the whole
@@ -438,7 +458,9 @@ export default function Schedule() {
    * meter a alguien en la rotación es la excepción. Un traslado (arrastrar una
    * asignación existente a otro puesto) SIEMPRE es rotación: ahí no hay elección.
    */
-  const [assignMode, setAssignMode] = useState<'single' | 'rotation'>('single');
+  const [assignMode, setAssignMode] = useState<'single' | 'rango' | 'rotation'>('single');
+  /** Último día del rango a cubrir. Solo se usa en modo `rango`. */
+  const [assignEndDate, setAssignEndDate] = useState(() => tzToday());
   const [sfPickQuery, setSfPickQuery] = useState('');
   const [assignStartTime, setAssignStartTime] = useState('07:00');
   const [assignEndTime, setAssignEndTime] = useState('19:00');
@@ -1162,6 +1184,8 @@ export default function Schedule() {
     positionId: string,
     dateStr?: string,
     copiarHorasDe?: ShiftRecord | null,
+    /** A quién se cubre, para precargar el rango de SU novedad. */
+    cubriendoA?: string,
   ) => {
     let [ini, fin] = horasDelPuesto(positionId);
     if (copiarHorasDe) {
@@ -1174,9 +1198,32 @@ export default function Schedule() {
     setAssignStartDate(dateStr || tzToday());
     setAssignStartTime(ini);
     setAssignEndTime(fin);
+
+    // ── SI SE ABRE SOBRE UNA NOVEDAD, SE PRECARGA SU RANGO COMPLETO ────────
+    // Cubrir unas vacaciones es cubrir QUINCE días, no el día en que se hizo
+    // clic. Las novedades se guardan una fila por día, así que el rango se
+    // reconstruye caminando hacia delante mientras siga el MISMO código para
+    // la misma persona. Con eso el modal abre ya en «rango» y con la última
+    // fecha puesta: quien opera solo elige a quién manda.
+    let modo: 'single' | 'rango' | 'rotation' = dateStr ? 'single' : 'rotation';
+    let hastaStr = dateStr || tzToday();
+    if (dateStr && cubriendoA) {
+      const ovIni = getOverride(cubriendoA, dateStr);
+      if (ovIni && ['V', 'PM', 'F'].includes(String(ovIni.type))) {
+        let cursor = dateStr;
+        for (let i = 0; i < 120; i += 1) {
+          const sig = addDaysStr(cursor, 1);
+          const ovSig = getOverride(cubriendoA, sig);
+          if (!ovSig || String(ovSig.type) !== String(ovIni.type)) break;
+          cursor = sig;
+        }
+        if (cursor !== dateStr) { modo = 'rango'; hastaStr = cursor; }
+      }
+    }
+    setAssignEndDate(hastaStr);
     // Con fecha (clic derecho sobre un día) se asume tapar ESE día; sin fecha,
     // el gesto sólo puede significar rotación.
-    setAssignMode(dateStr ? 'single' : 'rotation');
+    setAssignMode(modo);
     setMoveFrom(null);
     setShowAssignForm(true);
   };
@@ -1430,14 +1477,39 @@ export default function Schedule() {
       // Desde la misma casilla se ofrece taparlo con otro vigilante (turno
       // suelto de ese día), que es el caso del relevo temporal. Doblar al que
       // ya está sigue estando arriba, en «Extender turno…».
-      const faltaAbierta = ov && ['F', 'V', 'PM'].includes(String(ov.type));
-      if (faltaAbierta) {
+      // ── EL MENÚ DICE LO QUE DE VERDAD PASA ────────────────────────────
+      // Esta entrada aparece para F, V y PM, y la etiqueta decía «la falta de»
+      // en los tres casos: con alguien de VACACIONES el menú ofrecía «cubrir la
+      // falta de ABRAHAN» justo encima de «Quitar novedad (V)». No es una
+      // errata cosmética — llamar falta a unas vacaciones aprobadas es
+      // exactamente lo que no debe leer quien opera el cuadrante.
+      //
+      // `CODE_LABEL` es el mismo mapa que ya rotula la leyenda y las casillas
+      // del horario, así que la palabra sale de un solo sitio y no se puede
+      // desincronizar.
+      const hayNovedad = ov && ['F', 'V', 'PM'].includes(String(ov.type));
+      if (hayNovedad) {
+        const queEs = (CODE_LABEL[String(ov!.type)] || 'novedad').toLowerCase();
+        const quien = primerNombre(a.guard, 'este vigilante');
         items.push({
-          label: `Cubrir la falta de ${primerNombre(a.guard, 'este vigilante')} con otro vigilante…`,
-          onClick: () => openAssignForm(station.id, pos.id, dateStr, suShift),
+          // «Cubrir el turno de X (vacaciones) con otro vigilante…»: lo que se
+          // cubre es el TURNO, y entre paréntesis por qué está libre.
+          label: `Cubrir el turno de ${quien} (${queEs}) con otro vigilante…`,
+          // Se pasa a QUIÉN se cubre para que el modal precargue el rango
+          // completo de su novedad: unas vacaciones son quince días, y hasta
+          // ahora había que repetir el diálogo día por día.
+          onClick: () => openAssignForm(station.id, pos.id, dateStr, suShift, a.guardId),
         });
       }
-      if (ov) items.push({ label: `Quitar novedad (${ov.type})`, danger: true, onClick: () => void removeOverride(ov.id) });
+      if (ov) {
+        // El código crudo no significa nada para quien no lo escribió: «(V)» se
+        // lee como una letra, «Vacaciones» se lee como lo que es.
+        items.push({
+          label: `Quitar ${(CODE_LABEL[String(ov.type)] || `novedad (${ov.type})`).toLowerCase()}`,
+          danger: true,
+          onClick: () => void removeOverride(ov.id),
+        });
+      }
       // ── TAPAR EL HUECO CON QUIEN SEA ──────────────────────────────────
       // Antes, un puesto CON fijo sólo ofrecía «Asignar sacafranco…», y sólo
       // si ese día libraba y nadie lo cubría ya. Sin sacafrancos configurados
@@ -1540,37 +1612,81 @@ export default function Schedule() {
     // Un turno suelto, exactamente el mismo que dibujar un bloque en la vista
     // Día o el «Turno único» de la estación: una petición, sin rotación y sin
     // generar un año de turnos. Es lo que hace falta para tapar un hueco.
-    if (assignMode === 'single') {
+    if (assignMode === 'single' || assignMode === 'rango') {
       const toMin = (x: string) => { const [h, mm] = x.split(':').map(n => parseInt(n, 10) || 0); return (h % 24) * 60 + (mm % 60); };
       const startMin = toMin(assignStartTime);
       let endMin = toMin(assignEndTime);
       // Fin ≤ inicio = cruza la medianoche (iguales = 24 h completas).
       if (endMin <= startMin) endMin += 1440;
-      const [y, mo, d] = assignStartDate.split('-').map(Number);
-      const start = wallToDate(y, mo, d, startMin, tzName);
-      const end = wallToDate(y, mo, d, endMin, tzName);
+
+      // ── LOS DÍAS A CUBRIR ────────────────────────────────────────────────
+      // Un día, o todos los del rango. El rango se acota a 92 días: un año
+      // teclado por error («2036» en vez de «2026») crearía miles de turnos, y
+      // eso no se deshace con un botón.
+      const TOPE_DIAS = 92;
+      const dias: string[] = [];
+      if (assignMode === 'single') {
+        dias.push(assignStartDate);
+      } else {
+        const n = diasEntre(assignStartDate, assignEndDate);
+        if (n < 1) { toast.error('El último día no puede ser anterior al primero.'); return; }
+        if (n > TOPE_DIAS) { toast.error(`El rango son ${n} días; el máximo es ${TOPE_DIAS}. Divídelo en tramos.`); return; }
+        for (let i = 0; i < n; i += 1) dias.push(addDaysStr(assignStartDate, i));
+      }
+
       setAssignSaving(true);
+      const st = stationsById.get(assignTarget.stationId);
+      let creados = 0;
+      let reemplazados = 0;
+      const fallados: string[] = [];
       try {
-        // Reemplaza, no duplica: misma regla que el bloque dibujado y el turno único.
-        const solapados = shifts.filter(x =>
-          x.guardId === assignGuard && new Date(x.startTime) < end && new Date(x.endTime) > start);
-        if (solapados.length) {
-          await ApiService.delete(`/tenant/${tenantId}/shift?ids=${solapados.map(x => x.id).join(',')}`).catch(() => {});
+        for (const diaStr of dias) {
+          const [y, mo, d] = diaStr.split('-').map(Number);
+          const start = wallToDate(y, mo, d, startMin, tzName);
+          const end = wallToDate(y, mo, d, endMin, tzName);
+          try {
+            // Reemplaza, no duplica: misma regla que el bloque dibujado y el
+            // turno único. Se hace por día para que un solape en el día 7 no
+            // impida crear los otros catorce.
+            const solapados = shifts.filter(x =>
+              x.guardId === assignGuard && new Date(x.startTime) < end && new Date(x.endTime) > start);
+            if (solapados.length) {
+              await ApiService.delete(`/tenant/${tenantId}/shift?ids=${solapados.map(x => x.id).join(',')}`).catch(() => {});
+              reemplazados += solapados.length;
+            }
+            await ApiService.post(`/tenant/${tenantId}/shift`, {
+              data: {
+                startTime: start.toISOString(),
+                endTime: end.toISOString(),
+                station: assignTarget.stationId,
+                guard: assignGuard,
+                postSiteId: st?.postSiteId,
+              },
+            });
+            creados += 1;
+          } catch (e: any) {
+            // Un día que falla NO aborta el resto: cubrir 14 de 15 días y saber
+            // cuál falta es mucho mejor que quedarse sin saber qué se creó.
+            fallados.push(diaStr);
+          }
         }
-        const st = stationsById.get(assignTarget.stationId);
-        await ApiService.post(`/tenant/${tenantId}/shift`, {
-          data: {
-            startTime: start.toISOString(),
-            endTime: end.toISOString(),
-            station: assignTarget.stationId,
-            guard: assignGuard,
-            postSiteId: st?.postSiteId,
-          },
-        });
-        toast.success(solapados.length ? 'Turno creado (reemplazó turnos solapados)' : 'Turno creado para ese día');
-        setShowAssignForm(false);
-        setMoveFrom(null);
-        fetchAll({ silent: true });
+
+        if (!creados) {
+          toast.error(`No se pudo crear ningún turno${fallados.length ? ` (${fallados.length} día(s) con error)` : ''}.`);
+        } else if (fallados.length) {
+          // Se dicen las fechas: sin ellas hay que revisar el cuadrante a mano.
+          toast.warning(`${creados} turno(s) creado(s). Falló en: ${fallados.join(', ')}.`);
+        } else if (dias.length > 1) {
+          toast.success(`${creados} turnos creados${reemplazados ? ` (reemplazaron ${reemplazados} solapado(s))` : ''}`);
+        } else {
+          toast.success(reemplazados ? 'Turno creado (reemplazó turnos solapados)' : 'Turno creado para ese día');
+        }
+
+        if (creados) {
+          setShowAssignForm(false);
+          setMoveFrom(null);
+          fetchAll({ silent: true });
+        }
       } catch (e: any) {
         toast.error(e?.data?.message || e?.message || t('ui.Schedule.errorAlCrearElTurno', 'Error al crear el turno'));
       } finally {
@@ -3775,17 +3891,22 @@ export default function Schedule() {
                   rotación por definición), así que ahí no se enseña. */}
               {!moveFrom && (
                 <div>
-                  <Segmented<'single' | 'rotation'>
+                  <Segmented<'single' | 'rango' | 'rotation'>
                     value={assignMode}
                     onChange={setAssignMode}
                     options={[
                       { value: 'single', label: t('ui.Schedule.soloEsteDia', 'Sólo este día') },
+                      // Cubrir unas vacaciones son QUINCE días, no uno. Antes había
+                      // que repetir el diálogo día por día.
+                      { value: 'rango', label: 'Varios días' },
                       { value: 'rotation', label: puestoRota ? t('ui.ShiftAssignModal.rotacion', 'Rotación') : 'Turno fijo' },
                     ]}
                   />
                   <p className="mt-1.5 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
                     {assignMode === 'single'
                       ? 'Un turno suelto para la fecha elegida. No entra en el horario del puesto.'
+                      : assignMode === 'rango'
+                        ? `Un turno suelto por cada día del rango, con las mismas horas. ${diasEntre(assignStartDate, assignEndDate) > 0 ? `Se crearán ${diasEntre(assignStartDate, assignEndDate)} turno(s).` : 'El último día no puede ser anterior al primero.'}`
                       : puestoRota
                         ? 'Entra en la rotación del puesto: se generan sus turnos y irá alternando día y noche. Tarda unos segundos.'
                         : 'Se queda en este horario todos sus días de trabajo, sin alternar. Tarda unos segundos.'}
@@ -3845,14 +3966,32 @@ export default function Schedule() {
                   alternation stations). Defaults to the day you dropped on. */}
               <div>
                 <label className="cg-eyebrow mb-1.5 block">
-                  {assignMode === 'single' ? 'Día que cubre' : t("ui.Schedule.primerDiaDeTurno", "Primer día de turno")}
+                  {assignMode === 'single' ? 'Día que cubre'
+                    : assignMode === 'rango' ? 'Desde'
+                      : t("ui.Schedule.primerDiaDeTurno", "Primer día de turno")}
                 </label>
                 <input
                   type="date"
                   value={assignStartDate}
-                  onChange={e => setAssignStartDate(e.target.value)}
+                  onChange={e => {
+                    setAssignStartDate(e.target.value);
+                    // El fin nunca puede quedar antes del inicio: se arrastra.
+                    if (assignEndDate < e.target.value) setAssignEndDate(e.target.value);
+                  }}
                   className="cg-input cg-focus w-full px-3 py-2.5 text-sm"
                 />
+                {assignMode === 'rango' && (
+                  <>
+                    <label className="cg-eyebrow mb-1.5 mt-3 block">Hasta</label>
+                    <input
+                      type="date"
+                      value={assignEndDate}
+                      min={assignStartDate}
+                      onChange={e => setAssignEndDate(e.target.value)}
+                      className="cg-input cg-focus w-full px-3 py-2.5 text-sm"
+                    />
+                  </>
+                )}
                 <p className="mt-1 text-[10px]" style={{ color: 'var(--ink-faint)' }}>
                   {assignMode === 'single'
                     ? t('ui.Schedule.horaDeLaEmpresaPunto', 'Hora de la empresa.')
