@@ -468,6 +468,20 @@ export default function Schedule() {
   const [assignGuard, setAssignGuard] = useState('');
   const [assignStartDate, setAssignStartDate] = useState(() => tzToday());
   const [assignSaving, setAssignSaving] = useState(false);
+  /**
+   * ── LO PROPIO DEL SACAFRANCO ────────────────────────────────────────────
+   * Un fijo hereda el patrón de su estación y punto. Un sacafranco no: no
+   * pertenece al compás de una estación, cubre los descansos de VARIAS, así que
+   * lleva su propio ciclo y su propia lista de estaciones. El servidor ya lo
+   * soportaba —el generador prefiere la rotación de la asignación cuando es
+   * relevo, y lee `coveredStationIds`— pero no había dónde escribirlo.
+   *
+   * Vacío = el defecto de siempre: patrón de la estación, y cubre todas.
+   */
+  const [assignRotation, setAssignRotation] = useState('');
+  const [assignCovered, setAssignCovered] = useState<string[]>([]);
+  /** Asignación que se está EDITANDO (sacafranco ya puesto), sólo para el copy. */
+  const [assignEditing, setAssignEditing] = useState<GuardAssignment | null>(null);
   const [moveFrom, setMoveFrom] = useState<GuardAssignment | null>(null); // drag-move source
   const [coverage, setCoverage] = useState<CoverageInfo | null>(null); // real coverage of live schedule
 
@@ -803,11 +817,20 @@ export default function Schedule() {
   // useCallback so dependent memos (sfStationCoverage, localStationAlerts) keep a stable
   // identity and only recompute when their real inputs change.
   const isWorkDay = useCallback((assignment: GuardAssignment, date: Date): 'day' | 'night' | 'rest' => {
-    // The patrón de rotación lives on the STATION now (assignment.rotationStyleId
-    // is null), so resolve it from the station; fall back to any legacy embedded
-    // style. (Reading assignment.rotationStyle made every day show "L".)
+    // ── DE DÓNDE SALE EL PATRÓN: LA MISMA REGLA QUE EL GENERADOR ───────────
+    // `shiftGenerationService` resuelve:
+    //     relevo → la del sacafranco manda sobre la de la estación
+    //     fijo   → la de la estación manda
+    // La rejilla hacía ganar SIEMPRE a la estación, lo cual era correcto
+    // mientras un sacafranco no podía llevar patrón propio. Ahora sí puede, y si
+    // esto no se invierte se le generan los turnos de su ciclo y la pantalla
+    // sigue pintando el de la estación: dos verdades distintas del mismo mes.
+    // (Y leer sólo `assignment.rotationStyle` ponía "L" todos los días.)
     const station = stationsById.get(assignment.stationId);
-    const rot = (station?.rotationStyleId ? rotationStylesById.get(station.rotationStyleId) : null) || assignment.rotationStyle;
+    const esRelevo = positionsById.get(assignment.positionId)?.type === 'sacafranco' || assignment.isRelief;
+    const propia = assignment.rotationStyleId ? rotationStylesById.get(String(assignment.rotationStyleId)) : null;
+    const deLaEstacion = station?.rotationStyleId ? rotationStylesById.get(station.rotationStyleId) : null;
+    const rot = (esRelevo ? (propia || deLaEstacion) : (deLaEstacion || propia)) || assignment.rotationStyle;
     if (!rot) return 'rest';
 
     // Vigencia: outside [startDate, endDate] the assignment generates no
@@ -817,9 +840,8 @@ export default function Schedule() {
     if (assignment.startDate && dStr < String(assignment.startDate).slice(0, 10)) return 'rest';
     if (assignment.endDate && dStr > String(assignment.endDate).slice(0, 10)) return 'rest';
 
-    // For sacafranco positions, check if any fijo guard at the same station is resting
-    const pos = positionsById.get(assignment.positionId);
-    if (pos?.type === 'sacafranco' || assignment.isRelief) {
+    // El sacafranco sigue SU ciclo (ya resuelto arriba), no el de la estación.
+    if (esRelevo) {
       // Sacafranco follows its OWN rotation using global epoch (Jan 1)
       const sfCycle = rot.dayShifts + rot.nightShifts + rot.restDays;
       if (sfCycle === 0) return 'rest';
@@ -1212,6 +1234,8 @@ export default function Schedule() {
     copiarHorasDe?: ShiftRecord | null,
     /** A quién se cubre, para precargar el rango de SU novedad. */
     cubriendoA?: string,
+    /** Sacafranco YA asignado que se viene a editar (patrón / estaciones). */
+    editar?: GuardAssignment | null,
   ) => {
     // ── DE DÓNDE SALEN LAS HORAS, EN ORDEN ────────────────────────────────
     // 1) El turno que se está cubriendo, si quien abre el menú lo sabe.
@@ -1230,10 +1254,14 @@ export default function Schedule() {
       fin = hm(dateToWall(new Date(copiarHorasDe.endTime), tzName).minutes);
     }
     setAssignTarget({ stationId, positionId });
-    setAssignGuard('');
-    setAssignStartDate(dateStr || tzToday());
+    setAssignGuard(editar?.guardId || '');
+    setAssignStartDate(editar?.startDate ? String(editar.startDate).slice(0, 10) : (dateStr || tzToday()));
     setAssignStartTime(ini);
     setAssignEndTime(fin);
+    // Editando: se abre con lo que ya tiene puesto, no en blanco — era la queja.
+    setAssignEditing(editar || null);
+    setAssignRotation(editar?.rotationStyleId ? String(editar.rotationStyleId) : '');
+    setAssignCovered(Array.isArray(editar?.coveredStationIds) ? (editar!.coveredStationIds as string[]).map(String) : []);
 
     // ── SI SE ABRE SOBRE UNA NOVEDAD, SE PRECARGA SU RANGO COMPLETO ────────
     // Cubrir unas vacaciones es cubrir QUINCE días, no el día en que se hizo
@@ -1241,7 +1269,8 @@ export default function Schedule() {
     // reconstruye caminando hacia delante mientras siga el MISMO código para
     // la misma persona. Con eso el modal abre ya en «rango» y con la última
     // fecha puesta: quien opera solo elige a quién manda.
-    let modo: 'single' | 'rango' | 'rotation' = dateStr ? 'single' : 'rotation';
+    // Editar un sacafranco es siempre su rotación, nunca un día suelto.
+    let modo: 'single' | 'rango' | 'rotation' = editar ? 'rotation' : (dateStr ? 'single' : 'rotation');
     let hastaStr = dateStr || tzToday();
     if (dateStr && cubriendoA) {
       const ovIni = getOverride(cubriendoA, dateStr);
@@ -1577,6 +1606,12 @@ export default function Schedule() {
         items.push({ label: '—' });
       }
       const gName = nombreDeVigilante(sfGuard.guard, 'Sacafranco');
+      // Cambiarle el patrón o las estaciones que cubre sin tener que borrarlo y
+      // volver a crearlo, que era la única vía.
+      items.push({
+        label: 'Editar sacafranco (patrón y estaciones)…',
+        onClick: () => openAssignForm(pos.stationId, pos.id, undefined, null, undefined, sfGuard),
+      });
       items.push({
         label: 'Trasladar a otra estación…',
         onClick: () => setTransferTarget({
@@ -1745,11 +1780,21 @@ export default function Schedule() {
           positionId: assignTarget.positionId,
           startDate: assignStartDate,
           isRelief: isSacafranco,
-          // No rotationStyleId here — the guard INHERITS the station's patrón de
-          // rotación (resolved server-side in assignmentService from station.rotationStyleId).
+          // Un FIJO no manda patrón: hereda el de la estación (el servidor
+          // ignora lo que llegue). Un SACAFRANCO sí puede traer el suyo y su
+          // lista de estaciones; vacíos = el defecto de antes (patrón de la
+          // estación, cubre todas las de fijos).
+          ...(isSacafranco ? {
+            rotationStyleId: assignRotation || null,
+            coveredStationIds: assignCovered.length ? assignCovered : null,
+          } : {}),
         },
       });
-      toast.success(moveFrom ? 'Vigilante movido de puesto' : 'Vigilante asignado');
+      toast.success(
+        moveFrom ? 'Vigilante movido de puesto'
+          : assignEditing ? 'Sacafranco actualizado'
+            : 'Vigilante asignado',
+      );
       setShowAssignForm(false);
       setMoveFrom(null);
       fetchAll();
@@ -3868,11 +3913,11 @@ export default function Schedule() {
 
       {/* ─── Assignment Modal ─────────────────────────────────────────────── */}
       {showAssignForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'oklch(0 0 0 / 0.55)' }} onClick={() => { setShowAssignForm(false); setMoveFrom(null); }}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'oklch(0 0 0 / 0.55)' }} onClick={() => { setShowAssignForm(false); setMoveFrom(null); setAssignEditing(null); }}>
           <div className="glass-raised mx-4 max-h-[90vh] w-full max-w-md overflow-hidden overflow-y-auto animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--hairline)' }}>
-              <h4 className="text-sm font-semibold">{moveFrom ? t('ui.Schedule.moverVigilanteDePuesto', 'Mover vigilante de puesto') : (assignMode === 'single' ? t('ui.Schedule.cubrirEsteDia', 'Cubrir este día') : (puestoRota ? t('ui.Schedule.asignarVigilanteALaRotacion', 'Asignar vigilante a la rotación') : 'Asignar vigilante al turno fijo'))}</h4>
-              <button onClick={() => { setShowAssignForm(false); setMoveFrom(null); }} className="cg-btn-ghost cg-focus rounded-lg p-1.5"><X size={15} /></button>
+              <h4 className="text-sm font-semibold">{moveFrom ? t('ui.Schedule.moverVigilanteDePuesto', 'Mover vigilante de puesto') : assignEditing ? 'Editar sacafranco' : (assignMode === 'single' ? t('ui.Schedule.cubrirEsteDia', 'Cubrir este día') : (puestoRota ? t('ui.Schedule.asignarVigilanteALaRotacion', 'Asignar vigilante a la rotación') : 'Asignar vigilante al turno fijo'))}</h4>
+              <button onClick={() => { setShowAssignForm(false); setMoveFrom(null); setAssignEditing(null); }} className="cg-btn-ghost cg-focus rounded-lg p-1.5"><X size={15} /></button>
             </div>
             <div className="p-5 space-y-4">
               {/* ¿El puesto elegido ROTA? Lo dice su patrón: sin noches, no rota. */}
@@ -3925,7 +3970,7 @@ export default function Schedule() {
               {/* ── Qué se va a crear ──────────────────────────────────────
                   Un traslado no tiene elección (mover una asignación es
                   rotación por definición), así que ahí no se enseña. */}
-              {!moveFrom && (
+              {!moveFrom && !assignEditing && (
                 <div>
                   <Segmented<'single' | 'rango' | 'rotation'>
                     value={assignMode}
@@ -3974,7 +4019,7 @@ export default function Schedule() {
                   const conTurnoEseDia = (id: string) => !!shiftByGuardDate.get(`${id}|${assignStartDate}`);
 
                   return (
-                    <select value={assignGuard} onChange={e => setAssignGuard(e.target.value)} className="cg-input cg-focus w-full px-3 py-2.5 text-sm">
+                    <select value={assignGuard} onChange={e => setAssignGuard(e.target.value)} disabled={!!assignEditing} className="cg-input cg-focus w-full px-3 py-2.5 text-sm disabled:opacity-60">
                       <option value="">{t('comun.eligeUnVigilante')}</option>
                       {disponibles.map(g => (
                         <option key={g.id} value={g.id}>
@@ -4057,24 +4102,114 @@ export default function Schedule() {
                 </div>
               )}
 
-              {/* The patrón de rotación is set on the STATION (Sitios › Estación ›
-                  Horario del turno) and inherited here — not chosen per guard. */}
+              {/* ── EL PATRÓN ───────────────────────────────────────────────
+                  En un FIJO lo manda la estación (Sitios › Estación › Horario
+                  del turno) y aquí sólo se enseña: si cada fijo trajera el suyo,
+                  las dos plazas de un 24 h dejarían de encajar.
+
+                  En un SACAFRANCO se elige. No pertenece al compás de ninguna
+                  estación —cubre los descansos de varias— así que su ciclo de
+                  trabajo y descanso es suyo. El generador ya lo prefería sobre el
+                  de la estación; lo que faltaba era este campo. */}
               {assignMode === 'rotation' && (() => {
                 const st = stationsById.get(assignTarget?.stationId || '');
                 const rot = st?.rotationStyleId ? rotationStylesById.get(st.rotationStyleId) : null;
+                const esSf = positions.find(p => p.id === assignTarget?.positionId)?.type === 'sacafranco';
+                const ciclo = (r: RotationStyle) => {
+                  const partes = [
+                    r.dayShifts ? `${r.dayShifts}D` : '',
+                    r.nightShifts ? `${r.nightShifts}N` : '',
+                    r.restDays ? `${r.restDays}L` : '',
+                  ].filter(Boolean);
+                  return partes.join('-');
+                };
+
+                if (!esSf) {
+                  return (
+                    <div className="glass-sunken px-3 py-2">
+                      <p className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>
+                        {t('ui.Schedule.patronDeRotacion', 'Patrón de rotación:')} <span className="font-semibold" style={{ color: 'var(--ink)' }}>{rot?.name || 'el del puesto'}</span> · se hereda del puesto.
+                      </p>
+                    </div>
+                  );
+                }
+
                 return (
-                  <div className="glass-sunken px-3 py-2">
-                    <p className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>
-                      {t('ui.Schedule.patronDeRotacion', 'Patrón de rotación:')} <span className="font-semibold" style={{ color: 'var(--ink)' }}>{rot?.name || 'el del puesto'}</span> · se hereda del puesto.
-                    </p>
-                  </div>
+                  <>
+                    <div>
+                      <label className="cg-eyebrow mb-1.5 block">Su patrón de rotación</label>
+                      <select
+                        value={assignRotation}
+                        onChange={e => setAssignRotation(e.target.value)}
+                        className="cg-input cg-focus w-full px-3 py-2.5 text-sm"
+                      >
+                        <option value="">
+                          {rot ? `Sin patrón propio — mes libre, se cubre a mano` : 'Sin patrón propio — mes libre, se cubre a mano'}
+                        </option>
+                        {rotationStyles.map(r => (
+                          <option key={r.id} value={r.id}>
+                            {r.name}{ciclo(r) ? ` · ${ciclo(r)}` : ''}{st?.rotationStyleId === r.id ? ' (el de esta estación)' : ''}
+                          </option>
+                        ))}
+                      </select>
+                      <p className="mt-1 text-[10px]" style={{ color: assignRotation ? 'var(--ok-text)' : 'var(--ink-faint)' }}>
+                        {assignRotation
+                          ? 'Se le generan sus turnos con este ciclo. Tarda unos segundos.'
+                          : 'Empieza con el mes en blanco: sus días se colocan arrastrándolos sobre los descansos, o con «Optimizar sacafrancos».'}
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className="cg-eyebrow mb-1.5 block">Estaciones que cubre</label>
+                      <div
+                        className="max-h-40 overflow-y-auto rounded-xl px-1 py-1"
+                        style={{ border: '1px solid var(--hairline)' }}
+                      >
+                        {stations.map(s => {
+                          const marcada = assignCovered.includes(s.id);
+                          return (
+                            <label
+                              key={s.id}
+                              className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-xs transition-colors hover:bg-[var(--glass-sunken)]"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={marcada}
+                                onChange={() => setAssignCovered(prev => (
+                                  prev.includes(s.id) ? prev.filter(x => x !== s.id) : [...prev, s.id]
+                                ))}
+                                className="cg-focus"
+                              />
+                              <span className={marcada ? 'font-semibold' : ''}>{stationLabel(s)}</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                      <div className="mt-1 flex items-center justify-between gap-2">
+                        <p className="text-[10px]" style={{ color: 'var(--ink-faint)' }}>
+                          {assignCovered.length
+                            ? `Sólo buscará descansos que cubrir en ${assignCovered.length} estación(es).`
+                            : 'Sin marcar ninguna cubre TODAS las estaciones con puestos fijos.'}
+                        </p>
+                        {assignCovered.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => setAssignCovered([])}
+                            className="cg-btn-ghost cg-focus shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold"
+                          >
+                            Todas
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </>
                 );
               })()}
             </div>
             <div className="flex items-center justify-end gap-2 px-5 py-3" style={{ borderTop: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>
-              <button onClick={() => { setShowAssignForm(false); setMoveFrom(null); }} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all">{t('actions.cancel')}</button>
+              <button onClick={() => { setShowAssignForm(false); setMoveFrom(null); setAssignEditing(null); }} className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all">{t('actions.cancel')}</button>
               <button onClick={saveAssignment} disabled={assignSaving || !assignGuard} className="cg-btn-brand cg-focus rounded-full px-5 py-2 text-sm font-semibold transition-all disabled:opacity-40">
-                {assignSaving ? <Loader2 size={14} className="animate-spin" /> : (moveFrom ? 'Mover' : (assignMode === 'single' ? 'Cubrir el día' : 'Asignar a la rotación'))}
+                {assignSaving ? <Loader2 size={14} className="animate-spin" /> : (moveFrom ? 'Mover' : assignEditing ? 'Guardar cambios' : (assignMode === 'single' ? 'Cubrir el día' : 'Asignar a la rotación'))}
               </button>
             </div>
           </div>

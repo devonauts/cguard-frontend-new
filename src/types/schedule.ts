@@ -1,7 +1,7 @@
 export interface RotationStyle { id: string; name: string; description?: string; dayShifts: number; nightShifts: number; restDays: number; isSystem: boolean; }
 export interface StationPosition { id: string; name: string; type: 'fijo' | 'sacafranco'; startTime: string; endTime: string; guardsNeeded: number; sortOrder: number; stationId: string; }
 export interface GuardRef { id: string; firstName: string; lastName: string; email?: string; }
-export interface GuardAssignment { id: string; guardId: string; stationId: string; positionId: string; rotationStyleId: string; startDate: string; endDate?: string; platoonOffset: number; isRelief: boolean; status: string; /** 'holder' | 'shadow' — un aprendiz acompaña y NO cuenta como cobertura. */ role?: string; shadowOfAssignmentId?: string | null; guard?: GuardRef; position?: StationPosition; rotationStyle?: RotationStyle; }
+export interface GuardAssignment { id: string; guardId: string; stationId: string; positionId: string; rotationStyleId: string; startDate: string; endDate?: string; platoonOffset: number; isRelief: boolean; /** Sacafranco: estaciones cuyos descansos cubre. Vacío/ausente = todas las de fijos. */ coveredStationIds?: string[] | null; status: string; /** 'holder' | 'shadow' — un aprendiz acompaña y NO cuenta como cobertura. */ role?: string; shadowOfAssignmentId?: string | null; guard?: GuardRef; position?: StationPosition; rotationStyle?: RotationStyle; }
 export interface ShiftRecord {
   id: string;
   guardId: string;
