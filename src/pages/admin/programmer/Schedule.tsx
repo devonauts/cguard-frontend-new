@@ -2576,7 +2576,18 @@ export default function Schedule() {
         const dateStr = fmtDate(monthDays[c]);
         for (const a of asigsDeFila(row)) {
           const s = shiftByGuardDate.get(`${a.guardId}|${dateStr}`);
-          if (s && s.stationId === row.pos.stationId) guardar(s);
+          if (!s) continue;
+          /* Se borra LO QUE LA CELDA PINTA.
+             · Fila de fijo: su turno EN ESTA estación. La comparación existe
+               para no borrar un turno que esa persona tenga en otro sitio y que
+               esta fila no está enseñando.
+             · Fila de SACAFRANCO: justo al revés. Su turno NUNCA está en la
+               estación de su fila —esa es sólo su base—, está en la que fue a
+               cubrir, y la celda lo pinta con el nombre de esa estación. Con la
+               comparación puesta, Supr sobre un sacafranco no encontraba nada y
+               contestaba «la selección no tiene turnos ni novedades que borrar»
+               teniendo una D delante. */
+          if (row.isSf || s.stationId === row.pos.stationId) guardar(s);
         }
         // La cobertura vive donde se ve: en la primera fila del puesto. En una
         // fila de sacafranco su propio turno ya entró por `row.assignments`.
@@ -2601,9 +2612,33 @@ export default function Schedule() {
 
     // Nunca en silencio: si no hay nada que borrar, decirlo.
     if (!victims.length && !turnos.length) {
-      toast.info(sel
-        ? t('ui.Schedule.laSeleccionNoTieneTurnos', 'La selección no tiene turnos ni novedades que borrar')
-        : t('ui.Schedule.seleccionaCeldasDeUnPuesto'));
+      if (!sel) { toast.info(t('ui.Schedule.seleccionaCeldasDeUnPuesto')); return; }
+      /* Decir POR QUÉ no hay nada. «La selección no tiene turnos ni novedades»
+         delante de una D es lo que hace pensar que la pantalla miente, y hay
+         tres motivos distintos detrás:
+           · el puesto no tiene a nadie;
+           · la celda es un descanso (nada que borrar);
+           · la rejilla PINTA la rotación, pero el turno todavía no existe como
+             fila — el horario se materializa unos meses por delante, y más allá
+             de ese horizonte lo que se ve es la proyección del patrón. */
+      const filas = selectableRows.slice(selBounds?.r1 ?? 0, (selBounds?.r2 ?? 0) + 1);
+      const filaVacia = filas.every(r => !r || !r.assignments.length);
+      let proyectado = false;
+      if (!filaVacia && selBounds) {
+        for (const row of filas) {
+          if (!row) continue;
+          for (let c = selBounds.c1; c <= selBounds.c2 && c < monthDays.length && !proyectado; c++) {
+            for (const a of asigsDeFila(row)) {
+              if (isWorkDay(a, monthDays[c]) !== 'rest') { proyectado = true; break; }
+            }
+          }
+        }
+      }
+      toast.info(filaVacia
+        ? 'Ese puesto no tiene vigilante asignado: no hay turno que borrar.'
+        : proyectado
+          ? 'Ahí todavía no hay un turno creado: la rejilla está enseñando el patrón proyectado. El horario se genera unos meses por delante; para bloquear ese día usa una novedad (L, V, PM, F).'
+          : 'En esas celdas no hay turno ni novedad — están libres (L). Doble clic para registrar una novedad.');
       return;
     }
 
@@ -2650,7 +2685,7 @@ export default function Schedule() {
       toast.success(`${partes} eliminado(s)`);
     }
     fetchAll({ silent: true });
-  }, [cellsInSelection, shiftsInSelection, getOverride, tenantId, fetchAll, sel, t]);
+  }, [cellsInSelection, shiftsInSelection, getOverride, tenantId, fetchAll, sel, selBounds, selectableRows, monthDays, asigsDeFila, isWorkDay, t]);
 
   const openNovedadForFocus = useCallback(() => {
     if (!sel) return;
