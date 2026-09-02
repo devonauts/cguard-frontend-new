@@ -71,6 +71,10 @@ export type MonthGridHandlers = {
 
 const EMPTY_ASG: GuardAssignment[] = [];
 
+/** Códigos que dejan el puesto SIN esa persona — los que abren un hueco que
+ *  alguien viene a cubrir. `D`, `N` y `24` no: esos son trabajo. */
+const ABSENCE_CODES = new Set(['V', 'PM', 'F', 'L']);
+
 /* Copia literal de los de la hoja a propósito: son el TINTE de la rejilla y
    tienen que valer lo mismo en los dos sitios. */
 const TINT_TODAY = 'color-mix(in oklab, var(--brand) 8%, transparent)';
@@ -193,7 +197,12 @@ function MonthStationBlockInner({
     if (!lista || !lista.length) return null;
     for (const p of stationPositions) {
       for (const a of assignmentsByPosition.get(p.id) || EMPTY_ASG) {
-        // Una novedad ocupa la celda entera: esa fila no pinta la cobertura.
+        /* La celda de quien FALTA (vacaciones, permiso, falta) ya enseña quién
+           lo cubre: es SU puesto el que se está tapando. Antes esa fila se
+           saltaba —«una novedad ocupa la celda entera»— y el relevo acababa
+           pintado en la primera fila del puesto: «cubrí a Abrahán y se fue
+           arriba». */
+        if (ABSENCE_CODES.has(String(overrideByGuardDate.get(`${a.guardId}|${dateStr}`)?.type || ''))) return null;
         if (overrideByGuardDate.has(`${a.guardId}|${dateStr}`)) continue;
         if (h.isWorkDay(a, day) === 'rest') return null;
       }
@@ -205,37 +214,43 @@ function MonthStationBlockInner({
    *  cada posición del puesto. */
   const primeraFilaId = stationPositions[0]?.id;
 
-  /** La píldora de una cobertura que ninguna «L» va a enseñar. */
-  const pildoraCobertura = (
+  /**
+   * ── UNA PÍLDORA POR PERSONA QUE CUBRE ────────────────────────────────────
+   *
+   * Esto pintaba SÓLO `lista[0]`. Un día con dos coberturas —lo normal cuando
+   * alguien está de vacaciones: un relevo tapa el día y otro la noche— enseñaba
+   * una sola, y CUÁL salía dependía del orden del array. El caso real: se cubre
+   * la noche, la lista traía primero al del día, y la celda decía «D» con el
+   * nombre del otro. Desde fuera: «registré turno nocturno y se fue al turno del
+   * día», y en los días en que el otro relevo iba primero, el nocturno
+   * sencillamente no aparecía.
+   *
+   * Ahora se apilan todas. Cada una arrastra y abre SU hoja del día.
+   */
+  const pildorasCobertura = (
     lista: { id: string; guardId: string; name: string; fullName: string; code: 'D' | 'N'; ext?: boolean }[],
     dateStr: string,
-  ) => {
+  ) => lista.map(c => (
     // Una EXTENSIÓN (alguien doblando porque su relevo no llegó) va en ámbar,
     // no en verde: el verde dice «cubierto y en orden», y esto está cubierto
     // pero NO está en orden — hay una persona encadenando dos turnos.
-    const esExt = lista.some(x => x.ext);
-    return (
-      <div
-        className="flex min-h-[18px] flex-1 cursor-grab flex-col items-center justify-center rounded active:cursor-grabbing"
-        style={toneCard(esExt ? 'warn' : 'ok', esExt ? 18 : 12, esExt ? 34 : 22)}
-        title={
-          esExt
-            ? `DOBLA turno: ${lista.map(x => x.fullName).join(', ')}`
-            : `Cubre: ${lista.map(x => x.fullName).join(', ')} · arrastra para moverlo · doble clic para editar el día`
-        }
-        draggable
-        onDragStart={e => h.onCoverageDragStart(e, lista[0].id)}
-        /* La cobertura también es la hoja de asistencia de alguien: se abre
-           igual que cualquier otro casillero. Antes sólo se podía arrastrar. */
-        onDoubleClick={() => h.setOverrideTarget({ guardId: lista[0].guardId, guardName: lista[0].fullName, date: dateStr })}
-      >
-        <span className="text-[10px] font-bold leading-none">
-          {esExt ? '2×' : lista[0].code}
-        </span>
-        <span className="text-[8px] leading-none opacity-80">{lista[0].name}</span>
-      </div>
-    );
-  };
+    <div
+      key={c.id}
+      className="flex min-h-[16px] flex-1 cursor-grab flex-col items-center justify-center rounded active:cursor-grabbing"
+      style={toneCard(c.ext ? 'warn' : 'ok', c.ext ? 18 : 12, c.ext ? 34 : 22)}
+      title={c.ext
+        ? `${c.fullName} DOBLA turno (${CODE_LABEL[c.code] ?? c.code})`
+        : `Cubre ${c.fullName} — ${CODE_LABEL[c.code] ?? c.code} · arrastra para moverlo · doble clic para editar el día`}
+      draggable
+      onDragStart={e => h.onCoverageDragStart(e, c.id)}
+      /* La cobertura también es la hoja de asistencia de alguien: se abre igual
+         que cualquier otro casillero. Antes sólo se podía arrastrar. */
+      onDoubleClick={() => h.setOverrideTarget({ guardId: c.guardId, guardName: c.fullName, date: dateStr })}
+    >
+      <span className="text-[10px] font-bold leading-none">{c.ext ? '2×' : c.code}</span>
+      <span className="text-[8px] leading-none opacity-80">{c.name}</span>
+    </div>
+  ));
 
   const renderFijoCell = (pos: StationPosition, posAssignments: GuardAssignment[], day: Date, dayIdx: number) => {
     const dateStr = monthDayStrs[dayIdx];
@@ -279,7 +294,7 @@ function MonthStationBlockInner({
           // tiene ninguna «L» donde pintarse (ver `coberturaSinPintar`).
           (() => {
             const huerfana = pos.id === primeraFilaId ? coberturaSinPintar(dateStr, day) : null;
-            if (huerfana) return pildoraCobertura(huerfana, dateStr);
+            if (huerfana) return <div className="flex flex-1 flex-col gap-0.5">{pildorasCobertura(huerfana, dateStr)}</div>;
             return (
               <div
                 className="flex flex-1 cursor-pointer items-center justify-center rounded border border-dashed"
@@ -309,7 +324,12 @@ function MonthStationBlockInner({
               // If there's an override, show it instead of calculated rotation
               if (override) {
                 const oType = override.type;
-                return (
+                // Quien viene a tapar ESTE hueco se apila en la MISMA celda,
+                // debajo de la V: el puesto que se cubre es éste.
+                const relevos = ABSENCE_CODES.has(String(oType))
+                  ? (sfStationCoverage.get(`${station.id}-${dateStr}`) || [])
+                  : [];
+                const tarjetaNovedad = (
                   <div
                     key={assignment.id}
                     {...cartaProps}
@@ -321,6 +341,13 @@ function MonthStationBlockInner({
                     <span className="text-[10px] font-bold">{oType}</span>
                   </div>
                 );
+                if (!relevos.length) return tarjetaNovedad;
+                return (
+                  <div key={assignment.id} className="flex flex-1 flex-col gap-0.5">
+                    {tarjetaNovedad}
+                    {pildorasCobertura(relevos, dateStr)}
+                  </div>
+                );
               }
 
               const workStatus = h.isWorkDay(assignment, day);
@@ -328,31 +355,28 @@ function MonthStationBlockInner({
               if (workStatus === 'rest') {
                 const coverKey = `${station.id}-${dateStr}`;
                 const coveringSfs = sfStationCoverage.get(coverKey) || [];
-                const sfLabel = coveringSfs.length > 0 ? coveringSfs[0].name : '';
-                const sfTooltip = coveringSfs.length > 0 ? coveringSfs.map(s => s.fullName).join(', ') : '';
-                // La tarjeta de cobertura se ARRASTRA para moverla de día o de
-                // puesto; la «L» pelada no tiene nada que arrastrar.
-                const cobertura = coveringSfs[0];
+                /* Cubierto: se apilan TODOS los que cubren ese día. Antes esta
+                   celda enseñaba sólo `coveringSfs[0]`, así que el segundo
+                   relevo —el de la noche, casi siempre— era invisible. */
+                if (coveringSfs.length) {
+                  return (
+                    <div key={assignment.id} {...cartaProps} className={`flex flex-1 flex-col gap-0.5${anillo}`}>
+                      {pildorasCobertura(coveringSfs, dateStr)}
+                    </div>
+                  );
+                }
+                // Sin nadie que lo cubra: la «L» pelada. No hay nada que
+                // arrastrar aquí — lo arrastrable es la cobertura, y no la hay.
                 return (
                   <div
                     key={assignment.id}
                     {...cartaProps}
                     className={`relative flex min-h-[18px] flex-1 cursor-pointer items-center justify-center rounded${anillo}`}
-                    style={sfLabel ? toneCard('ok', 12, 22) : { background: 'var(--glass-sunken)' }}
-                    title={
-                      sfLabel
-                        ? `${sfTooltip} cubre a ${guardName} · arrastra para moverlo`
-                        : `${guardName} — Libre (clic derecho: asignar sacafranco)`
-                    }
-                    draggable={!!cobertura}
-                    onDragStart={e => { if (cobertura) h.onCoverageDragStart(e, cobertura.id); }}
+                    style={{ background: 'var(--glass-sunken)' }}
+                    title={`${guardName} — Libre (clic derecho: cubrir este día)`}
                     onDoubleClick={() => h.setOverrideTarget({ guardId: assignment.guardId, guardName, date: dateStr, assignmentId: assignment.id })}
                   >
-                    {sfLabel ? (
-                      <span className="text-[8px] font-bold">{sfLabel}</span>
-                    ) : (
-                      <span className="text-[10px] font-bold" style={{ color: 'var(--ink-faint)' }}>L</span>
-                    )}
+                    <span className="text-[10px] font-bold" style={{ color: 'var(--ink-faint)' }}>L</span>
                   </div>
                 );
               }
@@ -392,7 +416,7 @@ function MonthStationBlockInner({
                 apila debajo en vez de quedar invisible detrás de la D/N. */}
             {pos.id === primeraFilaId && (() => {
               const huerfana = coberturaSinPintar(dateStr, day);
-              return huerfana ? pildoraCobertura(huerfana, dateStr) : null;
+              return huerfana ? <>{pildorasCobertura(huerfana, dateStr)}</> : null;
             })()}
           </div>
         )}
