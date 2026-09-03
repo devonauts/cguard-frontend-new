@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { useAuth } from "@/contexts/AuthContext"
 import { Navigate, useLocation } from "react-router-dom"
 import NoWorkspaceAccess from "./NoWorkspaceAccess"
@@ -47,6 +48,32 @@ function isPlatformSuperadmin(user: any): boolean {
  * never the platform brand — so a white-labeled tenant never sees the wrong
  * logo. Warm off-white (light) / slate-950 (dark) to match the new design.
  */
+/**
+ * Saca al superadmin de plataforma HACIA LA APP DE VERDAD.
+ *
+ * `/superadmin/tenants` existe en DOS sitios: la app separada
+ * (`superadmin/`, desplegada en `/var/www/superadmin`, la que nginx sirve con
+ * `location ^~ /superadmin/`) y una página homónima que quedó viva AQUÍ, en el
+ * propio CRM (`pages/admin/superadmin/TenantsPage.tsx`), sobrante de antes de
+ * que el panel se separara en su propia app (2026-06-06). Un `<Navigate>` de
+ * React Router es navegación DE CLIENTE — no dispara ninguna petición al
+ * servidor — así que aterrizaba en la página muerta de aquí, con su propio
+ * fetch a `/api/superadmin/tenants` y su propio estado, en vez de en la app
+ * real. Ahí es donde un superadmin recién entrado se topaba con «error» sin
+ * entender por qué: la página vive, pero ya no es la que nadie mantiene.
+ *
+ * Por eso esto usa `window.location.replace` y no `<Navigate>`: es una
+ * recarga COMPLETA de página, hace falta para cruzar a un bundle de Vite
+ * distinto con su PROPIO token (`cguard_sa_token`, ajeno al `authToken` del
+ * CRM — visto en `superadmin/src/lib/api.ts`).
+ */
+function RedirectToSuperadminApp() {
+  useEffect(() => {
+    window.location.replace("/superadmin/")
+  }, [])
+  return <LoadingScreen />
+}
+
 function LoadingScreen() {
   let tenantLogo: string | null = null
   try {
@@ -104,7 +131,7 @@ export default function ProtectedRoute({
       if (location.pathname.startsWith("/superadmin")) {
         return <>{children}</>
       }
-      return <Navigate to="/superadmin/tenants" replace />
+      return <RedirectToSuperadminApp />
     }
     return <NoWorkspaceAccess />
   }

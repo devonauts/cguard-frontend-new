@@ -10,16 +10,8 @@ const tenantService = {
   list(query = '') {
     return ApiService.get(`/tenant${query ? `?${query}` : ''}`);
   },
-  // List tenants using superadmin endpoint (requires superadmin auth)
-  listSuperadmin(query = '') {
-    return ApiService.get(`/superadmin/tenants${query ? `?${query}` : ''}`);
-  },
   findById(id: string) {
     return ApiService.get(`/tenant/${id}`);
-  },
-  // Use superadmin endpoint to fetch arbitrary tenants when in superadmin UI
-  findByIdSuperadmin(id: string) {
-    return ApiService.get(`/superadmin/tenants/${id}`);
   },
   findByUrl(url: string) {
     return ApiService.get(`/tenant/url?url=${encodeURIComponent(url)}`);

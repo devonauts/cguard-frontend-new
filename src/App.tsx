@@ -190,8 +190,6 @@ const GuardSchedulePage = lazy(() => import("./pages/guard/dashboard/GuardSchedu
 const GuardTimeOffPage = lazy(() => import("./pages/guard/dashboard/GuardTimeOff"));
 const MemosPage = lazy(() => import("./pages/admin/memos/MemosPage"));
 const StyleGuide = lazy(() => import("./pages/StyleGuide"));
-const TenantsPage = lazy(() => import("./pages/admin/superadmin/TenantsPage"));
-import RequireGlobalAdmin from "./components/RequireGlobalAdmin";
 
 import { ClientSelectionProvider } from "./contexts/ClientSelectionContext";
 import CoBrowseAgent from "./components/cobrowse/CoBrowseAgent";
@@ -443,16 +441,6 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <StationsPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/superadmin/tenants"
-                element={
-                  <ProtectedRoute>
-                    <RequireGlobalAdmin>
-                      <TenantsPage />
-                    </RequireGlobalAdmin>
                   </ProtectedRoute>
                 }
               />

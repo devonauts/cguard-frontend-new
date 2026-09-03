@@ -10,8 +10,9 @@ import { useAuth } from "@/contexts/AuthContext"
  * BEFORE any tenant-scoped page mounts, so the user gets a clear message and a
  * way out (sign out) instead of a blank screen.
  *
- * Platform superadmins are handled separately (routed to /superadmin/tenants) —
- * this screen is for end users whose account was not attached to any workspace.
+ * Platform superadmins are handled separately (hard-redirected to the standalone
+ * SuperAdmin app at /superadmin/) — this screen is for end users whose account
+ * was not attached to any workspace.
  */
 export default function NoWorkspaceAccess() {
   const { t } = useTranslation()
