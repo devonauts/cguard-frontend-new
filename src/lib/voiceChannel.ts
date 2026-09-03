@@ -60,6 +60,17 @@ export class VoiceChannel {
   private attached = new Map<string, HTMLMediaElement>();
   /** identity of whoever we last reported as the active speaker (for prompt clearing). */
   private speakerId: string | null = null;
+  /**
+   * Vigila un «X está hablando» ATASCADO. Un publicador que se va a mitad de
+   * frase (el bot de la central de monitoreo, o alguien que pierde la red) puede
+   * dejar sin entregar el `ParticipantDisconnected` / `ActiveSpeakersChanged`, y
+   * entonces el canal se queda marcado como ocupado para siempre.
+   *
+   * Esto importa MUCHO más ahora que el botón se bloquea con el canal ocupado:
+   * sin este repaso, un fantasma dejaría a toda la central sin poder transmitir
+   * — que es exactamente por lo que este bloqueo se quitó en su día.
+   */
+  private speakerWatch: ReturnType<typeof setInterval> | null = null;
   /** true once the LiveKit room is connected (RadioContext polls this). */
   joined = false;
 
@@ -157,7 +168,7 @@ export class VoiceChannel {
         })
         .on(RoomEvent.ActiveSpeakersChanged, (speakers: Participant[]) => {
           const s = speakers[0];
-          this.setSpeaker(s ? { userId: usuarioDeIdentidad(s.identity), name: s.name || "—" } : null);
+          this.setSpeaker(s || null);
         })
         .on(RoomEvent.TrackMuted, (_pub: any, p: Participant) => {
           // PTT release mutes the mic → clear the "X está hablando" prompt
@@ -184,9 +195,43 @@ export class VoiceChannel {
     }
   }
 
-  private setSpeaker(sp: VoiceSpeaker): void {
-    this.speakerId = sp ? sp.userId : null;
+  /**
+   * `speakerId` guarda la IDENTIDAD DE SALA (con el sufijo del dispositivo), que
+   * es contra lo que se compara `p.identity` al silenciarse o desconectarse, y
+   * con lo que se busca al participante en la sala. Hacia fuera se emite la
+   * PERSONA. Guardar aquí el userId pelado hacía que ninguna de esas dos
+   * comparaciones acertara y el «X está hablando» no se borrara nunca.
+   */
+  private setSpeaker(p: { identity: string; name?: string } | null): void {
+    this.speakerId = p ? p.identity : null;
+    const sp: VoiceSpeaker = p ? { userId: usuarioDeIdentidad(p.identity), name: p.name || "—" } : null;
     this.cb.onSpeaker?.(sp);
+    this.armSpeakerWatch();
+  }
+
+  /**
+   * (Re)arma el vigía. Sólo corre mientras se muestra un hablante REMOTO — el
+   * propio se limpia al instante con `TrackMuted` al soltar. Cada 2 s revalida
+   * contra la sala en vivo: si esa persona ya no está, o está pero sin pista de
+   * audio sonando y fuera de `activeSpeakers`, se libera el canal.
+   */
+  private armSpeakerWatch(): void {
+    if (this.speakerWatch) { clearInterval(this.speakerWatch); this.speakerWatch = null; }
+    const id = this.speakerId;
+    const room = this.room;
+    if (!id || !room) return;
+    if (id === room.localParticipant?.identity) return; // lo mío lo limpia TrackMuted
+    this.speakerWatch = setInterval(() => {
+      const r = this.room;
+      const sid = this.speakerId;
+      if (!r || !sid) { if (this.speakerWatch) { clearInterval(this.speakerWatch); this.speakerWatch = null; } return; }
+      const p = r.remoteParticipants.get(sid);
+      if (!p) { this.setSpeaker(null); return; } // se fue de la sala
+      const active = (r.activeSpeakers || []).some((s) => s.identity === sid);
+      let liveAudio = false;
+      p.audioTrackPublications.forEach((pub: any) => { if (pub?.track && !pub.isMuted) liveAudio = true; });
+      if (!active && !liveAudio) this.setSpeaker(null); // presente pero callado
+    }, 2000);
   }
 
   private emitRoster(): void {
@@ -248,6 +293,7 @@ export class VoiceChannel {
   disconnect(): void {
     this.disposed = true;
     this.joined = false;
+    if (this.speakerWatch) { clearInterval(this.speakerWatch); this.speakerWatch = null; }
     this.speakerId = null;
     try {
       this.attached.forEach((el) => { try { el.remove(); } catch { /* ignore */ } });

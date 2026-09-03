@@ -4,7 +4,7 @@
 // the sound is a nicety, never a hard requirement.
 let ctx: AudioContext | null = null;
 
-function getCtx(): AudioContext | null {
+export function getCtx(): AudioContext | null {
   try {
     if (!ctx) {
       const AC = window.AudioContext || (window as any).webkitAudioContext;

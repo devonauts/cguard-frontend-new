@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { radioDenied, playTalkPermit, playRoger } from "@/lib/radioTones";
 import { useTranslation } from 'react-i18next';
 import { Mic, Loader2, Users, Radio, LogOut, Volume2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -38,12 +39,29 @@ export default function RadioLiveChannelPanel() {
 
   const someoneElseTalking = !!speaker && speaker.userId !== myId;
 
+  /** ¿La pulsación que se está soltando llegó a abrir el micrófono? */
+  const transmitiRef = useRef(false);
+
   const beginTalk = async () => {
     const r = await radioStartTalk();
     if (!pressedRef.current) { radioStopTalk(); return; } // released mid-acquire
-    if (!r?.ok && r?.error && r.error !== "off") setLocalHint(r.error);
+    if (r?.ok) { transmitiRef.current = true; playTalkPermit(); return; }
+    transmitiRef.current = false;
+    radioDenied();
+    if (r?.error && r.error !== "off") setLocalHint(r.error);
   };
+  // ── EL CANAL ES DE UNO SOLO ──────────────────────────────────────────────
+  // Con alguien en el aire el botón REBOTA (zumbido grave) y no se transmite,
+  // como en un equipo de mano. Antes se hablaba encima: LiveKit mezcla el
+  // audio, así que salían dos voces a la vez y no se entendía ninguna.
+  // El seguro contra un hablante ATASCADO —el fallo por el que esto se quitó en
+  // su día— vive en el motor, que revalida contra la sala cada 2 s.
   const onPttDown = (e: React.PointerEvent) => {
+    if (someoneElseTalking) {
+      radioDenied();
+      setLocalHint(`${speaker?.name || t('ui.radio.alguien', 'Alguien')} ${t('ui.radio.estaHablando', 'está hablando')}`);
+      return;
+    }
     try { (e.currentTarget as any).setPointerCapture?.(e.pointerId); } catch { /* ignore */ }
     pressedRef.current = true;
     setLocalHint(null);
@@ -54,6 +72,9 @@ export default function RadioLiveChannelPanel() {
     try { (e.currentTarget as any).releasePointerCapture?.(e.pointerId); } catch { /* ignore */ }
     pressedRef.current = false;
     radioStopTalk();
+    // El «terminé» sólo si de verdad se transmitió: sonarlo tras un rebote
+    // diría que se envió algo que nadie oyó.
+    if (transmitiRef.current) { transmitiRef.current = false; playRoger(); }
   };
 
   const shownHint = hint || localHint;

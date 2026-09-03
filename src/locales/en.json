@@ -9428,7 +9428,7 @@
       "uneteParaEscucharYHablar": "Join to listen and talk to the guards in real time (push-to-talk).",
       "canalAbiertoVozEnVivo": "Channel open (live voice)",
       "salirDelCanal": "Leave the channel",
-      "puedesHablarCuandoQuierasEl": "You can speak whenever you want — the channel allows talking over."
+      "puedesHablarCuandoQuierasEl": "Wait until they finish — one at a time on the channel, like a radio."
     },
     "Reporting": {
       "analiticasDeOperaciones": "Operations analytics",
@@ -10702,6 +10702,10 @@
         "stale": "No recent signal",
         "unknown": "No data"
       }
+    },
+    "radio": {
+      "alguien": "Someone",
+      "estaHablando": "is talking"
     }
   },
   "map": {

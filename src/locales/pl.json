@@ -9923,7 +9923,7 @@
       "uneteParaEscucharYHablar": "Prosimy dołączyć, aby słuchać i rozmawiać z pracownikami ochrony w czasie rzeczywistym (push-to-talk).",
       "canalAbiertoVozEnVivo": "Kanał otwarty (głos na żywo)",
       "salirDelCanal": "Opuść kanał",
-      "puedesHablarCuandoQuierasEl": "Można mówić w dowolnym momencie — kanał dopuszcza nakładanie się głosów."
+      "puedesHablarCuandoQuierasEl": "Poczekaj, aż skończy — na kanale mówi jedna osoba naraz, jak w radiotelefonie."
     },
     "Reporting": {
       "analiticasDeOperaciones": "Analityka operacyjna",
@@ -11197,6 +11197,10 @@
         "stale": "Brak świeżego sygnału",
         "unknown": "Brak danych"
       }
+    },
+    "radio": {
+      "alguien": "Ktoś",
+      "estaHablando": "mówi"
     }
   },
   "visitantes": {

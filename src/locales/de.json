@@ -9923,7 +9923,7 @@
       "uneteParaEscucharYHablar": "Treten Sie bei, um den Kräften in Echtzeit zuzuhören und mit ihnen zu sprechen (Push-to-Talk).",
       "canalAbiertoVozEnVivo": "Kanal offen (Live-Sprache)",
       "salirDelCanal": "Kanal verlassen",
-      "puedesHablarCuandoQuierasEl": "Sie können jederzeit sprechen — im Kanal ist Dazwischensprechen möglich."
+      "puedesHablarCuandoQuierasEl": "Warte, bis er fertig ist — im Kanal spricht einer nach dem anderen, wie im Funk."
     },
     "Reporting": {
       "analiticasDeOperaciones": "Betriebsanalysen",
@@ -11197,6 +11197,10 @@
         "stale": "Kein aktuelles Signal",
         "unknown": "Keine Daten"
       }
+    },
+    "radio": {
+      "alguien": "Jemand",
+      "estaHablando": "spricht gerade"
     }
   },
   "visitantes": {

@@ -9923,7 +9923,7 @@
       "uneteParaEscucharYHablar": "Sluit u aan om in realtime mee te luisteren en met de beveiligers te praten (push-to-talk).",
       "canalAbiertoVozEnVivo": "Kanaal open (live spraak)",
       "salirDelCanal": "Kanaal verlaten",
-      "puedesHablarCuandoQuierasEl": "U kunt spreken wanneer u wilt — op dit kanaal kunt u door elkaar praten."
+      "puedesHablarCuandoQuierasEl": "Wacht tot hij klaar is — op het kanaal spreekt er één tegelijk, net als bij een radio."
     },
     "Reporting": {
       "analiticasDeOperaciones": "Analyse van de operatie",
@@ -11197,6 +11197,10 @@
         "stale": "Geen recent signaal",
         "unknown": "Geen gegevens"
       }
+    },
+    "radio": {
+      "alguien": "Iemand",
+      "estaHablando": "is aan het praten"
     }
   },
   "visitantes": {

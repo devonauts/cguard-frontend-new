@@ -9923,7 +9923,7 @@
       "uneteParaEscucharYHablar": "Entra per ascoltare e parlare con le guardie in tempo reale (push-to-talk).",
       "canalAbiertoVozEnVivo": "Canale aperto (voce in diretta)",
       "salirDelCanal": "Esci dal canale",
-      "puedesHablarCuandoQuierasEl": "Puoi parlare quando vuoi — il canale consente di sovrapporsi."
+      "puedesHablarCuandoQuierasEl": "Aspetta che finisca — sul canale si parla uno alla volta, come in radio."
     },
     "Reporting": {
       "analiticasDeOperaciones": "Analisi delle operazioni",
@@ -11197,6 +11197,10 @@
         "stale": "Nessun segnale recente",
         "unknown": "Nessun dato"
       }
+    },
+    "radio": {
+      "alguien": "Qualcuno",
+      "estaHablando": "sta parlando"
     }
   },
   "visitantes": {

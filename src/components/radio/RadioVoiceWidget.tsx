@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useTranslation } from "react-i18next";
 import { Radio, Mic, Users, X, Loader2, Volume2, Megaphone, Square } from "lucide-react";
 import { toast } from "sonner";
+import { radioDenied, playTalkPermit, playRoger } from "@/lib/radioTones";
 import { useAuth } from "@/contexts/AuthContext";
 import { radioCheckService } from "@/lib/api/radioCheckService";
 import {
@@ -83,6 +84,8 @@ export default function RadioVoiceWidget() {
   }, [myId]);
 
   const someoneElseTalking = !!snap.speaker && snap.speaker.userId !== myId;
+  /** ¿La pulsación que se está soltando llegó a abrir el micrófono? */
+  const transmitiRef = useRef(false);
   const connecting = snap.on && snap.state === "connecting";
   const live = snap.on && snap.joined;
 
@@ -91,19 +94,37 @@ export default function RadioVoiceWidget() {
     setRadioOn(!snap.on);
   };
 
+  // ── EL CANAL ES DE UNO SOLO ──────────────────────────────────────────────
+  // Como en un equipo de mano: si ya hay alguien en el aire, el botón REBOTA
+  // con el zumbido grave y no se transmite. Antes el CRM dejaba hablar encima
+  // — LiveKit mezcla el audio, así que se oían dos voces a la vez y no se
+  // entendía ninguna, y quien hablaba encima no tenía forma de saberlo.
+  //
+  // El seguro contra el fallo por el que esto se quitó en su día (un hablante
+  // ATASCADO dejaba a todos sin transmitir) está en el motor: revalida al
+  // hablante contra la sala cada 2 s y libera el canal solo.
   const onPttDown = async (e: React.PointerEvent) => {
     if (!live) return;
+    if (someoneElseTalking) {
+      radioDenied();
+      toast.error(`${snap.speaker?.name || t("ui.radio.alguien", "Alguien")} ${t("ui.radio.estaHablando", "está hablando")}`);
+      return;
+    }
     try { (e.currentTarget as any).setPointerCapture?.(e.pointerId); } catch { /* ignore */ }
     pressedRef.current = true;
     radioResume();
     const r = await radioStartTalk();
     if (!pressedRef.current) { radioStopTalk(); return; }
-    void r;
+    if (r?.ok) { transmitiRef.current = true; playTalkPermit(); }
+    else { transmitiRef.current = false; radioDenied(); }
   };
   const onPttUp = (e: React.PointerEvent) => {
     try { (e.currentTarget as any).releasePointerCapture?.(e.pointerId); } catch { /* ignore */ }
     pressedRef.current = false;
     radioStopTalk();
+    // El «terminé» sólo si de verdad se llegó a transmitir: sonarlo tras un
+    // rebote diría que se envió algo que nadie oyó.
+    if (transmitiRef.current) { transmitiRef.current = false; playRoger(); }
   };
 
   if (!snap.open) return null;

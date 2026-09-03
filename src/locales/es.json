@@ -9428,7 +9428,7 @@
       "uneteParaEscucharYHablar": "Únete para escuchar y hablar con los vigilantes en tiempo real (push-to-talk).",
       "canalAbiertoVozEnVivo": "Canal abierto (voz en vivo)",
       "salirDelCanal": "Salir del canal",
-      "puedesHablarCuandoQuierasEl": "Puedes hablar cuando quieras — el canal permite hablar encima."
+      "puedesHablarCuandoQuierasEl": "Espera a que termine — el canal es de uno a la vez, como una radio."
     },
     "Reporting": {
       "analiticasDeOperaciones": "Analíticas de Operaciones",
@@ -10702,6 +10702,10 @@
         "stale": "Sin señal reciente",
         "unknown": "Sin datos"
       }
+    },
+    "radio": {
+      "alguien": "Alguien",
+      "estaHablando": "está hablando"
     }
   },
   "map": {

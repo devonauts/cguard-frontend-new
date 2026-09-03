@@ -6447,7 +6447,7 @@
       "uneteParaEscucharYHablar": "Entre para ouvir e falar com os vigilantes em tempo real (push-to-talk).",
       "canalAbiertoVozEnVivo": "Canal aberto (voz ao vivo)",
       "salirDelCanal": "Sair do canal",
-      "puedesHablarCuandoQuierasEl": "Você pode falar quando quiser — o canal permite falar por cima."
+      "puedesHablarCuandoQuierasEl": "Wait until they finish — one at a time on the channel, like a radio."
     },
     "Reporting": {
       "analiticasDeOperaciones": "Análises de operações",
@@ -7292,6 +7292,10 @@
       "vehiculoActualizado": "Veículo atualizado",
       "registraLosDatosDelVehiculo": "Registre os dados do veículo de patrulha",
       "delCliente": "Do cliente"
+    },
+    "radio": {
+      "alguien": "Someone",
+      "estaHablando": "is talking"
     }
   },
   "map": {
