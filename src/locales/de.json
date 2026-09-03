@@ -11027,7 +11027,8 @@
       "sinResultados": "Keine Ergebnisse."
     },
     "Incident": {
-      "informeDeIncidente": "Vorfallbericht"
+      "informeDeIncidente": "Vorfallbericht",
+      "sinCaso": "Zu diesem Vorfall gibt es keinen verknüpften Notfall."
     },
     "License": {
       "credencialesYLicenciasDelPersonal": "Dienstausweise und Lizenzen des Personals mit ihren Ablaufdaten.",

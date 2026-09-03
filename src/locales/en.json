@@ -10532,7 +10532,8 @@
       "sinResultados": "No results."
     },
     "Incident": {
-      "informeDeIncidente": "Incident Report"
+      "informeDeIncidente": "Incident Report",
+      "sinCaso": "This incident has no emergency case linked."
     },
     "License": {
       "credencialesYLicenciasDelPersonal": "Staff credentials and licenses, with their expiry dates.",

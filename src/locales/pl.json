@@ -11027,7 +11027,8 @@
       "sinResultados": "Brak wyników."
     },
     "Incident": {
-      "informeDeIncidente": "Zgłoszenie zdarzenia"
+      "informeDeIncidente": "Zgłoszenie zdarzenia",
+      "sinCaso": "Ten incydent nie ma powiązanego zgłoszenia alarmowego."
     },
     "License": {
       "credencialesYLicenciasDelPersonal": "Legitymacje i uprawnienia pracowników wraz z datami ważności.",

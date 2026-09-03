@@ -10523,7 +10523,8 @@
       "sinResultados": "Sem resultados."
     },
     "Incident": {
-      "informeDeIncidente": "Relatório de Incidente"
+      "informeDeIncidente": "Relatório de Incidente",
+      "sinCaso": "Este incidente não tem um caso de emergência associado."
     },
     "License": {
       "credencialesYLicenciasDelPersonal": "Credenciais e licenças da equipe, com suas datas de vencimento.",

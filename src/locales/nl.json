@@ -11027,7 +11027,8 @@
       "sinResultados": "Geen resultaten."
     },
     "Incident": {
-      "informeDeIncidente": "Incidentmelding"
+      "informeDeIncidente": "Incidentmelding",
+      "sinCaso": "Bij dit incident hoort geen noodgeval."
     },
     "License": {
       "credencialesYLicenciasDelPersonal": "Pasjes en vergunningen van het personeel, met hun vervaldatums.",

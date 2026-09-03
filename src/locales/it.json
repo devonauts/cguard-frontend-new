@@ -11027,7 +11027,8 @@
       "sinResultados": "Nessun risultato."
     },
     "Incident": {
-      "informeDeIncidente": "Report dell'incidente"
+      "informeDeIncidente": "Report dell'incidente",
+      "sinCaso": "Questo incidente non ha un caso di emergenza collegato."
     },
     "License": {
       "credencialesYLicenciasDelPersonal": "Tesserini e licenze del personale, con le date di scadenza.",

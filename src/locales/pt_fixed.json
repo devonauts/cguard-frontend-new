@@ -7296,6 +7296,9 @@
     "radio": {
       "alguien": "Someone",
       "estaHablando": "is talking"
+    },
+    "Incident": {
+      "sinCaso": "Este incidente não tem um caso de emergência associado."
     }
   },
   "map": {

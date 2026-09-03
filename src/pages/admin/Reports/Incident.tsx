@@ -1,5 +1,7 @@
 import { AlertTriangle } from "lucide-react";
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import DataReport, { type ReportColumn } from "./DataReport";
 import { formatDateTime, rangeBounds, REPORT_ROW_LIMIT, warnIfCapped } from "./reportFormat";
 import { ApiService } from "@/services/api/apiService";
@@ -14,6 +16,9 @@ interface Incident {
   location?: string | null;
   postSite?: { name?: string } | null;
   station?: { stationName?: string } | null;
+  /** El caso del Centro de Emergencias que atiende este incidente, si lo hay
+   *  (un pánico crea los dos). Lo adjunta el listado del servidor. */
+  alarmCaseId?: string | null;
 }
 
 
@@ -34,6 +39,7 @@ const columns: ReportColumn<Incident>[] = [
 
 export default function Incident() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   return (
     <DataReport<Incident>
       title={t("ui.Incident.informeDeIncidente", "Informe de Incidente")}
@@ -41,6 +47,19 @@ export default function Incident() {
       icon={AlertTriangle}
       tone="bad"
       columns={columns}
+      /* ── LA FILA TIENE QUE LLEVAR A ALGUNA PARTE ────────────────────────────
+         Un pánico aparece aquí y la fila no se podía ni tocar: sin acción, sin
+         ficha y —hasta el arreglo del espejo en el servidor— mostrando
+         «abierto» aunque ya se hubiera cerrado en el Centro de Emergencias.
+         Ahí es donde se atiende de verdad una emergencia (reconocer, despachar,
+         cerrar, con su bitácora), así que la fila lleva al caso. Los incidentes
+         que no nacieron de un pánico no tienen caso: se dice, en vez de dejar
+         una fila que a veces responde y a veces no — que es peor que una que
+         nunca responde. */
+      onRowClick={(r) => {
+        if (r.alarmCaseId) { navigate(`/alarm/case/${r.alarmCaseId}`); return; }
+        toast.info(t("ui.Incident.sinCaso", "Este incidente no tiene un caso de emergencia asociado."));
+      }}
       // Un incidente de prioridad alta/crítica todavía abierto se señala en rojo.
       rowTone={(r) => {
         const p = String(r.priority || "").toLowerCase();
