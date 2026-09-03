@@ -16,9 +16,9 @@ import type { PlatformNotification } from '@/hooks/useNotificationStream';
  * es una variable distinta porque el color de relleno usado como tinta no
  * contrasta (ver la medición en la cabecera de tokens.css).
  */
-type ToastTone = 'brand' | 'ok' | 'warn' | 'bad' | 'info' | 'neutral';
+export type ToastTone = 'brand' | 'ok' | 'warn' | 'bad' | 'info' | 'neutral';
 
-const TONE_INK: Record<ToastTone, { fill: string; ink: string }> = {
+export const TONE_INK: Record<ToastTone, { fill: string; ink: string }> = {
   brand:   { fill: 'var(--brand)',     ink: 'var(--brand-text)' },
   ok:      { fill: 'var(--ok)',        ink: 'var(--ok-text)' },
   warn:    { fill: 'var(--warn)',      ink: 'var(--warn-text)' },
@@ -27,7 +27,7 @@ const TONE_INK: Record<ToastTone, { fill: string; ink: string }> = {
   neutral: { fill: 'var(--ink-faint)', ink: 'var(--ink-soft)' },
 };
 
-function iconFor(eventType: string): { Icon: typeof Bell; tone: ToastTone } {
+export function iconFor(eventType: string): { Icon: typeof Bell; tone: ToastTone } {
   const t = (eventType || '').toLowerCase();
   if (t === 'guard.checkin') return { Icon: LogIn, tone: 'ok' };
   if (t === 'guard.checkout') return { Icon: LogOut, tone: 'neutral' };
@@ -42,6 +42,31 @@ function iconFor(eventType: string): { Icon: typeof Bell; tone: ToastTone } {
   if (t.startsWith('message')) return { Icon: MessageSquare, tone: 'brand' };
   if (t.startsWith('task')) return { Icon: ClipboardList, tone: 'warn' };
   return { Icon: Bell, tone: 'info' };
+}
+
+/**
+ * ── EL TÍTULO, SIN EMOJIS ───────────────────────────────────────────────────
+ *
+ * Algunos avisos llegaban del servidor con un emoji delante: «📋 Nueva tarea»,
+ * «⚠️ Puesto sin cubrir». Sobra por dos razones. La primera es que el icono YA
+ * lo pone `iconFor` a partir del tipo del evento, con su papel de color: el
+ * emoji duplica esa señal y además la contradice, porque su color no es el del
+ * sistema y no cambia en modo oscuro. La segunda es que un emoji se dibuja con
+ * la fuente del SO — se ve distinto en cada teléfono y en cada Windows, y en un
+ * panel de operaciones eso lee como aficionado.
+ *
+ * Se limpia AL PINTAR y no sólo en el servidor porque en la base ya hay avisos
+ * guardados con el emoji dentro: arreglar sólo el origen dejaría el historial
+ * sucio para siempre.
+ */
+export function tituloLimpio(texto: string | null | undefined): string {
+  if (!texto) return '';
+  return String(texto)
+    // Emojis y símbolos al PRINCIPIO, con su posible selector de variación y
+    // los espacios que arrastran. Sólo al principio: un emoji que alguien
+    // escribió dentro de un mensaje es suyo y no se toca.
+    .replace(/^(?:[\u2190-\u2BFF\u2600-\u27BF\uFE0F\u{1F000}-\u{1FAFF}]|\u200D)+\s*/u, '')
+    .trim();
 }
 
 function localDay(dateStr: string): string {
@@ -230,7 +255,7 @@ export function showNotificationToast(
       >
         <NotifPhoto n={n} fill={fill} ink={ink} Icon={Icon} />
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold leading-snug" style={{ color: 'var(--ink)' }}>{n.title}</p>
+          <p className="text-sm font-semibold leading-snug" style={{ color: 'var(--ink)' }}>{tituloLimpio(n.title)}</p>
           {n.body && (
             <p className="mt-0.5 line-clamp-3 text-xs" style={{ color: 'var(--ink-soft)' }}>{n.body}</p>
           )}

@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { useFileUrl } from '@/lib/fileUrl';
 import { SmartImage } from '@/components/kit';
 import type { PlatformNotification } from '@/hooks/useNotificationStream';
-import { targetForNotification } from './notificationToast';
+import { targetForNotification, iconFor, tituloLimpio, TONE_INK } from './notificationToast';
 
 interface NotificationsPanelProps {
   notifications: PlatformNotification[];
@@ -173,20 +173,41 @@ function NotificationItem({
       onClick={() => onOpen(n)}
     >
       <div className="flex items-start justify-between gap-2">
-        {photoUrl && (
+        {photoUrl ? (
           <SmartImage
             src={photoUrl}
             alt=""
             rounded="rounded-md"
             className="h-11 w-11 shrink-0 border border-[color:var(--hairline)]"
           />
+        ) : (
+          /* MISMO icono y MISMO papel de color que el aviso emergente. El panel
+             no tenía ninguno: una lista de títulos a pelo, donde un incidente y
+             un mensaje se leían igual. Se reutiliza `iconFor` en vez de copiar
+             el mapa, o los dos se separan al primer tipo nuevo. */
+          (() => {
+            const { Icon, tone } = iconFor(n.eventType);
+            const papel = TONE_INK[tone];
+            return (
+              <span
+                className="grid h-9 w-9 shrink-0 place-items-center rounded-lg"
+                style={{
+                  background: `color-mix(in oklab, ${papel.fill} 14%, transparent)`,
+                  color: papel.ink,
+                }}
+                aria-hidden
+              >
+                <Icon className="size-[18px]" />
+              </span>
+            );
+          })()
         )}
         <div className="flex-1 min-w-0">
           <p
             className={cn('truncate text-sm leading-snug', !n.read ? 'font-semibold' : 'font-normal')}
             style={{ color: 'var(--ink)' }}
           >
-            {n.title}
+            {tituloLimpio(n.title)}
           </p>
           {["coverage.post_uncovered", "coverage.uncovered", "attendance.no_show", "guard.inactive"].includes(String(n.eventType || "")) && (
             <button
