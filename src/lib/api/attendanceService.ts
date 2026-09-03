@@ -145,6 +145,22 @@ const attendanceService = {
     return unwrap(await api.patch(`/tenant/${t}/attendance/${id}/times`, { data }));
   },
 
+  /**
+   * Registrar la entrada A NOMBRE del vigilante: está en el puesto y no puede
+   * fichar (teléfono roto, batería muerta, móvil olvidado).
+   *
+   * El servidor ejecuta el MISMO fichaje que haría la app, así que el turno
+   * arrastra todo lo de un fichaje real. No se inventa ubicación: el registro
+   * sale sin GPS —que es la verdad— y por eso el motivo es obligatorio.
+   */
+  async manualClockIn(data: { guardId: string; stationId: string; reason: string }): Promise<{
+    ok: boolean; guardShiftId?: string; vigilante?: string; motivo?: string;
+    detalle?: string; turnoAbiertoDesde?: string;
+  }> {
+    const t = getTenantId();
+    return unwrap(await api.post(`/tenant/${t}/attendance/manual-clock-in`, { data }));
+  },
+
   /** Quién tocó esta tarjeta, qué hizo y cuándo. */
   async history(id: string): Promise<{ rows: TimesheetEvent[] }> {
     const t = getTenantId();

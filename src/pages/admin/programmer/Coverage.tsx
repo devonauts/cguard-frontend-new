@@ -9,14 +9,15 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import {
   PageContainer, PageHeader, Section, MetricTile, EmptyState, SkeletonCards, Modal, Stagger,
-  StatusBadge, Segmented, GlassPanel, IconTile,
+  StatusBadge, Segmented, GlassPanel, IconTile, InfoNote,
 } from "@/components/kit";
 import {
-  ShieldAlert, ShieldCheck, Clock, UserPlus, ArrowRightLeft, RefreshCw, Undo2, CalendarRange } from "lucide-react";
+  ShieldAlert, ShieldCheck, Clock, UserPlus, UserCheck, ArrowRightLeft, RefreshCw, Undo2, CalendarRange } from "lucide-react";
 import { toast } from "sonner";
 import GuardTypeahead, { GuardPick } from "./GuardTypeahead";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import { localeActual } from '@/lib/localeActual'
+import attendanceService from "@/lib/api/attendanceService";
 import coverageService, {
   COVERAGE_REASONS, REASON_LABEL, STATUS_LABEL, coverageErrorCode,
   stationLabel,
@@ -68,6 +69,14 @@ export default function Coverage() {
   // turnos inside the chosen range, so the vigilante returns to their own post
   // on the next one — there is no separate "expiry" to run or forget.
   const [transferFor, setTransferFor] = useState<any | null>(null);
+  /* ── «ESTÁ AQUÍ, PERO NO PUDO FICHAR» ────────────────────────────────────
+     La fila de un vigilante esperado sólo ofrecía «Trasladar» y «Novedad»: o lo
+     mandas a otro puesto, o declaras que faltó. Faltaba el caso más común de
+     todos — está en el puesto y el teléfono se rompió, se quedó sin batería o se
+     lo olvidó. Sin esto, la central tenía que declarar una falta que no existió
+     para poder cubrir el puesto, y ese turno no se pagaba. */
+  const [entradaManualFor, setEntradaManualFor] = useState<any | null>(null);
+  const [motivoManual, setMotivoManual] = useState("");
   const [toStationId, setToStationId] = useState("");
   const [transferMode, setTransferMode] = useState<"shift" | "range">("shift");
   const [transferUntil, setTransferUntil] = useState("");
@@ -147,6 +156,38 @@ export default function Coverage() {
       return true;
     } catch {
       toast.error(t('ui.Coverage.noSePudoCompletarLa'));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  /** Registrar la entrada de alguien que ESTÁ en el puesto y no pudo fichar. */
+  const registrarEntradaManual = async () => {
+    const row = entradaManualFor;
+    if (!row || motivoManual.trim().length < 10) return;
+    setBusy(true);
+    try {
+      const r = await attendanceService.manualClockIn({
+        guardId: row.guardId,
+        stationId: row.stationId,
+        reason: motivoManual.trim(),
+      });
+      if (!r.ok) {
+        // El servidor no lanza error cuando la razón es operativa (ya está en
+        // turno, el fichaje lo rechazó una puerta): lo dice, y aquí se cuenta.
+        toast.error(
+          r.turnoAbiertoDesde
+            ? "Ya tiene un turno abierto — no se abre un segundo."
+            : r.detalle || "No se pudo registrar la entrada",
+        );
+        return;
+      }
+      toast.success(`Entrada registrada para ${r.vigilante || "el vigilante"} — queda en espera de revisión`);
+      setEntradaManualFor(null);
+      setMotivoManual("");
+      load();
+    } catch (e: any) {
+      toast.error(e?.message || "No se pudo registrar la entrada");
     } finally {
       setBusy(false);
     }
@@ -297,15 +338,26 @@ export default function Coverage() {
                   <ArrowRightLeft className="mr-1 size-3.5" /> Trasladar
                 </Button>
                 {!here && (
-                  <Button
-                    size="sm" variant="destructive"
-                    onClick={() => {
-                      setAbsenceFor({ ...e, stationId: st.stationId, stationName: st.stationName });
-                      setReason("permiso_con_sueldo"); setNote("");
-                    }}
-                  >
-                    Novedad
-                  </Button>
+                  <>
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        setEntradaManualFor({ ...e, stationId: st.stationId, stationName: st.stationName });
+                        setMotivoManual("");
+                      }}
+                    >
+                      <UserCheck className="mr-1 size-3.5" /> Registrar entrada
+                    </Button>
+                    <Button
+                      size="sm" variant="destructive"
+                      onClick={() => {
+                        setAbsenceFor({ ...e, stationId: st.stationId, stationName: st.stationName });
+                        setReason("permiso_con_sueldo"); setNote("");
+                      }}
+                    >
+                      Novedad
+                    </Button>
+                  </>
                 )}
               </div>
             );
@@ -545,6 +597,45 @@ export default function Coverage() {
                 figura en la estación y puede fichar. Al terminar, la rotación del titular regresa sola.
               </GlassPanel>
             )}
+          </div>
+        </Modal>
+
+        {/* ── Registrar la entrada a nombre del vigilante ──────────────────── */}
+        <Modal
+          open={!!entradaManualFor}
+          onOpenChange={(o) => !o && setEntradaManualFor(null)}
+          title="Registrar entrada a nombre del vigilante"
+          description={`${entradaManualFor?.fullName || "Vigilante"} · ${entradaManualFor?.stationName || ""}`}
+          icon={<UserCheck />}
+          footer={
+            <>
+              <Button variant="outline" onClick={() => setEntradaManualFor(null)}>{t('actions.cancel')}</Button>
+              <Button onClick={registrarEntradaManual} disabled={busy || motivoManual.trim().length < 10}>
+                Registrar entrada
+              </Button>
+            </>
+          }
+        >
+          <div className="space-y-3">
+            <InfoNote tone="warn">
+              Úsalo sólo cuando la persona <b>está en el puesto</b> y no puede fichar. El turno se
+              registra <b>sin ubicación</b> —nadie marcó con GPS, y no lo inventamos— y queda en{" "}
+              <b>espera de revisión</b> con tu nombre y el motivo en la bitácora de la tarjeta.
+            </InfoNote>
+            <label className="block">
+              <span className="cg-eyebrow mb-1 block">Motivo *</span>
+              <input
+                className="cg-input cg-focus w-full px-3 py-2 text-sm"
+                value={motivoManual}
+                onChange={(e) => setMotivoManual(e.target.value)}
+                placeholder="Ej.: se le dañó el teléfono camino al puesto; reportó por radio a la central"
+              />
+              <span className="mt-1 block text-[10px]" style={{ color: "var(--ink-faint)" }}>
+                {motivoManual.trim().length < 10
+                  ? "Escribe al menos 10 caracteres: dentro de un mes alguien va a leer esto para entender por qué se pagó un turno sin fichaje."
+                  : "Queda en la bitácora, junto a quién lo autorizó."}
+              </span>
+            </label>
           </div>
         </Modal>
 
