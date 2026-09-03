@@ -6,7 +6,16 @@ const tenantId = (): string => {
   return t;
 };
 
-export type NotificationChannels = { dashboard: boolean; email: boolean; sms: boolean };
+/**
+ * Los cuatro canales por los que puede salir un aviso.
+ *
+ * `push` es el teléfono (apps del vigilante y del supervisor) y hasta ahora NO
+ * existía como casilla: el push iba pegado a «Panel de control», así que apagar
+ * la campana del CRM dejaba también sin aviso el bolsillo del supervisor. El
+ * servidor hereda `push` de `dashboard` mientras la empresa no toque la casilla,
+ * así que una preferencia guardada de antes se comporta igual que ayer.
+ */
+export type NotificationChannels = { dashboard: boolean; email: boolean; sms: boolean; push?: boolean };
 export type NotificationPreferences = Record<string, NotificationChannels>;
 
 export const notificationSettingsService = {

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useTranslation } from "react-i18next";
-import { Info, Loader2, Bell, MonitorSmartphone, Mail, MessageSquare } from "lucide-react";
+import { Info, Loader2, Bell, MonitorSmartphone, Mail, MessageSquare, Smartphone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -13,7 +13,16 @@ import { Link } from "react-router-dom";
 import { Section, SkeletonCards } from "@/components/kit";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 
-type ChannelKey = "dashboard" | "email" | "sms";
+/**
+ * Los cuatro destinos de un aviso. `push` es el TELÉFONO —las apps del vigilante
+ * y del supervisor— y hasta ahora no tenía casilla propia: iba pegado a «Panel
+ * de control», así que quien bajaba el ruido de la campana del CRM se quedaba
+ * también sin el aviso en el bolsillo, sin haberlo pedido.
+ *
+ * Mientras nadie toque la casilla nueva, el servidor la hereda de «Panel de
+ * control», así que las preferencias ya guardadas se comportan igual que antes.
+ */
+type ChannelKey = "dashboard" | "email" | "sms" | "push";
 
 type NotificationItem = {
   id: string;
@@ -28,6 +37,7 @@ type MatrixState = Record<
     dashboard: boolean;
     email: boolean;
     sms: boolean;
+    push: boolean;
   }
 >;
 
@@ -101,6 +111,7 @@ export default function NotificationMatrix() {
     { key: "dashboard", label: t('settings.notificationForm.columnDashboard', { defaultValue: "Panel de control" }), icon: <MonitorSmartphone className="h-3.5 w-3.5" /> },
     { key: "email", label: t('settings.notificationForm.columnEmail', { defaultValue: "Correo electrónico" }), icon: <Mail className="h-3.5 w-3.5" /> },
     { key: "sms", label: "SMS", icon: <MessageSquare className="h-3.5 w-3.5" /> },
+    { key: "push", label: t('settings.notificationForm.columnPush', { defaultValue: "Teléfono" }), icon: <Smartphone className="h-3.5 w-3.5" /> },
   ], [t]);
 
   const buildDefaults = (): MatrixState => {
@@ -110,6 +121,9 @@ export default function NotificationMatrix() {
         dashboard: !!n.default?.dashboard,
         email: !!n.default?.email,
         sms: !!n.default?.sms,
+        // Sin valor propio, el teléfono sigue al panel: es la misma herencia
+        // que aplica el servidor mientras la casilla no se haya tocado nunca.
+        push: n.default?.push ?? !!n.default?.dashboard,
       };
     });
     return initial;
@@ -138,6 +152,7 @@ export default function NotificationMatrix() {
                 dashboard: !!s.dashboard,
                 email: !!s.email,
                 sms: !!s.sms,
+                push: typeof s.push === "boolean" ? s.push : !!s.dashboard,
               };
             }
           });
@@ -202,7 +217,7 @@ export default function NotificationMatrix() {
   const toggleRow = (id: string, value: boolean) => {
     setState((prev) => ({
       ...prev,
-      [id]: { dashboard: value, email: value, sms: value },
+      [id]: { dashboard: value, email: value, sms: value, push: value },
     }));
   };
 
@@ -299,7 +314,7 @@ export default function NotificationMatrix() {
           <div className="min-w-[640px]">
             {/* Cabecera de la tabla */}
             <div
-              className="glass-sunken grid grid-cols-[1fr_repeat(3,150px)] items-center gap-2 px-4 py-3"
+              className="glass-sunken grid grid-cols-[1fr_repeat(4,130px)] items-center gap-2 px-4 py-3"
               style={{ borderRadius: 'var(--r-md) var(--r-md) 0 0' }}
             >
               <div className="cg-eyebrow">{t('settings.notificationForm.columnTypeHeader', { defaultValue: "Tipo de aviso" })}</div>
@@ -334,7 +349,7 @@ export default function NotificationMatrix() {
                   return (
                     <div
                       key={n.id}
-                      className="grid grid-cols-[1fr_repeat(3,150px)] items-center gap-2 px-4 py-3"
+                      className="grid grid-cols-[1fr_repeat(4,130px)] items-center gap-2 px-4 py-3"
                     >
                       <div className="flex items-center gap-2">
                         <Checkbox
