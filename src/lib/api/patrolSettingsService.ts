@@ -45,7 +45,7 @@ export const PATROL_DEFAULTS: PatrolSettings = {
   allowGalleryPhotos: true,
   lateThresholdMin: 15,
   criticalDelayMin: 45,
-  requireClockInToStart: false,
+  requireClockInToStart: true,
   allowSupervisorReorder: false,
   notifyOps: { routeStart: true, routeCompletion: true, stopSkipped: true, criticalFinding: true, lateRoute: true, missedStop: true, routeAborted: true },
   clientNotify: 'per_visit',

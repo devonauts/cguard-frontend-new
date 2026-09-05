@@ -43,14 +43,18 @@ export default function RouteRunsHistoryPage() {
       <PageContainer width="wide">
         <PageHeader icon={<HistoryIcon />} title={t('ui.RouteRunsHistory.titulo', 'Historial de rutas')} subtitle={t('ui.RouteRunsHistory.sub', 'Cada recorrido de supervisión que se ejecutó, con su resultado y su evidencia.')} />
         <Toolbar>
-          <input type="date" className={`${FIELD_CLS} w-auto`} value={from} onChange={(e) => setFrom(e.target.value)} aria-label="Desde" />
-          <input type="date" className={`${FIELD_CLS} w-auto`} value={to} onChange={(e) => setTo(e.target.value)} aria-label="Hasta" />
-          <select className={`${FIELD_CLS} w-auto`} value={status} onChange={(e) => setStatus(e.target.value)} aria-label="Estado">
+          <label className="flex items-center gap-2 text-sm" style={{ color: 'var(--ink-soft)' }}>{t('ui.RouteRunsHistory.desde', 'Desde')}
+            <input type="date" className={FIELD_CLS} style={{ width: 170 }} value={from} onChange={(e) => setFrom(e.target.value)} aria-label="Desde" />
+          </label>
+          <label className="flex items-center gap-2 text-sm" style={{ color: 'var(--ink-soft)' }}>{t('ui.RouteRunsHistory.hasta', 'Hasta')}
+            <input type="date" className={FIELD_CLS} style={{ width: 170 }} value={to} onChange={(e) => setTo(e.target.value)} aria-label="Hasta" />
+          </label>
+          <select className={FIELD_CLS} style={{ width: 220 }} value={status} onChange={(e) => setStatus(e.target.value)} aria-label="Estado">
             <option value="">{t('ui.RouteRunsHistory.todos', 'Todos los estados')}</option>
             {Object.entries(RUN_STATUS_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
           </select>
         </Toolbar>
-        <Section title={t('ui.RouteRunsHistory.ejecuciones', 'Ejecuciones')} icon={<Flag />} bare>
+        <Section title={t('ui.RouteRunsHistory.ejecuciones', 'Ejecuciones')} icon={<Flag />}>
           {rows === null ? <SkeletonCards count={4} /> : rows.length === 0 ? (
             <EmptyState icon={<HistoryIcon />} title={t('ui.RouteRunsHistory.vacio', 'Sin recorridos en este periodo')} />
           ) : (

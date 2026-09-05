@@ -62,14 +62,14 @@ export default function InspectionTemplatesPage() {
         <PageHeader icon={<ClipboardList />} title={t('ui.InspectionTemplates.titulo', 'Plantillas de inspección')} subtitle={t('ui.InspectionTemplates.sub', 'Lo que el supervisor revisa y contesta en cada parada de su ruta.')}
           actions={<Button variant="brand" onClick={() => setEditing('new')}><Plus className="size-4" />{t('ui.InspectionTemplates.nueva', 'Nueva plantilla')}</Button>} />
         <InfoNote tone="info" className="mb-4">{t('ui.InspectionTemplates.nota', 'Cada plantilla se asigna por ruta o por parada al editar la ruta. Si no se asigna ninguna, se usa la marcada por defecto. Editar una plantilla crea una versión nueva; las visitas anteriores no cambian.')}</InfoNote>
-        <Section title={t('ui.InspectionTemplates.lista', 'Plantillas')} icon={<ClipboardList />} bare>
+        <Section title={t('ui.InspectionTemplates.lista', 'Plantillas')} icon={<ClipboardList />}>
           {rows === null ? <SkeletonCards count={3} /> : rows.length === 0 ? <EmptyState icon={<ClipboardList />} title={t('ui.InspectionTemplates.vacio', 'Sin plantillas')} /> : (
             <div className="space-y-2">
               {rows.map((tpl) => {
                 const items = (tpl.content?.sections || []).reduce((n, s) => n + (s.items?.length || 0), 0);
                 return (
                   <ListRow key={tpl.id} title={tpl.name} subtitle={`${tpl.content?.sections?.length || 0} secciones · ${items} ítems · v${tpl.version}${tpl.description ? ` · ${tpl.description}` : ''}`}
-                    badges={tpl.isDefault ? <StatusBadge tone="brand" dot={false}><Star className="size-3" />{t('ui.InspectionTemplates.porDefecto', 'Por defecto')}</StatusBadge> : null}
+                    badges={tpl.isDefault ? <StatusBadge tone="brand" dot={false} className="whitespace-nowrap"><Star className="size-3 shrink-0" />{t('ui.InspectionTemplates.porDefecto', 'Por defecto')}</StatusBadge> : null}
                     actions={(
                       <div className="flex gap-1">
                         {!tpl.isDefault && <Button size="sm" variant="ghost" onClick={() => marcarDefecto(tpl)}><Star className="size-3.5" /></Button>}
