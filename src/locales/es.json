@@ -6423,7 +6423,10 @@
       "title": "Generar Códigos QR de Rondas",
       "useStationLocation": "Usar ubicación del puesto",
       "verifyNote": "Verificación de ubicación: al escanear, el servidor compara el GPS del vigilante con la ubicación del punto. Solo cuenta como válido si está dentro de",
-      "verifyNote2": "Los escaneos fuera de rango quedan registrados como \"fuera de ubicación\"."
+      "verifyNote2": "Los escaneos fuera de rango quedan registrados como \"fuera de ubicación\".",
+      "qrFailed": "No se pudo generar el código",
+      "printFailed": "No se pudo preparar la hoja",
+      "popupBlocked": "El navegador bloqueó la ventana de impresión."
     },
     "rondaHistory": {
       "empty": "No hay rondas registradas en este puesto.",
@@ -7954,7 +7957,9 @@
       "12hNight": "12h Noche",
       "24h": "24 horas",
       "custom": "Personalizado"
-    }
+    },
+    "openRondas": "Rondas del puesto",
+    "openQr": "Códigos QR"
   },
   "admin": {
     "registration_title": "Registro de Administrador"
@@ -11928,5 +11933,36 @@
     "switch": "Cambiar de empresa",
     "company": "Empresa",
     "switchHeader": "¿Con qué empresa vas a trabajar?"
+  },
+  "ronda": {
+    "wizard": {
+      "title": "Nueva ronda",
+      "doneTitle": "Ronda creada",
+      "step1": "Empieza de una plantilla o desde cero. Podrás cambiarlo todo antes de guardar.",
+      "step2": "Escribe los puntos que el vigilante debe recorrer, en orden.",
+      "name": "Nombre de la ronda",
+      "namePh": "Ronda nocturna",
+      "desc": "Descripción",
+      "descPh": "Cada 2 horas, de 22:00 a 06:00",
+      "templates": "Empezar de una plantilla",
+      "points": "puntos",
+      "count": "{{n}} punto(s)",
+      "addPoint": "Añadir punto",
+      "pointPh": "Nombre del punto — p. ej. Acceso principal",
+      "wherePh": "Dónde se pega la etiqueta (opcional) — p. ej. junto al torniquete",
+      "create": "Crear ronda y sus puntos",
+      "printNow": "Imprimir los QR",
+      "nameRequired": "Ponle un nombre a la ronda",
+      "pointsRequired": "Añade al menos un punto de control",
+      "failed": "No se pudo crear la ronda",
+      "noTourId": "La ronda se creó pero el servidor no devolvió su id",
+      "created": "«{{nombre}}» con {{n}} punto(s) de control",
+      "someFailed": "No se pudieron crear {{n}} punto(s). La ronda y el resto sí quedaron guardados: añade los que falten desde la lista.",
+      "nextTitle": "Lo que falta",
+      "next": "Los puntos existen, pero un punto de control no sirve hasta que su etiqueta está pegada en la pared. Imprime los QR, plastifícalos y colócalos donde dice el nombre de cada uno.",
+      "noCoordsTitle": "El puesto no tiene ubicación",
+      "noCoords": "Los puntos se crearán sin coordenadas, así que no se podrá comprobar que el vigilante estaba ahí. Pon la ubicación del puesto y luego ajusta cada punto en el mapa.",
+      "locHint": "Todos nacen en la ubicación del puesto. Después puedes afinar cada uno en el mapa para que la comprobación de cercanía sea exacta."
+    }
   }
 }

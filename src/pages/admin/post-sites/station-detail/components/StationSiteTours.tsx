@@ -10,6 +10,8 @@ import { Section, EmptyState, SkeletonCards, StatusBadge, Modal } from '@/compon
 import { FIELD_CLS_LG } from '@/pages/admin/clientes/components/_shared/tab-kit';
 import { Button } from '@/components/ui/button';
 import type { Station } from '@/types';
+import RondaWizard from './RondaWizard';
+import { useNavigate } from 'react-router-dom';
 
 interface StationDetail extends Station {
   latitude?: number | string | null;
@@ -46,10 +48,25 @@ const num = (v: any): number | null => {
   const n = Number(v);
   return Number.isFinite(n) ? n : null;
 };
-const genIdentifier = () =>
-  `QR-${Math.random().toString(36).slice(2, 6).toUpperCase()}${Date.now().toString(36).slice(-4).toUpperCase()}`;
+/* ── EL CÓDIGO DEL PUNTO LO EMITE EL SERVIDOR ─────────────────────────────
+   Aquí se generaba: `QR-` + cuatro caracteres de `Math.random()` + cuatro
+   derivados de `Date.now()`. Tres cosas mal, y el QR es LA PRUEBA de que el
+   vigilante estuvo físicamente en el punto:
+
+     · cuatro caracteres base36 son ~1,7 millones de combinaciones, y la mitad
+       del código no era aleatoria sino la hora — los puntos de una estación se
+       crean en la misma sesión, así que compartían sufijo. Con UNO se acotaba
+       el resto a un puñado;
+     · `Math.random()` no es un generador criptográfico y nunca prometió serlo;
+     · y lo decidía el CLIENTE: quien manipulara la petición elegía la identidad
+       del punto.
+
+   Ahora no se manda nada y lo emite el servidor, opaco y de 130 bits
+   (`backend/src/lib/checkpointCode.ts`). Es también la única forma de que el
+   código sea único de verdad: sólo el servidor ve todos los puntos. */
 
 export default function StationSiteTours({ station, stationId, postSiteId }: Props) {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const tenantId = (station?.tenantId || localStorage.getItem('tenantId') || '') as string;
   const stationLat = num(station?.latitud ?? station?.latitude);
@@ -62,9 +79,6 @@ export default function StationSiteTours({ station, stationId, postSiteId }: Pro
 
   // Create-ronda modal
   const [showNewTour, setShowNewTour] = useState(false);
-  const [tourName, setTourName] = useState('');
-  const [tourDesc, setTourDesc] = useState('');
-  const [savingTour, setSavingTour] = useState(false);
 
   // Per-tour checkpoint state
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -113,22 +127,6 @@ export default function StationSiteTours({ station, stationId, postSiteId }: Pro
     if (!cps[tourId]) loadCheckpoints(tourId);
   };
 
-  const createTour = async () => {
-    if (!tourName.trim()) { toast.error(t('station.siteTours.nameRequired', 'Escribe un nombre')); return; }
-    setSavingTour(true);
-    try {
-      await ApiService.post(`/tenant/${tenantId}/site-tour`, {
-        name: tourName.trim(), description: tourDesc.trim() || undefined,
-        stationId, postSiteId: postSiteId || undefined, active: true,
-      });
-      toast.success(t('station.siteTours.created', 'Ronda creada'));
-      setShowNewTour(false); setTourName(''); setTourDesc('');
-      loadTours();
-    } catch (e: any) {
-      toast.error(e?.message || t('station.siteTours.createFailed', 'No se pudo crear la ronda'));
-    } finally { setSavingTour(false); }
-  };
-
   const deleteTour = async (tourId: string) => {
     if (!(await confirmDialog({ title: 'Eliminar ronda', message: t('station.siteTours.confirmDelete', '¿Eliminar esta ronda y sus puntos de control?'), confirmText: 'Eliminar', tone: 'danger' }))) return;
     try {
@@ -154,7 +152,7 @@ export default function StationSiteTours({ station, stationId, postSiteId }: Pro
     setSavingCp(true);
     try {
       await ApiService.post(`/tenant/${tenantId}/site-tour/${encodeURIComponent(tourId)}/tag`, {
-        name: cpName.trim(), tagType: 'qr', tagIdentifier: genIdentifier(),
+        name: cpName.trim(), tagType: 'qr',
         latitude: cpLat, longitude: cpLng, geofenceRadius: cpRadius, stationId, showGeoFence: true,
       });
       toast.success(t('station.siteTours.cpCreated', 'Punto de control creado'));
@@ -361,33 +359,36 @@ export default function StationSiteTours({ station, stationId, postSiteId }: Pro
         )}
       </Section>
 
-      {/* Create ronda modal */}
-      <Modal
+      {/* ── EL MODAL SUELTO SE QUEDABA A MEDIAS ────────────────────────────
+           Este modal creaba la ronda VACÍA y ahí terminaba: después había que
+           desplegarla y añadir cada punto de uno en uno. Montar una ronda de
+           ocho puntos eran diecisiete idas y venidas, y el resultado corriente
+           era una ronda creada «para después» que nunca llegó a tener puntos —
+           y una ronda sin puntos no avisa de nada.
+           El asistente la crea entera, con plantillas, y termina ofreciendo
+           imprimir los códigos, que es el trabajo que de verdad queda. */}
+      <RondaWizard
         open={showNewTour}
-        onOpenChange={(o) => { if (!o) setShowNewTour(false); }}
-        size="sm"
-        icon={<Plus className="h-5 w-5" />}
-        title={t('station.siteTours.newTitle', 'Nueva ronda')}
-        footer={
-          <>
-            <Button variant="outline" onClick={() => setShowNewTour(false)}>{t('common.cancel', 'Cancelar')}</Button>
-            <Button variant="brand" onClick={createTour} disabled={savingTour || !tourName.trim()} className="gap-1.5">
-              {savingTour && <Loader2 className="animate-spin" size={14} />} {t('station.siteTours.create', 'Crear ronda')}
-            </Button>
-          </>
-        }
-      >
-        <div className="space-y-4">
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-foreground">{t('station.siteTours.name', 'Nombre')} *</label>
-            <input className={FIELD_CLS_LG} value={tourName} onChange={(e) => setTourName(e.target.value)} placeholder={t('station.siteTours.namePlaceholder', 'Ej. Ronda nocturna') as string} autoFocus />
-          </div>
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-foreground">{t('station.siteTours.desc', 'Descripción')}</label>
-            <textarea className={`${FIELD_CLS_LG} resize-none`} rows={3} value={tourDesc} onChange={(e) => setTourDesc(e.target.value)} />
-          </div>
-        </div>
-      </Modal>
+        onOpenChange={setShowNewTour}
+        tenantId={tenantId}
+        stationId={stationId}
+        postSiteId={postSiteId}
+        stationLat={stationLat}
+        stationLng={stationLng}
+        stationRadius={stationRadius}
+        onCreated={() => loadTours()}
+        onPrint={() => {
+          /* La pestaña va en la RUTA, no en la cadena de consulta:
+             /post-sites/:postSiteId/stations/:stationId/:tab
+             Se reemplaza el último segmento, que es el de la pestaña actual. */
+          const partes = window.location.pathname.replace(/\/+$/, '').split('/');
+          const i = partes.indexOf('stations');
+          if (i >= 0 && partes.length > i + 1) {
+            const base = partes.slice(0, i + 2).join('/');
+            navigate(`${base}/etiquetas`);
+          }
+        }}
+      />
 
       {/* Settings modal */}
       <Modal

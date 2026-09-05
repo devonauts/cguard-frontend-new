@@ -6423,7 +6423,10 @@
       "title": "Generate patrol QR codes",
       "useStationLocation": "Use the post's location",
       "verifyNote": "Location check: on each scan the server compares the guard's GPS with the checkpoint's location. It only counts as valid within",
-      "verifyNote2": "Scans out of range are recorded as \"off location\"."
+      "verifyNote2": "Scans out of range are recorded as \"off location\".",
+      "qrFailed": "Could not generate the code",
+      "printFailed": "Could not prepare the sheet",
+      "popupBlocked": "The browser blocked the print window."
     },
     "rondaHistory": {
       "empty": "No patrols have been recorded at this post.",
@@ -7954,7 +7957,9 @@
       "12hNight": "12h Night",
       "24h": "24 hours",
       "custom": "Custom"
-    }
+    },
+    "openRondas": "Post patrol rounds",
+    "openQr": "QR codes"
   },
   "admin": {
     "registration_title": "Administrator sign-up"
@@ -11928,5 +11933,36 @@
     "switch": "Switch company",
     "company": "Company",
     "switchHeader": "Which company are you working with?"
+  },
+  "ronda": {
+    "wizard": {
+      "title": "New patrol round",
+      "doneTitle": "Round created",
+      "step1": "Start from a template or from scratch. You can change everything before saving.",
+      "step2": "List the checkpoints the guard must visit, in order.",
+      "name": "Round name",
+      "namePh": "Night round",
+      "desc": "Description",
+      "descPh": "Every 2 hours, 10 PM to 6 AM",
+      "templates": "Start from a template",
+      "points": "checkpoints",
+      "count": "{{n}} checkpoint(s)",
+      "addPoint": "Add checkpoint",
+      "pointPh": "Checkpoint name — e.g. Main entrance",
+      "wherePh": "Where the label goes (optional) — e.g. next to the turnstile",
+      "create": "Create round and checkpoints",
+      "printNow": "Print the QR codes",
+      "nameRequired": "Give the round a name",
+      "pointsRequired": "Add at least one checkpoint",
+      "failed": "Could not create the round",
+      "noTourId": "The round was created but the server returned no id",
+      "created": "“{{nombre}}” with {{n}} checkpoint(s)",
+      "someFailed": "{{n}} checkpoint(s) could not be created. The round and the rest were saved: add the missing ones from the list.",
+      "nextTitle": "What is left",
+      "next": "The checkpoints exist, but a checkpoint is no use until its label is on the wall. Print the QR codes, laminate them and place each one where its name says.",
+      "noCoordsTitle": "This post has no location",
+      "noCoords": "Checkpoints will be created without coordinates, so there is no way to verify the guard was there. Set the post location, then adjust each checkpoint on the map.",
+      "locHint": "They all start at the post location. You can then fine-tune each one on the map so the proximity check is exact."
+    }
   }
 }

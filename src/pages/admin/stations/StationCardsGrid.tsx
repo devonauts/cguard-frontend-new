@@ -5,7 +5,7 @@
  * al detalle de la estación. Los datos llegan en lote desde /station/cards.
  */
 import { useTranslation } from "react-i18next";
-import { RadioTower, Building2, Users, MapPin, ShieldCheck, ShieldAlert, ShieldX, Moon, Clock } from "lucide-react";
+import { RadioTower, Building2, Users, MapPin, ShieldCheck, ShieldAlert, ShieldX, Moon, Clock, Route, QrCode } from "lucide-react";
 import { StatusBadge, SkeletonCards, EmptyState, GlassPanel, SmartImage } from "@/components/kit";
 import type { StationCard } from "@/lib/api/stationService";
 import { getTenantTimezone } from "@/utils/tenantLocation";
@@ -109,10 +109,13 @@ export default function StationCardsGrid({
   stations,
   loading,
   onOpen,
+  onOpenTab,
 }: {
   stations: StationCard[];
   loading: boolean;
   onOpen: (s: StationCard) => void;
+  /** Abrir la estación DIRECTAMENTE en una pestaña (rondas, códigos QR…). */
+  onOpenTab?: (s: StationCard, tab: string) => void;
 }) {
   const { t } = useTranslation();
 
@@ -218,6 +221,34 @@ export default function StationCardsGrid({
                 <span className="font-semibold text-foreground">{s.guardCount}</span>{" "}
                 {t("stations.guardsAssignedLabel", { defaultValue: "asignado(s)" })}
               </span>
+
+              {/* ── ATAJOS AL TRABAJO REAL DEL PUESTO ────────────────────────
+                  Dar de alta una estación y montar sus rondas es la MISMA
+                  tarea, y estaban a cuatro clics de distancia: abrir la
+                  tarjeta caía en el resumen y había que encontrar la pestaña.
+                  `stopPropagation` porque la tarjeta entera ya es un botón. */}
+              {onOpenTab && (
+                <span className="ml-auto flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); onOpenTab(s, "site-tours"); }}
+                    title={t("stations.openRondas", { defaultValue: "Rondas del puesto" }) as string}
+                    aria-label={t("stations.openRondas", { defaultValue: "Rondas del puesto" }) as string}
+                    className="cg-focus cg-btn-glass grid h-7 w-7 place-items-center rounded-md"
+                  >
+                    <Route className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); onOpenTab(s, "etiquetas"); }}
+                    title={t("stations.openQr", { defaultValue: "Códigos QR" }) as string}
+                    aria-label={t("stations.openQr", { defaultValue: "Códigos QR" }) as string}
+                    className="cg-focus cg-btn-glass grid h-7 w-7 place-items-center rounded-md"
+                  >
+                    <QrCode className="h-3.5 w-3.5" />
+                  </button>
+                </span>
+              )}
             </div>
           </GlassPanel>
         );

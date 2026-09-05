@@ -53,6 +53,14 @@ export default function StationsPage() {
     if (s.postSiteId) navigate(`/post-sites/${s.postSiteId}/stations/${s.id}/overview`);
   };
 
+  /* Entrar DIRECTO a lo que se va a hacer. Montar las rondas de un puesto y
+     dar de alta el puesto son la misma tarea, pero la tarjeta caía siempre en
+     el resumen y había que ir a buscar la pestaña. La pestaña es el último
+     segmento de la ruta. */
+  const openStationTab = (s: StationCard, tab: string) => {
+    if (s.postSiteId) navigate(`/post-sites/${s.postSiteId}/stations/${s.id}/${tab}`);
+  };
+
   return (
     <AppLayout>
       <PageContainer width="wide">
@@ -82,7 +90,7 @@ export default function StationsPage() {
           />
         </Toolbar>
 
-        <StationCardsGrid stations={filtered} loading={loading} onOpen={openStation} />
+        <StationCardsGrid stations={filtered} loading={loading} onOpen={openStation} onOpenTab={openStationTab} />
       </PageContainer>
     </AppLayout>
   );

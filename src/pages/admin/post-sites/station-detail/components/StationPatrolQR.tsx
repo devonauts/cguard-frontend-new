@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Section, EmptyState, SkeletonCards, Stagger, StatusBadge } from '@/components/kit';
 import { Button } from '@/components/ui/button';
 import type { Station } from '@/types';
+import { qrDataUrl, qrDataUrls, descargarQr } from '@/lib/qr';
 
 interface StationDetail extends Station {
   latitude?: number | string | null;
@@ -38,10 +39,12 @@ interface RawTagRow {
   longitude?: number | string | null; longitud?: number | string | null;
 }
 
-/** Free, no-dependency QR image for a given payload. */
-function qrUrl(identifier: string, size = 600): string {
-  return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&margin=12&data=${encodeURIComponent(identifier)}`;
-}
+/* El QR se genera EN EL NAVEGADOR (`@/lib/qr`). Antes se pedía a
+   `api.qrserver.com`: el identificador de cada punto de control de cada
+   instalación vigilada viajaba a un servicio ajeno en la cadena de consulta —y
+   es justo el dato con el que se fabrica el QR—, la hoja no se podía imprimir
+   sin conexión, y cuando la imagen no cargaba en 5 s se imprimía la hoja CON
+   LOS RECUADROS EN BLANCO. */
 
 function num(v: any): number | null {
   const n = Number(v);
@@ -54,6 +57,9 @@ export default function StationPatrolQR({ station, stationId }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [settingLoc, setSettingLoc] = useState<string | null>(null);
+  /** Los QR ya generados, por punto. Se generan aquí, no se piden fuera. */
+  const [qrs, setQrs] = useState<Record<string, string>>({});
+  const [printing, setPrinting] = useState(false);
 
   const tenantId = (station?.tenantId || localStorage.getItem('tenantId') || '') as string;
   const stationRadius = num(station?.geofenceRadius) ?? 75;
@@ -124,8 +130,7 @@ export default function StationPatrolQR({ station, stationId }: Props) {
   const downloadQr = async (cp: Checkpoint) => {
     try {
       const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.src = qrUrl(cp.tagIdentifier, 600);
+      img.src = await qrDataUrl(cp.tagIdentifier, { size: 600 });
       await new Promise((res, rej) => { img.onload = res; img.onerror = rej; });
       const pad = 40, qr = 560, w = qr + pad * 2, h = qr + pad * 2 + 90;
       const canvas = document.createElement('canvas');
@@ -146,41 +151,111 @@ export default function StationPatrolQR({ station, stationId }: Props) {
       link.href = canvas.toDataURL('image/png');
       link.click();
     } catch {
-      // CORS/canvas fallback: open the raw QR for manual save.
-      window.open(qrUrl(cp.tagIdentifier, 600), '_blank');
+      // Si el lienzo falla, al menos que se lleve el QR pelado.
+      try { descargarQr(await qrDataUrl(cp.tagIdentifier, { size: 600 }), `QR-${cp.name}`); }
+      catch { toast.error(t('station.patrolQr.qrFailed', 'No se pudo generar el código')); }
     }
   };
 
-  const printQrs = (list: Checkpoint[]) => {
-    const w = window.open('', '_blank', 'width=900,height=1200');
-    if (!w) return;
-    // Checkpoint name/identifier/tour are user-supplied — escape before injecting
-    // into the print HTML so a value like `<img onerror=...>` can't run in the popup.
-    const esc = (val: unknown): string =>
-      String(val ?? '')
-        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-    const cards = list.map((cp) => `
-      <div style="display:inline-block;width:300px;margin:14px;padding:16px;border:1px solid ${FILO_PAPEL};border-radius:12px;text-align:center;page-break-inside:avoid;vertical-align:top;background:${PAPEL};">
-        <img src="${esc(qrUrl(cp.tagIdentifier, 400))}" style="width:240px;height:240px;" />
-        <div style="font:bold 16px sans-serif;margin-top:10px;color:${TINTA};">${esc(cp.name)}</div>
-        <div style="font:12px monospace;color:${TINTA_TENUE};margin-top:4px;">${esc(cp.tagIdentifier)}</div>
-        ${cp.tourName ? `<div style="font:12px sans-serif;color:${TINTA_TENUE};margin-top:2px;">${esc(cp.tourName)}</div>` : ''}
-      </div>`).join('');
-    // Wait for every QR image to finish loading before printing so the sheet is
-    // never printed with blank/broken QR boxes on a slow connection. A 5s fallback
-    // guards against a hung remote image blocking the print forever.
-    const printScript = `<script>(function(){
-      var printed=false; var go=function(){ if(printed) return; printed=true; window.focus(); window.print(); };
-      var imgs=Array.prototype.slice.call(document.images); var pending=imgs.length;
-      if(!pending){ go(); return; }
-      var one=function(){ if(--pending<=0) go(); };
-      imgs.forEach(function(im){ if(im.complete){ one(); } else { im.onload=one; im.onerror=one; } });
-      setTimeout(go, 5000);
-    })();<\/script>`;
-    w.document.write(`<html><head><title>QR Rondas</title></head><body style="font-family:sans-serif;text-align:center;">${cards}${printScript}</body></html>`);
-    w.document.close();
+  /**
+   * HOJA IMPRIMIBLE DE TODA LA ESTACIÓN.
+   *
+   * Los QR van EMBEBIDOS como data URI: la ventana de impresión no depende de
+   * ninguna descarga, así que imprime al instante y sin conexión. La versión
+   * anterior pedía cada imagen a un servidor externo y, si no llegaba en 5 s,
+   * imprimía la hoja con los recuadros EN BLANCO — y alguien las pegaba.
+   *
+   * Cada etiqueta lleva lo que hace falta para instalarla y para rescatarla:
+   * el nombre del punto (para saber DÓNDE va antes de pegarla), la estación, el
+   * código en texto (para teclearlo cuando la etiqueta se raye) y una marca de
+   * corte. La instrucción de plastificar no es decoración: sin ella estas
+   * etiquetas duran una temporada de lluvia.
+   */
+  const printQrs = async (list: Checkpoint[]) => {
+    if (!list.length) return;
+    setPrinting(true);
+    try {
+      const imagenes = await qrDataUrls(list.map((c) => c.tagIdentifier), { size: 480 });
+      const w = window.open('', '_blank', 'width=900,height=1200');
+      if (!w) { toast.error(t('station.patrolQr.popupBlocked', 'El navegador bloqueó la ventana de impresión.')); return; }
+
+      // Nombre del punto, estación y código son texto del usuario: se escapan
+      // antes de inyectarlos, o un valor como `<img onerror=...>` correría.
+      const esc = (val: unknown): string =>
+        String(val ?? '')
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+      const rotulo = esc(station?.nickname || station?.stationName || '');
+      const cards = list.map((cp, i) => {
+        const img = imagenes[i];
+        const cuerpo = img
+          ? `<img src="${img}" style="width:230px;height:230px;display:block;margin:0 auto;" />`
+          : `<div style="width:230px;height:230px;margin:0 auto;display:grid;place-items:center;border:1px dashed #999;font:12px sans-serif;color:#999;">
+               No se pudo generar<br/>este código
+             </div>`;
+        return `
+        <div class="etiqueta">
+          ${cuerpo}
+          <div class="nombre">${esc(cp.name)}</div>
+          ${cp.location ? `<div class="lugar">${esc(cp.location)}</div>` : ''}
+          <div class="codigo">${esc(cp.tagIdentifier)}</div>
+          <div class="pie">${rotulo}${cp.tourName ? ` · ${esc(cp.tourName)}` : ''}</div>
+        </div>`;
+      }).join('');
+
+      w.document.write(`<!doctype html><html><head><meta charset="utf-8">
+        <title>QR de rondas — ${rotulo}</title>
+        <style>
+          @page { margin: 12mm; }
+          body { font-family: system-ui, sans-serif; margin: 0; color: #000; background: #fff; }
+          h1 { font-size: 15px; margin: 0 0 2px; }
+          .sub { font-size: 11px; color: #555; margin: 0 0 14px; }
+          .aviso { font-size: 10.5px; color: #555; border: 1px solid #ddd; border-radius: 6px;
+                   padding: 7px 10px; margin: 0 0 16px; }
+          .rejilla { display: flex; flex-wrap: wrap; gap: 0; }
+          .etiqueta { width: 268px; padding: 12px; margin: 0; text-align: center;
+                      border: 1px dashed #bbb; page-break-inside: avoid; break-inside: avoid; }
+          .nombre { font-size: 15px; font-weight: 700; margin-top: 8px; word-break: break-word; }
+          .lugar  { font-size: 11px; color: #444; margin-top: 2px; word-break: break-word; }
+          .codigo { font: 10px ui-monospace, monospace; color: #666; margin-top: 6px; word-break: break-all; }
+          .pie    { font-size: 10px; color: #888; margin-top: 4px; }
+          @media print { .aviso { border-color: #bbb; } }
+        </style></head><body>
+        <h1>Puntos de control — ${rotulo}</h1>
+        <p class="sub">${list.length} etiqueta(s) · impreso ${esc(new Date().toLocaleDateString())}</p>
+        <p class="aviso">
+          Corta por la línea de puntos y <strong>plastifica cada etiqueta</strong> antes de
+          pegarla: van a la intemperie y sin proteger no aguantan una temporada de lluvia.
+          Pega cada una en el sitio que dice su nombre. El código de abajo sirve para
+          teclearlo a mano si la etiqueta se raya y el lector no la reconoce.
+        </p>
+        <div class="rejilla">${cards}</div>
+        <script>window.focus();window.print();<\/script>
+        </body></html>`);
+      w.document.close();
+    } catch (e: any) {
+      toast.error(e?.message || t('station.patrolQr.printFailed', 'No se pudo preparar la hoja'));
+    } finally {
+      setPrinting(false);
+    }
   };
+
+  /* Generar los QR en cuanto se conocen los puntos. Va en un efecto y no al
+     pintar porque la generación es asíncrona; mientras tanto la tarjeta enseña
+     un girador en el hueco del código, que es más honesto que un recuadro vacío. */
+  useEffect(() => {
+    let vivo = true;
+    if (!checkpoints.length) { setQrs({}); return; }
+    (async () => {
+      const imgs = await qrDataUrls(checkpoints.map((c) => c.tagIdentifier), { size: 320 });
+      if (!vivo) return;
+      const mapa: Record<string, string> = {};
+      checkpoints.forEach((c, i) => { const u = imgs[i]; if (u) mapa[c.id] = u; });
+      setQrs(mapa);
+    })();
+    return () => { vivo = false; };
+  }, [checkpoints]);
 
   // One-click: set a checkpoint's coordinates to the station's, so location
   // verification works. (Most checkpoints sit at/near the post.)
@@ -219,8 +294,9 @@ export default function StationPatrolQR({ station, stationId }: Props) {
         }
         action={
           checkpoints.length > 0 ? (
-            <Button variant="brand" size="sm" onClick={() => printQrs(checkpoints)} className="gap-2">
-              <Printer className="h-4 w-4" /> {t('station.patrolQr.printAll', 'Imprimir todos')}
+            <Button variant="brand" size="sm" onClick={() => printQrs(checkpoints)} disabled={printing} className="gap-2">
+              {printing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Printer className="h-4 w-4" />}
+              {t('station.patrolQr.printAll', 'Imprimir todos')}
             </Button>
           ) : undefined
         }
@@ -256,7 +332,9 @@ export default function StationPatrolQR({ station, stationId }: Props) {
                 {/* El QR necesita fondo blanco puro: es lo que el lector del
                     teléfono espera, en claro y en oscuro por igual. */}
                 <div className="flex items-center justify-center p-4" style={{ background: PAPEL }}>
-                  <img src={qrUrl(cp.tagIdentifier, 300)} alt={cp.name} className="h-44 w-44" />
+                  {qrs[cp.id]
+                    ? <img src={qrs[cp.id]!} alt={cp.name} className="h-44 w-44" />
+                    : <div className="grid h-44 w-44 place-items-center"><Loader2 className="animate-spin" size={20} /></div>}
                 </div>
                 <div className="flex flex-1 flex-col gap-2 p-4">
                   <div>
