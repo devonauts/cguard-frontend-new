@@ -6602,7 +6602,9 @@
       "central.desc": "If you run a 24/7 console: which post it is, whether its operators cover shifts, and who gets the alerts.",
       "sms": "SMS balance",
       "idioma": "Language",
-      "idioma.desc": "What language you see the CRM in. Automatic, or the one you pick."
+      "idioma.desc": "What language you see the CRM in. Automatic, or the one you pick.",
+      "api-keys": "API keys",
+      "api-keys.desc": "Give an external system (e.g. the payroll connector) read-only access to your workers and hours."
     },
     "section": {
       "mi_cuenta": "My account",
@@ -11921,5 +11923,10 @@
       "cliente": "Client's",
       "propio": "Owned"
     }
+  },
+  "tenant": {
+    "switch": "Switch company",
+    "company": "Company",
+    "switchHeader": "Which company are you working with?"
   }
 }

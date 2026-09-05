@@ -11908,5 +11908,10 @@
       "cliente": "Van de opdrachtgever",
       "propio": "Eigen"
     }
+  },
+  "tenant": {
+    "switch": "Bedrijf wisselen",
+    "company": "Bedrijf",
+    "switchHeader": "Met welk bedrijf werk je?"
   }
 }

@@ -11908,5 +11908,10 @@
       "cliente": "Zleceniodawcy",
       "propio": "Własny"
     }
+  },
+  "tenant": {
+    "switch": "Zmień firmę",
+    "company": "Firma",
+    "switchHeader": "Z którą firmą pracujesz?"
   }
 }

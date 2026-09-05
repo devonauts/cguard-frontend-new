@@ -11908,5 +11908,10 @@
       "cliente": "Du client",
       "propio": "En propre"
     }
+  },
+  "tenant": {
+    "switch": "Changer d'entreprise",
+    "company": "Entreprise",
+    "switchHeader": "Avec quelle entreprise travaillez-vous ?"
   }
 }

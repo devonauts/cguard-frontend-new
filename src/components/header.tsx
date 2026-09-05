@@ -56,6 +56,7 @@ import { ThemeSwitch } from "@/components/theme-switch";
 import { IconTile, FIELD_CLS, FIELD_CLS_LG } from "@/components/kit";
 import MENU from "@/data/sidebar-menu.json";
 import NAVS from "@/data/settings-nav.json";
+import TenantSwitcher from '@/components/TenantSwitcher';
 
 type HeaderProps = {
   toggleSidebar: () => void;
@@ -594,6 +595,14 @@ export default function Header({
           lo dejaba pegado al buscador con media barra vacía a la derecha, y el
           perfil parecía estar en el medio. */}
       <div className="flex flex-1 items-center justify-end gap-1.5 md:ml-auto md:flex-none">
+        {/* Selector de empresa — sólo aparece para quien administra más de una.
+            Va lo primero del grupo derecho porque cambia el significado de TODO
+            lo que hay en pantalla: los datos, los permisos y la marca son de la
+            empresa activa. */}
+        <div className="mr-1 hidden sm:block">
+          <TenantSwitcher />
+        </div>
+
         <div className="mr-1 hidden sm:block">
           <TrialDaysBadge />
         </div>

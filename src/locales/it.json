@@ -11908,5 +11908,10 @@
       "cliente": "Del committente",
       "propio": "Di proprietà"
     }
+  },
+  "tenant": {
+    "switch": "Cambia azienda",
+    "company": "Azienda",
+    "switchHeader": "Con quale azienda vuoi lavorare?"
   }
 }

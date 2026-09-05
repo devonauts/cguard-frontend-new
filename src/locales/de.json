@@ -11908,5 +11908,10 @@
       "cliente": "Des Auftraggebers",
       "propio": "Firmeneigen"
     }
+  },
+  "tenant": {
+    "switch": "Unternehmen wechseln",
+    "company": "Unternehmen",
+    "switchHeader": "Mit welchem Unternehmen arbeiten Sie?"
   }
 }

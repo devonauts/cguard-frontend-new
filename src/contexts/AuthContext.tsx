@@ -12,6 +12,7 @@ import { clearPersistedCache } from "@/lib/offline/persistCache";
 import { clearQueue } from "@/lib/offline/offlineQueue";
 import { isNetworkFailure } from "@/lib/offline/networkStatus";
 import { setAppBadge } from "@/lib/desktop";
+import { resolveActiveTenantId, clearTenants } from '@/lib/activeTenant';
 
 /**
  * Higiene de máquina compartida: si el usuario que ENTRA no es el mismo que
@@ -183,9 +184,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Persist tenantId derived from user when user changes, and restore into clientService
   useEffect(() => {
     try {
-      const tenantId = (user && Array.isArray(user.tenants) && user.tenants.length > 0)
-        ? (user.tenants[0].tenantId || (user.tenants[0].tenant && user.tenants[0].tenant.id))
-        : null;
+      /* ── ESTO PISABA LA EMPRESA ELEGIDA ────────────────────────────────
+         Tomaba `tenants[0]` a ciegas y lo escribía en cada cambio de usuario
+         —incluido cada refresco del perfil—. Para quien administra DOS empresas
+         eso devolvía el panel a la primera sin avisar, deshaciendo el selector
+         a los pocos segundos. `resolveActiveTenantId` conserva la elección
+         mientras siga siendo válida, y sólo cae a la primera si no lo es. */
+      const tenantId = resolveActiveTenantId(user);
       if (tenantId) {
         try { localStorage.setItem('tenantId', tenantId); } catch {}
         try { setClientServiceTenantId(tenantId); } catch {}
@@ -377,7 +382,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         };
         if (!isGlobalSuperadminLocal(u)) {
           try {
-            const tenantId = (u.tenants && u.tenants[0] && (u.tenants[0].tenantId || (u.tenants[0].tenant && u.tenants[0].tenant.id))) || null;
+            const tenantId = resolveActiveTenantId(u);
             if (tenantId) {
               localStorage.setItem('tenantId', tenantId);
               try { setClientServiceTenantId(String(tenantId)); } catch {}
@@ -397,7 +402,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         try { localStorage.setItem('userPermissions', JSON.stringify(perms)); localStorage.setItem('userIsAdmin', admin ? 'true' : 'false'); } catch {}
         // store tenantId quickly if available and configure services immediately
         try {
-          const tenantId = (u.tenants && u.tenants[0] && (u.tenants[0].tenantId || (u.tenants[0].tenant && u.tenants[0].tenant.id))) || null;
+          const tenantId = resolveActiveTenantId(u);
           if (tenantId) {
             localStorage.setItem('tenantId', tenantId);
             try { setClientServiceTenantId(String(tenantId)); } catch {}
@@ -445,6 +450,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       try {
         localStorage.removeItem('userPermissions'); localStorage.removeItem('userIsAdmin');
         localStorage.removeItem('userTenantAdmin'); localStorage.removeItem('tenantId');
+        // La lista de empresas es parte de la sesión: el siguiente que entre en
+        // este navegador no puede heredar el selector —ni el nombre— del anterior.
+        try { clearTenants(); } catch { /* ignore */ }
         localStorage.removeItem('tenantLogoUrl'); localStorage.removeItem('tenantName');
       } catch {}
       try { clearAuthToken(); } catch {}
@@ -499,7 +507,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             return arr.some((r: any) => (typeof r === 'string' ? r : (r?.name || r?.key || '')).toString().toLowerCase().includes('superadmin'));
           };
           if (!isGlobalSuper(u)) {
-            const tenantId = (u.tenants && u.tenants[0] && (u.tenants[0].tenantId || (u.tenants[0].tenant && u.tenants[0].tenant.id))) || null;
+            const tenantId = resolveActiveTenantId(u);
             if (tenantId) {
               localStorage.setItem('tenantId', tenantId);
               try { setClientServiceTenantId(String(tenantId)); } catch {}

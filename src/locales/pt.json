@@ -11911,5 +11911,10 @@
       "cliente": "Do cliente",
       "propio": "Próprio"
     }
+  },
+  "tenant": {
+    "switch": "Trocar de empresa",
+    "company": "Empresa",
+    "switchHeader": "Com qual empresa você vai trabalhar?"
   }
 }

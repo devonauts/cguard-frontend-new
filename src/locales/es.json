@@ -6602,7 +6602,9 @@
       "central.desc": "Si tienes consola 24/7: qué puesto es, si sus operadores salen a cubrir y a quién llegan las alertas.",
       "sms": "Saldo SMS",
       "idioma": "Idioma",
-      "idioma.desc": "En qué idioma ves el CRM. Automático o el que tú elijas."
+      "idioma.desc": "En qué idioma ves el CRM. Automático o el que tú elijas.",
+      "api-keys": "Llaves de API",
+      "api-keys.desc": "Da a un sistema externo (por ejemplo, el conector de nómina) acceso de solo lectura a tus trabajadores y horas."
     },
     "section": {
       "mi_cuenta": "Mi cuenta",
@@ -11921,5 +11923,10 @@
     "nights": "{{count}} noche",
     "none": "Sin rotación",
     "rests": "{{count}} descanso"
+  },
+  "tenant": {
+    "switch": "Cambiar de empresa",
+    "company": "Empresa",
+    "switchHeader": "¿Con qué empresa vas a trabajar?"
   }
 }
