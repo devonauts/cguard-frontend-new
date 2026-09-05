@@ -376,6 +376,7 @@ export default function StationSiteTours({ station, stationId, postSiteId }: Pro
         stationLat={stationLat}
         stationLng={stationLng}
         stationRadius={stationRadius}
+        stationName={station?.nickname || station?.stationName || null}
         onCreated={() => loadTours()}
         onPrint={() => {
           /* La pestaña va en la RUTA, no en la cadena de consulta:

@@ -11964,7 +11964,14 @@
       "next": "The checkpoints exist, but a checkpoint is no use until its label is on the wall. Print the QR codes, laminate them and place each one where its name says.",
       "noCoordsTitle": "This post has no location",
       "noCoords": "Checkpoints will be created without coordinates, so there is no way to verify the guard was there. Set the post location, then adjust each checkpoint on the map.",
-      "locHint": "They all start at the post location. You can then fine-tune each one on the map so the proximity check is exact."
+      "locHint": "They all start at the post location. You can then fine-tune each one on the map so the proximity check is exact.",
+      "step2map": "List the checkpoints in order and place each one on the map.",
+      "placed": "Placed on the map",
+      "placeIt": "Place on the map",
+      "thisPoint": "This checkpoint",
+      "mapHint": "Pick a checkpoint from the list to place it on the map.",
+      "mapNoStation": "Set the post location first so checkpoints can be placed.",
+      "pendingPlacement": "{{n}} checkpoint(s) are still on the post coordinate. While they share a spot, the proximity check cannot tell one from another: standing at the entrance would validate the roof. You can create them anyway and place them later."
     }
   }
 }

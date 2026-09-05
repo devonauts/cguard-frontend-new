@@ -11952,7 +11952,14 @@
       "next": "Os pontos existem, mas um ponto de controle não serve até a etiqueta estar na parede. Imprima os QR, plastifique e cole cada um onde diz o nome.",
       "noCoordsTitle": "O posto não tem localização",
       "noCoords": "Os pontos serão criados sem coordenadas, então não dá para verificar que o vigilante esteve ali. Defina a localização do posto e depois ajuste cada ponto no mapa.",
-      "locHint": "Todos nascem na localização do posto. Depois você pode ajustar cada um no mapa para a verificação de proximidade ser exata."
+      "locHint": "Todos nascem na localização do posto. Depois você pode ajustar cada um no mapa para a verificação de proximidade ser exata.",
+      "step2map": "Liste os pontos em ordem e coloque cada um no mapa.",
+      "placed": "Colocado no mapa",
+      "placeIt": "Colocar no mapa",
+      "thisPoint": "Este ponto",
+      "mapHint": "Escolha um ponto da lista para colocá-lo no mapa.",
+      "mapNoStation": "Defina primeiro a localização do posto para poder colocar os pontos.",
+      "pendingPlacement": "{{n}} ponto(s) continuam na coordenada do posto. Enquanto dividirem o mesmo lugar, a verificação de proximidade não distingue um ponto do outro: estar na entrada validaria o terraço. Você pode criá-los assim mesmo e colocá-los depois."
     }
   }
 }

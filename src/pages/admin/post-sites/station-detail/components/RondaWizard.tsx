@@ -1,12 +1,13 @@
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Loader2, Plus, Trash2, ArrowUp, ArrowDown, MapPin, Route, Printer, Check,
+  Loader2, Plus, Trash2, ArrowUp, ArrowDown, MapPin, Route, Printer, Check, Crosshair,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { ApiService } from '@/services/api/apiService';
 import { Modal, FIELD_CLS, InfoNote } from '@/components/kit';
 import { Button } from '@/components/ui/button';
+import CheckpointLocationPicker from '@/components/maps/CheckpointLocationPicker';
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -14,27 +15,32 @@ import { Button } from '@/components/ui/button';
  *
  * Antes, montar una ronda de ocho puntos era esto: abrir un modal y escribir el
  * nombre; guardar; desplegar la ronda; pulsar «añadir punto»; escribir el
- * nombre del punto; guardar; repetir OCHO veces; y después ir a otra pestaña a
- * imprimir los códigos. Diecisiete idas y venidas para dar de alta un puesto.
+ * nombre; guardar; repetir OCHO veces; y después ir a otra pestaña a imprimir
+ * los códigos. Diecisiete idas y venidas para dar de alta un puesto.
  *
  * Así es como se hace en las plataformas grandes del sector, y por qué:
  *
  *  · **De una sentada.** Instalar un puesto es UNA tarea: se recorre el sitio
- *    una vez, se apunta dónde van los puntos y se da de alta todo junto. Partir
- *    eso en diecisiete pasos es lo que hace que la gente cree la ronda «para
- *    después» y se quede a medias — y una ronda sin puntos no avisa de nada.
+ *    una vez, se apunta dónde va cada punto y se da de alta todo junto. Partir
+ *    eso en diecisiete pasos es lo que hace que la ronda se cree «para después»
+ *    y se quede sin puntos — y una ronda sin puntos no avisa de nada.
  *
  *  · **Con plantillas.** Casi ninguna instalación es original: una bodega, un
  *    edificio y una urbanización tienen los mismos puntos con otros nombres.
- *    Empezar de una lista en blanco es lo que produce rondas de dos puntos.
- *    Las plantillas se EDITAN antes de crear; no son un molde cerrado.
+ *    Se EDITAN antes de crear; no son un molde cerrado.
  *
- *  · **Y termina en la impresora.** El punto de control no existe de verdad
- *    hasta que la etiqueta está pegada en la pared. Por eso el último paso
- *    ofrece imprimir: es el trabajo que queda, y separarlo en otra pestaña es
- *    lo que hace que se olvide.
+ *  · **Colocando cada punto en el mapa AQUÍ.** Es lo que faltaba. Todos nacían
+ *    en la coordenada del puesto y había que ir a afinarlos uno a uno después —
+ *    o sea, otra vez la misma tarea partida en trozos. Y mientras no se afinan,
+ *    la geocerca de los ocho puntos es el mismo círculo: la comprobación de que
+ *    el vigilante estuvo EN CADA punto no comprueba nada, porque estar en la
+ *    garita valida la azotea. Colocarlos aquí es lo que hace que la ronda sirva
+ *    de prueba desde el primer día.
  *
- * El CÓDIGO de cada punto no se pide ni se enseña aquí: lo emite el servidor.
+ *  · **Y termina en la impresora.** El punto no existe de verdad hasta que la
+ *    etiqueta está pegada en la pared.
+ *
+ * El CÓDIGO de cada punto no se pide ni se enseña: lo emite el servidor.
  * Ver `backend/src/lib/checkpointCode.ts`.
  * ════════════════════════════════════════════════════════════════════════════
  */
@@ -44,6 +50,11 @@ export interface PuntoBorrador {
   key: string;
   nombre: string;
   lugar: string;
+  lat: number | null;
+  lng: number | null;
+  radius: number;
+  /** ¿Se colocó a mano en el mapa, o sigue heredando la del puesto? */
+  colocado: boolean;
 }
 
 interface Props {
@@ -52,13 +63,12 @@ interface Props {
   tenantId: string;
   stationId: string;
   postSiteId?: string;
-  /** Coordenadas del puesto: los puntos nacen ahí y se afinan luego en el mapa. */
+  /** Coordenadas del puesto: el punto de partida de cada checkpoint. */
   stationLat: number | null;
   stationLng: number | null;
   stationRadius: number;
-  /** Se llama al terminar; el segundo argumento es el id de la ronda creada. */
+  stationName?: string | null;
   onCreated: (tourId: string, puntosCreados: number) => void;
-  /** Abrir la pestaña de códigos QR al terminar. */
   onPrint?: () => void;
 }
 
@@ -95,26 +105,36 @@ const PLANTILLAS: Array<{ id: string; nombre: string; descripcion: string; punto
 
 let contador = 0;
 const nuevaClave = () => `p${++contador}`;
-const puntoVacio = (nombre = '', lugar = ''): PuntoBorrador => ({ key: nuevaClave(), nombre, lugar });
 
 export default function RondaWizard({
   open, onOpenChange, tenantId, stationId, postSiteId,
-  stationLat, stationLng, stationRadius, onCreated, onPrint,
+  stationLat, stationLng, stationRadius, stationName, onCreated, onPrint,
 }: Props) {
   const { t } = useTranslation();
   const [paso, setPaso] = useState<1 | 2 | 3>(1);
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
-  const [puntos, setPuntos] = useState<PuntoBorrador[]>([puntoVacio()]);
   const [guardando, setGuardando] = useState(false);
   const [resultado, setResultado] = useState<{ tourId: string; creados: number; fallidos: number } | null>(null);
 
+  /** Todos nacen en la coordenada del puesto, y `colocado:false` lo confiesa. */
+  const puntoVacio = (n = '', l = ''): PuntoBorrador => ({
+    key: nuevaClave(), nombre: n, lugar: l,
+    lat: stationLat, lng: stationLng, radius: stationRadius, colocado: false,
+  });
+
+  const [puntos, setPuntos] = useState<PuntoBorrador[]>([puntoVacio()]);
+  /** Qué punto se está colocando en el mapa. */
+  const [editando, setEditando] = useState<string | null>(null);
+
   const validos = useMemo(() => puntos.filter((p) => p.nombre.trim()), [puntos]);
+  const sinColocar = useMemo(() => validos.filter((p) => !p.colocado).length, [validos]);
   const sinCoordenadas = stationLat == null || stationLng == null;
+  const enEdicion = puntos.find((p) => p.key === editando) || null;
 
   const reiniciar = () => {
     setPaso(1); setNombre(''); setDescripcion('');
-    setPuntos([puntoVacio()]); setResultado(null);
+    setPuntos([puntoVacio()]); setResultado(null); setEditando(null);
   };
 
   const cerrar = (v: boolean) => {
@@ -133,6 +153,10 @@ export default function RondaWizard({
   const cambiar = (key: string, campo: 'nombre' | 'lugar', valor: string) =>
     setPuntos((ps) => ps.map((p) => (p.key === key ? { ...p, [campo]: valor } : p)));
 
+  /** Colocar en el mapa marca el punto como COLOCADO: deja de heredar. */
+  const colocar = (key: string, lat: number, lng: number, radius: number) =>
+    setPuntos((ps) => ps.map((p) => (p.key === key ? { ...p, lat, lng, radius, colocado: true } : p)));
+
   const mover = (i: number, delta: number) =>
     setPuntos((ps) => {
       const j = i + delta;
@@ -144,9 +168,9 @@ export default function RondaWizard({
 
   /**
    * Crear. La ronda primero y los puntos DESPUÉS, en orden: si un punto falla,
-   * la ronda ya existe y lo que se creó se conserva — se dice cuántos entraron
-   * y cuántos no, y se pueden añadir los que falten a mano. Tirarlo todo por un
-   * nombre repetido sería peor: se pierde el trabajo de rellenar la lista.
+   * la ronda ya existe y lo creado se conserva — se dice cuántos entraron y
+   * cuántos no, y se añaden los que falten a mano. Tirarlo todo por un nombre
+   * repetido sería peor: se pierde el trabajo de rellenar y colocar la lista.
    */
   const crear = async () => {
     if (!nombre.trim()) { toast.error(t('ronda.wizard.nameRequired', 'Ponle un nombre a la ronda')); return; }
@@ -173,9 +197,9 @@ export default function RondaWizard({
             location: p.lugar.trim() || undefined,
             tagType: 'qr',
             stationId,
-            latitude: stationLat,
-            longitude: stationLng,
-            geofenceRadius: stationRadius,
+            latitude: p.lat,
+            longitude: p.lng,
+            geofenceRadius: p.radius,
             showGeoFence: true,
           });
           creados++;
@@ -206,7 +230,7 @@ export default function RondaWizard({
       }
       description={
         paso === 1 ? t('ronda.wizard.step1', 'Empieza de una plantilla o desde cero. Podrás cambiarlo todo antes de guardar.')
-        : paso === 2 ? t('ronda.wizard.step2', 'Escribe los puntos que el vigilante debe recorrer, en orden.')
+        : paso === 2 ? t('ronda.wizard.step2map', 'Escribe los puntos en orden y coloca cada uno en el mapa.')
         : undefined
       }
       footer={
@@ -263,7 +287,8 @@ export default function RondaWizard({
           </div>
           <div>
             <label className="mb-1 block text-sm font-semibold" style={{ color: 'var(--ink)' }}>
-              {t('ronda.wizard.desc', 'Descripción')} <span style={{ color: 'var(--ink-faint)' }}>({t('common.optional', 'opcional')})</span>
+              {t('ronda.wizard.desc', 'Descripción')}{' '}
+              <span style={{ color: 'var(--ink-faint)' }}>({t('common.optional', 'opcional')})</span>
             </label>
             <input
               className={FIELD_CLS}
@@ -306,64 +331,133 @@ export default function RondaWizard({
             </InfoNote>
           )}
 
-          <div className="space-y-2">
-            {puntos.map((p, i) => (
-              <div key={p.key} className="glass-flat flex items-start gap-2 rounded-xl p-2">
-                <span
-                  className="mt-2 grid h-6 w-6 shrink-0 place-items-center rounded-full text-[11px] font-bold"
-                  style={{ background: 'var(--brand-wash)', color: 'var(--brand-text)' }}
+          <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+            {/* ── La lista ──────────────────────────────────────────────── */}
+            <div className="space-y-2">
+              {puntos.map((p, i) => {
+                const activo = p.key === editando;
+                return (
+                  <div
+                    key={p.key}
+                    className="glass-flat flex items-start gap-2 rounded-xl p-2 transition-shadow"
+                    style={activo ? { boxShadow: 'inset 0 0 0 1px var(--brand-line)', background: 'var(--brand-wash)' } : undefined}
+                  >
+                    <span
+                      className="mt-2 grid h-6 w-6 shrink-0 place-items-center rounded-full text-[11px] font-bold"
+                      style={{ background: 'var(--brand-wash)', color: 'var(--brand-text)' }}
+                    >
+                      {i + 1}
+                    </span>
+                    <div className="min-w-0 flex-1 space-y-1.5">
+                      <input
+                        className={FIELD_CLS}
+                        value={p.nombre}
+                        onChange={(e) => cambiar(p.key, 'nombre', e.target.value)}
+                        onFocus={() => setEditando(p.key)}
+                        placeholder={t('ronda.wizard.pointPh', 'Nombre del punto — p. ej. Acceso principal') as string}
+                      />
+                      <input
+                        className={FIELD_CLS}
+                        value={p.lugar}
+                        onChange={(e) => cambiar(p.key, 'lugar', e.target.value)}
+                        onFocus={() => setEditando(p.key)}
+                        placeholder={t('ronda.wizard.wherePh', 'Dónde se pega la etiqueta (opcional)') as string}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setEditando(activo ? null : p.key)}
+                        disabled={sinCoordenadas}
+                        className="cg-focus inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-semibold disabled:opacity-50"
+                        style={{ color: p.colocado ? 'var(--ok-text)' : 'var(--warn-text)' }}
+                      >
+                        {p.colocado
+                          ? <><MapPin className="h-3 w-3" /> {t('ronda.wizard.placed', 'Colocado en el mapa')}</>
+                          : <><Crosshair className="h-3 w-3" /> {t('ronda.wizard.placeIt', 'Colocar en el mapa')}</>}
+                      </button>
+                    </div>
+                    <div className="flex shrink-0 flex-col gap-1">
+                      <button
+                        type="button" onClick={() => mover(i, -1)} disabled={i === 0}
+                        aria-label={t('common.moveUp', 'Subir') as string}
+                        className="cg-focus cg-btn-glass grid h-7 w-7 place-items-center rounded-md disabled:opacity-30"
+                      ><ArrowUp className="h-3.5 w-3.5" /></button>
+                      <button
+                        type="button" onClick={() => mover(i, 1)} disabled={i === puntos.length - 1}
+                        aria-label={t('common.moveDown', 'Bajar') as string}
+                        className="cg-focus cg-btn-glass grid h-7 w-7 place-items-center rounded-md disabled:opacity-30"
+                      ><ArrowDown className="h-3.5 w-3.5" /></button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPuntos((ps) => ps.filter((x) => x.key !== p.key));
+                          if (editando === p.key) setEditando(null);
+                        }}
+                        disabled={puntos.length === 1}
+                        aria-label={t('common.delete', 'Eliminar') as string}
+                        className="cg-focus cg-btn-glass grid h-7 w-7 place-items-center rounded-md disabled:opacity-30"
+                      ><Trash2 className="h-3.5 w-3.5" /></button>
+                    </div>
+                  </div>
+                );
+              })}
+
+              <button
+                type="button"
+                onClick={() => setPuntos((ps) => [...ps, puntoVacio()])}
+                className="cg-focus cg-btn-glass inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold"
+              >
+                <Plus className="h-4 w-4" /> {t('ronda.wizard.addPoint', 'Añadir punto')}
+              </button>
+            </div>
+
+            {/* ── El mapa del punto seleccionado ────────────────────────── */}
+            <div className="space-y-2">
+              {enEdicion && !sinCoordenadas ? (
+                <>
+                  <p className="text-xs font-semibold" style={{ color: 'var(--ink)' }}>
+                    {enEdicion.nombre.trim() || t('ronda.wizard.thisPoint', 'Este punto')}
+                  </p>
+                  <CheckpointLocationPicker
+                    lat={enEdicion.lat}
+                    lng={enEdicion.lng}
+                    radius={enEdicion.radius}
+                    onChange={(la, ln, r) => colocar(enEdicion.key, la, ln, r)}
+                    reference={
+                      stationLat != null && stationLng != null
+                        ? { lat: stationLat, lng: stationLng, label: stationName || undefined }
+                        : null
+                    }
+                  />
+                </>
+              ) : (
+                <div
+                  className="glass-flat grid min-h-[220px] place-items-center rounded-xl p-6 text-center text-sm"
+                  style={{ color: 'var(--ink-faint)' }}
                 >
-                  {i + 1}
-                </span>
-                <div className="min-w-0 flex-1 space-y-1.5">
-                  <input
-                    className={FIELD_CLS}
-                    value={p.nombre}
-                    onChange={(e) => cambiar(p.key, 'nombre', e.target.value)}
-                    placeholder={t('ronda.wizard.pointPh', 'Nombre del punto — p. ej. Acceso principal') as string}
-                  />
-                  <input
-                    className={FIELD_CLS}
-                    value={p.lugar}
-                    onChange={(e) => cambiar(p.key, 'lugar', e.target.value)}
-                    placeholder={t('ronda.wizard.wherePh', 'Dónde se pega la etiqueta (opcional) — p. ej. junto al torniquete') as string}
-                  />
+                  <span>
+                    <MapPin className="mx-auto mb-2 h-5 w-5" />
+                    {sinCoordenadas
+                      ? t('ronda.wizard.mapNoStation', 'Pon primero la ubicación del puesto para poder colocar los puntos.')
+                      : t('ronda.wizard.mapHint', 'Elige un punto de la lista para colocarlo en el mapa.')}
+                  </span>
                 </div>
-                <div className="flex shrink-0 flex-col gap-1">
-                  <button
-                    type="button" onClick={() => mover(i, -1)} disabled={i === 0}
-                    aria-label={t('common.moveUp', 'Subir') as string}
-                    className="cg-focus cg-btn-glass grid h-7 w-7 place-items-center rounded-md disabled:opacity-30"
-                  ><ArrowUp className="h-3.5 w-3.5" /></button>
-                  <button
-                    type="button" onClick={() => mover(i, 1)} disabled={i === puntos.length - 1}
-                    aria-label={t('common.moveDown', 'Bajar') as string}
-                    className="cg-focus cg-btn-glass grid h-7 w-7 place-items-center rounded-md disabled:opacity-30"
-                  ><ArrowDown className="h-3.5 w-3.5" /></button>
-                  <button
-                    type="button" onClick={() => setPuntos((ps) => ps.filter((x) => x.key !== p.key))}
-                    disabled={puntos.length === 1}
-                    aria-label={t('common.delete', 'Eliminar') as string}
-                    className="cg-focus cg-btn-glass grid h-7 w-7 place-items-center rounded-md disabled:opacity-30"
-                  ><Trash2 className="h-3.5 w-3.5" /></button>
-                </div>
-              </div>
-            ))}
+              )}
+            </div>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setPuntos((ps) => [...ps, puntoVacio()])}
-            className="cg-focus cg-btn-glass inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold"
-          >
-            <Plus className="h-4 w-4" /> {t('ronda.wizard.addPoint', 'Añadir punto')}
-          </button>
-
-          <p className="text-xs" style={{ color: 'var(--ink-faint)' }}>
-            <MapPin className="mr-1 inline h-3 w-3" />
-            {t('ronda.wizard.locHint',
-              'Todos nacen en la ubicación del puesto. Después puedes afinar cada uno en el mapa para que la comprobación de cercanía sea exacta.')}
-          </p>
+          {/* ── POR QUÉ INSISTIR EN COLOCARLOS ──────────────────────────────
+              Mientras todos comparten la coordenada del puesto, la geocerca de
+              los ocho puntos es EL MISMO círculo: estar en la garita valida la
+              azotea, y la ronda deja de probar nada. No se bloquea la creación
+              —hay puestos donde la coordenada exacta se sabe después—, pero se
+              dice, y se dice con la cuenta delante. */}
+          {!sinCoordenadas && sinColocar > 0 && (
+            <InfoNote tone="warn">
+              {t('ronda.wizard.pendingPlacement',
+                '{{n}} punto(s) siguen en la coordenada del puesto. Mientras compartan sitio, la comprobación de cercanía no distingue un punto de otro: estar en la entrada daría por válida la azotea. Puedes crearlos igual y colocarlos después.',
+                { n: sinColocar })}
+            </InfoNote>
+          )}
         </div>
       )}
 
