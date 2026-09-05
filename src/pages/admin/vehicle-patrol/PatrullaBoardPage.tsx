@@ -11,7 +11,7 @@ import Breadcrumb from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import {
   PageContainer, PageHeader, Section, Segmented, Stagger, StatCard, StatusBadge,
-  EmptyState, GlassPanel, SkeletonCards,
+  EmptyState, GlassPanel, SkeletonCards, Toolbar,
 } from '@/components/kit';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { confirmDialog } from '@/components/ui/confirmDialog';
@@ -161,30 +161,38 @@ export default function PatrullaBoardPage() {
           icon={<Car />}
           title="Patrulla vehicular"
           subtitle={t('ui.PatrullaBoardPage.rutasQueElSupervisorDebe')}
+          /* UNA acción primaria en la cabecera. Las demás (historial, plantillas,
+             gestionar rutas) van en la barra de abajo: cinco botones aquí
+             aplastaban el título a una letra por línea en un portátil. */
           actions={(
-            <>
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                aria-label={t('comun.fecha')}
-                className="cg-input cg-focus h-9 px-3 text-sm"
-              />
-              <Button variant="outline" onClick={() => navigate('/vehicle-patrol/history')}>
-                <HistoryIcon className="size-4" /> {t('ui.PatrullaBoard.historial', 'Historial')}
-              </Button>
-              <Button variant="outline" onClick={() => navigate('/vehicle-patrol/templates')}>
-                <ClipboardList className="size-4" /> {t('ui.PatrullaBoard.plantillas', 'Plantillas')}
-              </Button>
-              <Button variant="outline" onClick={() => navigate('/vehicle-patrol/routes')}>
-                <RouteIcon className="size-4" /> Gestionar rutas
-              </Button>
-              <Button variant="brand" onClick={goCreate}>
-                <Plus className="size-4" /> Crear patrulla vehicular
-              </Button>
-            </>
+            <Button variant="brand" onClick={goCreate}>
+              <Plus className="size-4" /> Crear patrulla vehicular
+            </Button>
           )}
         />
+        <Toolbar className="mb-4">
+          <label className="flex items-center gap-2 text-sm" style={{ color: 'var(--ink-soft)' }}>
+            {t('comun.fecha')}
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              aria-label={t('comun.fecha')}
+              className="cg-input cg-focus h-9 px-3 text-sm"
+              style={{ width: 170 }}
+            />
+          </label>
+          <span className="flex-1" />
+          <Button size="sm" variant="outline" onClick={() => navigate('/vehicle-patrol/history')}>
+            <HistoryIcon className="size-4" /> {t('ui.PatrullaBoard.historial', 'Historial')}
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => navigate('/vehicle-patrol/templates')}>
+            <ClipboardList className="size-4" /> {t('ui.PatrullaBoard.plantillas', 'Plantillas')}
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => navigate('/vehicle-patrol/routes')}>
+            <RouteIcon className="size-4" /> Gestionar rutas
+          </Button>
+        </Toolbar>
 
         <Stagger className="grid gap-4 sm:grid-cols-2">
           <StatCard label="Programadas hoy" value={todays.length} icon={<ListChecks />} accent="brand" />

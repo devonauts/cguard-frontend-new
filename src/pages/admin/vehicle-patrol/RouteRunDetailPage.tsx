@@ -128,15 +128,17 @@ export default function RouteRunDetailPage() {
           <EmptyState icon={<AlertTriangle />} title={t('ui.RouteRunDetail.noExiste', 'La ejecución no existe o no está disponible.')} />
         ) : (
           <>
-            <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Cuatro en fila sólo con sitio de sobra (xl); en un portátil, 2×2 —
+                si no, las etiquetas se cortan («INSPECCIÓN M…»). */}
+            <Stagger className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
               <StatCard label={t('ui.RouteRunDetail.paradas', 'Paradas')} value={`${ex.progress?.completed ?? 0}/${ex.progress?.total ?? stops.length}`} icon={<ListChecks />} accent="brand" />
               <StatCard label={t('ui.RouteRunDetail.inicio', 'Inicio')} value={fmtHora(ex.startedAt, locale)} hint={ex.completedAt ? `${t('ui.RouteRunDetail.fin', 'Fin')} ${fmtHora(ex.completedAt, locale)}` : ex.pausedAt ? t('ui.RouteRunDetail.enPausaDesde', 'En pausa desde {{h}}', { h: fmtHora(ex.pausedAt, locale) }) : undefined} icon={<Clock />} />
-              <StatCard label={t('ui.RouteRunDetail.inspeccion', 'Inspección media')} value={sum?.averageInspection != null ? `${Math.round(sum.averageInspection)}%` : '—'} icon={<CheckCircle2 />} accent="ok" />
-              <StatCard label={t('ui.RouteRunDetail.hallazgos', 'Hallazgos críticos')} value={sum?.criticalFindings ?? stops.reduce((n, s) => n + (s.observations || []).filter((o: any) => o.severity === 'critical').length, 0)} icon={<AlertTriangle />} accent="danger" />
+              <StatCard label={t('ui.RouteRunDetail.inspeccion', 'Inspección')} value={sum?.averageInspection != null ? `${Math.round(sum.averageInspection)}%` : '—'} icon={<CheckCircle2 />} accent="ok" />
+              <StatCard label={t('ui.RouteRunDetail.hallazgos', 'Críticos')} value={sum?.criticalFindings ?? stops.reduce((n, s) => n + (s.observations || []).filter((o: any) => o.severity === 'critical').length, 0)} icon={<AlertTriangle />} accent="danger" />
             </Stagger>
 
             {sum && (
-              <GlassPanel flat className="mt-4 grid grid-cols-2 gap-3 p-4 text-sm sm:grid-cols-4">
+              <GlassPanel flat className="mt-4 grid grid-cols-2 gap-3 p-4 text-sm lg:grid-cols-4">
                 <div><p className="cg-eyebrow">{t('ui.RouteRunDetail.duracion', 'Duración')}</p><p className="font-semibold">{fmtDur(sum.totalSeconds)}</p></div>
                 <div><p className="cg-eyebrow">{t('ui.RouteRunDetail.enVisitas', 'En visitas')}</p><p className="font-semibold">{fmtDur(sum.visitSeconds)}</p></div>
                 <div><p className="cg-eyebrow">{t('ui.RouteRunDetail.enTransito', 'En tránsito')}</p><p className="font-semibold">{fmtDur(sum.travelSeconds)}</p></div>

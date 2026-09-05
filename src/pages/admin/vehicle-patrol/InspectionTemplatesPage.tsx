@@ -69,7 +69,7 @@ export default function InspectionTemplatesPage() {
                 const items = (tpl.content?.sections || []).reduce((n, s) => n + (s.items?.length || 0), 0);
                 return (
                   <ListRow key={tpl.id} title={tpl.name} subtitle={`${tpl.content?.sections?.length || 0} secciones · ${items} ítems · v${tpl.version}${tpl.description ? ` · ${tpl.description}` : ''}`}
-                    badges={tpl.isDefault ? <StatusBadge tone="brand" dot={false} className="whitespace-nowrap"><Star className="size-3 shrink-0" />{t('ui.InspectionTemplates.porDefecto', 'Por defecto')}</StatusBadge> : null}
+                    badges={tpl.isDefault ? <StatusBadge tone="brand" className="whitespace-nowrap">{t('ui.InspectionTemplates.porDefecto', 'Por defecto')}</StatusBadge> : null}
                     actions={(
                       <div className="flex gap-1">
                         {!tpl.isDefault && <Button size="sm" variant="ghost" onClick={() => marcarDefecto(tpl)}><Star className="size-3.5" /></Button>}
