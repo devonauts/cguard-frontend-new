@@ -6565,6 +6565,8 @@
       "publishing-sites.desc": "Alertas de salida y regreso, y minutos antes de escalar un puesto sin cubrir.",
       "keep-safe": "Vigilantes en turno",
       "keep-safe.desc": "Inactividad, recordatorios de turno y aviso de credenciales por vencer.",
+      "patrullaje-config": "Rutas de supervisión",
+      "patrullaje-config.desc": "Geocerca de llegada, fotos y motivos exigidos, retrasos, avisos a la central y al cliente.",
       "rondas-config": "Rondas",
       "rondas-config.desc": "Frecuencia, tolerancia, foto y ubicación obligatorias, y a quién se avisa.",
       "tipos-incidentes": "Tipos de incidente",

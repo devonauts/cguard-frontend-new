@@ -2522,6 +2522,8 @@
       "preferencias-correo": "E-mails e modelos",
       "registro-actividad": "Registro de atividade",
       "retencion": "Retenção de dados",
+      "patrullaje-config": "Rotas de supervisão",
+      "patrullaje-config.desc": "Geocerca de chegada, fotos e motivos exigidos, atrasos, avisos à central e ao cliente.",
       "rondas-config": "Rondas",
       "seguridad": "Segurança",
       "sms-numeros": "Números e saldo de SMS",

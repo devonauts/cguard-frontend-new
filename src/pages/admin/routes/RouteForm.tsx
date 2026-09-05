@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from 'react-i18next';
 import { useWatch, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -6,6 +6,7 @@ import { routeCreateSchema, type RouteCreateSchema } from "@/lib/validators/rout
 import { Button } from "@/components/ui/button";
 import { toast } from 'sonner';
 import telemetryService from '@/lib/api/telemetryService';
+import routeInspectionTemplateService from '@/lib/api/routeInspectionTemplateService';
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -43,6 +44,8 @@ import {
   Loader2,
   Waypoints,
   Milestone,
+  SlidersHorizontal,
+  ClipboardList,
 } from "lucide-react";
 import { Section, InfoNote, EmptyState } from "@/components/kit";
 import { confirmDialog } from "@/components/ui/confirmDialog";
@@ -110,7 +113,21 @@ type RouteFormProps = {
       scheduledHits?: number;
       lat?: number | null;
       lng?: number | null;
+      /* Ejecución guiada (2026-09): lo que la app exige en esa parada. */
+      inspectionTemplateId?: string | null;
+      priority?: string | null;
+      required?: boolean;
+      minPhotos?: number;
+      instructions?: string | null;
+      geofenceRadius?: number | null;
+      visitWindowStart?: string | null;
+      visitWindowEnd?: string | null;
+      clientVisible?: boolean;
     }>;
+    /** Hora prevista de salida (HH:mm), base del cálculo de retrasos. */
+    scheduledStartTime?: string | null;
+    /** Plantilla de inspección para las paradas que no definen la suya. */
+    defaultInspectionTemplateId?: string | null;
     /* ── Los extremos del recorrido, opcionales por contrato ──────────────── */
     originLat?: number | string | null;
     originLng?: number | string | null;
@@ -127,6 +144,43 @@ type RouteFormProps = {
   };
   onSuccess?: () => void;
 };
+
+/**
+ * Lo que la ejecución guiada exige en cada parada. Ausente = valores por
+ * defecto (obligatoria, prioridad normal, visible al cliente, sin mínimos),
+ * que es exactamente cómo se comportan las rutas creadas antes de 2026-09.
+ */
+type DetalleDeParada = {
+  inspectionTemplateId: string;
+  priority: string;
+  required: boolean;
+  minPhotos: number;
+  instructions: string;
+  geofenceRadius: number | '';
+  visitWindowStart: string;
+  visitWindowEnd: string;
+  clientVisible: boolean;
+};
+type PuntoDelFormulario = {
+  siteId: string;
+  siteName?: string;
+  address?: string;
+  duration: number;
+  scheduledHits: number;
+  lat?: number | null;
+  lng?: number | null;
+} & DetalleDeParada;
+const detalleDeParada = (p: any): DetalleDeParada => ({
+  inspectionTemplateId: p?.inspectionTemplateId ? String(p.inspectionTemplateId) : '',
+  priority: p?.priority || 'normal',
+  required: p?.required !== false,
+  minPhotos: Number(p?.minPhotos) || 0,
+  instructions: p?.instructions || '',
+  geofenceRadius: p?.geofenceRadius != null && p.geofenceRadius !== '' ? Number(p.geofenceRadius) : '',
+  visitWindowStart: p?.visitWindowStart ? String(p.visitWindowStart).slice(0, 5) : '',
+  visitWindowEnd: p?.visitWindowEnd ? String(p.visitWindowEnd).slice(0, 5) : '',
+  clientVisible: p?.clientVisible !== false,
+});
 
 /** Identidad del ORDEN de las paradas: si cambia, la marca de optimizada muere. */
 const firmaDe = (puntos: Array<{ siteId: string }>) => puntos.map((p) => p.siteId).join('|');
@@ -164,15 +218,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
   const [sites, setSites] = useState<{ id: string; name: string; address?: string; lat?: number | string; lng?: number | string }[]>([]);
   const [vehicles, setVehicles] = useState<{ id: string; name: string; licensePlate?: string }[]>([]);
   const [fallbackVehicle, setFallbackVehicle] = useState<{ id: string; name: string; licensePlate?: string } | null>(null);
-  const [points, setPoints] = useState<Array<{
-    siteId: string;
-    siteName?: string;
-    address?: string;
-    duration: number;
-    scheduledHits: number;
-    lat?: number | null;
-    lng?: number | null;
-  }>>(initialData?.points?.map((p) => ({
+  const [points, setPoints] = useState<Array<PuntoDelFormulario>>(initialData?.points?.map((p) => ({
     siteId: p.siteId,
     siteName: p.siteName,
     address: p.address || '',
@@ -180,7 +226,18 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
     scheduledHits: p.scheduledHits ?? 1,
     lat: p.lat ?? null,
     lng: p.lng ?? null,
+    ...detalleDeParada(p),
   })) || []);
+  /* ── Ejecución guiada: campos de ruta fuera del esquema zod (opcionales) ── */
+  const [scheduledStartTime, setScheduledStartTime] = useState<string>(initialData?.scheduledStartTime || '');
+  const [defaultInspectionTemplateId, setDefaultInspectionTemplateId] = useState<string>(initialData?.defaultInspectionTemplateId || '');
+  const [plantillas, setPlantillas] = useState<Array<{ id: string; name: string; isDefault: boolean }>>([]);
+  const [detalleAbierto, setDetalleAbierto] = useState<string | null>(null);
+  useEffect(() => {
+    routeInspectionTemplateService.list()
+      .then((rows) => setPlantillas(rows.map((r) => ({ id: String(r.id), name: r.name, isDefault: !!r.isDefault }))))
+      .catch(() => setPlantillas([]));
+  }, []);
   const [pointOrder, setPointOrder] = useState<string | ''>('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -244,6 +301,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
         scheduledHits: p.scheduledHits ?? 1,
         lat: p.lat ?? null,
         lng: p.lng ?? null,
+        ...detalleDeParada(p),
       })) || [];
       setPoints(puntos);
       // El orden con el que llega es, por definición, el que está guardado.
@@ -531,6 +589,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
             scheduledHits: existing?.scheduledHits ?? 1,
             lat: latRaw == null ? null : Number(latRaw),
             lng: lngRaw == null ? null : Number(lngRaw),
+            ...detalleDeParada(existing),
           };
         };
 
@@ -623,7 +682,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
     desoptimizar();
   };
 
-  const updatePointField = (siteId: string, field: 'duration' | 'scheduledHits' | 'address', value: any) => {
+  const updatePointField = (siteId: string, field: keyof PuntoDelFormulario, value: any) => {
     setPoints((prev) => prev.map((p) => (p.siteId === siteId ? { ...p, [field]: value } : p)));
   };
 
@@ -698,6 +757,7 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
           // datos): se normalizan aquí para que el estado guarde números.
           lat: parseCoord(d.lat) ?? previo?.lat ?? null,
           lng: parseCoord(d.lng) ?? previo?.lng ?? null,
+          ...detalleDeParada(d.inspectionTemplateId !== undefined || d.priority !== undefined ? d : previo),
         };
       });
       setPoints(siguiente);
@@ -851,7 +911,18 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
           duration: p.duration,
           scheduledHits: p.scheduledHits,
           address: p.address,
+          inspectionTemplateId: p.inspectionTemplateId || null,
+          priority: p.priority || 'normal',
+          required: p.required !== false,
+          minPhotos: Number(p.minPhotos) || 0,
+          instructions: p.instructions || null,
+          geofenceRadius: p.geofenceRadius === '' ? null : Number(p.geofenceRadius),
+          visitWindowStart: p.visitWindowStart || null,
+          visitWindowEnd: p.visitWindowEnd || null,
+          clientVisible: p.clientVisible !== false,
         })),
+        scheduledStartTime: scheduledStartTime || null,
+        defaultInspectionTemplateId: defaultInspectionTemplateId || null,
         // Los seis van SIEMPRE. Y vacíos van como CADENA VACÍA, que es lo que el
         // servidor entiende por «bórralo»: un campo ausente no se toca, así que
         // con `undefined` el origen quitado reaparecería al recargar.
@@ -1261,8 +1332,8 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
                     points.map((p, idx) => {
                       const ubicada = aCoord(p.lat, p.lng) != null;
                       return (
+                        <Fragment key={p.siteId}>
                         <tr
-                          key={p.siteId}
                           draggable
                           onDragStart={(e) => {
                             // Arrastrar DENTRO de un campo es seleccionar texto o
@@ -1383,14 +1454,55 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
                               >
                                 <Trash2 className="size-4" />
                               </Button>
+                              <Button
+                                type="button"
+                                variant={detalleAbierto === p.siteId ? 'brand' : 'outline'}
+                                size="icon-lg"
+                                className="size-11"
+                                onClick={() => setDetalleAbierto((d) => (d === p.siteId ? null : p.siteId))}
+                                aria-label={`Detalle de ${p.siteName || p.siteId}`}
+                              >
+                                <SlidersHorizontal className="size-4" />
+                              </Button>
                             </div>
                           </td>
                         </tr>
+                        {detalleAbierto === p.siteId && (
+                          <tr className="border-b" style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}>
+                            <td colSpan={6} className="px-4 py-3">
+                              <DetalleParadaEditor
+                                p={p}
+                                plantillas={plantillas}
+                                onChange={(field, value) => updatePointField(p.siteId, field, value)}
+                              />
+                            </td>
+                          </tr>
+                        )}
+                        </Fragment>
                       );
                     })
                   )}
                 </tbody>
               </table>
+            </div>
+          </div>
+        </Section>
+
+        {/* ── Ejecución guiada: salida prevista y plantilla de inspección ──── */}
+        <Section title={t('ui.RouteForm.inspeccionYEjecucion', 'Inspección y ejecución')} icon={<ClipboardList />} contentClassName="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <Label htmlFor="scheduledStartTime">{t('ui.RouteForm.salidaPrevista', 'Salida prevista')}</Label>
+              <Input id="scheduledStartTime" type="time" value={scheduledStartTime} onChange={(e) => setScheduledStartTime(e.target.value)} />
+              <p className="mt-1 text-xs" style={{ color: 'var(--ink-soft)' }}>{t('ui.RouteForm.salidaPrevistaHint', 'Base para calcular «retrasada» y «en riesgo». Vacío: se usa la hora real de inicio.')}</p>
+            </div>
+            <div>
+              <Label htmlFor="defaultInspectionTemplateId">{t('ui.RouteForm.plantillaPorDefecto', 'Plantilla de inspección')}</Label>
+              <select id="defaultInspectionTemplateId" className="cg-input cg-focus h-10 w-full px-3 text-sm" value={defaultInspectionTemplateId} onChange={(e) => setDefaultInspectionTemplateId(e.target.value)}>
+                <option value="">{t('ui.RouteForm.plantillaEmpresa', 'La de la empresa (por defecto)')}</option>
+                {plantillas.map((tp) => <option key={tp.id} value={tp.id}>{tp.name}{tp.isDefault ? ' ★' : ''}</option>)}
+              </select>
+              <p className="mt-1 text-xs" style={{ color: 'var(--ink-soft)' }}>{t('ui.RouteForm.plantillaHint', 'Cada parada puede definir la suya en su detalle.')}</p>
             </div>
           </div>
         </Section>
@@ -1561,5 +1673,64 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
         </div>
       </form>
     </Form>
+  );
+}
+
+
+/**
+ * El detalle de UNA parada para la ejecución guiada: qué plantilla contesta el
+ * supervisor ahí, si es obligatoria, su prioridad, cuántas fotos exige, el
+ * radio de llegada, la ventana horaria, instrucciones y si el cliente la ve.
+ */
+function DetalleParadaEditor({ p, plantillas, onChange }: {
+  p: PuntoDelFormulario;
+  plantillas: Array<{ id: string; name: string; isDefault: boolean }>;
+  onChange: (field: keyof PuntoDelFormulario, value: any) => void;
+}) {
+  const { t } = useTranslation();
+  const cls = 'cg-input cg-focus h-10 w-full px-3 text-sm';
+  return (
+    <div className="grid gap-3 text-sm md:grid-cols-3">
+      <label className="flex flex-col gap-1">
+        <span className="text-xs font-semibold">{t('ui.RouteForm.det.plantilla', 'Plantilla de inspección')}</span>
+        <select className={cls} value={p.inspectionTemplateId} onChange={(e) => onChange('inspectionTemplateId', e.target.value)}>
+          <option value="">{t('ui.RouteForm.det.plantillaRuta', 'La de la ruta')}</option>
+          {plantillas.map((tp) => <option key={tp.id} value={tp.id}>{tp.name}{tp.isDefault ? ' ★' : ''}</option>)}
+        </select>
+      </label>
+      <label className="flex flex-col gap-1">
+        <span className="text-xs font-semibold">{t('ui.RouteForm.det.prioridad', 'Prioridad')}</span>
+        <select className={cls} value={p.priority} onChange={(e) => onChange('priority', e.target.value)}>
+          <option value="low">{t('ui.RouteForm.det.baja', 'Baja')}</option>
+          <option value="normal">{t('ui.RouteForm.det.normal', 'Normal')}</option>
+          <option value="high">{t('ui.RouteForm.det.alta', 'Alta')}</option>
+          <option value="critical">{t('ui.RouteForm.det.critica', 'Crítica')}</option>
+        </select>
+      </label>
+      <label className="flex flex-col gap-1">
+        <span className="text-xs font-semibold">{t('ui.RouteForm.det.fotosMin', 'Fotos mínimas')}</span>
+        <input type="number" min={0} max={20} className={cls} value={p.minPhotos} onChange={(e) => onChange('minPhotos', Number(e.target.value) || 0)} />
+      </label>
+      <label className="flex flex-col gap-1">
+        <span className="text-xs font-semibold">{t('ui.RouteForm.det.geocerca', 'Radio de llegada (m)')}</span>
+        <input type="number" min={20} max={5000} className={cls} placeholder={t('ui.RouteForm.det.geocercaPh', 'El de la empresa')} value={p.geofenceRadius} onChange={(e) => onChange('geofenceRadius', e.target.value === '' ? '' : Number(e.target.value))} />
+      </label>
+      <label className="flex flex-col gap-1">
+        <span className="text-xs font-semibold">{t('ui.RouteForm.det.ventanaDesde', 'Ventana desde')}</span>
+        <input type="time" className={cls} value={p.visitWindowStart} onChange={(e) => onChange('visitWindowStart', e.target.value)} />
+      </label>
+      <label className="flex flex-col gap-1">
+        <span className="text-xs font-semibold">{t('ui.RouteForm.det.ventanaHasta', 'Ventana hasta')}</span>
+        <input type="time" className={cls} value={p.visitWindowEnd} onChange={(e) => onChange('visitWindowEnd', e.target.value)} />
+      </label>
+      <label className="flex flex-col gap-1 md:col-span-3">
+        <span className="text-xs font-semibold">{t('ui.RouteForm.det.instrucciones', 'Instrucciones para el supervisor')}</span>
+        <textarea className="cg-input cg-focus w-full px-3 py-2 text-sm" rows={2} maxLength={2000} value={p.instructions} onChange={(e) => onChange('instructions', e.target.value)} placeholder={t('ui.RouteForm.det.instruccionesPh', 'P. ej. verificar el portón trasero y la bitácora del turno nocturno')} />
+      </label>
+      <div className="flex flex-wrap gap-6 md:col-span-3">
+        <label className="flex items-center gap-2"><Switch checked={p.required} onCheckedChange={(v) => onChange('required', v)} />{t('ui.RouteForm.det.obligatoria', 'Parada obligatoria')}</label>
+        <label className="flex items-center gap-2"><Switch checked={p.clientVisible} onCheckedChange={(v) => onChange('clientVisible', v)} />{t('ui.RouteForm.det.visibleCliente', 'Visible al cliente')}</label>
+      </div>
+    </div>
   );
 }

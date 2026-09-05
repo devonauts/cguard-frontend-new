@@ -99,6 +99,54 @@ const routeService = {
     return resp;
   },
 
+  /* ── Ejecución guiada (2026-09) ─────────────────────────────────────────
+     Las EJECUCIONES (`routeRun`) de las rutas: el tablero en vivo, el
+     historial, el detalle de una ejecución y las modificaciones de despacho
+     sobre un plan en curso. La central sólo cambia el PLAN (añadir, quitar,
+     reordenar, omitir, abortar); las visitas las registra el supervisor. */
+  async activeRuns() {
+    const tenantId = getTenantId();
+    const { data } = await api.get<any>(`/tenant/${tenantId}/route-runs/active`);
+    return Array.isArray(data?.rows) ? data.rows : [];
+  },
+  async runHistory(params: { from?: string; to?: string; supervisorUserId?: string; routeId?: string; status?: string; clientAccountId?: string; limit?: number; offset?: number }) {
+    const tenantId = getTenantId();
+    const qs = new URLSearchParams();
+    Object.entries(params).forEach(([k, v]) => { if (v !== undefined && v !== null && v !== '') qs.set(k, String(v)); });
+    const { data } = await api.get<any>(`/tenant/${tenantId}/route-runs/history?${qs.toString()}`);
+    return { rows: Array.isArray(data?.rows) ? data.rows : [], count: Number(data?.count) || 0 };
+  },
+  async runDetail(runId: string) {
+    const tenantId = getTenantId();
+    const { data } = await api.get<any>(`/tenant/${tenantId}/route-runs/${runId}`);
+    return data;
+  },
+  async dispatchAddStop(runId: string, body: { siteType?: string; siteId: string; afterOrder?: number | null; reason?: string; instructions?: string; priority?: string; inspectionTemplateId?: string | null; duration?: number | null }) {
+    const tenantId = getTenantId();
+    const { data } = await api.post<any>(`/tenant/${tenantId}/route-runs/${runId}/stops`, { data: body });
+    return data;
+  },
+  async dispatchReorder(runId: string, routePointIds: string[], reason?: string) {
+    const tenantId = getTenantId();
+    const { data } = await api.post<any>(`/tenant/${tenantId}/route-runs/${runId}/stops/reorder`, { data: { routePointIds, reason } });
+    return data;
+  },
+  async dispatchRemoveStop(runId: string, pointId: string, reason?: string) {
+    const tenantId = getTenantId();
+    const { data } = await api.delete<any>(`/tenant/${tenantId}/route-runs/${runId}/stops/${pointId}`, { data: { reason } });
+    return data;
+  },
+  async dispatchSkipStop(runId: string, pointId: string, body: { reason?: string; notes?: string }) {
+    const tenantId = getTenantId();
+    const { data } = await api.post<any>(`/tenant/${tenantId}/route-runs/${runId}/stops/${pointId}/skip`, { data: body });
+    return data;
+  },
+  async dispatchAbort(runId: string, reason: string) {
+    const tenantId = getTenantId();
+    const { data } = await api.post<any>(`/tenant/${tenantId}/route-runs/${runId}/abort`, { data: { reason } });
+    return data;
+  },
+
   async destroy(ids: string[] | string) {
     const tenantId = getTenantId();
     const payload = Array.isArray(ids) ? ids : [ids];

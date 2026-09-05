@@ -7034,6 +7034,8 @@
       "publishing-sites.desc": "Warnungen bei Verlassen und Rückkehr sowie Minuten bis zur Eskalation eines unbesetzten Objekts.",
       "keep-safe": "Wachkräfte im Dienst",
       "keep-safe.desc": "Inaktivität, Schichterinnerungen und Hinweis auf ablaufende Ausweise.",
+      "patrullaje-config": "Supervisor-Routen",
+      "patrullaje-config.desc": "Ankunfts-Geofence, Pflichtfotos und -gründe, Verspätungen, Hinweise an Zentrale und Kunden.",
       "rondas-config": "Rundgänge",
       "rondas-config.desc": "Häufigkeit, Toleranz, Pflichtfoto und Pflichtstandort sowie wer benachrichtigt wird.",
       "tipos-incidentes": "Vorfallarten",

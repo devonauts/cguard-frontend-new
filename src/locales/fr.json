@@ -7034,6 +7034,8 @@
       "publishing-sites.desc": "Alertes de sortie et de retour, et délai avant l'escalade d'un poste non couvert.",
       "keep-safe": "Agents en service",
       "keep-safe.desc": "Inactivité, rappels de vacation et alerte de titres bientôt expirés.",
+      "patrullaje-config": "Tournées de supervision",
+      "patrullaje-config.desc": "Géorepérage d’arrivée, photos et motifs exigés, retards, alertes au central et au client.",
       "rondas-config": "Rondes",
       "rondas-config.desc": "Fréquence, tolérance, photo et position obligatoires, et qui est prévenu.",
       "tipos-incidentes": "Types d'incident",

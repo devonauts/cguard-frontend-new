@@ -118,6 +118,14 @@ export function targetForNotification(n: PlatformNotification): string {
     return id ? `/tasks/approvals?focus=${id}` : '/tasks/approvals';
   }
 
+  // ── Rutas de supervisión (ejecución guiada) → la ejecución en el CRM, que
+  // es el puesto de mando si sigue abierta y la reconstrucción si ya cerró.
+  // Si el aviso no trae la ejecución, el tablero de patrulla.
+  if (type.startsWith('supervisor.route') || type.startsWith('supervisor.stop') || type.startsWith('supervisor.finding')) {
+    const runId = p.runId || p.routeRunId || (String((n as any).sourceEntityType || '').toLowerCase() === 'routerun' ? id : null);
+    return runId ? `/vehicle-patrol/runs/${runId}` : '/vehicle-patrol';
+  }
+
   // ── Incidents → the incident report detail.
   if (type.startsWith('incident')) return id ? `/reports/incident/${id}` : '/activities';
 

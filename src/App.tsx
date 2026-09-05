@@ -105,6 +105,10 @@ const DispatchPublicView = lazy(() => import("@/pages/public/DispatchPublicView"
 const NewVehiclePage = lazy(() => import("./pages/admin/vehicles/NewVehiclePage"));
 const RoutesPage = lazy(() => import("./pages/admin/routes/RoutesPage"));
 const PatrullaBoardPage = lazy(() => import("./pages/admin/vehicle-patrol/PatrullaBoardPage"));
+const RouteRunDetailPage = lazy(() => import("./pages/admin/vehicle-patrol/RouteRunDetailPage"));
+const RouteRunsHistoryPage = lazy(() => import("./pages/admin/vehicle-patrol/RouteRunsHistoryPage"));
+const InspectionTemplatesPage = lazy(() => import("./pages/admin/vehicle-patrol/InspectionTemplatesPage"));
+const PatrolSettingsPage = lazy(() => import("./pages/admin/Configuration/patrol-settings/PatrolSettingsPage"));
 const NewRoutePage = lazy(() => import("./pages/admin/routes/NewRoutePage"));
 const EditRoutePage = lazy(() => import("./pages/admin/routes/EditRoutePage"));
 const LiveTrackingPage = lazy(() => import("./pages/admin/gps-tracker/LiveTracking"));
@@ -1425,6 +1429,11 @@ export default function App() {
                   </ProtectedRoute>
                 }
               />
+              {/* Ejecución guiada (2026-09): historial, detalle de una ejecución
+                  (puesto de mando si está abierta) y plantillas de inspección. */}
+              <Route path="/vehicle-patrol/history" element={<ProtectedRoute><RouteRunsHistoryPage /></ProtectedRoute>} />
+              <Route path="/vehicle-patrol/runs/:runId" element={<ProtectedRoute><RouteRunDetailPage /></ProtectedRoute>} />
+              <Route path="/vehicle-patrol/templates" element={<ProtectedRoute><InspectionTemplatesPage /></ProtectedRoute>} />
               <Route
                 path="/tenant/:tenantId/vehicle-patrol/routes/add-new"
                 element={
@@ -1657,6 +1666,7 @@ export default function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route path="/setting/patrullaje" element={<ProtectedRoute><PatrolSettingsPage /></ProtectedRoute>} />
               <Route
                 path="/setting/jornada"
                 element={

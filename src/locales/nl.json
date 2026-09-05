@@ -7034,6 +7034,8 @@
       "publishing-sites.desc": "Meldingen bij het verlaten en terugkeren, en na hoeveel minuten een onbezette post wordt geëscaleerd.",
       "keep-safe": "Beveiligers in dienst",
       "keep-safe.desc": "Inactiviteit, dienstherinneringen en waarschuwingen voor aflopende pasjes.",
+      "patrullaje-config": "Supervisieroutes",
+      "patrullaje-config.desc": "Aankomst-geofence, verplichte foto’s en redenen, vertragingen, meldingen aan centrale en klant.",
       "rondas-config": "Rondes",
       "rondas-config.desc": "Frequentie, marge, verplichte foto en positie, en wie er bericht krijgt.",
       "tipos-incidentes": "Soorten incidenten",

@@ -6565,6 +6565,8 @@
       "publishing-sites.desc": "Exit and return alerts, and how long before an uncovered post escalates.",
       "keep-safe": "Guards on duty",
       "keep-safe.desc": "Inactivity, shift reminders and expiring-credential warnings.",
+      "patrullaje-config": "Supervisor routes",
+      "patrullaje-config.desc": "Arrival geofence, required photos and reasons, delays, alerts to dispatch and to the client.",
       "rondas-config": "Patrol rounds",
       "rondas-config.desc": "Frequency, tolerance, required photo and location, and who gets told.",
       "tipos-incidentes": "Incident types",

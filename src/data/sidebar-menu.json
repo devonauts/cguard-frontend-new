@@ -192,6 +192,16 @@
             "id": "patrulla-rutas",
             "label": "Rutas de supervisión",
             "path": "/vehicle-patrol/routes"
+          },
+          {
+            "id": "patrulla-historial",
+            "label": "Historial de ejecuciones",
+            "path": "/vehicle-patrol/history"
+          },
+          {
+            "id": "patrulla-plantillas",
+            "label": "Plantillas de inspección",
+            "path": "/vehicle-patrol/templates"
           }
         ]
       },

@@ -188,6 +188,14 @@
             "keywords": "panico sos emergencia alarma central monitoreo escalado escalar destinatarios boton de panico repetir"
           },
           {
+            "id": "patrullaje-config",
+            "label": "Rutas de supervisión",
+            "path": "/setting/patrullaje",
+            "icon": "Car",
+            "desc": "Geocerca de llegada, fotos y motivos exigidos, retrasos, avisos a la central y al cliente.",
+            "keywords": "patrulla patrullaje supervisor ruta recorrido parada geocerca inspeccion plantilla omitir retraso cliente"
+          },
+          {
             "id": "rondas-config",
             "label": "Rondas",
             "path": "/setting/rondas",
@@ -319,6 +327,14 @@
             "icon": "Plug",
             "desc": "Servicios externos y credenciales para conectar otros sistemas.",
             "keywords": "integracion api token webhook conectar externo desarrollador"
+          },
+          {
+            "id": "api-keys",
+            "label": "Llaves de API",
+            "path": "/setting/api-keys",
+            "icon": "KeyRound",
+            "desc": "Da a un sistema externo (por ejemplo, el conector de nómina) acceso de solo lectura a tus trabajadores y horas.",
+            "keywords": "api key llave token nomina conseg buk conector externo solo lectura desarrollador"
           }
         ]
       }

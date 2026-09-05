@@ -7034,6 +7034,8 @@
       "publishing-sites.desc": "Avvisi di uscita e rientro, e minuti prima di far salire di livello un posto scoperto.",
       "keep-safe": "Guardie in turno",
       "keep-safe.desc": "Inattività, promemoria di turno e avviso di documenti in scadenza.",
+      "patrullaje-config": "Percorsi di supervisione",
+      "patrullaje-config.desc": "Geofence di arrivo, foto e motivi richiesti, ritardi, avvisi alla centrale e al cliente.",
       "rondas-config": "Ronde",
       "rondas-config.desc": "Frequenza, tolleranza, foto e posizione obbligatorie, e chi viene avvisato.",
       "tipos-incidentes": "Tipi di incidente",

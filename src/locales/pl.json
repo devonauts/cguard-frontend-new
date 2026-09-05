@@ -7034,6 +7034,8 @@
       "publishing-sites.desc": "Alarmy opuszczenia i powrotu oraz liczba minut przed eskalacją nieobsadzonego posterunku.",
       "keep-safe": "Ochrona na zmianie",
       "keep-safe.desc": "Bezczynność, przypomnienia o zmianie i alarm o wygasających uprawnieniach.",
+      "patrullaje-config": "Trasy nadzoru",
+      "patrullaje-config.desc": "Geofence przybycia, wymagane zdjęcia i powody, opóźnienia, powiadomienia centrali i klienta.",
       "rondas-config": "Obchody",
       "rondas-config.desc": "Częstotliwość, tolerancja, obowiązkowe zdjęcie i lokalizacja oraz odbiorcy powiadomień.",
       "tipos-incidentes": "Typy zdarzeń",

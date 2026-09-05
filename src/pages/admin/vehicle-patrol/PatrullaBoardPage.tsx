@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
   Car, Plus, MapPin, Route as RouteIcon, CheckCircle2, Wand2, Clock, User,
-  Loader2, Eye, ListChecks,
+  Loader2, Eye, ListChecks, History as HistoryIcon, ClipboardList,
 } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import Breadcrumb from '@/components/ui/breadcrumb';
@@ -17,6 +17,7 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 import { confirmDialog } from '@/components/ui/confirmDialog';
 import routeService from '@/lib/api/routeService';
 import RouteDetailModal from '../routes/RouteDetailModal';
+import PatrullaEnVivo from './PatrullaEnVivo';
 import { InsigniaOptimizada, LineaAhorro } from '../routes/OptimizacionPanel';
 import { leerAhorro, km as fmtKm, minutos as fmtMin } from '../routes/routeOptimizacion';
 
@@ -169,6 +170,12 @@ export default function PatrullaBoardPage() {
                 aria-label={t('comun.fecha')}
                 className="cg-input cg-focus h-9 px-3 text-sm"
               />
+              <Button variant="outline" onClick={() => navigate('/vehicle-patrol/history')}>
+                <HistoryIcon className="size-4" /> {t('ui.PatrullaBoard.historial', 'Historial')}
+              </Button>
+              <Button variant="outline" onClick={() => navigate('/vehicle-patrol/templates')}>
+                <ClipboardList className="size-4" /> {t('ui.PatrullaBoard.plantillas', 'Plantillas')}
+              </Button>
               <Button variant="outline" onClick={() => navigate('/vehicle-patrol/routes')}>
                 <RouteIcon className="size-4" /> Gestionar rutas
               </Button>
@@ -183,6 +190,11 @@ export default function PatrullaBoardPage() {
           <StatCard label="Programadas hoy" value={todays.length} icon={<ListChecks />} accent="brand" />
           <StatCard label="Completadas" value={doneCount} icon={<CheckCircle2 />} accent="ok" />
         </Stagger>
+
+        {/* Lo que está pasando AHORA: las ejecuciones abiertas, con su avance.
+            Se alimenta del socket `route:progress` — el mismo canal por el que
+            el servidor anuncia cada llegada y cada cierre de parada. */}
+        <PatrullaEnVivo />
 
         <Section
           title={t("ui.PatrullaBoard.rutasDelDia", "Rutas del día")}
