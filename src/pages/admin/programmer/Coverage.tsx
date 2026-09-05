@@ -93,7 +93,10 @@ export default function Coverage() {
     try {
       const [l, e] = await Promise.all([
         coverageService.live(),
-        coverageService.events({ status: "open,covered" }),
+        // `resolved` también: es el hueco que VENCIÓ sin que nadie lo cubriera y
+        // que el barrido cerró para que dejara de pedir relevo. Cerrarlo no
+        // puede equivaler a esconderlo — es justo el que hay que poder mirar.
+        coverageService.events({ status: "open,covered,resolved" }),
       ]);
       setLive(l);
       setEvents(e?.rows || []);
@@ -506,8 +509,16 @@ export default function Coverage() {
                     {/* Payroll/discipline consequences, visible where they are decided. */}
                     {ev.countsAgainstGuard && <StatusBadge tone="bad">Falta grave</StatusBadge>}
                     <StatusBadge tone="neutral" dot={false}>{ev.paid ? t("ui.Coverage.conSueldo", "Con sueldo") : t("ui.Coverage.sinSueldo", "Sin sueldo")}</StatusBadge>
-                    <StatusBadge tone={ev.status === "open" ? "bad" : "ok"}>
-                      {ev.status === "open" ? "Sin cubrir" : ev.status === "covered" ? "Cubierto" : ev.status}
+                    <StatusBadge tone={ev.status === "open" ? "bad" : ev.status === "resolved" ? "warn" : "ok"}>
+                      {ev.status === "open"
+                        ? "Sin cubrir"
+                        : ev.status === "covered"
+                          ? "Cubierto"
+                          // Ya pasó y nadie lo cubrió. No lleva botón «Cubrir»
+                          // porque no hay nada que cubrir: la noche fue y vino.
+                          : ev.status === "resolved"
+                            ? "Quedó sin cubrir"
+                            : ev.status}
                     </StatusBadge>
                     {ev.status === "open" && (
                       <Button size="sm" onClick={() => openCover(ev)}>
