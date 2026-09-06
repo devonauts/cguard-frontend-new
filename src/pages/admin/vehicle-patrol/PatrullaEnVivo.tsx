@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Activity, Clock, MapPin, User, Pause, AlertTriangle, ChevronRight, Radio } from 'lucide-react';
-import { Section, StatusBadge, EmptyState, GlassPanel, SkeletonCards, Meter } from '@/components/kit';
+import { Activity, Clock, MapPin, User, Pause, AlertTriangle, ChevronRight } from 'lucide-react';
+import { Section, StatusBadge, StatusDot, EmptyState, GlassPanel, SkeletonCards, Meter } from '@/components/kit';
 import { getAuthToken } from '@/lib/api';
 import { crearSocket, cerrarSocket } from '@/lib/socket';
 import routeService from '@/lib/api/routeService';
@@ -46,8 +46,12 @@ export default function PatrullaEnVivo() {
       title={t('ui.PatrullaEnVivo.titulo', 'En curso ahora')}
       icon={<Activity />}
       action={(
-        <span className="flex items-center gap-1.5 text-xs" style={{ color: vivo ? 'var(--ok-text)' : 'var(--ink-faint)' }}>
-          <Radio className="size-3.5" />{vivo ? t('ui.PatrullaEnVivo.enVivo', 'En vivo') : t('ui.PatrullaEnVivo.sondeo', 'Actualizando cada 45 s')}
+        /* El punto que late es el del kit (`StatusDot pulse`): sólo late
+           mientras el canal en vivo está conectado. Si se cae, se dice cada
+           cuánto se refresca en vez de fingir que sigue en vivo. */
+        <span className="inline-flex items-center gap-2 text-xs" style={{ color: 'var(--ink-soft)' }}>
+          <StatusDot tone={vivo ? 'ok' : 'neutral'} pulse={vivo} label={vivo ? t('ui.PatrullaEnVivo.enVivo', 'En vivo') : t('ui.PatrullaEnVivo.sondeo', 'Actualizando cada 45 s')} />
+          {vivo ? t('ui.PatrullaEnVivo.enVivo', 'En vivo') : t('ui.PatrullaEnVivo.sondeo', 'Actualizando cada 45 s')}
         </span>
       )}
     >
@@ -65,7 +69,18 @@ export default function PatrullaEnVivo() {
             const pct = r.progress?.total ? Math.round((r.progress.completed / r.progress.total) * 100) : 0;
             const paused = r.status === 'paused';
             return (
-              <GlassPanel key={r.id} flat hover className="cursor-pointer p-4" onClick={() => navigate(`/vehicle-patrol/runs/${r.id}`)}>
+              /* `role="link"` + teclado: la tarjeta entera abre la ejecución,
+                 y antes sólo respondía al ratón. */
+              <GlassPanel
+                key={r.id}
+                flat
+                hover
+                role="link"
+                tabIndex={0}
+                className="cg-focus cursor-pointer p-4"
+                onClick={() => navigate(`/vehicle-patrol/runs/${r.id}`)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(`/vehicle-patrol/runs/${r.id}`); } }}
+              >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">

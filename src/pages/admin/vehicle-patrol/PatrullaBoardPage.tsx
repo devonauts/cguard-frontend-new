@@ -11,8 +11,9 @@ import Breadcrumb from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import {
   PageContainer, PageHeader, Section, Segmented, Stagger, StatCard, StatusBadge,
-  EmptyState, GlassPanel, SkeletonCards, Toolbar,
+  EmptyState, GlassPanel, SkeletonCards, Toolbar, FIELD_CLS,
 } from '@/components/kit';
+import { cn } from '@/lib/utils';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { confirmDialog } from '@/components/ui/confirmDialog';
 import routeService from '@/lib/api/routeService';
@@ -170,7 +171,10 @@ export default function PatrullaBoardPage() {
             </Button>
           )}
         />
-        <Toolbar className="mb-4">
+        {/* Sin `mb-4`: `PageContainer` ya separa a sus hijos con `space-y-6`.
+            Sin `cg-focus` en el campo: `.cg-input` ya pinta su aro y con los
+            dos quedaban dos anillos de radios distintos. */}
+        <Toolbar>
           <label className="flex items-center gap-2 text-sm" style={{ color: 'var(--ink-soft)' }}>
             {t('comun.fecha')}
             <input
@@ -178,8 +182,7 @@ export default function PatrullaBoardPage() {
               value={date}
               onChange={(e) => setDate(e.target.value)}
               aria-label={t('comun.fecha')}
-              className="cg-input cg-focus h-9 px-3 text-sm"
-              style={{ width: 170 }}
+              className={cn(FIELD_CLS, 'w-44')}
             />
           </label>
           <span className="flex-1" />

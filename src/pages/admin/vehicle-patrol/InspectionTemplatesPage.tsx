@@ -1,11 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { ClipboardList, Plus, Star, Pencil, Trash2, ChevronUp, ChevronDown, Copy } from 'lucide-react';
+import { ClipboardList, Plus, Star, Pencil, Trash2, ChevronUp, ChevronDown, Copy, SlidersHorizontal } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import Breadcrumb from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
-import { PageContainer, PageHeader, Section, StatusBadge, EmptyState, ListRow, SkeletonCards, Modal, FormField, FIELD_CLS, InfoNote } from '@/components/kit';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { PageContainer, PageHeader, Section, StatusBadge, EmptyState, ListRow, SkeletonCards, Modal, FormField, InfoNote, GlassPanel } from '@/components/kit';
 import { confirmDialog } from '@/components/ui/confirmDialog';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import routeInspectionTemplateService, { type InspectionTemplate, type TemplateContent, type TemplateItem, type TemplateSection, type ItemType } from '@/lib/api/routeInspectionTemplateService';
@@ -27,7 +31,14 @@ const TIPOS: Array<{ value: ItemType; label: string }> = [
 const ESCALABLES = new Set(['slider', 'rating', 'number']);
 const CON_OPCIONES = new Set(['single_select', 'multi_select']);
 const FALLABLES = new Set(['yes_no', 'pass_fail', 'boolean', 'checkbox', 'acknowledgement', 'single_select', 'slider', 'rating', 'number']);
+const GRAVEDAD: Array<{ value: string; label: string }> = [
+  { value: 'low', label: 'Baja' }, { value: 'medium', label: 'Media' }, { value: 'high', label: 'Alta' }, { value: 'critical', label: 'Crítica' },
+];
 const nuevoId = (p: string) => `${p}_${Math.random().toString(36).slice(2, 7)}`;
+
+/* El `Select` de Radix no admite un elemento con valor vacío: «siempre» lleva
+   un centinela que se traduce a «sin condición». */
+const SIEMPRE = '__siempre__';
 
 export default function InspectionTemplatesPage() {
   const { t } = useTranslation();
@@ -61,23 +72,40 @@ export default function InspectionTemplatesPage() {
       <PageContainer>
         <PageHeader icon={<ClipboardList />} title={t('ui.InspectionTemplates.titulo', 'Plantillas de inspección')} subtitle={t('ui.InspectionTemplates.sub', 'Lo que el supervisor revisa y contesta en cada parada de su ruta.')}
           actions={<Button variant="brand" onClick={() => setEditing('new')}><Plus className="size-4" />{t('ui.InspectionTemplates.nueva', 'Nueva plantilla')}</Button>} />
-        <InfoNote tone="info" className="mb-4">{t('ui.InspectionTemplates.nota', 'Cada plantilla se asigna por ruta o por parada al editar la ruta. Si no se asigna ninguna, se usa la marcada por defecto. Editar una plantilla crea una versión nueva; las visitas anteriores no cambian.')}</InfoNote>
+        <InfoNote tone="info">{t('ui.InspectionTemplates.nota', 'Cada plantilla se asigna por ruta o por parada al editar la ruta. Si no se asigna ninguna, se usa la marcada por defecto. Editar una plantilla crea una versión nueva; las visitas anteriores no cambian.')}</InfoNote>
         <Section title={t('ui.InspectionTemplates.lista', 'Plantillas')} icon={<ClipboardList />}>
-          {rows === null ? <SkeletonCards count={3} /> : rows.length === 0 ? <EmptyState icon={<ClipboardList />} title={t('ui.InspectionTemplates.vacio', 'Sin plantillas')} /> : (
-            <div className="space-y-2">
+          {rows === null ? <SkeletonCards count={3} /> : rows.length === 0 ? (
+            <EmptyState
+              variant="inline"
+              icon={<ClipboardList />}
+              title={t('ui.InspectionTemplates.vacio', 'Sin plantillas')}
+              description={t('ui.InspectionTemplates.vacioSub', 'Crea la primera y márcala por defecto: será la que contesten los supervisores en cada parada.')}
+              action={<Button variant="outline" onClick={() => setEditing('new')}><Plus className="size-4" />{t('ui.InspectionTemplates.nueva', 'Nueva plantilla')}</Button>}
+            />
+          ) : (
+            <div className="space-y-1">
               {rows.map((tpl) => {
                 const items = (tpl.content?.sections || []).reduce((n, s) => n + (s.items?.length || 0), 0);
                 return (
-                  <ListRow key={tpl.id} title={tpl.name} subtitle={`${tpl.content?.sections?.length || 0} secciones · ${items} ítems · v${tpl.version}${tpl.description ? ` · ${tpl.description}` : ''}`}
-                    badges={tpl.isDefault ? <StatusBadge tone="brand" className="whitespace-nowrap">{t('ui.InspectionTemplates.porDefecto', 'Por defecto')}</StatusBadge> : null}
+                  <ListRow
+                    key={tpl.id}
+                    title={tpl.name}
+                    subtitle={[
+                      t('ui.InspectionTemplates.secciones', '{{n}} secciones', { n: tpl.content?.sections?.length || 0 }),
+                      t('ui.InspectionTemplates.items', '{{n}} preguntas', { n: items }),
+                      `v${tpl.version}`,
+                      tpl.description,
+                    ].filter(Boolean).join(' · ')}
+                    badges={tpl.isDefault ? <StatusBadge tone="brand">{t('ui.InspectionTemplates.porDefecto', 'Por defecto')}</StatusBadge> : null}
                     actions={(
-                      <div className="flex gap-1">
-                        {!tpl.isDefault && <Button size="sm" variant="ghost" onClick={() => marcarDefecto(tpl)}><Star className="size-3.5" /></Button>}
-                        <Button size="sm" variant="ghost" onClick={() => duplicar(tpl)} aria-label="Duplicar"><Copy className="size-3.5" /></Button>
+                      <>
+                        {!tpl.isDefault && <Button size="icon-sm" variant="ghost" aria-label={t('ui.InspectionTemplates.marcarDefecto', 'Usar por defecto')} title={t('ui.InspectionTemplates.marcarDefecto', 'Usar por defecto')} onClick={() => marcarDefecto(tpl)}><Star className="size-4" /></Button>}
+                        <Button size="icon-sm" variant="ghost" aria-label={t('ui.InspectionTemplates.duplicar', 'Duplicar')} title={t('ui.InspectionTemplates.duplicar', 'Duplicar')} onClick={() => duplicar(tpl)}><Copy className="size-4" /></Button>
                         <Button size="sm" variant="outline" onClick={() => setEditing(tpl)}><Pencil className="size-3.5" />{t('comun.editar', 'Editar')}</Button>
-                        {!tpl.isDefault && <Button size="sm" variant="ghost" onClick={() => borrar(tpl)} aria-label="Desactivar"><Trash2 className="size-3.5" /></Button>}
-                      </div>
-                    )} />
+                        {!tpl.isDefault && <Button size="icon-sm" variant="danger-ghost" aria-label={t('ui.InspectionTemplates.desactivar', 'Desactivar')} title={t('ui.InspectionTemplates.desactivar', 'Desactivar')} onClick={() => borrar(tpl)}><Trash2 className="size-4" /></Button>}
+                      </>
+                    )}
+                  />
                 );
               })}
             </div>
@@ -89,8 +117,19 @@ export default function InspectionTemplatesPage() {
   );
 }
 
+/** Casilla con su etiqueta atada — la pareja `Checkbox` + `Label` del kit. */
+function Casilla({ id, checked, onChange, children, disabled }: { id: string; checked: boolean; onChange: (v: boolean) => void; children: React.ReactNode; disabled?: boolean }) {
+  return (
+    <div className="flex items-center gap-2">
+      <Checkbox id={id} checked={checked} disabled={disabled} onCheckedChange={(v) => onChange(v === true)} />
+      <Label htmlFor={id} className="cursor-pointer text-sm font-normal">{children}</Label>
+    </div>
+  );
+}
+
 function EditorModal({ tpl, factory, onClose, onSaved }: { tpl: InspectionTemplate | null; factory: TemplateContent | null; onClose: () => void; onSaved: () => void }) {
   const { t } = useTranslation();
+  const uid = useId();
   const esNueva = !tpl?.id;
   const [name, setName] = useState(tpl?.name || '');
   const [description, setDescription] = useState(tpl?.description || '');
@@ -105,7 +144,7 @@ function EditorModal({ tpl, factory, onClose, onSaved }: { tpl: InspectionTempla
 
   const save = async () => {
     if (!name.trim()) { toast.error(t('ui.InspectionTemplates.nombreReq', 'La plantilla necesita un nombre')); return; }
-    if (!todosItems.length) { toast.error(t('ui.InspectionTemplates.itemsReq', 'Añade al menos un ítem')); return; }
+    if (!todosItems.length) { toast.error(t('ui.InspectionTemplates.itemsReq', 'Añade al menos una pregunta')); return; }
     setSaving(true);
     try {
       if (esNueva) await routeInspectionTemplateService.create({ name: name.trim(), description: description.trim() || undefined, content, isDefault });
@@ -117,29 +156,46 @@ function EditorModal({ tpl, factory, onClose, onSaved }: { tpl: InspectionTempla
   };
 
   return (
-    <Modal open onOpenChange={(v) => { if (!v) onClose(); }} title={esNueva ? t('ui.InspectionTemplates.nueva', 'Nueva plantilla') : `${tpl!.name} · v${tpl!.version}`} icon={<ClipboardList />} size="xl"
-      footer={<><Button variant="outline" onClick={onClose}>{t('comun.cancelar', 'Cancelar')}</Button><Button variant="brand" onClick={save} disabled={saving}>{t('comun.guardar', 'Guardar')}</Button></>}>
-      <div className="grid gap-4">
-        <div className="grid gap-3 sm:grid-cols-2">
-          <FormField label={t('ui.InspectionTemplates.nombre', 'Nombre')} required><input className={FIELD_CLS} value={name} onChange={(e) => setName(e.target.value)} maxLength={150} /></FormField>
-          <FormField label={t('ui.InspectionTemplates.descripcion', 'Descripción')}><input className={FIELD_CLS} value={description} onChange={(e) => setDescription(e.target.value)} maxLength={255} /></FormField>
+    <Modal
+      open
+      onOpenChange={(v) => { if (!v) onClose(); }}
+      title={esNueva ? t('ui.InspectionTemplates.nueva', 'Nueva plantilla') : tpl!.name}
+      description={esNueva ? t('ui.InspectionTemplates.nuevaSub', 'Lo que el supervisor contesta en cada parada.') : t('ui.InspectionTemplates.version', 'Versión {{v}} · al guardar cambios de contenido se crea la siguiente', { v: tpl!.version })}
+      icon={<ClipboardList />}
+      size="xl"
+      footer={<><Button variant="outline" onClick={onClose}>{t('comun.cancelar', 'Cancelar')}</Button><Button variant="brand" onClick={save} disabled={saving}>{saving ? t('comun.guardando', 'Guardando…') : t('comun.guardar', 'Guardar')}</Button></>}
+    >
+      <div className="space-y-5">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <FormField label={t('ui.InspectionTemplates.nombre', 'Nombre')} htmlFor={`${uid}-nombre`} required>
+            <Input id={`${uid}-nombre`} value={name} onChange={(e) => setName(e.target.value)} maxLength={150} />
+          </FormField>
+          <FormField label={t('ui.InspectionTemplates.descripcion', 'Descripción')} htmlFor={`${uid}-desc`}>
+            <Input id={`${uid}-desc`} value={description} onChange={(e) => setDescription(e.target.value)} maxLength={255} />
+          </FormField>
         </div>
-        <div className="flex flex-wrap gap-4 text-sm">
-          <label className="flex items-center gap-2"><input type="checkbox" checked={isDefault} onChange={(e) => setIsDefault(e.target.checked)} />{t('ui.InspectionTemplates.usarPorDefecto', 'Usar por defecto')}</label>
-          <label className="flex items-center gap-2"><input type="checkbox" checked={!!content.settings?.requireGuardVerification} onChange={(e) => setSettings({ requireGuardVerification: e.target.checked })} />{t('ui.InspectionTemplates.exigirPersonal', 'Exigir verificar al personal')}</label>
-          <label className="flex items-center gap-2"><input type="checkbox" checked={!!content.settings?.requireNotes} onChange={(e) => setSettings({ requireNotes: e.target.checked })} />{t('ui.InspectionTemplates.exigirNotas', 'Exigir notas')}</label>
-          <label className="flex items-center gap-2">{t('ui.InspectionTemplates.fotosMin', 'Fotos mínimas')}<input type="number" min={0} max={20} className={`${FIELD_CLS} w-20`} value={content.settings?.minPhotos ?? 0} onChange={(e) => setSettings({ minPhotos: Number(e.target.value) || 0 })} /></label>
+
+        {/* Reglas de la plantilla entera: un pozo hundido, como el detalle de
+            una fila de Ajustes. */}
+        <div className="glass-sunken flex flex-wrap items-center gap-x-6 gap-y-3 p-3">
+          <Casilla id={`${uid}-def`} checked={isDefault} onChange={setIsDefault}>{t('ui.InspectionTemplates.usarPorDefecto', 'Usar por defecto')}</Casilla>
+          <Casilla id={`${uid}-personal`} checked={!!content.settings?.requireGuardVerification} onChange={(v) => setSettings({ requireGuardVerification: v })}>{t('ui.InspectionTemplates.exigirPersonal', 'Exigir verificar al personal')}</Casilla>
+          <Casilla id={`${uid}-notas`} checked={!!content.settings?.requireNotes} onChange={(v) => setSettings({ requireNotes: v })}>{t('ui.InspectionTemplates.exigirNotas', 'Exigir notas')}</Casilla>
+          <div className="flex items-center gap-2">
+            <Label htmlFor={`${uid}-fotos`} className="text-sm font-normal">{t('ui.InspectionTemplates.fotosMin', 'Fotos mínimas')}</Label>
+            <Input id={`${uid}-fotos`} type="number" min={0} max={20} className="w-20 text-right" value={content.settings?.minPhotos ?? 0} onChange={(e) => setSettings({ minPhotos: Number(e.target.value) || 0 })} />
+          </div>
         </div>
 
         {content.sections.map((sec, si) => (
-          <div key={sec.id} className="rounded-2xl border p-3" style={{ borderColor: 'var(--hairline)' }}>
+          <GlassPanel key={sec.id} flat className="p-4">
             <div className="flex items-center gap-2">
-              <input className={`${FIELD_CLS} font-semibold`} value={sec.title} onChange={(e) => setSection(si, (s) => ({ ...s, title: e.target.value }))} maxLength={120} placeholder="Título de la sección" />
-              <Button size="icon" variant="ghost" disabled={si === 0} onClick={() => setContent((c) => ({ ...c, sections: mover(c.sections, si, -1) }))}><ChevronUp className="size-4" /></Button>
-              <Button size="icon" variant="ghost" disabled={si === content.sections.length - 1} onClick={() => setContent((c) => ({ ...c, sections: mover(c.sections, si, 1) }))}><ChevronDown className="size-4" /></Button>
-              <Button size="icon" variant="ghost" onClick={() => setContent((c) => ({ ...c, sections: c.sections.filter((_, j) => j !== si) }))} aria-label="Quitar sección"><Trash2 className="size-4" /></Button>
+              <Input className="font-semibold" value={sec.title} onChange={(e) => setSection(si, (s) => ({ ...s, title: e.target.value }))} maxLength={120} placeholder={t('ui.InspectionTemplates.tituloSeccion', 'Título de la sección')} aria-label={t('ui.InspectionTemplates.tituloSeccion', 'Título de la sección')} />
+              <Button size="icon-sm" variant="ghost" aria-label={t('ui.InspectionTemplates.subirSeccion', 'Subir sección')} disabled={si === 0} onClick={() => setContent((c) => ({ ...c, sections: mover(c.sections, si, -1) }))}><ChevronUp className="size-4" /></Button>
+              <Button size="icon-sm" variant="ghost" aria-label={t('ui.InspectionTemplates.bajarSeccion', 'Bajar sección')} disabled={si === content.sections.length - 1} onClick={() => setContent((c) => ({ ...c, sections: mover(c.sections, si, 1) }))}><ChevronDown className="size-4" /></Button>
+              <Button size="icon-sm" variant="danger-ghost" aria-label={t('ui.InspectionTemplates.quitarSeccion', 'Quitar sección')} onClick={() => setContent((c) => ({ ...c, sections: c.sections.filter((_, j) => j !== si) }))}><Trash2 className="size-4" /></Button>
             </div>
-            <div className="mt-2 space-y-2">
+            <div className="mt-3 space-y-2">
               {sec.items.map((it, ii) => (
                 <ItemEditor key={it.id} it={it} otros={todosItems.filter((x) => x.id !== it.id)}
                   onChange={(fn) => setItem(si, ii, fn)}
@@ -147,9 +203,9 @@ function EditorModal({ tpl, factory, onClose, onSaved }: { tpl: InspectionTempla
                   onRemove={() => setSection(si, (s) => ({ ...s, items: s.items.filter((_, j) => j !== ii) }))}
                   first={ii === 0} last={ii === sec.items.length - 1} />
               ))}
-              <Button size="sm" variant="outline" onClick={() => setSection(si, (s) => ({ ...s, items: [...s.items, { id: nuevoId('it'), type: 'yes_no', label: '', required: true, clientVisible: true, weight: 1 }] }))}><Plus className="size-3.5" />{t('ui.InspectionTemplates.agregarItem', 'Añadir ítem')}</Button>
+              <Button size="sm" variant="outline" onClick={() => setSection(si, (s) => ({ ...s, items: [...s.items, { id: nuevoId('it'), type: 'yes_no', label: '', required: true, clientVisible: true, weight: 1 }] }))}><Plus className="size-3.5" />{t('ui.InspectionTemplates.agregarItem', 'Añadir pregunta')}</Button>
             </div>
-          </div>
+          </GlassPanel>
         ))}
         <Button variant="outline" onClick={() => setContent((c) => ({ ...c, sections: [...c.sections, { id: nuevoId('sec'), title: `Sección ${c.sections.length + 1}`, items: [] }] }))}><Plus className="size-4" />{t('ui.InspectionTemplates.agregarSeccion', 'Añadir sección')}</Button>
       </div>
@@ -157,81 +213,155 @@ function EditorModal({ tpl, factory, onClose, onSaved }: { tpl: InspectionTempla
   );
 }
 
+/**
+ * Una pregunta de la plantilla. La primera línea es lo que se toca a diario
+ * (texto y tipo); las reglas finas —peso, escala, opciones, qué pasa al
+ * fallar, cuándo se muestra— quedan plegadas detrás de «Ajustes».
+ */
 function ItemEditor({ it, otros, onChange, onMove, onRemove, first, last }: { it: TemplateItem; otros: TemplateItem[]; onChange: (fn: (it: TemplateItem) => TemplateItem) => void; onMove: (d: -1 | 1) => void; onRemove: () => void; first: boolean; last: boolean }) {
   const { t } = useTranslation();
+  const uid = useId();
   const [mas, setMas] = useState(false);
   const set = (p: Partial<TemplateItem>) => onChange((x) => ({ ...x, ...p }));
+  const setOpcion = (i: number, p: Partial<NonNullable<TemplateItem['options']>[number]>) => set({ options: it.options!.map((x, j) => (j === i ? { ...x, ...p } : x)) });
+  const escala = it.scale || { min: 0, max: 10 };
+  const condicion = it.showIf ? (it.showIf.isFail !== undefined ? (it.showIf.isFail ? 'fail' : 'pass') : 'equals') : 'fail';
+
   return (
-    <div className="rounded-xl p-2" style={{ background: 'var(--glass-sunken)' }}>
-      <div className="flex flex-wrap items-center gap-2">
-        <input className={`${FIELD_CLS} min-w-[200px] flex-1`} value={it.label} placeholder={t('ui.InspectionTemplates.pregunta', 'Pregunta')} onChange={(e) => set({ label: e.target.value })} maxLength={200} />
-        <select className={`${FIELD_CLS} w-44`} value={it.type} onChange={(e) => set({ type: e.target.value as ItemType, scale: ESCALABLES.has(e.target.value) ? (it.scale || { min: e.target.value === 'rating' ? 1 : 0, max: e.target.value === 'rating' ? 5 : 10 }) : undefined, options: CON_OPCIONES.has(e.target.value) ? (it.options || [{ value: 'a', label: 'Opción A', score: 1 }, { value: 'b', label: 'Opción B', score: 0 }]) : undefined })}>
-          {TIPOS.map((tp) => <option key={tp.value} value={tp.value}>{tp.label}</option>)}
-        </select>
-        <label className="flex items-center gap-1 text-xs"><input type="checkbox" checked={it.required !== false} onChange={(e) => set({ required: e.target.checked })} />{t('ui.InspectionTemplates.obligatorio', 'Obligatorio')}</label>
-        <label className="flex items-center gap-1 text-xs"><input type="checkbox" checked={it.clientVisible !== false} onChange={(e) => set({ clientVisible: e.target.checked })} />{t('ui.InspectionTemplates.cliente', 'Cliente')}</label>
-        <Button size="sm" variant="ghost" onClick={() => setMas((m) => !m)}>{mas ? t('ui.InspectionTemplates.menos', 'Menos') : t('ui.InspectionTemplates.mas', 'Más…')}</Button>
-        <Button size="icon" variant="ghost" disabled={first} onClick={() => onMove(-1)}><ChevronUp className="size-4" /></Button>
-        <Button size="icon" variant="ghost" disabled={last} onClick={() => onMove(1)}><ChevronDown className="size-4" /></Button>
-        <Button size="icon" variant="ghost" onClick={onRemove} aria-label="Quitar"><Trash2 className="size-4" /></Button>
+    <div className="glass-sunken p-3">
+      <div className="grid gap-2 sm:grid-cols-[1fr_11rem]">
+        <Input value={it.label} placeholder={t('ui.InspectionTemplates.pregunta', 'Pregunta')} aria-label={t('ui.InspectionTemplates.pregunta', 'Pregunta')} onChange={(e) => set({ label: e.target.value })} maxLength={200} />
+        <Select
+          value={it.type}
+          onValueChange={(v) => set({
+            type: v as ItemType,
+            scale: ESCALABLES.has(v) ? (it.scale || { min: v === 'rating' ? 1 : 0, max: v === 'rating' ? 5 : 10 }) : undefined,
+            options: CON_OPCIONES.has(v) ? (it.options || [{ value: 'a', label: 'Opción A', score: 1 }, { value: 'b', label: 'Opción B', score: 0 }]) : undefined,
+          })}
+        >
+          <SelectTrigger aria-label={t('ui.InspectionTemplates.tipo', 'Tipo de respuesta')}><SelectValue /></SelectTrigger>
+          <SelectContent>
+            {TIPOS.map((tp) => <SelectItem key={tp.value} value={tp.value}>{tp.label}</SelectItem>)}
+          </SelectContent>
+        </Select>
       </div>
+      <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-2">
+        <Casilla id={`${uid}-req`} checked={it.required !== false} onChange={(v) => set({ required: v })}>{t('ui.InspectionTemplates.obligatorio', 'Obligatoria')}</Casilla>
+        <Casilla id={`${uid}-cli`} checked={it.clientVisible !== false} onChange={(v) => set({ clientVisible: v })}>{t('ui.InspectionTemplates.cliente', 'Visible al cliente')}</Casilla>
+        <div className="ml-auto flex items-center gap-1">
+          <Button size="sm" variant={mas ? 'brand' : 'ghost'} aria-expanded={mas} onClick={() => setMas((m) => !m)}><SlidersHorizontal className="size-3.5" />{t('ui.InspectionTemplates.ajustes', 'Ajustes')}</Button>
+          <Button size="icon-sm" variant="ghost" aria-label={t('ui.InspectionTemplates.subir', 'Subir')} disabled={first} onClick={() => onMove(-1)}><ChevronUp className="size-4" /></Button>
+          <Button size="icon-sm" variant="ghost" aria-label={t('ui.InspectionTemplates.bajar', 'Bajar')} disabled={last} onClick={() => onMove(1)}><ChevronDown className="size-4" /></Button>
+          <Button size="icon-sm" variant="danger-ghost" aria-label={t('ui.InspectionTemplates.quitar', 'Quitar pregunta')} onClick={onRemove}><Trash2 className="size-4" /></Button>
+        </div>
+      </div>
+
       {mas && (
-        <div className="mt-2 grid gap-2 text-xs sm:grid-cols-2">
-          <label className="flex items-center gap-2">{t('ui.InspectionTemplates.ayuda', 'Ayuda')}<input className={FIELD_CLS} value={it.help || ''} onChange={(e) => set({ help: e.target.value })} maxLength={400} /></label>
-          <label className="flex items-center gap-2">{t('ui.InspectionTemplates.peso', 'Peso en la nota')}<input type="number" min={0} max={10} step={0.5} className={`${FIELD_CLS} w-20`} value={it.weight ?? 1} onChange={(e) => set({ weight: Number(e.target.value) })} /></label>
+        <div className="mt-3 space-y-4 border-t pt-3" style={{ borderColor: 'var(--hairline)' }}>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <FormField label={t('ui.InspectionTemplates.ayuda', 'Texto de ayuda')} htmlFor={`${uid}-ayuda`} hint={t('ui.InspectionTemplates.ayudaHint', 'Se muestra bajo la pregunta en la app.')}>
+              <Input id={`${uid}-ayuda`} value={it.help || ''} onChange={(e) => set({ help: e.target.value })} maxLength={400} />
+            </FormField>
+            <FormField label={t('ui.InspectionTemplates.peso', 'Peso en la nota')} htmlFor={`${uid}-peso`} hint={t('ui.InspectionTemplates.pesoHint', 'Cuánto cuenta esta pregunta en el porcentaje de la inspección.')}>
+              <Input id={`${uid}-peso`} type="number" min={0} max={10} step={0.5} className="w-24 text-right" value={it.weight ?? 1} onChange={(e) => set({ weight: Number(e.target.value) })} />
+            </FormField>
+          </div>
+
           {ESCALABLES.has(it.type) && (
-            <div className="flex flex-wrap items-center gap-2 sm:col-span-2">
-              <span>{t('ui.InspectionTemplates.escala', 'Escala')}</span>
-              <input type="number" className={`${FIELD_CLS} w-20`} value={it.scale?.min ?? 0} onChange={(e) => set({ scale: { ...(it.scale || { min: 0, max: 10 }), min: Number(e.target.value) } })} aria-label="Mínimo" />
-              <span>–</span>
-              <input type="number" className={`${FIELD_CLS} w-20`} value={it.scale?.max ?? 10} onChange={(e) => set({ scale: { ...(it.scale || { min: 0, max: 10 }), max: Number(e.target.value) } })} aria-label="Máximo" />
-              <input className={`${FIELD_CLS} w-28`} placeholder="Etiqueta mín." value={it.scale?.minLabel || ''} onChange={(e) => set({ scale: { ...(it.scale || { min: 0, max: 10 }), minLabel: e.target.value } })} />
-              <input className={`${FIELD_CLS} w-28`} placeholder="Etiqueta máx." value={it.scale?.maxLabel || ''} onChange={(e) => set({ scale: { ...(it.scale || { min: 0, max: 10 }), maxLabel: e.target.value } })} />
-              <span>{t('ui.InspectionTemplates.fallaSi', 'Falla si es menor que')}</span>
-              <input type="number" className={`${FIELD_CLS} w-20`} value={it.failWhen?.lt ?? ''} onChange={(e) => set({ failWhen: e.target.value === '' ? undefined : { lt: Number(e.target.value) } })} />
+            <div>
+              <div className="cg-eyebrow mb-2">{t('ui.InspectionTemplates.escala', 'Escala')}</div>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+                <FormField label={t('ui.InspectionTemplates.minimo', 'Mínimo')} htmlFor={`${uid}-min`}>
+                  <Input id={`${uid}-min`} type="number" value={escala.min ?? 0} onChange={(e) => set({ scale: { ...escala, min: Number(e.target.value) } })} />
+                </FormField>
+                <FormField label={t('ui.InspectionTemplates.maximo', 'Máximo')} htmlFor={`${uid}-max`}>
+                  <Input id={`${uid}-max`} type="number" value={escala.max ?? 10} onChange={(e) => set({ scale: { ...escala, max: Number(e.target.value) } })} />
+                </FormField>
+                <FormField label={t('ui.InspectionTemplates.etiquetaMin', 'Etiqueta del mínimo')} htmlFor={`${uid}-minl`}>
+                  <Input id={`${uid}-minl`} value={escala.minLabel || ''} onChange={(e) => set({ scale: { ...escala, minLabel: e.target.value } })} />
+                </FormField>
+                <FormField label={t('ui.InspectionTemplates.etiquetaMax', 'Etiqueta del máximo')} htmlFor={`${uid}-maxl`}>
+                  <Input id={`${uid}-maxl`} value={escala.maxLabel || ''} onChange={(e) => set({ scale: { ...escala, maxLabel: e.target.value } })} />
+                </FormField>
+                <FormField label={t('ui.InspectionTemplates.fallaSi', 'Falla si es menor que')} htmlFor={`${uid}-lt`}>
+                  <Input id={`${uid}-lt`} type="number" value={it.failWhen?.lt ?? ''} onChange={(e) => set({ failWhen: e.target.value === '' ? undefined : { lt: Number(e.target.value) } })} />
+                </FormField>
+              </div>
             </div>
           )}
+
           {CON_OPCIONES.has(it.type) && (
-            <div className="sm:col-span-2">
-              <p className="mb-1">{t('ui.InspectionTemplates.opciones', 'Opciones (valor · etiqueta · puntaje 0–1)')}</p>
-              {(it.options || []).map((o, i) => (
-                <div key={i} className="mb-1 flex gap-2">
-                  <input className={`${FIELD_CLS} w-24`} value={o.value} onChange={(e) => set({ options: it.options!.map((x, j) => (j === i ? { ...x, value: e.target.value } : x)) })} />
-                  <input className={`${FIELD_CLS} flex-1`} value={o.label} onChange={(e) => set({ options: it.options!.map((x, j) => (j === i ? { ...x, label: e.target.value } : x)) })} />
-                  <input type="number" min={0} max={1} step={0.1} className={`${FIELD_CLS} w-20`} value={o.score ?? ''} onChange={(e) => set({ options: it.options!.map((x, j) => (j === i ? { ...x, score: e.target.value === '' ? undefined : Number(e.target.value) } : x)) })} />
-                  <Button size="icon" variant="ghost" onClick={() => set({ options: it.options!.filter((_, j) => j !== i) })}><Trash2 className="size-3.5" /></Button>
-                </div>
-              ))}
-              <Button size="sm" variant="outline" onClick={() => set({ options: [...(it.options || []), { value: `o${(it.options?.length || 0) + 1}`, label: '', score: 1 }] })}><Plus className="size-3.5" />Opción</Button>
+            <div>
+              <div className="cg-eyebrow mb-2">{t('ui.InspectionTemplates.opciones', 'Opciones')}</div>
+              <div className="mb-1 hidden grid-cols-[6rem_1fr_5rem_2rem] gap-2 text-xs sm:grid" style={{ color: 'var(--ink-faint)' }}>
+                <span>{t('ui.InspectionTemplates.opValor', 'Valor')}</span>
+                <span>{t('ui.InspectionTemplates.opEtiqueta', 'Etiqueta')}</span>
+                <span>{t('ui.InspectionTemplates.opPuntaje', 'Puntaje 0–1')}</span>
+                <span />
+              </div>
+              <div className="space-y-2">
+                {(it.options || []).map((o, i) => (
+                  <div key={i} className="grid grid-cols-[6rem_1fr_5rem_2rem] items-center gap-2">
+                    <Input value={o.value} aria-label={t('ui.InspectionTemplates.opValor', 'Valor')} onChange={(e) => setOpcion(i, { value: e.target.value })} />
+                    <Input value={o.label} aria-label={t('ui.InspectionTemplates.opEtiqueta', 'Etiqueta')} onChange={(e) => setOpcion(i, { label: e.target.value })} />
+                    <Input type="number" min={0} max={1} step={0.1} className="text-right" aria-label={t('ui.InspectionTemplates.opPuntaje', 'Puntaje 0–1')} value={o.score ?? ''} onChange={(e) => setOpcion(i, { score: e.target.value === '' ? undefined : Number(e.target.value) })} />
+                    <Button size="icon-sm" variant="danger-ghost" aria-label={t('ui.InspectionTemplates.quitarOpcion', 'Quitar opción')} onClick={() => set({ options: it.options!.filter((_, j) => j !== i) })}><Trash2 className="size-3.5" /></Button>
+                  </div>
+                ))}
+              </div>
+              <Button size="sm" variant="outline" className="mt-2" onClick={() => set({ options: [...(it.options || []), { value: `o${(it.options?.length || 0) + 1}`, label: '', score: 1 }] })}><Plus className="size-3.5" />{t('ui.InspectionTemplates.agregarOpcion', 'Añadir opción')}</Button>
             </div>
           )}
-          {it.type === 'photo' && <label className="flex items-center gap-2">{t('ui.InspectionTemplates.fotosMinItem', 'Fotos mínimas')}<input type="number" min={0} max={10} className={`${FIELD_CLS} w-20`} value={it.photo?.min ?? 1} onChange={(e) => set({ photo: { ...(it.photo || {}), min: Number(e.target.value) } })} /></label>}
+
+          {it.type === 'photo' && (
+            <FormField label={t('ui.InspectionTemplates.fotosMinItem', 'Fotos mínimas')} htmlFor={`${uid}-fmin`} className="max-w-xs">
+              <Input id={`${uid}-fmin`} type="number" min={0} max={10} className="w-24 text-right" value={it.photo?.min ?? 1} onChange={(e) => set({ photo: { ...(it.photo || {}), min: Number(e.target.value) } })} />
+            </FormField>
+          )}
+
           {FALLABLES.has(it.type) && (
-            <div className="flex flex-wrap gap-3 sm:col-span-2">
-              <span>{t('ui.InspectionTemplates.alFallar', 'Al fallar:')}</span>
-              <label className="flex items-center gap-1"><input type="checkbox" checked={!!it.onFail?.requireNote} onChange={(e) => set({ onFail: { ...(it.onFail || {}), requireNote: e.target.checked } })} />{t('ui.InspectionTemplates.exigeNota', 'exige nota')}</label>
-              <label className="flex items-center gap-1"><input type="checkbox" checked={!!it.onFail?.requirePhoto} onChange={(e) => set({ onFail: { ...(it.onFail || {}), requirePhoto: e.target.checked } })} />{t('ui.InspectionTemplates.exigeFoto', 'exige foto')}</label>
-              <label className="flex items-center gap-1"><input type="checkbox" checked={!!it.onFail?.offerIncident} onChange={(e) => set({ onFail: { ...(it.onFail || {}), offerIncident: e.target.checked } })} />{t('ui.InspectionTemplates.ofreceIncidente', 'ofrece crear incidente')}</label>
-              <label className="flex items-center gap-1"><input type="checkbox" checked={!!it.onFail?.offerTask} onChange={(e) => set({ onFail: { ...(it.onFail || {}), offerTask: e.target.checked } })} />{t('ui.InspectionTemplates.ofreceTarea', 'ofrece crear tarea')}</label>
-              <label className="flex items-center gap-1">{t('ui.InspectionTemplates.gravedad', 'gravedad')}
-                <select className={`${FIELD_CLS} w-28`} value={it.onFail?.severity || 'medium'} onChange={(e) => set({ onFail: { ...(it.onFail || {}), severity: e.target.value } })}>
-                  <option value="low">Baja</option><option value="medium">Media</option><option value="high">Alta</option><option value="critical">Crítica</option>
-                </select>
-              </label>
+            <div>
+              <div className="cg-eyebrow mb-2">{t('ui.InspectionTemplates.alFallar', 'Cuando falla')}</div>
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+                <Casilla id={`${uid}-fnota`} checked={!!it.onFail?.requireNote} onChange={(v) => set({ onFail: { ...(it.onFail || {}), requireNote: v } })}>{t('ui.InspectionTemplates.exigeNota', 'Exige nota')}</Casilla>
+                <Casilla id={`${uid}-ffoto`} checked={!!it.onFail?.requirePhoto} onChange={(v) => set({ onFail: { ...(it.onFail || {}), requirePhoto: v } })}>{t('ui.InspectionTemplates.exigeFoto', 'Exige foto')}</Casilla>
+                <Casilla id={`${uid}-finc`} checked={!!it.onFail?.offerIncident} onChange={(v) => set({ onFail: { ...(it.onFail || {}), offerIncident: v } })}>{t('ui.InspectionTemplates.ofreceIncidente', 'Ofrece crear incidente')}</Casilla>
+                <Casilla id={`${uid}-ftarea`} checked={!!it.onFail?.offerTask} onChange={(v) => set({ onFail: { ...(it.onFail || {}), offerTask: v } })}>{t('ui.InspectionTemplates.ofreceTarea', 'Ofrece crear tarea')}</Casilla>
+                <div className="flex items-center gap-2">
+                  <Label htmlFor={`${uid}-grav`} className="text-sm font-normal">{t('ui.InspectionTemplates.gravedad', 'Gravedad')}</Label>
+                  <Select value={it.onFail?.severity || 'medium'} onValueChange={(v) => set({ onFail: { ...(it.onFail || {}), severity: v } })}>
+                    <SelectTrigger id={`${uid}-grav`} className="w-32"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {GRAVEDAD.map((g) => <SelectItem key={g.value} value={g.value}>{g.label}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </div>
           )}
-          <div className="flex flex-wrap items-center gap-2 sm:col-span-2">
-            <span>{t('ui.InspectionTemplates.mostrarSolo', 'Mostrar sólo si')}</span>
-            <select className={`${FIELD_CLS} w-56`} value={it.showIf?.itemId || ''} onChange={(e) => set({ showIf: e.target.value ? { itemId: e.target.value, isFail: true } : undefined })}>
-              <option value="">{t('ui.InspectionTemplates.siempre', 'Siempre')}</option>
-              {otros.map((o) => <option key={o.id} value={o.id}>{o.label || o.id}</option>)}
-            </select>
-            {it.showIf && (
-              <select className={`${FIELD_CLS} w-40`} value={it.showIf.isFail !== undefined ? (it.showIf.isFail ? 'fail' : 'pass') : 'equals'} onChange={(e) => set({ showIf: e.target.value === 'fail' ? { itemId: it.showIf!.itemId, isFail: true } : e.target.value === 'pass' ? { itemId: it.showIf!.itemId, isFail: false } : { itemId: it.showIf!.itemId, equals: '' } })}>
-                <option value="fail">{t('ui.InspectionTemplates.falla', 'falla')}</option><option value="pass">{t('ui.InspectionTemplates.pasa', 'pasa')}</option><option value="equals">{t('ui.InspectionTemplates.vale', 'vale…')}</option>
-              </select>
-            )}
-            {it.showIf && it.showIf.isFail === undefined && <input className={`${FIELD_CLS} w-32`} value={it.showIf.equals ?? ''} onChange={(e) => set({ showIf: { itemId: it.showIf!.itemId, equals: e.target.value } })} placeholder="valor" />}
+
+          <div>
+            <div className="cg-eyebrow mb-2">{t('ui.InspectionTemplates.mostrarSolo', 'Mostrar sólo si')}</div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Select value={it.showIf?.itemId || SIEMPRE} onValueChange={(v) => set({ showIf: v === SIEMPRE ? undefined : { itemId: v, isFail: true } })}>
+                <SelectTrigger className="w-60" aria-label={t('ui.InspectionTemplates.preguntaCondicion', 'Pregunta de la que depende')}><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={SIEMPRE}>{t('ui.InspectionTemplates.siempre', 'Siempre')}</SelectItem>
+                  {otros.map((o) => <SelectItem key={o.id} value={o.id}>{o.label || o.id}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              {it.showIf && (
+                <Select value={condicion} onValueChange={(v) => set({ showIf: v === 'fail' ? { itemId: it.showIf!.itemId, isFail: true } : v === 'pass' ? { itemId: it.showIf!.itemId, isFail: false } : { itemId: it.showIf!.itemId, equals: '' } })}>
+                  <SelectTrigger className="w-40" aria-label={t('ui.InspectionTemplates.condicion', 'Condición')}><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="fail">{t('ui.InspectionTemplates.falla', 'falla')}</SelectItem>
+                    <SelectItem value="pass">{t('ui.InspectionTemplates.pasa', 'pasa')}</SelectItem>
+                    <SelectItem value="equals">{t('ui.InspectionTemplates.vale', 'vale…')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+              {it.showIf && it.showIf.isFail === undefined && <Input className="w-40" value={it.showIf.equals ?? ''} onChange={(e) => set({ showIf: { itemId: it.showIf!.itemId, equals: e.target.value } })} placeholder={t('ui.InspectionTemplates.valor', 'valor')} aria-label={t('ui.InspectionTemplates.valor', 'valor')} />}
+            </div>
           </div>
         </div>
       )}

@@ -47,7 +47,10 @@ import {
   SlidersHorizontal,
   ClipboardList,
 } from "lucide-react";
-import { Section, InfoNote, EmptyState } from "@/components/kit";
+/* `FormField` del kit se importa con alias: en este archivo `FormField` ya es
+   el de react-hook-form (ui/form). El del kit es el envoltorio
+   etiqueta/pista de un campo SIN formulario detrás. */
+import { Section, InfoNote, EmptyState, FormField as CampoKit } from "@/components/kit";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import userService from "@/lib/api/userService";
 import { postSiteService } from "@/lib/api/postSiteService";
@@ -1489,21 +1492,25 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
         </Section>
 
         {/* ── Ejecución guiada: salida prevista y plantilla de inspección ──── */}
-        <Section title={t('ui.RouteForm.inspeccionYEjecucion', 'Inspección y ejecución')} icon={<ClipboardList />} contentClassName="space-y-4">
+        <Section title={t('ui.RouteForm.inspeccionYEjecucion', 'Inspección y ejecución')} icon={<ClipboardList />}>
           <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <Label htmlFor="scheduledStartTime">{t('ui.RouteForm.salidaPrevista', 'Salida prevista')}</Label>
+            <CampoKit label={t('ui.RouteForm.salidaPrevista', 'Salida prevista')} htmlFor="scheduledStartTime" hint={t('ui.RouteForm.salidaPrevistaHint', 'Base para calcular «retrasada» y «en riesgo». Vacío: se usa la hora real de inicio.')}>
               <Input id="scheduledStartTime" type="time" value={scheduledStartTime} onChange={(e) => setScheduledStartTime(e.target.value)} />
-              <p className="mt-1 text-xs" style={{ color: 'var(--ink-soft)' }}>{t('ui.RouteForm.salidaPrevistaHint', 'Base para calcular «retrasada» y «en riesgo». Vacío: se usa la hora real de inicio.')}</p>
-            </div>
-            <div>
-              <Label htmlFor="defaultInspectionTemplateId">{t('ui.RouteForm.plantillaPorDefecto', 'Plantilla de inspección')}</Label>
-              <select id="defaultInspectionTemplateId" className="cg-input cg-focus h-10 w-full px-3 text-sm" value={defaultInspectionTemplateId} onChange={(e) => setDefaultInspectionTemplateId(e.target.value)}>
-                <option value="">{t('ui.RouteForm.plantillaEmpresa', 'La de la empresa (por defecto)')}</option>
-                {plantillas.map((tp) => <option key={tp.id} value={tp.id}>{tp.name}{tp.isDefault ? ' ★' : ''}</option>)}
-              </select>
-              <p className="mt-1 text-xs" style={{ color: 'var(--ink-soft)' }}>{t('ui.RouteForm.plantillaHint', 'Cada parada puede definir la suya en su detalle.')}</p>
-            </div>
+            </CampoKit>
+            <CampoKit label={t('ui.RouteForm.plantillaPorDefecto', 'Plantilla de inspección')} htmlFor="defaultInspectionTemplateId" hint={t('ui.RouteForm.plantillaHint', 'Cada parada puede definir la suya en su detalle.')}>
+              <Select value={defaultInspectionTemplateId || PLANTILLA_HEREDADA} onValueChange={(v) => setDefaultInspectionTemplateId(v === PLANTILLA_HEREDADA ? '' : v)}>
+                {/* El texto se pasa a mano, como en el selector de vehículo:
+                    las plantillas llegan después de montar y Radix no
+                    refresca el valor mostrado hasta que se abre la lista. */}
+                <SelectTrigger id="defaultInspectionTemplateId">
+                  <SelectValue>{nombrePlantilla(plantillas, defaultInspectionTemplateId, t('ui.RouteForm.plantillaEmpresa', 'La de la empresa (por defecto)'))}</SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={PLANTILLA_HEREDADA}>{t('ui.RouteForm.plantillaEmpresa', 'La de la empresa (por defecto)')}</SelectItem>
+                  {plantillas.map((tp) => <SelectItem key={tp.id} value={tp.id}>{tp.name}{tp.isDefault ? ' ★' : ''}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </CampoKit>
           </div>
         </Section>
 
@@ -1682,54 +1689,84 @@ export default function RouteForm({ mode, routeId, initialData, onSuccess }: Rou
  * supervisor ahí, si es obligatoria, su prioridad, cuántas fotos exige, el
  * radio de llegada, la ventana horaria, instrucciones y si el cliente la ve.
  */
+/* El `Select` de Radix no admite un elemento con valor vacío, así que
+   «heredar» (la plantilla de la ruta, o la de la empresa) lleva un centinela
+   que se convierte en '' para la API. */
+const PLANTILLA_HEREDADA = '__heredada__';
+const PRIORIDADES = ['low', 'normal', 'high', 'critical'] as const;
+
+/** Qué se lee en el disparador del selector de plantilla. Las plantillas
+ *  llegan después de montar y Radix no refresca el valor mostrado hasta que
+ *  se abre la lista, así que el texto se calcula aquí (mismo remedio que el
+ *  selector de vehículo de este formulario). */
+function nombrePlantilla(plantillas: Array<{ id: string; name: string; isDefault: boolean }>, id: string, heredada: string) {
+  if (!id) return heredada;
+  const tp = plantillas.find((x) => x.id === id);
+  return tp ? `${tp.name}${tp.isDefault ? ' ★' : ''}` : heredada;
+}
+
 function DetalleParadaEditor({ p, plantillas, onChange }: {
   p: PuntoDelFormulario;
   plantillas: Array<{ id: string; name: string; isDefault: boolean }>;
   onChange: (field: keyof PuntoDelFormulario, value: any) => void;
 }) {
   const { t } = useTranslation();
-  const cls = 'cg-input cg-focus h-10 w-full px-3 text-sm';
+  const id = `det-${p.siteId}`;
+  const prioridadLabel: Record<(typeof PRIORIDADES)[number], string> = {
+    low: t('ui.RouteForm.det.baja', 'Baja'),
+    normal: t('ui.RouteForm.det.normal', 'Normal'),
+    high: t('ui.RouteForm.det.alta', 'Alta'),
+    critical: t('ui.RouteForm.det.critica', 'Crítica'),
+  };
+  /* Mismas piezas que el resto del formulario: `CampoKit` (etiqueta atada +
+     pista), `Input`, `Select`, `Textarea` y `Switch` con `Label`. Los campos
+     sueltos con `cg-input cg-focus` medían 40 px —uno más que el resto— y
+     pintaban dos aros de foco. */
   return (
-    <div className="grid gap-3 text-sm md:grid-cols-3">
-      <label className="flex flex-col gap-1">
-        <span className="text-xs font-semibold">{t('ui.RouteForm.det.plantilla', 'Plantilla de inspección')}</span>
-        <select className={cls} value={p.inspectionTemplateId} onChange={(e) => onChange('inspectionTemplateId', e.target.value)}>
-          <option value="">{t('ui.RouteForm.det.plantillaRuta', 'La de la ruta')}</option>
-          {plantillas.map((tp) => <option key={tp.id} value={tp.id}>{tp.name}{tp.isDefault ? ' ★' : ''}</option>)}
-        </select>
-      </label>
-      <label className="flex flex-col gap-1">
-        <span className="text-xs font-semibold">{t('ui.RouteForm.det.prioridad', 'Prioridad')}</span>
-        <select className={cls} value={p.priority} onChange={(e) => onChange('priority', e.target.value)}>
-          <option value="low">{t('ui.RouteForm.det.baja', 'Baja')}</option>
-          <option value="normal">{t('ui.RouteForm.det.normal', 'Normal')}</option>
-          <option value="high">{t('ui.RouteForm.det.alta', 'Alta')}</option>
-          <option value="critical">{t('ui.RouteForm.det.critica', 'Crítica')}</option>
-        </select>
-      </label>
-      <label className="flex flex-col gap-1">
-        <span className="text-xs font-semibold">{t('ui.RouteForm.det.fotosMin', 'Fotos mínimas')}</span>
-        <input type="number" min={0} max={20} className={cls} value={p.minPhotos} onChange={(e) => onChange('minPhotos', Number(e.target.value) || 0)} />
-      </label>
-      <label className="flex flex-col gap-1">
-        <span className="text-xs font-semibold">{t('ui.RouteForm.det.geocerca', 'Radio de llegada (m)')}</span>
-        <input type="number" min={20} max={5000} className={cls} placeholder={t('ui.RouteForm.det.geocercaPh', 'El de la empresa')} value={p.geofenceRadius} onChange={(e) => onChange('geofenceRadius', e.target.value === '' ? '' : Number(e.target.value))} />
-      </label>
-      <label className="flex flex-col gap-1">
-        <span className="text-xs font-semibold">{t('ui.RouteForm.det.ventanaDesde', 'Ventana desde')}</span>
-        <input type="time" className={cls} value={p.visitWindowStart} onChange={(e) => onChange('visitWindowStart', e.target.value)} />
-      </label>
-      <label className="flex flex-col gap-1">
-        <span className="text-xs font-semibold">{t('ui.RouteForm.det.ventanaHasta', 'Ventana hasta')}</span>
-        <input type="time" className={cls} value={p.visitWindowEnd} onChange={(e) => onChange('visitWindowEnd', e.target.value)} />
-      </label>
-      <label className="flex flex-col gap-1 md:col-span-3">
-        <span className="text-xs font-semibold">{t('ui.RouteForm.det.instrucciones', 'Instrucciones para el supervisor')}</span>
-        <textarea className="cg-input cg-focus w-full px-3 py-2 text-sm" rows={2} maxLength={2000} value={p.instructions} onChange={(e) => onChange('instructions', e.target.value)} placeholder={t('ui.RouteForm.det.instruccionesPh', 'P. ej. verificar el portón trasero y la bitácora del turno nocturno')} />
-      </label>
-      <div className="flex flex-wrap gap-6 md:col-span-3">
-        <label className="flex items-center gap-2"><Switch checked={p.required} onCheckedChange={(v) => onChange('required', v)} />{t('ui.RouteForm.det.obligatoria', 'Parada obligatoria')}</label>
-        <label className="flex items-center gap-2"><Switch checked={p.clientVisible} onCheckedChange={(v) => onChange('clientVisible', v)} />{t('ui.RouteForm.det.visibleCliente', 'Visible al cliente')}</label>
+    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <CampoKit label={t('ui.RouteForm.det.plantilla', 'Plantilla de inspección')} htmlFor={`${id}-plantilla`}>
+        <Select value={p.inspectionTemplateId || PLANTILLA_HEREDADA} onValueChange={(v) => onChange('inspectionTemplateId', v === PLANTILLA_HEREDADA ? '' : v)}>
+          <SelectTrigger id={`${id}-plantilla`}>
+            <SelectValue>{nombrePlantilla(plantillas, p.inspectionTemplateId, t('ui.RouteForm.det.plantillaRuta', 'La de la ruta'))}</SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={PLANTILLA_HEREDADA}>{t('ui.RouteForm.det.plantillaRuta', 'La de la ruta')}</SelectItem>
+            {plantillas.map((tp) => <SelectItem key={tp.id} value={tp.id}>{tp.name}{tp.isDefault ? ' ★' : ''}</SelectItem>)}
+          </SelectContent>
+        </Select>
+      </CampoKit>
+      <CampoKit label={t('ui.RouteForm.det.prioridad', 'Prioridad')} htmlFor={`${id}-prioridad`}>
+        <Select value={p.priority} onValueChange={(v) => onChange('priority', v)}>
+          <SelectTrigger id={`${id}-prioridad`}><SelectValue /></SelectTrigger>
+          <SelectContent>
+            {PRIORIDADES.map((v) => <SelectItem key={v} value={v}>{prioridadLabel[v]}</SelectItem>)}
+          </SelectContent>
+        </Select>
+      </CampoKit>
+      <CampoKit label={t('ui.RouteForm.det.fotosMin', 'Fotos mínimas')} htmlFor={`${id}-fotos`}>
+        <Input id={`${id}-fotos`} type="number" min={0} max={20} value={p.minPhotos} onChange={(e) => onChange('minPhotos', Number(e.target.value) || 0)} />
+      </CampoKit>
+      <CampoKit label={t('ui.RouteForm.det.geocerca', 'Radio de llegada')} htmlFor={`${id}-radio`} hint={t('ui.RouteForm.det.geocercaHint', 'En metros. Vacío: el de la empresa.')}>
+        <Input id={`${id}-radio`} type="number" min={20} max={5000} placeholder={t('ui.RouteForm.det.geocercaPh', 'El de la empresa')} value={p.geofenceRadius} onChange={(e) => onChange('geofenceRadius', e.target.value === '' ? '' : Number(e.target.value))} />
+      </CampoKit>
+      <CampoKit label={t('ui.RouteForm.det.ventanaDesde', 'Ventana desde')} htmlFor={`${id}-desde`}>
+        <Input id={`${id}-desde`} type="time" value={p.visitWindowStart} onChange={(e) => onChange('visitWindowStart', e.target.value)} />
+      </CampoKit>
+      <CampoKit label={t('ui.RouteForm.det.ventanaHasta', 'Ventana hasta')} htmlFor={`${id}-hasta`}>
+        <Input id={`${id}-hasta`} type="time" value={p.visitWindowEnd} onChange={(e) => onChange('visitWindowEnd', e.target.value)} />
+      </CampoKit>
+      <CampoKit label={t('ui.RouteForm.det.instrucciones', 'Instrucciones para el supervisor')} htmlFor={`${id}-instr`} className="sm:col-span-2 xl:col-span-3">
+        <Textarea id={`${id}-instr`} rows={2} maxLength={2000} value={p.instructions} onChange={(e) => onChange('instructions', e.target.value)} placeholder={t('ui.RouteForm.det.instruccionesPh', 'P. ej. verificar el portón trasero y la bitácora del turno nocturno')} />
+      </CampoKit>
+      <div className="flex flex-wrap gap-x-6 gap-y-3 sm:col-span-2 xl:col-span-3">
+        <div className="flex items-center gap-2.5">
+          <Switch id={`${id}-req`} checked={p.required} onCheckedChange={(v) => onChange('required', v)} />
+          <Label htmlFor={`${id}-req`} className="cursor-pointer text-sm font-normal">{t('ui.RouteForm.det.obligatoria', 'Parada obligatoria')}</Label>
+        </div>
+        <div className="flex items-center gap-2.5">
+          <Switch id={`${id}-cli`} checked={p.clientVisible} onCheckedChange={(v) => onChange('clientVisible', v)} />
+          <Label htmlFor={`${id}-cli`} className="cursor-pointer text-sm font-normal">{t('ui.RouteForm.det.visibleCliente', 'Visible al cliente')}</Label>
+        </div>
       </div>
     </div>
   );

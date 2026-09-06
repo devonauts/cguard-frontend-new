@@ -164,8 +164,33 @@ const storedChoice = (): LanguageChoice => {
     return 'auto';
 };
 
-/** El automático, con lo que se sabe SIN red: IP cacheada → navegador → español. */
-const autoSinRed = (): Language => ipCacheado() || detectBrowser() || 'es';
+/**
+ * El idioma que viene en la URL, puesto por el sitio público al mandar aquí.
+ *
+ * cguardpro.com es un sitio de NUEVE mercados y cada botón de «empieza tu
+ * prueba» sale de una página en su idioma. Esta app arrancaba siempre en
+ * español (`lng: 'es'` en i18n.ts), así que un comprador que pulsaba «Start
+ * Free Trial» en la página inglesa aterrizaba en una pantalla titulada
+ * «Acceso» — con los ocho diccionarios ya en el repositorio, sin usar.
+ *
+ * El sitio añade `?lang=` a todos los enlaces a app.cguardpro.com (junto a
+ * `cg` y `lp`, que son los de atribución). Aquí se lee una sola vez.
+ *
+ * Va por DEBAJO de la elección guardada —quien ya eligió su idioma dentro del
+ * CRM no debe perderlo por abrir un enlace de marketing— y por ENCIMA de la
+ * IP: el idioma de la página desde la que vino dice más sobre en qué idioma
+ * lee que el país desde el que se conecta.
+ */
+const idiomaDeLaUrl = (): Language | null => {
+    try {
+        return norm(new URLSearchParams(window.location.search).get('lang'));
+    } catch {
+        return null;
+    }
+};
+
+/** El automático, con lo que se sabe SIN red: URL → IP cacheada → navegador → español. */
+const autoSinRed = (): Language => idiomaDeLaUrl() || ipCacheado() || detectBrowser() || 'es';
 
 /** El idioma del PRIMER pintado (síncrono): elección → automático sin red. */
 const resolveInitial = (): Language => {
@@ -226,7 +251,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         // Se pide SIEMPRE que no haya elección, con o sin sesión: la pantalla de
         // acceso es justo donde más importa (es lo primero que ve un prospecto)
         // y este endpoint es público.
-        if (local === 'auto' && !ipCacheado()) {
+        // `!idiomaDeLaUrl()`: si el sitio público mandó el idioma en la URL, ya
+        // se pintó con él y la IP no debe cambiarlo. El caso concreto es un
+        // comprador que lee la página inglesa desde Guayaquil: la IP diría
+        // español y le voltearía la pantalla debajo, después del primer pintado.
+        if (local === 'auto' && !ipCacheado() && !idiomaDeLaUrl()) {
             void idiomaPorIp().then((porIp) => {
                 if (!porIp) return;
                 // Si mientras tanto la persona eligió, no se le pisa.

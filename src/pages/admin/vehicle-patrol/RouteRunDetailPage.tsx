@@ -1,15 +1,22 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import {
-  Route as RouteIcon, User, Clock, MapPin, Camera, MessageSquareText, Siren, AlertTriangle, CheckCircle2,
-  SkipForward, Ban, ArrowUp, ArrowDown, Trash2, Plus, ListChecks, Users2, History as HistoryIcon, Pause,
+  Route as RouteIcon, Clock, MapPin, Camera, MessageSquareText, Siren, AlertTriangle, CheckCircle2,
+  SkipForward, Ban, ArrowUp, ArrowDown, Trash2, Plus, ListChecks, Users2, History as HistoryIcon,
+  ChevronDown, ChevronUp,
 } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import Breadcrumb from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
-import { PageContainer, PageHeader, Section, StatCard, StatusBadge, EmptyState, GlassPanel, SkeletonCards, Stagger, Modal, FormField, FIELD_CLS } from '@/components/kit';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  PageContainer, PageHeader, Section, StatCard, StatusBadge, StatusDot, EmptyState, GlassPanel, SkeletonCards,
+  Stagger, Modal, FormField, Field, IconTile, TabNav,
+} from '@/components/kit';
 import { confirmDialog } from '@/components/ui/confirmDialog';
 import { promptDialog } from '@/components/ui/promptDialog';
 import { usePageTitle } from '@/hooks/usePageTitle';
@@ -20,7 +27,7 @@ import { localeActual } from '@/lib/localeActual';
 import RouteMap from '../routes/RouteMap';
 import {
   RUN_STATUS_LABEL, RUN_STATUS_TONE, VISIT_STATUS_LABEL, VISIT_STATUS_TONE, SCHEDULE_LABEL, SCHEDULE_TONE,
-  EVENT_LABEL, SKIP_REASON_LABEL, SEVERITY_LABEL, SEVERITY_TONE, fmtHora, fmtDur,
+  EVENT_LABEL, SKIP_REASON_LABEL, SEVERITY_LABEL, SEVERITY_TONE, fmtHora, fmtDur, fmtFecha,
 } from './runLabels';
 
 /**
@@ -34,9 +41,10 @@ import {
 const OPEN = new Set(['in_progress', 'paused']);
 const TERMINAL = new Set(['completed', 'skipped', 'missed']);
 
+const PRIORIDAD_LABEL: Record<string, string> = { low: 'Baja', normal: 'Normal', high: 'Alta', critical: 'Crítica' };
+
 export default function RouteRunDetailPage() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { runId = '' } = useParams<{ runId: string }>();
   usePageTitle('Ejecución de ruta');
   const [data, setData] = useState<any | null>(null);
@@ -100,6 +108,7 @@ export default function RouteRunDetailPage() {
   };
 
   const titulo = data?.routeName || data?.route?.name || t('ui.RouteRunDetail.titulo', 'Ejecución de ruta');
+  const eventos: any[] = data?.events || [];
 
   return (
     <AppLayout>
@@ -108,7 +117,7 @@ export default function RouteRunDetailPage() {
         <PageHeader
           icon={<RouteIcon />}
           title={titulo}
-          subtitle={data ? `${data.date || ''}${data.supervisorName ? ` · ${data.supervisorName}` : ''}` : undefined}
+          subtitle={data ? [fmtFecha(data.date, locale), data.supervisorName].filter(Boolean).join(' · ') : undefined}
           badges={ex ? (
             <>
               <StatusBadge tone={RUN_STATUS_TONE[ex.status] || 'neutral'}>{RUN_STATUS_LABEL[ex.status] || ex.status}</StatusBadge>
@@ -116,10 +125,14 @@ export default function RouteRunDetailPage() {
               {ex.planVersion > 1 && <StatusBadge tone="brand" dot={false}>{t('ui.RouteRunDetail.planV', 'Plan v{{v}}', { v: ex.planVersion })}</StatusBadge>}
             </>
           ) : undefined}
+          /* UNA acción primaria: añadir una parada es lo que la central hace a
+             diario. Abortar es la excepción y va en tinta de peligro sin
+             relleno — dos botones llenos en la cabecera se pelean. Tiene
+             doble confirmación, así que no necesita gritar. */
           actions={abierta ? (
             <>
-              <Button variant="outline" onClick={() => setAddOpen(true)} disabled={busy}><Plus className="size-4" />{t('ui.RouteRunDetail.agregarParada', 'Añadir parada')}</Button>
-              <Button variant="destructive" onClick={abortar} disabled={busy}><Ban className="size-4" />{t('ui.RouteRunDetail.abortar', 'Abortar ruta')}</Button>
+              <Button variant="danger-ghost" onClick={abortar} disabled={busy}><Ban className="size-4" />{t('ui.RouteRunDetail.abortar', 'Abortar ruta')}</Button>
+              <Button variant="brand" onClick={() => setAddOpen(true)} disabled={busy}><Plus className="size-4" />{t('ui.RouteRunDetail.agregarParada', 'Añadir parada')}</Button>
             </>
           ) : undefined}
         />
@@ -132,45 +145,53 @@ export default function RouteRunDetailPage() {
                 si no, las etiquetas se cortan («INSPECCIÓN M…»). */}
             <Stagger className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
               <StatCard label={t('ui.RouteRunDetail.paradas', 'Paradas')} value={`${ex.progress?.completed ?? 0}/${ex.progress?.total ?? stops.length}`} icon={<ListChecks />} accent="brand" />
-              <StatCard label={t('ui.RouteRunDetail.inicio', 'Inicio')} value={fmtHora(ex.startedAt, locale)} hint={ex.completedAt ? `${t('ui.RouteRunDetail.fin', 'Fin')} ${fmtHora(ex.completedAt, locale)}` : ex.pausedAt ? t('ui.RouteRunDetail.enPausaDesde', 'En pausa desde {{h}}', { h: fmtHora(ex.pausedAt, locale) }) : undefined} icon={<Clock />} />
-              <StatCard label={t('ui.RouteRunDetail.inspeccion', 'Inspección')} value={sum?.averageInspection != null ? `${Math.round(sum.averageInspection)}%` : '—'} icon={<CheckCircle2 />} accent="ok" />
-              <StatCard label={t('ui.RouteRunDetail.hallazgos', 'Críticos')} value={sum?.criticalFindings ?? stops.reduce((n, s) => n + (s.observations || []).filter((o: any) => o.severity === 'critical').length, 0)} icon={<AlertTriangle />} accent="danger" />
+              <StatCard label={t('ui.RouteRunDetail.inicio', 'Inicio')} value={fmtHora(ex.startedAt, locale)} hint={ex.completedAt ? `${t('ui.RouteRunDetail.fin', 'Fin')} ${fmtHora(ex.completedAt, locale)}` : ex.pausedAt ? t('ui.RouteRunDetail.enPausaDesde', 'En pausa desde {{h}}', { h: fmtHora(ex.pausedAt, locale) }) : undefined} icon={<Clock />} accent="neutral" />
+              <StatCard label={t('ui.RouteRunDetail.inspeccion', 'Inspección')} value={sum?.averageInspection != null ? `${Math.round(sum.averageInspection)} %` : '—'} icon={<CheckCircle2 />} accent="ok" />
+              <StatCard label={t('ui.RouteRunDetail.hallazgos', 'Críticos')} value={sum?.criticalFindings ?? stops.reduce((n, s) => n + (s.observations || []).filter((o: any) => o.severity === 'critical').length, 0)} icon={<AlertTriangle />} accent="bad" />
             </Stagger>
 
+            {/* El resumen de tiempos y evidencia: pares etiqueta/dato de sólo
+                lectura (`Field`), como en cualquier ficha del CRM. */}
             {sum && (
-              <GlassPanel flat className="mt-4 grid grid-cols-2 gap-3 p-4 text-sm lg:grid-cols-4">
-                <div><p className="cg-eyebrow">{t('ui.RouteRunDetail.duracion', 'Duración')}</p><p className="font-semibold">{fmtDur(sum.totalSeconds)}</p></div>
-                <div><p className="cg-eyebrow">{t('ui.RouteRunDetail.enVisitas', 'En visitas')}</p><p className="font-semibold">{fmtDur(sum.visitSeconds)}</p></div>
-                <div><p className="cg-eyebrow">{t('ui.RouteRunDetail.enTransito', 'En tránsito')}</p><p className="font-semibold">{fmtDur(sum.travelSeconds)}</p></div>
-                <div><p className="cg-eyebrow">{t('ui.RouteRunDetail.enPausa', 'En pausa')}</p><p className="font-semibold">{fmtDur(sum.pausedSeconds)}</p></div>
-                <div><p className="cg-eyebrow">{t('ui.RouteRunDetail.fotos', 'Fotos')}</p><p className="font-semibold">{sum.photos ?? 0}</p></div>
-                <div><p className="cg-eyebrow">{t('ui.RouteRunDetail.novedades', 'Novedades')}</p><p className="font-semibold">{sum.observations ?? 0}</p></div>
-                <div><p className="cg-eyebrow">{t('ui.RouteRunDetail.incidentes', 'Incidentes')}</p><p className="font-semibold">{sum.incidents ?? 0}</p></div>
-                <div><p className="cg-eyebrow">{t('ui.RouteRunDetail.fueraDeZona', 'Fuera de zona')}</p><p className="font-semibold">{sum.geofenceFlags ?? 0}</p></div>
+              <GlassPanel flat className="grid grid-cols-2 gap-x-4 gap-y-4 p-4 lg:grid-cols-4">
+                <Field label={t('ui.RouteRunDetail.duracion', 'Duración')} value={fmtDur(sum.totalSeconds)} numeric />
+                <Field label={t('ui.RouteRunDetail.enVisitas', 'En visitas')} value={fmtDur(sum.visitSeconds)} numeric />
+                <Field label={t('ui.RouteRunDetail.enTransito', 'En tránsito')} value={fmtDur(sum.travelSeconds)} numeric />
+                <Field label={t('ui.RouteRunDetail.enPausa', 'En pausa')} value={fmtDur(sum.pausedSeconds)} numeric />
+                <Field label={t('ui.RouteRunDetail.fotos', 'Fotos')} value={String(sum.photos ?? 0)} numeric />
+                <Field label={t('ui.RouteRunDetail.novedades', 'Novedades')} value={String(sum.observations ?? 0)} numeric />
+                <Field label={t('ui.RouteRunDetail.incidentes', 'Incidentes')} value={String(sum.incidents ?? 0)} numeric />
+                <Field label={t('ui.RouteRunDetail.fueraDeZona', 'Fuera de zona')} value={String(sum.geofenceFlags ?? 0)} numeric />
               </GlassPanel>
             )}
 
             {mapStops.length > 0 && (
-              <div className="mt-4 overflow-hidden rounded-2xl"><RouteMap stops={mapStops} height={300} hud={false} /></div>
+              <div className="overflow-hidden rounded-2xl"><RouteMap stops={mapStops} height={300} hud={false} /></div>
             )}
 
-            <div className="mt-4 flex gap-2">
-              <Button size="sm" variant={tab === 'visitas' ? 'brand' : 'outline'} onClick={() => setTab('visitas')}><MapPin className="size-3.5" />{t('ui.RouteRunDetail.visitas', 'Visitas')}</Button>
-              <Button size="sm" variant={tab === 'eventos' ? 'brand' : 'outline'} onClick={() => setTab('eventos')}><HistoryIcon className="size-3.5" />{t('ui.RouteRunDetail.lineaDeTiempo', 'Línea de tiempo')} ({(data.events || []).length})</Button>
-            </div>
-
-            {tab === 'visitas' && (
-              <Section title={t('ui.RouteRunDetail.recorrido', 'Recorrido')} icon={<MapPin />} className="mt-2">
+            {/* Secciones de UN registro → `TabNav`, el mismo carril de pestañas
+                que la ficha de un vigilante o de un puesto. Dos botones de
+                relleno alternando era un tercer idioma de pestañas. El carril
+                ES la cabecera de la tarjeta: un título encima repetía el
+                nombre de la pestaña activa. */}
+            <Section>
+              <TabNav
+                className="mb-4"
+                value={tab}
+                onChange={setTab}
+                items={[
+                  { value: 'visitas', label: t('ui.RouteRunDetail.visitas', 'Visitas'), icon: <MapPin />, badge: stops.length },
+                  { value: 'eventos', label: t('ui.RouteRunDetail.lineaDeTiempo', 'Línea de tiempo'), icon: <HistoryIcon />, badge: eventos.length },
+                ]}
+              />
+              {tab === 'visitas' ? (
                 <div className="space-y-3">
                   {stops.map((s, idx) => <VisitaCard key={s.routePointId} s={s} idx={idx} abierta={abierta} busy={busy} locale={locale} onSkip={() => omitir(s)} onRemove={() => quitar(s)} onMove={(d) => mover(idx, d)} />)}
                 </div>
-              </Section>
-            )}
-            {tab === 'eventos' && (
-              <Section title={t('ui.RouteRunDetail.lineaDeTiempo', 'Línea de tiempo')} icon={<HistoryIcon />} className="mt-2">
-                <Eventos events={data.events || []} stops={stops} locale={locale} />
-              </Section>
-            )}
+              ) : (
+                <Eventos events={eventos} stops={stops} locale={locale} />
+              )}
+            </Section>
           </>
         )}
       </PageContainer>
@@ -190,18 +211,24 @@ function VisitaCard({ s, idx, abierta, busy, locale, onSkip, onRemove, onMove }:
   const insp = s.inspection;
   const fotos: any[] = s.photos || [];
   const obs: any[] = s.observations || [];
+  const hayDetalle = Boolean(insp?.responses || fotos.length || obs.length || v.notes || (v.guardVerifications || []).length);
   return (
     <GlassPanel flat className="p-4">
       <div className="flex items-start gap-3">
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-bold" style={{ background: 'var(--glass-sunken)' }}>{s.order ?? idx + 1}</span>
+        {/* El número de orden va en una ficha del kit, la misma que lleva un
+            icono en cualquier lista: en curso se tiñe de marca, cerrada queda
+            neutra, y así el ojo encuentra «por dónde va» sin leer. */}
+        <IconTile tone={enSitio ? 'brand' : 'neutral'} size="sm">
+          <span className="text-sm font-bold tabular-nums">{s.order ?? idx + 1}</span>
+        </IconTile>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <p className="text-sm font-semibold">{s.name}</p>
             <StatusBadge tone={VISIT_STATUS_TONE[st] || 'neutral'}>{VISIT_STATUS_LABEL[st] || st}</StatusBadge>
-            {s.priority && (s.priority === 'high' || s.priority === 'critical') && <StatusBadge tone="danger" dot={false}>{t('ui.RouteRunDetail.prioritaria', 'Prioritaria')}</StatusBadge>}
+            {s.priority && (s.priority === 'high' || s.priority === 'critical') && <StatusBadge tone="bad" dot={false}>{t('ui.RouteRunDetail.prioritaria', 'Prioritaria')}</StatusBadge>}
             {s.required === false && <StatusBadge tone="neutral" dot={false}>{t('ui.RouteRunDetail.opcional', 'Opcional')}</StatusBadge>}
-            {s.arrival?.flagged && <StatusBadge tone="warn" dot={false}><AlertTriangle className="size-3" />{t('ui.RouteRunDetail.fueraDeZonaBadge', 'Fuera de zona')}{s.arrival.distanceMeters != null ? ` · ${Math.round(s.arrival.distanceMeters)} m` : ''}</StatusBadge>}
-            {v.inspectionScore != null && <StatusBadge tone={v.inspectionScore >= 80 ? 'ok' : v.inspectionScore >= 60 ? 'warn' : 'danger'} dot={false}>{Math.round(v.inspectionScore)}%</StatusBadge>}
+            {s.arrival?.flagged && <StatusBadge tone="warn" dot={false}>{t('ui.RouteRunDetail.fueraDeZonaBadge', 'Fuera de zona')}{s.arrival.distanceMeters != null ? ` · ${Math.round(s.arrival.distanceMeters)} m` : ''}</StatusBadge>}
+            {v.inspectionScore != null && <StatusBadge tone={v.inspectionScore >= 80 ? 'ok' : v.inspectionScore >= 60 ? 'warn' : 'bad'} dot={false}>{Math.round(v.inspectionScore)} %</StatusBadge>}
           </div>
           <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs" style={{ color: 'var(--ink-soft)' }}>
             {s.address && <span>{s.address}</span>}
@@ -215,14 +242,15 @@ function VisitaCard({ s, idx, abierta, busy, locale, onSkip, onRemove, onMove }:
           {s.skip && <p className="mt-1 text-xs" style={{ color: 'var(--warn-text)' }}><SkipForward className="mr-1 inline size-3" />{SKIP_REASON_LABEL[s.skip.reason] || s.skip.label || s.skip.reason}{s.skip.notes ? ` — ${s.skip.notes}` : ''}</p>}
           {s.arrival?.overrideReason && <p className="mt-1 text-xs" style={{ color: 'var(--warn-text)' }}>{t('ui.RouteRunDetail.motivoOverride', 'Motivo del registro fuera de zona')}: {s.arrival.overrideReason}</p>}
 
-          {(insp?.responses || fotos.length || obs.length || v.notes || (v.guardVerifications || []).length) ? (
-            <button type="button" className="mt-2 text-xs font-semibold underline" style={{ color: 'var(--brand-text)' }} onClick={() => setOpen((o) => !o)}>
+          {hayDetalle && (
+            <Button size="sm" variant="ghost" className="-ml-3 mt-1" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+              {open ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
               {open ? t('ui.RouteRunDetail.ocultarDetalle', 'Ocultar detalle') : t('ui.RouteRunDetail.verDetalle', 'Ver detalle de la visita')}
-            </button>
-          ) : null}
+            </Button>
+          )}
 
           {open && (
-            <div className="mt-3 space-y-3 border-t pt-3" style={{ borderColor: 'var(--hairline)' }}>
+            <div className="mt-3 space-y-4 border-t pt-3" style={{ borderColor: 'var(--hairline)' }}>
               {insp?.snapshot?.sections && (
                 <div>
                   <p className="cg-eyebrow mb-1">{t('ui.RouteRunDetail.inspeccionV', 'Inspección (plantilla v{{v}})', { v: insp.templateVersion || 1 })}</p>
@@ -232,7 +260,7 @@ function VisitaCard({ s, idx, abierta, busy, locale, onSkip, onRemove, onMove }:
                       {(sec.items || []).map((it: any) => {
                         const val = insp.responses?.[it.id];
                         if (val === undefined || val === null || val === '') return null;
-                        return <p key={it.id} className="flex justify-between gap-4 border-b py-1 text-sm" style={{ borderColor: 'var(--hairline)' }}><span>{it.label}</span><strong>{Array.isArray(val) ? val.join(', ') : String(val)}</strong></p>;
+                        return <p key={it.id} className="flex justify-between gap-4 border-b py-1 text-sm" style={{ borderColor: 'var(--hairline)' }}><span>{it.label}</span><strong className="tabular-nums">{Array.isArray(val) ? val.join(', ') : String(val)}</strong></p>;
                       })}
                     </div>
                   ))}
@@ -241,14 +269,14 @@ function VisitaCard({ s, idx, abierta, busy, locale, onSkip, onRemove, onMove }:
               {(v.guardVerifications || []).length > 0 && (
                 <div>
                   <p className="cg-eyebrow mb-1"><Users2 className="mr-1 inline size-3" />{t('ui.RouteRunDetail.personal', 'Personal del puesto')}</p>
-                  {v.guardVerifications.map((g: any, i: number) => <p key={i} className="flex justify-between text-sm"><span>{g.name}</span><strong>{g.status}{g.note ? ` — ${g.note}` : ''}</strong></p>)}
+                  {v.guardVerifications.map((g: any, i: number) => <p key={i} className="flex justify-between gap-4 text-sm"><span>{g.name}</span><strong>{g.status}{g.note ? ` — ${g.note}` : ''}</strong></p>)}
                 </div>
               )}
               {fotos.length > 0 && (
                 <div>
                   <p className="cg-eyebrow mb-1"><Camera className="mr-1 inline size-3" />{t('ui.RouteRunDetail.fotos', 'Fotos')}</p>
                   <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
-                    {fotos.map((f: any) => { const u = f.downloadUrl || f.url || f.publicUrl; return u ? <a key={f.id} href={u} target="_blank" rel="noreferrer"><img src={u} alt="" className="aspect-square w-full rounded-lg object-cover" loading="lazy" /></a> : null; })}
+                    {fotos.map((f: any) => { const u = f.downloadUrl || f.url || f.publicUrl; return u ? <a key={f.id} href={u} target="_blank" rel="noreferrer" className="cg-focus rounded-lg"><img src={u} alt="" className="aspect-square w-full rounded-lg object-cover" loading="lazy" /></a> : null; })}
                   </div>
                 </div>
               )}
@@ -256,11 +284,11 @@ function VisitaCard({ s, idx, abierta, busy, locale, onSkip, onRemove, onMove }:
                 <div>
                   <p className="cg-eyebrow mb-1"><MessageSquareText className="mr-1 inline size-3" />{t('ui.RouteRunDetail.novedades', 'Novedades')}</p>
                   {obs.map((o: any) => (
-                    <div key={o.id} className="flex items-start gap-2 py-1 text-sm">
+                    <div key={o.id} className="flex flex-wrap items-start gap-2 py-1 text-sm">
                       <StatusBadge tone={SEVERITY_TONE[o.severity] || 'neutral'} dot={false}>{SEVERITY_LABEL[o.severity] || o.severity}</StatusBadge>
-                      <span className="flex-1">{o.text}</span>
+                      <span className="min-w-0 flex-1">{o.text}</span>
                       {o.visibility === 'client_visible' && <StatusBadge tone="brand" dot={false}>{t('ui.RouteRunDetail.visibleCliente', 'Cliente')}</StatusBadge>}
-                      {o.incidentId && <a className="underline" style={{ color: 'var(--danger-text)' }} href={`/reports/incident/${o.incidentId}`}><Siren className="inline size-3" /> {t('ui.RouteRunDetail.incidente', 'Incidente')}</a>}
+                      {o.incidentId && <a className="cg-focus inline-flex items-center gap-1 rounded-md text-xs font-semibold" style={{ color: 'var(--bad-text)' }} href={`/reports/incident/${o.incidentId}`}><Siren className="size-3" />{t('ui.RouteRunDetail.incidente', 'Incidente')}</a>}
                     </div>
                   ))}
                 </div>
@@ -271,10 +299,10 @@ function VisitaCard({ s, idx, abierta, busy, locale, onSkip, onRemove, onMove }:
         </div>
         {abierta && !terminal && (
           <div className="flex shrink-0 flex-col gap-1">
-            <Button size="icon" variant="ghost" aria-label="Subir" disabled={busy || enSitio} onClick={() => onMove(-1)}><ArrowUp className="size-4" /></Button>
-            <Button size="icon" variant="ghost" aria-label="Bajar" disabled={busy || enSitio} onClick={() => onMove(1)}><ArrowDown className="size-4" /></Button>
-            <Button size="icon" variant="ghost" aria-label="Omitir" disabled={busy || enSitio} onClick={onSkip}><SkipForward className="size-4" /></Button>
-            <Button size="icon" variant="ghost" aria-label="Quitar" disabled={busy || enSitio} onClick={onRemove}><Trash2 className="size-4" /></Button>
+            <Button size="icon-sm" variant="ghost" aria-label={t('ui.RouteRunDetail.subir', 'Subir')} disabled={busy || enSitio} onClick={() => onMove(-1)}><ArrowUp className="size-4" /></Button>
+            <Button size="icon-sm" variant="ghost" aria-label={t('ui.RouteRunDetail.bajar', 'Bajar')} disabled={busy || enSitio} onClick={() => onMove(1)}><ArrowDown className="size-4" /></Button>
+            <Button size="icon-sm" variant="ghost" aria-label={t('ui.RouteRunDetail.omitir', 'Omitir')} disabled={busy || enSitio} onClick={onSkip}><SkipForward className="size-4" /></Button>
+            <Button size="icon-sm" variant="danger-ghost" aria-label={t('ui.RouteRunDetail.quitar', 'Quitar del plan')} disabled={busy || enSitio} onClick={onRemove}><Trash2 className="size-4" /></Button>
           </div>
         )}
       </div>
@@ -282,16 +310,21 @@ function VisitaCard({ s, idx, abierta, busy, locale, onSkip, onRemove, onMove }:
   );
 }
 
+/**
+ * La línea de tiempo. Cada evento lleva un punto del kit con su tono — el
+ * texto va siempre en tinta normal. Pintar títulos enteros de rojo o verde
+ * convertía la lista en un semáforo que competía con las insignias.
+ */
 function Eventos({ events, stops, locale }: { events: any[]; stops: any[]; locale: string }) {
   const { t } = useTranslation();
   const nombre = useMemo(() => new Map(stops.map((s) => [String(s.routePointId), s.name || ''])), [stops]);
-  if (!events.length) return <EmptyState icon={<HistoryIcon />} title={t('ui.RouteRunDetail.sinEventos', 'Todavía no hay eventos')} />;
+  if (!events.length) return <EmptyState variant="inline" icon={<HistoryIcon />} title={t('ui.RouteRunDetail.sinEventos', 'Todavía no hay eventos')} />;
   return (
-    <div className="space-y-1">
+    <div className="divide-y" style={{ borderColor: 'var(--hairline)' }}>
       {events.map((e) => {
         const p = e.payload || {};
-        const detalle = e.type === 'stop.arrived' && p.distanceM != null ? `${p.distanceM} m${p.outside ? ' · fuera de zona' : ''}`
-          : e.type === 'stop.completed' && p.score != null ? `${Math.round(p.score)}%`
+        const detalle = e.type === 'stop.arrived' && p.distanceM != null ? `${p.distanceM} m${p.outside ? ` · ${t('ui.RouteRunDetail.fueraDeZonaBadge', 'Fuera de zona').toLowerCase()}` : ''}`
+          : e.type === 'stop.completed' && p.score != null ? `${Math.round(p.score)} %`
           : e.type === 'stop.skipped' ? (p.notes || SKIP_REASON_LABEL[p.reason] || p.reason || '')
           : e.type === 'route.plan_updated' ? (p.change || p.reason || '')
           : e.type === 'route.paused' ? (p.reason || '')
@@ -300,16 +333,21 @@ function Eventos({ events, stops, locale }: { events: any[]; stops: any[]; local
           : e.type === 'observation.created' || e.type === 'incident.created' ? (p.text || '')
           : e.type === 'stop.geofence_override' ? (p.reason || '')
           : '';
-        const tone = e.type.includes('aborted') || e.type === 'route.at_risk' || e.type === 'stop.missed' || e.type === 'incident.created' ? 'var(--danger-text)'
-          : e.type === 'route.delayed' || e.type === 'stop.skipped' || e.type === 'stop.geofence_override' || e.type === 'route.paused' ? 'var(--warn-text)'
-          : e.type === 'stop.completed' || e.type === 'route.completed' ? 'var(--ok-text)' : 'var(--ink)';
+        const tone: 'bad' | 'warn' | 'ok' | 'brand' | 'neutral' =
+          e.type.includes('aborted') || e.type === 'route.at_risk' || e.type === 'stop.missed' || e.type === 'incident.created' ? 'bad'
+          : e.type === 'route.delayed' || e.type === 'stop.skipped' || e.type === 'stop.geofence_override' || e.type === 'route.paused' ? 'warn'
+          : e.type === 'stop.completed' || e.type === 'route.completed' ? 'ok'
+          : e.type === 'route.started' || e.type === 'stop.arrived' ? 'brand'
+          : 'neutral';
+        const parada = e.routePointId ? nombre.get(String(e.routePointId)) : '';
         return (
-          <div key={e.id} className="grid grid-cols-[64px_1fr] gap-3 border-b py-2 text-sm" style={{ borderColor: 'var(--hairline)' }}>
-            <span className="tabular-nums" style={{ color: 'var(--ink-soft)' }}>{fmtHora(e.at, locale)}</span>
-            <div>
-              <p className="font-semibold" style={{ color: tone }}>
-                {e.type === 'route.paused' ? <Pause className="mr-1 inline size-3" /> : null}
-                {EVENT_LABEL[e.type] || e.type}{e.routePointId && nombre.get(String(e.routePointId)) ? <span className="font-normal" style={{ color: 'var(--ink-soft)' }}> · {nombre.get(String(e.routePointId))}</span> : null}
+          <div key={e.id} className="grid grid-cols-[5.5rem_auto_1fr] items-start gap-x-3 py-2.5 text-sm">
+            <span className="whitespace-nowrap tabular-nums" style={{ color: 'var(--ink-soft)' }}>{fmtHora(e.at, locale)}</span>
+            <StatusDot tone={tone} className="mt-[7px]" />
+            <div className="min-w-0">
+              <p className="font-medium">
+                {EVENT_LABEL[e.type] || e.type}
+                {parada ? <span className="font-normal" style={{ color: 'var(--ink-soft)' }}> · {parada}</span> : null}
               </p>
               {detalle && <p className="text-xs" style={{ color: 'var(--ink-soft)' }}>{detalle}</p>}
               {e.actorChannel === 'crm' && <p className="text-xs" style={{ color: 'var(--ink-faint)' }}>{t('ui.RouteRunDetail.porCentral', 'Por la central')}{e.actorName ? ` · ${e.actorName}` : ''}</p>}
@@ -320,6 +358,10 @@ function Eventos({ events, stops, locale }: { events: any[]; stops: any[]; local
     </div>
   );
 }
+
+/* El `Select` de Radix no admite un elemento con valor vacío: «al final del
+   recorrido» lleva un centinela que se convierte en `null` para la API. */
+const AL_FINAL = '__final__';
 
 function AgregarParadaModal({ open, onOpenChange, stops, onAdd, busy }: { open: boolean; onOpenChange: (v: boolean) => void; stops: any[]; onAdd: (b: any) => Promise<void>; busy: boolean }) {
   const { t } = useTranslation();
@@ -344,31 +386,39 @@ function AgregarParadaModal({ open, onOpenChange, stops, onAdd, busy }: { open: 
   }, [open]);
   const pendientes = stops.filter((s) => !TERMINAL.has(s.visit?.status || 'pending'));
   return (
-    <Modal open={open} onOpenChange={onOpenChange} title={t('ui.RouteRunDetail.agregarParada', 'Añadir parada')} icon={<Plus />} size="md"
+    <Modal open={open} onOpenChange={onOpenChange} title={t('ui.RouteRunDetail.agregarParada', 'Añadir parada')} description={t('ui.RouteRunDetail.agregarParadaSub', 'Entra en el plan de hoy; la ruta base no cambia.')} icon={<Plus />} size="md"
       footer={<><Button variant="outline" onClick={() => onOpenChange(false)}>{t('comun.cancelar', 'Cancelar')}</Button><Button variant="brand" disabled={!siteId || busy} onClick={() => onAdd({ siteType, siteId, afterOrder: afterOrder ? Number(afterOrder) : null, reason: reason || undefined, instructions: instructions || undefined, priority })}>{t('ui.RouteRunDetail.agregar', 'Añadir al plan')}</Button></>}>
-      <div className="grid gap-3">
-        <FormField label={t('ui.RouteRunDetail.puesto', 'Puesto')} required>
-          <select className={FIELD_CLS} value={siteId} onChange={(e) => { setSiteId(e.target.value); setSiteType('station'); }}>
-            <option value="">—</option>
-            {estaciones.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
-          </select>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <FormField label={t('ui.RouteRunDetail.puesto', 'Puesto')} htmlFor="ap-puesto" required full>
+          <Select value={siteId || undefined} onValueChange={(v) => { setSiteId(v); setSiteType('station'); }}>
+            <SelectTrigger id="ap-puesto"><SelectValue placeholder={t('ui.RouteRunDetail.elegirPuesto', 'Elegir un puesto…')} /></SelectTrigger>
+            <SelectContent>
+              {estaciones.map((s) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+            </SelectContent>
+          </Select>
         </FormField>
-        <FormField label={t('ui.RouteRunDetail.despuesDe', 'Después de')}>
-          <select className={FIELD_CLS} value={afterOrder} onChange={(e) => setAfterOrder(e.target.value)}>
-            <option value="">{t('ui.RouteRunDetail.alFinal', 'Al final del recorrido')}</option>
-            {pendientes.map((s) => <option key={s.routePointId} value={s.order}>{s.order}. {s.name}</option>)}
-          </select>
+        <FormField label={t('ui.RouteRunDetail.despuesDe', 'Después de')} htmlFor="ap-despues">
+          <Select value={afterOrder || AL_FINAL} onValueChange={(v) => setAfterOrder(v === AL_FINAL ? '' : v)}>
+            <SelectTrigger id="ap-despues"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value={AL_FINAL}>{t('ui.RouteRunDetail.alFinal', 'Al final del recorrido')}</SelectItem>
+              {pendientes.map((s) => <SelectItem key={s.routePointId} value={String(s.order)}>{s.order}. {s.name}</SelectItem>)}
+            </SelectContent>
+          </Select>
         </FormField>
-        <FormField label={t('ui.RouteRunDetail.prioridad', 'Prioridad')}>
-          <select className={FIELD_CLS} value={priority} onChange={(e) => setPriority(e.target.value)}>
-            <option value="low">Baja</option><option value="normal">Normal</option><option value="high">Alta</option><option value="critical">Crítica</option>
-          </select>
+        <FormField label={t('ui.RouteRunDetail.prioridad', 'Prioridad')} htmlFor="ap-prioridad">
+          <Select value={priority} onValueChange={setPriority}>
+            <SelectTrigger id="ap-prioridad"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {Object.entries(PRIORIDAD_LABEL).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
+            </SelectContent>
+          </Select>
         </FormField>
-        <FormField label={t('ui.RouteRunDetail.instrucciones', 'Instrucciones para el supervisor')}>
-          <textarea className="cg-input w-full px-3 py-2 text-sm" rows={2} value={instructions} onChange={(e) => setInstructions(e.target.value)} maxLength={2000} />
+        <FormField label={t('ui.RouteRunDetail.instrucciones', 'Instrucciones para el supervisor')} htmlFor="ap-instrucciones" full>
+          <Textarea id="ap-instrucciones" rows={2} value={instructions} onChange={(e) => setInstructions(e.target.value)} maxLength={2000} />
         </FormField>
-        <FormField label={t('ui.RouteRunDetail.motivo', 'Motivo del cambio')}>
-          <input className={FIELD_CLS} value={reason} onChange={(e) => setReason(e.target.value)} maxLength={500} />
+        <FormField label={t('ui.RouteRunDetail.motivo', 'Motivo del cambio')} htmlFor="ap-motivo" hint={t('ui.RouteRunDetail.motivoHint', 'Queda en la línea de tiempo de la ruta.')} full>
+          <Input id="ap-motivo" value={reason} onChange={(e) => setReason(e.target.value)} maxLength={500} />
         </FormField>
       </div>
     </Modal>
