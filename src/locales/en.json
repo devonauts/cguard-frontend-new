@@ -710,13 +710,13 @@
     },
     "form": {
       "active": "Active",
-      "address": "Address *",
+      "address": "Address",
       "addressLine2": "Address Line 2",
       "addressLine2Placeholder": "Optional",
       "categories": "Categories",
-      "city": "City *",
-      "country": "Country *",
-      "email": "Email Address *",
+      "city": "City",
+      "country": "Country",
+      "email": "Email Address",
       "fax": "Landline",
       "lastName": "Last name *",
       "latitude": "Latitude *",
@@ -724,8 +724,8 @@
       "longitude": "Longitude *",
       "moreInfo": "More information",
       "name": "Name *",
-      "phone": "Phone *",
-      "postalCode": "Postal code/Zip *",
+      "phone": "Phone",
+      "postalCode": "Postal code/Zip",
       "useMyLocation": "Use my location",
       "website": "Website",
       "addressAutoFilled": "Address filled in automatically",
@@ -760,7 +760,13 @@
       "coordinates": "GPS coordinates",
       "legalRep": "Legal representative",
       "optional": "Optional",
-      "switchToManual": "Manual"
+      "switchToManual": "Manual",
+      "extraAccessHintCompany": "Optional. For example, the person in charge of the operation. They get app access in addition to the legal representative.",
+      "extraAccessHintPerson": "Optional. Other people who will also have app access (for example a child or spouse).",
+      "extraAccessRole": "Role (e.g. Site manager)",
+      "extraAccessRelation": "Relationship (e.g. child)",
+      "extraAccessDefaultRole": "Person in charge",
+      "extraAccessRemove": "Remove"
     },
     "nav": {
       "clientPortal": "Client portal",
@@ -911,7 +917,7 @@
     },
     "overview": {
       "cards": {
-        "guardsAssigned": "Guardias asignados",
+        "guardsAssigned": "Assigned guards",
         "hoursWorked": "Hours worked (last 7 days)",
         "incidents": "Incident reports (last 7 days)",
         "postSites": "Active locations",
@@ -3023,7 +3029,7 @@
     "stations": {
       "action": "Action",
       "add": "Add Station",
-      "assignedGuardsTitle": "Guardias asignados",
+      "assignedGuardsTitle": "Assigned guards",
       "cancel": "Cancel",
       "company": "Company",
       "confirmRemovalBlockedDesc": "One or more selected stations have related records and cannot be deleted.",

@@ -935,13 +935,13 @@
       },
       "form": {
         "active": "Ativo",
-        "address": "Endereço *",
+        "address": "Endereço",
         "addressLine2": "Endereço (linha 2)",
         "addressLine2Placeholder": "Opcional",
         "categories": "Tipo",
-        "city": "Cidade *",
-        "country": "País *",
-        "email": "E-mail *",
+        "city": "Cidade",
+        "country": "País",
+        "email": "E-mail",
         "fax": "Telefone fixo",
         "lastName": "Sobrenome *",
         "latitude": "Latitude *",
@@ -949,8 +949,8 @@
         "longitude": "Longitude *",
         "moreInfo": "Mais informações",
         "name": "Nome *",
-        "phone": "Telefone *",
-        "postalCode": "Código postal/CEP *",
+        "phone": "Telefone",
+        "postalCode": "Código postal/CEP",
         "useMyLocation": "Usar minha localização",
         "website": "Site"
       },
@@ -4644,7 +4644,7 @@
       "contacts": "Contatos",
       "notes": "Notas",
       "files": "Arquivos",
-      "postSites": "Post Sites",
+      "postSites": "Locais",
       "clientPortal": "Portal do cliente",
       "userAccess": "Acesso de usuários",
       "emailReports": "Relatórios por e-mail",
@@ -4696,7 +4696,7 @@
     },
     "overview": {
       "cards": {
-        "postSites": "Post Sites",
+        "postSites": "Locais ativos",
         "guardsAssigned": "Guardas atribuídos",
         "toursCompleted": "Tours completados (últimos 7 dias)",
         "tasksCompleted": "Tarefas completadas (últimos 7 dias)",
@@ -5023,7 +5023,13 @@
       "coordinates": "Coordenadas GPS",
       "legalRep": "Representante legal",
       "optional": "Opcional",
-      "switchToManual": "Manual"
+      "switchToManual": "Manual",
+      "extraAccessHintCompany": "Opcional. Por exemplo, a pessoa responsável pela operação. Terá acesso à aplicação além do representante legal.",
+      "extraAccessHintPerson": "Opcional. Outras pessoas que também terão acesso à aplicação (por exemplo, filho ou cônjuge).",
+      "extraAccessRole": "Função (ex.: responsável)",
+      "extraAccessRelation": "Relação (ex.: filho)",
+      "extraAccessDefaultRole": "Pessoa responsável",
+      "extraAccessRemove": "Remover"
     },
     "notes": {
       "Added By": "Adicionado por",

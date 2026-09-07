@@ -152,7 +152,7 @@ export default function ClientForm({
     type AccessPerson = { name: string; email: string; phone: string; relationship: string };
     const [accessPeople, setAccessPeople] = useState<AccessPerson[]>([]);
     const addAccessPerson = () =>
-        setAccessPeople((p) => [...p, { name: '', email: '', phone: '', relationship: personType === 'PJ' ? 'Persona encargada' : '' }]);
+        setAccessPeople((p) => [...p, { name: '', email: '', phone: '', relationship: personType === 'PJ' ? t('clients.form.extraAccessDefaultRole', 'Persona encargada') : '' }]);
     const updateAccessPerson = (i: number, patch: Partial<AccessPerson>) =>
         setAccessPeople((p) => p.map((x, idx) => (idx === i ? { ...x, ...patch } : x)));
     const removeAccessPerson = (i: number) => setAccessPeople((p) => p.filter((_, idx) => idx !== i));
@@ -918,8 +918,8 @@ export default function ClientForm({
                       >
                           <p className="text-xs text-muted-foreground -mt-1">
                             {personType === 'PJ'
-                              ? 'Opcional. Ej: la persona encargada de la operación. Recibirá acceso a la app además del representante legal.'
-                              : 'Opcional. Otras personas que también tendrán acceso a la app (ej: hijo, cónyuge).'}
+                              ? t('clients.form.extraAccessHintCompany', 'Opcional. Ej: la persona encargada de la operación. Recibirá acceso a la app además del representante legal.')
+                              : t('clients.form.extraAccessHintPerson', 'Opcional. Otras personas que también tendrán acceso a la app (ej: hijo, cónyuge).')}
                           </p>
                           {accessPeople.length === 0 && (
                             <p className="text-xs text-muted-foreground italic">{t("ui.ClientForm.sinPersonasAdicionalesSoloEl", "Sin personas adicionales. Solo el contacto principal tendrá acceso.")}</p>
@@ -928,8 +928,8 @@ export default function ClientForm({
                             <div key={i} className="glass-sunken grid grid-cols-1 gap-2 p-3 sm:grid-cols-12">
                               <input value={p.name} onChange={(e) => updateAccessPerson(i, { name: e.target.value })} placeholder={t('ui.ClientForm.nombreCompleto')} className={`${FIELD_CLS_LG} sm:col-span-4`} />
                               <input value={p.email} onChange={(e) => updateAccessPerson(i, { email: e.target.value })} type="email" placeholder={t('comun.correoReq')} className={`${FIELD_CLS_LG} sm:col-span-4`} />
-                              <input value={p.relationship} onChange={(e) => updateAccessPerson(i, { relationship: e.target.value })} placeholder={personType === 'PJ' ? 'Cargo (ej: Encargado)' : 'Relación (ej: hijo)'} className={`${FIELD_CLS_LG} sm:col-span-3`} />
-                              <button type="button" onClick={() => removeAccessPerson(i)} className="cg-focus grid place-items-center rounded-lg transition-opacity hover:opacity-70 sm:col-span-1" style={{ color: 'var(--bad-text)' }} aria-label="Quitar"><Trash2 size={15} /></button>
+                              <input value={p.relationship} onChange={(e) => updateAccessPerson(i, { relationship: e.target.value })} placeholder={personType === 'PJ' ? t('clients.form.extraAccessRole', 'Cargo (ej: Encargado)') : t('clients.form.extraAccessRelation', 'Relación (ej: hijo)')} className={`${FIELD_CLS_LG} sm:col-span-3`} />
+                              <button type="button" onClick={() => removeAccessPerson(i)} className="cg-focus grid place-items-center rounded-lg transition-opacity hover:opacity-70 sm:col-span-1" style={{ color: 'var(--bad-text)' }} aria-label={t('clients.form.extraAccessRemove', 'Quitar')}><Trash2 size={15} /></button>
                             </div>
                           ))}
                       </Section>
