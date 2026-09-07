@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { useTranslation } from 'react-i18next';
 /**
  * El instrumento de cobertura: qué parte de los puestos tiene un vigilante
@@ -17,7 +18,7 @@ import { fmtValue } from "../tone";
 /** 270° de recorrido y el hueco abajo: se lee como dial, no como tarta. */
 const SWEEP = 75; // % de la circunferencia (pathLength = 100)
 
-export function CoverageGauge({ coverage, onDuty, stations }: {
+function CoverageGaugeBase({ coverage, onDuty, stations }: {
   coverage: number | null; onDuty: number; stations: number;
 }) {
   const { t } = useTranslation();
@@ -93,3 +94,12 @@ function Linea({ label, value, pct, tone }: { label: string; value: string; pct:
     </div>
   );
 }
+
+/* ── MEMOIZADO ──────────────────────────────────────────────────────────────
+   El panel se re-renderiza con cada ping de GPS —hasta 33 veces por segundo con
+   mil vigilantes en movimiento— porque el hook devuelve un objeto de estado
+   nuevo. Este componente no depende de las posiciones, así que sin `memo`
+   repintaba 33 veces por segundo para enseñar exactamente lo mismo.
+   No es el arreglo de fondo (ese es sacar `entities` del objeto grande), pero
+   corta el coste donde se paga. */
+export const CoverageGauge = memo(CoverageGaugeBase);

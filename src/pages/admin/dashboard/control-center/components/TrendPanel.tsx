@@ -4,7 +4,7 @@
  * del otro obligan a comparar cosas que no se comparan (incidentes contra
  * minutos contra clientes); uno grande deja LEER la serie que interesa.
  */
-import { useMemo, useState } from "react";
+import { useMemo, useState, memo } from "react";
 import { useTranslation } from 'react-i18next';
 import { AlertTriangle, Building2, Timer } from "lucide-react";
 import { Segmented } from "@/components/kit";
@@ -16,7 +16,7 @@ import { Panel, PanelLink } from "./Panel";
 import { localeActual } from '@/lib/localeActual'
 type SerieKey = "incidentes" | "respuesta" | "clientes";
 
-export function TrendPanel({ incidents, response, acquisition, className }: {
+function TrendPanelBase({ incidents, response, acquisition, className }: {
   incidents: MonthPoint[]; response: MonthPoint[]; acquisition: MonthPoint[]; className?: string;
 }) {
   const { t } = useTranslation();
@@ -131,3 +131,12 @@ function Resumen({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+
+/* ── MEMOIZADO ──────────────────────────────────────────────────────────────
+   El panel se re-renderiza con cada ping de GPS —hasta 33 veces por segundo con
+   mil vigilantes en movimiento— porque el hook devuelve un objeto de estado
+   nuevo. Este componente no depende de las posiciones, así que sin `memo`
+   repintaba 33 veces por segundo para enseñar exactamente lo mismo.
+   No es el arreglo de fondo (ese es sacar `entities` del objeto grande), pero
+   corta el coste donde se paga. */
+export const TrendPanel = memo(TrendPanelBase);

@@ -115,12 +115,46 @@ function url(svg: string): string {
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg.replace(/\s{2,}/g, " "))}`;
 }
 
+/**
+ * Caché de iconos con desalojo por USO, no por vaciado total.
+ *
+ * ── LO QUE HACÍA MAL ────────────────────────────────────────────────────────
+ * Al pasar de 400 entradas hacía `clear()`: borraba la caché ENTERA. Y las
+ * claves se multiplican por rumbo (24 escalones), color, estado y cobertura, así
+ * que con muchas entidades en el mapa se pasaba de 400 continuamente. Resultado:
+ * la caché se vaciaba una y otra vez y cada pin volvía a serializar su SVG y a
+ * pasarlo por `encodeURIComponent` — el trabajo más caro de este fichero, justo
+ * en el momento de más presión, que es cuando hay muchas cosas moviéndose.
+ *
+ * Es el peor comportamiento posible: la caché deja de servir exactamente cuando
+ * más falta hace.
+ *
+ * ── AHORA ───────────────────────────────────────────────────────────────────
+ * LRU sobre el orden de inserción de `Map`, que en JavaScript está garantizado:
+ * la primera clave es la menos usada recientemente. Al llegar al tope se
+ * desaloja UNA, no todas. Y al acertar se reinserta, para que lo que se usa se
+ * quede.
+ *
+ * El tope sube a 1200: un icono son unos cientos de bytes, y 1200 caben de sobra
+ * en la memoria de una pestaña. 400 era demasiado justo para un mapa con
+ * centenares de entidades y rumbos cambiando.
+ */
 const cacheAssets = new Map<string, PinAsset>();
+const TOPE_CACHE = 1200;
+
 function memo(clave: string, construir: () => PinAsset): PinAsset {
   const previo = cacheAssets.get(clave);
-  if (previo) return previo;
+  if (previo) {
+    // Reinsertar lo mueve al final: lo que se usa sobrevive al desalojo.
+    cacheAssets.delete(clave);
+    cacheAssets.set(clave, previo);
+    return previo;
+  }
   const a = construir();
-  if (cacheAssets.size > 400) cacheAssets.clear();
+  if (cacheAssets.size >= TOPE_CACHE) {
+    const masVieja = cacheAssets.keys().next().value;
+    if (masVieja !== undefined) cacheAssets.delete(masVieja);
+  }
   cacheAssets.set(clave, a);
   return a;
 }

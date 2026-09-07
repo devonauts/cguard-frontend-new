@@ -675,8 +675,29 @@ export function useControlCenter(intervalSec = 15): ControlCenterData & { refres
       const la = coord(e?.lat), ln = coord(e?.lng);
       if (la == null || ln == null || !e?.id) return;
       setState((s) => {
-        const others = s.entities.filter((x) => x.id !== String(e.id));
-        const previa = s.entities.find((x) => x.id === String(e.id));
+        /* ── TRES COSAS QUE ESTE MANEJADOR HACÍA MAL ─────────────────────────
+           Corre por CADA ping de CADA vigilante: con 1000 en movimiento son 33
+           veces por segundo. Lo que costaba cada una:
+
+            1. REORDENABA. `filter` + poner al final movía la entidad
+               actualizada al fondo del array, así que el ORDEN cambiaba en cada
+               ping. Eso invalida cualquier `useMemo` de aguas abajo aunque el
+               contenido sea idéntico — y aguas abajo está `calcularCobertura`,
+               que es O(puestos × personas) con haversine por par.
+            2. RE-RENDERIZABA POR PINGS QUE NO IMPORTAN. Un ping de alguien que
+               ya no está en el mapa (fichó salida) creaba estado nuevo igual.
+            3. RE-RENDERIZABA SIN CAMBIOS. Un vigilante parado manda su posición
+               cada cinco minutos, idéntica, y el tablero entero se repintaba.
+
+           Ahora: se sustituye EN SITIO (el orden no cambia), se ignora lo que no
+           está en el mapa, y si la coordenada es la misma se devuelve el estado
+           TAL CUAL — React no re-renderiza cuando la identidad no cambia. El
+           patrón se copia de `LiveTracking.tsx`, que ya lo hacía bien. */
+        const idx = s.entities.findIndex((x) => x.id === String(e.id));
+        if (idx < 0) return s;
+        const previa = s.entities[idx];
+        if (previa.lat === la && previa.lng === ln) return s;
+        const others = s.entities;
         const entity: MapEntity = {
           id: String(e.id),
           kind: (e.kind as MapEntity["kind"]) || "supervisor",
@@ -690,7 +711,9 @@ export function useControlCenter(intervalSec = 15): ControlCenterData & { refres
           // sale el latido del mapa, que sólo late con señal fresca de verdad.
           meta: { ...previa?.meta, ...e.meta, lastSeenAt: new Date().toISOString() },
         };
-        return { ...s, entities: [...others, entity] };
+        const siguientes = others.slice();
+        siguientes[idx] = entity;
+        return { ...s, entities: siguientes };
       });
     };
     /* La sala del mapa se PIDE. `location:update` ya no llega por rol: sin esta

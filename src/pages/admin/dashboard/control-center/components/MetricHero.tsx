@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { useTranslation } from 'react-i18next';
 /**
  * La métrica grande de la fila superior: cifra enorme, píldora de variación y
@@ -17,7 +18,7 @@ import {
 } from "../tone";
 import { TonePill } from "./Panel";
 
-export function MetricHero({ kpi, icon: Icon, to, className }: {
+function MetricHeroBase({ kpi, icon: Icon, to, className }: {
   kpi: Kpi; icon?: LucideIcon; to?: string; className?: string;
 }) {
   const { t } = useTranslation();
@@ -102,3 +103,12 @@ export function MetricHero({ kpi, icon: Icon, to, className }: {
     </article>
   );
 }
+
+/* ── MEMOIZADO ──────────────────────────────────────────────────────────────
+   El panel se re-renderiza con cada ping de GPS —hasta 33 veces por segundo con
+   mil vigilantes en movimiento— porque el hook devuelve un objeto de estado
+   nuevo. Este componente no depende de las posiciones, así que sin `memo`
+   repintaba 33 veces por segundo para enseñar exactamente lo mismo.
+   No es el arreglo de fondo (ese es sacar `entities` del objeto grande), pero
+   corta el coste donde se paga. */
+export const MetricHero = memo(MetricHeroBase);

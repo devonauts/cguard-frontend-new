@@ -1,3 +1,4 @@
+import { memo } from "react";
 /**
  * El parte de novedades: lo que está pasando en la operación, en orden. Cada
  * fila es un avatar tonal, el hecho, la píldora de qué tipo de hecho es y la
@@ -25,7 +26,7 @@ const KIND_LABEL: Record<ActivityItem["kind"], string> = {
   alert: "Alerta", system: "Sistema", event: "Novedad",
 };
 
-export function ActivityStream({ items, live, className }: { items: ActivityItem[]; live?: boolean; className?: string }) {
+function ActivityStreamBase({ items, live, className }: { items: ActivityItem[]; live?: boolean; className?: string }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -96,3 +97,12 @@ export function ActivityStream({ items, live, className }: { items: ActivityItem
     </Panel>
   );
 }
+
+/* ── MEMOIZADO ──────────────────────────────────────────────────────────────
+   El panel se re-renderiza con cada ping de GPS —hasta 33 veces por segundo con
+   mil vigilantes en movimiento— porque el hook devuelve un objeto de estado
+   nuevo. Este componente no depende de las posiciones, así que sin `memo`
+   repintaba 33 veces por segundo para enseñar exactamente lo mismo.
+   No es el arreglo de fondo (ese es sacar `entities` del objeto grande), pero
+   corta el coste donde se paga. */
+export const ActivityStream = memo(ActivityStreamBase);

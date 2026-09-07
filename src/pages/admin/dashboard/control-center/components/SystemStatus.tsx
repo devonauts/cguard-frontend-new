@@ -1,3 +1,4 @@
+import { memo } from "react";
 /**
  * La banda de estado del puesto: el enlace en vivo, cuántos equipos reportan y
  * el tamaño de la operación. Va abajo y a lo ancho — es el pie del tablero, no
@@ -18,7 +19,7 @@ import { toneFill, type Tone } from "../tone";
 // español): no se traduce el campo, se traduce al pintar con `labelKey`.
 interface Celda { icon: LucideIcon; label: string; labelKey: string; value: string; hint: string; hintKey: string; tone: Tone }
 
-export function SystemStatus({ sseConnected, onlineDevices, stations, clients, team }: {
+function SystemStatusBase({ sseConnected, onlineDevices, stations, clients, team }: {
   sseConnected: boolean; onlineDevices: number; stations: number; clients: number; team: number;
 }) {
   const { t } = useTranslation();
@@ -96,3 +97,12 @@ function CeldaEstado({ celda }: { celda: Celda }) {
     </div>
   );
 }
+
+/* ── MEMOIZADO ──────────────────────────────────────────────────────────────
+   El panel se re-renderiza con cada ping de GPS —hasta 33 veces por segundo con
+   mil vigilantes en movimiento— porque el hook devuelve un objeto de estado
+   nuevo. Este componente no depende de las posiciones, así que sin `memo`
+   repintaba 33 veces por segundo para enseñar exactamente lo mismo.
+   No es el arreglo de fondo (ese es sacar `entities` del objeto grande), pero
+   corta el coste donde se paga. */
+export const SystemStatus = memo(SystemStatusBase);

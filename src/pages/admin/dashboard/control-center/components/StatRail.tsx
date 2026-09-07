@@ -1,3 +1,4 @@
+import { memo } from "react";
 /**
  * El riel de recursos: las métricas que no son signos vitales pero que se
  * consultan a diario (puestos, supervisores, respuesta, cartera). Van como
@@ -13,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 
 export interface RailItem { kpi: Kpi; icon?: LucideIcon; to?: string }
 
-export function StatRail({ title, subtitle, icon, items }: {
+function StatRailBase({ title, subtitle, icon, items }: {
   title: string; subtitle?: string; icon?: React.ReactNode; items: RailItem[];
 }) {
   const navigate = useNavigate();
@@ -55,3 +56,12 @@ export function StatRail({ title, subtitle, icon, items }: {
     </Panel>
   );
 }
+
+/* ── MEMOIZADO ──────────────────────────────────────────────────────────────
+   El panel se re-renderiza con cada ping de GPS —hasta 33 veces por segundo con
+   mil vigilantes en movimiento— porque el hook devuelve un objeto de estado
+   nuevo. Este componente no depende de las posiciones, así que sin `memo`
+   repintaba 33 veces por segundo para enseñar exactamente lo mismo.
+   No es el arreglo de fondo (ese es sacar `entities` del objeto grande), pero
+   corta el coste donde se paga. */
+export const StatRail = memo(StatRailBase);
