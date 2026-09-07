@@ -766,7 +766,14 @@
       "extraAccessRole": "Role (e.g. Site manager)",
       "extraAccessRelation": "Relationship (e.g. child)",
       "extraAccessDefaultRole": "Person in charge",
-      "extraAccessRemove": "Remove"
+      "extraAccessRemove": "Remove",
+      "taxIdOf": "Company {{documento}}",
+      "taxIdGeneric": "Company tax ID",
+      "personIdGeneric": "ID document",
+      "personNaturalNamed": "Individual ({{documento}})",
+      "personNaturalGeneric": "Individual",
+      "personJuridicaNamed": "Company ({{documento}})",
+      "personJuridicaGeneric": "Company"
     },
     "nav": {
       "clientPortal": "Client portal",
@@ -881,7 +888,9 @@
       "cedula_invalid": "Invalid ID",
       "ruc_invalid": "Invalid RUC (must end in 001 and contain a valid ID)",
       "latitude_numeric": "Latitude must be a number",
-      "longitude_numeric": "Longitude must be a number"
+      "longitude_numeric": "Longitude must be a number",
+      "document_invalid_named": "Invalid {{documento}}",
+      "document_invalid": "Invalid ID"
     },
     "alerts": {
       "archiveClients": {
@@ -1012,7 +1021,9 @@
       "document": "Representative's ID",
       "email": "Personal email",
       "phone": "Personal phone",
-      "title": "Legal representative"
+      "title": "Legal representative",
+      "documentNamed": "Representative's {{documento}}",
+      "documentGeneric": "Representative's ID"
     },
     "newClientSubtitle": "Register a new client on the platform.",
     "noChanges": "There were no changes to save",
@@ -7954,6 +7965,16 @@
       "offHours": "Off shift",
       "noShifts": "No shifts today",
       "nextAt": "Starts {{time}}"
+    },
+    "shift": {
+      "label": "Shift {{code}}",
+      "D": "D",
+      "T": "A",
+      "N": "N",
+      "until": "until {{time}}",
+      "reliefSoon": "relief {{time}}",
+      "overdue": "no relief since {{time}}",
+      "vacant": "no guard"
     },
     "noGuardsAssigned": "No guards assigned",
     "guardsAssignedLabel": "assigned",

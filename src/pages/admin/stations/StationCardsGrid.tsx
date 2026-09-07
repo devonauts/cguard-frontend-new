@@ -105,6 +105,29 @@ function insigniaDeCobertura(s: StationCard, t: (k: string, o?: any) => string):
   }
 }
 
+/**
+ * La insignia del TURNO: la letra manda (D/T/N) y el color es el del relevo,
+ * que es lo que se viene a mirar — verde corre normal, ámbar termina en menos
+ * de una hora, rojo venció y nadie relevó, neutro no hay nadie fichado.
+ */
+function insigniaDeTurno(s: StationCard, t: (k: string, o?: any) => string): Insignia | null {
+  const sh = s.shift;
+  if (!sh) return null;
+  const letra = t(`stations.shift.${sh.code}`, { defaultValue: sh.code });
+  let hint: string | null = null;
+  if (sh.vacant) hint = t("stations.shift.vacant", { defaultValue: "sin vigilante" });
+  else if (sh.overdue) hint = t("stations.shift.overdue", { time: sh.end ?? "", defaultValue: "sin relevo desde {{time}}" });
+  else if (sh.endsSoon) hint = t("stations.shift.reliefSoon", { time: sh.end ?? "", defaultValue: "relevo {{time}}" });
+  else if (sh.end) hint = t("stations.shift.until", { time: sh.end, defaultValue: "hasta {{time}}" });
+  const tone: Insignia["tone"] = sh.vacant ? "neutral" : sh.overdue ? "bad" : sh.endsSoon ? "warn" : "ok";
+  return {
+    tone,
+    icon: <Clock className="h-3 w-3" />,
+    label: t("stations.shift.label", { code: letra, defaultValue: "Turno {{code}}" }),
+    hint,
+  };
+}
+
 export default function StationCardsGrid({
   stations,
   loading,
@@ -182,6 +205,20 @@ export default function StationCardsGrid({
                         </StatusBadge>
                         {ins.hint && (
                           <span className="text-xs" style={{ color: "var(--ink-faint)" }}>{ins.hint}</span>
+                        )}
+                      </>
+                    );
+                  })()}
+                  {(() => {
+                    const turno = insigniaDeTurno(s, t);
+                    if (!turno) return null;
+                    return (
+                      <>
+                        <StatusBadge tone={turno.tone} dot={false}>
+                          {turno.icon} <strong>{turno.label}</strong>
+                        </StatusBadge>
+                        {turno.hint && (
+                          <span className="text-xs" style={{ color: "var(--ink-faint)" }}>{turno.hint}</span>
                         )}
                       </>
                     );

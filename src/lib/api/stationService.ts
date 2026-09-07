@@ -172,6 +172,27 @@ export interface StationCard {
   shiftsToday: number;
   /** Huecos de cobertura ya declarados por alguien. */
   openGaps: number;
+  /**
+   * EL TURNO QUE CORRE en el puesto — D día · T tarde · N noche — con el
+   * estado de su relevo. «Vigilante en puesto» no dice si ya hubo relevo: el
+   * de la noche que sigue fichado a las nueve de la mañana también es «un
+   * vigilante en puesto». Lo calcula el backend (lib/turnoActivo).
+   */
+  shift: StationShift | null;
+}
+
+export interface StationShift {
+  code: "D" | "T" | "N";
+  /** «07:00» / «19:00» en la hora de la empresa. */
+  start: string | null;
+  end: string | null;
+  endsInMin: number | null;
+  /** Termina en menos de una hora: el relevo está por llegar. */
+  endsSoon: boolean;
+  /** La ventana ya terminó y sigue fichado: sin relevo. */
+  overdue: boolean;
+  /** Nadie fichado; la letra es la del bloque que debería estar. */
+  vacant: boolean;
 }
 
 const stationService = {

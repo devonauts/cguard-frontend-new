@@ -766,7 +766,14 @@
       "extraAccessRole": "Cargo (ej: Encargado)",
       "extraAccessRelation": "Relación (ej: hijo)",
       "extraAccessDefaultRole": "Persona encargada",
-      "extraAccessRemove": "Quitar"
+      "extraAccessRemove": "Quitar",
+      "taxIdOf": "{{documento}} de la empresa",
+      "taxIdGeneric": "Identificador fiscal de la empresa",
+      "personIdGeneric": "Documento de identidad",
+      "personNaturalNamed": "Persona natural ({{documento}})",
+      "personNaturalGeneric": "Persona natural",
+      "personJuridicaNamed": "Persona jurídica ({{documento}})",
+      "personJuridicaGeneric": "Empresa"
     },
     "nav": {
       "clientPortal": "Portal del cliente",
@@ -881,7 +888,9 @@
       "cedula_invalid": "Cédula inválida",
       "ruc_invalid": "RUC inválido (debe terminar en 001 y contener cédula válida)",
       "latitude_numeric": "Latitud debe ser numérica",
-      "longitude_numeric": "Longitud debe ser numérica"
+      "longitude_numeric": "Longitud debe ser numérica",
+      "document_invalid_named": "{{documento}} inválido",
+      "document_invalid": "Identificación inválida"
     },
     "alerts": {
       "archiveClients": {
@@ -1012,7 +1021,9 @@
       "document": "Cédula del representante",
       "email": "Correo electrónico personal",
       "phone": "Teléfono personal",
-      "title": "Datos del representante legal"
+      "title": "Datos del representante legal",
+      "documentNamed": "{{documento}} del representante",
+      "documentGeneric": "Documento del representante"
     },
     "newClientSubtitle": "Registra un nuevo cliente en la plataforma.",
     "noChanges": "No hubo cambios para guardar",
@@ -7955,6 +7966,16 @@
       "noShifts": "Sin turnos hoy",
       "nextAt": "Entra {{time}}"
     },
+    "shift": {
+      "label": "Turno {{code}}",
+      "D": "D",
+      "T": "T",
+      "N": "N",
+      "until": "hasta {{time}}",
+      "reliefSoon": "relevo {{time}}",
+      "overdue": "sin relevo desde {{time}}",
+      "vacant": "sin vigilante"
+    },
     "noGuardsAssigned": "Sin vigilantes asignados",
     "guardsAssignedLabel": "asignado(s)",
     "card": {
@@ -11813,7 +11834,7 @@
     },
     "client": {
       "addressRequired": "Dirección requerida",
-      "documentRequired": "RUC/Cédula requerido",
+      "documentRequired": "Identificación requerida",
       "emailRequired": "Email requerido",
       "latitudeRange": "Latitud entre -90 y 90",
       "longitudeRange": "Longitud entre -180 y 180",
