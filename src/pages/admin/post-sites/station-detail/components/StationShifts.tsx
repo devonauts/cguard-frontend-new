@@ -150,7 +150,23 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
         `/tenant/${tenantId}/shift?filter[station]=${encodeURIComponent(stationId)}&limit=999`
       );
       const list = Array.isArray(res) ? res : (res?.rows ?? []);
-      setRows(list);
+      /* ── UN TURNO ANULADO NO ES UN TURNO ────────────────────────────────
+         Esta pestaña era la ÚNICA superficie de horario que no filtraba por
+         estado: pedía el listado crudo y su etiqueta (activo / programado /
+         completado) salía sólo del reloj, nunca de `shift.status`.
+
+         Al cerrar una asignación sus turnos futuros se ANULAN y se fijan
+         (`cancelled` + `pinned`) para que quede constancia de lo planificado —
+         ver `guardAssignmentDelete`—. El resto del CRM los esconde en
+         `loadShiftIndex` (`activeShiftWhere`), pero aquí se pintaban como
+         turnos normales: BIOMAR BAHIA, sin un solo vigilante asignado, mostraba
+         154 turnos hasta diciembre a nombre de dos personas que se habían
+         retirado del puesto el 4 de septiembre.
+
+         Las filas siguen en la base: son historial y no se tocan. Simplemente
+         no se enseñan como si alguien fuera a ir a trabajar. */
+      const ANULADOS = ['cancelled', 'transferred_out', 'absent'];
+      setRows(list.filter((r: any) => !ANULADOS.includes(String(r?.status || 'planned'))));
     } catch (e: any) {
       setError(e?.message || 'Error al cargar turnos');
     } finally {
