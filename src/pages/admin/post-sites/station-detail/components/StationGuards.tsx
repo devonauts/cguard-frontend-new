@@ -20,7 +20,7 @@ type Props = { station: StationDetail; stationId: string; postSiteId: string };
 type PosType = 'fijo' | 'sacafranco';
 
 // A scheduler position row from `/station/:id/positions`.
-interface PositionRow { id: string; type?: string; startTime?: string; endTime?: string; name?: string }
+interface PositionRow { id: string; type?: string; startTime?: string; endTime?: string; name?: string; sortOrder?: number }
 
 interface Assignment {
   id: string;                    // row key: `a:<assignmentId>` or `s:<userId>`
@@ -216,13 +216,26 @@ export default function StationGuards({ station, stationId, postSiteId }: Props)
     const occupiedPos = new Set(rows.filter((r) => r.positionId).map((r) => String(r.positionId)));
     const free = positions.find((p: PositionRow) => (p.type || 'fijo') === type && !occupiedPos.has(String(p.id)));
     if (free) return free.id;
+    /* ── LA PLAZA NUEVA HEREDA LA VENTANA DE LAS QUE YA HAY ──────────────────
+       Antes salía de `startingTimeInDay` y, a falta de él, de un 07:00–19:00
+       escrito a mano. En un puesto NOCTURNO cuyas plazas van de 19:00 a 07:00
+       eso metía al segundo vigilante en pleno día. Las plazas hermanas son el
+       dato más fiable de a qué hora se trabaja ahí; la estación es el respaldo.
+       Y el nombre se numera: tres vigilantes ya no se llaman todos «Fijo 1». */
+    const fijos = positions.filter((p: PositionRow) => (p.type || 'fijo') !== 'sacafranco');
+    const hermana = [...fijos].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))[0];
+    const sacas = positions.filter((p: PositionRow) => (p.type || 'fijo') === 'sacafranco');
+    const nombre = type === 'sacafranco'
+      ? (sacas.length ? `Sacafranco ${sacas.length + 1}` : 'Sacafranco')
+      : `Fijo ${fijos.length + 1}`;
     try {
       const created: any = await ApiService.post(`/tenant/${tenantId}/station/${encodeURIComponent(stationId)}/positions`, {
-        name: type === 'sacafranco' ? 'Sacafranco' : 'Fijo 1',
+        name: nombre,
         type,
-        startTime: station?.startingTimeInDay || '07:00',
-        endTime: station?.finishTimeInDay || '19:00',
+        startTime: hermana?.startTime || station?.startingTimeInDay || '07:00',
+        endTime: hermana?.endTime || station?.finishTimeInDay || '19:00',
         guardsNeeded: 1,
+        sortOrder: type === 'sacafranco' ? 99 : fijos.length,
       });
       const id = created?.id || created?.data?.id || null;
       return id;
