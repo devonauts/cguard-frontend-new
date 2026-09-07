@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { ApiService } from '@/services/api/apiService';
 import { getTenantTimezone } from '@/utils/tenantLocation';
 import { EmptyState, Modal } from '@/components/kit';
+import SecuenciaPropiaSelect from '@/components/schedule/SecuenciaPropiaSelect';
 
 /** Local (tenant-tz) YYYY-MM-DD for a shift start. */
 function localDateKey(iso: string): string {
@@ -24,13 +25,26 @@ interface Candidate { id: string; name: string; busy: Set<string>; freeForGaps: 
 interface AssignmentRow { positionId?: string | null; isRelief?: boolean; guardId?: string; guard?: { id?: string } | null }
 interface GuardAutoRow { guardId?: string; id?: string; fullName?: string; label?: string; name?: string }
 interface ShiftRow { guardId?: string; guard?: { id?: string } | null; startTime?: string }
-interface PositionRow { id: string; type?: string }
+interface PositionRow { id: string; type?: string; startTime?: string | null; endTime?: string | null }
 
 /**
  * Assign a Sacafranco (relief) to cover the fijos' rest-day gaps. Shows each
  * candidate as a card with the next-14-day availability strip — the station's gap
  * days are highlighted, and days the guard already works (at any station) are marked
  * busy — so you pick someone free on the days you need.
+ *
+ * ── POR QUÉ ESTE DIÁLOGO NO REGISTRABA NINGÚN TURNO ─────────────────────────
+ * Mandaba el alta sin patrón, y el backend trataba «sacafranco sin patrón» como
+ * «mes en blanco»: se saltaba la generación a propósito (MANUAL SACAFRANCO,
+ * 2026-07-18). El aviso decía «asignado» y el vigilante se quedaba con cero
+ * turnos, sin ninguna pista de que faltaba un segundo paso en otra pantalla.
+ *
+ * Ahora un sacafranco sin patrón SÍ genera: va cada día al descanso que dejen
+ * los fijos. Aquí quedan las otras dos piezas del mismo fallo:
+ *   · la plaza se creaba siempre 07:00–19:00, aunque la estación trabajara
+ *     07:00–23:00 en dos bloques;
+ *   · nadie contaba los turnos creados, así que un día SIN huecos que tapar se
+ *     veía exactamente igual que el fallo. Ahora se dice cuántos salieron.
  */
 export default function SacafrancoAssignModal({
   open, onClose, stationId, tenantId, gapDates, onAssigned,
@@ -46,6 +60,8 @@ export default function SacafrancoAssignModal({
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState(false);
   const [assigning, setAssigning] = useState<string | null>(null);
+  /** Ciclo propio del sacafranco. Vacío = tapa los huecos que haya, sin ciclo. */
+  const [cicloPropio, setCicloPropio] = useState('');
 
   const days = (() => {
     const out: string[] = [];
@@ -101,18 +117,70 @@ export default function SacafrancoAssignModal({
     try {
       // Ensure the station has a Sacafranco position to assign into.
       const posRes: any = await ApiService.get(`/tenant/${tenantId}/station/${stationId}/positions`);
-      const posList = Array.isArray(posRes) ? posRes : (posRes?.rows || []);
+      const posList: PositionRow[] = Array.isArray(posRes) ? posRes : (posRes?.rows || []);
       let sf = posList.find((p: PositionRow) => p.type === 'sacafranco');
       if (!sf) {
+        // La ventana de la plaza sale de la de los FIJOS de la estación, no de
+        // un 07:00–19:00 escrito a mano: en una estación de 07:00 a 23:00 esa
+        // plaza nacía con un horario que no existe en el puesto.
+        const fijos = posList.filter((p: PositionRow) => (p.type || 'fijo') !== 'sacafranco');
+        const primero = [...fijos].sort((a, b) => String(a.startTime || '').localeCompare(String(b.startTime || '')))[0];
         const created: any = await ApiService.post(`/tenant/${tenantId}/station/${stationId}/positions`, {
-          data: { name: 'Sacafranco', type: 'sacafranco', startTime: '07:00', endTime: '19:00', sortOrder: 2, guardsNeeded: 1 },
+          data: {
+            name: 'Sacafranco',
+            type: 'sacafranco',
+            startTime: String(primero?.startTime || '07:00').slice(0, 5),
+            endTime: String(primero?.endTime || '19:00').slice(0, 5),
+            sortOrder: 99,
+            guardsNeeded: 1,
+          },
         });
         sf = created?.data || created;
       }
       await ApiService.post(`/tenant/${tenantId}/guard-assignment`, {
-        data: { guardId: g.id, stationId, positionId: sf.id, startDate: today(), isRelief: true },
+        data: {
+          guardId: g.id,
+          stationId,
+          positionId: sf!.id,
+          startDate: today(),
+          isRelief: true,
+          // Vacío ⇒ sin ciclo propio: va cada día al descanso que dejen los fijos.
+          rotationStyleId: cicloPropio || null,
+        },
       });
-      toast.success(`${g.name} asignado como sacafranco — quedó asignado como sacafranco — coloca su cobertura día a día en Programador › Horario (arrastra sus días L) o usa Optimizar Sacafrancos`);
+
+      /* ── ¿CUÁNTOS TURNOS LE SALIERON? ────────────────────────────────────
+         La queja era literalmente «lo agregué y no registraba el turno». Un
+         mensaje de éxito que no distingue entre «se generaron 12 turnos» y «no
+         había ni un hueco que tapar» deja al operador exactamente igual de
+         perdido que el fallo. Se cuentan y se dicen. */
+      let turnos: number | null = null;
+      try {
+        const desde = today();
+        const hasta = new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
+        const res: any = await ApiService.get(
+          `/tenant/${tenantId}/shift?limit=999&guardId=${encodeURIComponent(g.id)}`,
+        );
+        const filas: ShiftRow[] = Array.isArray(res) ? res : (res?.rows || []);
+        turnos = filas.filter((sh) => {
+          if (!sh.startTime) return false;
+          const gid = String(sh.guardId || sh.guard?.id || '');
+          if (gid && gid !== String(g.id)) return false;
+          const d = localDateKey(sh.startTime);
+          return d >= desde && d <= hasta;
+        }).length;
+      } catch { /* el conteo es informativo */ }
+
+      if (turnos === null) {
+        toast.success(`${g.name} quedó asignado como sacafranco.`);
+      } else if (turnos > 0) {
+        toast.success(`${g.name} quedó como sacafranco — ${turnos} turno${turnos === 1 ? '' : 's'} generado${turnos === 1 ? '' : 's'} en los próximos 30 días.`);
+      } else {
+        toast.warning(
+          `${g.name} quedó como sacafranco, pero no hay ningún descanso que tapar en los próximos 30 días, así que no se generó ningún turno. Revisa que los fijos de la estación tengan descansos en su ciclo, o dale un ciclo propio.`,
+          { duration: 9000 },
+        );
+      }
       onAssigned();
       onClose();
     } catch (e: any) {
@@ -130,6 +198,22 @@ export default function SacafrancoAssignModal({
       description={t('ui.SacafrancoAssignModal.cubreLosDiasDeDescanso')}
     >
       <div className="space-y-3">
+        {/* Ciclo del sacafranco. El defecto —sin ciclo propio— es lo que la
+            palabra significa: va donde los fijos libran. */}
+        <div>
+          <p className="cg-eyebrow mb-1.5">Cómo trabaja</p>
+          <SecuenciaPropiaSelect
+            tenantId={tenantId}
+            value={cicloPropio}
+            onChange={setCicloPropio}
+            etiquetaPorDefecto="Tapa el hueco donde caiga (recomendado)"
+          />
+          <p className="mt-1 text-[10px]" style={{ color: 'var(--ink-soft)' }}>
+            Sin ciclo propio cubre, día a día, el descanso que dejen los fijos. Con ciclo propio corre
+            su rotación y dentro de sus días de trabajo va al hueco que exista.
+          </p>
+        </div>
+
         {/* Legend */}
         <div className="flex flex-wrap items-center gap-4 text-[10px]" style={{ color: 'var(--ink-soft)' }}>
           <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded-sm" style={{ background: 'color-mix(in oklab, var(--bad) 45%, transparent)' }} />{" "}{t("ui.SacafrancoAssignModal.diaACubrirDescansoDel", "Día a cubrir (descanso del fijo)")}</span>

@@ -7,6 +7,7 @@ import { ApiService } from '@/services/api/apiService';
 import { Modal, Segmented } from '@/components/kit';
 import { FIELD_CLS_LG, LabeledField } from '@/pages/admin/clientes/components/_shared/tab-kit';
 import { Button } from '@/components/ui/button';
+import SecuenciaPropiaSelect from '@/components/schedule/SecuenciaPropiaSelect';
 import type { Station } from '@/types';
 
 import { localeActual } from '@/lib/localeActual'
@@ -19,7 +20,7 @@ interface StationDetail extends Station {
 }
 
 // A scheduler position row from `/station/:id/positions`.
-interface PositionRow { id: string; type?: string; sortOrder?: number }
+interface PositionRow { id: string; type?: string; sortOrder?: number; startTime?: string | null; endTime?: string | null }
 // A rotation style (patrón) — dayShifts/nightShifts/restDays define the cycle.
 interface RotationStyleRow extends RotationCycle { id: string; name?: string }
 // A raw shift row from `/shift` (only the fields this modal reads).
@@ -42,8 +43,14 @@ type Props = {
  * The single guard-assignment modal (used by the Turnos tab AND "Vigilantes
  * Asignados"). Rotación mode assigns the guard to a POSITION (Vigilante 1/2) via
  * the scheduling engine, which staggers day/night automatically from the
- * station's patrón de rotación — NO per-guard jornada or pattern. "Turno único"
- * creates a one-off shift. Self-contained: loads its own guards + positions.
+ * station's patrón de rotación. "Turno único" creates a one-off shift.
+ * Self-contained: loads its own guards + positions.
+ *
+ * La rotación de la estación es el DEFECTO y sigue siendo lo normal. Desde
+ * 2026-09-06 se puede además darle a un vigilante concreto SU secuencia
+ * («Secuencia de este vigilante»): hay estaciones —Batallón Sur, 07:00–23:00 en
+ * dos bloques— donde el fijo 1 hace 2 mañanas y 2 tardes y el fijo 2 hace 3 y 2,
+ * y no hay forma de escribir eso con un solo ciclo por estación.
  */
 export default function ShiftAssignModal({ open, onClose, onSaved, station, stationId, postSiteId, presetGuardId }: Props) {
   const { t } = useTranslation();
@@ -60,6 +67,8 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
   // Optional end date: assign the guard to the station only until this date (e.g.
   // temporary cover). Empty ⇒ indefinite. Backend already supports endDate.
   const [rotationEndDate, setRotationEndDate] = useState('');
+  /** Secuencia propia del vigilante. Vacío = hereda la de la estación. */
+  const [secuenciaPropia, setSecuenciaPropia] = useState('');
   const [rotationStyles, setRotationStyles] = useState<RotationStyleRow[]>([]);
   const [selectedPositionId, setSelectedPositionId] = useState('');
   const [shiftStart, setShiftStart] = useState('');
@@ -95,7 +104,11 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
   const restPreview = useMemo(() => {
     const pos = positions.find((p) => p.id === selectedPositionId);
     if (!pos || (pos.type || 'fijo') === 'sacafranco') return null;
-    const style = rotationStyles.find((s) => String(s.id) === String((station as any).rotationStyleId));
+    // La vista previa tiene que mirar el MISMO ciclo que va a generar el
+    // backend: con secuencia propia elegida, la suya; si no, la de la estación.
+    const style = rotationStyles.find(
+      (s) => String(s.id) === String(secuenciaPropia || (station as any).rotationStyleId),
+    );
     if (!style) return null;
     const cycle = style.dayShifts + style.nightShifts + style.restDays;
     if (cycle <= 0 || !rotationStartDate) return null;
@@ -107,7 +120,39 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
       dates,
       startWeekday: start.toLocaleDateString(localeActual(), { weekday: 'long', day: 'numeric', month: 'short' }),
     };
-  }, [positions, selectedPositionId, rotationStyles, station, rotationStartDate]);
+  }, [positions, selectedPositionId, rotationStyles, station, rotationStartDate, secuenciaPropia]);
+
+  /* ── CÓMO SE LLAMA EL SEGUNDO TRAMO DEL CICLO EN ESTA ESTACIÓN ────────────
+     En un puesto de 24 h es la NOCHE. En una estación partida en dos tramos
+     diurnos —Batallón Sur, 07:00–15:00 y 15:00–23:00— es la TARDE, y llamarla
+     noche hacía que el operador no reconociera lo que acababa de configurar. */
+  const bloques = useMemo(() => {
+    const fijos = positions.filter((p) => (p.type || 'fijo') !== 'sacafranco');
+    const vistos = new Map<string, string>();
+    for (const f of fijos) {
+      const ini = String(f.startTime || '').slice(0, 5);
+      const fin = String(f.endTime || '').slice(0, 5);
+      if (ini && fin) vistos.set(`${ini}|${fin}`, ini);
+    }
+    return Array.from(vistos.values()).sort();
+  }, [positions]);
+
+  const etiquetaSegundoBloque = useMemo(() => {
+    if (bloques.length < 2) return 'noche';
+    const posActual = positions.find((p) => p.id === selectedPositionId);
+    const miIni = String(posActual?.startTime || bloques[0]).slice(0, 5);
+    const i = bloques.indexOf(miIni);
+    const otro = bloques[((i < 0 ? 0 : i) + 1) % bloques.length];
+    const h = parseInt(String(otro).split(':')[0], 10);
+    if (Number.isNaN(h)) return 'noche';
+    if (h >= 18 || h < 6) return 'noche';
+    return h >= 12 ? 'tarde' : 'mañana';
+  }, [bloques, positions, selectedPositionId]);
+
+  const patronDeLaEstacion = useMemo(
+    () => rotationStyles.find((s) => String(s.id) === String((station as any).rotationStyleId))?.name || null,
+    [rotationStyles, station],
+  );
 
   // Initialize + load data each time the modal opens.
   useEffect(() => {
@@ -121,6 +166,7 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
     setRotationStartDate(target);
     setAssignMode('rotation');
     setSelectedPositionId('');
+    setSecuenciaPropia('');
 
     (async () => {
       setLoadingGuards(true);
@@ -231,6 +277,9 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
           positionId: selectedPositionId,
           startDate: rotationStartDate,
           endDate: rotationEndDate || null,
+          // Vacío ⇒ el backend deja `rotationStyleId: null` y el generador
+          // hereda el de la estación, que es el comportamiento de siempre.
+          rotationStyleId: secuenciaPropia || null,
           isRelief,
         },
       });
@@ -311,6 +360,25 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
                 )}
                 <p className="mt-1.5 text-[11px] text-muted-foreground">{t('ui.ShiftAssignModal.losVigilantesAlternanDiaY')}{" "}<b>{t('ui.ShiftAssignModal.fechaDeInicio')}</b>{" "}{t("ui.ShiftAssignModal.cambialaParaMoverElDia", "— cámbiala para mover el día de descanso.")}</p>
               </LabeledField>
+
+              {/* Secuencia propia — sólo para un fijo; un sacafranco no corre
+                  ciclo de puesto, tapa los descansos que dejen los fijos. */}
+              {selectedPositionId
+                && (positions.find((p) => p.id === selectedPositionId)?.type || 'fijo') !== 'sacafranco' && (
+                <LabeledField label="Secuencia de este vigilante">
+                  <SecuenciaPropiaSelect
+                    tenantId={tenantId}
+                    value={secuenciaPropia}
+                    onChange={setSecuenciaPropia}
+                    etiquetaSegundoBloque={etiquetaSegundoBloque}
+                    patronDeLaEstacion={patronDeLaEstacion}
+                  />
+                  <p className="mt-1 text-[10px] text-muted-foreground/70">
+                    Déjalo en «la de la estación» salvo que este vigilante tenga un ciclo distinto
+                    al de sus compañeros{bloques.length > 1 ? ` (por ejemplo 2 de día y 2 de ${etiquetaSegundoBloque})` : ''}.
+                  </p>
+                </LabeledField>
+              )}
 
               {/* Fecha de inicio = la fase de la rotación (día-0 del ciclo). */}
               <LabeledField label={t('ui.ShiftAssignModal.fechaDeInicioDelTurno')}>
