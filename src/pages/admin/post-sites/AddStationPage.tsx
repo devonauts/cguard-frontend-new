@@ -11,6 +11,7 @@ import { ApiService } from '@/services/api/apiService';
 import { Button } from '@/components/ui/button';
 import StationGeofencePolygon, { type PolyPoint } from '@/components/GoogleMap/StationGeofencePolygon';
 import RotationStyleSelect from '@/components/schedule/RotationStyleSelect';
+import { etiquetaPrimerTramo, etiquetaSegundoTramo } from '@/components/schedule/tramos';
 import { PageContainer, PageHeader } from '@/components/kit';
 import { FIELD_CLS_LG } from '@/pages/admin/clientes/components/_shared/tab-kit';
 
@@ -143,6 +144,9 @@ export default function AddStationPage() {
   const customBlockMin = Number(blockHours) > 0 ? Number(blockHours) * 60 : 0;
   const customBlocksOk = customBlockMin > 0 && customWindowMin > 0 && customWindowMin % customBlockMin === 0;
   const customBlockCount = customBlocksOk ? customWindowMin / customBlockMin : 1;
+  // El segundo tramo del ciclo, por su nombre: en 07:00–15:00 + 15:00–23:00 es la TARDE.
+  const primerTramo = etiquetaPrimerTramo(startingTimeInDay, customBlockMin, customBlockCount);
+  const segundoTramo = etiquetaSegundoTramo(startingTimeInDay, customBlockMin, customBlockCount);
   // Alternation: fijos per block = cycle / workDays (must divide evenly).
   const rotCycle = rotStyle ? (rotStyle.dayShifts || 0) + (rotStyle.nightShifts || 0) + (rotStyle.restDays || 0) : 0;
   const rotWork = rotStyle ? (rotStyle.dayShifts || 0) + (rotStyle.nightShifts || 0) : 0;
@@ -385,7 +389,17 @@ export default function AddStationPage() {
               {/* Patrón de rotación — chosen here at the station; assigned guards inherit it. */}
               {turnoType && (
                 <div className="glass-sunken p-3">
-                  <RotationStyleSelect scheduleType={turnoToScheduleType(turnoType)} value={rotationStyleId} onChange={setRotationStyleId} onStyleChange={setRotStyle} />
+                  <RotationStyleSelect
+                    scheduleType={turnoToScheduleType(turnoType)}
+                    value={rotationStyleId}
+                    onChange={setRotationStyleId}
+                    onStyleChange={setRotStyle}
+                    /* Con la cobertura partida en bloques el ciclo tiene DOS tramos
+                       que repartir (mañana y tarde), no sólo «trabaja / descansa». */
+                    bloques={turnoType === 'custom' ? customBlockCount : 1}
+                    etiquetaPrimerBloque={primerTramo}
+                    etiquetaSegundoBloque={segundoTramo}
+                  />
                 </div>
               )}
 

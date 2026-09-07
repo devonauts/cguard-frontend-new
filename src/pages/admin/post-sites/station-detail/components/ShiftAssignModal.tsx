@@ -8,6 +8,7 @@ import { Modal, Segmented } from '@/components/kit';
 import { FIELD_CLS_LG, LabeledField } from '@/pages/admin/clientes/components/_shared/tab-kit';
 import { Button } from '@/components/ui/button';
 import SecuenciaPropiaSelect from '@/components/schedule/SecuenciaPropiaSelect';
+import { nombreDeTramo } from '@/components/schedule/tramos';
 import type { Station } from '@/types';
 
 import { localeActual } from '@/lib/localeActual'
@@ -82,12 +83,41 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
   // Assignable positions (puestos). Fijos shown as "Vigilante 1/2…" (they rotate
   // through day AND night, staggered by the engine); sacafranco shown separately.
   // A puesto already taken is flagged `occupied` (disabled in the UI).
+  /* ── QUÉ TRAMO ES CADA PLAZA ──────────────────────────────────────────────
+     Las plazas se llamaban «Vigilante 1» y «Vigilante 2» y nada más. En un
+     puesto de 24 h eso ya era ambiguo; en una estación partida en tramos
+     —07:00–15:00 y 15:00–23:00— es directamente indescifrable: el que asigna no
+     tiene forma de saber si el de arriba es el de la mañana o el de la tarde, y
+     el tramo lo decide EXACTAMENTE esta elección. Se enseñan las horas. */
   const positionOptions = useMemo(() => {
     const fijos = positions.filter((p: PositionRow) => (p.type || 'fijo') !== 'sacafranco');
     const sacas = positions.filter((p: PositionRow) => (p.type || 'fijo') === 'sacafranco');
+    const hhmm = (v?: string | null) => String(v || '').slice(0, 5);
+    // Sólo se nombra el tramo cuando hay más de uno: en un puesto de un solo
+    // bloque la etiqueta no distingue nada y sobra.
+    const variasVentanas = new Set(fijos.map((p) => `${hhmm(p.startTime)}|${hhmm(p.endTime)}`)).size > 1;
     return [
-      ...fijos.map((p: PositionRow, i: number) => ({ id: p.id, label: `Vigilante ${i + 1}`, type: 'fijo' as const, occupied: occupiedPositionIds.has(String(p.id)) })),
-      ...sacas.map((p: PositionRow, i: number) => ({ id: p.id, label: sacas.length > 1 ? `Sacafranco ${i + 1}` : 'Sacafranco', type: 'sacafranco' as const, occupied: occupiedPositionIds.has(String(p.id)) })),
+      ...fijos.map((p: PositionRow, i: number) => {
+        const ini = hhmm(p.startTime);
+        const fin = hhmm(p.endTime);
+        const horas = ini && fin ? `${ini}–${fin}` : '';
+        return {
+          id: p.id,
+          label: `Vigilante ${i + 1}`,
+          horas,
+          tramo: variasVentanas && ini ? nombreDeTramo(ini) : '',
+          type: 'fijo' as const,
+          occupied: occupiedPositionIds.has(String(p.id)),
+        };
+      }),
+      ...sacas.map((p: PositionRow, i: number) => ({
+        id: p.id,
+        label: sacas.length > 1 ? `Sacafranco ${i + 1}` : 'Sacafranco',
+        horas: '',
+        tramo: '',
+        type: 'sacafranco' as const,
+        occupied: occupiedPositionIds.has(String(p.id)),
+      })),
     ];
   }, [positions, occupiedPositionIds]);
 
@@ -143,10 +173,14 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
     const miIni = String(posActual?.startTime || bloques[0]).slice(0, 5);
     const i = bloques.indexOf(miIni);
     const otro = bloques[((i < 0 ? 0 : i) + 1) % bloques.length];
-    const h = parseInt(String(otro).split(':')[0], 10);
-    if (Number.isNaN(h)) return 'noche';
-    if (h >= 18 || h < 6) return 'noche';
-    return h >= 12 ? 'tarde' : 'mañana';
+    return nombreDeTramo(otro);
+  }, [bloques, positions, selectedPositionId]);
+
+  /** Y cómo se llama el tramo PROPIO de la plaza elegida (el primero del ciclo). */
+  const etiquetaPrimerBloque = useMemo(() => {
+    if (bloques.length < 2) return 'día';
+    const posActual = positions.find((p) => p.id === selectedPositionId);
+    return nombreDeTramo(String(posActual?.startTime || bloques[0]).slice(0, 5));
   }, [bloques, positions, selectedPositionId]);
 
   const patronDeLaEstacion = useMemo(
@@ -347,14 +381,25 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
                         type="button"
                         disabled={p.occupied}
                         onClick={() => setSelectedPositionId(p.id)}
-                        title={p.occupied ? 'Puesto ocupado' : undefined}
-                        className="cg-focus rounded-xl border px-3 py-2 text-sm font-medium transition-all disabled:cursor-not-allowed disabled:line-through"
+                        title={p.occupied ? 'Puesto ocupado' : (p.horas || undefined)}
+                        className="cg-focus rounded-xl border px-3 py-2 text-left text-sm font-medium transition-all disabled:cursor-not-allowed"
                         style={p.occupied
                           ? { borderColor: 'var(--hairline)', color: 'var(--ink-faint)', opacity: 0.5 }
                           : selectedPositionId === p.id
                             ? { borderColor: 'var(--brand-line)', background: 'var(--brand-wash)', color: 'var(--brand-text)' }
                             : { borderColor: 'var(--hairline)', color: 'var(--ink-soft)' }}
-                      >{p.label}{p.occupied ? ' · ocupado' : ''}</button>
+                      >
+                        <span className={p.occupied ? 'line-through' : undefined}>{p.label}</span>
+                        {p.occupied ? ' · ocupado' : ''}
+                        {/* Las horas de la plaza: son las que va a trabajar quien se
+                            asigne aquí, y sin ellas no hay forma de distinguir la
+                            plaza de la mañana de la de la tarde. */}
+                        {p.horas && (
+                          <span className="mt-0.5 block text-[10px] font-normal tabular-nums opacity-80">
+                            {p.horas}{p.tramo ? ` · ${p.tramo}` : ''}
+                          </span>
+                        )}
+                      </button>
                     ))}
                   </div>
                 )}
@@ -370,12 +415,13 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
                     tenantId={tenantId}
                     value={secuenciaPropia}
                     onChange={setSecuenciaPropia}
+                    etiquetaPrimerBloque={etiquetaPrimerBloque}
                     etiquetaSegundoBloque={etiquetaSegundoBloque}
                     patronDeLaEstacion={patronDeLaEstacion}
                   />
                   <p className="mt-1 text-[10px] text-muted-foreground/70">
                     Déjalo en «la de la estación» salvo que este vigilante tenga un ciclo distinto
-                    al de sus compañeros{bloques.length > 1 ? ` (por ejemplo 2 de día y 2 de ${etiquetaSegundoBloque})` : ''}.
+                    al de sus compañeros{bloques.length > 1 ? ` (por ejemplo 2 de ${etiquetaPrimerBloque} y 2 de ${etiquetaSegundoBloque})` : ''}.
                   </p>
                 </LabeledField>
               )}

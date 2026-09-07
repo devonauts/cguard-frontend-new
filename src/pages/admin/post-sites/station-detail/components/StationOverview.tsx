@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { confirmDialog } from '@/components/ui/confirmDialog';
 import StationGeofencePolygon, { type PolyPoint } from '@/components/GoogleMap/StationGeofencePolygon';
 import RotationStyleSelect from '@/components/schedule/RotationStyleSelect';
+import { etiquetaPrimerTramo, etiquetaSegundoTramo } from '@/components/schedule/tramos';
 import { reverseGeocode } from '@/lib/geocodeClient';
 import { Section, StatCard, Stagger } from '@/components/kit';
 import type { Station } from '@/types';
@@ -92,6 +93,10 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
   })();
   const blocksOk = Number(blockHours) > 0 && winMin > 0 && winMin % (Number(blockHours) * 60) === 0;
   const blockCount = blocksOk ? winMin / (Number(blockHours) * 60) : 1;
+  // Cómo se llama el segundo tramo del ciclo aquí: en 07:00–15:00 + 15:00–23:00
+  // es la TARDE, y llamarla «noche» hacía irreconocible lo recién configurado.
+  const primerTramo = etiquetaPrimerTramo(customStart, Number(blockHours) * 60, blockCount);
+  const segundoTramo = etiquetaSegundoTramo(customStart, Number(blockHours) * 60, blockCount);
   const [restCoverage, setRestCoverage] = useState<'sacafranco' | 'alternate'>('sacafranco');
   const [rotStyle, setRotStyle] = useState<{ dayShifts: number; nightShifts: number; restDays: number } | null>(null);
   const rotCycle = rotStyle ? (rotStyle.dayShifts || 0) + (rotStyle.nightShifts || 0) + (rotStyle.restDays || 0) : 0;
@@ -554,7 +559,17 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
             </div>
           )}
           {turno && (
-            <RotationStyleSelect scheduleType={turnoToScheduleType(turno)} value={rotationStyleId} onChange={setRotationStyleId} onStyleChange={setRotStyle} />
+            <RotationStyleSelect
+              scheduleType={turnoToScheduleType(turno)}
+              value={rotationStyleId}
+              onChange={setRotationStyleId}
+              onStyleChange={setRotStyle}
+              /* Con la cobertura partida en bloques, el ciclo tiene DOS tramos que
+                 repartir (mañana y tarde) — no sólo «trabaja / descansa». */
+              bloques={turno === 'custom' ? blockCount : 1}
+              etiquetaPrimerBloque={primerTramo}
+              etiquetaSegundoBloque={segundoTramo}
+            />
           )}
           <div className="flex items-center justify-between gap-3">
             <p className="text-[11px]" style={{ color: 'var(--warn-text)' }}>{t("ui.StationOverview.cambiarElHorarioReconfiguraLos", "Cambiar el horario reconfigura los puestos; los vigilantes asignados deberán reasignarse.")}</p>

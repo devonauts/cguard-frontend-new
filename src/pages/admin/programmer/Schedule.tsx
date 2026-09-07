@@ -40,6 +40,7 @@ import { confirmDialog } from "@/components/ui/confirmDialog";
 import ExtendShiftDialog, { type ExtendTarget } from "./ExtendShiftDialog";
 import ScheduleTimeline, { dateToWall, wallToDate, startPan } from "./ScheduleTimeline";
 import RotationStyleSelect from "@/components/schedule/RotationStyleSelect";
+import { etiquetaPrimerTramo, etiquetaSegundoTramo } from '@/components/schedule/tramos';
 import ContextMenu, { CtxItem, CtxMenuState } from "./ContextMenu";
 import TransferShiftModal, { TransferTarget } from "./TransferShiftModal";
 import { stationLabel } from "@/lib/stationName";
@@ -508,6 +509,15 @@ export default function Schedule() {
   }, [cfgStart, cfgEnd]);
   const cfgBlocksOk = Number(cfgBlockHours) > 0 && cfgWinMin > 0 && cfgWinMin % (Number(cfgBlockHours) * 60) === 0;
   const cfgBlockCount = cfgBlocksOk ? cfgWinMin / (Number(cfgBlockHours) * 60) : 1;
+  // El segundo tramo del ciclo, por su nombre: 07:00–15:00 + 15:00–23:00 ⇒ «tarde».
+  const cfgPrimerTramo = useMemo(
+    () => etiquetaPrimerTramo(cfgStart, Number(cfgBlockHours) * 60, cfgBlockCount),
+    [cfgStart, cfgBlockHours, cfgBlockCount],
+  );
+  const cfgSegundoTramo = useMemo(
+    () => etiquetaSegundoTramo(cfgStart, Number(cfgBlockHours) * 60, cfgBlockCount),
+    [cfgStart, cfgBlockHours, cfgBlockCount],
+  );
   const cfgRotCycle = cfgRotStyle ? (cfgRotStyle.dayShifts || 0) + (cfgRotStyle.nightShifts || 0) + (cfgRotStyle.restDays || 0) : 0;
   const cfgRotWork = cfgRotStyle ? (cfgRotStyle.dayShifts || 0) + (cfgRotStyle.nightShifts || 0) : 0;
   const cfgAlternateOk = cfgRestCoverage !== 'alternate' || !cfgRotStyle || (cfgRotWork > 0 && cfgRotCycle % cfgRotWork === 0);
@@ -5092,6 +5102,11 @@ export default function Schedule() {
                 value={configRotation}
                 onChange={setConfigRotation}
                 onStyleChange={setCfgRotStyle}
+                /* Partida en bloques, la estación tiene DOS tramos que repartir en
+                   el ciclo (mañana y tarde) — no sólo «trabaja / descansa». */
+                bloques={configType === 'custom' ? cfgBlockCount : 1}
+                etiquetaPrimerBloque={cfgPrimerTramo}
+                etiquetaSegundoBloque={cfgSegundoTramo}
               />
             </div>
             <div className="flex items-center justify-end gap-2 px-5 py-3" style={{ borderTop: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>

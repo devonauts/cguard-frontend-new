@@ -15,32 +15,69 @@ export type RotationStyle = {
 
 /**
  * Patrón de rotación picker, chosen at STATION level (create/edit) and inherited
- * by every guard assigned there. Options are filtered to the station's horario:
- *  - 24h  → day+night patterns (nightShifts > 0), e.g. 4-4-2
- *  - 12h  → work/rest patterns (nightShifts = 0), e.g. 8-2, 5-2, 6-1
- * Plus an inline "Personalizado" that creates a new rotationStyle on the fly.
+ * by every guard assigned there.
+ *
+ * ── POR QUÉ HAY UN SEGUNDO CAMPO Y CUÁNDO SE ENSEÑA ────────────────────────
+ * El ciclo que guarda el motor tiene DOS tramos de trabajo y unos libres
+ * (`dayShifts` / `nightShifts` / `restDays`). Hasta ahora el segundo campo sólo
+ * aparecía en los puestos de 24 h, donde ese tramo es la noche.
+ *
+ * Eso dejaba fuera la operación de una estación PERSONALIZADA partida en
+ * bloques. BIOMAR BAHIA cubre 07:00–23:00 en dos tramos (07:00–15:00 y
+ * 15:00–23:00) y tiene vigilantes que hacen unos días la mañana, otros la tarde
+ * y otros libran. El generador sabe hacerlo desde siempre —al entrar en el
+ * segundo tramo del ciclo toma el bloque SIGUIENTE al propio— pero el
+ * formulario sólo ofrecía «trabaja / descansa», así que ese ciclo no había
+ * forma de escribirlo: se acababa guardando un 8-2 que no era lo pedido.
+ *
+ * Ahora el segundo campo aparece siempre que la estación tenga dos tramos o
+ * más (`bloques`), y se llama por su nombre real —«tarde», «mañana», «noche»—
+ * en vez de «noches» a secas.
  */
 export default function RotationStyleSelect({
   scheduleType,
   value,
   onChange,
   onStyleChange,
+  bloques = 1,
+  etiquetaPrimerBloque,
+  etiquetaSegundoBloque,
 }: {
   scheduleType: string;            // '24h' | '12h-day' | '12h-night' | 'custom'
   value: string;                   // rotationStyleId
   onChange: (id: string) => void;
   /** Fires with the FULL selected style (or null) so callers can derive counts (e.g. alternation fijos = cycle/workDays). */
   onStyleChange?: (style: RotationStyle | null) => void;
+  /** En cuántos tramos está partida la cobertura de la estación (custom). 1 = uno solo. */
+  bloques?: number;
+  /** Cómo se llama el primer tramo aquí ('mañana', 'tarde'…). Por defecto, 'día'. */
+  etiquetaPrimerBloque?: string;
+  /** Cómo se llama el segundo tramo aquí ('tarde', 'noche'…). Por defecto, 'noche'. */
+  etiquetaSegundoBloque?: string;
 }) {
   const { t } = useTranslation();
   const tenantId = localStorage.getItem('tenantId') || '';
   const is24h = scheduleType === '24h';
+  /**
+   * Hay dos tramos que repartir cuando el puesto es de 24 h (día y noche) o
+   * cuando la estación parte su cobertura en dos bloques o más. Es la condición
+   * que gobierna TODO lo de abajo; `is24h` sólo decide ya los textos propios de
+   * un 24 h (ventanas espejo 07:00–19:00 / 19:00–07:00).
+   */
+  const tramos = Math.max(1, Math.floor(Number(bloques) || 1));
+  const dosTramos = is24h || tramos >= 2;
+  /* Los dos tramos se nombran con las horas REALES de la estación —«mañana» y
+     «tarde» en 07:00–15:00 + 15:00–23:00, «tarde» y «noche» en 15:00–07:00— y
+     no se adivina uno a partir del otro: en un puesto de 24 h siguen siendo el
+     día y la noche de siempre. */
+  const lblSegundo = (etiquetaSegundoBloque || 'noche').trim() || 'noche';
+  const lblPrimero = is24h ? 'día' : ((etiquetaPrimerBloque || 'día').trim() || 'día');
   const [styles, setStyles] = useState<RotationStyle[]>([]);
   const [loading, setLoading] = useState(false);
   const [creating, setCreating] = useState(false);
   const [custom, setCustom] = useState(false);
-  const [cWork, setCWork] = useState(is24h ? '4' : '8');
-  const [cNight, setCNight] = useState('4');
+  const [cWork, setCWork] = useState(dosTramos ? (is24h ? '4' : '2') : '8');
+  const [cNight, setCNight] = useState(is24h ? '4' : '2');
   const [cRest, setCRest] = useState('2');
 
   useEffect(() => {
@@ -67,36 +104,34 @@ export default function RotationStyleSelect({
    *
    * Se ordena en vez de esconder: lo habitual arriba, lo demás disponible.
    */
-  /* ─── CÓMO TRABAJAN LOS DOS FIJOS DE UN PUESTO DE 24 h ───────────────────
+  /* ─── CÓMO TRABAJAN LOS FIJOS DE UN PUESTO CON DOS TRAMOS ────────────────
      Son dos operaciones distintas y el catálogo no las distinguía:
 
-       · ROTATIVO — un patrón CON noches (4-4-2): el mismo vigilante hace unos
-         días de día y otros de noche.
-       · TURNOS FIJOS — un patrón SIN noches: uno se queda SIEMPRE de día y otro
-         SIEMPRE de noche, cada uno con sus horas (las plazas salen con ventanas
-         espejo, 07:00–19:00 y 19:00–07:00).
+       · ROTATIVO — un patrón CON segundo tramo (4-4-2, o 2-2-2 en una estación
+         de mañana y tarde): el mismo vigilante hace unos días un tramo y otros
+         días el otro.
+       · TURNOS FIJOS — un patrón SIN segundo tramo: cada uno se queda SIEMPRE
+         en su franja, y lo único que se decide es cada cuántos días libra.
 
      El motor sabía hacer las dos desde siempre, pero la única pista era una
-     etiquetita «sin noches» con un tooltip: quien quería un diurno fijo y un
-     nocturno fijo no encontraba por dónde, porque todo lo que se ofrecía se
-     llamaba «rotación». Se pregunta directamente. */
+     etiquetita «sin noches» con un tooltip. Se pregunta directamente. */
   const estiloActual = styles.find((s) => s.id === value) || null;
   const [modoFijos, setModoFijos] = useState<boolean | null>(null);
-  const fijos24 = is24h && (modoFijos ?? ((estiloActual?.nightShifts ?? 1) === 0));
+  const fijos = dosTramos && (modoFijos ?? ((estiloActual?.nightShifts ?? (is24h ? 1 : 0)) === 0));
 
-  const encaja = (s: RotationStyle) => (is24h
-    ? (fijos24 ? (s.nightShifts || 0) === 0 : (s.nightShifts || 0) > 0)
+  const encaja = (s: RotationStyle) => (dosTramos
+    ? (fijos ? (s.nightShifts || 0) === 0 : (s.nightShifts || 0) > 0)
     : (s.nightShifts || 0) === 0);
   /* En TURNOS FIJOS se filtra de verdad, no se ordena. Un 4-4-2 ahí no quiere
      decir nada —el vigilante no rota, se queda en su plaza— y ofrecerlo sólo
      confunde: lo único que se decide es cada cuántos días libra. En rotativo se
      sigue ordenando sin esconder, que es como estaba. */
   const options = useMemo(
-    () => (fijos24
+    () => (fijos
       ? styles.filter((s) => (s.nightShifts || 0) === 0)
       : [...styles].sort((a, b) => Number(encaja(b)) - Number(encaja(a)))),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [styles, is24h, fijos24],
+    [styles, dosTramos, fijos],
   );
   const recomendados = useMemo(() => options.filter(encaja), [options]);
 
@@ -109,28 +144,30 @@ export default function RotationStyleSelect({
     const base = recomendados.length ? recomendados : options;
     const preferred = is24h
       ? (base.find((o) => o.name === '4-4-2') || base[0])
-      : (base.find((o) => o.name === '8-2') || base.find((o) => o.name === '5-2') || base[0]);
+      : (dosTramos && !fijos
+        ? (base.find((o) => o.name === '2-2-2') || base[0])
+        : (base.find((o) => o.name === '8-2') || base.find((o) => o.name === '5-2') || base[0]));
     if (preferred) onChange(preferred.id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [options, is24h, fijos24]);
+  }, [options, is24h, dosTramos, fijos]);
 
   /** Cambiar de modo re-elige patrón: dejar seleccionado uno del otro modo
    *  guardaría justo lo contrario de lo que se acaba de pedir. */
-  const elegirModo = (fijos: boolean) => {
-    setModoFijos(fijos);
-    const candidatos = styles.filter((s) => (fijos ? (s.nightShifts || 0) === 0 : (s.nightShifts || 0) > 0));
+  const elegirModo = (quiereFijos: boolean) => {
+    setModoFijos(quiereFijos);
+    const candidatos = styles.filter((s) => (quiereFijos ? (s.nightShifts || 0) === 0 : (s.nightShifts || 0) > 0));
     if (!candidatos.length) {
       // No hay ninguno: se abre el creador ya preparado para ese modo.
-      setCWork(fijos ? '1' : '4');
-      setCNight(fijos ? '0' : '4');
-      setCRest(fijos ? '0' : '2');
+      setCWork(quiereFijos ? '1' : (is24h ? '4' : '2'));
+      setCNight(quiereFijos ? '0' : (is24h ? '4' : '2'));
+      setCRest(quiereFijos ? '0' : '2');
       setCustom(true);
       return;
     }
     if (!candidatos.some((c) => c.id === value)) {
-      const pref = fijos
+      const pref = quiereFijos
         ? (candidatos.find((c) => c.restDays === 0) || candidatos[0])
-        : (candidatos.find((c) => c.name === '4-4-2') || candidatos[0]);
+        : (candidatos.find((c) => c.name === (is24h ? '4-4-2' : '2-2-2')) || candidatos[0]);
       onChange(pref.id);
     }
   };
@@ -170,17 +207,19 @@ export default function RotationStyleSelect({
   const describe = (s: RotationStyle) => {
     // `restDays: 0` es un patrón legítimo —el vigilante trabaja todos los días—
     // y "0 descanso" se lee como un dato a medio escribir. Se nombra.
-    const descanso = s.restDays === 0 ? 'sin descanso' : `${s.restDays} descans${is24h ? 'o' : 'a'}`;
-    return is24h
-      ? `${s.dayShifts} día · ${s.nightShifts} noche · ${descanso}`
+    const descanso = s.restDays === 0 ? 'sin descanso' : `${s.restDays} descansa`;
+    // Un patrón sin segundo tramo se describe con UN solo número de trabajo,
+    // venga de donde venga: escribir «· 0 noche» sólo se lee como un dato roto.
+    return (s.nightShifts || 0) > 0
+      ? `${s.dayShifts} ${lblPrimero} · ${s.nightShifts} ${lblSegundo} · ${descanso}`
       : `${s.dayShifts} trabaja · ${descanso}`;
   };
 
   const createCustom = async () => {
-    // En un 24 h los dos campos pueden bajar a 0 —un patrón sólo-noches o
-    // sólo-días es legítimo y el backend lo guarda tal cual—, siempre que entre
-    // los dos sumen al menos un día de trabajo.
-    const work = is24h ? Math.max(0, parseInt(cWork) || 0) : Math.max(1, parseInt(cWork) || 0);
+    // Con dos tramos los dos campos pueden bajar a 0 —un patrón de un solo tramo
+    // es legítimo y el backend lo guarda tal cual—, siempre que entre los dos
+    // sumen al menos un día de trabajo.
+    const work = dosTramos ? Math.max(0, parseInt(cWork) || 0) : Math.max(1, parseInt(cWork) || 0);
     // CERO DESCANSOS ES VÁLIDO: hay puestos que se cubren todos los días con la
     // misma persona. El backend ya lo guardaba tal cual («an explicit 0 must
     // persist as 0 — e.g. a no-rest pattern»); era este `Math.max(1, …)` —y el
@@ -188,19 +227,29 @@ export default function RotationStyleSelect({
     // siguen con mínimo 1: un ciclo de 0 días no es un patrón, es una división
     // por cero en `getRotationStatus`.
     const rest = Math.max(0, parseInt(cRest) || 0);
-    // En TURNOS FIJOS no hay noches en el patrón —la noche la pone la ventana de
-    // la plaza—, y el campo ni se enseña: se fuerza a 0 para que lo oculto no
-    // pueda colarse en lo guardado.
-    const night = (is24h && !fijos24) ? Math.max(0, parseInt(cNight) || 0) : 0;
+    // En TURNOS FIJOS no hay segundo tramo en el patrón —la franja la pone la
+    // ventana de la plaza—, y el campo ni se enseña: se fuerza a 0 para que lo
+    // oculto no pueda colarse en lo guardado.
+    const night = (dosTramos && !fijos) ? Math.max(0, parseInt(cNight) || 0) : 0;
     if (work + night < 1) {
       toast.error('El patrón necesita al menos un día de trabajo.');
       return;
     }
-    const name = is24h ? `${work}-${night}-${rest}` : `${work}-${rest}`;
+    const name = night > 0 ? `${work}-${night}-${rest}` : `${work}-${rest}`;
+    // Reutiliza uno idéntico en vez de acumular duplicados en el catálogo: el
+    // mismo ciclo creado dos veces son dos filas que luego hay que distinguir.
+    const igual = styles.find((s) => s.dayShifts === work && s.nightShifts === night && s.restDays === rest);
+    if (igual) { onChange(igual.id); setCustom(false); return; }
     setCreating(true);
     try {
       const res: any = await ApiService.post(`/tenant/${tenantId}/rotation-style`, {
-        data: { name, dayShifts: work, nightShifts: night, restDays: rest },
+        data: {
+          name,
+          description: night > 0 ? `${work} ${lblPrimero} · ${night} ${lblSegundo} · ${rest} descansa` : undefined,
+          dayShifts: work,
+          nightShifts: night,
+          restDays: rest,
+        },
       });
       const created = res?.data ?? res;
       if (created?.id) {
@@ -223,40 +272,65 @@ export default function RotationStyleSelect({
         </button>
       </div>
 
-      {is24h && (
+      {dosTramos && (
         <div className="rounded-xl p-2.5" style={{ border: '1px solid var(--hairline)', background: 'var(--glass-sunken)' }}>
           <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>
-            ¿Cómo trabajan los dos vigilantes?
+            ¿Cómo trabajan los {tramos > 2 ? `${tramos} ` : 'dos '}vigilantes?
           </div>
           <div className="grid grid-cols-2 gap-1.5">
             <button
               type="button"
               onClick={() => elegirModo(false)}
-              className={`cg-focus rounded-lg px-2 py-2 text-left text-[11px] font-semibold transition-all ${!fijos24 ? 'glass-brand' : 'glass-flat'}`}
+              className={`cg-focus rounded-lg px-2 py-2 text-left text-[11px] font-semibold transition-all ${!fijos ? 'glass-brand' : 'glass-flat'}`}
             >
               Rotativo
-              <span className="mt-0.5 block text-[10px] font-normal opacity-75">Cada uno hace días y noches por turnos</span>
+              <span className="mt-0.5 block text-[10px] font-normal opacity-75">
+                {is24h
+                  ? 'Cada uno hace días y noches por turnos'
+                  : `Cada uno hace unos días la ${lblPrimero} y otros la ${lblSegundo}`}
+              </span>
             </button>
             <button
               type="button"
               onClick={() => elegirModo(true)}
-              className={`cg-focus rounded-lg px-2 py-2 text-left text-[11px] font-semibold transition-all ${fijos24 ? 'glass-brand' : 'glass-flat'}`}
+              className={`cg-focus rounded-lg px-2 py-2 text-left text-[11px] font-semibold transition-all ${fijos ? 'glass-brand' : 'glass-flat'}`}
             >
               Turnos fijos
-              <span className="mt-0.5 block text-[10px] font-normal opacity-75">Uno siempre de día y otro siempre de noche</span>
+              <span className="mt-0.5 block text-[10px] font-normal opacity-75">
+                {is24h
+                  ? 'Uno siempre de día y otro siempre de noche'
+                  : `Cada uno se queda siempre en su tramo (${lblPrimero} o ${lblSegundo})`}
+              </span>
             </button>
           </div>
-          {fijos24 && (
+          {fijos && (
             <p className="mt-2 text-[11px] leading-snug" style={{ color: 'var(--ink-soft)' }}>
-              Se crean dos plazas con horarios espejo: <strong>Fijo 1 de 07:00 a 19:00</strong> y{' '}
-              <strong>Fijo 2 de 19:00 a 07:00</strong>. Cada vigilante se queda en la suya — al asignarlos,
-              el turno lo decide la plaza que elijas. Abajo sólo queda decidir cada cuántos días libran.
+              {is24h ? (
+                <>
+                  Se crean dos plazas con horarios espejo: <strong>Fijo 1 de 07:00 a 19:00</strong> y{' '}
+                  <strong>Fijo 2 de 19:00 a 07:00</strong>. Cada vigilante se queda en la suya — al asignarlos,
+                  el turno lo decide la plaza que elijas. Abajo sólo queda decidir cada cuántos días libran.
+                </>
+              ) : (
+                <>
+                  Se crea una plaza por tramo ({tramos} en total). Cada vigilante se queda en la suya — al
+                  asignarlo, el tramo lo decide la plaza que elijas. Abajo sólo queda decidir cada cuántos
+                  días libran.
+                </>
+              )}
+            </p>
+          )}
+          {!fijos && !is24h && (
+            <p className="mt-2 text-[11px] leading-snug" style={{ color: 'var(--ink-soft)' }}>
+              El ciclo alterna entre el tramo de la plaza y el siguiente. Un <strong>2-2-2</strong> aquí es
+              «2 días de {lblPrimero}, 2 días de {lblSegundo}, 2 libres». Si el vigilante necesita otro ciclo
+              distinto al de sus compañeros, se le puede dar el suyo al asignarlo.
             </p>
           )}
         </div>
       )}
 
-      {fijos24 && (
+      {fijos && (
         <div className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-soft)' }}>
           ¿Cada cuántos días libran?
         </div>
@@ -266,7 +340,7 @@ export default function RotationStyleSelect({
         <div className="flex items-center gap-2 text-xs text-muted-foreground"><Loader2 size={13} className="animate-spin" />{" "}{t('ui.RotationStyleSelect.cargandoPatrones')}</div>
       ) : (
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-          {fijos24 && (
+          {fijos && (
             <button
               type="button"
               onClick={() => void elegirSinDescansos()}
@@ -277,7 +351,7 @@ export default function RotationStyleSelect({
               <div className="text-[10px] text-muted-foreground">Trabaja todos los días</div>
             </button>
           )}
-          {options.filter((s) => !(fijos24 && sinDescansos && s.id === sinDescansos.id)).map((s) => (
+          {options.filter((s) => !(fijos && sinDescansos && s.id === sinDescansos.id)).map((s) => (
             <button
               key={s.id}
               type="button"
@@ -286,14 +360,14 @@ export default function RotationStyleSelect({
             >
               <div className="flex items-center gap-1">
                 <span className="text-xs font-semibold text-foreground">{s.name}</span>
-                {!encaja(s) && !fijos24 && (
+                {!encaja(s) && !fijos && (
                   <span
                     className="rounded px-1 text-[8px] font-bold uppercase text-muted-foreground"
-                    title={is24h
-                      ? 'Sin noches: cada fijo se queda en SU horario. Úsalo con un Fijo diurno y un Fijo nocturno con horas distintas.'
-                      : 'Con noches: pensado para puestos de 24 h que rotan día/noche.'}
+                    title={dosTramos
+                      ? `Sin ${lblSegundo}: cada fijo se queda en SU tramo. Úsalo con una plaza por tramo, cada una con sus horas.`
+                      : `Con ${lblSegundo}: pensado para puestos que alternan dos tramos.`}
                   >
-                    {is24h ? 'sin noches' : 'con noches'}
+                    {dosTramos ? `sin ${lblSegundo}` : `con ${lblSegundo}`}
                   </span>
                 )}
               </div>
@@ -307,19 +381,32 @@ export default function RotationStyleSelect({
       {custom && (
         <div className="mt-1 flex flex-wrap items-end gap-2 rounded-xl border border-border/40 bg-muted/10 p-3">
           <div>
-            <label className="block text-[10px] font-medium text-muted-foreground mb-1 uppercase">{is24h ? t('ui.RotationStyleSelect.dias', 'Días') : t('ui.RotationStyleSelect.trabaja', 'Trabaja')}</label>
-            <input type="number" min={is24h ? 0 : 1} max={30} value={cWork} onChange={(e) => setCWork(e.target.value)} className="w-20 rounded-lg border border-border/40 bg-background px-2 py-1.5 text-sm font-mono outline-none focus:border-primary" />
+            <label className="block text-[10px] font-medium text-muted-foreground mb-1 uppercase">
+              {dosTramos && !fijos
+                ? (is24h ? t('ui.RotationStyleSelect.dias', 'Días') : `Turnos de ${lblPrimero}`)
+                : t('ui.RotationStyleSelect.trabaja', 'Trabaja')}
+            </label>
+            <input type="number" min={dosTramos ? 0 : 1} max={30} value={cWork} onChange={(e) => setCWork(e.target.value)} className="w-24 rounded-lg border border-border/40 bg-background px-2 py-1.5 text-sm font-mono outline-none focus:border-primary" />
           </div>
-          {is24h && !fijos24 && (
+          {dosTramos && !fijos && (
             <div>
-              <label className="block text-[10px] font-medium text-muted-foreground mb-1 uppercase">Noches</label>
-              <input type="number" min={0} max={30} value={cNight} onChange={(e) => setCNight(e.target.value)} className="w-20 rounded-lg border border-border/40 bg-background px-2 py-1.5 text-sm font-mono outline-none focus:border-primary" />
+              <label className="block text-[10px] font-medium text-muted-foreground mb-1 uppercase">
+                {is24h ? 'Noches' : `Turnos de ${lblSegundo}`}
+              </label>
+              <input type="number" min={0} max={30} value={cNight} onChange={(e) => setCNight(e.target.value)} className="w-24 rounded-lg border border-border/40 bg-background px-2 py-1.5 text-sm font-mono outline-none focus:border-primary" />
             </div>
           )}
           <div>
             <label className="block text-[10px] font-medium text-muted-foreground mb-1 uppercase">Descansa</label>
-            <input type="number" min={0} max={30} value={cRest} onChange={(e) => setCRest(e.target.value)} className="w-20 rounded-lg border border-border/40 bg-background px-2 py-1.5 text-sm font-mono outline-none focus:border-primary" />
+            <input type="number" min={0} max={30} value={cRest} onChange={(e) => setCRest(e.target.value)} className="w-24 rounded-lg border border-border/40 bg-background px-2 py-1.5 text-sm font-mono outline-none focus:border-primary" />
           </div>
+          {dosTramos && !fijos && (
+            <div className="basis-full text-[10px]" style={{ color: 'var(--ink-soft)' }}>
+              Ciclo de {(parseInt(cWork) || 0) + (parseInt(cNight) || 0) + (parseInt(cRest) || 0)} días:{' '}
+              {parseInt(cWork) || 0} de {lblPrimero}, {parseInt(cNight) || 0} de {lblSegundo}
+              {(parseInt(cRest) || 0) > 0 ? ` y ${parseInt(cRest) || 0} libre${(parseInt(cRest) || 0) > 1 ? 's' : ''}` : ', sin libres'}.
+            </div>
+          )}
           {(parseInt(cRest) || 0) === 0 && (
             <div className="basis-full text-[10px]" style={{ color: 'var(--ink-soft)' }}>
               Sin descanso: el vigilante trabaja todos los días, sin sacafranco que lo releve.

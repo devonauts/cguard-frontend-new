@@ -31,6 +31,8 @@ export default function SecuenciaPropiaSelect({
   tenantId,
   value,
   onChange,
+  /** Cómo describir el primer tramo del ciclo en esta estación. */
+  etiquetaPrimerBloque = 'día',
   /** Cómo describir el segundo tramo del ciclo en esta estación. */
   etiquetaSegundoBloque = 'noche',
   /** Nombre del patrón de la estación, para nombrar la opción heredada. */
@@ -41,6 +43,7 @@ export default function SecuenciaPropiaSelect({
   tenantId: string;
   value: string;
   onChange: (id: string) => void;
+  etiquetaPrimerBloque?: string;
   etiquetaSegundoBloque?: string;
   patronDeLaEstacion?: string | null;
   etiquetaPorDefecto?: string;
@@ -68,7 +71,7 @@ export default function SecuenciaPropiaSelect({
   const describir = (s: RotationStyle) => {
     const descanso = s.restDays === 0 ? 'sin descanso' : `${s.restDays} descansa`;
     return (s.nightShifts || 0) > 0
-      ? `${s.name} — ${s.dayShifts} + ${s.nightShifts} ${etiquetaSegundoBloque} · ${descanso}`
+      ? `${s.name} — ${s.dayShifts} ${etiquetaPrimerBloque} · ${s.nightShifts} ${etiquetaSegundoBloque} · ${descanso}`
       : `${s.name} — ${s.dayShifts} trabaja · ${descanso}`;
   };
 
@@ -96,7 +99,7 @@ export default function SecuenciaPropiaSelect({
     setCreating(true);
     try {
       const res: any = await ApiService.post(`/tenant/${tenantId}/rotation-style`, {
-        data: { name, description: `${work} + ${night} ${etiquetaSegundoBloque} · ${rest} descansa`, dayShifts: work, nightShifts: night, restDays: rest },
+        data: { name, description: `${work} ${etiquetaPrimerBloque} · ${night} ${etiquetaSegundoBloque} · ${rest} descansa`, dayShifts: work, nightShifts: night, restDays: rest },
       });
       const creado = res?.data ?? res;
       if (creado?.id) {
@@ -144,7 +147,7 @@ export default function SecuenciaPropiaSelect({
           </div>
           <div className="grid grid-cols-3 gap-2">
             <label className="text-[11px] text-muted-foreground">
-              Turnos de día
+              Turnos de {etiquetaPrimerBloque}
               <input type="number" min={0} value={cWork} onChange={(e) => setCWork(e.target.value)} className={`${campo} mt-1`} style={estiloCampo} />
             </label>
             <label className="text-[11px] text-muted-foreground">
