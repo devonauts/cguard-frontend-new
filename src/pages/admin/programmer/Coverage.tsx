@@ -18,6 +18,8 @@ import GuardTypeahead, { GuardPick } from "./GuardTypeahead";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import { localeActual } from '@/lib/localeActual'
 import attendanceService from "@/lib/api/attendanceService";
+import { crearSocket, cerrarSocket } from "@/lib/socket";
+import { getAuthToken } from "@/lib/api";
 import coverageService, {
   COVERAGE_REASONS, REASON_LABEL, STATUS_LABEL, coverageErrorCode,
   stationLabel,
@@ -47,6 +49,8 @@ type ConfirmFlags = { allowRestDay: boolean; allowDoubleShift: boolean };
 
 const fmtTime = (iso: string) =>
   new Date(iso).toLocaleTimeString(localeActual(), { hour: "2-digit", minute: "2-digit" });
+
+const tenantId = () => localStorage.getItem("tenantId") || "";
 
 export default function Coverage() {
   const { t } = useTranslation();
@@ -107,12 +111,43 @@ export default function Coverage() {
     }
   }, []);
 
+  /* El tablero se mira durante un incidente, así que no puede quedarse viejo
+     delante de quien lo está observando. Ahora se entera por evento —el
+     servidor anuncia `coverage:changed` desde los seis caminos que la cambian, y
+     agrupa las ráfagas de planificación— y el reloj se queda como red de
+     seguridad por si el socket estaba caído, pausado con la pestaña oculta.
+     `connect` recarga al reconectar: es ahí, y no en un temporizador, donde hay
+     que recuperar lo que pasó mientras no escuchábamos. */
   useEffect(() => {
     load();
-    // The board is watched during an incident, so it must not go stale in front
-    // of whoever is staring at it.
-    const id = setInterval(load, 30_000);
-    return () => clearInterval(id);
+    const tid = tenantId();
+    let socket: ReturnType<typeof crearSocket> | null = null;
+    const alCambiar = () => { void load(); };
+    if (tid) {
+      socket = crearSocket(getAuthToken() || "", tid);
+      socket.on("coverage:changed", alCambiar);
+      socket.on("shift:punch", alCambiar);
+      socket.on("connect", alCambiar);
+    }
+
+    let iv: ReturnType<typeof setInterval> | null = null;
+    const visible = () => document.visibilityState !== "hidden";
+    const arrancar = () => { if (!iv && visible()) iv = setInterval(load, 30_000); };
+    const parar = () => { if (iv) { clearInterval(iv); iv = null; } };
+    const alVerse = () => { if (visible()) { void load(); arrancar(); } else parar(); };
+    arrancar();
+    document.addEventListener("visibilitychange", alVerse);
+
+    return () => {
+      parar();
+      document.removeEventListener("visibilitychange", alVerse);
+      if (socket) {
+        socket.off("coverage:changed", alCambiar);
+        socket.off("shift:punch", alCambiar);
+        socket.off("connect", alCambiar);
+        cerrarSocket(socket);
+      }
+    };
   }, [load]);
 
   /**

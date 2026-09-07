@@ -693,6 +693,13 @@ export function useControlCenter(intervalSec = 15): ControlCenterData & { refres
         return { ...s, entities: [...others, entity] };
       });
     };
+    /* La sala del mapa se PIDE. `location:update` ya no llega por rol: sin esta
+       línea el chorro de posiciones no entra — y ése es el objetivo, que sólo lo
+       reciba quien está pintando un mapa. Se pide en cada `connect` porque tras
+       una reconexión la pertenencia a salas se rehace desde cero. */
+    const pedirMapa = () => socket.emit("map:subscribe");
+    pedirMapa();
+    socket.on("connect", pedirMapa);
     socket.on("location:update", onLocation);
 
     /* ── FICHAJES: EL AVISO QUE SUSTITUYE AL RELOJ DE 15 s ──────────────────
@@ -707,6 +714,13 @@ export function useControlCenter(intervalSec = 15): ControlCenterData & { refres
        services/realtime/shiftPunchEvent.ts. */
     const onPunch = () => { void refrescarPresencia(); };
     socket.on("shift:punch", onPunch);
+
+    /* Cobertura: el otro motivo por el que este panel sondeaba cada 15 s.
+       `refrescarPresencia` pide las dos cosas en la misma tanda —vigilantes en
+       servicio y resumen de cobertura— así que el mismo manejador vale para los
+       dos eventos. El servidor ya agrupa las ráfagas de planificación, de modo
+       que una carga de vacaciones llega como un aviso, no como cuarenta. */
+    socket.on("coverage:changed", onPunch);
 
     /* ── LA RECUPERACIÓN VA EN LA RECONEXIÓN, NO EN UN RELOJ ────────────────
        Un websocket entrega lo que pasa MIENTRAS escuchas. No puede contarte lo
@@ -726,8 +740,11 @@ export function useControlCenter(intervalSec = 15): ControlCenterData & { refres
     socket.on("connect", onPunch);
 
     return () => {
+      socket.emit("map:unsubscribe");
+      socket.off("connect", pedirMapa);
       socket.off("location:update", onLocation);
       socket.off("shift:punch", onPunch);
+      socket.off("coverage:changed", onPunch);
       socket.off("connect", onPunch);
       cerrarSocket(socket);
     };

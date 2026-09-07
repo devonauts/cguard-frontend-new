@@ -226,8 +226,17 @@ export default function LiveTrackingPage() {
       });
     };
 
+    /* La sala del mapa se PIDE. `location:update` ya no llega por rol: sin esta
+       línea el chorro de posiciones no entra — y ése es el objetivo, que sólo lo
+       reciba quien está pintando un mapa. Se pide en cada `connect` porque tras
+       una reconexión la pertenencia a salas se rehace desde cero. */
+    const pedirMapa = () => socket.emit("map:subscribe");
+    pedirMapa();
+    socket.on("connect", pedirMapa);
     socket.on("location:update", alMover);
-    return () => { socket.off("location:update", alMover); cerrarSocket(socket); };
+    return () => { socket.emit("map:unsubscribe");
+      socket.off("connect", pedirMapa);
+      socket.off("location:update", alMover); cerrarSocket(socket); };
   }, [esHoy]);
 
   const unidadesVisibles = useMemo(
