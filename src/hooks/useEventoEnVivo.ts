@@ -59,12 +59,42 @@ export function useEventoEnVivo(
       temporizador = setTimeout(() => recargarRef.current(), agruparMs);
     };
 
-    const nombres = [...clave.split("|"), "connect"];
-    for (const n of nombres) socket.on(n, alAvisar);
+    /* ── EL HUECO QUE UN WEBSOCKET NO SABE CONTARTE ──────────────────────────
+       Un socket entrega lo que pasa mientras escuchas. Si el portátil durmió
+       cuarenta segundos, reconecta tan tranquilo y nadie avisa de los tres
+       eventos perdidos: la pantalla se queda mintiendo con cara de estar al día.
+
+       El servidor numera los eventos de estado por empresa. Aquí se guarda el
+       último visto: si llega el 47 y el anterior fue el 45, hay hueco y se
+       recarga igual. Recargar de más es gratis —la pantalla ya se estaba
+       refrescando—; no enterarse no tiene arreglo.
+
+       Un salto hacia ATRÁS significa que el contador se reinició (Redis
+       reiniciado, o cambio a contador local): se acepta el nuevo y se recarga,
+       en vez de quedarse esperando un número que ya no va a llegar. */
+    let ultimaSeq: number | null = null;
+    const conSeq = (p: any) => {
+      const seq = Number(p?.seq);
+      if (Number.isFinite(seq)) {
+        const hueco = ultimaSeq != null && seq !== ultimaSeq + 1;
+        ultimaSeq = seq;
+        if (hueco) { recargarRef.current(); return; }
+      }
+      alAvisar();
+    };
+
+    const nombres = clave.split("|");
+    for (const n of nombres) socket.on(n, conSeq);
+    /* `connect` recarga SIEMPRE y reinicia la cuenta: tras una reconexión no
+       sabemos qué nos perdimos, así que se pide el estado actual una vez y se
+       vuelve a empezar a numerar desde lo que llegue. */
+    const alConectar = () => { ultimaSeq = null; alAvisar(); };
+    socket.on("connect", alConectar);
 
     return () => {
       if (temporizador) clearTimeout(temporizador);
-      for (const n of nombres) socket.off(n, alAvisar);
+      for (const n of nombres) socket.off(n, conSeq);
+      socket.off("connect", alConectar);
       cerrarSocket(socket);
     };
   }, [clave, agruparMs, activo]);

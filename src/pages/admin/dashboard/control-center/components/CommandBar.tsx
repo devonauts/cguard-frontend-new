@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { FadeIn, IconTile } from "@/components/kit";
 import { clockOf } from "../tone";
 import { TonePill } from "./Panel";
+import { useSaludEnVivo } from "@/hooks/useSaludEnVivo";
 
 /** Devuelve la CLAVE del saludo; la traduce quien la pinta. */
 function saludo(): string {
@@ -31,11 +32,26 @@ export function CommandBar({
   resumen: string;
 }) {
   const { t } = useTranslation();
+  /* ── DECIR LA VERDAD SOBRE EL CANAL ────────────────────────────────────────
+     Este distintivo decía «Sondeo activo» cuando el SSE no estaba, y eso era
+     honesto mientras había sondeo. Ya no lo hay: si el canal se cae, el tablero
+     no se refresca por otra vía — se queda quieto.
+
+     Y hay un modo de fallo que el navegador NO puede detectar solo: el socket
+     sigue abierto y sano, pero el adaptador de Redis del servidor se cayó y los
+     eventos de un worker no llegan a los sockets del otro. Por eso el servidor
+     lo anuncia y aquí se pinta en rojo, no en ámbar: un tablero ciego que
+     parece vivo es peor que uno que avisa. */
+  const salud = useSaludEnVivo();
   const enlace = demo
     ? { tone: "brand" as const, label: t("dashboard.demoData") }
+    : salud === "degradado"
+    ? { tone: "bad" as const, label: "Sin conexión en vivo — los datos pueden estar atrasados" }
+    : salud === "reconectando"
+    ? { tone: "warn" as const, label: "Reconectando…" }
     : sseConnected
     ? { tone: "ok" as const, label: t("dashboard.liveLink") }
-    : { tone: "warn" as const, label: "Sondeo activo" };
+    : { tone: "warn" as const, label: "Conectando…" };
 
   return (
     <FadeIn className="glass cmd-sweep relative overflow-hidden">
