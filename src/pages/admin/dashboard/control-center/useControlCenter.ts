@@ -228,7 +228,7 @@ export function useControlCenter(intervalSec = 15): ControlCenterData & { refres
   // aquí (lo tragaba `safe`), pero dejaba un error con traza en el log del
   // servidor cada vez. Si no alcanza el piso, ni se pide: los KPIs de esa
   // tarjeta ya tienen su camino de respaldo.
-  const { user } = useAuth();
+  const { user, loading: cargandoAuth } = useAuth();
   const puedeVerPanelEjecutivo = hasMinAuthority(user, AUTHORITY.MANAGEMENT, tenantId());
   const sseRef = useRef<EventSource | null>(null);
   const locSeqRef = useRef(0);
@@ -238,6 +238,8 @@ export function useControlCenter(intervalSec = 15): ControlCenterData & { refres
   // ── primary load (stats + entities) ─────────────────────────────────────
   useEffect(() => {
     if (!tenantId()) { setState((s) => ({ ...s, loading: false, error: "no-tenant" })); return; }
+    // Auth todavía resolviendo: esperar evita la segunda tanda de 14 peticiones.
+    if (cargandoAuth) return;
     let alive = true;
     (async () => {
       const gaps: string[] = [];
@@ -533,16 +535,32 @@ export function useControlCenter(intervalSec = 15): ControlCenterData & { refres
         .catch(() => { /* never blocks the dashboard */ });
     })();
     return () => { alive = false; };
-    // `puedeVerPanelEjecutivo` va en las dependencias a propósito: el usuario
-    // llega de forma asíncrona, así que en el primer render es `false` incluso
-    // para un administrador. Sin esto, quien SÍ tiene nivel se quedaría sin
-    // los KPIs ejecutivos hasta recargar.
-  }, [tick, puedeVerPanelEjecutivo]);
+    /* ── POR QUÉ YA NO SE DEPENDE DE `puedeVerPanelEjecutivo` ────────────────
+       Estaba en las dependencias por una razón real: el usuario llega de forma
+       asíncrona, así que en el primer render vale `false` incluso para un
+       administrador, y sin re-ejecutar el efecto quien sí tiene nivel se
+       quedaba sin los KPIs ejecutivos hasta recargar.
+
+       Pero el precio era que las CATORCE peticiones de la carga inicial se
+       lanzaban DOS VECES enteras en cada apertura del panel: una con el usuario
+       todavía vacío y otra al resolverse. Veintisiete peticiones donde debían
+       ser catorce — y tres tandas en desarrollo, por StrictMode.
+
+       La solución no es quitar la dependencia, que reintroduciría el fallo
+       original: es no arrancar hasta que Auth haya terminado. Con
+       `cargandoAuth` en la guarda, el efecto corre UNA vez y ya con el nivel
+       correcto. La dependencia se queda por si el usuario cambia de verdad
+       (cambio de empresa), que es el único caso en que debe rehacerse. */
+  }, [tick, puedeVerPanelEjecutivo, cargandoAuth]);
 
   // ── live polling of on-duty guard locations ─────────────────────────────
-  useEffect(() => {
+  /* Refresca QUIÉN está en servicio y cómo va la cobertura.
+     Lo llaman tres sitios —el evento `shift:punch`, la reconexión del socket y
+     el reloj de respaldo— a propósito: mientras el reloj siga existiendo tiene
+     que hacer EXACTAMENTE lo mismo que el evento, o las dos vías se separan y
+     el tablero enseña una cosa distinta según cuál corrió última. */
+  const refrescarPresencia = useCallback(async () => {
     if (!tenantId()) return;
-    const iv = setInterval(async () => {
       // Monotonic guard: a slow poll must not overwrite a newer one's positions
       // (markers were jumping backward / clocked-out guards reappearing).
       const mine = ++locSeqRef.current;
@@ -595,9 +613,30 @@ export function useControlCenter(intervalSec = 15): ControlCenterData & { refres
         return { ...s, kpis, entities: [...others, ...guards],
           health: { ...s.health, onlineDevices: onDuty, lastSync: new Date().toISOString() } };
       });
-    }, Math.max(5, intervalSec) * 1000);
-    return () => clearInterval(iv);
-  }, [intervalSec]);
+  }, []);
+
+  /* ── EL RELOJ, EN RETIRADA ─────────────────────────────────────────────────
+     Sigue aquí a propósito, conviviendo con el evento, hasta que se compruebe
+     en producción que `shift:punch` llega SIEMPRE —desde los dos workers de
+     PM2, y tras una desconexión real de las de modo avión—. Quitarlo antes de
+     esa prueba cambiaría un tablero que gasta de más por uno que miente, que es
+     mucho peor. Cuando la prueba pase, esto se borra entero: la recuperación
+     vive en `socket.on("connect")`, no aquí. */
+  useEffect(() => {
+    if (!tenantId()) return;
+    let iv: ReturnType<typeof setInterval> | null = null;
+    /* Nadie mira un tablero que no está en pantalla. Y no basta con confiar en
+       el navegador: Chrome NO estrangula las pestañas con websocket abierto, y
+       el CRM tiene varios — o sea que sin esta guarda el reloj seguía a ritmo
+       completo toda la noche. Al volver se refresca de golpe. */
+    const visible = () => document.visibilityState !== "hidden";
+    const arrancar = () => { if (!iv && visible()) iv = setInterval(() => { void refrescarPresencia(); }, Math.max(5, intervalSec) * 1000); };
+    const parar = () => { if (iv) { clearInterval(iv); iv = null; } };
+    const alCambiar = () => { if (visible()) { void refrescarPresencia(); arrancar(); } else parar(); };
+    arrancar();
+    document.addEventListener("visibilitychange", alCambiar);
+    return () => { parar(); document.removeEventListener("visibilitychange", alCambiar); };
+  }, [intervalSec, refrescarPresencia]);
 
   // ── SSE live event feed (real-time layer the backend already exposes) ────
   useEffect(() => {
@@ -655,8 +694,44 @@ export function useControlCenter(intervalSec = 15): ControlCenterData & { refres
       });
     };
     socket.on("location:update", onLocation);
-    return () => { socket.off("location:update", onLocation); cerrarSocket(socket); };
-  }, []);
+
+    /* ── FICHAJES: EL AVISO QUE SUSTITUYE AL RELOJ DE 15 s ──────────────────
+       `active-locations` hace DOS trabajos: dice dónde está la gente y dice
+       quién está en servicio. El movimiento ya llegaba por `location:update`;
+       lo que no tenía evento era el fichaje, así que la única forma de saber
+       que alguien entró a trabajar era volver a pedir la lista entera cada 15
+       segundos. Ése —y no la ubicación— era el motivo del sondeo.
+
+       El evento trae ids, no filas: se reconsulta con el endpoint de siempre,
+       que aplica el permiso fino por puesto. Ver el backend en
+       services/realtime/shiftPunchEvent.ts. */
+    const onPunch = () => { void refrescarPresencia(); };
+    socket.on("shift:punch", onPunch);
+
+    /* ── LA RECUPERACIÓN VA EN LA RECONEXIÓN, NO EN UN RELOJ ────────────────
+       Un websocket entrega lo que pasa MIENTRAS escuchas. No puede contarte lo
+       que pasó mientras el portátil dormía, el wifi saltaba o PM2 reciclaba un
+       worker: los eventos son un flujo, no un estado. Ése es el único trabajo
+       que hacía de verdad el sondeo.
+
+       Pero el disparador correcto es volver a estar conectado, no que hayan
+       pasado N segundos. Y se pide el ESTADO ACTUAL en vez de reproducir los
+       fichajes perdidos: reconstruir «quién está en servicio» a partir de una
+       secuencia de avisos es más frágil y más caro que preguntarlo — si se
+       pierde uno o llegan desordenados, el estado reconstruido queda mal para
+       siempre; el estado preguntado de nuevo siempre es correcto.
+
+       socket.io reconecta solo; este manejador corre en cada `connect`,
+       incluidos los que siguen a una caída. */
+    socket.on("connect", onPunch);
+
+    return () => {
+      socket.off("location:update", onLocation);
+      socket.off("shift:punch", onPunch);
+      socket.off("connect", onPunch);
+      cerrarSocket(socket);
+    };
+  }, [refrescarPresencia]);
 
   return { ...state, refresh };
 }

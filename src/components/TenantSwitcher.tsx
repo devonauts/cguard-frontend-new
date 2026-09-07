@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Building2, Check, ChevronDown } from 'lucide-react';
+import { SmartImage } from '@/components/kit/SmartImage';
 import {
   getActiveTenant,
   getAvailableTenants,
@@ -69,7 +70,7 @@ export default function TenantSwitcher() {
         title={t('tenant.switch', { defaultValue: 'Cambiar de empresa' }) as string}
       >
         {activa?.logoUrl ? (
-          <img src={activa.logoUrl} alt="" className="h-5 w-5 shrink-0 rounded-md object-cover" />
+          <SmartImage src={activa.logoUrl} alt="" rounded="rounded-md" className="h-5 w-5 shrink-0" />
         ) : (
           <Building2 className="h-4 w-4 shrink-0" style={{ color: 'var(--brand-text)' }} />
         )}
@@ -103,7 +104,7 @@ export default function TenantSwitcher() {
                     : undefined}
                 >
                   {e.logoUrl ? (
-                    <img src={e.logoUrl} alt="" className="h-6 w-6 shrink-0 rounded-md object-cover" />
+                    <SmartImage src={e.logoUrl} alt="" rounded="rounded-md" className="h-6 w-6 shrink-0" />
                   ) : (
                     <span
                       className="grid h-6 w-6 shrink-0 place-items-center rounded-md"

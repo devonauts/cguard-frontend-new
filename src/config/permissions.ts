@@ -43,6 +43,14 @@ export const PERMISSIONS: string[] = [
   // ── Sitios / operación ──
   "postSiteCreate","postSiteRead","postSiteEdit","postSiteDestroy","postSiteAutocomplete",
   "routeImport","routeCreate","routeEdit","routeDestroy","routeRead","routeAutocomplete",
+  // ── RUTAS DE SUPERVISIÓN (ejecución en vivo) ──────────────────────────────
+  // Estos cinco existían en el backend y NO aquí, y esta lista es la que dibuja
+  // Configuración › Roles. O sea que un admin no podía concederlos ni verlos:
+  // la pantalla de Patrulla Vehicular respondía 403 y no había forma de
+  // arreglarlo desde la interfaz. Es la misma lista de `permissions.ts` del
+  // backend copiada a mano, así que se separa sola cada vez que se añade uno.
+  "routeExecutionRead","routeDispatch","routeOverrideGeofence",
+  "routeTemplateRead","routeTemplateManage",
   "vehicleCreate","vehicleEdit","vehicleDestroy","vehicleRead","vehicleAutocomplete",
   "visitorLogImport","visitorLogCreate","visitorLogEdit","visitorLogDestroy","visitorLogRead","visitorLogAutocomplete",
   "incidentTypeImport","incidentTypeCreate","incidentTypeEdit","incidentTypeDestroy","incidentTypeRead","incidentTypeAutocomplete",

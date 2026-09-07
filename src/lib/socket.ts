@@ -24,14 +24,50 @@ export function socketOrigin(): string {
   }
 }
 
+/* ── UN SOLO SOCKET POR IDENTIDAD, COMPARTIDO ───────────────────────────────
+   `crearSocket` devolvía una conexión NUEVA en cada llamada, y socket.io 4 no
+   multiplexa: dos `io()` al mismo origen y namespace abren dos Managers y dos
+   sockets TCP de verdad. El CRM tiene seis puntos de creación y tres montados
+   siempre (co-navegación, campana, radio), así que cada pestaña abría entre 3 y
+   5 websockets. Con dos pestañas, ocho — y la tormenta de reconexión tras cada
+   despliegue era ocho veces el número de personas, no una.
+
+   Las apps móviles y el superadmin ya resolvieron esto con un socket
+   compartido; el CRM se quedó atrás. El propio repo lo tiene escrito en la app
+   de vigilante: «abrir un segundo socket con la misma identidad es exactamente
+   el error que ya costó 6.087 expulsiones en la radio».
+
+   Aquí se comparte por (token, tenant) con recuento de referencias. Quien llama
+   no cambia: sigue pidiendo su socket y cerrándolo al desmontar; lo que cambia
+   es que por debajo es el mismo, y sólo se cierra de verdad cuando lo suelta el
+   último. Un cambio de empresa o de sesión produce una clave distinta, así que
+   abre una conexión nueva — que es lo correcto: la identidad es otra.
+
+   Los `on`/`off` de cada consumidor conviven sin pisarse porque socket.io
+   guarda los oyentes por evento y cada uno retira EL SUYO por referencia. */
+type Compartido = { socket: Socket; clave: string; usos: number };
+let compartido: Compartido | null = null;
+
 /** Abre la conexión en vivo del tenant. El servidor sólo acepta websocket. */
 export function crearSocket(token: string, tenantId: string): Socket {
-  return io(socketOrigin(), {
+  const clave = `${tenantId}::${token}`;
+  if (compartido && compartido.clave === clave && !compartido.socket.disconnected) {
+    compartido.usos++;
+    return compartido.socket;
+  }
+  // Identidad distinta (o el anterior murió): el viejo se suelta entero.
+  if (compartido) {
+    try { cerrarDeVerdad(compartido.socket); } catch { /* ya estaba cerrado */ }
+    compartido = null;
+  }
+  const socket = io(socketOrigin(), {
     path: SOCKET_PATH,
     transports: ['websocket'],
     withCredentials: true,
     auth: { token, tenantId },
   });
+  compartido = { socket, clave, usos: 1 };
+  return socket;
 }
 
 /**
@@ -56,6 +92,26 @@ export function crearSocket(token: string, tenantId: string): Socket {
 export function cerrarSocket(socket: Socket | null | undefined, esperaMaxMs = 8000): void {
   if (!socket) return;
 
+  /* ── SOLTAR NO ES CERRAR ─────────────────────────────────────────────────
+     Con el socket compartido, cada consumidor llama aquí al desmontarse. Si
+     esto cerrara siempre, el primer panel que se va dejaría sin tiempo real a
+     la campana, a la radio y a la co-navegación — y encima `removeAllListeners`
+     borraría los oyentes de TODOS, no sólo los suyos.
+
+     Así que se descuenta un uso y sólo se cierra de verdad cuando lo suelta el
+     último. Cada consumidor ya retira sus propios `on` con su `off` antes de
+     llamar aquí, que es lo correcto y sigue funcionando igual. */
+  if (compartido && compartido.socket === socket) {
+    compartido.usos--;
+    if (compartido.usos > 0) return;
+    compartido = null;
+  }
+
+  cerrarDeVerdad(socket, esperaMaxMs);
+}
+
+/** El cierre real, con el drenado del saludo a medias. */
+function cerrarDeVerdad(socket: Socket, esperaMaxMs = 8000): void {
   socket.removeAllListeners();
 
   if (socket.connected) {

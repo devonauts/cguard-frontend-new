@@ -84,6 +84,24 @@ export default defineConfig({
           "assets/{de,en,fr,it,nl,pl,pt}-*.js",
           "assets/vendor-livekit-*.js",
           "assets/vendor-xlsx-*.js",
+          // ── LOS SUBCONJUNTOS DE FUENTE QUE ESTA PANTALLA NO VA A PINTAR ────
+          // Fontsource parte cada familia por alfabeto y marca cada trozo con
+          // `unicode-range`. Gracias a eso el NAVEGADOR ya descarga sólo el
+          // trozo que necesita para el texto que hay en pantalla: de las 70
+          // fuentes del build, una sesión normal pide tres o cuatro.
+          //
+          // El precache se saltaba esa optimización entera y se bajaba las 70,
+          // porque un glob no entiende de `unicode-range`. 38 de ellas —
+          // cirílico, griego y vietnamita, 305 KB— son 38 peticiones que no
+          // pinta nadie.
+          //
+          // NO se quitan del build, que es lo que importa: el sitio sirve a
+          // todo el mundo y un visitante ruso, griego o vietnamita sigue
+          // recibiendo su alfabeto perfectamente, pedido por red en el momento
+          // en que aparece el primer carácter. Lo único que se pierde es tener
+          // ESOS alfabetos disponibles sin conexión, y no se pierden los del
+          // usuario: el latino sí se precachea.
+          "assets/*-{cyrillic,cyrillic-ext,greek,greek-ext,vietnamese}-*.woff2",
         ],
         // El chunk principal supera los 2 MB por defecto de Workbox.
         maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,

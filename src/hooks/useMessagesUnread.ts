@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { messageService } from "@/lib/api/messageService";
 
 /**
@@ -14,6 +14,25 @@ import { messageService } from "@/lib/api/messageService";
  *    inmediata, sin esperar al reloj;
  *  · al volver a la pestaña, porque el intervalo no corre fiable en segundo plano;
  *  · un intervalo largo como red de seguridad si el socket estaba caído.
+ *
+ * ── UN SOLO RELOJ PARA TODOS LOS MONTAJES ──────────────────────────────────
+ * El menú lateral está montado DOS VECES a la vez: el `aside` de escritorio
+ * (`hidden lg:block`) y el cajón móvil (`lg:hidden`), que no se desmonta — sólo
+ * se desplaza fuera de pantalla con `translate-x`. Como el hook creaba su propio
+ * intervalo, el CRM pedía el contador DOS veces por minuto en cualquier
+ * pantalla, siempre.
+ *
+ * Se arregla aquí y no en el layout a propósito: renderizar un solo menú según
+ * el ancho obliga a desmontar y remontar al redimensionar o al girar el
+ * teléfono, y eso rompe el estado del propio menú. Aquí el estado vive fuera de
+ * React, con recuento de suscriptores: el primero que monta arranca el reloj, el
+ * último que se va lo para, y todos comparten la misma respuesta.
+ *
+ * ── Y SE PARA CON LA PESTAÑA OCULTA ────────────────────────────────────────
+ * Nadie lee el punto de un menú que no está en pantalla. Además el CRM mantiene
+ * varios websockets abiertos, y Chrome NO aplica su estrangulamiento agresivo a
+ * las pestañas con websocket — o sea que sin esta guarda el reloj seguía
+ * corriendo a ritmo completo toda la noche.
  */
 export const MESSAGES_CHANGED_EVENT = "cg:messages-changed";
 
@@ -28,44 +47,80 @@ export function notifyMessagesChanged() {
 
 const INTERVALO_MS = 60_000;
 
-export function useMessagesUnread(enabled = true): number {
-  const [count, setCount] = useState(0);
+// ── Estado compartido, fuera de React ──────────────────────────────────────
+let valor = 0;
+let timer: number | null = null;
+const suscriptores = new Set<(n: number) => void>();
 
-  const refresh = useCallback(async () => {
-    if (!enabled) return;
-    try {
-      const r: any = await messageService.unreadCount();
-      const n = Number(r?.count ?? 0);
-      setCount(Number.isFinite(n) && n > 0 ? n : 0);
-    } catch {
-      // Sin empresa seleccionada, sin permiso de mensajería o sin red: el punto
-      // simplemente no aparece. Nunca rompe el menú.
-      setCount(0);
-    }
-  }, [enabled]);
+function publicar(n: number) {
+  valor = n;
+  for (const f of suscriptores) f(n);
+}
+
+async function consultar() {
+  try {
+    const r: any = await messageService.unreadCount();
+    const n = Number(r?.count ?? 0);
+    publicar(Number.isFinite(n) && n > 0 ? n : 0);
+  } catch {
+    // Sin empresa seleccionada, sin permiso de mensajería o sin red: el punto
+    // simplemente no aparece. Nunca rompe el menú.
+    publicar(0);
+  }
+}
+
+/** Sólo se consulta con la pestaña a la vista. */
+const visible = () =>
+  typeof document === "undefined" || document.visibilityState !== "hidden";
+
+const tick = () => { if (visible()) void consultar(); };
+
+const alVolver = () => {
+  // Volver a la pestaña: se pide una vez de golpe y se rearma el reloj, que
+  // pudo quedar parado mientras estaba oculta.
+  if (visible()) { void consultar(); arrancarTimer(); }
+  else pararTimer();
+};
+
+function arrancarTimer() {
+  if (timer == null) timer = window.setInterval(tick, INTERVALO_MS);
+}
+function pararTimer() {
+  if (timer != null) { window.clearInterval(timer); timer = null; }
+}
+
+function arrancar() {
+  window.addEventListener(MESSAGES_CHANGED_EVENT, tick);
+  window.addEventListener("focus", alVolver);
+  document.addEventListener("visibilitychange", alVolver);
+  arrancarTimer();
+  void consultar();
+}
+
+function parar() {
+  window.removeEventListener(MESSAGES_CHANGED_EVENT, tick);
+  window.removeEventListener("focus", alVolver);
+  document.removeEventListener("visibilitychange", alVolver);
+  pararTimer();
+  valor = 0;
+}
+
+export function useMessagesUnread(enabled = true): number {
+  const [count, setCount] = useState(enabled ? valor : 0);
 
   useEffect(() => {
-    if (!enabled) {
-      setCount(0);
-      return;
-    }
-    let vivo = true;
-    const tick = () => { if (vivo) refresh(); };
-
-    tick();
-    window.addEventListener(MESSAGES_CHANGED_EVENT, tick);
-    window.addEventListener("focus", tick);
-    const id = window.setInterval(tick, INTERVALO_MS);
+    if (!enabled) { setCount(0); return; }
+    // El primero que monta arranca; el último que se va, para.
+    const primero = suscriptores.size === 0;
+    suscriptores.add(setCount);
+    if (primero) arrancar();
+    else setCount(valor); // los siguientes heredan el último valor conocido
 
     return () => {
-      vivo = false;
-      window.removeEventListener(MESSAGES_CHANGED_EVENT, tick);
-      window.removeEventListener("focus", tick);
-      window.clearInterval(id);
+      suscriptores.delete(setCount);
+      if (suscriptores.size === 0) parar();
     };
-  }, [enabled, refresh]);
+  }, [enabled]);
 
   return count;
 }
-
-export default useMessagesUnread;
