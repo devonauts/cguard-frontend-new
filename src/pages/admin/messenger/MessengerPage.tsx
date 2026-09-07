@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import i18n from "@/i18n";
 import { notifyMessagesChanged } from "@/hooks/useMessagesUnread";
+import { useEventoEnVivo } from "@/hooks/useEventoEnVivo";
 
 /**
  * Renders one message attachment (image/video). The attachment `url` is a raw
@@ -147,11 +148,14 @@ export default function MessengerPage({ scope = "operational" }: { scope?: "oper
   }, []);
 
   useEffect(() => { loadConversations(); }, [loadConversations]);
-  // Poll inbox + open thread for near-real-time sync.
-  useEffect(() => {
-    const id = setInterval(() => { loadConversations(); if (selected) loadThread(selected); }, 12000);
-    return () => clearInterval(id);
-  }, [loadConversations, loadThread, selected]);
+  /* `message:changed` lo emite el backend para las TRES ramas de destinatario
+     —oficina, cliente y vigilante—, y va a la sala del usuario, que comparten
+     todos sus dispositivos. Antes esta pantalla sondeaba cada 12 s: la bandeja
+     entera más el hilo abierto, 300-600 peticiones/hora. */
+  useEventoEnVivo(["message:changed"], () => {
+    loadConversations();
+    if (selected) loadThread(selected);
+  });
 
   // Operativos = chats with vigilantes/supervisores + grupos (recipientType !== "client").
   // Clientes = chats with customers (recipientType === "client").

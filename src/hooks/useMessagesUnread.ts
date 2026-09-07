@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { messageService } from "@/lib/api/messageService";
+import { crearSocket, cerrarSocket } from "@/lib/socket";
+import { getAuthToken } from "@/lib/api";
 
 /**
  * Mensajes sin leer del buzón del CRM — el punto del menú lateral.
@@ -89,15 +91,35 @@ function pararTimer() {
   if (timer != null) { window.clearInterval(timer); timer = null; }
 }
 
+/* El socket es la vía rápida: `message:changed` llega en cuanto alguien manda
+   o lee un mensaje, para las tres ramas de destinatario. El reloj se queda como
+   red de seguridad —a 60 s y parado con la pestaña oculta— por si el socket
+   estaba caído, y `connect` recupera lo que pasó mientras no escuchábamos. */
+let socketContador: ReturnType<typeof crearSocket> | null = null;
+
 function arrancar() {
   window.addEventListener(MESSAGES_CHANGED_EVENT, tick);
   window.addEventListener("focus", alVolver);
   document.addEventListener("visibilitychange", alVolver);
+  try {
+    const tid = localStorage.getItem("tenantId") || "";
+    if (tid) {
+      socketContador = crearSocket(getAuthToken() || "", tid);
+      socketContador.on("message:changed", tick);
+      socketContador.on("connect", tick);
+    }
+  } catch { /* sin socket, el reloj sigue cubriendo */ }
   arrancarTimer();
   void consultar();
 }
 
 function parar() {
+  if (socketContador) {
+    socketContador.off("message:changed", tick);
+    socketContador.off("connect", tick);
+    cerrarSocket(socketContador);
+    socketContador = null;
+  }
   window.removeEventListener(MESSAGES_CHANGED_EVENT, tick);
   window.removeEventListener("focus", alVolver);
   document.removeEventListener("visibilitychange", alVolver);

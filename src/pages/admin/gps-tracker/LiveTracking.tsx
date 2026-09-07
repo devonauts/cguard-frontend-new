@@ -79,6 +79,8 @@ const tenantId = () => localStorage.getItem("tenantId") || "";
 
 export default function LiveTrackingPage() {
   const { t } = useTranslation();
+  // Puente al recargador del efecto de datos, para que el socket lo dispare.
+  const traerRef = useRef<() => void>(() => {});
   const [openFilter, setOpenFilter] = useState(false);
   const [mapType, setMapType] = useState<"roadmap" | "satellite" | "hybrid" | "terrain">("roadmap");
   const [showGeofence, setShowGeofence] = useState(true);
@@ -194,8 +196,23 @@ export default function LiveTrackingPage() {
     };
 
     traer();
-    const iv = window.setInterval(traer, MS_SONDEO);
-    return () => { vivo = false; window.clearInterval(iv); };
+    /* El sondeo pedía QUIÉN está en servicio, no dónde: el movimiento ya llegaba
+       por `location:update`. Eso ya tiene evento —`shift:punch`— así que el
+       reloj se queda como red de seguridad y se para con la pestaña oculta. El
+       evento y `connect` se enganchan en el efecto de abajo, que es donde vive
+       el socket de esta pantalla. */
+    let iv: number | null = null;
+    const visible = () => document.visibilityState !== "hidden";
+    const arrancar = () => { if (!iv && visible()) iv = window.setInterval(traer, MS_SONDEO); };
+    const parar = () => { if (iv) { window.clearInterval(iv); iv = null; } };
+    const alVerse = () => { if (visible()) { traer(); arrancar(); } else parar(); };
+    arrancar();
+    document.addEventListener("visibilitychange", alVerse);
+    traerRef.current = traer;
+    return () => {
+      vivo = false; parar();
+      document.removeEventListener("visibilitychange", alVerse);
+    };
   }, [esHoy]);
 
   /* ── Movimiento instantáneo por el canal en vivo ──────────────────────── */
@@ -233,9 +250,14 @@ export default function LiveTrackingPage() {
     const pedirMapa = () => socket.emit("map:subscribe");
     pedirMapa();
     socket.on("connect", pedirMapa);
+    const alFichar = () => traerRef.current();
+    socket.on("shift:punch", alFichar);
+    socket.on("connect", alFichar);
     socket.on("location:update", alMover);
     return () => { socket.emit("map:unsubscribe");
       socket.off("connect", pedirMapa);
+      socket.off("shift:punch", alFichar);
+      socket.off("connect", alFichar);
       socket.off("location:update", alMover); cerrarSocket(socket); };
   }, [esHoy]);
 

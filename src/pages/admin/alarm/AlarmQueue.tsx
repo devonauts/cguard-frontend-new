@@ -27,6 +27,7 @@ import {
 } from "@/lib/api/alarmService";
 import { useTranslation } from "react-i18next";
 import { openEventStream } from "@/lib/api/eventStream";
+import { useEventoEnVivo } from "@/hooks/useEventoEnVivo";
 import {
   CriticalRail, ClockPill, PriorityPill, STATUS_META, OPEN_STATUSES,
   categoryMeta, categoryTone, criticalBorder, elapsedSince, formatWhen, slaTone,
@@ -91,14 +92,28 @@ export default function AlarmQueue() {
     load();
   }, [load]);
 
-  // Live SLA timer tick + silent auto-refresh of the queue (poll is the SSE fallback)
+  /* El reloj del SLA es de PANTALLA: cuenta segundos, no pide nada. Se queda a
+     1 s y separado del sondeo, que antes compartían efecto — cambiar el filtro
+     reiniciaba también el cronómetro. */
   React.useEffect(() => {
     const tick = setInterval(() => setNow(Date.now()), 1000);
-    const poll = setInterval(() => load({ silent: true }), 20000);
-    return () => {
-      clearInterval(tick);
-      clearInterval(poll);
-    };
+    return () => clearInterval(tick);
+  }, []);
+
+  /* La cola se entera por `alarm:case`: lo emite el embudo único del backend, o
+     sea los seis endpoints de consola, el normalizador de señales de panel y el
+     escalado por SLA. El reloj se queda como red de seguridad, pero a 2 min en
+     vez de 20 s y parado con la pestaña oculta. */
+  useEventoEnVivo(["alarm:case"], () => load({ silent: true }));
+  React.useEffect(() => {
+    let iv: ReturnType<typeof setInterval> | null = null;
+    const visible = () => document.visibilityState !== "hidden";
+    const arrancar = () => { if (!iv && visible()) iv = setInterval(() => load({ silent: true }), 120_000); };
+    const parar = () => { if (iv) { clearInterval(iv); iv = null; } };
+    const alVerse = () => { if (visible()) { load({ silent: true }); arrancar(); } else parar(); };
+    arrancar();
+    document.addEventListener("visibilitychange", alVerse);
+    return () => { parar(); document.removeEventListener("visibilitychange", alVerse); };
   }, [load]);
 
   // Real-time: subscribe to the platform SSE stream; refresh instantly on alarm events.
