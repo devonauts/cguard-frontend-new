@@ -250,12 +250,16 @@ export default function LiveTrackingPage() {
     const pedirMapa = () => socket.emit("map:subscribe");
     pedirMapa();
     socket.on("connect", pedirMapa);
-    const alFichar = () => traerRef.current();
+    /* Agrupado: sesenta fichajes a las siete de la mañana no son sesenta
+       recargas de la lista de vigilantes. */
+    let agrup: ReturnType<typeof setTimeout> | null = null;
+    const alFichar = () => { if (agrup) clearTimeout(agrup); agrup = setTimeout(() => traerRef.current(), 700); };
     socket.on("shift:punch", alFichar);
     socket.on("connect", alFichar);
     socket.on("location:update", alMover);
     return () => { socket.emit("map:unsubscribe");
       socket.off("connect", pedirMapa);
+      if (agrup) clearTimeout(agrup);
       socket.off("shift:punch", alFichar);
       socket.off("connect", alFichar);
       socket.off("location:update", alMover); cerrarSocket(socket); };

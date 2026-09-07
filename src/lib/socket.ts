@@ -48,12 +48,93 @@ export function socketOrigin(): string {
 type Compartido = { socket: Socket; clave: string; usos: number };
 let compartido: Compartido | null = null;
 
+/* ── CADA QUIEN SE LLEVA LO SUYO ────────────────────────────────────────────
+   Antes de compartir el socket, `cerrarSocket` hacía `removeAllListeners()`, y
+   varios consumidores se apoyaban en eso: registran oyentes ANÓNIMOS y su
+   limpieza sólo llama a `cerrarSocket`. Al pasar a un socket compartido eso
+   dejó de valer por dos motivos opuestos: si sigue borrando todo, el primero
+   que se va deja mudos a los demás; y si no borra nada, los oyentes anónimos
+   se acumulan en cada montaje y no hay forma de retirarlos desde fuera.
+
+   La solución no puede ser «que cada consumidor recuerde hacer `off`»: eso es
+   justo lo que ya se olvidó tres veces. Se resuelve aquí, con un envoltorio que
+   apunta lo que registra CADA llamante y lo retira exactamente al soltar. Para
+   quien lo usa es transparente —sigue siendo el socket de siempre— y los
+   `off` explícitos que ya existen siguen funcionando igual. */
+const registrados = new WeakMap<object, Array<[string, (...a: any[]) => void]>>();
+
+function envolver(socket: Socket): Socket {
+  const propios: Array<[string, (...a: any[]) => void]> = [];
+  const proxy = new Proxy(socket, {
+    get(destino: any, prop: string | symbol, receptor: any) {
+      // Marca para que `cerrarSocket` pueda llegar al socket de verdad: el
+      // envoltorio nunca es === al compartido, y sin esto el recuento no casaba
+      // y volvíamos a cerrar en cada baja.
+      if (prop === '__target') return destino;
+      if (prop === 'on' || prop === 'once') {
+        return (evento: string, fn: (...a: any[]) => void) => {
+          propios.push([evento, fn]);
+          return (destino[prop] as any).call(destino, evento, fn);
+        };
+      }
+      if (prop === 'off') {
+        return (evento?: string, fn?: (...a: any[]) => void) => {
+          if (evento && fn) {
+            const i = propios.findIndex(([e, f]) => e === evento && f === fn);
+            if (i >= 0) propios.splice(i, 1);
+          }
+          return (destino.off as any).call(destino, evento, fn);
+        };
+      }
+      const v = destino[prop];
+      return typeof v === 'function' ? v.bind(destino) : v;
+    },
+  }) as Socket;
+  registrados.set(proxy, propios);
+  return proxy;
+}
+
+/** Retira SÓLO lo que registró este llamante. */
+function soltarOyentes(handle: Socket): void {
+  const propios = registrados.get(handle as unknown as object);
+  if (!propios) return;
+  /* Se COPIA antes de iterar: `off` del envoltorio quita la entrada de este
+     mismo array, y recorrer un array del que se va borrando se salta la mitad
+     — que es exactamente lo que hacía esta función antes de la prueba. */
+  const copia = propios.slice();
+  propios.length = 0;
+  const real: any = (handle as any).__target || handle;
+  for (const [evento, fn] of copia) {
+    try { real.off(evento, fn); } catch { /* ya retirado */ }
+  }
+}
+
 /** Abre la conexión en vivo del tenant. El servidor sólo acepta websocket. */
 export function crearSocket(token: string, tenantId: string): Socket {
   const clave = `${tenantId}::${token}`;
-  if (compartido && compartido.clave === clave && !compartido.socket.disconnected) {
+  /* ── `active`, NO `disconnected` ─────────────────────────────────────────
+     `disconnected` es literalmente `!connected` (socket.io-client 4.8,
+     socket.js:144), y `connected` sólo pasa a true cuando TERMINA el saludo.
+     O sea que durante toda la negociación —y durante cada reconexión— vale
+     `true`.
+
+     Con la condición anterior, la rama de reutilización no se cumplía nunca
+     mientras el socket estaba negociando… que es justo cuando montan los seis
+     consumidores del panel, todos en el mismo tick. Cada uno veía
+     `disconnected === true`, daba el socket anterior por muerto, llamaba a
+     `cerrarDeVerdad` —con su `removeAllListeners()`— y abría el suyo. Resultado
+     por carga de página: seis saludos, cinco sockets muertos nada más conectar,
+     y cinco consumidores con un socket sin oyentes. Sólo funcionaba el último
+     que montara. La campana, la co-navegación y los avisos de radio se caían en
+     cada carga.
+
+     `active` es `!!this.subs` (socket.js:180): verdadero desde que el socket se
+     crea y mientras siga gestionado por su Manager, incluidas las
+     reconexiones. Es la pregunta correcta: «¿este socket sigue vivo?», no
+     «¿está conectado en este instante?». */
+  if (compartido && compartido.clave === clave && compartido.socket.active) {
     compartido.usos++;
-    return compartido.socket;
+    return envolver(compartido.socket);
   }
   // Identidad distinta (o el anterior murió): el viejo se suelta entero.
   if (compartido) {
@@ -67,7 +148,7 @@ export function crearSocket(token: string, tenantId: string): Socket {
     auth: { token, tenantId },
   });
   compartido = { socket, clave, usos: 1 };
-  return socket;
+  return envolver(socket);
 }
 
 /**
@@ -101,13 +182,17 @@ export function cerrarSocket(socket: Socket | null | undefined, esperaMaxMs = 80
      Así que se descuenta un uso y sólo se cierra de verdad cuando lo suelta el
      último. Cada consumidor ya retira sus propios `on` con su `off` antes de
      llamar aquí, que es lo correcto y sigue funcionando igual. */
-  if (compartido && compartido.socket === socket) {
+  // Lo primero, y pase lo que pase: retirar lo que registró QUIEN llama.
+  soltarOyentes(socket);
+
+  const real: Socket = (socket as any).__target || socket;
+  if (compartido && (compartido.socket === socket || compartido.socket === real)) {
     compartido.usos--;
     if (compartido.usos > 0) return;
     compartido = null;
   }
 
-  cerrarDeVerdad(socket, esperaMaxMs);
+  cerrarDeVerdad(compartido?.socket || real, esperaMaxMs);
 }
 
 /** El cierre real, con el drenado del saludo a medias. */

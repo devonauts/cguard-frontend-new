@@ -72,13 +72,28 @@ export function useEventoEnVivo(
        Un salto hacia ATRÁS significa que el contador se reinició (Redis
        reiniciado, o cambio a contador local): se acepta el nuevo y se recarga,
        en vez de quedarse esperando un número que ya no va a llegar. */
+    /* ── EL NÚMERO ES POR EMPRESA, NO POR PANTALLA ───────────────────────
+       Corregido tras la re-auditoría: esto comparaba `seq !== ultimaSeq + 1` y
+       daba «hueco» casi siempre. El contador del backend es GLOBAL por empresa
+       y lo comparten todos los eventos de supervisión, pero cada pantalla
+       escucha uno o dos: entre dos `alarm:case` se cuelan fichajes, coberturas
+       y rutas, así que el número salta de 40 a 47 sin que se haya perdido nada.
+
+       Resultado: «hueco» permanente, recarga inmediata en cada evento y la
+       agrupación de 400 ms sin efecto — justo lo que la agrupación existía para
+       evitar, y peor que el sondeo que sustituye.
+
+       Lo único que un número global puede decir con certeza es que fuimos HACIA
+       ATRÁS (el contador se reinició: Redis reiniciado o caída al contador
+       local). Eso sí obliga a recargar sin esperar. Avanzar de más es normal y
+       no significa nada. */
     let ultimaSeq: number | null = null;
     const conSeq = (p: any) => {
       const seq = Number(p?.seq);
       if (Number.isFinite(seq)) {
-        const hueco = ultimaSeq != null && seq !== ultimaSeq + 1;
+        const reinicio = ultimaSeq != null && seq < ultimaSeq;
         ultimaSeq = seq;
-        if (hueco) { recargarRef.current(); return; }
+        if (reinicio) { recargarRef.current(); return; }
       }
       alAvisar();
     };

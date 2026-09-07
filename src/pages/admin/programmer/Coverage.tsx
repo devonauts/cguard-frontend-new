@@ -122,7 +122,10 @@ export default function Coverage() {
     load();
     const tid = tenantId();
     let socket: ReturnType<typeof crearSocket> | null = null;
-    const alCambiar = () => { void load(); };
+    /* Agrupado: un cambio de turno emite decenas de eventos y cada recarga
+       pide /coverage/live, que son diez consultas secuenciales. */
+    let agrup: ReturnType<typeof setTimeout> | null = null;
+    const alCambiar = () => { if (agrup) clearTimeout(agrup); agrup = setTimeout(() => { void load(); }, 700); };
     if (tid) {
       socket = crearSocket(getAuthToken() || "", tid);
       socket.on("coverage:changed", alCambiar);
@@ -142,6 +145,7 @@ export default function Coverage() {
       parar();
       document.removeEventListener("visibilitychange", alVerse);
       if (socket) {
+        if (agrup) clearTimeout(agrup);
         socket.off("coverage:changed", alCambiar);
         socket.off("shift:punch", alCambiar);
         socket.off("connect", alCambiar);

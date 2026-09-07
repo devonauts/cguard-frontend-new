@@ -95,7 +95,13 @@ function medir(texto: string, fuente: string): number {
   } catch {
     /* respaldo ya calculado */
   }
-  if (cacheMedidas.size > 500) cacheMedidas.clear();
+  /* LRU, igual que `cacheAssets`: se desaloja UNA, no todas. `clear()` hacía que
+     la caché dejara de servir justo cuando más entradas hay — que es cuando más
+     falta hace. Se me pasó este segundo caché al arreglar el primero. */
+  if (cacheMedidas.size >= 500) {
+    const masVieja = cacheMedidas.keys().next().value;
+    if (masVieja !== undefined) cacheMedidas.delete(masVieja);
+  }
   cacheMedidas.set(clave, ancho);
   return ancho;
 }

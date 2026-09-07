@@ -735,7 +735,22 @@ export function useControlCenter(intervalSec = 15): ControlCenterData & { refres
        El evento trae ids, no filas: se reconsulta con el endpoint de siempre,
        que aplica el permiso fino por puesto. Ver el backend en
        services/realtime/shiftPunchEvent.ts. */
-    const onPunch = () => { void refrescarPresencia(); };
+    /* ── AGRUPAR, O EL CAMBIO DE TURNO ES PEOR QUE EL SONDEO ───────────────
+       Corregido tras la re-auditoría. `shift:punch` sale uno por fichaje (el
+       backend sólo agrupa `coverage:changed`), y cada fichaje emite LOS DOS
+       eventos. A las siete de la mañana, con sesenta vigilantes entrando, eso
+       eran ~120 recargas en un minuto por panel abierto — y cada una pide
+       `/coverage/live`, que son diez consultas secuenciales. Contra las ocho
+       que hacía el reloj de 15 s.
+
+       El sondeo estaba actuando de limitador de caudal sin que nadie lo hubiera
+       decidido. Al ponerle eventos encima sin agrupar, el pico era quince veces
+       peor justo en el momento de más actividad del día. */
+    let agrupador: ReturnType<typeof setTimeout> | null = null;
+    const onPunch = () => {
+      if (agrupador) clearTimeout(agrupador);
+      agrupador = setTimeout(() => { void refrescarPresencia(); }, 700);
+    };
     socket.on("shift:punch", onPunch);
 
     /* Cobertura: el otro motivo por el que este panel sondeaba cada 15 s.
@@ -766,6 +781,7 @@ export function useControlCenter(intervalSec = 15): ControlCenterData & { refres
       socket.emit("map:unsubscribe");
       socket.off("connect", pedirMapa);
       socket.off("location:update", onLocation);
+      if (agrupador) clearTimeout(agrupador);
       socket.off("shift:punch", onPunch);
       socket.off("coverage:changed", onPunch);
       socket.off("connect", onPunch);
