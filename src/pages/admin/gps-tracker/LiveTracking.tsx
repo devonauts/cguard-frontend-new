@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from 'react-i18next';
 import { toast } from "sonner";
-import { crearSocket, cerrarSocket } from "@/lib/socket";
+import { crearSocket, cerrarSocket, entrarEnSalaDelMapa } from "@/lib/socket";
 import AppLayout from "@/layouts/app-layout";
 
 import { Button } from "@/components/ui/button";
@@ -245,11 +245,12 @@ export default function LiveTrackingPage() {
 
     /* La sala del mapa se PIDE. `location:update` ya no llega por rol: sin esta
        línea el chorro de posiciones no entra — y ése es el objetivo, que sólo lo
-       reciba quien está pintando un mapa. Se pide en cada `connect` porque tras
-       una reconexión la pertenencia a salas se rehace desde cero. */
-    const pedirMapa = () => socket.emit("map:subscribe");
-    pedirMapa();
-    socket.on("connect", pedirMapa);
+       reciba quien está pintando un mapa.
+
+       El recuento de quién la quiere, y el re-enganche tras reconectar, viven en
+       `lib/socket`: el socket es compartido, así que salirse por cuenta propia
+       dejaría muda a cualquier otra pantalla que también pinte posiciones. */
+    const salirDeLaSalaDelMapa = entrarEnSalaDelMapa(socket);
     /* Agrupado: sesenta fichajes a las siete de la mañana no son sesenta
        recargas de la lista de vigilantes. */
     let agrup: ReturnType<typeof setTimeout> | null = null;
@@ -257,8 +258,7 @@ export default function LiveTrackingPage() {
     socket.on("shift:punch", alFichar);
     socket.on("connect", alFichar);
     socket.on("location:update", alMover);
-    return () => { socket.emit("map:unsubscribe");
-      socket.off("connect", pedirMapa);
+    return () => { salirDeLaSalaDelMapa();
       if (agrup) clearTimeout(agrup);
       socket.off("shift:punch", alFichar);
       socket.off("connect", alFichar);

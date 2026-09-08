@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import i18n from "@/i18n";
 import api, { getAuthToken } from "@/lib/api";
-import { crearSocket, cerrarSocket } from "@/lib/socket";
+import { crearSocket, cerrarSocket, entrarEnSalaDelMapa } from "@/lib/socket";
 import { openEventStream } from "@/lib/api/eventStream";
 import securityGuardService from "@/lib/api/securityGuardService";
 import { supervisorService } from "@/lib/api/supervisorService";
@@ -718,11 +718,14 @@ export function useControlCenter(intervalSec = 15): ControlCenterData & { refres
     };
     /* La sala del mapa se PIDE. `location:update` ya no llega por rol: sin esta
        línea el chorro de posiciones no entra — y ése es el objetivo, que sólo lo
-       reciba quien está pintando un mapa. Se pide en cada `connect` porque tras
-       una reconexión la pertenencia a salas se rehace desde cero. */
-    const pedirMapa = () => socket.emit("map:subscribe");
-    pedirMapa();
-    socket.on("connect", pedirMapa);
+       reciba quien está pintando un mapa.
+
+       Va por `entrarEnSalaDelMapa` y no con un `emit` suelto porque el socket es
+       compartido: si esta pantalla saliera de la sala por su cuenta, dejaría sin
+       posiciones a cualquier otra que también las esté pintando. El recuento —y
+       el re-enganche tras reconectar, que antes había que acordarse de poner
+       aquí— viven en `lib/socket`. */
+    const salirDeLaSalaDelMapa = entrarEnSalaDelMapa(socket);
     socket.on("location:update", onLocation);
 
     /* ── FICHAJES: EL AVISO QUE SUSTITUYE AL RELOJ DE 15 s ──────────────────
@@ -778,8 +781,7 @@ export function useControlCenter(intervalSec = 15): ControlCenterData & { refres
     socket.on("connect", onPunch);
 
     return () => {
-      socket.emit("map:unsubscribe");
-      socket.off("connect", pedirMapa);
+      salirDeLaSalaDelMapa();
       socket.off("location:update", onLocation);
       if (agrupador) clearTimeout(agrupador);
       socket.off("shift:punch", onPunch);

@@ -45,7 +45,15 @@ export function socketOrigin(): string {
 
    Los `on`/`off` de cada consumidor conviven sin pisarse porque socket.io
    guarda los oyentes por evento y cada uno retira EL SUYO por referencia. */
-type Compartido = { socket: Socket; clave: string; usos: number };
+type Compartido = {
+  socket: Socket;
+  clave: string;
+  usos: number;
+  /** Cuántos consumidores quieren AHORA el chorro de posiciones. */
+  salaMapa: number;
+  /** El re-enganche tras reconectar, registrado una sola vez. */
+  reengancheMapa: (() => void) | null;
+};
 let compartido: Compartido | null = null;
 
 /* ── CADA QUIEN SE LLEVA LO SUYO ────────────────────────────────────────────
@@ -147,8 +155,55 @@ export function crearSocket(token: string, tenantId: string): Socket {
     withCredentials: true,
     auth: { token, tenantId },
   });
-  compartido = { socket, clave, usos: 1 };
+  compartido = { socket, clave, usos: 1, salaMapa: 0, reengancheMapa: null };
   return envolver(socket);
+}
+
+/* ── LA SALA TAMBIÉN SE COMPARTE, ASÍ QUE TAMBIÉN SE CUENTA ─────────────────
+   El socket lleva recuento de referencias y cada consumidor retira sus propios
+   oyentes. La pertenencia a SALAS se había quedado fuera de ese mismo cuidado:
+   `map:unsubscribe` saca al socket FÍSICO, no al que lo pide. Con dos pantallas
+   de mapa abiertas sobre el mismo socket, la primera en desmontarse dejaba a la
+   otra sin posiciones — el marcador quieto y ningún error.
+
+   Hoy no pasa, porque el panel de control y el rastreo GPS viven en rutas
+   distintas y no coexisten. Pero es exactamente el fallo que el recuento acaba
+   de arreglar para los oyentes, esperando al tercer consumidor. Se cierra ahora,
+   que cuesta veinte líneas, y no el día que alguien meta un mapa en una pestaña
+   lateral y no entienda por qué el otro se congela.
+
+   El re-enganche tras reconectar vive aquí y no en cada llamante: la
+   pertenencia a salas se rehace desde cero en cada saludo, y un solo oyente que
+   mira el contador hace el trabajo de todos. */
+export function entrarEnSalaDelMapa(handle: Socket): () => void {
+  const real: any = (handle as any).__target || handle;
+  const c = compartido;
+  // Un socket que no es el compartido (o que ya se soltó) se apaña solo: sin
+  // recuento que llevar, pide y suelta directamente.
+  if (!c || (c.socket !== handle && c.socket !== real)) {
+    real.emit('map:subscribe');
+    let fuera = false;
+    return () => { if (!fuera) { fuera = true; real.emit('map:unsubscribe'); } };
+  }
+
+  c.salaMapa++;
+  if (c.salaMapa === 1) {
+    real.emit('map:subscribe');
+    c.reengancheMapa = () => { if (compartido && compartido.salaMapa > 0) real.emit('map:subscribe'); };
+    real.on('connect', c.reengancheMapa);
+  }
+
+  let soltado = false;
+  return () => {
+    if (soltado) return;      // desmontar dos veces no descuenta dos veces
+    soltado = true;
+    if (!compartido || compartido !== c) return; // el socket ya se cerró entero
+    c.salaMapa--;
+    if (c.salaMapa > 0) return;
+    c.salaMapa = 0;
+    real.emit('map:unsubscribe');
+    if (c.reengancheMapa) { real.off('connect', c.reengancheMapa); c.reengancheMapa = null; }
+  };
 }
 
 /**

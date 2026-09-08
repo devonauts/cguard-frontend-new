@@ -8,6 +8,7 @@ import { estiloMapa, huella, pielDe, useMapPalette, type MapPalette } from "@/ut
 import { chipPin, iconoDe, orbPin } from "@/utils/mapPins";
 import { crearMotorMapa, type MotorMapa } from "@/utils/mapMotion";
 import { useMapPopup } from "@/components/maps/MapPopup";
+import { useValorConRitmo } from "@/hooks/useValorConRitmo";
 import type { MapEntity, EntityKind } from "../types";
 import { DEFAULT_PREFS, type DashboardPrefs } from "../prefs";
 import { iconInnerSvg } from "../iconRegistry";
@@ -221,9 +222,29 @@ export function OperationsMap({
   // dependencias del efecto, abrir un globo volvería a montar los marcadores.
   const { open: abrirPop, portal: portalGlobo } = useMapPopup(() => mapRef.current);
 
+  /* ── LA COBERTURA NO NECESITA IR A 33 Hz ──────────────────────────────────
+     `calcularCobertura` es O(puestos × personas) con haversine o
+     punto-en-polígono por par, y colgaba directamente de `entities`. El
+     manejador de `location:update` ya no reordena ni crea estado por un ping
+     que no mueve a nadie — pero cuando SÍ mueve, el array es nuevo y el memo se
+     invalidaba igual. Con 1.000 vigilantes en movimiento eso son 33 recálculos
+     por segundo de todos los pares, y detrás va `resumen`, que cuelga de éste.
+
+     Un puesto no pasa de «cubierto» a «sin cubrir» treinta y tres veces por
+     segundo: pasa cuando alguien cruza la geocerca. Medio segundo de retraso en
+     pintarlo no lo ve nadie, y son 66 veces menos trabajo.
+
+     Ojo con lo que NO se atenúa: el marcador se sigue moviendo a pantalla
+     completa, porque de eso se encarga `mapMotion` escribiendo `setPosition`
+     directo, y no pasa por aquí. */
+  const entidadesParaCobertura = useValorConRitmo(entities, 500);
+
   /** La cobertura se calcula SIEMPRE sobre todas las entidades, nunca sobre las
    *  visibles: apagar la capa de vigilantes no puede teñir de rojo los puestos. */
-  const cobertura = useMemo(() => calcularCobertura(entities), [entities]);
+  const cobertura = useMemo(
+    () => calcularCobertura(entidadesParaCobertura),
+    [entidadesParaCobertura],
+  );
 
   const porTipo = useMemo(() => {
     const m = {} as Record<EntityKind, number>;
@@ -242,7 +263,10 @@ export function OperationsMap({
 
   /** Resumen para el panel flotante — la lectura de un vistazo. */
   const resumen = useMemo(() => {
-    const puestos = entities.filter((e) => e.kind === "station").length;
+    /* Sobre la MISMA foto que la cobertura: contar los puestos de `entities` y
+       los cubiertos de una cobertura de hace medio segundo mezclaría dos
+       instantes, y el porcentaje podría pasar de 100 %. */
+    const puestos = entidadesParaCobertura.filter((e) => e.kind === "station").length;
     let cubiertos = 0;
     let sinDatos = 0;
     cobertura.forEach((c) => {
@@ -260,7 +284,7 @@ export function OperationsMap({
       incidentes: porTipo.incident ?? 0,
       cubiertos, sinDatos, pct,
     };
-  }, [entities, cobertura, porTipo]);
+  }, [entidadesParaCobertura, cobertura, porTipo]);
 
   // Las capas guardadas en la cuenta ganan a la caché de este navegador.
   useEffect(() => {
