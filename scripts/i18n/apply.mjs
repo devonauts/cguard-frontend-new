@@ -81,7 +81,11 @@ if (!SECO) {
   // En los grupos fusionados a propósito (variantes de mayúsculas o puntos
   // suspensivos del mismo texto) TODAS las filas comparten clave: hay que
   // escribir la forma canónica, o el español que queda es el de la última fila.
-  for (const [arch, campo] of [['es', 'texto'], ['en', 'en'], ['pt_fixed', 'pt']]) {
+  // `pt.json` es el diccionario que carga `src/i18n.ts`. Aquí ponía
+  // `pt_fixed`, así que cada pasada escribía el portugués en un archivo que la
+  // app no lee: la clave se envolvía en `t()` y el usuario brasileño seguía
+  // viendo español. Es la misma fuga que el comentario de arriba jura evitar.
+  for (const [arch, campo] of [['es', 'texto'], ['en', 'en'], ['pt', 'pt']]) {
     const p = path.join(RAIZ, 'src/locales', `${arch}.json`);
     const d = JSON.parse(fs.readFileSync(p, 'utf8'));
     for (const r of listos) {

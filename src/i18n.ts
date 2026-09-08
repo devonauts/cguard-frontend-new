@@ -26,8 +26,11 @@ i18n.use(initReactI18next).init({
 const CARGADORES: Record<string, () => Promise<any>> = {
   en: () => import('./locales/en.json'),
   // `pt` apuntaba a `pt_fixed.json`, que estaba INCOMPLETO: 6.270 de 7.828
-  // claves. Lo que faltaba salía en español a un usuario brasileño. Ahora
-  // `pt.json` está completo y el nombre ya no arrastra el arreglo de entonces.
+  // claves. Lo que faltaba salía en español a un usuario brasileño. Ese archivo
+  // ya no existe: se quedó atrás cuando esto pasó a `pt.json` y siguió siendo
+  // lo que medía el gate de paridad y lo que escribía `scripts/i18n/apply.mjs`
+  // —una roja permanente por claves que no le faltaban a nadie, y portugués
+  // nuevo cayendo en un archivo que nadie carga—. Sólo hay un diccionario pt.
   pt: () => import('./locales/pt.json'),
   de: () => import('./locales/de.json'),
   fr: () => import('./locales/fr.json'),

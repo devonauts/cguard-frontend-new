@@ -2565,7 +2565,9 @@
       "central": "Central de monitoramento",
       "central.desc": "Central própria: quem recebe os pânicos e os alertas ao vivo.",
       "idioma": "Idioma",
-      "idioma.desc": "Em que idioma você vê o CRM. Automático ou o que você escolher."
+      "idioma.desc": "Em que idioma você vê o CRM. Automático ou o que você escolher.",
+      "api-keys": "Chaves de API",
+      "api-keys.desc": "Dá a um sistema externo (por exemplo, o conector da folha de pagamento) acesso somente leitura aos seus trabalhadores e horas."
     },
     "section": {
       "apps_y_portales": "Apps e portais",
@@ -3168,7 +3170,16 @@
       "timezoneTruthEmphasis": "única fonte de verdade",
       "timezoneTruthSuffix": " para os horários: determina como turnos, registros e relatórios são exibidos e calculados — para todos (administradores e vigilantes), independentemente do fuso do dispositivo.",
       "saveAdminOnlyTitle": "Apenas administradores podem salvar alterações",
-      "saveBtn": "Salvar"
+      "saveBtn": "Salvar",
+      "taxIdGenericLabel": "Identificação fiscal",
+      "taxIdPlaceholder": "{{doc}} da empresa",
+      "taxIdInvalid": "O {{doc}} não tem um formato válido. {{ayuda}}",
+      "taxIdHintMX": "12 caracteres (empresa) ou 13 (pessoa física): letras, data e homoclave.",
+      "taxIdHintCO": "De 8 a 10 dígitos, com dígito verificador opcional.",
+      "taxIdHintPE": "11 dígitos que começam por 10, 15, 17 ou 20.",
+      "taxIdHintGeneric": "Entre 5 e 20 letras ou números.",
+      "timezoneEmpty": "Nenhum fuso corresponde a essa busca.",
+      "tzFromDevice": "Foi aplicado o fuso horário deste equipamento: {{tz}}. Se a sua empresa opera em outro, escolha-o na lista."
     },
     "security": {
       "loadError": "Não foi possível carregar a política de segurança.",
@@ -5029,7 +5040,14 @@
       "extraAccessRole": "Função (ex.: responsável)",
       "extraAccessRelation": "Relação (ex.: filho)",
       "extraAccessDefaultRole": "Pessoa responsável",
-      "extraAccessRemove": "Remover"
+      "extraAccessRemove": "Remover",
+      "taxIdOf": "{{documento}} da empresa",
+      "taxIdGeneric": "Identificação fiscal da empresa",
+      "personIdGeneric": "Documento de identidade",
+      "personNaturalNamed": "Pessoa física ({{documento}})",
+      "personNaturalGeneric": "Pessoa física",
+      "personJuridicaNamed": "Pessoa jurídica ({{documento}})",
+      "personJuridicaGeneric": "Empresa"
     },
     "notes": {
       "Added By": "Adicionado por",
@@ -5107,7 +5125,9 @@
       "cedula_invalid": "Cédula inválida",
       "ruc_invalid": "RUC inválido (deve terminar em 001 e conter cédula válida)",
       "latitude_numeric": "A latitude deve ser numérica",
-      "longitude_numeric": "A longitude deve ser numérica"
+      "longitude_numeric": "A longitude deve ser numérica",
+      "document_invalid_named": "{{documento}} inválido",
+      "document_invalid": "Identificação inválida"
     },
     "clientCreatedSiteHint": "A primeira sede também foi criada com estes dados. Falta configurar a sua operação antes de criar postos e atribuir vigilantes.",
     "bulkPartialSuccess": "{{succeeded}} atualizados, {{failed}} com erro",
@@ -5131,7 +5151,9 @@
       "document": "Documento do representante",
       "email": "E-mail pessoal",
       "phone": "Telefone pessoal",
-      "title": "Dados do representante legal"
+      "title": "Dados do representante legal",
+      "documentNamed": "{{documento}} do representante",
+      "documentGeneric": "Documento do representante"
     },
     "newClientSubtitle": "Cadastre um novo cliente na plataforma.",
     "noChanges": "Não havia alterações para salvar",
@@ -7956,7 +7978,17 @@
       "custom": "Personalizado"
     },
     "openRondas": "Rondas do posto",
-    "openQr": "Códigos QR"
+    "openQr": "Códigos QR",
+    "shift": {
+      "label": "Turno {{code}}",
+      "D": "D",
+      "T": "T",
+      "N": "N",
+      "until": "até {{time}}",
+      "reliefSoon": "rendição {{time}}",
+      "overdue": "sem rendição desde {{time}}",
+      "vacant": "sem vigilante"
+    }
   },
   "admin": {
     "registration_title": "Cadastro de administrador"
@@ -11463,7 +11495,8 @@
       "phone": "Telefone",
       "taxNumber": "RUC / Cédula",
       "timezone": "Fuso horário",
-      "logo": "Logotipo"
+      "logo": "Logotipo",
+      "taxNumberGeneric": "Identificação fiscal"
     },
     "wizard": {
       "autoSearch": "Busca automática",

@@ -23,7 +23,14 @@ const localesDir = resolve(__dirname, '..', 'src', 'locales');
 const load = (f) => JSON.parse(readFileSync(resolve(localesDir, f), 'utf-8'));
 const es = load('es.json');
 const en = load('en.json');
-const pt = load('pt_fixed.json');
+/* EL ARCHIVO QUE SE MIDE ES EL QUE SE SIRVE.
+   Esto leía `pt_fixed.json`, y `src/i18n.ts` dejó de cargarlo hace tiempo: la
+   app sirve `pt.json`. El gate llevaba desde entonces midiendo un archivo
+   muerto — daba 1.595 claves «sin traducir» que no le faltaban a ningún
+   usuario, mientras las que SÍ faltaban en el diccionario vivo pasaban sin que
+   nadie las viera. Una paridad que mide lo que no se sirve no es una paridad,
+   y una roja permanente enseña a ignorar el CI. */
+const pt = load('pt.json');
 
 // Sub-ramas de `sidebar` que duplican un namespace top-level → claves muertas.
 const DEAD_SIDEBAR = new Set([
