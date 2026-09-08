@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import ShiftAssignModal from './ShiftAssignModal';
 import SacafrancoAssignModal from './SacafrancoAssignModal';
+import AsignacionEditModal from './AsignacionEditModal';
 import StationRoster from './StationRoster';
 import { confirmDialog } from '@/components/ui/confirmDialog';
 import { useTranslation } from 'react-i18next';
-import { Loader2, Plus, ChevronLeft, ChevronRight, User, Calendar, AlertTriangle, CheckCircle2, Sun, Moon, Trash2 } from 'lucide-react';
+import { Loader2, Plus, ChevronLeft, ChevronRight, User, Calendar, AlertTriangle, CheckCircle2, Sun, Moon, Trash2, Pencil } from 'lucide-react';
 import { ApiService } from '@/services/api/apiService';
 import { toast } from 'sonner';
 import { getTenantTimezone } from '@/utils/tenantLocation';
@@ -134,6 +135,10 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedShift, setSelectedShift] = useState<ShiftEvent | null>(null);
+  /* La asignación que se está editando. Pulsar sobre un vigilante sólo ofrecía
+     QUITARLO, así que corregirle la plaza o la fecha de inicio —la que decide
+     en qué día cae su descanso— obligaba a borrarlo y volverlo a crear. */
+  const [editandoAsignacion, setEditandoAsignacion] = useState<string | null>(null);
 
   // Assignment is handled entirely by <ShiftAssignModal/> (self-contained).
   const [showForm, setShowForm] = useState(false);
@@ -490,18 +495,33 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
   // Remove a guard from this station: end their ACTIVE rotation assignment (the
   // backend cascades and deletes future shifts). Falls back to deleting the single
   // shift for legacy shift-only rows that have no assignment.
-  const removeGuard = async (ev: ShiftEvent) => {
-    if (!(await confirmDialog({ title: 'Quitar vigilante', message: `¿Quitar a ${ev.guardName} de este puesto? Se eliminarán sus turnos en este sitio.`, confirmText: 'Quitar', tone: 'danger' }))) return;
+  /** La asignación de rotación detrás de un turno pintado, si la hay. Un «turno
+   *  único» no tiene ninguna: se creó como fila suelta, no desde una rotación. */
+  const asignacionDe = async (ev: ShiftEvent): Promise<string | null> => {
+    if (ev.raw?.guardAssignmentId) return String(ev.raw.guardAssignmentId);
     try {
-      let assignmentId: string | null = ev.raw?.guardAssignmentId || null;
-      if (!assignmentId) {
-        const res: any = await ApiService.get(
-          `/tenant/${tenantId}/guard-assignments?stationId=${encodeURIComponent(stationId)}&status=active`,
-        );
-        const list = Array.isArray(res) ? res : (res?.rows || res?.data || []);
-        const match = list.find((a: any) => String(a.guardId) === String(ev.guardId));
-        assignmentId = match?.id || null;
-      }
+      const res: any = await ApiService.get(
+        `/tenant/${tenantId}/guard-assignments?stationId=${encodeURIComponent(stationId)}&status=active`,
+      );
+      const list = Array.isArray(res) ? res : (res?.rows || res?.data || []);
+      const match = list.find((a: any) => String(a.guardId) === String(ev.guardId));
+      return match?.id ? String(match.id) : null;
+    } catch { return null; }
+  };
+
+  const editarTurno = async (ev: ShiftEvent) => {
+    const id = await asignacionDe(ev);
+    if (!id) {
+      toast.info('Este turno no viene de una rotación: bórralo y vuelve a crearlo desde «Asignar vigilante».');
+      return;
+    }
+    setEditandoAsignacion(id);
+  };
+
+  const removeGuard = async (ev: ShiftEvent) => {
+    if (!(await confirmDialog({ title: 'Quitar vigilante', message: `¿Quitar a ${ev.guardName} de este puesto? Sus turnos futuros se anulan; los ya trabajados se conservan en el historial.`, confirmText: 'Quitar', tone: 'danger' }))) return;
+    try {
+      const assignmentId: string | null = await asignacionDe(ev);
       if (assignmentId) {
         await ApiService.delete(`/tenant/${tenantId}/guard-assignment/${encodeURIComponent(assignmentId)}`);
       } else if (ev.id) {
@@ -754,11 +774,24 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
                                 <span className="text-[9px]" style={{ color: 'var(--ink-soft)' }}>
                                   {Math.round((ev.end.getTime() - ev.start.getTime()) / (1000 * 60 * 60))}h
                                 </span>
+                                {/* Pulsar sobre el vigilante sólo dejaba QUITARLO. Corregirle
+                                    la plaza, la secuencia o la fecha de inicio —la que decide
+                                    en qué día libra— pedía borrarlo y volverlo a crear, y eso
+                                    re-fasea el puesto entero. Ahora se edita. */}
+                                <div
+                                  role="button"
+                                  tabIndex={0}
+                                  onClick={(e) => { e.stopPropagation(); void editarTurno(ev); }}
+                                  className="ml-auto inline-flex cursor-pointer items-center gap-1 rounded-md border px-2 py-0.5 text-[9px] font-semibold transition-colors"
+                                  style={{ borderColor: 'var(--hairline)', color: 'var(--ink-soft)' }}
+                                >
+                                  <Pencil size={10} /> Editar turno
+                                </div>
                                 <div
                                   role="button"
                                   tabIndex={0}
                                   onClick={(e) => { e.stopPropagation(); removeGuard(ev); }}
-                                  className="ml-auto inline-flex cursor-pointer items-center gap-1 rounded-md border px-2 py-0.5 text-[9px] font-semibold transition-colors"
+                                  className="inline-flex cursor-pointer items-center gap-1 rounded-md border px-2 py-0.5 text-[9px] font-semibold transition-colors"
                                   style={{
                                     background: 'color-mix(in oklab, var(--bad) 12%, transparent)',
                                     borderColor: 'color-mix(in oklab, var(--bad) 28%, transparent)',
@@ -803,6 +836,17 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
           stationId={stationId}
           postSiteId={postSiteId}
           presetGuardId={stationGuardId}
+        />
+
+        {/* Editar la rotación del vigilante ya asignado (plaza, secuencia, fechas) */}
+        <AsignacionEditModal
+          open={!!editandoAsignacion}
+          onClose={() => setEditandoAsignacion(null)}
+          onSaved={() => { setSelectedShift(null); loadShifts(); }}
+          tenantId={tenantId}
+          stationId={stationId}
+          assignmentId={editandoAsignacion}
+          stationRotationStyleId={(station as any)?.rotationStyleId || null}
         />
 
         {/* Sacafranco (relief) availability + assign */}

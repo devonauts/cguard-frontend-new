@@ -21,7 +21,7 @@ interface StationDetail extends Station {
 }
 
 // A scheduler position row from `/station/:id/positions`.
-interface PositionRow { id: string; type?: string; sortOrder?: number; startTime?: string | null; endTime?: string | null }
+interface PositionRow { id: string; type?: string; sortOrder?: number; startTime?: string | null; endTime?: string | null; rotationStyleId?: string | null }
 // A rotation style (patrón) — dayShifts/nightShifts/restDays define the cycle.
 interface RotationStyleRow extends RotationCycle { id: string; name?: string }
 // A raw shift row from `/shift` (only the fields this modal reads).
@@ -229,6 +229,20 @@ export default function ShiftAssignModal({ open, onClose, onSaved, station, stat
     }).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
+
+  /* ── LA PLAZA TRAE SU CICLO ───────────────────────────────────────────────
+     Al configurar el horario de la estación se le puede dar a cada plaza el
+     suyo (BIOMAR: la mañana en un ciclo y la tarde en otro). Elegir la plaza
+     aquí tiene que enseñar ESE ciclo, no «la de la estación»: si no, lo que se
+     configuró en el puesto no aparece por ninguna parte y el operador cree que
+     no se guardó. El backend hace lo mismo cuando no se le dice nada; esto sólo
+     lo pone delante para que se vea y se pueda cambiar. */
+  useEffect(() => {
+    if (!open || !selectedPositionId) return;
+    const pos = positions.find((p) => String(p.id) === String(selectedPositionId));
+    setSecuenciaPropia(pos?.rotationStyleId ? String(pos.rotationStyleId) : '');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedPositionId, positions]);
 
   // Default the puesto to the first FREE one once positions/occupancy load.
   useEffect(() => {

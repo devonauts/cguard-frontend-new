@@ -10,7 +10,7 @@ import OperationSetupAlert from './components/OperationSetup/OperationSetupAlert
 import { ApiService } from '@/services/api/apiService';
 import { Button } from '@/components/ui/button';
 import StationGeofencePolygon, { type PolyPoint } from '@/components/GoogleMap/StationGeofencePolygon';
-import RotationStyleSelect from '@/components/schedule/RotationStyleSelect';
+import RotacionDeLaEstacion from '@/components/schedule/RotacionDeLaEstacion';
 import { etiquetaPrimerTramo, etiquetaSegundoTramo } from '@/components/schedule/tramos';
 import { PageContainer, PageHeader } from '@/components/kit';
 import { FIELD_CLS_LG } from '@/pages/admin/clientes/components/_shared/tab-kit';
@@ -139,6 +139,9 @@ export default function AddStationPage() {
   // e.g. 24x24 = trabaja 1 / descansa 1 con 2 fijos, sin sacafranco).
   const [restCoverage, setRestCoverage] = useState<'sacafranco' | 'alternate'>('sacafranco');
   const [rotStyle, setRotStyle] = useState<{ dayShifts: number; nightShifts: number; restDays: number } | null>(null);
+  /* El ciclo de CADA plaza cuando la rotación es individual. `null` = compartida
+     (un solo ciclo para todo el puesto), que es el caso normal y el defecto. */
+  const [estilosPorPlaza, setEstilosPorPlaza] = useState<string[] | null>(null);
 
   const customWindowMin = turnoType === 'custom' ? windowMinutes(startingTimeInDay, finishTimeInDay) : 0;
   const customBlockMin = Number(blockHours) > 0 ? Number(blockHours) * 60 : 0;
@@ -271,6 +274,9 @@ export default function AddStationPage() {
               endTime: finishTimeInDay || undefined,
               blockHours: turnoType === 'custom' && blockHours ? Number(blockHours) : undefined,
               restCoverage: turnoType === 'custom' ? restCoverage : undefined,
+              // Rotación individual: un ciclo por plaza, en orden de plaza.
+              // Ausente = compartida, que es como se comportaba siempre.
+              positionRotationStyleIds: estilosPorPlaza || undefined,
             },
           });
         } catch (cfgErr: any) {
@@ -389,14 +395,21 @@ export default function AddStationPage() {
               {/* Patrón de rotación — chosen here at the station; assigned guards inherit it. */}
               {turnoType && (
                 <div className="glass-sunken p-3">
-                  <RotationStyleSelect
-                    scheduleType={turnoToScheduleType(turnoType)}
+                  <RotacionDeLaEstacion
+                    tenantId={site?.tenantId || localStorage.getItem('tenantId') || ''}
+                    entrada={{
+                      scheduleType: turnoToScheduleType(turnoType),
+                      inicio: startingTimeInDay,
+                      fin: finishTimeInDay,
+                      ciclo: rotStyle,
+                      blockHours: turnoType === 'custom' && blockHours ? Number(blockHours) : undefined,
+                      restCoverage: turnoType === 'custom' ? restCoverage : undefined,
+                    }}
                     value={rotationStyleId}
                     onChange={setRotationStyleId}
                     onStyleChange={setRotStyle}
-                    /* Con la cobertura partida en bloques el ciclo tiene DOS tramos
-                       que repartir (mañana y tarde), no sólo «trabaja / descansa». */
-                    bloques={turnoType === 'custom' ? customBlockCount : 1}
+                    porPlaza={estilosPorPlaza}
+                    onPorPlazaChange={setEstilosPorPlaza}
                     etiquetaPrimerBloque={primerTramo}
                     etiquetaSegundoBloque={segundoTramo}
                   />

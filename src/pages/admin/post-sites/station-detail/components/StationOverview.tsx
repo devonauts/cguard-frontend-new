@@ -8,7 +8,7 @@ import { ApiService } from '@/services/api/apiService';
 import { toast } from 'sonner';
 import { confirmDialog } from '@/components/ui/confirmDialog';
 import StationGeofencePolygon, { type PolyPoint } from '@/components/GoogleMap/StationGeofencePolygon';
-import RotationStyleSelect from '@/components/schedule/RotationStyleSelect';
+import RotacionDeLaEstacion from '@/components/schedule/RotacionDeLaEstacion';
 import { etiquetaPrimerTramo, etiquetaSegundoTramo } from '@/components/schedule/tramos';
 import { reverseGeocode } from '@/lib/geocodeClient';
 import { Section, StatCard, Stagger } from '@/components/kit';
@@ -104,6 +104,8 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
   const alternateOk = restCoverage !== 'alternate' || (rotWork > 0 && rotCycle % rotWork === 0);
   const guardsPerBlock = restCoverage === 'alternate' && alternateOk && rotWork > 0 ? rotCycle / rotWork : 1;
   const [rotationStyleId, setRotationStyleId] = useState('');
+  /* Un ciclo por plaza cuando la rotación es individual; `null` = compartida. */
+  const [estilosPorPlaza, setEstilosPorPlaza] = useState<string[] | null>(null);
   const [savingHorario, setSavingHorario] = useState(false);
 
   // Station LOCATION (coordinates the clock-in geofence uses). Editable here —
@@ -182,6 +184,30 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
     setPolygon(Array.isArray(station.geofencePolygon) ? station.geofencePolygon : []);
   }, [station]);
 
+  /* ── LO QUE YA ESTÁ CONFIGURADO POR PLAZA ────────────────────────────────
+     Sin esto, abrir el horario de una estación que corre rotación individual la
+     enseñaba como si fuera compartida, y pulsar «Actualizar horario» por
+     cualquier otro motivo —cambiar la hora, por ejemplo— la habría devuelto a
+     un solo ciclo sin avisar. Se leen las plazas y se rehidrata el modo. */
+  useEffect(() => {
+    if (!stationId) return;
+    let vivo = true;
+    (async () => {
+      try {
+        const tenantId = localStorage.getItem('tenantId') || '';
+        const res: any = await ApiService.get(`/tenant/${tenantId}/station/${stationId}/positions`);
+        const filas = (Array.isArray(res) ? res : (res?.rows ?? []))
+          .filter((p: any) => (p.type || 'fijo') !== 'sacafranco')
+          .sort((a: any, b: any) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+        if (!vivo) return;
+        setEstilosPorPlaza(filas.some((p: any) => p.rotationStyleId)
+          ? filas.map((p: any) => String(p.rotationStyleId || ''))
+          : null);
+      } catch { /* se queda en compartida, que es el defecto */ }
+    })();
+    return () => { vivo = false; };
+  }, [stationId]);
+
   if (!station) {
     return <div className="text-muted-foreground text-sm">{t("ui.StationOverview.noHayInformacionDelPuesto", "No hay información del puesto")}</div>;
   }
@@ -234,7 +260,11 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
     const unchangedType = scheduleType === currentType;
     const unchangedCustom = turno !== 'custom'
       || (!blockHours && restCoverage === 'sacafranco' && customStart === (station.startingTimeInDay || '') && customEnd === (station.finishTimeInDay || ''));
-    const unchangedRotation = (rotationStyleId || '') === (station.rotationStyleId || '');
+    const unchangedRotation = (rotationStyleId || '') === (station.rotationStyleId || '')
+      // Elegir rotación individual no toca `rotationStyleId` —el ciclo va por
+      // plaza—, así que sin esto el atajo de «no cambió nada» se tragaba el
+      // cambio entero y el botón no hacía absolutamente nada.
+      && !estilosPorPlaza;
     if (unchangedType && unchangedCustom && unchangedRotation) { toast.info(t('ui.StationOverview.elHorarioNoCambio')); return; }
     if (!(await confirmDialog({ message: 'Cambiar el horario reconfigura los puestos del turno. Si hay vigilantes asignados a esta estación, deberán reasignarse. ¿Continuar?', confirmText: 'Continuar' }))) return;
     setSavingHorario(true);
@@ -248,6 +278,9 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
           endTime: turno === 'custom' ? customEnd : undefined,
           blockHours: turno === 'custom' && blockHours ? Number(blockHours) : undefined,
           restCoverage: turno === 'custom' ? restCoverage : undefined,
+          // Rotación individual: un ciclo por plaza, en orden de plaza. Ausente
+          // = compartida, y las plazas conservan el que ya tuvieran.
+          positionRotationStyleIds: estilosPorPlaza || undefined,
         },
       });
       toast.success(t('ui.StationOverview.horarioActualizadoLosPuestosDel'));
@@ -559,14 +592,21 @@ export default function StationOverview({ station, stationId, postSiteId }: Prop
             </div>
           )}
           {turno && (
-            <RotationStyleSelect
-              scheduleType={turnoToScheduleType(turno)}
+            <RotacionDeLaEstacion
+              tenantId={localStorage.getItem('tenantId') || ''}
+              entrada={{
+                scheduleType: turnoToScheduleType(turno),
+                inicio: turno === 'custom' ? customStart : (station.startingTimeInDay || ''),
+                fin: turno === 'custom' ? customEnd : (station.finishTimeInDay || ''),
+                ciclo: rotStyle,
+                blockHours: turno === 'custom' && blockHours ? Number(blockHours) : undefined,
+                restCoverage: turno === 'custom' ? restCoverage : undefined,
+              }}
               value={rotationStyleId}
               onChange={setRotationStyleId}
               onStyleChange={setRotStyle}
-              /* Con la cobertura partida en bloques, el ciclo tiene DOS tramos que
-                 repartir (mañana y tarde) — no sólo «trabaja / descansa». */
-              bloques={turno === 'custom' ? blockCount : 1}
+              porPlaza={estilosPorPlaza}
+              onPorPlazaChange={setEstilosPorPlaza}
               etiquetaPrimerBloque={primerTramo}
               etiquetaSegundoBloque={segundoTramo}
             />

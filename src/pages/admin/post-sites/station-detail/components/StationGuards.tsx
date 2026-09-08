@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Loader2, UserPlus, Users, Repeat, Shield, RefreshCw, Trash2 } from 'lucide-react';
+import { Loader2, UserPlus, Users, Repeat, Shield, RefreshCw, Trash2, Pencil } from 'lucide-react';
 import { toast } from 'sonner';
 import { confirmDialog } from '@/components/ui/confirmDialog';
 import { ApiService } from '@/services/api/apiService';
@@ -8,6 +8,7 @@ import { Section, EmptyState, SkeletonCards, StatusBadge, Modal } from '@/compon
 import { FIELD_CLS_LG, LabeledField } from '@/pages/admin/clientes/components/_shared/tab-kit';
 import { Button } from '@/components/ui/button';
 import ShiftAssignModal from './ShiftAssignModal';
+import AsignacionEditModal from './AsignacionEditModal';
 import { localToday } from '@/lib/utils';
 import type { Station } from '@/types';
 
@@ -89,6 +90,9 @@ export default function StationGuards({ station, stationId, postSiteId }: Props)
   const { t } = useTranslation();
   const tenantId = (station?.tenantId || localStorage.getItem('tenantId') || '') as string;
   const [showShiftModal, setShowShiftModal] = useState(false);
+  /* Qué asignación se está editando. «Cambiar» releva a la PERSONA; esto edita
+     el TURNO —plaza, secuencia, fechas— sin tocar quién lo ocupa. */
+  const [editando, setEditando] = useState<string | null>(null);
 
   const [rows, setRows] = useState<Assignment[]>([]);
   const [positions, setPositions] = useState<PositionRow[]>([]);
@@ -417,6 +421,11 @@ export default function StationGuards({ station, stationId, postSiteId }: Props)
                   <div className="text-xs text-muted-foreground">{a.positionName}</div>
                   <CoverageStrip work={a.workDays} type={a.type} />
                 </div>
+                {a.assignmentId && (
+                  <button onClick={() => setEditando(a.assignmentId)} className="inline-flex shrink-0 items-center gap-1 rounded-md border border-border px-2.5 py-1.5 text-xs font-medium hover:bg-muted/40" title="Editar el turno (plaza, secuencia, fechas)">
+                    <Pencil size={13} /> {t('station.guards.editShift', 'Editar turno')}
+                  </button>
+                )}
                 <button onClick={() => openChange(a)} className="inline-flex shrink-0 items-center gap-1 rounded-md border border-border px-2.5 py-1.5 text-xs font-medium hover:bg-muted/40" title={t('station.guards.change', 'Cambiar')}>
                   <RefreshCw size={13} /> {t('station.guards.change', 'Cambiar')}
                 </button>
@@ -482,6 +491,16 @@ export default function StationGuards({ station, stationId, postSiteId }: Props)
               )}
         </div>
       </Modal>
+
+      <AsignacionEditModal
+        open={!!editando}
+        onClose={() => setEditando(null)}
+        onSaved={() => { load(); try { window.dispatchEvent(new CustomEvent('assignments:changed')); } catch { /* noop */ } }}
+        tenantId={tenantId}
+        stationId={stationId}
+        assignmentId={editando}
+        stationRotationStyleId={station?.rotationStyleId || null}
+      />
 
       <ShiftAssignModal
         open={showShiftModal}
