@@ -2,14 +2,21 @@ import { useEffect, useMemo, useState, useRef } from "react";
 import { FIELD_CLS_LG } from './components/_shared/tab-kit';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { clientSchema, type ClientInput } from "@/lib/validators/client";
+import { crearEsquemaCliente, type ClientInput } from "@/lib/validators/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { clientService } from "@/lib/api/clientService";
 import { categoryService } from "@/lib/api/categoryService";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslation } from "react-i18next";
-import { validateCedulaOrRuc } from '@/lib/validators/id';
+import {
+    taxIdLabelFor,
+    taxIdHintFor,
+    personIdLabelFor,
+    validateTaxNumberForCountry,
+    validatePersonIdForCountry,
+} from '@/lib/validators/id';
+import { usePaisDeLaEmpresa } from '@/hooks/usePaisDeLaEmpresa';
 import AddressAutocomplete, { AddressComponents } from "@/components/maps/AddressAutocomplete";
 import { toastOnce } from '@/lib/toastOnce';
 import { getTenantCountry } from "@/utils/tenantLocation";
@@ -109,8 +116,12 @@ export default function ClientForm({
 
     type FormValues = ClientInput & { personType?: 'PN' | 'PJ'; documentNumber?: string };
 
+    // El país de la empresa es la vara por defecto: decide qué documento se pide
+    // y cómo se llama mientras el cliente no tenga dirección escrita.
+    const paisDeLaEmpresa = usePaisDeLaEmpresa();
+
     const form = useForm<FormValues>({
-        resolver: zodResolver(clientSchema as any),
+        resolver: zodResolver(crearEsquemaCliente(paisDeLaEmpresa) as any),
         defaultValues: {
             name: "",
             lastName: "",
@@ -145,6 +156,43 @@ export default function ClientForm({
     });
 
     const personType = form.watch('personType') || 'PN';
+
+    // ── El país con el que se mide la identificación ─────────────────────────
+    // El del propio cliente en cuanto lo escribe; hasta entonces, el de la
+    // empresa. La dirección va DEBAJO del documento en el formulario, así que
+    // sin el segundo el campo se validaría a ciegas justo cuando se rellena.
+    const paisDelCliente = (form.watch('country') as string) || paisDeLaEmpresa;
+
+    // Cómo se llama ahí el documento que toca —«NIP», «RFC», «Codice Fiscale»—
+    // y un ejemplo de su forma. Si no conocemos el país, la etiqueta genérica
+    // traducida: nunca «RUC» por descarte, que es lo que hacía antes.
+    const nombreDelDocumento = personType === 'PJ'
+        ? taxIdLabelFor(paisDelCliente)
+        : personIdLabelFor(paisDelCliente);
+    const etiquetaDocumento = nombreDelDocumento
+        ? (personType === 'PJ'
+            ? t('clients.form.taxIdOf', { documento: nombreDelDocumento, defaultValue: '{{documento}} de la empresa' })
+            : nombreDelDocumento)
+        : (personType === 'PJ'
+            ? t('clients.form.taxIdGeneric', 'Identificador fiscal de la empresa')
+            : t('clients.form.personIdGeneric', 'Documento de identidad'));
+    const ejemploDelDocumento = personType === 'PJ' ? taxIdHintFor(paisDelCliente) : null;
+
+    /** Comprueba el documento con la regla del país, al salir del campo. */
+    const revisarDocumento = (valor: unknown) => {
+        const v = (valor ?? '').toString().trim();
+        if (!v) return;
+        const valido = personType === 'PJ'
+            ? validateTaxNumberForCountry(v, paisDelCliente)
+            : validatePersonIdForCountry(v, paisDelCliente);
+        if (valido) { form.clearErrors('documentNumber'); return; }
+        form.setError('documentNumber', {
+            type: 'manual',
+            message: nombreDelDocumento
+                ? t('clients.validation.document_invalid_named', { documento: nombreDelDocumento, defaultValue: '{{documento}} inválido' })
+                : t('clients.validation.document_invalid', 'Identificación inválida'),
+        });
+    };
 
     // Additional people who ALSO get access to the client app. PJ: persona
     // encargada (CEO + ops). PN: family/others (hijo, madre…). The PRIMARY access
@@ -495,8 +543,19 @@ export default function ClientForm({
                                                         <SelectValue />
                                                     </SelectTrigger>
                                                     <SelectContent>
-                                                        <SelectItem value="PN">{t('clients.form.personNatural', 'Persona natural (Cédula)')}</SelectItem>
-                                                        <SelectItem value="PJ">{t('clients.form.personJuridica', 'Persona jurídica (RUC)')}</SelectItem>
+                                                        {/* El nombre del documento sale del país: «Persona natural
+                                                            (Cédula)» en Quito, «(PESEL)» en Varsovia, y sin paréntesis
+                                                            donde no lo sepamos. */}
+                                                        <SelectItem value="PN">
+                                                            {personIdLabelFor(paisDelCliente)
+                                                                ? t('clients.form.personNaturalNamed', { documento: personIdLabelFor(paisDelCliente), defaultValue: 'Persona natural ({{documento}})' })
+                                                                : t('clients.form.personNaturalGeneric', 'Persona natural')}
+                                                        </SelectItem>
+                                                        <SelectItem value="PJ">
+                                                            {taxIdLabelFor(paisDelCliente)
+                                                                ? t('clients.form.personJuridicaNamed', { documento: taxIdLabelFor(paisDelCliente), defaultValue: 'Persona jurídica ({{documento}})' })
+                                                                : t('clients.form.personJuridicaGeneric', 'Empresa')}
+                                                        </SelectItem>
                                                     </SelectContent>
                                                 </Select>
                                             </FormControl>
@@ -510,25 +569,24 @@ export default function ClientForm({
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">
-                                                {personType === 'PJ' ? t('clients.form.ruc', 'RUC de la empresa') : t('clients.form.cedula', 'Cédula')} <span className="brand-text">*</span>
+                                                {etiquetaDocumento} <span className="brand-text">*</span>
                                             </FormLabel>
                                             <FormControl>
                                                 <input
                                                     className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm disabled:opacity-50"
                                                     {...field}
                                                     value={typeof field.value === 'string' ? field.value : ''}
-                                                    maxLength={personType === 'PJ' ? 13 : 10}
-                                                    onChange={(e) => field.onChange((e.target.value || '').replace(/\D/g, ''))}
-                                                    onBlur={() => {
-                                                        const digits = (field.value || '').toString().replace(/\D/g, '');
-                                                        if (personType === 'PN') {
-                                                            if (digits.length !== 10 || !validateCedulaOrRuc(digits)) form.setError('documentNumber', { type: 'manual', message: t('clients.validation.cedula_invalid') });
-                                                            else form.clearErrors('documentNumber');
-                                                        } else {
-                                                            if (digits.length !== 13 || !validateCedulaOrRuc(digits)) form.setError('documentNumber', { type: 'manual', message: t('clients.validation.ruc_invalid') });
-                                                            else form.clearErrors('documentNumber');
-                                                        }
-                                                    }}
+                                                    placeholder={ejemploDelDocumento || undefined}
+                                                    /* Media docena de países llevan LETRAS en el identificador
+                                                       —RFC mexicano, CIF español, codice fiscale, IVA europeo con
+                                                       prefijo— y aquí se borraban según se tecleaban: el campo
+                                                       hacía `replace(/\D/g,'')`. Ahora sólo se limpia lo que
+                                                       nadie quiere (símbolos raros) y se respeta el resto. */
+                                                    maxLength={30}
+                                                    onChange={(e) => field.onChange(
+                                                        (e.target.value || '').replace(/[^\p{L}\p{N}\-./ ]/gu, '').toUpperCase(),
+                                                    )}
+                                                    onBlur={() => revisarDocumento(field.value)}
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -618,8 +676,16 @@ export default function ClientForm({
                                 {personType === 'PJ' && (
                                   <FormField<ClientInput> control={form.control} name={"legalRepDocument" as any} render={({ field }) => (
                                     <FormItem>
-                                      <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">{t('clients.legalRep.document', 'Cédula del representante')} <span className="brand-text">*</span></FormLabel>
-                                      <FormControl><input inputMode="numeric" maxLength={10} className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm" {...field} value={typeof field.value === 'string' ? field.value : ''} onChange={(e) => field.onChange((e.target.value || '').replace(/\D/g, ''))} /></FormControl>
+                                      <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">
+                                        {personIdLabelFor(paisDelCliente)
+                                          ? t('clients.legalRep.documentNamed', { documento: personIdLabelFor(paisDelCliente), defaultValue: '{{documento}} del representante' })
+                                          : t('clients.legalRep.documentGeneric', 'Documento del representante')} <span className="brand-text">*</span>
+                                      </FormLabel>
+                                      {/* Sin `inputMode="numeric"` ni el filtro de dígitos: el documento de
+                                          una persona lleva letras en media Europa (DNI español, codice
+                                          fiscale, Personalausweis) y el teclado numérico del móvil ni
+                                          siquiera dejaba escribirlas. */}
+                                      <FormControl><input maxLength={30} className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm" {...field} value={typeof field.value === 'string' ? field.value : ''} onChange={(e) => field.onChange((e.target.value || '').replace(/[^\p{L}\p{N}\-./ ]/gu, '').toUpperCase())} /></FormControl>
                                       <FormMessage />
                                     </FormItem>
                                   )} />

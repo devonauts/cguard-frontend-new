@@ -514,7 +514,14 @@
       "extraAccessRole": "Stanowisko (np. kierownik obiektu)",
       "extraAccessRelation": "Relacja (np. dziecko)",
       "extraAccessDefaultRole": "Osoba odpowiedzialna",
-      "extraAccessRemove": "Usuń"
+      "extraAccessRemove": "Usuń",
+      "taxIdOf": "{{documento}} firmy",
+      "taxIdGeneric": "Identyfikator podatkowy firmy",
+      "personIdGeneric": "Dokument tożsamości",
+      "personNaturalNamed": "Osoba fizyczna ({{documento}})",
+      "personNaturalGeneric": "Osoba fizyczna",
+      "personJuridicaNamed": "Osoba prawna ({{documento}})",
+      "personJuridicaGeneric": "Firma"
     },
     "nav": {
       "clientPortal": "Portal zleceniodawcy",
@@ -629,7 +636,9 @@
       "cedula_invalid": "Nieprawidłowy numer dowodu",
       "ruc_invalid": "Nieprawidłowy NIP (musi kończyć się na 001 i zawierać poprawny numer dowodu)",
       "latitude_numeric": "Szerokość geograficzna musi być liczbą",
-      "longitude_numeric": "Długość geograficzna musi być liczbą"
+      "longitude_numeric": "Długość geograficzna musi być liczbą",
+      "document_invalid_named": "Nieprawidłowy {{documento}}",
+      "document_invalid": "Nieprawidłowy identyfikator"
     },
     "alerts": {
       "archiveClients": {
@@ -760,7 +769,9 @@
       "document": "Numer dowodu reprezentanta",
       "email": "Prywatny adres e-mail",
       "phone": "Prywatny telefon",
-      "title": "Dane reprezentanta prawnego"
+      "title": "Dane reprezentanta prawnego",
+      "documentNamed": "{{documento}} reprezentanta",
+      "documentGeneric": "Dokument reprezentanta"
     },
     "newClientSubtitle": "Zarejestruj nowego zleceniodawcę na platformie.",
     "noChanges": "Nie było zmian do zapisania",
@@ -11793,7 +11804,7 @@
     },
     "client": {
       "addressRequired": "Adres jest wymagany",
-      "documentRequired": "RUC / nr dowodu jest wymagany",
+      "documentRequired": "Identyfikator jest wymagany",
       "emailRequired": "Adres e-mail jest wymagany",
       "latitudeRange": "Szerokość geograficzna musi mieścić się w zakresie od -90 do 90",
       "longitudeRange": "Długość geograficzna musi mieścić się w zakresie od -180 do 180",

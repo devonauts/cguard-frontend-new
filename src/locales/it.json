@@ -514,7 +514,14 @@
       "extraAccessRole": "Ruolo (es. responsabile)",
       "extraAccessRelation": "Relazione (es. figlio)",
       "extraAccessDefaultRole": "Persona responsabile",
-      "extraAccessRemove": "Rimuovi"
+      "extraAccessRemove": "Rimuovi",
+      "taxIdOf": "{{documento}} dell'azienda",
+      "taxIdGeneric": "Identificativo fiscale dell'azienda",
+      "personIdGeneric": "Documento d'identità",
+      "personNaturalNamed": "Persona fisica ({{documento}})",
+      "personNaturalGeneric": "Persona fisica",
+      "personJuridicaNamed": "Persona giuridica ({{documento}})",
+      "personJuridicaGeneric": "Azienda"
     },
     "nav": {
       "clientPortal": "Portale del committente",
@@ -629,7 +636,9 @@
       "cedula_invalid": "Documento non valido",
       "ruc_invalid": "P. IVA non valida (deve terminare con 001 e contenere un documento valido)",
       "latitude_numeric": "La latitudine deve essere numerica",
-      "longitude_numeric": "La longitudine deve essere numerica"
+      "longitude_numeric": "La longitudine deve essere numerica",
+      "document_invalid_named": "{{documento}} non valido",
+      "document_invalid": "Identificativo non valido"
     },
     "alerts": {
       "archiveClients": {
@@ -760,7 +769,9 @@
       "document": "Documento del rappresentante",
       "email": "Email personale",
       "phone": "Telefono personale",
-      "title": "Dati del rappresentante legale"
+      "title": "Dati del rappresentante legale",
+      "documentNamed": "{{documento}} del rappresentante",
+      "documentGeneric": "Documento del rappresentante"
     },
     "newClientSubtitle": "Registra un nuovo committente sulla piattaforma.",
     "noChanges": "Non ci sono state modifiche da salvare",

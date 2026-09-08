@@ -1,6 +1,12 @@
 import { z } from "zod";
 import i18n from "@/i18n";
-import { validateCedulaOrRuc } from "./id";
+import {
+    resolveCountryCode,
+    taxIdLabelFor,
+    personIdLabelFor,
+    validateTaxNumberForCountry,
+    validatePersonIdForCountry,
+} from "./id";
 
 // Este esquema vive en el módulo: un t() suelto aquí se evaluaría al cargar y
 // congelaría el idioma de arranque. Por eso el texto se resuelve TARDE — dentro
@@ -13,7 +19,27 @@ const maxChars = (n: number) => ({
     error: () => i18n.t("validation.postSite.maxChars", { n, defaultValue: "Máximo {{n}} caracteres" }),
 });
 
-export const clientSchema = z
+/**
+ * El esquema del alta de cliente, medido con la vara del país.
+ *
+ * ── POR QUÉ ES UNA FÁBRICA Y NO UNA CONSTANTE ──────────────────────────────
+ * Hasta hoy era una constante y validaba SIEMPRE con la regla ecuatoriana:
+ * persona natural = cédula de 10 dígitos con módulo 10, persona jurídica = RUC
+ * de 13. La plataforma opera en Estados Unidos, América Latina y Europa, así
+ * que eso significaba que una agencia polaca veía la etiqueta «NIP firmy»,
+ * escribía su NIP de diez dígitos y recibía «RUC inválido (debe terminar en
+ * 001…)». El formulario era imposible de enviar fuera de Ecuador — y el backend
+ * no tenía nada que ver: `lib/validators/taxId.ts` ya validaba por país desde
+ * agosto. El bloqueo era enteramente de esta pantalla.
+ *
+ * ── DE DÓNDE SALE EL PAÍS ──────────────────────────────────────────────────
+ * Del propio cliente (`data.country`, que está en la sección de dirección) y,
+ * mientras esté vacío —el documento se teclea ANTES que la dirección—, del país
+ * de la empresa que da el alta, que es el que la fábrica recibe. Si no hay
+ * ninguno de los dos, se aplica la comprobación genérica de sensatez: ante la
+ * duda se acepta, que es la regla del resto de validadores.
+ */
+export const crearEsquemaCliente = (paisDeLaEmpresa?: string) => z
     .object({
     name: z
         .string()
@@ -148,25 +174,50 @@ export const clientSchema = z
 .superRefine((data, ctx) => {
     const personType = data.personType || 'PN';
     const doc = (data.documentNumber || '').toString().trim();
+    // El país del cliente manda; mientras no esté escrito, el de la empresa.
+    const pais = (data.country || '').toString().trim() || paisDeLaEmpresa || '';
+
     if (!doc) {
         // Aquí ya estamos DENTRO de la validación: i18n.t() directo es correcto,
         // se resuelve con el idioma vivo.
-        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['documentNumber'], message: i18n.t('validation.client.documentRequired', 'RUC/Cédula requerido') });
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['documentNumber'],
+            message: i18n.t('validation.client.documentRequired', 'Identificación requerida'),
+        });
         return;
     }
 
-    const digits = doc.replace(/\D/g, '');
-    if (personType === 'PN') {
-        // Persona natural: debe ser una cédula válida de 10 dígitos
-        if (!validateCedulaOrRuc(digits) || digits.length !== 10) {
-            ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['documentNumber'], message: i18n.t('clients.validation.cedula_invalid', 'Cédula inválida') });
-        }
-    } else if (personType === 'PJ') {
-        // Persona jurídica: RUC de 13 dígitos que termina en 001 y cuyos primeros 10 conforman una cédula válida
-        if (!validateCedulaOrRuc(digits) || digits.length !== 13) {
-            ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['documentNumber'], message: i18n.t('clients.validation.ruc_invalid', 'RUC inválido (debe terminar en 001 y contener cédula válida)') });
-        }
+    // El nombre del documento en ESE país entra en el mensaje: «NIP inválido»
+    // le dice algo a un polaco; «RUC inválido», nada.
+    const nombre = personType === 'PJ' ? taxIdLabelFor(pais) : personIdLabelFor(pais);
+    const valido = personType === 'PJ'
+        ? validateTaxNumberForCountry(doc, pais)
+        : validatePersonIdForCountry(doc, pais);
+
+    if (!valido) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['documentNumber'],
+            message: nombre
+                ? i18n.t('clients.validation.document_invalid_named', {
+                      documento: nombre,
+                      defaultValue: '{{documento}} inválido',
+                  })
+                : i18n.t('clients.validation.document_invalid', 'Identificación inválida'),
+        });
     }
 });
+
+/**
+ * El esquema sin país, para quien sólo necesita el TIPO. Deriva de la fábrica
+ * para que no puedan separarse: un segundo esquema copiado a mano es
+ * exactamente cómo el frontend y el backend acabaron discrepando.
+ */
+export const clientSchema = crearEsquemaCliente();
+
+/** Países cuyo `resolveCountryCode` reconocemos, por si la pantalla quiere
+ *  saber si puede prometer una forma concreta o tiene que hablar en genérico. */
+export const paisReconocido = (pais?: string) => resolveCountryCode(pais) !== null;
 
 export type ClientInput = z.infer<typeof clientSchema>;

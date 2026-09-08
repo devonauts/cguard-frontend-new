@@ -514,7 +514,14 @@
       "extraAccessRole": "Fonction (ex. : responsable)",
       "extraAccessRelation": "Lien (ex. : enfant)",
       "extraAccessDefaultRole": "Personne responsable",
-      "extraAccessRemove": "Retirer"
+      "extraAccessRemove": "Retirer",
+      "taxIdOf": "{{documento}} de l'entreprise",
+      "taxIdGeneric": "Identifiant fiscal de l'entreprise",
+      "personIdGeneric": "Pièce d'identité",
+      "personNaturalNamed": "Personne physique ({{documento}})",
+      "personNaturalGeneric": "Personne physique",
+      "personJuridicaNamed": "Personne morale ({{documento}})",
+      "personJuridicaGeneric": "Entreprise"
     },
     "nav": {
       "clientPortal": "Portail client",
@@ -629,7 +636,9 @@
       "cedula_invalid": "Pièce d'identité non valide",
       "ruc_invalid": "RUC non valide (il doit se terminer par 001 et contenir une pièce d'identité valide)",
       "latitude_numeric": "La latitude doit être numérique",
-      "longitude_numeric": "La longitude doit être numérique"
+      "longitude_numeric": "La longitude doit être numérique",
+      "document_invalid_named": "{{documento}} non valide",
+      "document_invalid": "Identification non valide"
     },
     "alerts": {
       "archiveClients": {
@@ -760,7 +769,9 @@
       "document": "Pièce d'identité du représentant",
       "email": "Adresse e-mail personnelle",
       "phone": "Téléphone personnel",
-      "title": "Données du représentant légal"
+      "title": "Données du représentant légal",
+      "documentNamed": "{{documento}} du représentant",
+      "documentGeneric": "Pièce d'identité du représentant"
     },
     "newClientSubtitle": "Enregistrez un nouveau client sur la plateforme.",
     "noChanges": "Aucune modification à enregistrer",

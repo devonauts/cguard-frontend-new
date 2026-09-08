@@ -514,7 +514,14 @@
       "extraAccessRole": "Funktion (z. B. Objektleitung)",
       "extraAccessRelation": "Beziehung (z. B. Kind)",
       "extraAccessDefaultRole": "Verantwortliche Person",
-      "extraAccessRemove": "Entfernen"
+      "extraAccessRemove": "Entfernen",
+      "taxIdOf": "{{documento}} des Unternehmens",
+      "taxIdGeneric": "Steuerliche Identifikation des Unternehmens",
+      "personIdGeneric": "Ausweisdokument",
+      "personNaturalNamed": "Natürliche Person ({{documento}})",
+      "personNaturalGeneric": "Natürliche Person",
+      "personJuridicaNamed": "Juristische Person ({{documento}})",
+      "personJuridicaGeneric": "Unternehmen"
     },
     "nav": {
       "clientPortal": "Auftraggeberportal",
@@ -629,7 +636,9 @@
       "cedula_invalid": "Ungültige Ausweisnummer",
       "ruc_invalid": "Ungültige RUC (muss auf 001 enden und eine gültige Ausweisnummer enthalten)",
       "latitude_numeric": "Der Breitengrad muss eine Zahl sein",
-      "longitude_numeric": "Der Längengrad muss eine Zahl sein"
+      "longitude_numeric": "Der Längengrad muss eine Zahl sein",
+      "document_invalid_named": "{{documento}} ungültig",
+      "document_invalid": "Ungültige Identifikation"
     },
     "alerts": {
       "archiveClients": {
@@ -760,7 +769,9 @@
       "document": "Ausweisnummer der vertretenden Person",
       "email": "Persönliche E-Mail-Adresse",
       "phone": "Persönliches Telefon",
-      "title": "Angaben zur gesetzlichen Vertretung"
+      "title": "Angaben zur gesetzlichen Vertretung",
+      "documentNamed": "{{documento}} des Vertreters",
+      "documentGeneric": "Ausweis des Vertreters"
     },
     "newClientSubtitle": "Registrieren Sie einen neuen Auftraggeber auf der Plattform.",
     "noChanges": "Es gab keine Änderungen zum Speichern",

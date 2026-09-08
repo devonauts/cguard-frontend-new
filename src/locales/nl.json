@@ -514,7 +514,14 @@
       "extraAccessRole": "Functie (bijv. objectleider)",
       "extraAccessRelation": "Relatie (bijv. kind)",
       "extraAccessDefaultRole": "Verantwoordelijke persoon",
-      "extraAccessRemove": "Verwijderen"
+      "extraAccessRemove": "Verwijderen",
+      "taxIdOf": "{{documento}} van het bedrijf",
+      "taxIdGeneric": "Fiscaal nummer van het bedrijf",
+      "personIdGeneric": "Identiteitsbewijs",
+      "personNaturalNamed": "Natuurlijke persoon ({{documento}})",
+      "personNaturalGeneric": "Natuurlijke persoon",
+      "personJuridicaNamed": "Bedrijf ({{documento}})",
+      "personJuridicaGeneric": "Bedrijf"
     },
     "nav": {
       "clientPortal": "Opdrachtgeversportaal",
@@ -629,7 +636,9 @@
       "cedula_invalid": "Ongeldig ID-nummer",
       "ruc_invalid": "Ongeldig fiscaal nummer (moet eindigen op 001 en een geldig ID-nummer bevatten)",
       "latitude_numeric": "De breedtegraad moet een getal zijn",
-      "longitude_numeric": "De lengtegraad moet een getal zijn"
+      "longitude_numeric": "De lengtegraad moet een getal zijn",
+      "document_invalid_named": "Ongeldig {{documento}}",
+      "document_invalid": "Ongeldig identiteitsnummer"
     },
     "alerts": {
       "archiveClients": {
@@ -760,7 +769,9 @@
       "document": "ID van de vertegenwoordiger",
       "email": "Persoonlijk e-mailadres",
       "phone": "Persoonlijk telefoonnummer",
-      "title": "Gegevens wettelijk vertegenwoordiger"
+      "title": "Gegevens wettelijk vertegenwoordiger",
+      "documentNamed": "{{documento}} van de tekenbevoegde",
+      "documentGeneric": "Identiteitsbewijs van de tekenbevoegde"
     },
     "newClientSubtitle": "Registreer een nieuwe opdrachtgever op het platform.",
     "noChanges": "Er waren geen wijzigingen om op te slaan",
