@@ -4,7 +4,8 @@ import { clientDisplayName } from '@/lib/clientName';
 import type { Client } from '@/types/client';
 import useScrollToTopOnMount from '@/hooks/useScrollToTopOnMount';
 import { clientService } from '@/lib/api/clientService';
-import { Section, EmptyState, StatusBadge, Modal, GlassPanel, IconTile } from '@/components/kit';
+import { Section, EmptyState, StatusBadge, Modal, GlassPanel, IconTile, Segmented } from '@/components/kit';
+import type { ExportFormat } from '@/lib/export/reportExport';
 import {
   FIELD_CLS, LabeledField, TabTable, THead, Th, Tr, RowAction, Pager, TabFooter, TabLoading,
 } from '../_shared/tab-kit';
@@ -151,9 +152,23 @@ export default function ClientReports({ client }: { client: Client & { companyNa
 
   const KPI_ICONS: Record<string, ReactNode> = { incidentes: <AlertTriangle />, rondas: <RouteIcon />, asistencias: <Users />, checkpoints: <MapPin />, respuesta: <Clock /> };
 
+  /**
+   * El formato de los reportes rápidos, elegido UNA vez para las cuatro filas.
+   *
+   * Se pone arriba y no dentro de cada fila a propósito: cada fila ya es un
+   * botón que descarga, y meterle un menú a cada una convertiría una lista de
+   * cuatro atajos en una lista de cuatro menús. Quien exporta aquí baja los
+   * cuatro informes del mismo periodo, y los quiere en el mismo formato.
+   *
+   * PDF por defecto: éste es el informe que se le manda al CLIENTE, y lo que se
+   * adjunta a un correo es un PDF. El CSV que salía antes obligaba al
+   * destinatario a abrirlo y darle formato para poder leerlo.
+   */
+  const [formato, setFormato] = useState<ExportFormat>('pdf');
+
   const doExport = async (type: string) => {
     setExporting(type);
-    try { await clientService.exportClientReport(client.id, type, from, to); toast.success(t('ui.ClientReports.exportacionDescargada')); }
+    try { await clientService.exportClientReport(client.id, type, from, to, formato); toast.success(t('ui.ClientReports.exportacionDescargada')); }
     catch { toast.error(t('ui.ClientReports.noSePudoExportar')); } finally { setExporting(''); }
   };
   const saveSchedule = async () => {
@@ -250,7 +265,21 @@ export default function ClientReports({ client }: { client: Client & { companyNa
             </div>
           </Section>
 
-          <Section title={t("ui.ClientReports.reportesRapidos", "Reportes rápidos")} icon={<FileBarChart className="h-4 w-4" />}>
+          <Section
+            title={t("ui.ClientReports.reportesRapidos", "Reportes rápidos")}
+            icon={<FileBarChart className="h-4 w-4" />}
+            action={
+              <Segmented
+                value={formato}
+                onChange={(v) => setFormato(v as ExportFormat)}
+                options={[
+                  { value: 'pdf', label: 'PDF' },
+                  { value: 'excel', label: 'Excel' },
+                  { value: 'csv', label: 'CSV' },
+                ]}
+              />
+            }
+          >
             <div className="space-y-1">
               {quickReports.map((r) => { const Icon = QUICK_ICON[r.key] || FileText; return (
                 <button key={r.key} onClick={() => doExport(r.key)} disabled={!!exporting} className="cg-focus flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left text-sm transition-opacity hover:opacity-80 disabled:opacity-50">

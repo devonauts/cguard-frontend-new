@@ -1,15 +1,12 @@
 import { useState, type ReactNode } from "react";
-import {
-  Search, Filter, MoreVertical, FileText, FileSpreadsheet, Printer, Mail, Inbox,
-} from "lucide-react";
+import { Search, Filter, Inbox } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,
 } from "@/components/ui/sheet";
-import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import ExportMenu from "@/components/reports/ExportMenu";
+import type { ExportFormat } from "@/lib/export/reportExport";
 import AppLayout from "@/layouts/app-layout";
 import Breadcrumb from "@/components/ui/breadcrumb";
 import {
@@ -61,7 +58,7 @@ export default function ReportPageShell({
   title, breadcrumb, description, icon: Icon, tone = "brand",
   filters, onApplyFilters, rangeControl, children, empty, count = 0, loading = false,
   search: searchProp, onSearchChange,
-  onExportPdf, onExportExcel, onPrint, onEmail, exporting,
+  onExport, onPrint, onEmail, exporting,
   pagination,
 }: {
   title: string;
@@ -85,9 +82,16 @@ export default function ReportPageShell({
   /** Controlled search (optional — falls back to local state). */
   search?: string;
   onSearchChange?: (v: string) => void;
-  /** Export actions — wired into the dropdown. Omitted actions are hidden. */
-  onExportPdf?: () => void;
-  onExportExcel?: () => void;
+  /**
+   * Exportar el informe en el formato pedido. UNA función para los tres, en vez
+   * de las dos `onExportPdf`/`onExportExcel` que había: aquellas obligaban a
+   * cada informe a repetir el armado del archivo, y por eso el «Excel» de todos
+   * ellos acabó siendo un CSV renombrado. El armazón dibuja el menú; quién sabe
+   * armar cada formato es `lib/export/reportExport`.
+   */
+  onExport?: (format: ExportFormat) => void | Promise<void>;
+  /** Vista de impresión — se conserva aparte del PDF: es la salida fiel en los
+   *  idiomas cuyos caracteres no cubren las fuentes estándar del PDF. */
   onPrint?: () => void;
   onEmail?: () => void;
   exporting?: boolean;
@@ -98,7 +102,7 @@ export default function ReportPageShell({
   const [localSearch, setLocalSearch] = useState("");
   const search = searchProp !== undefined ? searchProp : localSearch;
   const setSearch = (v: string) => (onSearchChange ? onSearchChange(v) : setLocalSearch(v));
-  const hasExport = !!(onExportPdf || onExportExcel || onPrint || onEmail);
+  const hasExport = !!(onExport || onPrint || onEmail);
   const hasFilters = !!filters;
   /* El buscador sólo se dibuja si alguien lo consume: en una página sin datos
      escribía en un estado local que no filtraba nada. Misma regla que el resto
@@ -137,8 +141,17 @@ export default function ReportPageShell({
         {/* ── Barra de herramientas ── */}
         {showToolbar && (
         <Toolbar>
+          {/* ── POR QUÉ EL BUSCADOR OCUPA LA FILA ENTERA EN UN TELÉFONO ──────
+              Tenía `flex-1` sin ancho base, así que a 390 px competía en la
+              MISMA línea con el conmutador de rango y el botón de exportar, y
+              perdía: se encogía hasta quedar en un círculo con la lupa dentro
+              —un campo de texto en el que no cabe texto— y de paso cortaba el
+              «7 días» del conmutador. Con `w-full` se lleva la primera línea y
+              obliga a los otros dos a envolver a la segunda, donde sí caben
+              (conmutador ~200 px + botón ~120 px). De `sm` en adelante vuelve a
+              ser la caja estrecha de siempre a la izquierda de la barra. */}
           {showSearch && (
-            <div className="relative min-w-0 flex-1 sm:max-w-xs">
+            <div className="relative w-full min-w-0 sm:w-auto sm:flex-1 sm:max-w-xs">
               <Search
                 className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
                 style={{ color: "var(--ink-faint)" }}
@@ -155,6 +168,9 @@ export default function ReportPageShell({
           {rangeControl}
 
           <div className="ml-auto flex items-center gap-2">
+            {/* `ml-auto` sigue valiendo en las dos filas: en el teléfono empuja
+                los botones al borde derecho de la segunda línea, que es donde
+                el pulgar los alcanza. */}
             {hasFilters && (
               <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
                 <SheetTrigger asChild>
@@ -182,27 +198,19 @@ export default function ReportPageShell({
             )}
 
             {hasExport && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" aria-label="Exportar" disabled={exporting}>
-                    <MoreVertical className="h-5 w-5" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  {onExportPdf && (
-                    <DropdownMenuItem className="gap-2" onSelect={onExportPdf}><FileText className="h-4 w-4" /> Exportar como PDF</DropdownMenuItem>
-                  )}
-                  {onExportExcel && (
-                    <DropdownMenuItem className="gap-2" onSelect={onExportExcel}><FileSpreadsheet className="h-4 w-4" /> Exportar como Excel</DropdownMenuItem>
-                  )}
-                  {onPrint && (
-                    <DropdownMenuItem className="gap-2" onSelect={onPrint}><Printer className="h-4 w-4" /> Imprimir</DropdownMenuItem>
-                  )}
-                  {onEmail && (
-                    <DropdownMenuItem className="gap-2" onSelect={onEmail}><Mail className="h-4 w-4" /> Enviar por correo</DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <ExportMenu
+                /* Un informe puede ofrecer sólo imprimir o sólo enviar: en ese
+                   caso `formats={[]}` deja el menú sin descargas en vez de
+                   pintar tres opciones que nadie sabe atender. */
+                onExport={onExport || (() => {})}
+                formats={onExport ? undefined : []}
+                onPrint={onPrint}
+                onEmail={onEmail}
+                busy={exporting}
+                /* Sin filas no hay archivo que bajar: mejor un botón apagado
+                   que un Excel de cero registros en la carpeta de descargas. */
+                disabled={loading || count === 0}
+              />
             )}
           </div>
         </Toolbar>

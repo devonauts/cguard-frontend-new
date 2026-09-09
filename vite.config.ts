@@ -75,8 +75,10 @@ export default defineConfig({
         // Se quedan fuera las piezas que un usuario CONCRETO casi nunca usa:
         //  · los seis diccionarios que no son el suyo (~2,8 MB) — el español va
         //    dentro del bundle de entrada, y los demás ya se cargan bajo demanda;
-        //  · la radio (livekit) y la exportación a Excel (xlsx), que sólo bajan
-        //    si alguien abre esas pantallas.
+        //  · la radio (livekit) y los dos armadores de archivos —`xlsx` para el
+        //    Excel y `jspdf` para el PDF—, que sólo bajan cuando alguien pulsa
+        //    Exportar. Son 815 KB entre los dos para una acción que la mayoría
+        //    de las sesiones no ejecuta ni una vez.
         // Siguen funcionando: al pedirlos se buscan en red. Lo que se pierde es
         // poder CAMBIAR de idioma o abrir la radio estando ya sin conexión; el
         // CRM en su idioma sigue abriendo offline, que es para lo que está.
@@ -84,6 +86,7 @@ export default defineConfig({
           "assets/{de,en,fr,it,nl,pl,pt}-*.js",
           "assets/vendor-livekit-*.js",
           "assets/vendor-xlsx-*.js",
+          "assets/vendor-pdf-*.js",
           // ── LOS SUBCONJUNTOS DE FUENTE QUE ESTA PANTALLA NO VA A PINTAR ────
           // Fontsource parte cada familia por alfabeto y marca cada trozo con
           // `unicode-range`. Gracias a eso el NAVEGADOR ya descarga sólo el
@@ -164,6 +167,11 @@ export default defineConfig({
           "vendor-i18n": ["i18next", "react-i18next"],
           // Spreadsheet / export
           "vendor-xlsx": ["xlsx"],
+          // Los dos armadores del PDF van juntos: `jspdf-autotable` no sirve de
+          // nada sin `jspdf`, y separados eran dos peticiones encadenadas —la
+          // segunda no puede empezar hasta que la primera resuelve— justo en el
+          // momento en que el usuario está esperando su archivo.
+          "vendor-pdf": ["jspdf", "jspdf-autotable"],
           // Phone input
           "vendor-phone": ["libphonenumber-js"],
           // Notifications

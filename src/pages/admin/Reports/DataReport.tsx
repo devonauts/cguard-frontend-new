@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import ReportPageShell from "./ReportPageShell";
 import type { ReportTone } from "./reportIcons";
 import { Segmented } from "@/components/kit";
+import { exportColumns, type ExportFormat } from "@/lib/export/reportExport";
 
 export interface ReportColumn<T> {
   key: string;
@@ -76,27 +77,17 @@ function daysAgo(n: number): string {
  *  cualquier fecha: esto sólo son los tres atajos habituales. */
 const PRESETS = [7, 30, 90] as const;
 
-function csvCell(v: string): string {
-  const s = String(v ?? "");
-  return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
-}
-
-function download(filename: string, blob: Blob) {
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
 /**
- * Generic, data-driven report page. Wraps ReportPageShell with a real data
- * fetch, a themed table, a date-range filter and WORKING exports (Excel/CSV,
- * PDF and print — all client-side, no backend needed). Turns a 6-line dead
- * shell into a functioning, exportable report.
+ * La página de informe genérica: una consulta real, una tabla con el tema del
+ * CRM, un filtro de rango y TRES exportaciones que producen lo que su nombre
+ * dice — `.xlsx`, `.pdf` y `.csv`.
+ *
+ * Lo de «lo que su nombre dice» no es una obviedad: hasta ahora «Exportar como
+ * Excel» bajaba un `.csv` renombrado y «Exportar como PDF» abría el diálogo de
+ * impresión. Los tres formatos se arman ahora en `lib/export/reportExport`, a
+ * partir de las MISMAS `columns[]` que pinta la tabla, así que el archivo y la
+ * pantalla no pueden discrepar — incluida la regla de privacidad que quita la
+ * columna del vigilante.
  */
 export default function DataReport<T>({
   title, description, icon, tone, columns: columnsProp, load, searchable = true, defaultDays = 30, emptyMessage, rowTone, onRowClick, reloadRef,
@@ -192,12 +183,40 @@ export default function DataReport<T>({
   const rangeLabel = `${from} a ${to}`;
   const fileBase = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
-  const exportExcel = () => {
-    const header = columns.map((c) => csvCell(rotulo(c))).join(",");
-    const body = filtered.map((row) => columns.map((c) => csvCell(c.value(row))).join(",")).join("\n");
-    // UTF-8 BOM so Excel opens accents correctly.
-    download(`${fileBase}-${to}.csv`, new Blob(["﻿" + header + "\n" + body], { type: "text/csv;charset=utf-8;" }));
-    toast.success("Informe exportado (Excel)");
+  /**
+   * Exporta lo que se está VIENDO (`filtered`), no lo que se cargó: si el
+   * usuario buscó «Torre B», el archivo trae Torre B. Y trae el conjunto
+   * entero, no la página pintada — una exportación recortada a las 25 filas de
+   * la paginación es una trampa silenciosa.
+   */
+  const [exportando, setExportando] = useState(false);
+  const exportar = async (format: ExportFormat) => {
+    if (!filtered.length) {
+      toast.info(t("ui.DataReport.sinFilasParaExportar", "No hay registros que exportar"));
+      return;
+    }
+    setExportando(true);
+    try {
+      await exportColumns(
+        format,
+        columns.map((c) => ({ label: rotulo(c), value: c.value, align: c.align })),
+        filtered,
+        {
+          title,
+          subtitle: `Rango: ${rangeLabel} \u00b7 ${filtered.length} registro(s)`,
+          fileBase: `${fileBase}-${to}`,
+        },
+      );
+      toast.success(
+        t("ui.DataReport.informeExportado", "Informe exportado") +
+          ` (${format === "excel" ? "Excel" : format.toUpperCase()})`,
+      );
+    } catch (e) {
+      console.error("export failed", e);
+      toast.error(t("ui.DataReport.errorExportar", "No se pudo generar el archivo"));
+    } finally {
+      setExportando(false);
+    }
   };
 
   // El documento impreso es una página aparte: no hereda las variables del CRM,
@@ -243,8 +262,8 @@ export default function DataReport<T>({
       loading={loading}
       search={searchable ? search : undefined}
       onSearchChange={searchable ? setSearch : undefined}
-      onExportExcel={exportExcel}
-      onExportPdf={() => openPrint(true)}
+      onExport={exportar}
+      exporting={exportando}
       onPrint={() => openPrint(true)}
       empty={{ message: emptyMessage }}
       pagination={{

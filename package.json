@@ -72,6 +72,8 @@
     "i18next": "^25.7.4",
     "idb-keyval": "^6.3.0",
     "input-otp": "^1.4.2",
+    "jspdf": "^3.0.4",
+    "jspdf-autotable": "^5.0.8",
     "leaflet": "^1.9.4",
     "libphonenumber-js": "^1.10.24",
     "livekit-client": "^2.20.0",

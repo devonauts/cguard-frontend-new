@@ -1,4 +1,6 @@
 import api from "../api";
+import { descargarInforme } from "@/lib/export/serverDownload";
+import type { ExportFormat } from "@/lib/export/reportExport";
 
 /**
  * Nómina / Time & Attendance API client. Tenant-scoped; mirrors shiftService.
@@ -172,20 +174,22 @@ const attendanceService = {
    * sólo tiene las filas que alcanzó a cargar, y el archivo tiene que incluir
    * también los días de vacaciones y falta, que no son fichajes.
    */
+  /**
+   * La hoja de asistencia del periodo, en el formato pedido.
+   *
+   * El nombre del archivo lo pone el SERVIDOR (`Content-Disposition`): aquí se
+   * componía a mano a partir del formato, así que en cuanto el servidor cambió
+   * el nombre —para meter el rango de fechas— el archivo bajaba con otro. Se
+   * conserva un nombre de reserva por si la cabecera no llega.
+   */
   async exportRecords(params: Record<string, unknown>): Promise<void> {
     const t = getTenantId();
-    const resp = await api.get(`/tenant/${t}/attendance/export${buildQuery(params)}`, {
-      responseType: "blob",
-    } as any);
-    const blob = (resp as any)?.data ?? resp;
     const fmt = String(params.format || "csv");
-    const ext = fmt === "excel" || fmt === "xlsx" ? "xlsx" : fmt;
-    const url = URL.createObjectURL(blob as Blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `asistencia_${new Date().toISOString().slice(0, 10)}.${ext}`;
-    a.click();
-    URL.revokeObjectURL(url);
+    const format: ExportFormat = fmt === "excel" || fmt === "xlsx" ? "excel" : fmt === "pdf" ? "pdf" : "csv";
+    await descargarInforme(`/tenant/${t}/attendance/export${buildQuery(params)}`, {
+      format,
+      nombreBase: `asistencia_${new Date().toISOString().slice(0, 10)}`,
+    });
   },
 
   async exceptions(params?: Record<string, unknown>) {

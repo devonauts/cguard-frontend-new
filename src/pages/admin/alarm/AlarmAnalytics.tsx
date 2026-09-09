@@ -3,11 +3,13 @@ import { useTranslation } from 'react-i18next';
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import {
-  Activity, Clock, Send, ShieldCheck, TrendingUp, AlertTriangle, PhoneCall, Download, Users, RefreshCw, BarChart3,
+  Activity, Clock, Send, ShieldCheck, TrendingUp, AlertTriangle, PhoneCall, Users, BarChart3,
 } from "lucide-react";
 import AppLayout from "@/layouts/app-layout";
 import { MetricCard, DayBars, HBars, Section, GOLD, TONES } from "@/pages/admin/analytics/_shared";
 import { alarmService } from "@/lib/api/alarmService";
+import ExportMenu from "@/components/reports/ExportMenu";
+import type { ExportFormat } from "@/lib/export/reportExport";
 import { SeverityBars, categoryTone, priorityTone } from "./shared";
 import {
   PageContainer,
@@ -59,21 +61,6 @@ function toItems(obj: Record<string, number>, labeler?: (k: string) => string) {
     .sort((a, b) => b.count - a.count);
 }
 
-function downloadCsv(rows: Record<string, unknown>[], filename: string) {
-  if (!rows.length) { toast.info(i18n.t('ui.AlarmAnalytics.sinRegistrosParaExportar')); return; }
-  const cols = Object.keys(rows[0]);
-  const esc = (v: unknown) => {
-    const s = v == null ? "" : String(v);
-    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
-  };
-  const csv = [cols.join(","), ...rows.map((r) => cols.map((c) => esc(r[c])).join(","))].join("\n");
-  const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url; a.download = filename; a.click();
-  URL.revokeObjectURL(url);
-}
-
 interface AlarmAnalyticsData {
   total: number; open: number;
   avgTtaSec: number; avgTtdSec: number; avgTtrSec: number;
@@ -98,12 +85,21 @@ export default function AlarmAnalytics() {
     alarmService.analytics({ days }).then(setD).catch(() => {}).finally(() => setLoading(false));
   }, [days]);
 
-  const exportAudit = async () => {
+  /**
+   * El rastro de cumplimiento de la central, en CSV, Excel o PDF.
+   *
+   * Antes esta pantalla se bajaba el JSON de la auditoría y montaba el CSV a
+   * mano, con una consecuencia fea: las columnas del archivo eran las claves
+   * crudas del JSON (`caseId`, `disposition`, `at`), no rótulos legibles. Ahora
+   * el archivo lo arma el servidor —con nombres de columna de verdad— y esta
+   * pantalla sólo pide el formato. El PDF es lo que se le entrega a un auditor
+   * de central receptora, que es a quien va dirigido este informe.
+   */
+  const exportAudit = async (format: ExportFormat) => {
     setExporting(true);
     try {
-      const r = await alarmService.auditExport({ days });
-      downloadCsv(r.rows || [], `auditoria-alarmas-${days}d.csv`);
-      toast.success(`${r.count} registros exportados`);
+      await alarmService.auditExportFile(format, { days });
+      toast.success(t("alarm.analytics.exportAuditOk", "Auditoría exportada"));
     } catch (e) {
       toast.error((e as Error)?.message || t("alarm.analytics.exportAuditFailed", "No se pudo exportar la auditoría"));
     } finally {
@@ -125,10 +121,12 @@ export default function AlarmAnalytics() {
                 onChange={(v) => setDays(Number(v))}
                 options={PERIODS.map((p) => ({ value: String(p), label: p === 365 ? "1 año" : `${p} días` }))}
               />
-              <Button variant="outline" size="sm" onClick={exportAudit} disabled={exporting}>
-                {exporting ? <RefreshCw className="size-3.5 animate-spin" /> : <Download className="size-3.5" />}
-                Exportar historial
-              </Button>
+              <ExportMenu
+                onExport={exportAudit}
+                busy={exporting}
+                size="sm"
+                label={t("alarm.analytics.exportAudit", "Exportar historial")}
+              />
               <Button asChild variant="ghost" size="sm">
                 <Link to="/alarm/reports">Falsas alarmas →</Link>
               </Button>

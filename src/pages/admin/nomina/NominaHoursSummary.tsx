@@ -1,4 +1,3 @@
-import { loadXlsx } from '../../../lib/lazyXlsx';
 import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import AppLayout from "@/layouts/app-layout";
@@ -6,7 +5,9 @@ import { DataTable, type Column } from "@/components/table/DataTable";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { confirmDialog } from "@/components/ui/confirmDialog";
-import { FileDown, Printer, Lock, FileSpreadsheet, CalendarDays, Clock, Timer, UserX } from "lucide-react";
+import { Lock, CalendarDays, Clock, Timer, UserX } from "lucide-react";
+import ExportMenu from "@/components/reports/ExportMenu";
+import { exportMatrix, type ExportFormat } from "@/lib/export/reportExport";
 import attendanceService from "@/lib/api/attendanceService";
 import { PageContainer, PageHeader, Section, MetricTile, Stagger, Toolbar, StatusBadge, EmptyState } from "@/components/kit";
 
@@ -121,76 +122,48 @@ export default function NominaHoursSummary() {
     }
   };
 
-  const exportXlsx = async () => {
-    const data = rows.map((r) => ({
-      Vigilante: r.guardName,
-      Turnos: r.shifts,
-      "Días trabajados": r.daysWorked ?? 0,
-      "Horas regulares": r.regularHours,
-      "Horas extra": r.overtimeHours,
-      "Horas totales": r.totalHours,
-      Tardanzas: r.lateCount,
-      "Sin salida": r.missedClockouts,
-      Inasistencias: r.noShows,
-      Correcciones: r.approvedCorrections,
-    }));
-    const XLSX = await loadXlsx();
-    const ws = XLSX.utils.json_to_sheet(data);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Horas");
-    XLSX.writeFile(wb, `horas-trabajadas-${from}_${to}.xlsx`);
-  };
+  /**
+   * Las tres salidas del resumen de horas, desde una sola tabla de columnas.
+   *
+   * Antes eran tres funciones separadas con tres listas de encabezados escritas
+   * a mano, y ya se habían desincronizado: el CSV llevaba «Sin salida» y el PDF
+   * no, así que el mismo periodo daba dos informes con distinto número de
+   * columnas. Ahora la lista es una, y los tres archivos dicen lo mismo.
+   */
+  const COLUMNAS_EXPORT: { label: string; get: (r: SummaryRow) => string | number }[] = [
+    { label: "Vigilante", get: (r) => r.guardName },
+    { label: "Días trabajados", get: (r) => r.daysWorked ?? 0 },
+    { label: "Turnos", get: (r) => r.shifts },
+    { label: "Horas regulares", get: (r) => Number(r.regularHours).toFixed(2) },
+    { label: "Horas extra", get: (r) => Number(r.overtimeHours).toFixed(2) },
+    { label: "Horas totales", get: (r) => Number(r.totalHours).toFixed(2) },
+    { label: "Tardanzas", get: (r) => r.lateCount },
+    { label: "Sin salida", get: (r) => r.missedClockouts },
+    { label: "Inasistencias", get: (r) => r.noShows },
+    { label: "Correcciones", get: (r) => r.approvedCorrections },
+  ];
 
-  const exportPdf = () => {
-    // El encabezado de la tabla impresa toma el acento vivo del CRM: si el
-    // usuario cambió el color, el PDF cambia con él. Si el navegador no puede
-    // resolverlo, la celda sale sin relleno en vez de con un dorado fijo.
-    const css = getComputedStyle(document.documentElement);
-    const brand = css.getPropertyValue("--brand").trim();
-    const brandInk = css.getPropertyValue("--brand-ink").trim();
-    // El filo de la tabla impresa también sale del token, no de un gris fijo.
-    const line = css.getPropertyValue("--hairline").trim();
-    const esc = (s: unknown) =>
-      String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string));
-    const head = ["Vigilante", "Días trab.", "Turnos", "H. reg.", "H. extra", "H. tot.", "Tardanzas", "Inasist.", "Correc."];
-    const body = rows
-      .map((r) => {
-        const cells = [r.guardName, r.daysWorked ?? 0, r.shifts, r.regularHours.toFixed(2), r.overtimeHours.toFixed(2), r.totalHours.toFixed(2), r.lateCount, r.noShows, r.approvedCorrections];
-        return `<tr>${cells.map((c) => `<td>${esc(c)}</td>`).join("")}</tr>`;
-      })
-      .join("");
-    const w = window.open("", "_blank");
-    if (!w) return;
-    w.document.write(`<html><head><title>Horas trabajadas ${esc(from)} a ${esc(to)}</title>
-      <style>body{font-family:Arial,sans-serif;padding:24px}h1{font-size:18px}
-      table{width:100%;border-collapse:collapse;font-size:12px;margin-top:12px}
-      th,td{border:1px solid ${line || "currentColor"};padding:6px;text-align:left}
-      th{background:${brand || "transparent"};color:${brandInk || "inherit"}}
-      td:not(:first-child){text-align:right;font-variant-numeric:tabular-nums}</style></head>
-      <body><h1>${esc(t('ui.NominaHoursSummary.resumenDeHoras', 'Resumen de horas'))} · ${esc(from)} a ${esc(to)}</h1>
-      <table><thead><tr>${head.map((h) => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${body}</tbody></table>
-      </body></html>`);
-    w.document.close();
-    w.focus();
-    setTimeout(() => w.print(), 300);
-  };
-
-  const exportCsv = () => {
-    const headers = [
-      "Vigilante", "Días trabajados", "Turnos", "Horas regulares", "Horas extra",
-      "Horas totales", "Tardanzas", "Sin salida", "Inasistencias", "Correcciones",
-    ];
-    const lines = rows.map((r) =>
-      [r.guardName, r.daysWorked ?? 0, r.shifts, r.regularHours, r.overtimeHours, r.totalHours, r.lateCount, r.missedClockouts, r.noShows, r.approvedCorrections]
-        .map((v) => `"${String(v).replace(/"/g, '""')}"`)
-        .join(","),
-    );
-    const csv = [headers.join(","), ...lines].join("\r\n");
-    const link = document.createElement("a");
-    // Prepend UTF-8 BOM so Excel renders accented guard names (ñ/á/é) correctly.
-    link.href = URL.createObjectURL(new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" }));
-    link.download = `horas-trabajadas-${from}_${to}.csv`;
-    link.click();
+  const exportar = async (format: ExportFormat) => {
+    if (!rows.length) return;
+    try {
+      await exportMatrix(
+        format,
+        COLUMNAS_EXPORT.map((c) => c.label),
+        rows.map((r) => COLUMNAS_EXPORT.map((c) => c.get(r))),
+        {
+          title: t('ui.NominaHoursSummary.resumenDeHoras', 'Resumen de horas'),
+          subtitle: `${from} a ${to} \u00b7 ${rows.length} persona(s)`,
+          fileBase: `horas-trabajadas-${from}_${to}`,
+        },
+        // Todo lo que no sea el nombre es un número: alineado a la derecha se
+        // compara de un vistazo columna abajo.
+        COLUMNAS_EXPORT.map((_, i) => (i === 0 ? 'left' : 'right')),
+      );
+      toast.success(`${rows.length} fila(s) exportada(s)`);
+    } catch (e) {
+      console.error('export horas', e);
+      toast.error('No se pudo generar el archivo');
+    }
   };
 
   const columns: Column<SummaryRow>[] = [
@@ -258,15 +231,10 @@ export default function NominaHoursSummary() {
             )}
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Button variant="outline" size="sm" onClick={exportCsv} disabled={!rows.length}>
-              <FileDown className="mr-1.5 h-4 w-4" /> CSV
-            </Button>
-            <Button variant="outline" size="sm" onClick={exportXlsx} disabled={!rows.length}>
-              <FileSpreadsheet className="mr-1.5 h-4 w-4" /> Excel
-            </Button>
-            <Button variant="outline" size="sm" onClick={exportPdf} disabled={!rows.length}>
-              <Printer className="mr-1.5 h-4 w-4" /> PDF
-            </Button>
+            {/* Tres botones seguidos ocupaban toda la barra en un teléfono y
+                empujaban «Cerrar periodo» a una línea suya. Uno solo, y el
+                formato se elige dentro. */}
+            <ExportMenu onExport={exportar} disabled={!rows.length} size="sm" />
             <Button variant="destructive" size="sm" onClick={closePeriod} disabled={closing}>
               <Lock className="mr-1.5 h-4 w-4" /> {closing ? "Cerrando…" : "Cerrar periodo"}
             </Button>

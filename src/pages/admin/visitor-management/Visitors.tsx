@@ -1,5 +1,6 @@
-import { loadXlsx } from '../../../lib/lazyXlsx';
 import { useMemo, useState, FormEvent, useEffect, useCallback } from "react";
+import ExportMenu from "@/components/reports/ExportMenu";
+import { exportMatrix, type ExportFormat } from "@/lib/export/reportExport";
 import { clientDisplayName } from '@/lib/clientName';
 import { useAsyncList } from "@/hooks/useAsyncList";
 import AppLayout from "@/layouts/app-layout";
@@ -35,10 +36,6 @@ import {
     Filter as FilterIcon,
     MoreVertical,
     Upload,
-    FileDown,
-    FileSpreadsheet,
-    Printer,
-    Mail,
     UserPlus,
     Users,
     Plus,
@@ -414,95 +411,67 @@ export default function Visitors() {
     };
 
 
-    const handleExportCSV = async () => {
+    /**
+     * ══════════════════════════════════════════════════════════════════════
+     * LA BITÁCORA DE VISITAS, FUERA DEL SISTEMA
+     *
+     * ── QUÉ HABÍA ────────────────────────────────────────────────────────
+     * CUATRO copias de la misma tabla de diez columnas: una en el CSV, otra
+     * en el Excel, otra en el PDF y otra en la impresión. Y no eran iguales
+     * —el CSV y el Excel rotulaban en inglés, el PDF en el idioma del
+     * usuario—, así que el mismo periodo daba archivos con cabeceras
+     * distintas. Además el exportador de Excel estaba HUÉRFANO: la función
+     * existía entera y ningún botón del menú la llamaba, así que la opción
+     * de bajar un `.xlsx` no existía para el usuario.
+     *
+     * Ahora la tabla es una sola y los cuatro caminos salen de ella.
+     * ══════════════════════════════════════════════════════════════════════
+     */
+    const COLUMNAS_BITACORA: { label: string; get: (r: VisitLogRow) => string }[] = [
+        { label: t('visitantes.logTable.date', 'Fecha'), get: (r) => formatDateTime(r.visitDate) },
+        { label: t('visitantes.logTable.lastName', 'Apellidos'), get: (r) => r.lastName || '' },
+        { label: t('visitantes.logTable.firstName', 'Nombre'), get: (r) => r.firstName || '' },
+        { label: t('visitantes.logTable.idNumber', 'ID'), get: (r) => r.idNumber || '' },
+        { label: t('visitantes.logTable.reason', 'Motivo'), get: (r) => r.reason || '' },
+        { label: t('visitantes.logTable.exitTime', 'Hora de salida'), get: (r) => formatDateTime(r.exitTime) || '' },
+        { label: t('visitantes.logTable.numPeople', 'Número de personas'), get: (r) => String(r.numPeople ?? '') },
+        { label: t('visitantes.logTable.station', 'Estación'), get: (r) => r.station?.stationName || r.station?.name || r.stationName || '' },
+        { label: t('visitantes.logTable.client', 'Cliente'), get: (r) => getClientLabelFromRecord(r) || '' },
+        { label: t('visitantes.logTable.postSite', 'Sitio'), get: (r) => getPostSiteLabelFromRecord(r) || '' },
+    ];
+
+    /** Las filas marcadas, ya resueltas contra el conjunto completo. */
+    const filasSeleccionadas = async (mensajeVacio: string): Promise<VisitLogRow[] | null> => {
         const ids = Object.keys(selectedLogs).filter((k) => selectedLogs[k]);
-        if (!ids || ids.length === 0) {
-            toast.error(t('visitantes.noSelectionExport') || 'No hay registros seleccionados para exportar');
-            return;
-        }
-
-        const rowsToExport = await resolveExportRows(ids);
-        if (!rowsToExport.length) {
-            toast.error(t('visitantes.noSelectionExport') || 'No hay registros seleccionados para exportar');
-            return;
-        }
-
-        const keys = ['Date', 'Last name', 'First name', 'ID', 'Reason of visit', 'Exit Time', 'Number of people', 'Station', 'Client', 'Site'];
-        const rowsCsv = rowsToExport.map((r) => ({
-            Date: formatDateTime(r.visitDate),
-            'Last name': r.lastName ?? '',
-            'First name': r.firstName ?? '',
-            ID: r.idNumber ?? '',
-            'Reason of visit': r.reason ?? '',
-            'Exit Time': formatDateTime(r.exitTime),
-            'Number of people': r.numPeople ?? '',
-            Station: r.station?.stationName || r.station?.name || r.stationName || '',
-            Client: getClientLabelFromRecord(r) || '',
-            Site: getPostSiteLabelFromRecord(r) || '',
-        }));
-
-        const csv = [keys.join(',')]
-            .concat(rowsCsv.map((r) => keys.map((k) => `"${String((r as Record<string, unknown>)[k] ?? '').replace(/"/g, '""')}"`).join(',')))
-            .join('\r\n');
-
-        // Prepend UTF-8 BOM so Excel renders accented Spanish text (ñ/á/é) correctly.
-        const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `bitacoras_export_${new Date().toISOString().slice(0, 10)}.csv`;
-        a.click();
-        URL.revokeObjectURL(url);
+        if (!ids.length) { toast.error(mensajeVacio); return null; }
+        const filas = await resolveExportRows(ids);
+        if (!filas.length) { toast.error(mensajeVacio); return null; }
+        return filas;
     };
 
-    const handleExportExcel = async () => {
-        const ids = Object.keys(selectedLogs).filter((k) => selectedLogs[k]);
-        if (!ids || ids.length === 0) {
-            toast.error(t('visitantes.noSelectionExport') || 'No hay registros seleccionados para exportar');
-            return;
-        }
-
-        const rowsToExport = await resolveExportRows(ids);
-        if (!rowsToExport.length) {
-            toast.error(t('visitantes.noSelectionExport') || 'No hay registros seleccionados para exportar');
-            return;
-        }
-
-        // Build array of objects with desired column order
-        const data = rowsToExport.map((r) => ({
-            Date: formatDateTime(r.visitDate),
-            'Last name': r.lastName ?? '',
-            'First name': r.firstName ?? '',
-            ID: r.idNumber ?? '',
-            'Reason of visit': r.reason ?? '',
-            'Exit Time': formatDateTime(r.exitTime),
-            'Number of people': r.numPeople ?? '',
-            Station: r.station?.stationName || r.station?.name || r.stationName || '',
-            Client: getClientLabelFromRecord(r) || '',
-            Site: getPostSiteLabelFromRecord(r) || '',
-        }));
-
+    const exportarBitacoras = async (format: ExportFormat) => {
+        const filas = await filasSeleccionadas(
+            t('visitantes.noSelectionExport') || 'No hay registros seleccionados para exportar',
+        );
+        if (!filas) return;
         try {
-            const header = ['Date', 'Last name', 'First name', 'ID', 'Reason of visit', 'Exit Time', 'Number of people', 'Station', 'Client', 'Site'];
-            const XLSX = await loadXlsx();
-            const worksheet = XLSX.utils.json_to_sheet(data, { header });
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, 'Bitacoras');
-            const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-            const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `bitacoras_export_${new Date().toISOString().slice(0, 10)}.xlsx`;
-            a.click();
-            URL.revokeObjectURL(url);
+            await exportMatrix(
+                format,
+                COLUMNAS_BITACORA.map((c) => c.label),
+                filas.map((r) => COLUMNAS_BITACORA.map((c) => c.get(r))),
+                {
+                    title: t('visitantes.bitacoras', 'Bitácoras'),
+                    subtitle: `${filas.length} registro(s)`,
+                    fileBase: `bitacoras_export_${new Date().toISOString().slice(0, 10)}`,
+                },
+            );
         } catch (e) {
-            console.error('Excel export failed', e);
-            toast.error(t('visitantes.exportError') || 'Error exportando a Excel');
+            console.error('Export bitácoras failed', e);
+            toast.error(t('visitantes.exportError') || 'Error exportando');
         }
     };
 
-    // Escape any user/server-supplied value before interpolating into print/PDF HTML.
+    // Escape any user/server-supplied value before interpolating into print HTML.
     // Visitor fields (names, idNumber, reason) and client/site labels are free-text and
     // attacker-influenced; without escaping a value like `<img src=x onerror=...>` would
     // execute in the same-origin print popup and could read localStorage tokens.
@@ -514,32 +483,29 @@ export default function Visitors() {
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#39;');
 
-    // Shared builder for PDF/print: escapes every cell once and opens a print window.
-    const buildAndPrint = (
-        rowsToPrint: VisitLogRow[],
-        opts: { title: string; headers: string[] },
-    ) => {
-        const tableRows = rowsToPrint.map((r) => `
-            <tr>
-                <td>${escapeHtml(formatDateTime(r.visitDate))}</td>
-                <td>${escapeHtml(r.lastName || '')}</td>
-                <td>${escapeHtml(r.firstName || '')}</td>
-                <td>${escapeHtml(r.idNumber || '')}</td>
-                <td>${escapeHtml(r.reason || '')}</td>
-                <td>${escapeHtml(formatDateTime(r.exitTime) || '')}</td>
-                <td>${escapeHtml(r.numPeople ?? '')}</td>
-                <td>${escapeHtml(r.station?.stationName || r.station?.name || r.stationName || '')}</td>
-                <td>${escapeHtml(getClientLabelFromRecord(r) || '')}</td>
-                <td>${escapeHtml(getPostSiteLabelFromRecord(r) || '')}</td>
-            </tr>
-        `).join('');
+    /**
+     * La vista de impresión, sobre las MISMAS columnas.
+     *
+     * Se conserva junto al PDF descargable, y no por costumbre: las fuentes
+     * estándar del PDF cubren el español, el portugués, el francés, el
+     * italiano, el alemán y el neerlandés, pero no la ł ni la ą del polaco.
+     * En polaco, la ventana del navegador sigue siendo la salida fiel.
+     */
+    const handlePrintSelected = async () => {
+        const filas = await filasSeleccionadas(
+            t('visitantes.notprint') || 'No hay registros seleccionados para imprimir',
+        );
+        if (!filas) return;
 
-        const headerCells = opts.headers.map((h) => `<th>${escapeHtml(h)}</th>`).join('');
+        const cabecera = COLUMNAS_BITACORA.map((c) => `<th>${escapeHtml(c.label)}</th>`).join('');
+        const cuerpo = filas
+            .map((r) => `<tr>${COLUMNAS_BITACORA.map((c) => `<td>${escapeHtml(c.get(r))}</td>`).join('')}</tr>`)
+            .join('');
 
         const html = `
             <html>
             <head>
-                <title>${escapeHtml(opts.title)}</title>
+                <title>${escapeHtml(t('visitantes.bitacorasImprimir', 'Bitácoras - Imprimir'))}</title>
                 <style>
                     table{border-collapse:collapse;width:100%}
                     th,td{border:1px solid rgba(0,0,0,0.22);padding:6px;text-align:left}
@@ -548,76 +514,20 @@ export default function Visitors() {
             </head>
             <body>
                 <h2>${escapeHtml(t('visitantes.bitacoras') || 'Bitácoras')}</h2>
-                <table>
-                    <thead>
-                        <tr>${headerCells}</tr>
-                    </thead>
-                    <tbody>
-                        ${tableRows}
-                    </tbody>
-                </table>
+                <table><thead><tr>${cabecera}</tr></thead><tbody>${cuerpo}</tbody></table>
             </body>
             </html>
         `;
 
         const w = window.open('', '_blank');
-        if (w) {
-            w.document.write(html);
-            w.document.close();
-            w.focus();
-            setTimeout(() => { w.print(); }, 500);
-        } else {
+        if (!w) {
             toast.error(t('visitantes.printError') || 'No se pudo abrir ventana para imprimir');
-        }
-    };
-
-    const handleExportPDF = async () => {
-        const ids = Object.keys(selectedLogs).filter((k) => selectedLogs[k]);
-        if (!ids || ids.length === 0) {
-            toast.error(t('visitantes.noSelectionExport') || 'No hay registros seleccionados para exportar');
             return;
         }
-
-        const rowsToExport = await resolveExportRows(ids);
-        if (!rowsToExport.length) {
-            toast.error(t('visitantes.noSelectionExport') || 'No hay registros seleccionados para exportar');
-            return;
-        }
-
-        buildAndPrint(rowsToExport, {
-            title: t('visitantes.bitacoras', 'Bitácoras'),
-            headers: [
-                t('visitantes.logTable.date') || 'Fecha',
-                t('visitantes.logTable.lastName') || 'Apellidos',
-                t('visitantes.logTable.firstName') || 'Nombre',
-                t('visitantes.logTable.idNumber') || 'ID',
-                t('visitantes.logTable.reason') || 'Motivo',
-                t('visitantes.logTable.exitTime') || 'Hora de salida',
-                t('visitantes.logTable.numPeople') || 'Número de personas',
-                t('visitantes.logTable.station') || 'Estación',
-                t('visitantes.logTable.client') || 'Cliente',
-                t('visitantes.logTable.postSite') || 'Sitio',
-            ],
-        });
-    };
-
-    const handlePrintSelected = async () => {
-        const ids = Object.keys(selectedLogs).filter((k) => selectedLogs[k]);
-        if (!ids || ids.length === 0) {
-            toast.error(t('visitantes.notprint') || 'No hay registros seleccionados para imprimir');
-            return;
-        }
-
-        const rowsToPrint = await resolveExportRows(ids);
-        if (!rowsToPrint.length) {
-            toast.error(t('visitantes.notprint') || 'No hay registros seleccionados para imprimir');
-            return;
-        }
-
-        buildAndPrint(rowsToPrint, {
-            title: t('visitantes.bitacorasImprimir', 'Bitácoras - Imprimir'),
-            headers: ['Date', 'Last name', 'First name', 'ID', 'Reason of visit', 'Exit Time', 'Number of people', 'Station', 'Client', 'Site'],
-        });
+        w.document.write(html);
+        w.document.close();
+        w.focus();
+        setTimeout(() => { w.print(); }, 500);
     };
 
     // Shared async-list hook: debounced (one request per typing burst),
@@ -1128,37 +1038,14 @@ export default function Visitors() {
                             </SheetContent>
                         </Sheet>
 
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    size="icon"
-                                    className="rounded-full"
-                                    type="button"
-                                >
-                                    <MoreVertical className="h-4 w-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-56">
-                                <DropdownMenuItem onClick={handleExportCSV}>
-                                    <FileDown className="mr-2 h-4 w-4" />
-                                    {t('visitantes.exportCSV') || 'Exportar CSV'}
-                                </DropdownMenuItem>
-
-                                <DropdownMenuItem onClick={handleExportPDF}>
-                                    <Printer className="mr-2 h-4 w-4" />
-                                    {t('visitantes.exportPDF') || 'Exportar PDF'}
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={handlePrintSelected}>
-                                    <Printer className="mr-2 h-4 w-4" />
-                                    {t('visitantes.print') || 'Imprimir'}
-                                </DropdownMenuItem>
-                                {/*<DropdownMenuItem onClick={() => console.log('Correo') }>
-                                    <Mail className="mr-2 h-4 w-4" />
-                                    {t('visitantes.email') || 'Correo Electrónico'}
-                                </DropdownMenuItem>*/}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        {/* Un icono de tres puntos sin rótulo no dice que ahí
+                            se exporta; y de los tres formatos sólo ofrecía dos,
+                            porque el de Excel se había quedado sin botón. */}
+                        <ExportMenu
+                            onExport={exportarBitacoras}
+                            onPrint={handlePrintSelected}
+                            label={t('visitantes.exportar', 'Exportar')}
+                        />
                 </Toolbar>
 
                 <Section title={t('visitantes.bitacoras') || 'Bitácoras'} icon={<Users />}>

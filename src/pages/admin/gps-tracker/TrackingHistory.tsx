@@ -7,7 +7,9 @@ import {
   Select, SelectTrigger, SelectContent, SelectItem, SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { History, Map as MapIcon, FileSpreadsheet, Loader2, MapPin } from "lucide-react";
+import { History, Map as MapIcon, Loader2, MapPin } from "lucide-react";
+import ExportMenu from "@/components/reports/ExportMenu";
+import { exportMatrix, type ExportFormat } from "@/lib/export/reportExport";
 import Breadcrumb from "@/components/ui/breadcrumb";
 import { rangeBounds } from "@/pages/admin/Reports/reportFormat";
 import { PageContainer, PageHeader, Section, EmptyState } from "@/components/kit";
@@ -103,25 +105,38 @@ export default function TrackingHistoryPage() {
     loadTrail();
   }, [guardId, loadTrail]);
 
-  const exportCsv = () => {
+  /**
+   * El recorrido, en CSV, Excel o PDF.
+   *
+   * El PDF de un recorrido no es una rareza: es lo que se adjunta a un parte
+   * cuando hay que demostrar por dónde pasó alguien y a qué hora. Antes sólo
+   * salía el CSV, o sea el formato que no se puede firmar ni mandar a un
+   * cliente sin abrirlo antes en otra cosa.
+   */
+  const exportar = async (format: ExportFormat) => {
     if (!points.length) return;
-    const csvCell = (v: unknown) => {
-      const s = v === null || v === undefined ? "" : String(v);
-      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
-    };
-    const header = "Fecha/Hora,Latitud,Longitud,Velocidad(m/s),Precisión(m),Batería(%)";
-    const body = points
-      .map((p) => [new Date(p.at).toLocaleString(localeActual()), p.lat, p.lng, p.speed ?? "", p.accuracy ?? "", p.battery ?? ""].map(csvCell).join(","))
-      .join("\r\n");
-    const blob = new Blob(["﻿" + header + "\n" + body], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `recorrido_${to}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    const nombre = guards.find((g) => g.id === guardId)?.name || "";
+    try {
+      await exportMatrix(
+        format,
+        ["Fecha/Hora", "Latitud", "Longitud", "Velocidad (m/s)", "Precisión (m)", "Batería (%)"],
+        points.map((p) => [
+          new Date(p.at).toLocaleString(localeActual()),
+          p.lat, p.lng, p.speed ?? "", p.accuracy ?? "", p.battery ?? "",
+        ]),
+        {
+          title: t('sidebar.rastreador.historial', 'Historial de seguimiento'),
+          subtitle: `${nombre ? `${nombre} \u00b7 ` : ""}${from} a ${to} \u00b7 ${points.length} punto(s)`,
+          fileBase: `recorrido-${nombre || "gps"}-${to}`,
+        },
+        // Sólo la fecha es texto; las cinco coordenadas y medidas son números y
+        // se leen mucho mejor alineadas a la derecha.
+        ["left", "right", "right", "right", "right", "right"],
+      );
+    } catch (e) {
+      console.error("export recorrido", e);
+      toast.error("No se pudo generar el archivo");
+    }
   };
 
   const guardName = useMemo(() => guards.find((g) => g.id === guardId)?.name || "", [guards, guardId]);
@@ -172,10 +187,7 @@ export default function TrackingHistoryPage() {
           title={t('sidebar.rastreador.historial', 'Historial de seguimiento')}
           subtitle={t('ui.TrackingHistory.reproduceElRecorridoGpsReal')}
           actions={
-            <Button variant="outline" onClick={exportCsv} disabled={!points.length}>
-              <FileSpreadsheet className="size-4" />
-              Exportar
-            </Button>
+            <ExportMenu onExport={exportar} disabled={!points.length} />
           }
         />
 

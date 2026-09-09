@@ -7,7 +7,9 @@ import { Section, StatCard, EmptyState, SkeletonCards } from '@/components/kit';
 import { Button } from '@/components/ui/button';
 import attendanceService, { type AttendanceRecord } from '@/lib/api/attendanceService';
 import { StatusBadge, ApprovalBadge, STATUS_META, approvalLabel, fmtDateTime, fmtTime, fmtHours } from '@/pages/admin/nomina/shared';
-import { CalendarClock, ChevronLeft, ChevronRight, Download, Clock, CalendarDays, Timer, ExternalLink } from 'lucide-react';
+import { CalendarClock, ChevronLeft, ChevronRight, Clock, CalendarDays, Timer, ExternalLink } from 'lucide-react';
+import ExportMenu from '@/components/reports/ExportMenu';
+import { exportMatrix, type ExportFormat } from '@/lib/export/reportExport';
 
 import { localeActual } from '@/lib/localeActual'
 type Period = 'week' | 'month';
@@ -38,16 +40,11 @@ function rangeLabel(period: Period, anchor: Date): string {
   return `${s.toLocaleDateString(localeActual(), { day: '2-digit', month: sameMonth ? undefined : 'short' })} – ${e.toLocaleDateString(localeActual(), { day: '2-digit', month: 'short', year: 'numeric' })}`;
 }
 
-function csvCell(v: unknown): string {
-  const s = v == null ? '' : String(v);
-  return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
-}
-
 /**
  * Hoja de asistencia individual del vigilante — sus marcaciones (guardShift)
  * del periodo, con resumen (turnos, días, horas, tardanzas), tabla detallada y
- * exportación CSV. Es la vista de Nómina · Registros filtrada a un solo
- * trabajador. :id = securityGuard id (guardShift.guardNameId).
+ * exportación en CSV, Excel o PDF. Es la vista de Nómina · Registros filtrada a
+ * un solo trabajador. :id = securityGuard id (guardShift.guardNameId).
  */
 export default function GuardAsistenciaPage() {
   const { t } = useTranslation();
@@ -87,28 +84,47 @@ export default function GuardAsistenciaPage() {
     return { shifts: rows.length, days: days.size, hours: Math.round(hours * 100) / 100, late };
   }, [rows]);
 
-  const exportCsv = () => {
+  /**
+   * La hoja de asistencia de ESTA persona, en los tres formatos.
+   *
+   * Es el documento que se imprime para una conversación de recursos humanos o
+   * para adjuntar a una liquidación, y salía sólo en CSV: para llevarlo a una
+   * reunión había que abrirlo, darle formato a mano y volverlo a exportar.
+   */
+  const COLUMNAS_EXPORT: { label: string; get: (r: AttendanceRecord) => string | number; align?: 'left' | 'right' }[] = [
+    { label: 'Fecha', get: (r) => (r.punchInTime ? new Date(r.punchInTime).toLocaleDateString(localeActual()) : '') },
+    { label: 'Puesto', get: (r) => r.stationName?.stationName || '' },
+    { label: 'Programado inicio', get: (r) => fmtTime(r.scheduledStart) },
+    { label: 'Programado fin', get: (r) => fmtTime(r.scheduledEnd) },
+    { label: 'Entrada', get: (r) => (r.punchInTime ? new Date(r.punchInTime).toLocaleString(localeActual()) : '') },
+    { label: 'Salida', get: (r) => (r.punchOutTime ? new Date(r.punchOutTime).toLocaleString(localeActual()) : '') },
+    { label: 'Horas', get: (r) => r.hoursWorked ?? '', align: 'right' },
+    { label: 'Tarde (min)', get: (r) => r.lateMinutes ?? 0, align: 'right' },
+    { label: 'Extra (min)', get: (r) => r.overtimeMinutes ?? 0, align: 'right' },
+    { label: 'Fuera de geocerca', get: (r) => (r.punchInOutsideGeofence ? 'Sí' : 'No') },
+    { label: 'Estado', get: (r) => STATUS_META[r.status]?.label || r.status || '' },
+    { label: 'Aprobación', get: (r) => approvalLabel(r.approvalStatus) },
+  ];
+
+  const exportar = async (format: ExportFormat) => {
     if (!rows.length) { toast.error(t('comun.noHayRegistrosParaExportar')); return; }
-    const headers = ['Fecha', 'Puesto', 'Programado inicio', 'Programado fin', 'Entrada', 'Salida', 'Horas', 'Tarde (min)', 'Extra (min)', 'Fuera de geocerca', 'Estado', 'Aprobación'];
-    const body = rows.map((r) => [
-      r.punchInTime ? new Date(r.punchInTime).toLocaleDateString(localeActual()) : '',
-      r.stationName?.stationName || '',
-      fmtTime(r.scheduledStart), fmtTime(r.scheduledEnd),
-      r.punchInTime ? new Date(r.punchInTime).toLocaleString(localeActual()) : '',
-      r.punchOutTime ? new Date(r.punchOutTime).toLocaleString(localeActual()) : '',
-      r.hoursWorked ?? '', r.lateMinutes ?? 0, r.overtimeMinutes ?? 0,
-      r.punchInOutsideGeofence ? 'Sí' : 'No',
-      STATUS_META[r.status]?.label || r.status || '', approvalLabel(r.approvalStatus),
-    ]);
-    const csv = [headers, ...body].map((row) => row.map(csvCell).join(',')).join('\r\n');
-    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `asistencia_${period}_${rangeStart.toISOString().slice(0, 10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast.success(`${rows.length} registro(s) exportado(s)`);
+    try {
+      await exportMatrix(
+        format,
+        COLUMNAS_EXPORT.map((c) => c.label),
+        rows.map((r) => COLUMNAS_EXPORT.map((c) => c.get(r))),
+        {
+          title: 'Hoja de asistencia',
+          subtitle: `${rangeLabel(period, anchor)} \u00b7 ${rows.length} registro(s)`,
+          fileBase: `asistencia-${period}-${rangeStart.toISOString().slice(0, 10)}`,
+        },
+        COLUMNAS_EXPORT.map((c) => c.align || 'left'),
+      );
+      toast.success(`${rows.length} registro(s) exportado(s)`);
+    } catch (e) {
+      console.error('export asistencia vigilante', e);
+      toast.error('No se pudo generar el archivo');
+    }
   };
 
   return (
@@ -145,9 +161,7 @@ export default function GuardAsistenciaPage() {
                 <span className="min-w-[150px] text-center text-sm font-medium capitalize">{rangeLabel(period, anchor)}</span>
                 <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setAnchor((a) => shiftAnchor(period, a, 1))}><ChevronRight className="h-4 w-4" /></Button>
               </div>
-              <Button variant="outline" size="sm" className="gap-1.5" onClick={exportCsv} disabled={!rows.length}>
-                <Download className="h-4 w-4" /> CSV
-              </Button>
+              <ExportMenu onExport={exportar} disabled={!rows.length} size="sm" />
             </div>
           }
         >

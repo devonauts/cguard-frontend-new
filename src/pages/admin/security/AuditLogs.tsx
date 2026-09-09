@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from 'react-i18next';
 import { toast } from "sonner";
-import { ShieldCheck, AlertTriangle, RefreshCw, Inbox, Download } from "lucide-react";
+import { ShieldCheck, AlertTriangle, RefreshCw, Inbox } from "lucide-react";
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
 import {
   PageContainer, PageHeader, Section, Toolbar, StatusBadge, EmptyState,
 } from "@/components/kit";
 import { ApiService } from "@/services/api/apiService";
+import ExportMenu from "@/components/reports/ExportMenu";
+import { descargarInforme } from "@/lib/export/serverDownload";
+import type { ExportFormat } from "@/lib/export/reportExport";
 import {
   AuditRow as AuditTr, AuditSearch, AuditSkeleton, AuditTable, SeverityRail,
   fmtStamp, metaFor,
@@ -29,37 +32,27 @@ export default function AuditLogs() {
   const tid = () => localStorage.getItem("tenantId") || "";
 
   /**
-   * Descarga la bitácora en CSV.
+   * Descarga la bitácora en el formato pedido: CSV, Excel o PDF.
    *
-   * No se podía exportar: la pantalla listaba y paginaba, y la única salida era
-   * copiar a mano. Es lo primero que pide un auditor externo — y desde que la
-   * retención de datos borra de verdad, es lo que hay que poder sacar ANTES de
-   * que se purgue.
+   * No se podía exportar en absoluto: la pantalla listaba y paginaba, y la
+   * única salida era copiar a mano. Es lo primero que pide un auditor externo —
+   * y desde que la retención de datos borra de verdad, es lo que hay que poder
+   * sacar ANTES de que se purgue.
    *
-   * Va con `fetch` y no con ApiService porque esto no devuelve JSON: es un
-   * archivo, y hace falta el blob y el nombre que manda el servidor.
+   * Los tres los arma el SERVIDOR, no esta pantalla: aquí sólo hay las 300
+   * filas que se cargan para pintar la tabla, y una bitácora recortada a 300
+   * líneas no le sirve a nadie que la esté auditando. El servidor exporta lo
+   * que corresponde al filtro, hasta su tope de cincuenta mil.
    */
-  const exportar = async () => {
+  const exportar = async (format: ExportFormat) => {
     setBajando(true);
     try {
-      const params = q.trim() ? `?search=${encodeURIComponent(q.trim())}` : "";
-      // Mismas base y clave de token que ApiService (`authToken`, no `jwt`) — con
-      // la clave equivocada la descarga daría 401 sin decir por qué.
-      const base = (import.meta.env.VITE_API_URL ?? "http://localhost:3001/api").replace(/\/+$/, "");
-      const resp = await fetch(
-        `${base}/tenant/${tid()}/security/audit-logs/export${params}`,
-        { headers: { Authorization: `Bearer ${localStorage.getItem("authToken") || ""}` } },
+      const params = new URLSearchParams({ format });
+      if (q.trim()) params.set("search", q.trim());
+      await descargarInforme(
+        `/tenant/${tid()}/security/audit-logs/export?${params.toString()}`,
+        { format, nombreBase: `bitacora-accesos-${new Date().toISOString().slice(0, 10)}` },
       );
-      if (!resp.ok) throw new Error(String(resp.status));
-      const blob = await resp.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `bitacora-accesos-${new Date().toISOString().slice(0, 10)}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
     } catch {
       toast.error(t('ui.AuditLogs.noSePudoDescargarEl'));
     } finally {
@@ -111,16 +104,14 @@ export default function AuditLogs() {
 
         <Toolbar>
           <AuditSearch value={q} onChange={setQ} placeholder={t("ui.AuditLogs.buscarPorUsuarioDireccionO", "Buscar por usuario, dirección o dispositivo…")} />
-          <Button
-            variant="outline"
-            className="ml-auto"
-            onClick={exportar}
-            disabled={bajando || loading}
-            title={t("ui.AuditLogs.descargarEnCsvLoQue", "Descargar en CSV lo que estás viendo")}
-          >
-            <Download className="mr-2 size-4" />
-            {bajando ? "Preparando…" : "Descargar CSV"}
-          </Button>
+          <div className="ml-auto">
+            <ExportMenu
+              onExport={exportar}
+              busy={bajando}
+              disabled={loading}
+              label={t("ui.AuditLogs.descargar", "Descargar")}
+            />
+          </div>
           <Button variant="outline" size="icon" onClick={load} title="Recargar" aria-label="Recargar">
 
             <RefreshCw className={`size-4 ${loading ? "animate-spin" : ""}`} />

@@ -1,8 +1,9 @@
-import { loadXlsx } from '../../../lib/lazyXlsx';
 import { useTranslation } from 'react-i18next';
 import { useMemo, useState, useEffect, useCallback, FormEvent } from "react";
 import { useAsyncList } from "@/hooks/useAsyncList";
-import { Search, Filter as FilterIcon, MoreVertical, FileDown, FileSpreadsheet, Printer, ClipboardList, LogIn, LogOut } from "lucide-react";
+import { Search, Filter as FilterIcon, ClipboardList, LogIn, LogOut } from "lucide-react";
+import ExportMenu from "@/components/reports/ExportMenu";
+import { exportMatrix, type ExportFormat } from "@/lib/export/reportExport";
 import {
     PageContainer,
     PageHeader,
@@ -33,12 +34,6 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import visitorLogService, { VisitorLogFilters } from "@/lib/api/visitorLogService";
@@ -345,31 +340,39 @@ export default function Visits() {
         "Puesto de seguridad": getPostSiteLabel(r) === "-" ? "" : getPostSiteLabel(r),
     });
 
-    const handleExportExcel = async () => {
+    /**
+     * Los tres archivos del registro de visitas, sobre `toExportRow`.
+     *
+     * ── QUÉ HABÍA ────────────────────────────────────────────────────────
+     * El menú ofrecía «Exportar como PDF» e «Imprimir», y las DOS llamaban a
+     * la misma función: abrir una pestaña y llamar a `print()`. O sea, dos
+     * rótulos distintos para lo mismo, y ningún PDF. CSV no había ninguno.
+     * Ahora el PDF baja como archivo, el CSV existe, y «Imprimir» queda como
+     * lo que siempre fue —la vista de impresión— en su propio sitio.
+     */
+    const exportarVisitas = async (format: ExportFormat) => {
         const subjects = await exportSubjects();
         if (!subjects.length) {
             toast.error(t('comun.noHayRegistrosParaExportar'));
             return;
         }
         try {
-            const data = subjects.map(toExportRow);
-            const XLSX = await loadXlsx();
-            const worksheet = XLSX.utils.json_to_sheet(data, { header: exportKeys });
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Visitas");
-            const wbout = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-            const blob = new Blob([wbout], {
-                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `visitas_export_${new Date().toISOString().slice(0, 10)}.xlsx`;
-            a.click();
-            URL.revokeObjectURL(url);
+            await exportMatrix(
+                format,
+                exportKeys,
+                subjects.map((r) => {
+                    const fila = toExportRow(r) as Record<string, string>;
+                    return exportKeys.map((k) => fila[k] ?? '');
+                }),
+                {
+                    title: t('ui.Visits.registroDeVisitas', 'Registro de visitas'),
+                    subtitle: `${subjects.length} registro(s)`,
+                    fileBase: `visitas_export_${new Date().toISOString().slice(0, 10)}`,
+                },
+            );
         } catch (e) {
-            console.error("Excel export failed", e);
-            toast.error("Error exportando a Excel");
+            console.error('Export visitas failed', e);
+            toast.error('No se pudo generar el archivo');
         }
     };
 
@@ -652,27 +655,10 @@ export default function Visits() {
                             </SheetContent>
                         </Sheet>
 
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="outline" size="icon">
-                                    <MoreVertical className="h-4 w-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-56">
-                                <DropdownMenuItem onClick={() => buildAndPrint("Visitas")}>
-                                    <FileDown className="mr-2 h-4 w-4" />
-                                    <span>Exportar como PDF</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={handleExportExcel}>
-                                    <FileSpreadsheet className="mr-2 h-4 w-4" />
-                                    <span>Exportar como Excel</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => buildAndPrint("Visitas")}>
-                                    <Printer className="mr-2 h-4 w-4" />
-                                    <span>Imprimir</span>
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        <ExportMenu
+                            onExport={exportarVisitas}
+                            onPrint={() => buildAndPrint(t('ui.Visits.registroDeVisitas', 'Registro de visitas'))}
+                        />
                 </Toolbar>
 
                 <Section title={t('ui.Visits.registroDeVisitas', 'Registro de visitas')} icon={<ClipboardList />}>

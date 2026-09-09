@@ -3,20 +3,21 @@ import { useTranslation } from 'react-i18next';
 import { useSearchParams } from "react-router-dom";
 import AppLayout from "@/layouts/app-layout";
 import { DataTable, type Column } from "@/components/table/DataTable";
-import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import attendanceService, { type AttendanceRecord } from "@/lib/api/attendanceService";
 import departmentService, { type Department } from "@/lib/api/departmentService";
 import GoogleMapEmbed from "@/components/GoogleMap/GoogleMapEmbed";
 import StaticMapImage from "@/components/maps/StaticMapImage";
 import { useFileUrl } from "@/lib/fileUrl";
-import { StatusBadge, PayrollBadge, PAYROLL_FLOW_META, PAYROLL_FLOW_NEXT, STATUS_META, approvalLabel, fmtTime, fmtHours } from "./shared";
+import { StatusBadge, PayrollBadge, PAYROLL_FLOW_META, PAYROLL_FLOW_NEXT, STATUS_META, fmtTime, fmtHours } from "./shared";
 import { PageContainer, PageHeader, Section, SkeletonCards, Segmented, Toolbar, StatusBadge as ToneBadge, EmptyState } from "@/components/kit";
-import { ClipboardCheck, ClipboardList, Filter, Download, ChevronLeft, ChevronRight, MapPin, Users } from "lucide-react";
+import { ClipboardCheck, ClipboardList, Filter, ChevronLeft, ChevronRight, MapPin, Users } from "lucide-react";
 import { BulkActionsSelect } from "@/components/table/BulkActionsSelect";
 import TimesheetModal from "./TimesheetModal";
 import { usePermissions } from "@/hooks/usePermissions";
 import { confirmDialog } from "@/components/ui/confirmDialog";
+import ExportMenu from "@/components/reports/ExportMenu";
+import type { ExportFormat } from "@/lib/export/reportExport";
 
 import { localeActual } from '@/lib/localeActual'
 const STATUS_OPTIONS = [
@@ -57,11 +58,6 @@ function rangeLabel(period: Period, anchor: Date): string {
   if (period === "month") return s.toLocaleDateString(localeActual(), { month: "long", year: "numeric" });
   const sameMonth = s.getMonth() === e.getMonth();
   return `${s.toLocaleDateString(localeActual(), { day: "2-digit", month: sameMonth ? undefined : "short" })} – ${e.toLocaleDateString(localeActual(), { day: "2-digit", month: "short", year: "numeric" })}`;
-}
-
-function csvCell(v: unknown): string {
-  const s = v == null ? "" : String(v);
-  return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
 export default function NominaRecords() {
@@ -160,37 +156,6 @@ export default function NominaRecords() {
     () => (payrollStatus ? rows.filter((r) => String(r.payrollStatus || "") === payrollStatus) : rows),
     [rows, payrollStatus],
   );
-
-  // Export the current period's records to CSV (UTF-8 BOM so Excel reads accents).
-  const exportCsv = () => {
-    if (!rows.length) { toast.error(t('comun.noHayRegistrosParaExportar')); return; }
-    const headers = [
-      "Fecha", "Vigilante", "Puesto", "Programado inicio", "Programado fin",
-      "Entrada", "Salida", "Horas", "Tarde (min)", "Extra (min)",
-      "Rondas", "Incidentes", "Fuera de geocerca", "Estado", "Aprobación",
-    ];
-    const body = rows.map((r) => [
-      r.punchInTime ? new Date(r.punchInTime).toLocaleDateString(localeActual()) : "",
-      r.guardName?.fullName || "",
-      r.stationName?.stationName || "",
-      fmtTime(r.scheduledStart), fmtTime(r.scheduledEnd),
-      r.punchInTime ? new Date(r.punchInTime).toLocaleString(localeActual()) : "",
-      r.punchOutTime ? new Date(r.punchOutTime).toLocaleString(localeActual()) : "",
-      r.hoursWorked ?? "", r.lateMinutes ?? 0, r.overtimeMinutes ?? 0,
-      r.numberOfPatrolsDuringShift ?? 0, r.numberOfIncidentsDurindShift ?? 0,
-      r.punchInOutsideGeofence ? "Sí" : "No",
-      STATUS_META[r.status]?.label || r.status || "", approvalLabel(r.approvalStatus),
-    ]);
-    const csv = [headers, ...body].map((row) => row.map(csvCell).join(",")).join("\r\n");
-    const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `asistencia_${period}_${rangeStart.toISOString().slice(0, 10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast.success(`${rows.length} registro(s) exportado(s)`);
-  };
 
   // Once rows are loaded, open the detail for the notification's record (once).
   useEffect(() => {
@@ -370,7 +335,7 @@ export default function NominaRecords() {
   };
 
   /** Descarga del servidor: el navegador sólo tiene lo que cargó. */
-  const exportar = async (formato: "pdf" | "excel" | "csv") => {
+  const exportar = async (formato: ExportFormat) => {
     setBusy(true);
     try {
       await attendanceService.exportRecords({
@@ -403,22 +368,16 @@ export default function NominaRecords() {
                vacaciones y falta —que no son fichajes— y no se queda en las mil
                filas que el navegador alcanzó a cargar. Con filas marcadas,
                exporta sólo esas. */
-            <div className="flex items-center gap-2">
-              <select
-                className="cg-input cg-focus px-3 py-2 text-sm"
-                value=""
-                disabled={busy}
-                onChange={(e) => { const v = e.target.value; e.currentTarget.value = ""; if (v) void exportar(v as "pdf" | "excel" | "csv"); }}
-              >
-                <option value="">{selectedIds.length ? `Exportar ${selectedIds.length} seleccionada(s)…` : "Exportar…"}</option>
-                <option value="pdf">PDF</option>
-                <option value="excel">Excel</option>
-                <option value="csv">CSV</option>
-              </select>
-              <Button variant="outline" onClick={exportCsv} className="gap-2" title="CSV rápido de lo que hay en pantalla">
-                <Download className="size-4" /> CSV
-              </Button>
-            </div>
+            /* Un solo control. Antes había DOS: un `<select>` nativo (que en
+               iOS abre la rueda del sistema y no se parece a nada del CRM) y,
+               al lado, un botón «CSV» que exportaba OTRA cosa —sólo las filas
+               que el navegador había alcanzado a cargar—. Dos botones de
+               exportar que daban archivos distintos era la peor parte. */
+            <ExportMenu
+              onExport={exportar}
+              busy={busy}
+              label={selectedIds.length ? `Exportar ${selectedIds.length}` : "Exportar"}
+            />
           }
         />
 

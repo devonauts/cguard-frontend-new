@@ -1,5 +1,7 @@
 import { ApiService } from "@/services/api/apiService";
 import i18n from '@/i18n';
+import { descargarInforme } from "@/lib/export/serverDownload";
+import type { ExportFormat } from "@/lib/export/reportExport";
 
 const tid = (): string => localStorage.getItem("tenantId") || "";
 
@@ -435,6 +437,21 @@ export const alarmService = {
   },
   auditExport(params?: { days?: number }): Promise<{ days: number; count: number; rows: any[] }> {
     return ApiService.get(`/tenant/${tid()}/alarm/reports/audit-export${qstr(params)}`);
+  },
+  /**
+   * El mismo rastro de auditoría, pero como archivo ya armado por el servidor.
+   *
+   * Es el MISMO endpoint: sin `format` devuelve el JSON que pinta la pantalla,
+   * con `format` devuelve el CSV, el Excel o el PDF. Se aprovecha así en vez de
+   * abrir una ruta nueva porque los datos, el permiso y el tope de filas son
+   * exactamente los mismos; lo único que cambia es el envoltorio.
+   */
+  auditExportFile(format: ExportFormat, params?: { days?: number }): Promise<void> {
+    const days = params?.days ?? 30;
+    return descargarInforme(
+      `/tenant/${tid()}/alarm/reports/audit-export?days=${days}&format=${format}`,
+      { format, nombreBase: `auditoria-alarmas-${days}d` },
+    );
   },
 
   // --- Signals / Events ---

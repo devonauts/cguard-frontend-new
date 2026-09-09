@@ -1,4 +1,6 @@
 import api, { getAuthToken } from "../api";
+import { descargarInforme } from "@/lib/export/serverDownload";
+import type { ExportFormat } from "@/lib/export/reportExport";
 import { cachedFetch, invalidateEntity } from "@/lib/queryClient";
 import type {
     Client,
@@ -664,18 +666,24 @@ export const clientService = {
         const { data } = await api.get<any>(`/tenant/${tenantId}/client-account/${clientId}/reports${qs}`, { toast: { silentError: true } });
         return data?.data ?? data;
     },
-    async exportClientReport(clientId: string, type: string, from?: string, to?: string) {
+    /**
+     * El informe del cliente, en el formato pedido.
+     *
+     * El nombre del archivo lo pone el SERVIDOR: aquí se escribía a mano
+     * `reporte-<tipo>.csv`, así que en cuanto hubo más de un formato el PDF
+     * habría bajado llamándose `.csv` — y, peor, sin el rango de fechas que el
+     * servidor sí pone en el nombre. Se conserva un nombre de reserva por si la
+     * cabecera no llega.
+     */
+    async exportClientReport(clientId: string, type: string, from?: string, to?: string, format: ExportFormat = 'csv') {
         const tenantId = getTenantId();
-        const params = new URLSearchParams({ type });
+        const params = new URLSearchParams({ type, format });
         if (from) params.set('from', from);
         if (to) params.set('to', to);
-        const resp = await api.get<Blob>(`/tenant/${tenantId}/client-account/${clientId}/reports-export?${params.toString()}`, { responseType: 'blob' });
-        const blob = resp.data;
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url; a.download = `reporte-${type}.csv`;
-        document.body.appendChild(a); a.click(); a.remove();
-        window.URL.revokeObjectURL(url);
+        await descargarInforme(
+            `/tenant/${tenantId}/client-account/${clientId}/reports-export?${params.toString()}`,
+            { format, nombreBase: `reporte-${type}` },
+        );
     },
     async createReportSchedule(clientId: string, payload: { name: string; type: string; frequency: string }) {
         const tenantId = getTenantId();
