@@ -1,4 +1,6 @@
 import api from '@/lib/api';
+import { descargarInforme } from "@/lib/export/serverDownload";
+import type { ExportFormat } from "@/lib/export/reportExport";
 
 const getTenantId = (): string => {
   const t = localStorage.getItem('tenantId');
@@ -35,6 +37,32 @@ export interface PaginationOptions {
 }
 
 export const visitorLogService = {
+  /**
+   * Baja los registros de garita del periodo pedido, en el formato pedido.
+   *
+   * Lo arma el SERVIDOR y no el navegador a propósito: la pestaña de control
+   * vehicular sólo carga 200 filas y filtra las que traen placa en memoria, así
+   * que exportar lo que está en pantalla habría bajado un archivo que parece
+   * completo y no lo es. El servidor consulta con el filtro puesto.
+   */
+  async exportar(
+    format: ExportFormat,
+    opciones: { stationId?: string; kind: 'visitors' | 'vehicles'; from: string; to: string; nombreBase: string },
+  ): Promise<void> {
+    const t = getTenantId();
+    const qs = new URLSearchParams({
+      format,
+      kind: opciones.kind,
+      from: opciones.from,
+      to: opciones.to,
+    });
+    if (opciones.stationId) qs.set('stationId', opciones.stationId);
+    await descargarInforme(`/tenant/${t}/visitor-log/export?${qs.toString()}`, {
+      format,
+      nombreBase: opciones.nombreBase,
+    });
+  },
+
   async list(filters: VisitorLogFilters = {}, options: PaginationOptions = { limit: 25, offset: 0 }) {
     const tenantId = getTenantId();
     const params = new URLSearchParams();

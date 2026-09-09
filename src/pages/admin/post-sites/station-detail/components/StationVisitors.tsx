@@ -12,6 +12,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Section, EmptyState, SkeletonCards, FadeIn, SmartImage } from '@/components/kit';
+import ExportarPeriodo, { type Ventana } from '@/components/reports/ExportarPeriodo';
+import type { ExportFormat } from '@/lib/export/reportExport';
 import type { Station } from '@/types';
 
 type Props = { station: Station; stationId: string; postSiteId: string };
@@ -369,6 +371,25 @@ export default function StationVisitors({ stationId }: Props) {
   const [editRow, setEditRow] = useState<VisitorRow | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
 
+  /**
+   * La exportación la arma el SERVIDOR con el periodo pedido, no la página con
+   * lo que tenga paginado: quien pide «la semana» quiere la semana entera, no
+   * los veinticinco registros que se ven.
+   */
+  const exportar = async (format: ExportFormat, v: Ventana) => {
+    try {
+      await visitorLogService.exportar(format, {
+        stationId,
+        kind: 'visitors',
+        from: v.from,
+        to: v.to,
+        nombreBase: `visitantes_${v.etiqueta}`,
+      });
+    } catch (e: any) {
+      toast.error(e?.message || 'No se pudo generar el archivo');
+    }
+  };
+
   const load = useCallback(async () => {
     if (!stationId) return;
     setLoading(true); setError(null);
@@ -399,9 +420,14 @@ export default function StationVisitors({ stationId }: Props) {
         </span>
       }
       action={
-        <Button variant="brand" size="sm" onClick={() => { setEditRow(null); setFormOpen(true); }} className="gap-1">
-          <Plus size={14} /> Nuevo visitante
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Sin registros el menú se deshabilita: un archivo vacío se lee como
+              que el sistema perdió los datos, no como que no hubo visitas. */}
+          <ExportarPeriodo onExport={exportar} disabled={total === 0} />
+          <Button variant="brand" size="sm" onClick={() => { setEditRow(null); setFormOpen(true); }} className="gap-1">
+            <Plus size={14} /> Nuevo visitante
+          </Button>
+        </div>
       }
       contentClassName="-mx-5 -mb-5"
     >

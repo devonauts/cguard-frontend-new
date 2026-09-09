@@ -6,6 +6,8 @@ import { vehicleControlService, type Ocupacion, type ReglasVehiculo } from '@/li
 import { toast } from 'sonner';
 import { Section, EmptyState, SkeletonCards, FadeIn, StatusBadge, SmartImage } from '@/components/kit';
 import { fileUrlFromFile } from '@/lib/fileUrl';
+import ExportarPeriodo, { type Ventana } from '@/components/reports/ExportarPeriodo';
+import type { ExportFormat } from '@/lib/export/reportExport';
 import type { Station } from '@/types';
 
 import { localeActual } from '@/lib/localeActual'
@@ -148,6 +150,25 @@ export default function StationParking({ stationId }: Props) {
     return () => { mounted = false; };
   }, [stationId, t]);
 
+  /**
+   * La exportación NO sale de `vehiculos`: esa lista son las 200 últimas filas
+   * que cupieron en la pantalla. Se le pide al servidor el periodo entero, que
+   * es lo que el cliente espera cuando pide «el mes».
+   */
+  const exportar = async (format: ExportFormat, v: Ventana) => {
+    try {
+      await visitorLogService.exportar(format, {
+        stationId,
+        kind: 'vehicles',
+        from: v.from,
+        to: v.to,
+        nombreBase: `control-vehicular_${v.etiqueta}`,
+      });
+    } catch (e: any) {
+      toast.error(e?.message || t('station.parking.exportError', 'No se pudo generar el archivo'));
+    }
+  };
+
   const vehiculos = useMemo(() => {
     const conPlaca = rows.filter(r => String(r.vehiclePlate || r.vehicle_plate || '').trim());
     // Más reciente primero: lo que acaba de entrar es lo que se está mirando.
@@ -175,6 +196,10 @@ export default function StationParking({ stationId }: Props) {
       action={
         !loading ? (
           <>
+          {/* Exportar va PRIMERO en la barra: es la acción que se busca cuando
+              se entra a esta pestaña a final de mes. Se deshabilita sin filas,
+              porque bajar un archivo vacío parece que el sistema perdió datos. */}
+          <ExportarPeriodo onExport={exportar} disabled={vehiculos.length === 0} />
           {/* El cupo sólo aparece si el puesto lo tiene configurado. */}
           {ocup?.reglas.enabled && ocup.capacidad != null && (
             <span
