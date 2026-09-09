@@ -10980,15 +10980,6 @@
       "reportesDeFalsasAlarmas": "Rapporten vals alarm",
       "sinCasosCerradosConDisposicionEnElPeriodo": "Geen afgesloten meldingen met afhandeling in deze periode."
     },
-    "ApiKeysPage": {
-      "aunNoHayLlaves": "Nog geen sleutels",
-      "comoSeUsa": "Zo gebruik je het",
-      "copiaTuClaveAhora": "Kopieer je sleutel nu",
-      "crearLlaveDeApi": "API-sleutel aanmaken",
-      "elSistemaExternoLlamaA": "Het externe systeem benadert",
-      "llavesDeApi": "API-sleutels",
-      "yaLaGuarde": "Ik heb hem opgeslagen"
-    },
     "AppErrorBoundary": {
       "estaSeccionNoSePudoMostrar": "Dit onderdeel kon niet worden weergegeven",
       "errorDeRenderizado": "Weergavefout"

@@ -6624,9 +6624,7 @@
       "central.desc": "Si tienes consola 24/7: qué puesto es, si sus operadores salen a cubrir y a quién llegan las alertas.",
       "sms": "Saldo SMS",
       "idioma": "Idioma",
-      "idioma.desc": "En qué idioma ves el CRM. Automático o el que tú elijas.",
-      "api-keys": "Llaves de API",
-      "api-keys.desc": "Da a un sistema externo (por ejemplo, el conector de nómina) acceso de solo lectura a tus trabajadores y horas."
+      "idioma.desc": "En qué idioma ves el CRM. Automático o el que tú elijas."
     },
     "section": {
       "mi_cuenta": "Mi cuenta",
@@ -10501,15 +10499,6 @@
     "AlarmReports": {
       "reportesDeFalsasAlarmas": "Reportes de falsas alarmas",
       "sinCasosCerradosConDisposicionEnElPeriodo": "Sin casos cerrados con disposición en el período."
-    },
-    "ApiKeysPage": {
-      "aunNoHayLlaves": "Aún no hay llaves",
-      "comoSeUsa": "Cómo se usa",
-      "copiaTuClaveAhora": "Copia tu clave ahora",
-      "crearLlaveDeApi": "Crear llave de API",
-      "elSistemaExternoLlamaA": "El sistema externo llama a",
-      "llavesDeApi": "Llaves de API",
-      "yaLaGuarde": "Ya la guardé"
     },
     "AppErrorBoundary": {
       "estaSeccionNoSePudoMostrar": "Esta sección no se pudo mostrar",

@@ -2565,9 +2565,7 @@
       "central": "Central de monitoramento",
       "central.desc": "Central própria: quem recebe os pânicos e os alertas ao vivo.",
       "idioma": "Idioma",
-      "idioma.desc": "Em que idioma você vê o CRM. Automático ou o que você escolher.",
-      "api-keys": "Chaves de API",
-      "api-keys.desc": "Dá a um sistema externo (por exemplo, o conector da folha de pagamento) acesso somente leitura aos seus trabalhadores e horas."
+      "idioma.desc": "Em que idioma você vê o CRM. Automático ou o que você escolher."
     },
     "section": {
       "apps_y_portales": "Apps e portais",
@@ -10501,15 +10499,6 @@
     "AlarmReports": {
       "reportesDeFalsasAlarmas": "Relatórios de falsos alarmes",
       "sinCasosCerradosConDisposicionEnElPeriodo": "Sem casos encerrados com desfecho no período."
-    },
-    "ApiKeysPage": {
-      "aunNoHayLlaves": "Ainda não há chaves",
-      "comoSeUsa": "Como se usa",
-      "copiaTuClaveAhora": "Copie sua chave agora",
-      "crearLlaveDeApi": "Criar chave de API",
-      "elSistemaExternoLlamaA": "O sistema externo chama",
-      "llavesDeApi": "Chaves de API",
-      "yaLaGuarde": "Já salvei"
     },
     "AppErrorBoundary": {
       "estaSeccionNoSePudoMostrar": "Não foi possível exibir esta seção",

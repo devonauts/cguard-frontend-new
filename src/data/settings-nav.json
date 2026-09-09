@@ -327,14 +327,6 @@
             "icon": "Plug",
             "desc": "Servicios externos y credenciales para conectar otros sistemas.",
             "keywords": "integracion api token webhook conectar externo desarrollador"
-          },
-          {
-            "id": "api-keys",
-            "label": "Llaves de API",
-            "path": "/setting/api-keys",
-            "icon": "KeyRound",
-            "desc": "Da a un sistema externo (por ejemplo, el conector de nómina) acceso de solo lectura a tus trabajadores y horas.",
-            "keywords": "api key llave token nomina conseg buk conector externo solo lectura desarrollador"
           }
         ]
       }

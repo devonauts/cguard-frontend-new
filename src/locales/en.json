@@ -6624,9 +6624,7 @@
       "central.desc": "If you run a 24/7 console: which post it is, whether its operators cover shifts, and who gets the alerts.",
       "sms": "SMS balance",
       "idioma": "Language",
-      "idioma.desc": "What language you see the CRM in. Automatic, or the one you pick.",
-      "api-keys": "API keys",
-      "api-keys.desc": "Give an external system (e.g. the payroll connector) read-only access to your workers and hours."
+      "idioma.desc": "What language you see the CRM in. Automatic, or the one you pick."
     },
     "section": {
       "mi_cuenta": "My account",
@@ -10501,15 +10499,6 @@
     "AlarmReports": {
       "reportesDeFalsasAlarmas": "False alarm reports",
       "sinCasosCerradosConDisposicionEnElPeriodo": "No cases closed with an outcome in this period."
-    },
-    "ApiKeysPage": {
-      "aunNoHayLlaves": "No keys yet",
-      "comoSeUsa": "How it is used",
-      "copiaTuClaveAhora": "Copy your key now",
-      "crearLlaveDeApi": "Create API key",
-      "elSistemaExternoLlamaA": "The external system calls",
-      "llavesDeApi": "API keys",
-      "yaLaGuarde": "I've saved it"
     },
     "AppErrorBoundary": {
       "estaSeccionNoSePudoMostrar": "This section could not be displayed",

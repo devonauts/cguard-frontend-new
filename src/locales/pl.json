@@ -10980,15 +10980,6 @@
       "reportesDeFalsasAlarmas": "Raporty fałszywych alarmów",
       "sinCasosCerradosConDisposicionEnElPeriodo": "Brak spraw zamkniętych z rozstrzygnięciem w tym okresie."
     },
-    "ApiKeysPage": {
-      "aunNoHayLlaves": "Nie ma jeszcze kluczy",
-      "comoSeUsa": "Jak tego używać",
-      "copiaTuClaveAhora": "Prosimy skopiować klucz teraz",
-      "crearLlaveDeApi": "Utwórz klucz API",
-      "elSistemaExternoLlamaA": "System zewnętrzny wywołuje",
-      "llavesDeApi": "Klucze API",
-      "yaLaGuarde": "Klucz zapisany"
-    },
     "AppErrorBoundary": {
       "estaSeccionNoSePudoMostrar": "Nie udało się wyświetlić tej sekcji",
       "errorDeRenderizado": "Błąd wyświetlania"

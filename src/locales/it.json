@@ -10980,15 +10980,6 @@
       "reportesDeFalsasAlarmas": "Report dei falsi allarmi",
       "sinCasosCerradosConDisposicionEnElPeriodo": "Nessun caso chiuso con esito nel periodo."
     },
-    "ApiKeysPage": {
-      "aunNoHayLlaves": "Non ci sono ancora chiavi",
-      "comoSeUsa": "Come si usa",
-      "copiaTuClaveAhora": "Copia la tua chiave adesso",
-      "crearLlaveDeApi": "Crea chiave API",
-      "elSistemaExternoLlamaA": "Il sistema esterno chiama",
-      "llavesDeApi": "Chiavi API",
-      "yaLaGuarde": "L'ho salvata"
-    },
     "AppErrorBoundary": {
       "estaSeccionNoSePudoMostrar": "Impossibile mostrare questa sezione",
       "errorDeRenderizado": "Errore di visualizzazione"

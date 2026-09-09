@@ -10980,15 +10980,6 @@
       "reportesDeFalsasAlarmas": "Rapports de fausses alarmes",
       "sinCasosCerradosConDisposicionEnElPeriodo": "Aucun dossier clôturé avec une issue sur la période."
     },
-    "ApiKeysPage": {
-      "aunNoHayLlaves": "Aucune clé",
-      "comoSeUsa": "Comment l'utiliser",
-      "copiaTuClaveAhora": "Copiez votre clé maintenant",
-      "crearLlaveDeApi": "Créer une clé d'API",
-      "elSistemaExternoLlamaA": "Le système externe appelle",
-      "llavesDeApi": "Clés d'API",
-      "yaLaGuarde": "Je l'ai enregistrée"
-    },
     "AppErrorBoundary": {
       "estaSeccionNoSePudoMostrar": "Cette section n'a pas pu s'afficher",
       "errorDeRenderizado": "Erreur d'affichage"
