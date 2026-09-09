@@ -53,6 +53,7 @@ import AgendaView from './AgendaView';
 import { COL_W, COL_STICKY_W } from './gridBand';
 
 import { localeActual } from '@/lib/localeActual'
+import { cuentaComoCobertura } from '@/lib/shiftStatus'
 import { leerAparienciaDeLaCuenta, guardarApariencia, cambioLocalReciente } from '@/lib/appearanceSync'
 import {
   type Tone, tonePill, toneCard, toneInk,
@@ -931,6 +932,19 @@ export default function Schedule() {
     // aunque su turno traiga posición, por compatibilidad con lo de antes.
     for (const s of shifts) {
       if (!s.startTime) continue;
+      // ── UN TURNO ANULADO NO CUBRE NADA ────────────────────────────────
+      // La píldora de cobertura salía de TODOS los turnos, sin mirar el
+      // estado. Marcar «Libre» a quien cubría deja su turno en `absent`
+      // (lo hace el backend en schedule-overrides), pero la casilla seguía
+      // enseñando «N ET» como si el hombre fuera a ir: en Seguridad B.A.S.
+      // se le dio el día a Edgardo Torres y su cobertura siguió pintada en
+      // el puesto, así que nadie vio el hueco y nadie mandó a nadie.
+      //
+      // El servidor manda los `absent` A PROPÓSITO —la rejilla los necesita
+      // para pintar la novedad encima y para saber que ahí falta gente—, así
+      // que el filtro tiene que estar AQUÍ, en quien responde «¿quién
+      // cubre?». Mismos estados que `VOIDED_SHIFT_STATUSES` del backend.
+      if (!cuentaComoCobertura(s)) continue;
       const esCobertura = !s.positionId || reliefGuardIds.has(s.guardId);
       if (!esCobertura) continue;
       const dateStr = dateToWall(new Date(s.startTime), tzName).dateStr;
@@ -962,6 +976,10 @@ export default function Schedule() {
     const map = new Map<string, ShiftRecord[]>();
     for (const s of shifts) {
       if (!s.startTime) continue;
+      // Mismo criterio que la píldora de arriba: si no se pinta, tampoco se
+      // ofrece en el menú ni se borra con Supr — si no, el clic derecho
+      // enseñaba «Eliminar la cobertura de X» sobre una casilla vacía.
+      if (!cuentaComoCobertura(s)) continue;
       if (s.positionId && !reliefGuardIds.has(s.guardId)) continue;
       const key = `${s.stationId}-${dateToWall(new Date(s.startTime), tzName).dateStr}`;
       const list = map.get(key);

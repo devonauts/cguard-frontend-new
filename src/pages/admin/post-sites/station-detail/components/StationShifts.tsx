@@ -103,7 +103,7 @@ interface ShiftEvent {
   guardId: string;
   start: Date;
   end: Date;
-  status: 'active' | 'upcoming' | 'completed';
+  status: 'active' | 'upcoming' | 'completed' | 'novedad';
   raw: ShiftRow;
 }
 // Aggregated coverage for a single calendar date.
@@ -124,6 +124,15 @@ interface ShiftRow {
   punchInTime?: string; punchOutTime?: string;
   start?: string; end?: string;
   guardAssignmentId?: string;
+  status?: string | null;
+  /** Lo adjunta el servidor cuando el turno lo anuló una novedad (ver shiftRepository). */
+  novedad?: {
+    tipo: string;
+    etiqueta: string;
+    nota?: string | null;
+    registradaPor?: string | null;
+    registradaEl?: string | null;
+  } | null;
 }
 
 export default function StationShifts({ station, stationId, postSiteId }: Props) {
@@ -170,8 +179,20 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
 
          Las filas siguen en la base: son historial y no se tocan. Simplemente
          no se enseñan como si alguien fuera a ir a trabajar. */
-      const ANULADOS = ['cancelled', 'transferred_out', 'absent'];
-      setRows(list.filter((r: any) => !ANULADOS.includes(String(r?.status || 'planned'))));
+      /* ── PERO UNA NOVEDAD SÍ ES HISTORIAL ───────────────────────────────
+         `absent` estaba en la misma lista que los otros dos y no es lo mismo.
+         Un turno `cancelled` o `transferred_out` dejó de existir aquí (se cerró
+         la asignación, se lo llevó otra estación): no hay nada que contar. Un
+         `absent` es una persona que SÍ estaba programada y no va a venir — y
+         eso es justo lo que el historial tiene que enseñar.
+
+         Escondiéndolo, dar el día libre a alguien lo borraba del puesto sin
+         dejar rastro: quien abría la ficha al día siguiente no podía saber que
+         Torres estaba programado, ni que se le cambió a libre, ni quién lo
+         hizo. Ahora la fila se queda, marcada como lo que es, con su motivo y
+         su autor (`novedad`, que adjunta el servidor). */
+      const DESAPARECIDOS = ['cancelled', 'transferred_out'];
+      setRows(list.filter((r: any) => !DESAPARECIDOS.includes(String(r?.status || 'planned'))));
     } catch (e: any) {
       setError(e?.message || 'Error al cargar turnos');
     } finally {
@@ -305,7 +326,11 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
       const start = new Date(r.startTime || r.punchInTime || r.start);
       const end = new Date(r.endTime || r.punchOutTime || r.end);
       const now = Date.now();
-      const status = now >= start.getTime() && now <= end.getTime() ? 'active'
+      /* Una novedad manda sobre el reloj: alguien a quien se le dio el día
+         libre no está «en servicio» a las 22:00 porque el reloj diga que sí. */
+      const status: ShiftEvent['status'] = String(r.status || '') === 'absent'
+        ? 'novedad'
+        : now >= start.getTime() && now <= end.getTime() ? 'active'
         : now < start.getTime() ? 'upcoming' : 'completed';
       return { id: r.id, guardName, guardId, start, end, status, raw: r };
     });
@@ -739,8 +764,10 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
                       {selectedDayEvents.map((ev, i) => {
                         const color = guardColorMap[ev.guardId] || GUARD_FALLBACK;
                         const isSelected = selectedShift?.id === ev.id;
-                        const estadoTono = ev.status === 'active' ? 'var(--ok)' : ev.status === 'upcoming' ? 'var(--info)' : 'var(--ink-faint)';
-                        const estadoTinta = ev.status === 'active' ? 'var(--ok-text)' : ev.status === 'upcoming' ? 'var(--info-text)' : 'var(--ink-soft)';
+                        const esNovedad = ev.status === 'novedad';
+                        const nov = ev.raw?.novedad || null;
+                        const estadoTono = esNovedad ? 'var(--warn)' : ev.status === 'active' ? 'var(--ok)' : ev.status === 'upcoming' ? 'var(--info)' : 'var(--ink-faint)';
+                        const estadoTinta = esNovedad ? 'var(--warn-text)' : ev.status === 'active' ? 'var(--ok-text)' : ev.status === 'upcoming' ? 'var(--info-text)' : 'var(--ink-soft)';
                         return (
                           <button
                             key={ev.id || i}
@@ -751,13 +778,33 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
                             <div className="flex items-center gap-2">
                               <div className="h-8 w-[3px] flex-shrink-0 rounded-full" style={{ backgroundColor: color.accent }} />
                               <div className="min-w-0 flex-1">
-                                <p className="truncate text-[12px] font-medium">{ev.guardName}</p>
+                                <p
+                                  className="truncate text-[12px] font-medium"
+                                  style={esNovedad ? { textDecoration: 'line-through', color: 'var(--ink-soft)' } : undefined}
+                                >
+                                  {ev.guardName}
+                                </p>
                                 <p className="text-[10px]" style={{ color: 'var(--ink-soft)' }}>
                                   {toDateKey(ev.start) === toDateKey(ev.end)
                                     ? `${fmtTime(ev.start)} – ${fmtTime(ev.end)}`
                                     : `${ev.start.toLocaleDateString(localeActual(), { day: 'numeric', month: 'short' })} ${fmtTime(ev.start)} – ${ev.end.toLocaleDateString(localeActual(), { day: 'numeric', month: 'short' })} ${fmtTime(ev.end)}`
                                   }
                                 </p>
+                                {/* ── LO QUE PASÓ, Y QUIÉN LO DECIDIÓ ─────────────────
+                                    El turno tachado dice que no viene; esta línea dice
+                                    por qué y de quién fue la decisión. Sin el autor la
+                                    anotación no sirve para lo único que se le pide a un
+                                    historial: responder «¿quién hizo esto?». */}
+                                {esNovedad && nov && (
+                                  <p className="mt-0.5 text-[10px]" style={{ color: 'var(--warn-text)' }}>
+                                    {nov.etiqueta}
+                                    {nov.registradaPor ? ` — lo registró ${nov.registradaPor}` : ''}
+                                    {nov.registradaEl
+                                      ? ` el ${new Date(nov.registradaEl).toLocaleDateString(localeActual(), { day: 'numeric', month: 'short' })}`
+                                      : ''}
+                                    {nov.nota ? ` · ${nov.nota}` : ''}
+                                  </p>
+                                )}
                               </div>
                               {ev.status === 'active' && (
                                 <span className="cc-dot flex-shrink-0" style={{ background: 'var(--ok)' }} />
@@ -769,7 +816,9 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
                                   className="inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-semibold"
                                   style={{ background: `color-mix(in oklab, ${estadoTono} 16%, transparent)`, color: estadoTinta }}
                                 >
-                                  {ev.status === 'active' ? 'En servicio' : ev.status === 'upcoming' ? 'Programado' : 'Completado'}
+                                  {esNovedad
+                                    ? `No se presenta — ${nov?.etiqueta || 'novedad'}`
+                                    : ev.status === 'active' ? 'En servicio' : ev.status === 'upcoming' ? 'Programado' : 'Completado'}
                                 </span>
                                 <span className="text-[9px]" style={{ color: 'var(--ink-soft)' }}>
                                   {Math.round((ev.end.getTime() - ev.start.getTime()) / (1000 * 60 * 60))}h
@@ -1011,9 +1060,17 @@ function WeekView({ days, eventsByDate, coverageByDate, guardColorMap, selectedD
                           {guards.slice(0, 3).map((ev: ShiftEvent, gi: number) => {
                             const color = guardColorMap[ev.guardId] || GUARD_FALLBACK;
                             return (
-                              <div key={ev.id || gi} className="flex items-center gap-1 rounded px-1 py-0.5" style={{ backgroundColor: color.bg }}>
+                              <div
+                                key={ev.id || gi}
+                                className="flex items-center gap-1 rounded px-1 py-0.5"
+                                style={{ backgroundColor: color.bg, opacity: ev.status === 'novedad' ? 0.55 : undefined }}
+                                title={ev.status === 'novedad' ? `${ev.raw?.novedad?.etiqueta || 'Novedad'} — no se presenta` : undefined}
+                              >
                                 <div className="h-3 w-[3px] flex-shrink-0 rounded-full" style={{ backgroundColor: color.accent }} />
-                                <span className="truncate text-[10px] font-medium" style={{ color: color.text }}>
+                                <span
+                                  className="truncate text-[10px] font-medium"
+                                  style={{ color: color.text, textDecoration: ev.status === 'novedad' ? 'line-through' : undefined }}
+                                >
                                   {ev.guardName.split(' ').slice(0, 2).join(' ')}
                                 </span>
                                 {ev.status === 'active' && <div className="ml-auto h-1.5 w-1.5 flex-shrink-0 animate-pulse rounded-full" style={{ background: 'var(--ok)' }} />}
@@ -1178,13 +1235,19 @@ function DayView({ date, coverage, dayEvents, guardColorMap, onAssign }: {
                   <div
                     key={ev.id || i}
                     className="absolute inset-x-1 z-20 overflow-hidden rounded-lg px-2 py-1 shadow-sm"
-                    style={{ top, height, backgroundColor: color.bg, borderLeft: `3px solid ${color.accent}` }}
+                    style={{ top, height, backgroundColor: color.bg, borderLeft: `3px solid ${color.accent}`, opacity: ev.status === 'novedad' ? 0.55 : undefined }}
+                    title={ev.status === 'novedad' ? `${ev.raw?.novedad?.etiqueta || 'Novedad'} — no se presenta` : undefined}
                   >
                     <div className="flex items-center gap-1.5">
                       <div className="grid h-5 w-5 shrink-0 place-items-center rounded-full text-[8px] font-bold" style={{ background: color.accent, color: 'var(--brand-ink)' }}>
                         {ev.guardName.split(' ').map((w: string) => w[0]).slice(0, 2).join('')}
                       </div>
-                      <span className="truncate text-[11px] font-semibold" style={{ color: color.text }}>{ev.guardName}</span>
+                      <span
+                        className="truncate text-[11px] font-semibold"
+                        style={{ color: color.text, textDecoration: ev.status === 'novedad' ? 'line-through' : undefined }}
+                      >
+                        {ev.guardName}
+                      </span>
                       {ev.status === 'active' && <span className="ml-auto h-1.5 w-1.5 shrink-0 animate-pulse rounded-full" style={{ background: 'var(--ok)' }} />}
                     </div>
                     {height > 36 && (
