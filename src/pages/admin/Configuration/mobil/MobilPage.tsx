@@ -830,7 +830,7 @@ export default function MobilPage() {
                     <TableRow key={s.id}>
                       <TableCell>{s.title}</TableCell>
                       <TableCell className="truncate">{s.description}</TableCell>
-                      <TableCell className="tabular-nums">{s.price ?? '-'}</TableCell>
+                      <TableCell className="tabular-nums">{s.price === null || s.price === undefined || s.price === '' ? '-' : s.price}</TableCell>
                       <TableCell className="text-center">
                         <StatusBadge tone={s.publishedOnMobile ? 'ok' : 'neutral'}>
                           {s.publishedOnMobile ? t('settings.mobil.published', { defaultValue: 'Publicado' }) : t('settings.mobil.hidden', { defaultValue: 'Oculto' })}
