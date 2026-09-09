@@ -23,7 +23,11 @@
  */
 
 /** Nadie está en el puesto: el turno se anuló, se trasladó, o la persona no va. */
-export const ESTADOS_ANULADOS = ['cancelled', 'transferred_out', 'absent'] as const;
+export const ESTADOS_ANULADOS = [
+  "cancelled",
+  "transferred_out",
+  "absent",
+] as const;
 
 /**
  * `absent` aparte de los otros dos.
@@ -35,18 +39,25 @@ export const ESTADOS_ANULADOS = ['cancelled', 'transferred_out', 'absent'] as co
  *     novedad, y el historial de la estación tiene que enseñarla con su motivo
  *     y con quién la registró.
  */
-export const ESTADO_NOVEDAD = 'absent';
+export const ESTADO_NOVEDAD = "absent";
 
 /** ¿Este turno significa que alguien va a estar en el puesto? */
-export function cuentaComoCobertura(turno: { status?: string | null } | null | undefined): boolean {
+export function cuentaComoCobertura(
+  turno: { status?: string | null } | null | undefined,
+): boolean {
   if (!turno) return false;
+
   // Sin estado = turno de siempre (la mayoría en empresas antiguas) = cuenta.
   // Se decide por lista NEGRA para que un estado nuevo cuente como cobertura
   // por defecto: que algo desaparezca del cuadrante sin avisar es el fallo caro.
-  return !(ESTADOS_ANULADOS as readonly string[]).includes(String(turno.status || 'planned'));
+  return !(ESTADOS_ANULADOS as readonly string[]).includes(
+    String(turno.status || "planned"),
+  );
 }
 
 /** ¿Es una novedad —alguien que estaba programado y no viene—? */
-export function esNovedad(turno: { status?: string | null } | null | undefined): boolean {
-  return String(turno?.status || '') === ESTADO_NOVEDAD;
+export function esNovedad(
+  turno: { status?: string | null } | null | undefined,
+): boolean {
+  return String(turno?.status || "") === ESTADO_NOVEDAD;
 }

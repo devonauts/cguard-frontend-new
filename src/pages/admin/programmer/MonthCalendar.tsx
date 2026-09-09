@@ -1,9 +1,12 @@
-import React, { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
-import { localeActual } from '@/lib/localeActual';
-import { nombreDeVigilante } from '@/lib/guardName';
-import { stationShort } from '@/lib/stationName';
-import type { ShiftRecord, Station } from '@/types';
+import type { ShiftRecord, Station } from "@/types";
+
+import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
+
+import { localeActual } from "@/lib/localeActual";
+import { nombreDeVigilante } from "@/lib/guardName";
+import { stationShort } from "@/lib/stationName";
+import { cuentaComoCobertura } from "@/lib/shiftStatus";
 
 /**
  * ────────────────────────────────────────────────────────────────────────────
@@ -30,16 +33,26 @@ const MAX_CHIPS_MOVIL = 2;
 /** ¿Pantalla estrecha? Se consulta una vez y se reacciona al giro del móvil. */
 function usePantallaEstrecha(): boolean {
   const [estrecha, setEstrecha] = React.useState(() => {
-    try { return window.matchMedia('(max-width: 767px)').matches; } catch { return false; }
+    try {
+      return window.matchMedia("(max-width: 767px)").matches;
+    } catch {
+      return false;
+    }
   });
+
   React.useEffect(() => {
     try {
-      const mq = window.matchMedia('(max-width: 767px)');
+      const mq = window.matchMedia("(max-width: 767px)");
       const on = () => setEstrecha(mq.matches);
-      mq.addEventListener('change', on);
-      return () => mq.removeEventListener('change', on);
-    } catch { return undefined; }
+
+      mq.addEventListener("change", on);
+
+      return () => mq.removeEventListener("change", on);
+    } catch {
+      return undefined;
+    }
   }, []);
+
   return estrecha;
 }
 
@@ -60,8 +73,15 @@ export type MonthCalendarProps = {
 };
 
 function MonthCalendarInner({
-  monthAnchor, shifts, stationsById, guardColorMap, todayStr,
-  dateStrOf, timeOf, onPickDay, onPickShift,
+  monthAnchor,
+  shifts,
+  stationsById,
+  guardColorMap,
+  todayStr,
+  dateStrOf,
+  timeOf,
+  onPickDay,
+  onPickShift,
 }: MonthCalendarProps) {
   const { t } = useTranslation();
   const locale = localeActual();
@@ -70,16 +90,24 @@ function MonthCalendarInner({
 
   /** Las 6×7 celdas: lunes primero, con la cola del mes anterior y del siguiente. */
   const celdas = useMemo(() => {
-    const primero = new Date(monthAnchor.getFullYear(), monthAnchor.getMonth(), 1);
+    const primero = new Date(
+      monthAnchor.getFullYear(),
+      monthAnchor.getMonth(),
+      1,
+    );
     const desplaz = (primero.getDay() + 6) % 7; // lunes = 0
     const inicio = new Date(primero);
+
     inicio.setDate(inicio.getDate() - desplaz);
+
     return Array.from({ length: 42 }, (_, i) => {
       const d = new Date(inicio);
+
       d.setDate(d.getDate() + i);
       const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, '0');
-      const dd = String(d.getDate()).padStart(2, '0');
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
+
       return {
         date: d,
         dateStr: `${y}-${m}-${dd}`,
@@ -92,36 +120,62 @@ function MonthCalendarInner({
   /** `YYYY-MM-DD` → turnos de ese día, ordenados por hora de entrada. */
   const porDia = useMemo(() => {
     const m = new Map<string, ShiftRecord[]>();
+
     for (const s of shifts) {
       if (!s.startTime) continue;
       const k = dateStrOf(s.startTime);
       const list = m.get(k);
-      if (list) list.push(s); else m.set(k, [s]);
+
+      if (list) list.push(s);
+      else m.set(k, [s]);
     }
     for (const list of m.values()) {
-      list.sort((a, b) => String(a.startTime).localeCompare(String(b.startTime)));
+      list.sort((a, b) =>
+        String(a.startTime).localeCompare(String(b.startTime)),
+      );
     }
+
     return m;
   }, [shifts, dateStrOf]);
 
   const diasSemana = useMemo(() => {
     // Nombres cortos en el idioma del usuario, empezando en lunes.
     const base = new Date(2026, 0, 5); // un lunes cualquiera
+
     return Array.from({ length: 7 }, (_, i) => {
       const d = new Date(base);
+
       d.setDate(d.getDate() + i);
-      const corto = d.toLocaleDateString(locale, { weekday: estrecha ? 'narrow' : 'short' });
+      const corto = d.toLocaleDateString(locale, {
+        weekday: estrecha ? "narrow" : "short",
+      });
+
       return corto.replace(/^./, (c) => c.toUpperCase());
     });
   }, [locale, estrecha]);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl" style={{ border: '1px solid var(--hairline)' }}>
+    <div
+      className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl"
+      style={{ border: "1px solid var(--hairline)" }}
+    >
       {/* Cabecera de días */}
-      <div className="grid shrink-0" style={{ gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', background: 'var(--glass-sunken)' }}>
+      <div
+        className="grid shrink-0"
+        style={{
+          gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
+          background: "var(--glass-sunken)",
+        }}
+      >
         {diasSemana.map((d) => (
-          <div key={d} className="px-2 py-2 text-center text-[11px] font-semibold uppercase tracking-wider"
-            style={{ color: 'var(--ink-soft)', borderBottom: '1px solid var(--hairline)' }}>
+          <div
+            key={d}
+            className="px-2 py-2 text-center text-[11px] font-semibold uppercase tracking-wider"
+            style={{
+              color: "var(--ink-soft)",
+              borderBottom: "1px solid var(--hairline)",
+            }}
+          >
             {d}
           </div>
         ))}
@@ -131,11 +185,13 @@ function MonthCalendarInner({
       <div
         className="grid min-h-0 flex-1 overflow-y-auto"
         style={{
-          gridTemplateColumns: 'repeat(7, minmax(0, 1fr))',
+          gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
           // En el móvil las filas NO se reparten la altura: se les da un mínimo
           // legible y el mes se desplaza en vertical. Repartir 6 filas en una
           // pantalla de teléfono deja celdas de 60 px donde no cabe ni una ficha.
-          gridTemplateRows: estrecha ? 'repeat(6, minmax(92px, auto))' : 'repeat(6, minmax(0, 1fr))',
+          gridTemplateRows: estrecha
+            ? "repeat(6, minmax(92px, auto))"
+            : "repeat(6, minmax(0, 1fr))",
         }}
       >
         {celdas.map((c) => {
@@ -143,67 +199,116 @@ function MonthCalendarInner({
           const hoy = c.dateStr === todayStr;
           const visibles = delDia.slice(0, tope);
           const resto = delDia.length - visibles.length;
+
           return (
             <div
               key={c.dateStr}
               className="flex min-h-0 flex-col gap-0.5 overflow-hidden p-1"
               style={{
-                borderRight: '1px solid var(--hairline)',
-                borderBottom: '1px solid var(--hairline)',
+                borderRight: "1px solid var(--hairline)",
+                borderBottom: "1px solid var(--hairline)",
                 background: hoy
-                  ? 'color-mix(in oklab, var(--brand) 8%, transparent)'
-                  : c.domingo ? 'color-mix(in oklab, var(--bad) 4%, transparent)' : undefined,
+                  ? "color-mix(in oklab, var(--brand) 8%, transparent)"
+                  : c.domingo
+                    ? "color-mix(in oklab, var(--bad) 4%, transparent)"
+                    : undefined,
                 opacity: c.delMes ? 1 : 0.45,
               }}
               onDoubleClick={() => onPickDay(c.dateStr)}
             >
               <div className="flex shrink-0 items-center justify-between">
                 <span
-                  className={`text-[11px] tabular-nums ${hoy ? 'font-bold' : 'font-medium'}`}
-                  style={{ color: hoy ? 'var(--brand)' : 'var(--ink-soft)' }}
+                  className={`text-[11px] tabular-nums ${hoy ? "font-bold" : "font-medium"}`}
+                  style={{ color: hoy ? "var(--brand)" : "var(--ink-soft)" }}
                 >
                   {c.date.getDate()}
                 </span>
                 {delDia.length > 0 && (
-                  <span className="text-[9px] tabular-nums" style={{ color: 'var(--ink-faint)' }}>{delDia.length}</span>
+                  <span
+                    className="text-[9px] tabular-nums"
+                    style={{ color: "var(--ink-faint)" }}
+                  >
+                    {delDia.length}
+                  </span>
                 )}
               </div>
 
               <div className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-hidden">
                 {visibles.map((s) => {
-                  const color = guardColorMap[s.guardId] || 'var(--ink-faint)';
+                  const color = guardColorMap[s.guardId] || "var(--ink-faint)";
                   const est = stationsById.get(s.stationId);
-                  const quien = nombreDeVigilante(s.guard, 'Vigilante');
-                  const aprendiz = (s as any).status === 'training';
+                  const quien = nombreDeVigilante(s.guard, "Vigilante");
+                  const aprendiz = (s as any).status === "training";
+                  /* ── QUIEN NO VA, NO SE PINTA COMO SI FUERA ──────────────
+                     El calendario sólo distinguía al aprendiz. Un turno
+                     `absent` —alguien a quien se le marcó vacaciones, permiso,
+                     falta o libre— salía idéntico a uno que se va a trabajar,
+                     así que la vista de mes decía que esa persona está en su
+                     puesto un día en que no va a estar. Es el mismo fallo de la
+                     celda de Bravo 14, en la pantalla que se usa para mirar el
+                     mes de un vistazo. La fila SÍ se muestra (es la prueba de lo
+                     que se había planificado, y el hueco que hay que cubrir),
+                     pero tachada. Ver `lib/shiftStatus`. */
+                  const anulado = !cuentaComoCobertura(s);
+
                   return (
                     <button
                       key={s.id}
-                      type="button"
-                      onClick={(e) => { e.stopPropagation(); onPickShift(s); }}
                       className="cg-focus flex shrink-0 items-center gap-1 truncate rounded px-1 py-0.5 text-left text-[10px] transition-opacity hover:opacity-80"
                       style={{
-                        background: 'var(--glass-sunken)',
+                        background: "var(--glass-sunken)",
                         borderLeft: `3px solid ${color}`,
                         // El aprendiz se ve, pero apagado: está en el puesto y no
                         // cubre la plaza (ver `lib/shiftStatus`).
-                        ...(aprendiz ? { opacity: 0.6, borderStyle: 'dashed' } : null),
+                        ...(aprendiz
+                          ? { opacity: 0.6, borderStyle: "dashed" }
+                          : null),
+                        ...(anulado
+                          ? {
+                              opacity: 0.45,
+                              borderStyle: "dotted",
+                              textDecoration: "line-through",
+                            }
+                          : null),
                       }}
-                      title={`${quien}${est ? ` · ${est.stationName}` : ''} · ${timeOf(s.startTime)}–${timeOf(s.endTime)}${aprendiz ? ` · ${t('ui.MonthCalendar.aprendiz')}` : ''}`}
+                      title={`${quien}${est ? ` · ${est.stationName}` : ""} · ${timeOf(s.startTime)}–${timeOf(s.endTime)}${aprendiz ? ` · ${t("ui.MonthCalendar.aprendiz")}` : ""}`}
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onPickShift(s);
+                      }}
                     >
-                      <span className="tabular-nums" style={{ color: 'var(--ink-faint)' }}>{timeOf(s.startTime)}</span>
-                      <span className="truncate font-medium">{quien.split(' ')[0]}</span>
-                      {est && !estrecha && <span className="truncate" style={{ color: 'var(--ink-faint)' }}>{stationShort(est)}</span>}
+                      <span
+                        className="tabular-nums"
+                        style={{ color: "var(--ink-faint)" }}
+                      >
+                        {timeOf(s.startTime)}
+                      </span>
+                      <span className="truncate font-medium">
+                        {quien.split(" ")[0]}
+                      </span>
+                      {est && !estrecha && (
+                        <span
+                          className="truncate"
+                          style={{ color: "var(--ink-faint)" }}
+                        >
+                          {stationShort(est)}
+                        </span>
+                      )}
                     </button>
                   );
                 })}
                 {resto > 0 && (
                   <button
-                    type="button"
-                    onClick={(e) => { e.stopPropagation(); onPickDay(c.dateStr); }}
                     className="cg-focus shrink-0 rounded px-1 text-left text-[10px] font-semibold hover:underline"
-                    style={{ color: 'var(--ink-soft)' }}
+                    style={{ color: "var(--ink-soft)" }}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onPickDay(c.dateStr);
+                    }}
                   >
-                    {t('ui.MonthCalendar.masDias', { n: resto })}
+                    {t("ui.MonthCalendar.masDias", { n: resto })}
                   </button>
                 )}
               </div>

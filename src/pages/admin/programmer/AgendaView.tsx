@@ -1,9 +1,12 @@
-import React, { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
-import { localeActual } from '@/lib/localeActual';
-import { nombreDeVigilante } from '@/lib/guardName';
-import { stationLabel } from '@/lib/stationName';
-import type { ShiftRecord, Station } from '@/types';
+import type { ShiftRecord, Station } from "@/types";
+
+import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
+
+import { localeActual } from "@/lib/localeActual";
+import { nombreDeVigilante } from "@/lib/guardName";
+import { stationLabel } from "@/lib/stationName";
+import { cuentaComoCobertura } from "@/lib/shiftStatus";
 
 /**
  * ────────────────────────────────────────────────────────────────────────────
@@ -33,29 +36,46 @@ export type AgendaViewProps = {
 };
 
 function AgendaViewInner({
-  days, shifts, stationsById, guardColorMap, todayStr, dateStrOf, timeOf, onPickShift,
+  days,
+  shifts,
+  stationsById,
+  guardColorMap,
+  todayStr,
+  dateStrOf,
+  timeOf,
+  onPickShift,
 }: AgendaViewProps) {
   const { t } = useTranslation();
   const locale = localeActual();
 
   const porDia = useMemo(() => {
     const m = new Map<string, ShiftRecord[]>();
+
     for (const s of shifts) {
       if (!s.startTime) continue;
       const k = dateStrOf(s.startTime);
       const l = m.get(k);
-      if (l) l.push(s); else m.set(k, [s]);
+
+      if (l) l.push(s);
+      else m.set(k, [s]);
     }
-    for (const l of m.values()) l.sort((a, b) => String(a.startTime).localeCompare(String(b.startTime)));
+    for (const l of m.values())
+      l.sort((a, b) => String(a.startTime).localeCompare(String(b.startTime)));
+
     return m;
   }, [shifts, dateStrOf]);
 
-  const fechas = useMemo(() => days.map((d) => {
-    const y = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const dd = String(d.getDate()).padStart(2, '0');
-    return { date: d, dateStr: `${y}-${mm}-${dd}` };
-  }), [days]);
+  const fechas = useMemo(
+    () =>
+      days.map((d) => {
+        const y = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, "0");
+        const dd = String(d.getDate()).padStart(2, "0");
+
+        return { date: d, dateStr: `${y}-${mm}-${dd}` };
+      }),
+    [days],
+  );
 
   /* DESDE HOY, no desde el borde del rango.
      La agenda cargaba el mismo mes que el calendario, cuya rejilla empieza el
@@ -66,72 +86,120 @@ function AgendaViewInner({
      Si hoy no cae en el rango (se navegó a otro mes) se enseña desde el
      principio, que ahí sí es lo que se pidió ver. */
   const hayHoy = fechas.some((f) => f.dateStr === todayStr);
-  const desdeHoy = hayHoy ? fechas.filter((f) => f.dateStr >= todayStr) : fechas;
-  const conTurnos = desdeHoy.filter((f) => (porDia.get(f.dateStr) || []).length > 0);
+  const desdeHoy = hayHoy
+    ? fechas.filter((f) => f.dateStr >= todayStr)
+    : fechas;
+  const conTurnos = desdeHoy.filter(
+    (f) => (porDia.get(f.dateStr) || []).length > 0,
+  );
 
   if (!conTurnos.length) {
     return (
-      <div className="flex flex-1 items-center justify-center rounded-2xl p-8 text-center"
-        style={{ border: '1px solid var(--hairline)' }}>
-        <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
-          {t('ui.AgendaView.sinTurnos')}
+      <div
+        className="flex flex-1 items-center justify-center rounded-2xl p-8 text-center"
+        style={{ border: "1px solid var(--hairline)" }}
+      >
+        <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+          {t("ui.AgendaView.sinTurnos")}
         </p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-0 flex-1 overflow-y-auto rounded-2xl" style={{ border: '1px solid var(--hairline)' }}>
+    <div
+      className="min-h-0 flex-1 overflow-y-auto rounded-2xl"
+      style={{ border: "1px solid var(--hairline)" }}
+    >
       {conTurnos.map(({ date, dateStr }) => {
         const lista = porDia.get(dateStr) || [];
         const hoy = dateStr === todayStr;
+
         return (
           <div key={dateStr}>
             {/* Cabecera de día — pegajosa, para no perder de vista qué día se lee */}
             <div
               className="sticky top-0 z-10 flex items-baseline gap-2 px-4 py-2"
               style={{
-                background: hoy ? 'color-mix(in oklab, var(--brand) 12%, var(--glass-solid))' : 'var(--glass-sunken)',
-                borderBottom: '1px solid var(--hairline)',
+                background: hoy
+                  ? "color-mix(in oklab, var(--brand) 12%, var(--glass-solid))"
+                  : "var(--glass-sunken)",
+                borderBottom: "1px solid var(--hairline)",
               }}
             >
-              <span className="text-sm font-semibold" style={{ color: hoy ? 'var(--brand-text)' : undefined }}>
-                {date.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' })
+              <span
+                className="text-sm font-semibold"
+                style={{ color: hoy ? "var(--brand-text)" : undefined }}
+              >
+                {date
+                  .toLocaleDateString(locale, {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                  })
                   .replace(/^./, (c) => c.toUpperCase())}
               </span>
-              <span className="text-[11px] tabular-nums" style={{ color: 'var(--ink-faint)' }}>
-                {lista.length} {lista.length === 1 ? t('ui.AgendaView.turno') : t('ui.AgendaView.turnos')}
+              <span
+                className="text-[11px] tabular-nums"
+                style={{ color: "var(--ink-faint)" }}
+              >
+                {lista.length}{" "}
+                {lista.length === 1
+                  ? t("ui.AgendaView.turno")
+                  : t("ui.AgendaView.turnos")}
               </span>
             </div>
 
             {lista.map((s) => {
-              const color = guardColorMap[s.guardId] || 'var(--ink-faint)';
+              const color = guardColorMap[s.guardId] || "var(--ink-faint)";
               const est = stationsById.get(s.stationId);
-              const aprendiz = (s as any).status === 'training';
+              const aprendiz = (s as any).status === "training";
+              // Igual que en el calendario de mes: quien no va no puede
+              // parecer que va. Se muestra tachado, no se esconde: el hueco
+              // hay que verlo. Ver `lib/shiftStatus`.
+              const anulado = !cuentaComoCobertura(s);
+
               return (
                 <button
                   key={s.id}
+                  className="flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-[var(--glass-sunken)]"
+                  style={{
+                    borderBottom: "1px solid var(--hairline)",
+                    ...(anulado
+                      ? { opacity: 0.5, textDecoration: "line-through" }
+                      : null),
+                  }}
                   type="button"
                   onClick={() => onPickShift(s)}
-                  className="flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-[var(--glass-sunken)]"
-                  style={{ borderBottom: '1px solid var(--hairline)' }}
                 >
                   {/* La hora primero: es lo que se busca al abrir esto */}
-                  <span className="shrink-0 text-xs font-bold tabular-nums" style={{ color: 'var(--ink-soft)', minWidth: 82 }}>
+                  <span
+                    className="shrink-0 text-xs font-bold tabular-nums"
+                    style={{ color: "var(--ink-soft)", minWidth: 82 }}
+                  >
                     {timeOf(s.startTime)}–{timeOf(s.endTime)}
                   </span>
-                  <span className="h-8 w-1 shrink-0 rounded-full" style={{ background: color, opacity: aprendiz ? 0.5 : 1 }} />
+                  <span
+                    className="h-8 w-1 shrink-0 rounded-full"
+                    style={{ background: color, opacity: aprendiz ? 0.5 : 1 }}
+                  />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-medium">
-                      {nombreDeVigilante(s.guard, 'Vigilante')}
+                      {nombreDeVigilante(s.guard, "Vigilante")}
                       {aprendiz && (
-                        <span className="ml-1.5 text-[10px] font-semibold" style={{ color: 'var(--ink-faint)' }}>
-                          · {t('ui.AgendaView.aprendiz')}
+                        <span
+                          className="ml-1.5 text-[10px] font-semibold"
+                          style={{ color: "var(--ink-faint)" }}
+                        >
+                          · {t("ui.AgendaView.aprendiz")}
                         </span>
                       )}
                     </span>
                     {est && (
-                      <span className="block truncate text-[11px]" style={{ color: 'var(--ink-faint)' }}>
+                      <span
+                        className="block truncate text-[11px]"
+                        style={{ color: "var(--ink-faint)" }}
+                      >
                         {stationLabel(est)}
                       </span>
                     )}
