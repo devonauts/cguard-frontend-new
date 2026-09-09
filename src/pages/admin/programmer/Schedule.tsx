@@ -549,14 +549,35 @@ export default function Schedule() {
   const primerDiaDeMes = (d: Date) => new Date(d.getFullYear(), d.getMonth(), 1);
   const ultimoDiaDeMes = (d: Date) => new Date(d.getFullYear(), d.getMonth() + 1, 0);
 
+  /* ── UN AÑO RODANTE, NO EL AÑO DEL CALENDARIO ───────────────────────────
+     El Horario estaba topado al año en curso: del 1 de enero al 31 de
+     diciembre. Suena a «un año» y no lo es — en diciembre el usuario podía
+     planificar TREINTA Y UN DÍAS, y en marzo diez meses. El horizonte que ve
+     encogía según el mes en que estuvieras, sin decir por qué.
+
+     Ahora la ventana acompaña al horizonte real del backend, que materializa
+     365 días rodantes desde hoy: se puede mirar un mes atrás —lo recién
+     pasado, que es lo que se consulta— y un año hacia delante, siempre.
+
+     Los límites se recalculan al montar, no en cada render: la hoja vive
+     abierta durante turnos enteros, y mover el tope bajo el usuario mientras
+     trabaja mueve el lienzo bajo su dedo. */
+  const limites = useMemo(() => {
+    const [y, m, d] = tzToday().split('-').map(Number);
+    const hoy = new Date(y, m - 1, d);
+    return {
+      min: primerDiaDeMes(new Date(y, m - 2, 1)),                       // el mes pasado
+      max: new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + 365),
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const [rango, setRango] = useState(() => {
     const [y, m] = tzToday().split('-').map(Number);
-    const minAnio = new Date(todayYear, 0, 1);
     let desde = primerDiaDeMes(new Date(y, m - 2, 1));
-    if (desde < minAnio) desde = minAnio;
+    if (desde < limites.min) desde = limites.min;
     let hasta = ultimoDiaDeMes(new Date(desde.getFullYear(), desde.getMonth() + MESES_POR_TRAMO - 1, 1));
-    const maxAnio = new Date(todayYear, 11, 31);
-    if (hasta > maxAnio) hasta = maxAnio;
+    if (hasta > limites.max) hasta = limites.max;
     return { desde, hasta };
   });
 
@@ -587,8 +608,8 @@ export default function Schedule() {
 
   const ampliarRango = useCallback((hacia: 'antes' | 'despues') => {
     setRango(prev => {
-      const minAnio = new Date(todayYear, 0, 1);
-      const maxAnio = new Date(todayYear, 11, 31);
+      const minAnio = limites.min;
+      const maxAnio = limites.max;
       if (hacia === 'antes') {
         if (prev.desde <= minAnio) return prev;
         let nuevo = primerDiaDeMes(new Date(prev.desde.getFullYear(), prev.desde.getMonth() - MESES_POR_TRAMO, 1));
@@ -601,7 +622,7 @@ export default function Schedule() {
       if (nuevo > maxAnio) nuevo = maxAnio;
       return { ...prev, hasta: nuevo };
     });
-  }, [todayYear]);
+  }, [limites]);
 
   // `YYYY-MM-DD` y «¿es domingo?» de cada columna, precalculados UNA vez. Antes
   // `fmtDate(day)` se ejecutaba dentro de cada celda: 365 columnas x 55 filas =
@@ -2733,13 +2754,12 @@ export default function Schedule() {
 
   // ─── Navigation ───────────────────────────────────────────────────────────
 
-  // The whole Horario is capped to the CURRENT year (the user's "máximo el año
-  // de hoy") — the year canvas covers it entirely; week/day anchors clamp.
+  // Las vistas de Semana y Día se anclan al MISMO horizonte que la hoja: un mes
+  // atrás y un año adelante, rodando. Antes se topaban al año calendario, así
+  // que en diciembre no se podía mirar la semana siguiente.
   const clampToYear = useCallback((d: Date) => {
-    const min = new Date(todayYear, 0, 1);
-    const max = new Date(todayYear, 11, 31);
-    return d < min ? min : d > max ? max : d;
-  }, [todayYear]);
+    return d < limites.min ? limites.min : d > limites.max ? limites.max : d;
+  }, [limites]);
 
   const gridScrollRef = useRef<HTMLDivElement>(null);
 
@@ -2833,9 +2853,13 @@ export default function Schedule() {
   const dayIndexOf = useCallback((y: number, mo1: number, d: number) =>
     Math.round((new Date(y, mo1 - 1, d).getTime() - rango.desde.getTime()) / 86400000), [rango]);
 
+  /* `monthIdx0` es un mes ABSOLUTO (año × 12 + mes), no 0-11: con la ventana
+     rodante los meses cruzan diciembre, y toparlos a [0,11] dejaba la
+     navegación encerrada en el año en curso — que es justo lo que se quita. */
   const scrollMonthTo = useCallback((monthIdx0: number) => {
-    const m = Math.max(0, Math.min(11, monthIdx0));
-    const objetivo = new Date(todayYear, m, 1);
+    const crudo = new Date(Math.floor(monthIdx0 / 12), monthIdx0 % 12, 1);
+    const objetivo = crudo < limites.min ? primerDiaDeMes(limites.min)
+      : crudo > limites.max ? primerDiaDeMes(limites.max) : crudo;
     setVisibleMonth(objetivo);
 
     // Fuera del tramo cargado: se estira hasta abarcarlo y el salto espera a que
@@ -2850,9 +2874,9 @@ export default function Schedule() {
       });
       return;
     }
-    const idx = dayIndexOf(todayYear, m + 1, 1);
+    const idx = dayIndexOf(objetivo.getFullYear(), objetivo.getMonth() + 1, 1);
     gridScrollRef.current?.scrollTo({ left: Math.max(0, idx * COL_W), behavior: 'smooth' });
-  }, [dayIndexOf, todayYear, rango]);
+  }, [dayIndexOf, limites, rango]);
 
   useLayoutEffect(() => {
     const objetivo = saltoPendienteRef.current;
@@ -2865,7 +2889,7 @@ export default function Schedule() {
 
   const nav = useCallback((dir: number) => {
     setSel(null);
-    if (view === 'month') { scrollMonthTo(visibleMonth.getMonth() + dir); return; }
+    if (view === 'month') { scrollMonthTo(visibleMonth.getFullYear() * 12 + visibleMonth.getMonth() + dir); return; }
     // El calendario navega por MESES, y su mes vivo es `visibleMonth` — el mismo
     // que la hoja del año, para que cambiar de vista no te mueva de sitio.
     if (view === 'calendar' || view === 'agenda') {
