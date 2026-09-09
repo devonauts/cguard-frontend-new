@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import useScrollToTopOnMount from '@/hooks/useScrollToTopOnMount';
 import { clientService } from '@/lib/api/clientService';
+import { useAppInviteEnabled } from '@/hooks/useAppInviteEnabled';
 import { Search, UserPlus, Users, Trash2, Mail, Smartphone, Loader2 } from 'lucide-react';
 import { Section, EmptyState, StatusBadge, Modal } from '@/components/kit';
 import { FIELD_CLS, LabeledField, RowAction, TabLoading, Avatar } from '../_shared/tab-kit';
@@ -29,6 +30,13 @@ export default function ClientUserAccess({ client }: Props) {
   const [form, setForm] = useState({ email: '', channel: 'app' as 'app' | 'portal' });
   const [sending, setSending] = useState(false);
 
+  // Con el correo de la app apagado sólo queda el portal, y el canal por
+  // defecto tiene que dejar de ser uno que el servidor va a rechazar.
+  const appInviteEnabled = useAppInviteEnabled();
+  useEffect(() => {
+    if (!appInviteEnabled) setForm((f) => (f.channel === 'app' ? { ...f, channel: 'portal' } : f));
+  }, [appInviteEnabled]);
+
   const load = async () => {
     try { const u = await clientService.getClientAccessUsers(client.id); setUsers(Array.isArray(u) ? u : []); }
     catch { setUsers([]); } finally { setLoading(false); }
@@ -45,7 +53,7 @@ export default function ClientUserAccess({ client }: Props) {
       if (form.channel === 'portal') await clientService.sendClientPortalInvitation(client.id, email);
       else await clientService.sendClientAppInvitation(client.id, email);
       toast.success(`Invitación enviada a ${email}`);
-      setInviteOpen(false); setForm({ email: '', channel: 'app' });
+      setInviteOpen(false); setForm({ email: '', channel: appInviteEnabled ? 'app' : 'portal' });
       await load();
     } catch (e: any) { toast.error(e?.response?.data?.message || 'No se pudo enviar la invitación'); }
     finally { setSending(false); }
@@ -97,8 +105,10 @@ export default function ClientUserAccess({ client }: Props) {
         <div className="space-y-3">
           <LabeledField label={t('ui.ClientUserAccess.correoDeLaPersona')}><input type="email" className={FIELD_CLS} placeholder={t('ui.ClientUserAccess.personaEmpresaCom')} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></LabeledField>
           <LabeledField label={t('ui.ClientUserAccess.tipoDeAcceso')}>
-            <div className="grid grid-cols-2 gap-2">
-              {([['app', 'App Mi Seguridad'], ['portal', 'Portal web']] as const).map(([canal, etiqueta]) => {
+            <div className={`grid gap-2 ${appInviteEnabled ? 'grid-cols-2' : 'grid-cols-1'}`}>
+              {(([['app', 'App Mi Seguridad'], ['portal', 'Portal web']] as const)
+                .filter(([canal]) => canal !== 'app' || appInviteEnabled)
+              ).map(([canal, etiqueta]) => {
                 const activo = form.channel === canal;
                 return (
                   <button

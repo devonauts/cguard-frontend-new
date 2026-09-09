@@ -5,6 +5,7 @@ import type { Client } from '@/types/client';
 import { useNavigate } from 'react-router-dom';
 import useScrollToTopOnMount from '@/hooks/useScrollToTopOnMount';
 import { clientService } from '@/lib/api/clientService';
+import { useAppInviteEnabled } from '@/hooks/useAppInviteEnabled';
 import { toast } from 'sonner';
 import { Section, StatusBadge, Modal, EmptyState, GlassPanel, IconTile } from '@/components/kit';
 import { Button } from '@/components/ui/button';
@@ -84,6 +85,7 @@ export default function ClientPortal({ client }: Props) {
 
   const [confirm, setConfirm] = useState<Kind | null>(null);
   const [sending, setSending] = useState(false);
+  const appInviteEnabled = useAppInviteEnabled();
   const [result, setResult] = useState<{ kind: Kind; recipient: string } | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -204,7 +206,9 @@ export default function ClientPortal({ client }: Props) {
             {/* Actions */}
             <div className="mt-3 flex flex-wrap gap-2">
               <Button variant="brand" onClick={() => setConfirm('portal')} disabled={!email && !linked}><Mail className="mr-1.5 h-4 w-4" /> {linked ? t('ui.ClientPortal.resendPortalInvite', 'Reenviar invitación al portal') : t('ui.ClientPortal.sendPortalInvite', 'Enviar invitación al portal')}</Button>
-              <Button variant="outline" onClick={() => setConfirm('app')} disabled={!email && !linked}><Smartphone className="mr-1.5 h-4 w-4" />{" "}{t('ui.ClientPortal.invitarALaAppMi')}</Button>
+              {appInviteEnabled && (
+                <Button variant="outline" onClick={() => setConfirm('app')} disabled={!email && !linked}><Smartphone className="mr-1.5 h-4 w-4" />{" "}{t('ui.ClientPortal.invitarALaAppMi')}</Button>
+              )}
             </div>
             {(!email && !linked) && <p className="mt-2 text-xs" style={{ color: 'var(--warn-text)' }}>{t('ui.ClientPortal.esteClienteNoTieneCorreo')}</p>}
           </Section>

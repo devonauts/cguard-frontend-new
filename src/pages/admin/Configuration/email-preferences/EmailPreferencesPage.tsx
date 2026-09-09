@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { olvidarPreferenciaDeInvitacion } from "@/hooks/useAppInviteEnabled";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Loader2, Save, Mail, Lock, Palette, RotateCcw, Eye, Info, TriangleAlert } from "lucide-react";
@@ -253,6 +254,10 @@ export default function EmailPreferencesPage() {
       setCatalog(res.catalog || catalog);
       setPrefs(res.preferences || prefs);
       if (res.branding) setBranding({ brandColor: res.branding.brandColor, headerColor: res.branding.headerColor });
+      // La ficha del cliente pregunta UNA vez por sesión si puede invitar a la
+      // app. Si no se olvida aquí, apagar ese interruptor no se notaría en la
+      // ficha hasta recargar el CRM — y encenderlo tampoco.
+      olvidarPreferenciaDeInvitacion();
       toast.success(t("emailPreferences.saved", { defaultValue: "Preferencias guardadas" }));
     } catch (e: any) {
       toast.error(e?.message || t("emailPreferences.saveError", { defaultValue: "Error al guardar" }));

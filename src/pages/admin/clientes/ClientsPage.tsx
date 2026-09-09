@@ -52,6 +52,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 import { clientService } from "@/lib/api/clientService";
+import { useAppInviteEnabled } from "@/hooks/useAppInviteEnabled";
 import ClientCardsGrid, { type ClientCardMeta } from "./components/ClientCardsGrid";
 import { LayoutGrid, List as ListIcon } from "lucide-react";
 import type { Client } from "@/types/client";
@@ -183,6 +184,10 @@ export default function ClientesPage() {
   const [openAppInviteDialog, setOpenAppInviteDialog] = useState(false);
   const [appInviteClient, setAppInviteClient] = useState<Client | null>(null);
   const [sendingAppInvite, setSendingAppInvite] = useState(false);
+
+  // El correo de invitación a la app se puede apagar en Preferencias de correo;
+  // si está apagado, esta acción no se ofrece (ver el hook).
+  const appInviteEnabled = useAppInviteEnabled();
   const { setSelectedClient } = useClientSelection();
 
   const debouncedSearch = useDebouncedValue(searchQuery, 500);
@@ -690,14 +695,16 @@ export default function ClientesPage() {
         },
       });
 
-      actions.push({
-        label: t('clients.inviteToApp', 'Invitar a la app'),
-        icon: <Download className="h-4 w-4" />,
-        onClick: () => {
-          setAppInviteClient(client);
-          setOpenAppInviteDialog(true);
-        },
-      });
+      if (appInviteEnabled) {
+        actions.push({
+          label: t('clients.inviteToApp', 'Invitar a la app'),
+          icon: <Download className="h-4 w-4" />,
+          onClick: () => {
+            setAppInviteClient(client);
+            setOpenAppInviteDialog(true);
+          },
+        });
+      }
     }
 
     return actions;
