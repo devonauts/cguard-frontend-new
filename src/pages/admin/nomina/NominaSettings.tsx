@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
-import { useTranslation } from 'react-i18next';
-import AppLayout from "@/layouts/app-layout";
-import SettingsLayout from "@/layouts/SettingsLayout";
-import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import attendanceService from "@/lib/api/attendanceService";
-import { Section, FadeIn, SkeletonCards } from "@/components/kit";
 import {
   Loader2,
   SlidersHorizontal,
@@ -16,6 +11,11 @@ import {
   CalendarRange,
 } from "lucide-react";
 
+import AppLayout from "@/layouts/app-layout";
+import SettingsLayout from "@/layouts/SettingsLayout";
+import { Button } from "@/components/ui/button";
+import attendanceService from "@/lib/api/attendanceService";
+import { Section, FadeIn, SkeletonCards } from "@/components/kit";
 
 interface NominaSettings {
   general?: {
@@ -45,6 +45,18 @@ interface NominaSettings {
     lockAfterPayrollClose?: boolean;
   };
   payroll?: {
+    /** La política de pago, sin país. Ver `backend/lib/politicaDeNomina`. */
+    politica?: {
+      moneda?: string;
+      horasOrdinariasDia?: number;
+      horasOrdinariasSemana?: number;
+      tramosExtra?: Array<{ desdeHora: number; recargoPct: number }>;
+      nocturno?: { desdeHora?: number; hastaHora?: number; recargoPct?: number };
+      domingoRecargoPct?: number;
+      descansoRecargoPct?: number;
+      feriadoRecargoPct?: number;
+      acumulacionDeRecargos?: "suma" | "mayor";
+    };
     periodType?: string;
     startDayOfWeek?: number;
     currency?: string;
@@ -66,8 +78,94 @@ type SettingsRecord = Record<string, Record<string, unknown> | undefined>;
 function set<T extends object>(obj: T, path: string, value: unknown): T {
   const next = { ...obj } as Record<string, Record<string, unknown>>;
   const [a, b] = path.split(".");
+
   next[a] = { ...(next[a] || {}), [b]: value };
+
   return next as unknown as T;
+}
+
+/**
+ * LOS ESCALONES DE HORAS EXTRA, LOS QUE HAGAN FALTA.
+ *
+ * La versión anterior tenía DOS clavados —«las 2 primeras al 25 %, el resto al
+ * 35 %»— porque estaban escritos para un país. Hay convenios de uno solo
+ * (todo al +50 %) y de tres o más, así que la lista se edita.
+ *
+ * Vacía significa algo concreto y correcto: las horas extra se pagan a tarifa
+ * simple. Es lo único que se puede suponer sin conocer el convenio.
+ */
+function TramosExtra({
+  tramos,
+  onChange,
+}: {
+  tramos: Array<{ desdeHora: number; recargoPct: number }>;
+  onChange: (t: Array<{ desdeHora: number; recargoPct: number }>) => void;
+}) {
+  const set = (i: number, campo: "desdeHora" | "recargoPct", v: number) =>
+    onChange(tramos.map((t, k) => (k === i ? { ...t, [campo]: v } : t)));
+
+  return (
+    <div>
+      <span className="text-sm font-medium">Escalones de horas extra</span>
+      <p className="mt-0.5 text-xs" style={{ color: "var(--ink-faint)" }}>
+        A partir de cuántas horas extra acumuladas en el día aplica cada
+        recargo. Sin escalones, las extra se pagan a tarifa simple.
+      </p>
+
+      <div className="mt-2 space-y-2">
+        {tramos.map((t, i) => (
+          <div key={i} className="flex items-end gap-2">
+            <label className="block">
+              <span className="cg-eyebrow">Desde la hora extra</span>
+              <input
+                className="cg-input cg-focus mt-1 w-32 px-3 py-2 text-sm tabular-nums"
+                type="number"
+                min={0}
+                value={t.desdeHora}
+                onChange={(e) => set(i, "desdeHora", Number(e.target.value))}
+              />
+            </label>
+            <label className="block">
+              <span className="cg-eyebrow">Recargo (%)</span>
+              <input
+                className="cg-input cg-focus mt-1 w-32 px-3 py-2 text-sm tabular-nums"
+                type="number"
+                min={0}
+                value={t.recargoPct}
+                onChange={(e) => set(i, "recargoPct", Number(e.target.value))}
+              />
+            </label>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => onChange(tramos.filter((_, k) => k !== i))}
+            >
+              Quitar
+            </Button>
+          </div>
+        ))}
+      </div>
+
+      <Button
+        className="mt-2"
+        size="sm"
+        variant="outline"
+        onClick={() =>
+          onChange([
+            ...tramos,
+            {
+              desdeHora: tramos.length
+                ? tramos[tramos.length - 1].desdeHora + 2
+                : 0,
+              recargoPct: 25,
+            },
+          ])
+        }
+      >
+        Añadir escalón
+      </Button>
+    </div>
+  );
 }
 
 export default function NominaSettings() {
@@ -87,9 +185,12 @@ export default function NominaSettings() {
   const save = async () => {
     setSaving(true);
     try {
-      const saved = await attendanceService.saveSettings((s ?? {}) as Record<string, unknown>);
+      const saved = await attendanceService.saveSettings(
+        (s ?? {}) as Record<string, unknown>,
+      );
+
       setS(saved);
-      toast.success(t('comun.configuracionGuardada'));
+      toast.success(t("comun.configuracionGuardada"));
     } catch (e) {
       toast.error((e as { message?: string })?.message || "Error al guardar");
     } finally {
@@ -99,14 +200,23 @@ export default function NominaSettings() {
 
   const Num = ({ label, path }: { label: string; path: string }) => {
     const [a, b] = path.split(".");
+
     return (
       <label className="block">
         <span className="cg-eyebrow">{label}</span>
         <input
-          type="number"
-          value={((s as unknown as SettingsRecord | null)?.[a]?.[b] as number | undefined) ?? 0}
-          onChange={(e) => setS((prev) => set(prev as NominaSettings, path, Number(e.target.value)))}
           className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm tabular-nums"
+          type="number"
+          value={
+            ((s as unknown as SettingsRecord | null)?.[a]?.[b] as
+              | number
+              | undefined) ?? 0
+          }
+          onChange={(e) =>
+            setS((prev) =>
+              set(prev as NominaSettings, path, Number(e.target.value)),
+            )
+          }
         />
       </label>
     );
@@ -114,14 +224,17 @@ export default function NominaSettings() {
 
   const Toggle = ({ label, path }: { label: string; path: string }) => {
     const [a, b] = path.split(".");
+
     return (
       <label className="glass-flat glass-hover flex cursor-pointer items-center gap-2.5 px-3 py-2.5">
         <input
-          type="checkbox"
           checked={!!(s as unknown as SettingsRecord | null)?.[a]?.[b]}
-          onChange={(e) => setS((prev) => set(prev as NominaSettings, path, e.target.checked))}
           className="cg-focus size-4"
           style={{ accentColor: "var(--brand)" }}
+          type="checkbox"
+          onChange={(e) =>
+            setS((prev) => set(prev as NominaSettings, path, e.target.checked))
+          }
         />
         <span className="text-sm">{label}</span>
       </label>
@@ -137,47 +250,116 @@ export default function NominaSettings() {
     icon: React.ReactNode;
     children: React.ReactNode;
   }) => (
-    <Section title={title} icon={icon}>
+    <Section icon={icon} title={title}>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">{children}</div>
     </Section>
   );
 
   return (
     <AppLayout>
-      <SettingsLayout navKey="configuracion" title={t('ui.NominaSettings.asistenciaTimeAttendance')}>
+      <SettingsLayout
+        navKey="configuracion"
+        title={t("ui.NominaSettings.asistenciaTimeAttendance")}
+      >
         {loading || !s ? (
           <SkeletonCards count={4} />
         ) : (
           <FadeIn className="space-y-4 pb-28">
-            <SettingsSection title="General" icon={<SlidersHorizontal />}>
-              <Toggle label={t('ui.NominaSettings.relojDeAsistenciaHabilitado')} path="general.timeClockEnabled" />
-              <Toggle label="Requerir selfie al marcar" path="general.requireSelfie" />
-              <Toggle label={t('ui.NominaSettings.requerirNotasEnExcepciones')} path="general.requireNotesOnException" />
+            <SettingsSection icon={<SlidersHorizontal />} title="General">
+              <Toggle
+                label={t("ui.NominaSettings.relojDeAsistenciaHabilitado")}
+                path="general.timeClockEnabled"
+              />
+              <Toggle
+                label="Requerir selfie al marcar"
+                path="general.requireSelfie"
+              />
+              <Toggle
+                label={t("ui.NominaSettings.requerirNotasEnExcepciones")}
+                path="general.requireNotesOnException"
+              />
             </SettingsSection>
 
-            <SettingsSection title={t('ui.NominaSettings.ventanasDeTiempoMinutos', 'Ventanas de tiempo (minutos)')} icon={<Timer />}>
-              <Num label="Entrada anticipada permitida" path="windows.earlyClockInMin" />
-              <Num label={t('ui.NominaSettings.toleranciaDeRetrasoGracia', 'Tolerancia de retraso (gracia)')} path="windows.lateGraceMin" />
-              <Num label={t('ui.NominaSettings.umbralDeSalidaAnticipada', 'Umbral de salida anticipada')} path="windows.earlyClockoutThresholdMin" />
-              <Num label={t('ui.NominaSettings.umbralSinMarcarSalida')} path="windows.missedClockoutThresholdMin" />
-              <Num label={t('ui.NominaSettings.umbralInasistenciaNoShow', 'Umbral inasistencia (no-show)')} path="windows.noShowThresholdMin" />
+            <SettingsSection
+              icon={<Timer />}
+              title={t(
+                "ui.NominaSettings.ventanasDeTiempoMinutos",
+                "Ventanas de tiempo (minutos)",
+              )}
+            >
+              <Num
+                label="Entrada anticipada permitida"
+                path="windows.earlyClockInMin"
+              />
+              <Num
+                label={t(
+                  "ui.NominaSettings.toleranciaDeRetrasoGracia",
+                  "Tolerancia de retraso (gracia)",
+                )}
+                path="windows.lateGraceMin"
+              />
+              <Num
+                label={t(
+                  "ui.NominaSettings.umbralDeSalidaAnticipada",
+                  "Umbral de salida anticipada",
+                )}
+                path="windows.earlyClockoutThresholdMin"
+              />
+              <Num
+                label={t("ui.NominaSettings.umbralSinMarcarSalida")}
+                path="windows.missedClockoutThresholdMin"
+              />
+              <Num
+                label={t(
+                  "ui.NominaSettings.umbralInasistenciaNoShow",
+                  "Umbral inasistencia (no-show)",
+                )}
+                path="windows.noShowThresholdMin"
+              />
             </SettingsSection>
 
-            <SettingsSection title="Geocerca" icon={<MapPinned />}>
-              <Num label={t('ui.NominaSettings.radioPorDefectoM')} path="geofence.defaultRadiusM" />
-              <Toggle label={t("ui.NominaSettings.requerirValidacionDeGeocerca", "Requerir validación de geocerca")} path="geofence.requireValidation" />
-              <Toggle label={t("ui.NominaSettings.permitirFueraDeGeocercaCon", "Permitir fuera de geocerca (con aprobación)")} path="geofence.allowOutsideWithApproval" />
+            <SettingsSection icon={<MapPinned />} title="Geocerca">
+              <Num
+                label={t("ui.NominaSettings.radioPorDefectoM")}
+                path="geofence.defaultRadiusM"
+              />
+              <Toggle
+                label={t(
+                  "ui.NominaSettings.requerirValidacionDeGeocerca",
+                  "Requerir validación de geocerca",
+                )}
+                path="geofence.requireValidation"
+              />
+              <Toggle
+                label={t(
+                  "ui.NominaSettings.permitirFueraDeGeocercaCon",
+                  "Permitir fuera de geocerca (con aprobación)",
+                )}
+                path="geofence.allowOutsideWithApproval"
+              />
             </SettingsSection>
 
-            <SettingsSection title="Notificaciones" icon={<BellRing />}>
-              <Toggle label={t('ui.NominaSettings.notificarSoloAlSupervisorAsignado')} path="notifications.assignedSupervisorsOnly" />
+            <SettingsSection icon={<BellRing />} title="Notificaciones">
+              <Toggle
+                label={t("ui.NominaSettings.notificarSoloAlSupervisorAsignado")}
+                path="notifications.assignedSupervisorsOnly"
+              />
               {/* El backend YA enviaba a estos correos (attendanceService y el
                   barrido nocturno los leen); lo que faltaba era el campo para
                   escribirlos. Un ajuste funcional e inalcanzable es el problema
                   inverso al del interruptor muerto, y se nota igual de poco. */}
               <label className="block">
-                <span className="cg-eyebrow">{t("ui.NominaSettings.avisarAdemasAEstosCorreos", "Avisar además a estos correos")}</span>
+                <span className="cg-eyebrow">
+                  {t(
+                    "ui.NominaSettings.avisarAdemasAEstosCorreos",
+                    "Avisar además a estos correos",
+                  )}
+                </span>
                 <input
+                  className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm"
+                  placeholder={t(
+                    "ui.NominaSettings.operacionesEmpresaComRrhhEmpresa",
+                  )}
                   type="text"
                   value={(s.notifications?.customEmails || []).join(", ")}
                   onChange={(e) =>
@@ -192,28 +374,58 @@ export default function NominaSettings() {
                       ),
                     )
                   }
-                  placeholder={t('ui.NominaSettings.operacionesEmpresaComRrhhEmpresa')}
-                  className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm"
                 />
-                <span className="mt-1 block text-xs" style={{ color: "var(--ink-faint)" }}>
-                  Separados por comas. Reciben las novedades de asistencia además de los supervisores.
+                <span
+                  className="mt-1 block text-xs"
+                  style={{ color: "var(--ink-faint)" }}
+                >
+                  Separados por comas. Reciben las novedades de asistencia
+                  además de los supervisores.
                 </span>
               </label>
             </SettingsSection>
 
-            <SettingsSection title="Aprobaciones" icon={<CheckSquare />}>
-              <Toggle label="Auto-aprobar marcaciones normales" path="approval.autoApproveNormal" />
-              <Toggle label={t("ui.NominaSettings.requerirAprobacionParaExcepciones", "Requerir aprobación para excepciones")} path="approval.requireApprovalForExceptions" />
-              <Toggle label={t("ui.NominaSettings.bloquearRegistrosAlCerrarLa", "Bloquear registros al cerrar la nómina")} path="approval.lockAfterPayrollClose" />
+            <SettingsSection icon={<CheckSquare />} title="Aprobaciones">
+              <Toggle
+                label="Auto-aprobar marcaciones normales"
+                path="approval.autoApproveNormal"
+              />
+              <Toggle
+                label={t(
+                  "ui.NominaSettings.requerirAprobacionParaExcepciones",
+                  "Requerir aprobación para excepciones",
+                )}
+                path="approval.requireApprovalForExceptions"
+              />
+              <Toggle
+                label={t(
+                  "ui.NominaSettings.bloquearRegistrosAlCerrarLa",
+                  "Bloquear registros al cerrar la nómina",
+                )}
+                path="approval.lockAfterPayrollClose"
+              />
             </SettingsSection>
 
-            <SettingsSection title="Periodo y horas extra" icon={<CalendarRange />}>
+            <SettingsSection
+              icon={<CalendarRange />}
+              title="Periodo y horas extra"
+            >
               <label className="block">
-                <span className="cg-eyebrow">{t('ui.NominaSettings.periodoDelTimesheet')}</span>
+                <span className="cg-eyebrow">
+                  {t("ui.NominaSettings.periodoDelTimesheet")}
+                </span>
                 <select
-                  value={s.payroll?.periodType || "biweekly"}
-                  onChange={(e) => setS((p) => set(p as NominaSettings, "payroll.periodType", e.target.value))}
                   className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm"
+                  value={s.payroll?.periodType || "biweekly"}
+                  onChange={(e) =>
+                    setS((p) =>
+                      set(
+                        p as NominaSettings,
+                        "payroll.periodType",
+                        e.target.value,
+                      ),
+                    )
+                  }
                 >
                   <option value="weekly">Semanal</option>
                   <option value="biweekly">Quincenal</option>
@@ -225,50 +437,203 @@ export default function NominaSettings() {
                   contar la semana. Lo lee `periodoVigente` en el backend. */}
               {(s.payroll?.periodType || "biweekly") === "weekly" && (
                 <label className="block">
-                  <span className="cg-eyebrow">{t('ui.NominaSettings.laSemanaEmpiezaEl')}</span>
+                  <span className="cg-eyebrow">
+                    {t("ui.NominaSettings.laSemanaEmpiezaEl")}
+                  </span>
                   <select
+                    className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm"
                     value={String(s.payroll?.startDayOfWeek ?? 1)}
                     onChange={(e) =>
-                      setS((p) => set(p as NominaSettings, "payroll.startDayOfWeek", Number(e.target.value)))
+                      setS((p) =>
+                        set(
+                          p as NominaSettings,
+                          "payroll.startDayOfWeek",
+                          Number(e.target.value),
+                        ),
+                      )
                     }
-                    className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm"
                   >
-                    <option value="0">{t('ui.NominaSettings.domingo')}</option>
-                    <option value="1">{t('ui.NominaSettings.lunes')}</option>
-                    <option value="2">{t('ui.NominaSettings.martes')}</option>
-                    <option value="3">{t("ui.NominaSettings.miercoles", "Miércoles")}</option>
-                    <option value="4">{t('ui.NominaSettings.jueves')}</option>
-                    <option value="5">{t('ui.NominaSettings.viernes')}</option>
-                    <option value="6">{t("ui.NominaSettings.sabado", "Sábado")}</option>
+                    <option value="0">{t("ui.NominaSettings.domingo")}</option>
+                    <option value="1">{t("ui.NominaSettings.lunes")}</option>
+                    <option value="2">{t("ui.NominaSettings.martes")}</option>
+                    <option value="3">
+                      {t("ui.NominaSettings.miercoles", "Miércoles")}
+                    </option>
+                    <option value="4">{t("ui.NominaSettings.jueves")}</option>
+                    <option value="5">{t("ui.NominaSettings.viernes")}</option>
+                    <option value="6">
+                      {t("ui.NominaSettings.sabado", "Sábado")}
+                    </option>
                   </select>
                 </label>
               )}
-              <Num label={t('ui.NominaSettings.umbralDeHorasExtraH')} path="payroll.overtimeThresholdHours" />
+              <Num
+                label={t("ui.NominaSettings.umbralDeHorasExtraH")}
+                path="payroll.overtimeThresholdHours"
+              />
               {/* No existía: se acumulaban segundos exactos y un informe de
                   quince días daba cifras como 172,37 h, que hay que redondear a
                   mano en una hoja de cálculo — donde se pierde el rastro de
                   quién ajustó qué. */}
               <label className="block">
-                <span className="text-sm font-medium">{t('ui.NominaSettings.redondearLasHorasDelInforme')}</span>
-                <p className="mt-0.5 text-xs" style={{ color: "var(--ink-faint)" }}>
-                  Se aplica al total de cada persona, no a cada marcación: así el redondeo no
-                  se acumula turno a turno. Déjalo en «Sin redondear» para conservar los
-                  minutos exactos.
+                <span className="text-sm font-medium">
+                  {t("ui.NominaSettings.redondearLasHorasDelInforme")}
+                </span>
+                <p
+                  className="mt-0.5 text-xs"
+                  style={{ color: "var(--ink-faint)" }}
+                >
+                  Se aplica al total de cada persona, no a cada marcación: así
+                  el redondeo no se acumula turno a turno. Déjalo en «Sin
+                  redondear» para conservar los minutos exactos.
                 </p>
                 <select
                   className="cg-input cg-focus mt-1.5 w-56 px-3 py-2 text-sm"
                   value={String(s.payroll?.roundingMinutes ?? 0)}
                   onChange={(e) =>
-                    setS((p) => set(p as NominaSettings, "payroll.roundingMinutes", Number(e.target.value)))
+                    setS((p) =>
+                      set(
+                        p as NominaSettings,
+                        "payroll.roundingMinutes",
+                        Number(e.target.value),
+                      ),
+                    )
                   }
                 >
-                  <option value="0">{t('ui.NominaSettings.sinRedondear')}</option>
-                  <option value="5">{t("ui.NominaSettings.alMultiploDe5Minutos", "Al múltiplo de 5 minutos")}</option>
-                  <option value="15">{t('ui.NominaSettings.alCuartoDeHora')}</option>
-                  <option value="30">{t('ui.NominaSettings.aLaMediaHora')}</option>
-                  <option value="60">{t('ui.NominaSettings.aLaHora')}</option>
+                  <option value="0">
+                    {t("ui.NominaSettings.sinRedondear")}
+                  </option>
+                  <option value="5">
+                    {t(
+                      "ui.NominaSettings.alMultiploDe5Minutos",
+                      "Al múltiplo de 5 minutos",
+                    )}
+                  </option>
+                  <option value="15">
+                    {t("ui.NominaSettings.alCuartoDeHora")}
+                  </option>
+                  <option value="30">
+                    {t("ui.NominaSettings.aLaMediaHora")}
+                  </option>
+                  <option value="60">{t("ui.NominaSettings.aLaHora")}</option>
                 </select>
               </label>
+            </SettingsSection>
+
+            {/* ── POLÍTICA DE PAGO ──────────────────────────────────────────────
+                Las reglas de pago NO tienen país. Esto sustituye a lo que estaba
+                escrito para uno: horas extra «las 2 primeras al 25 %, el resto al
+                35 %», noche de 22:00 a 06:00 y recargo dominical siempre puesto.
+                El recargo dominical no existe en casi toda Europa y el umbral de
+                horas extra es semanal en Estados Unidos, así que por defecto NO
+                se recarga nada: cada empresa declara su convenio. */}
+            <SettingsSection
+              icon={<SlidersHorizontal />}
+              title="Política de pago"
+            >
+              <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
+                Con esto se calculan las horas extra y los recargos de las
+                tarjetas de nómina. Por defecto no se recarga nada: declara aquí
+                lo que diga tu convenio. Si el pago lo calcula otro sistema,
+                puedes dejarlo como está — las horas y los días se exportan
+                igual.
+              </p>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="block">
+                  <span className="cg-eyebrow">Moneda (ISO 4217)</span>
+                  <input
+                    className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm uppercase"
+                    maxLength={8}
+                    value={s.payroll?.politica?.moneda ?? "USD"}
+                    onChange={(e) =>
+                      setS((p) =>
+                        set(
+                          p as NominaSettings,
+                          "payroll.politica.moneda",
+                          e.target.value.toUpperCase(),
+                        ),
+                      )
+                    }
+                  />
+                </label>
+                <Num
+                  label="Jornada ordinaria diaria (h)"
+                  path="payroll.politica.horasOrdinariasDia"
+                />
+              </div>
+
+              <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
+                Lo que pase de la jornada ordinaria es hora extra —aunque nadie
+                se quede más allá de su relevo—. En una empresa de turnos de 12 h
+                con jornada legal de 8, cada turno trae 4 horas extra.
+              </p>
+
+              <div className="grid gap-3 sm:grid-cols-3">
+                <Num
+                  label="Nocturno: desde (hora)"
+                  path="payroll.politica.nocturno.desdeHora"
+                />
+                <Num
+                  label="Nocturno: hasta (hora)"
+                  path="payroll.politica.nocturno.hastaHora"
+                />
+                <Num
+                  label="Recargo nocturno (%)"
+                  path="payroll.politica.nocturno.recargoPct"
+                />
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-3">
+                <Num
+                  label="Recargo dominical (%)"
+                  path="payroll.politica.domingoRecargoPct"
+                />
+                <Num
+                  label="Recargo en día de descanso (%)"
+                  path="payroll.politica.descansoRecargoPct"
+                />
+                <Num
+                  label="Recargo en feriado (%)"
+                  path="payroll.politica.feriadoRecargoPct"
+                />
+              </div>
+
+              <label className="block">
+                <span className="text-sm font-medium">
+                  Cuando varios recargos caen sobre la misma hora
+                </span>
+                <p className="mt-0.5 text-xs" style={{ color: "var(--ink-faint)" }}>
+                  Un domingo por la noche que además es feriado. Hay países donde
+                  los recargos se SUMAN y países donde gana sólo el mayor: dan
+                  importes muy distintos.
+                </p>
+                <select
+                  className="cg-input cg-focus mt-1.5 w-72 px-3 py-2 text-sm"
+                  value={s.payroll?.politica?.acumulacionDeRecargos ?? "suma"}
+                  onChange={(e) =>
+                    setS((p) =>
+                      set(
+                        p as NominaSettings,
+                        "payroll.politica.acumulacionDeRecargos",
+                        e.target.value,
+                      ),
+                    )
+                  }
+                >
+                  <option value="suma">Se suman</option>
+                  <option value="mayor">Gana el mayor</option>
+                </select>
+              </label>
+
+              <TramosExtra
+                tramos={s.payroll?.politica?.tramosExtra ?? []}
+                onChange={(t2) =>
+                  setS((p) =>
+                    set(p as NominaSettings, "payroll.politica.tramosExtra", t2),
+                  )
+                }
+              />
             </SettingsSection>
 
             {/* ── COSTOS DEL HORARIO ────────────────────────────────────────────
@@ -282,33 +647,69 @@ export default function NominaSettings() {
                 hasta rehacerlo pensando en cualquier país. Esto es la
                 ESTIMACIÓN del planificador, y la pantalla lo dice para que nadie
                 crea que de aquí sale una liquidación. */}
-            <SettingsSection title={t('ui.NominaSettings.costosDelHorario')} icon={<CalendarRange />}>
+            <SettingsSection
+              icon={<CalendarRange />}
+              title={t("ui.NominaSettings.costosDelHorario")}
+            >
               <p className="mb-3 text-xs" style={{ color: "var(--ink-faint)" }}>
-                Sirven para estimar el costo de un horario ANTES de publicarlo. Sin una
-                tarifa, ese panel muestra cero. No se usan para liquidar sueldos.
+                Sirven para estimar el costo de un horario ANTES de publicarlo.
+                Sin una tarifa, ese panel muestra cero. No se usan para liquidar
+                sueldos.
               </p>
               <label className="block">
                 <span className="cg-eyebrow">Moneda</span>
                 <input
-                  type="text"
-                  maxLength={3}
-                  value={s.payroll?.currency ?? "USD"}
-                  onChange={(e) => setS((p) => set(p as NominaSettings, "payroll.currency", e.target.value.toUpperCase()))}
                   className="cg-input cg-focus mt-1.5 w-28 px-3 py-2 text-sm uppercase"
+                  maxLength={3}
+                  type="text"
+                  value={s.payroll?.currency ?? "USD"}
+                  onChange={(e) =>
+                    setS((p) =>
+                      set(
+                        p as NominaSettings,
+                        "payroll.currency",
+                        e.target.value.toUpperCase(),
+                      ),
+                    )
+                  }
                 />
-                <span className="mt-1 block text-xs" style={{ color: "var(--ink-faint)" }}>
+                <span
+                  className="mt-1 block text-xs"
+                  style={{ color: "var(--ink-faint)" }}
+                >
                   Código de tres letras: USD, MXN, COP…
                 </span>
               </label>
-              <Num label={t('ui.NominaSettings.tarifaPorHoraPorDefecto')} path="payroll.defaultHourlyRate" />
-              <Num label={t('ui.NominaSettings.multiplicadorDeHoraExtra')} path="payroll.overtimeMultiplier" />
-              <Num label="Recargo nocturno (0.25 = 25 %)" path="payroll.nightSurchargePct" />
-              <Num label={t('ui.NominaSettings.laNocheEmpiezaALas')} path="payroll.nightStartHour" />
-              <Num label={t('ui.NominaSettings.laNocheTerminaALas')} path="payroll.nightEndHour" />
+              <Num
+                label={t("ui.NominaSettings.tarifaPorHoraPorDefecto")}
+                path="payroll.defaultHourlyRate"
+              />
+              <Num
+                label={t("ui.NominaSettings.multiplicadorDeHoraExtra")}
+                path="payroll.overtimeMultiplier"
+              />
+              <Num
+                label="Recargo nocturno (0.25 = 25 %)"
+                path="payroll.nightSurchargePct"
+              />
+              <Num
+                label={t("ui.NominaSettings.laNocheEmpiezaALas")}
+                path="payroll.nightStartHour"
+              />
+              <Num
+                label={t("ui.NominaSettings.laNocheTerminaALas")}
+                path="payroll.nightEndHour"
+              />
             </SettingsSection>
 
             <div className="fixed bottom-6 right-6 z-10">
-              <Button variant="brand" size="lg" onClick={save} disabled={saving} className="brand-glow">
+              <Button
+                className="brand-glow"
+                disabled={saving}
+                size="lg"
+                variant="brand"
+                onClick={save}
+              >
                 {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Guardar configuración
               </Button>

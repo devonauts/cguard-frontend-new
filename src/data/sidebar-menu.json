@@ -334,6 +334,11 @@
         "path": "/nomina/payroll-summary"
       },
       {
+        "id": "nomina-timecards",
+        "name": "Tarjetas de Nómina",
+        "path": "/nomina/timecards"
+      },
+      {
         "id": "nomina-settings",
         "name": "Configuración de Asistencia",
         "path": "/nomina/settings"
