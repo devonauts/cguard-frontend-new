@@ -48,6 +48,25 @@ function horaCorta(iso?: string | null): string | null {
 
 type Insignia = { tone: "ok" | "warn" | "bad" | "neutral"; icon: JSX.Element; label: string; hint?: string | null };
 
+/**
+ * El nombre que se enseña en la insignia verde.
+ *
+ * SE ACORTA A NOMBRE + PRIMER APELLIDO. La insignia mide lo que mide, y
+ * «Rubén Castillo Hernández» la desborda o la trunca a mitad de palabra, que
+ * es peor que acortar bien. Dos palabras es además como se refiere a alguien
+ * quien mira el tablero.
+ *
+ * Devuelve `null` si no hay nombre, para que quien llama elija el texto de
+ * reserva en vez de pintar una insignia vacía.
+ */
+function nombreEnPuesto(s: StationCard): string | null {
+  const nombres = Array.isArray(s.onDutyNames) ? s.onDutyNames.filter(Boolean) : [];
+  if (!nombres.length) return null;
+  const corto = nombres[0].trim().split(/\s+/).slice(0, 2).join(" ");
+  if (!corto) return null;
+  return nombres.length > 1 ? `${corto} +${nombres.length - 1}` : corto;
+}
+
 function insigniaDeCobertura(s: StationCard, t: (k: string, o?: any) => string): Insignia | null {
   // Sin estado calculado no se inventa nada: antes que una insignia falsa,
   // ninguna.
@@ -59,10 +78,17 @@ function insigniaDeCobertura(s: StationCard, t: (k: string, o?: any) => string):
       return {
         tone: "ok",
         icon: <ShieldCheck className="h-3 w-3" />,
-        // El número importa: un puesto de dos con dos no es lo mismo que con uno.
-        label: s.onDutyCount > 1
-          ? t("stations.coverage.onDutyN", { count: s.onDutyCount, defaultValue: "{{count}} en puesto" })
-          : t("stations.coverage.onDuty", { defaultValue: "Vigilante en puesto" }),
+        // EL NOMBRE, no «Vigilante en puesto». Que hay alguien ya lo dice el
+        // verde; la pregunta que sigue —y la única que importa a esa hora— es
+        // quién. Con dos o más se enseña el primero y «+N»: dos nombres
+        // completos no caben en la insignia y la tarjeta se rompe. Sin nombre
+        // resuelto se vuelve al texto de siempre; una insignia en blanco se
+        // lee como que el puesto está vacío.
+        label:
+          nombreEnPuesto(s) ??
+          (s.onDutyCount > 1
+            ? t("stations.coverage.onDutyN", { count: s.onDutyCount, defaultValue: "{{count}} en puesto" })
+            : t("stations.coverage.onDuty", { defaultValue: "Vigilante en puesto" })),
       };
     case "at_risk":
       return {

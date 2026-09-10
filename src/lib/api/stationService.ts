@@ -164,6 +164,13 @@ export interface StationCard {
   coverageStatus: 'covered' | 'at_risk' | 'uncovered' | 'idle' | null;
   /** Cuántos hay fichados AHORA. */
   onDutyCount: number;
+  /**
+   * QUIÉN está fichado ahora, por nombre. La insignia enseña el nombre en vez
+   * de «Vigilante en puesto», que es lo que ya dice el color verde.
+   * Vacío = no se pudo resolver el nombre; la insignia vuelve al texto genérico
+   * en lugar de quedarse en blanco.
+   */
+  onDutyNames: string[];
   /** Cuántos se esperan según el horario. */
   expectedCount: number;
   /** Próxima entrada planificada (24 h) — «Entra 19:00». */
