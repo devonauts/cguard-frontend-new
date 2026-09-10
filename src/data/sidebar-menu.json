@@ -271,11 +271,6 @@
         "path": "/coverage"
       },
       {
-        "id": "plantillas",
-        "name": "Plantillas de turno",
-        "path": "/shift-templates"
-      },
-      {
         "id": "estado",
         "name": "Estado de Turno",
         "path": "/shift-status"
