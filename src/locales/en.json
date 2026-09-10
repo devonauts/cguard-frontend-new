@@ -6070,6 +6070,7 @@
       "idNumber": "ID",
       "lastName": "Last name",
       "numPeople": "Number of people",
+      "companions": "Companions",
       "placeType": "Place Type and Number",
       "postSite": "Site",
       "reason": "Reason of visit",
