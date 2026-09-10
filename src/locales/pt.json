@@ -5653,6 +5653,7 @@
       "idNumber": "ID",
       "lastName": "Sobrenome",
       "numPeople": "Número de pessoas",
+      "companions": "Acompanhantes",
       "placeType": "Tipo de local e número",
       "postSite": "posto de vigilância",
       "reason": "Motivo da visita",

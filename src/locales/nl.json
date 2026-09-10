@@ -11412,6 +11412,7 @@
       "idNumber": "ID",
       "lastName": "Achternaam",
       "numPeople": "Aantal personen",
+      "companions": "Metgezellen",
       "placeType": "Type ruimte en nummer",
       "postSite": "Post",
       "reason": "Reden van het bezoek",

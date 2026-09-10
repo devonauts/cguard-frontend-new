@@ -11412,6 +11412,7 @@
       "idNumber": "ID",
       "lastName": "Nachname",
       "numPeople": "Anzahl Personen",
+      "companions": "Begleitpersonen",
       "placeType": "Art und Nummer des Orts",
       "postSite": "Objekt",
       "reason": "Besuchsgrund",

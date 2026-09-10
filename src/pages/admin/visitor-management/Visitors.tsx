@@ -110,6 +110,9 @@ type VisitLogRow = {
   numPeople?: number;
   peopleCount?: number;
   numberPeople?: number;
+  /** Los que entraron CON el titular. La API la manda como lista; una ficha
+   *  vieja puede traerla como texto JSON. Ver backend/src/lib/acompanantes.ts. */
+  companions?: unknown;
   placeType?: string;
   client?: ClientLike | string | number;
   clientId?: string;
@@ -191,6 +194,35 @@ type NewVisitor = {
   numPeople?: number;
   reason?: string;
 };
+
+/**
+ * Los acompañantes en una línea: «Ana Ruiz (0102) · Luis Paz».
+ *
+ * Acepta lista o texto JSON porque una ficha guardada antes de que la columna
+ * existiera, o recuperada de la cola sin cobertura de la app, puede llegar de
+ * cualquiera de las dos formas. Ante algo que no entiende devuelve cadena
+ * vacía: una celda vacía informa, un «[object Object]» no.
+ */
+function acompanantesEnLinea(bruto: unknown): string {
+  let lista: unknown = bruto;
+  if (typeof lista === "string") {
+    try {
+      lista = JSON.parse(lista);
+    } catch {
+      return "";
+    }
+  }
+  if (!Array.isArray(lista)) return "";
+  return lista
+    .map((a: any) => {
+      if (!a || typeof a !== "object") return "";
+      const nombre = [a.firstName, a.lastName].filter(Boolean).join(" ").trim();
+      if (nombre && a.idNumber) return `${nombre} (${a.idNumber})`;
+      return nombre || a.idNumber || "";
+    })
+    .filter(Boolean)
+    .join(" · ");
+}
 
 export default function Visitors() {
   const [openFilter, setOpenFilter] = useState(false);
@@ -528,6 +560,14 @@ export default function Visitors() {
     {
       label: t("visitantes.logTable.numPeople", "Número de personas"),
       get: (r) => String(r.numPeople ?? ""),
+    },
+    {
+      // Sin esto, «Personas: 4» en la bitácora que se le manda al cliente
+      // sigue sin decir quiénes entraron. Va aquí y no en cada exportador
+      // porque de esta tabla salen los cuatro caminos (CSV, Excel, PDF e
+      // impresión) — ese fue justo el arreglo que documenta la cabecera.
+      label: t("visitantes.logTable.companions", "Acompañantes"),
+      get: (r) => acompanantesEnLinea(r.companions),
     },
     {
       label: t("visitantes.logTable.station", "Estación"),

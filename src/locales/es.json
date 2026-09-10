@@ -6070,6 +6070,7 @@
       "idNumber": "ID",
       "lastName": "Apellidos",
       "numPeople": "Número de personas",
+      "companions": "Acompañantes",
       "placeType": "Tipo de lugar y número",
       "postSite": "puesto de vigilancia",
       "reason": "Motivo de la visita",
