@@ -269,6 +269,9 @@ const DispatchPrintablePage = lazy(
 const DispatchPublicView = lazy(
   () => import("@/pages/public/DispatchPublicView"),
 );
+const DocumentPacketPublicView = lazy(
+  () => import("@/pages/public/DocumentPacketPublicView"),
+);
 const NewVehiclePage = lazy(
   () => import("./pages/admin/vehicles/NewVehiclePage"),
 );
@@ -2105,6 +2108,14 @@ export default function App() {
                             <Route
                               element={<DispatchPublicView />}
                               path="/public/dispatch/:token"
+                            />
+
+                            {/* Carpeta de documentos entregada al cliente por
+                                enlace (no auth). La ruta es corta —`/d/`— a
+                                propósito: viaja en un correo. */}
+                            <Route
+                              element={<DocumentPacketPublicView />}
+                              path="/d/:token"
                             />
 
                             {/* FIN DESPACHADOR */}

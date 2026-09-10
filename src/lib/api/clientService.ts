@@ -685,6 +685,123 @@ export const clientService = {
             { format, nombreBase: `reporte-${type}` },
         );
     },
+    /**
+     * La biblioteca de documentos (`getClientDocuments`) es la trastienda; esto
+     * es lo que el cliente RECIBE: un grupo con nombre y periodo, entregado por
+     * la app o por un enlace que caduca a las 72 h, con constancia de quién lo
+     * vio y qué descargó.
+     */
+    async getDocumentPackets(clientId: string) {
+      const tenantId = getTenantId();
+      const { data } = await api.get<any>(
+        `/tenant/${tenantId}/client-account/${clientId}/document-packets`,
+        { toast: { silentError: true } },
+      );
+
+      return data?.data ?? data;
+    },
+    async createDocumentPacket(
+      clientId: string,
+      payload: {
+        name: string;
+        periodStart?: string | null;
+        periodEnd?: string | null;
+        notes?: string | null;
+        attachmentIds: string[];
+      },
+    ) {
+      const tenantId = getTenantId();
+      const { data } = await api.post<any>(
+        `/tenant/${tenantId}/client-account/${clientId}/document-packets`,
+        { data: payload },
+      );
+
+      return data?.data ?? data;
+    },
+    async updateDocumentPacket(
+      clientId: string,
+      packetId: string,
+      payload: Record<string, unknown>,
+    ) {
+      const tenantId = getTenantId();
+      const { data } = await api.patch<any>(
+        `/tenant/${tenantId}/client-account/${clientId}/document-packets/${packetId}`,
+        { data: payload },
+      );
+
+      return data?.data ?? data;
+    },
+    async deleteDocumentPacket(clientId: string, packetId: string) {
+      const tenantId = getTenantId();
+      const { data } = await api.delete<any>(
+        `/tenant/${tenantId}/client-account/${clientId}/document-packets/${packetId}`,
+      );
+
+      return data?.data ?? data;
+    },
+    async shareDocumentPacketInApp(
+      clientId: string,
+      packetId: string,
+      enabled: boolean,
+    ) {
+      const tenantId = getTenantId();
+      const { data } = await api.post<any>(
+        `/tenant/${tenantId}/client-account/${clientId}/document-packets/${packetId}/share-app`,
+        { data: { enabled } },
+      );
+
+      return data?.data ?? data;
+    },
+    async createDocumentPacketLink(
+      clientId: string,
+      packetId: string,
+      payload: {
+        requireCode: boolean;
+        recipients: string[];
+        expiresInHours?: number;
+        message?: string;
+      },
+    ) {
+      const tenantId = getTenantId();
+      const { data } = await api.post<any>(
+        `/tenant/${tenantId}/client-account/${clientId}/document-packets/${packetId}/links`,
+        { data: payload },
+      );
+
+      return data?.data ?? data;
+    },
+    async revokeDocumentPacketLink(
+      clientId: string,
+      packetId: string,
+      linkId: string,
+    ) {
+      const tenantId = getTenantId();
+      const { data } = await api.post<any>(
+        `/tenant/${tenantId}/client-account/${clientId}/document-packets/${packetId}/links/${linkId}/revoke`,
+        { data: {} },
+      );
+
+      return data?.data ?? data;
+    },
+    async getDocumentPacketEvents(clientId: string, packetId: string) {
+      const tenantId = getTenantId();
+      const { data } = await api.get<any>(
+        `/tenant/${tenantId}/client-account/${clientId}/document-packets/${packetId}/events`,
+        { toast: { silentError: true } },
+      );
+
+      return data?.data ?? data;
+    },
+    async getDocumentPacketRecipients(clientId: string) {
+      const tenantId = getTenantId();
+      const { data } = await api.get<any>(
+        `/tenant/${tenantId}/client-account/${clientId}/document-packets/recipients`,
+        { toast: { silentError: true } },
+      );
+
+      return data?.data ?? data;
+    },
+
     async createReportSchedule(clientId: string, payload: { name: string; type: string; frequency: string }) {
         const tenantId = getTenantId();
         const { data } = await api.post<any>(`/tenant/${tenantId}/client-account/${clientId}/report-schedules`, payload);
