@@ -24,6 +24,31 @@ const resourceUrl = (resource: string) => {
   return `/tenant/${tenantId}/${resource}`;
 };
 
+/** Qué del vigilante ve el cliente en Mi Seguridad. Ausente = todo visible. */
+export interface CustomerGuardVisibility {
+  name: boolean;
+  photo: boolean;
+}
+
+export async function getCustomerGuardVisibility(): Promise<CustomerGuardVisibility> {
+  const { data } = await api.get(resourceUrl('settings'));
+  const v = (data && (data as any).customerGuardVisibility) || {};
+  // Default a visible (comportamiento actual) cuando la clave no existe.
+  return { name: v.name !== false, photo: v.photo !== false };
+}
+
+export async function saveCustomerGuardVisibility(
+  vis: CustomerGuardVisibility,
+): Promise<void> {
+  // El settings PUT fusiona por columna, así que enviar solo esta clave no
+  // toca logo, tema ni el resto de la configuración.
+  await api.put(resourceUrl('settings'), {
+    settings: {
+      customerGuardVisibility: { name: !!vis.name, photo: !!vis.photo },
+    },
+  });
+}
+
 export async function listBanners() {
   const { data } = await api.get(resourceUrl('banner-superior-app'));
   return data?.rows ?? [];

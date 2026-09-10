@@ -11,7 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Plus, Pencil, Trash2, Smartphone, Image as ImageIcon, Tag, BadgeCheck, Upload } from 'lucide-react';
+import { Plus, Pencil, Trash2, Smartphone, Image as ImageIcon, Tag, BadgeCheck, Upload, ShieldCheck } from 'lucide-react';
 import CustomerAppPreview, { serviceIcon, SERVICE_ICONS } from './CustomerAppPreview';
 
 /** Pre-made security-service templates: pick one to pre-fill title/description + a
@@ -67,6 +67,8 @@ import {
   updateService,
   createService,
   deleteService,
+  getCustomerGuardVisibility,
+  saveCustomerGuardVisibility,
 } from './MobilService';
 
 // Stored file relation as produced by securityGuardService.uploadFileToStorage
@@ -165,6 +167,8 @@ const defaultCertificationForm = {
 export default function MobilPage() {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
+  const [guardVis, setGuardVis] = useState<{ name: boolean; photo: boolean }>({ name: true, photo: true });
+  const [savingGuardVis, setSavingGuardVis] = useState(false);
   const [bannerDialogOpen, setBannerDialogOpen] = useState(false);
   const [certDialogOpen, setCertDialogOpen] = useState(false);
   const [bannerItems, setBannerItems] = useState<BannerItem[]>([]);
@@ -287,14 +291,16 @@ export default function MobilPage() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [banners, certifications, services] = await Promise.all([
+      const [banners, certifications, services, visibility] = await Promise.all([
         listBanners(),
         listCertifications(),
         listServices(),
+        getCustomerGuardVisibility(),
       ]);
       setBannerItems(banners);
       setCertItems(certifications);
       setServices(services);
+      setGuardVis(visibility);
     } catch (err) {
       console.error(err);
       toast.error(t('settings.mobil.loadError', { defaultValue: 'No se pudo cargar la información de Mobil.' }));
@@ -306,6 +312,23 @@ export default function MobilPage() {
   useEffect(() => {
     loadData();
   }, []);
+
+  const updateGuardVis = async (patch: Partial<{ name: boolean; photo: boolean }>) => {
+    const prev = guardVis;
+    const next = { ...guardVis, ...patch };
+    setGuardVis(next);
+    setSavingGuardVis(true);
+    try {
+      await saveCustomerGuardVisibility(next);
+      toast.success(t('settings.mobil.guardVisSaved', { defaultValue: 'Preferencia guardada.' }));
+    } catch (err) {
+      console.error(err);
+      setGuardVis(prev);
+      toast.error(t('settings.mobil.guardVisError', { defaultValue: 'No se pudo guardar la preferencia.' }));
+    } finally {
+      setSavingGuardVis(false);
+    }
+  };
 
   const openCreateBanner = () => {
     setEditingBannerId(null);
@@ -525,6 +548,30 @@ export default function MobilPage() {
           />
           <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
             <div className="min-w-0 space-y-6">
+
+          <Section
+            title={t('settings.mobil.guardVisTitle', { defaultValue: 'Datos del vigilante visibles para el cliente' })}
+            icon={<ShieldCheck />}
+            contentClassName="space-y-4"
+          >
+            <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
+              {t('settings.mobil.guardVisDesc', { defaultValue: 'Elige qué datos del vigilante ve el cliente en la app Mi Seguridad. El cambio se aplica de inmediato, sin actualizar la app.' })}
+            </p>
+            <div className="flex items-center justify-between gap-4 rounded-xl border p-4" style={{ borderColor: 'var(--hairline)' }}>
+              <div>
+                <div className="text-sm font-medium">{t('settings.mobil.guardVisName', { defaultValue: 'Nombre del vigilante' })}</div>
+                <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{t('settings.mobil.guardVisNameHint', { defaultValue: 'Si se apaga, el cliente ve "Vigilante" en vez del nombre.' })}</div>
+              </div>
+              <Switch checked={guardVis.name} disabled={savingGuardVis || loading} onCheckedChange={(v) => updateGuardVis({ name: !!v })} />
+            </div>
+            <div className="flex items-center justify-between gap-4 rounded-xl border p-4" style={{ borderColor: 'var(--hairline)' }}>
+              <div>
+                <div className="text-sm font-medium">{t('settings.mobil.guardVisPhoto', { defaultValue: 'Foto del vigilante' })}</div>
+                <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{t('settings.mobil.guardVisPhotoHint', { defaultValue: 'Si se apaga, el cliente ve las iniciales en vez de la foto.' })}</div>
+              </div>
+              <Switch checked={guardVis.photo} disabled={savingGuardVis || loading} onCheckedChange={(v) => updateGuardVis({ photo: !!v })} />
+            </div>
+          </Section>
 
           <Section
             title={t('settings.mobil.bannerSectionTitle', { defaultValue: 'Banner Superior' })}
