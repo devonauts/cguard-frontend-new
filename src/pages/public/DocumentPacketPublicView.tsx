@@ -18,6 +18,7 @@
  * ════════════════════════════════════════════════════════════════════════════
  */
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import {
   CheckCircle2,
@@ -70,25 +71,23 @@ const bytes = (b: number) => {
   return `${Math.round((b / 1024 ** i) * 10) / 10} ${u[i]}`;
 };
 
-const MOTIVO: Record<string, { titulo: string; texto: string }> = {
+const MOTIVO: Record<string, { tituloKey: string; textoKey: string }> = {
   expired: {
-    titulo: "Este enlace ha caducado",
-    texto:
-      "Los enlaces de documentación caducan por seguridad. Pide uno nuevo a tu proveedor de seguridad.",
+    tituloKey: "ui.DocumentPacketPublic.expiredTitle",
+    textoKey: "ui.DocumentPacketPublic.expiredText",
   },
   revoked: {
-    titulo: "Este enlace ya no está disponible",
-    texto:
-      "Se ha retirado el acceso a esta documentación. Ponte en contacto con tu proveedor de seguridad.",
+    tituloKey: "ui.DocumentPacketPublic.revokedTitle",
+    textoKey: "ui.DocumentPacketPublic.revokedText",
   },
   locked: {
-    titulo: "Enlace bloqueado",
-    texto:
-      "Se han agotado los intentos de clave. Por seguridad, hay que emitir un enlace nuevo.",
+    tituloKey: "ui.DocumentPacketPublic.lockedTitle",
+    textoKey: "ui.DocumentPacketPublic.lockedText",
   },
 };
 
 export default function DocumentPacketPublicView() {
+  const { t } = useTranslation();
   const { token = "" } = useParams();
   const [data, setData] = useState<Payload | null>(null);
   const [cargando, setCargando] = useState(true);
@@ -146,8 +145,10 @@ export default function DocumentPacketPublicView() {
       if (!r.ok) {
         setErrorClave(
           j?.locked
-            ? "Se han agotado los intentos. El enlace queda bloqueado."
-            : `Clave incorrecta. Te quedan ${j?.attemptsLeft ?? 0} intento(s).`,
+            ? t("ui.DocumentPacketPublic.errorLocked")
+            : t("ui.DocumentPacketPublic.errorWrongCode", {
+                intentos: j?.attemptsLeft ?? 0,
+              }),
         );
         if (j?.locked) await cargar();
 
@@ -156,7 +157,7 @@ export default function DocumentPacketPublicView() {
       setClaveActiva(clave);
       setData(j);
     } catch {
-      setErrorClave("No se pudo comprobar la clave. Inténtalo de nuevo.");
+      setErrorClave(t("ui.DocumentPacketPublic.errorCheckFailed"));
     } finally {
       setVerificando(false);
     }
@@ -190,7 +191,9 @@ export default function DocumentPacketPublicView() {
       if (!r.ok) {
         const j = await r.json().catch(() => ({}));
 
-        setErrorClave(j?.message || "No se pudo registrar la decisión.");
+        setErrorClave(
+          j?.message || t("ui.DocumentPacketPublic.errorDecisionFailed"),
+        );
 
         return;
       }
@@ -211,7 +214,7 @@ export default function DocumentPacketPublicView() {
         if (r2.ok) setData(await r2.json());
       }
     } catch {
-      setErrorClave("No se pudo registrar la decisión.");
+      setErrorClave(t("ui.DocumentPacketPublic.errorDecisionFailed"));
     } finally {
       setEnviandoDecision(false);
     }
@@ -243,7 +246,8 @@ export default function DocumentPacketPublicView() {
             className="flex items-center justify-center gap-2 py-10"
             style={{ color: "var(--ink-soft)" }}
           >
-            <Loader2 className="h-5 w-5 animate-spin" /> Abriendo documentación…
+            <Loader2 className="h-5 w-5 animate-spin" />{" "}
+            {t("ui.DocumentPacketPublic.opening")}
           </div>
         </Tarjeta>
       </Marco>
@@ -259,10 +263,11 @@ export default function DocumentPacketPublicView() {
               className="mx-auto mb-3 h-10 w-10"
               style={{ color: "var(--ink-faint)" }}
             />
-            <h1 className="text-lg font-semibold">Enlace no válido</h1>
+            <h1 className="text-lg font-semibold">
+              {t("ui.DocumentPacketPublic.invalidTitle")}
+            </h1>
             <p className="mt-1 text-sm" style={{ color: "var(--ink-soft)" }}>
-              Este enlace no existe o ha dejado de estar disponible. Pide uno
-              nuevo a tu proveedor de seguridad.
+              {t("ui.DocumentPacketPublic.invalidText")}
             </p>
           </div>
         </Tarjeta>
@@ -282,9 +287,9 @@ export default function DocumentPacketPublicView() {
               className="mx-auto mb-3 h-10 w-10"
               style={{ color: "var(--ink-faint)" }}
             />
-            <h1 className="text-lg font-semibold">{motivo.titulo}</h1>
+            <h1 className="text-lg font-semibold">{t(motivo.tituloKey)}</h1>
             <p className="mt-1 text-sm" style={{ color: "var(--ink-soft)" }}>
-              {motivo.texto}
+              {t(motivo.textoKey)}
             </p>
             {data.name && (
               <p className="mt-3 text-xs" style={{ color: "var(--ink-faint)" }}>
@@ -319,15 +324,16 @@ export default function DocumentPacketPublicView() {
               </p>
             )}
             <p className="mt-1 text-sm" style={{ color: "var(--ink-soft)" }}>
-              {data.documentCount} documento(s)
+              {t("ui.DocumentPacketPublic.documentCount", {
+                count: data.documentCount ?? 0,
+              })}
             </p>
             <p className="mt-4 text-sm" style={{ color: "var(--ink-soft)" }}>
-              Introduce la clave de acceso que te facilitó tu proveedor de
-              seguridad.
+              {t("ui.DocumentPacketPublic.enterCode")}
             </p>
 
             <input
-              aria-label="Clave de acceso"
+              aria-label={t("ui.DocumentPacketPublic.accessCodeAria")}
               onChange={(e) => setClave(e.target.value.replace(/\D/g, '').slice(0, 6))}
               // `inputMode` numérico: en el teléfono sale el teclado de números,
               // no el alfabético con los dígitos escondidos tras una tecla.
@@ -352,7 +358,7 @@ export default function DocumentPacketPublicView() {
               {verificando ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                "Abrir documentación"
+                t("ui.DocumentPacketPublic.openButton")
               )}
             </Button>
           </div>
@@ -376,7 +382,9 @@ export default function DocumentPacketPublicView() {
             <h1 className="text-lg font-semibold">{data.name}</h1>
             <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
               {periodo ? `${periodo} · ` : ""}
-              {data.documents?.length ?? 0} documento(s)
+              {t("ui.DocumentPacketPublic.documentCount", {
+                count: data.documents?.length ?? 0,
+              })}
             </p>
           </div>
         </div>
@@ -393,7 +401,9 @@ export default function DocumentPacketPublicView() {
         )}
         {data.expiresAt && (
           <p className="mt-3 text-xs" style={{ color: "var(--ink-faint)" }}>
-            Este enlace caduca el {new Date(data.expiresAt).toLocaleString()}.
+            {t("ui.DocumentPacketPublic.expiresOn", {
+              fecha: new Date(data.expiresAt).toLocaleString(),
+            })}
           </p>
         )}
       </Tarjeta>
@@ -410,7 +420,9 @@ export default function DocumentPacketPublicView() {
                 <div className="truncate text-sm font-medium">{d.name}</div>
                 <div className="text-xs" style={{ color: "var(--ink-faint)" }}>
                   {bytes(d.sizeInBytes)}
-                  {d.downloadCount > 0 ? " · ya descargado" : ""}
+                  {d.downloadCount > 0
+                    ? ` · ${t("ui.DocumentPacketPublic.alreadyDownloaded")}`
+                    : ""}
                 </div>
               </div>
               {/* Botón y no enlace: la descarga necesita reenviar la clave, y un
@@ -421,7 +433,7 @@ export default function DocumentPacketPublicView() {
                 variant="outline"
                 onClick={() => descargar(d)}
               >
-                <Download className="mr-1.5 h-4 w-4" /> Descargar
+                <Download className="mr-1.5 h-4 w-4" /> {t("actions.download")}
               </Button>
             </div>
           ))}
@@ -443,8 +455,8 @@ export default function DocumentPacketPublicView() {
             <div>
               <div className="font-semibold">
                 {data.status === "approved"
-                  ? "Documentación aprobada"
-                  : "Documentación rechazada"}
+                  ? t("ui.DocumentPacketPublic.docApproved")
+                  : t("ui.DocumentPacketPublic.docRejected")}
               </div>
               <div className="text-sm" style={{ color: "var(--ink-soft)" }}>
                 {data.decidedByName ? `${data.decidedByName} · ` : ""}
@@ -458,23 +470,23 @@ export default function DocumentPacketPublicView() {
           <div className="space-y-3">
             <div className="font-semibold">
               {decidiendo === "approved"
-                ? "Aprobar documentación"
-                : "Rechazar documentación"}
+                ? t("ui.DocumentPacketPublic.approveTitle")
+                : t("ui.DocumentPacketPublic.rejectTitle")}
             </div>
             <input
-              aria-label="Tu nombre"
+              aria-label={t("ui.DocumentPacketPublic.nameAria")}
               className="cg-input w-full px-3 py-2.5 text-sm"
-              placeholder="Tu nombre y apellidos"
+              placeholder={t("ui.DocumentPacketPublic.namePlaceholder")}
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
             />
             <textarea
-              aria-label="Comentario"
+              aria-label={t("ui.DocumentPacketPublic.commentAria")}
               className="cg-input w-full px-3 py-2.5 text-sm"
               placeholder={
                 decidiendo === "approved"
-                  ? "Comentario (opcional)"
-                  : "Motivo del rechazo"
+                  ? t("ui.DocumentPacketPublic.commentOptionalPlaceholder")
+                  : t("ui.DocumentPacketPublic.rejectReasonPlaceholder")
               }
               rows={3}
               value={comentario}
@@ -499,7 +511,7 @@ export default function DocumentPacketPublicView() {
                 {enviandoDecision ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  "Confirmar"
+                  t("actions.confirm")
                 )}
               </Button>
               <Button
@@ -508,16 +520,17 @@ export default function DocumentPacketPublicView() {
                 variant="outline"
                 onClick={() => setDecidiendo(null)}
               >
-                Cancelar
+                {t("actions.cancel")}
               </Button>
             </div>
           </div>
         ) : (
           <div>
-            <div className="font-semibold">¿Está todo correcto?</div>
+            <div className="font-semibold">
+              {t("ui.DocumentPacketPublic.reviewQuestion")}
+            </div>
             <p className="mt-1 text-sm" style={{ color: "var(--ink-soft)" }}>
-              Tu respuesta queda registrada con fecha y nombre, y la ve tu
-              proveedor de seguridad.
+              {t("ui.DocumentPacketPublic.reviewNote")}
             </p>
             <div className="mt-3 flex flex-col gap-2 sm:flex-row">
               <Button
@@ -528,7 +541,8 @@ export default function DocumentPacketPublicView() {
                   setErrorClave(null);
                 }}
               >
-                <CheckCircle2 className="mr-1.5 h-4 w-4" /> Aprobar
+                <CheckCircle2 className="mr-1.5 h-4 w-4" />{" "}
+                {t("ui.DocumentPacketPublic.approveButton")}
               </Button>
               <Button
                 className="h-11 flex-1"
@@ -538,7 +552,8 @@ export default function DocumentPacketPublicView() {
                   setErrorClave(null);
                 }}
               >
-                <XCircle className="mr-1.5 h-4 w-4" /> Rechazar
+                <XCircle className="mr-1.5 h-4 w-4" />{" "}
+                {t("ui.DocumentPacketPublic.rejectButton")}
               </Button>
             </div>
           </div>

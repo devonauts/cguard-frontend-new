@@ -14,6 +14,7 @@
  * ════════════════════════════════════════════════════════════════════════════
  */
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
   CheckCircle2,
@@ -116,40 +117,40 @@ interface PacketEvent {
 type Tone = "neutral" | "info" | "brand" | "ok" | "bad" | "warn";
 
 /** El estado se lee de un vistazo: es la única pregunta al llegar fin de mes. */
-const ESTADO: Record<Packet["status"], { label: string; tone: Tone }> = {
-  draft: { label: "Borrador", tone: "neutral" },
-  sent: { label: "Enviada", tone: "info" },
-  viewed: { label: "Vista", tone: "brand" },
-  approved: { label: "Aprobada", tone: "ok" },
-  rejected: { label: "Rechazada", tone: "bad" },
+const ESTADO: Record<Packet["status"], { labelKey: string; tone: Tone }> = {
+  draft: { labelKey: "ui.DocumentPackets.statusDraft", tone: "neutral" },
+  sent: { labelKey: "ui.DocumentPackets.statusSent", tone: "info" },
+  viewed: { labelKey: "ui.DocumentPackets.statusViewed", tone: "brand" },
+  approved: { labelKey: "ui.DocumentPackets.statusApproved", tone: "ok" },
+  rejected: { labelKey: "ui.DocumentPackets.statusRejected", tone: "bad" },
 };
 
 const ESTADO_ENLACE: Record<
   PacketLink["state"],
-  { label: string; tone: Tone }
+  { labelKey: string; tone: Tone }
 > = {
-  active: { label: "Activo", tone: "ok" },
-  expired: { label: "Caducado", tone: "neutral" },
-  revoked: { label: "Revocado", tone: "neutral" },
-  locked: { label: "Bloqueado", tone: "bad" },
+  active: { labelKey: "ui.DocumentPackets.linkStateActive", tone: "ok" },
+  expired: { labelKey: "ui.DocumentPackets.linkStateExpired", tone: "neutral" },
+  revoked: { labelKey: "ui.DocumentPackets.linkStateRevoked", tone: "neutral" },
+  locked: { labelKey: "ui.DocumentPackets.linkStateLocked", tone: "bad" },
 };
 
 const EVENTO: Record<string, string> = {
-  created: "Carpeta creada",
-  shared_app: "Compartida en la app",
-  unshared_app: "Retirada de la app",
-  link_created: "Enlace generado",
-  link_revoked: "Enlace revocado",
-  sent: "Correo enviado",
-  link_opened: "Enlace abierto",
-  code_failed: "Clave incorrecta",
-  viewed: "Documentación vista",
-  downloaded: "Documento descargado",
-  approved: "Aprobada por el cliente",
-  rejected: "Rechazada por el cliente",
+  created: "ui.DocumentPackets.eventCreated",
+  shared_app: "ui.DocumentPackets.eventSharedApp",
+  unshared_app: "ui.DocumentPackets.eventUnsharedApp",
+  link_created: "ui.DocumentPackets.eventLinkCreated",
+  link_revoked: "ui.DocumentPackets.eventLinkRevoked",
+  sent: "ui.DocumentPackets.eventSent",
+  link_opened: "ui.DocumentPackets.eventLinkOpened",
+  code_failed: "ui.DocumentPackets.eventCodeFailed",
+  viewed: "ui.DocumentPackets.eventViewed",
+  downloaded: "ui.DocumentPackets.eventDownloaded",
+  approved: "ui.DocumentPackets.eventApproved",
+  rejected: "ui.DocumentPackets.eventRejected",
 };
 
-const VIA: Record<string, string> = { crm: "CRM", app: "App", link: "Enlace" };
+const VIA: Record<string, string> = { crm: "CRM", app: "App", link: "ui.DocumentPackets.viaLink" };
 
 const fmtDT = (iso?: string | null) => {
   if (!iso) return "—";
@@ -167,17 +168,25 @@ const fmtDT = (iso?: string | null) => {
 };
 const fmtDay = (iso?: string | null) => (iso ? String(iso).slice(0, 10) : null);
 
+type TFn = (key: string, opts?: Record<string, unknown>) => string;
+
 /** Cuánto le queda al enlace, en la unidad que se entiende sin pensar. */
-function cuantoQueda(expiresAt: string): string {
+function cuantoQueda(expiresAt: string, t: TFn): string {
   const ms = new Date(expiresAt).getTime() - Date.now();
 
-  if (ms <= 0) return "caducado";
+  if (ms <= 0) return t("ui.DocumentPackets.remainingExpired");
   const h = Math.floor(ms / 3_600_000);
 
-  if (h >= 24) return `${Math.floor(h / 24)} d ${h % 24} h`;
-  if (h >= 1) return `${h} h`;
+  if (h >= 24)
+    return t("ui.DocumentPackets.remainingDaysHours", {
+      dias: Math.floor(h / 24),
+      horas: h % 24,
+    });
+  if (h >= 1) return t("ui.DocumentPackets.remainingHours", { horas: h });
 
-  return `${Math.max(1, Math.round(ms / 60000))} min`;
+  return t("ui.DocumentPackets.remainingMinutes", {
+    minutos: Math.max(1, Math.round(ms / 60000)),
+  });
 }
 
 const bytes = (b: number) => {
@@ -188,12 +197,12 @@ const bytes = (b: number) => {
   return `${Math.round((b / 1024 ** i) * 10) / 10} ${u[i]}`;
 };
 
-async function copiar(texto: string, queEs: string) {
+async function copiar(texto: string, queEs: string, t: TFn) {
   try {
     await navigator.clipboard.writeText(texto);
-    toast.success(`${queEs} copiado`);
+    toast.success(t("ui.DocumentPackets.toastCopied", { que: queEs }));
   } catch {
-    toast.error("No se pudo copiar");
+    toast.error(t("ui.DocumentPackets.toastCopyFailed"));
   }
 }
 
@@ -207,6 +216,7 @@ export default function DocumentPackets({
   /** Cambia cuando la biblioteca crea una carpeta nueva: fuerza recarga. */
   refreshKey: number;
 }) {
+  const { t } = useTranslation();
   const [packets, setPackets] = useState<Packet[]>([]);
   const [loading, setLoading] = useState(true);
   const [abierta, setAbierta] = useState<string | null>(null);
@@ -247,30 +257,32 @@ export default function DocumentPackets({
     try {
       await clientService.shareDocumentPacketInApp(clientId, p.id, activo);
       toast.success(
-        activo ? "Visible en la app del cliente" : "Retirada de la app",
+        activo
+          ? t("ui.DocumentPackets.toastSharedInApp")
+          : t("ui.DocumentPackets.toastUnsharedFromApp"),
       );
       await cargar();
     } catch {
-      toast.error("No se pudo cambiar");
+      toast.error(t("ui.DocumentPackets.toastShareFailed"));
     }
   };
 
   const borrar = async (p: Packet) => {
     if (
       !(await confirmDialog({
-        title: "Eliminar carpeta",
-        message: `¿Eliminar «${p.name}»? Los documentos NO se borran de la biblioteca; sólo se retira la entrega y se revocan sus enlaces.`,
-        confirmText: "Eliminar",
+        title: t("ui.DocumentPackets.deleteTitle"),
+        message: t("ui.DocumentPackets.deleteMessage", { nombre: p.name }),
+        confirmText: t("actions.delete"),
         tone: "danger",
       }))
     )
       return;
     try {
       await clientService.deleteDocumentPacket(clientId, p.id);
-      toast.success("Carpeta eliminada");
+      toast.success(t("ui.DocumentPackets.toastDeleted"));
       await cargar();
     } catch {
-      toast.error("No se pudo eliminar");
+      toast.error(t("ui.DocumentPackets.toastDeleteFailed"));
     }
   };
 
@@ -328,12 +340,17 @@ export default function DocumentPackets({
 
       toast.success(
         enviados
-          ? `Enlace generado y enviado a ${enviados} destinatario(s)${fallidos ? ` · ${fallidos} falló` : ""}`
-          : "Enlace generado",
+          ? fallidos
+            ? t("ui.DocumentPackets.toastLinkSentWithFailures", {
+                enviados,
+                fallidos,
+              })
+            : t("ui.DocumentPackets.toastLinkSent", { enviados })
+          : t("ui.DocumentPackets.toastLinkGenerated"),
       );
       await cargar();
     } catch {
-      toast.error("No se pudo generar el enlace");
+      toast.error(t("ui.DocumentPackets.toastLinkFailed"));
     } finally {
       setEnviando(false);
     }
@@ -342,20 +359,19 @@ export default function DocumentPackets({
   const revocar = async (p: Packet, l: PacketLink) => {
     if (
       !(await confirmDialog({
-        title: "Revocar enlace",
-        message:
-          "Quien tenga este enlace dejará de poder abrirlo, ahora mismo.",
-        confirmText: "Revocar",
+        title: t("ui.DocumentPackets.revokeTitle"),
+        message: t("ui.DocumentPackets.revokeMessage"),
+        confirmText: t("ui.DocumentPackets.revokeConfirm"),
         tone: "danger",
       }))
     )
       return;
     try {
       await clientService.revokeDocumentPacketLink(clientId, p.id, l.id);
-      toast.success("Enlace revocado");
+      toast.success(t("ui.DocumentPackets.toastLinkRevoked"));
       await cargar();
     } catch {
-      toast.error("No se pudo revocar");
+      toast.error(t("ui.DocumentPackets.toastRevokeFailed"));
     }
   };
 
@@ -378,17 +394,17 @@ export default function DocumentPackets({
       <Section
         action={
           <span className="text-xs" style={{ color: "var(--ink-faint)" }}>
-            {packets.length} carpeta(s)
+            {t("ui.DocumentPackets.folderCount", { count: packets.length })}
           </span>
         }
         icon={<FolderOpen />}
-        title="Entregas al cliente"
+        title={t("ui.DocumentPackets.sectionTitle")}
       >
         {packets.length === 0 ? (
           <EmptyState
-            description="Marca documentos en la biblioteca y pulsa «Agrupar y entregar» para armar la primera carpeta: el cliente la verá en su app o la recibirá por un enlace privado."
+            description={t("ui.DocumentPackets.emptyDescription")}
             icon={<FolderOpen />}
-            title="Todavía no has entregado nada"
+            title={t("ui.DocumentPackets.emptyTitle")}
             variant="inline"
           />
         ) : (
@@ -432,25 +448,28 @@ export default function DocumentPackets({
                         style={{ color: "var(--ink-soft)" }}
                       >
                         {periodo ? `${periodo} · ` : ""}
-                        {p.documentCount} doc · {bytes(p.totalBytes)} · por{" "}
-                        {p.createdByName}
+                        {t("ui.DocumentPackets.cardMeta", {
+                          docs: p.documentCount,
+                          size: bytes(p.totalBytes),
+                          autor: p.createdByName,
+                        })}
                       </div>
                     </button>
 
                     <div className="flex flex-wrap items-center gap-1.5">
                       <StatusBadge dot={false} tone={est.tone}>
-                        {est.label}
+                        {t(est.labelKey)}
                       </StatusBadge>
                       {p.sharedInApp && (
                         <StatusBadge dot={false} tone="info">
                           <Smartphone className="mr-1 inline h-3 w-3" />
-                          En la app
+                          {t("ui.DocumentPackets.badgeInApp")}
                         </StatusBadge>
                       )}
                       {enlaceVivo && (
                         <StatusBadge dot={false} tone="ok">
                           <Link2 className="mr-1 inline h-3 w-3" />
-                          {cuantoQueda(enlaceVivo.expiresAt)}
+                          {cuantoQueda(enlaceVivo.expiresAt, t)}
                         </StatusBadge>
                       )}
                       {p.downloadedCount > 0 && (
@@ -465,27 +484,27 @@ export default function DocumentPackets({
                       <RowAction
                         title={
                           p.sharedInApp
-                            ? "Retirar de la app"
-                            : "Compartir en la app"
+                            ? t("ui.DocumentPackets.actionUnshareApp")
+                            : t("ui.DocumentPackets.actionShareApp")
                         }
                         onClick={() => compartir(p, !p.sharedInApp)}
                       >
                         <Smartphone className="h-3.5 w-3.5" />
                       </RowAction>
                       <RowAction
-                        title="Generar enlace privado"
+                        title={t("ui.DocumentPackets.actionGenerateLink")}
                         onClick={() => abrirEnlace(p)}
                       >
                         <Link2 className="h-3.5 w-3.5" />
                       </RowAction>
                       <RowAction
-                        title="Historial"
+                        title={t("ui.DocumentPackets.actionHistory")}
                         onClick={() => verHistorial(p)}
                       >
                         <History className="h-3.5 w-3.5" />
                       </RowAction>
                       <RowAction
-                        title="Eliminar"
+                        title={t("actions.delete")}
                         tone="bad"
                         onClick={() => borrar(p)}
                       >
@@ -504,18 +523,21 @@ export default function DocumentPackets({
                       <div className="mb-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
                         <Hito
                           icon={<Send className="h-3.5 w-3.5" />}
-                          label="Enviada"
+                          label={t("ui.DocumentPackets.milestoneSent")}
                           value={fmtDT(p.sentAt)}
                         />
                         <Hito
                           icon={<Eye className="h-3.5 w-3.5" />}
-                          label="Vista"
+                          label={t("ui.DocumentPackets.milestoneViewed")}
                           value={fmtDT(p.firstViewedAt)}
                         />
                         <Hito
                           icon={<Download className="h-3.5 w-3.5" />}
-                          label="Descargados"
-                          value={`${p.downloadedCount} de ${p.documentCount}`}
+                          label={t("ui.DocumentPackets.milestoneDownloaded")}
+                          value={t("ui.DocumentPackets.countOf", {
+                            actual: p.downloadedCount,
+                            total: p.documentCount,
+                          })}
                         />
                         <Hito
                           icon={
@@ -526,7 +548,9 @@ export default function DocumentPackets({
                             )
                           }
                           label={
-                            p.status === "rejected" ? "Rechazada" : "Aprobada"
+                            p.status === "rejected"
+                              ? t("ui.DocumentPackets.statusRejected")
+                              : t("ui.DocumentPackets.statusApproved")
                           }
                           value={
                             p.decisionAt
@@ -565,8 +589,11 @@ export default function DocumentPackets({
                             >
                               {bytes(d.sizeInBytes)}
                               {d.downloadCount > 0
-                                ? ` · descargado ${d.downloadCount}× · ${fmtDT(d.lastDownloadedAt)}`
-                                : " · sin descargar"}
+                                ? ` · ${t("ui.DocumentPackets.docDownloaded", {
+                                    veces: d.downloadCount,
+                                    fecha: fmtDT(d.lastDownloadedAt),
+                                  })}`
+                                : ` · ${t("ui.DocumentPackets.docNotDownloaded")}`}
                             </span>
                           </div>
                         ))}
@@ -585,20 +612,23 @@ export default function DocumentPackets({
                                 style={{ background: "var(--glass-sunken)" }}
                               >
                                 <StatusBadge dot={false} tone={e.tone}>
-                                  {e.label}
+                                  {t(e.labelKey)}
                                 </StatusBadge>
                                 {l.requiresCode && (
                                   <span
                                     className="inline-flex items-center gap-1"
                                     style={{ color: "var(--ink-soft)" }}
                                   >
-                                    <ShieldCheck className="h-3 w-3" /> con
-                                    clave
+                                    <ShieldCheck className="h-3 w-3" />{" "}
+                                    {t("ui.DocumentPackets.withCode")}
                                   </span>
                                 )}
                                 <span style={{ color: "var(--ink-soft)" }}>
-                                  caduca {fmtDT(l.expiresAt)} · {l.openCount}{" "}
-                                  apertura(s) · {l.downloadCount} descarga(s)
+                                  {t("ui.DocumentPackets.linkStats", {
+                                    fecha: fmtDT(l.expiresAt),
+                                    aperturas: l.openCount,
+                                    descargas: l.downloadCount,
+                                  })}
                                 </span>
                                 {l.recipients.length > 0 && (
                                   <span
@@ -614,16 +644,27 @@ export default function DocumentPackets({
                                       <Button
                                         size="sm"
                                         variant="ghost"
-                                        onClick={() => copiar(l.url, "Enlace")}
+                                        onClick={() =>
+                                          copiar(
+                                            l.url,
+                                            t("ui.DocumentPackets.copyLabelLink"),
+                                            t,
+                                          )
+                                        }
                                       >
-                                        <Copy className="mr-1 h-3 w-3" /> Enlace
+                                        <Copy className="mr-1 h-3 w-3" />{" "}
+                                        {t("ui.DocumentPackets.copyLabelLink")}
                                       </Button>
                                       {l.accessCode && (
                                         <Button
                                           size="sm"
                                           variant="ghost"
                                           onClick={() =>
-                                            copiar(l.accessCode!, "Clave")
+                                            copiar(
+                                              l.accessCode!,
+                                              t("ui.DocumentPackets.copyLabelCode"),
+                                              t,
+                                            )
                                           }
                                         >
                                           <ShieldCheck className="mr-1 h-3 w-3" />
@@ -637,7 +678,7 @@ export default function DocumentPackets({
                                         variant="danger-ghost"
                                         onClick={() => revocar(p, l)}
                                       >
-                                        Revocar
+                                        {t("ui.DocumentPackets.revokeConfirm")}
                                       </Button>
                                     </>
                                   )}
@@ -666,7 +707,7 @@ export default function DocumentPackets({
                 setRecien(null);
               }}
             >
-              Listo
+              {t("ui.DocumentPackets.doneButton")}
             </Button>
           ) : (
             <>
@@ -675,17 +716,19 @@ export default function DocumentPackets({
                 variant="outline"
                 onClick={() => setLinkFor(null)}
               >
-                Cancelar
+                {t("actions.cancel")}
               </Button>
               <Button disabled={enviando} onClick={generar}>
-                {enviando ? "Generando…" : "Generar y enviar"}
+                {enviando
+                  ? t("ui.DocumentPackets.generating")
+                  : t("ui.DocumentPackets.generateAndSend")}
               </Button>
             </>
           )
         }
         icon={<Link2 className="h-5 w-5" />}
         open={!!linkFor}
-        title="Enlace privado"
+        title={t("ui.DocumentPackets.privateLinkTitle")}
         onOpenChange={(o) => {
           if (!o && !enviando) {
             setLinkFor(null);
@@ -700,7 +743,9 @@ export default function DocumentPackets({
               className="rounded-xl p-3"
               style={{ background: "var(--glass-sunken)" }}
             >
-              <div className="cg-eyebrow mb-1">Enlace</div>
+              <div className="cg-eyebrow mb-1">
+                {t("ui.DocumentPackets.copyLabelLink")}
+              </div>
               <div className="flex items-center gap-2">
                 <input
                   readOnly
@@ -710,7 +755,13 @@ export default function DocumentPackets({
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() => copiar(recien.url, "Enlace")}
+                  onClick={() =>
+                    copiar(
+                      recien.url,
+                      t("ui.DocumentPackets.copyLabelLink"),
+                      t,
+                    )
+                  }
                 >
                   <Copy className="h-3.5 w-3.5" />
                 </Button>
@@ -721,7 +772,9 @@ export default function DocumentPackets({
                 className="rounded-xl p-3"
                 style={{ background: "var(--glass-sunken)" }}
               >
-                <div className="cg-eyebrow mb-1">Clave de acceso</div>
+                <div className="cg-eyebrow mb-1">
+                  {t("ui.DocumentPackets.accessCodeLabel")}
+                </div>
                 <div className="flex items-center gap-2">
                   <div className="flex-1 text-2xl font-bold tabular-nums tracking-[0.3em]">
                     {recien.accessCode}
@@ -729,7 +782,13 @@ export default function DocumentPackets({
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => copiar(recien.accessCode!, "Clave")}
+                    onClick={() =>
+                      copiar(
+                        recien.accessCode!,
+                        t("ui.DocumentPackets.copyLabelCode"),
+                        t,
+                      )
+                    }
                   >
                     <Copy className="h-3.5 w-3.5" />
                   </Button>
@@ -739,28 +798,24 @@ export default function DocumentPackets({
                   className="mt-2 text-xs"
                   style={{ color: "var(--ink-soft)" }}
                 >
-                  La clave NO va en el correo, a propósito: dísela por teléfono
-                  o WhatsApp. Así, un correo reenviado por error no abre la
-                  documentación.
+                  {t("ui.DocumentPackets.codeHint")}
                 </p>
               </div>
             ) : (
               <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
-                Este enlace abre directo, sin clave. Quien lo reciba —o a quien
-                se lo reenvíen— entra.
+                {t("ui.DocumentPackets.noCodeHint")}
               </p>
             )}
             <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
-              Caduca en {horas} horas. Puedes revocarlo antes desde la lista.
+              {t("ui.DocumentPackets.expiresHint", { horas })}
             </p>
           </div>
         ) : (
           <div className="space-y-3">
-            <LabeledField label="Destinatarios del correo">
+            <LabeledField label={t("ui.DocumentPackets.recipientsLabel")}>
               {recipients.length === 0 ? (
                 <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
-                  Este cliente no tiene contactos con correo. Escribe abajo a
-                  quién enviárselo.
+                  {t("ui.DocumentPackets.noRecipientsHint")}
                 </p>
               ) : (
                 <div className="space-y-1">
@@ -785,7 +840,9 @@ export default function DocumentPackets({
                         style={{ color: "var(--ink-faint)" }}
                       >
                         {r.email} ·{" "}
-                        {r.source === "portal" ? "portal" : "contacto"}
+                        {r.source === "portal"
+                          ? t("ui.DocumentPackets.sourcePortal")
+                          : t("ui.DocumentPackets.sourceContact")}
                       </span>
                     </label>
                   ))}
@@ -793,19 +850,19 @@ export default function DocumentPackets({
               )}
             </LabeledField>
 
-            <LabeledField label="Otros correos (separados por coma)">
+            <LabeledField label={t("ui.DocumentPackets.otherEmailsLabel")}>
               <input
                 className={FIELD_CLS}
-                placeholder="contador@empresa.com"
+                placeholder={t("ui.DocumentPackets.otherEmailsPlaceholder")}
                 value={correoSuelto}
                 onChange={(e) => setCorreoSuelto(e.target.value)}
               />
             </LabeledField>
 
-            <LabeledField label="Mensaje (opcional)">
+            <LabeledField label={t("ui.DocumentPackets.messageLabel")}>
               <textarea
                 className={`${FIELD_CLS} h-auto py-2`}
-                placeholder="Adjuntamos la documentación del mes para su revisión."
+                placeholder={t("ui.DocumentPackets.messagePlaceholder")}
                 rows={2}
                 value={mensaje}
                 onChange={(e) => setMensaje(e.target.value)}
@@ -817,34 +874,40 @@ export default function DocumentPackets({
               style={{ background: "var(--glass-sunken)" }}
             >
               <input
-                aria-label="Pedir clave de acceso"
+                aria-label={t("ui.DocumentPackets.requireCodeLabel")}
                 checked={pedirClave}
                 className="mt-1"
                 type="checkbox"
                 onChange={(e) => setPedirClave(e.target.checked)}
               />
               <span className="text-sm">
-                <span className="font-medium">Pedir clave de acceso</span>
+                <span className="font-medium">
+                  {t("ui.DocumentPackets.requireCodeLabel")}
+                </span>
                 <span
                   className="block text-xs"
                   style={{ color: "var(--ink-soft)" }}
                 >
-                  Se genera una clave de 6 dígitos que verás aquí para
-                  dictársela aparte. Sin ella, quien reciba el correo reenviado
-                  entra igual.
+                  {t("ui.DocumentPackets.requireCodeHint")}
                 </span>
               </span>
             </label>
 
-            <LabeledField label="Caduca en">
+            <LabeledField label={t("ui.DocumentPackets.expiresInLabel")}>
               <select
                 className={FIELD_CLS}
                 value={horas}
                 onChange={(e) => setHoras(Number(e.target.value))}
               >
-                <option value={24}>24 horas</option>
-                <option value={72}>72 horas</option>
-                <option value={168}>7 días</option>
+                <option value={24}>
+                  {t("ui.DocumentPackets.expiry24h")}
+                </option>
+                <option value={72}>
+                  {t("ui.DocumentPackets.expiry72h")}
+                </option>
+                <option value={168}>
+                  {t("ui.DocumentPackets.expiry7d")}
+                </option>
               </select>
             </LabeledField>
           </div>
@@ -853,17 +916,23 @@ export default function DocumentPackets({
 
       {/* ── Diálogo: historial ── */}
       <Modal
-        footer={<Button onClick={() => setEventsFor(null)}>Cerrar</Button>}
+        footer={
+          <Button onClick={() => setEventsFor(null)}>
+            {t("actions.close")}
+          </Button>
+        }
         icon={<History className="h-5 w-5" />}
         open={!!eventsFor}
-        title={`Historial · ${eventsFor?.name || ""}`}
+        title={t("ui.DocumentPackets.historyTitle", {
+          nombre: eventsFor?.name || "",
+        })}
         onOpenChange={(o) => {
           if (!o) setEventsFor(null);
         }}
       >
         {events.length === 0 ? (
           <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-            Sin actividad registrada todavía.
+            {t("ui.DocumentPackets.historyEmpty")}
           </p>
         ) : (
           <div className="max-h-[50vh] space-y-2 overflow-y-auto">
@@ -874,9 +943,16 @@ export default function DocumentPackets({
                   style={{ color: "var(--ink-faint)" }}
                 />
                 <div className="min-w-0 flex-1">
-                  <div className="font-medium">{EVENTO[e.kind] || e.kind}</div>
+                  <div className="font-medium">
+                    {EVENTO[e.kind] ? t(EVENTO[e.kind]) : e.kind}
+                  </div>
                   <div className="text-xs" style={{ color: "var(--ink-soft)" }}>
-                    {fmtDT(e.at)} · {VIA[e.via] || e.via}
+                    {fmtDT(e.at)} ·{" "}
+                    {VIA[e.via]
+                      ? VIA[e.via].startsWith("ui.")
+                        ? t(VIA[e.via])
+                        : VIA[e.via]
+                      : e.via}
                     {e.actor ? ` · ${e.actor}` : ""}
                     {e.ip ? ` · ${e.ip}` : ""}
                   </div>
