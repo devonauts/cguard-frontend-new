@@ -38,7 +38,6 @@ export const PERMISSIONS: string[] = [
   "attendanceSettingsRead","attendanceSettingsEdit",
   "timeOffRequestCreate","timeOffRequestRead","timeOffRequestEdit","timeOffRequestDestroy",
   // ── Programador ──
-  "shiftTemplateCreate","shiftTemplateRead","shiftTemplateEdit","shiftTemplateDestroy",
   "shiftExchangeRequestCreate","shiftExchangeRequestRead","shiftExchangeRequestEdit","shiftExchangeRequestDestroy",
   // ── Sitios / operación ──
   "postSiteCreate","postSiteRead","postSiteEdit","postSiteDestroy","postSiteAutocomplete",
